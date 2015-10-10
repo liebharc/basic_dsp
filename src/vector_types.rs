@@ -1,6 +1,7 @@
 use simd::f32x4;
 use scoped_threadpool::Pool;
 use std::sync::{Arc, Mutex};
+use num_cpus;
 
 pub struct Complex
 {
@@ -25,12 +26,9 @@ impl DataBuffer
 {
 	pub fn new() -> DataBuffer
 	{
-		return DataBuffer { pool: Pool::new(8) };
+		return DataBuffer { pool: Pool::new(num_cpus::get() as u32) };
 	}
 }
-
-#[allow(dead_code)]
-const NUM_CHUNKS: usize = 8;
 
 #[derive(Debug)]
 #[derive(PartialEq)]
@@ -50,7 +48,7 @@ impl Chunk
 		return Chunk { id: id, start: start, end: end, step_size: step_size };
 	}
 	
-	fn partition(array_length: usize, step_size: usize) -> Vec<Chunk>
+	fn partition_in_number(array_length: usize, step_size: usize, number_of_chunks: usize) -> Vec<Chunk>
 	{
 		let mut result = Vec::new();
 		if array_length < 1000
@@ -60,14 +58,14 @@ impl Chunk
 		}
 		else
 		{
-			let mut chunk_size = array_length / NUM_CHUNKS;
+			let mut chunk_size = array_length / number_of_chunks;
 			chunk_size -= chunk_size % step_size;
 			let mut i = 0;
 			let mut last_start = 0;
-			while i < NUM_CHUNKS
+			while i < number_of_chunks
 			{
 				let new_start = 
-					if i != NUM_CHUNKS - 1 { last_start + chunk_size } 
+					if i != number_of_chunks - 1 { last_start + chunk_size } 
 					else				     { array_length };
 				result.push(Chunk::new(i, last_start, new_start - 1, step_size));
 				last_start = new_start;
@@ -78,15 +76,20 @@ impl Chunk
 		}
 	}
 	
+	fn partition(array_length: usize, step_size: usize) -> Vec<Chunk>
+	{
+		return Chunk::partition_in_number(array_length, step_size, num_cpus::get());
+	}
+	
 	fn execute<F>(array: & mut [f32], step_size: usize, buffer:  &mut DataBuffer, function: F)
-		where F: Fn(& mut [f32],usize,usize)  + Send
+		where F: Fn(& mut [f32],Chunk)  + Send
 	{
 		let array_length = array.len();
 		Chunk::execute_partial(array, array_length, step_size, buffer, function);
 	}
 	
 	fn execute_partial<F>(array: & mut [f32], array_length: usize, step_size: usize, buffer:  &mut DataBuffer, function: F)
-		where F: Fn(& mut [f32],usize,usize) + Send
+		where F: Fn(& mut [f32],Chunk) + Send
 	{
 		let chunks = Chunk::partition(array_length, step_size);
 		let data = Arc::new(Mutex::new(array));
@@ -102,12 +105,7 @@ impl Chunk
 				{
 					let mut data = data.lock().unwrap();
 					let function = function.lock().unwrap();
-					let mut i = chunk.start;
-					while i <= chunk.end
-					{
-						function(&mut data, i, chunk.step_size);
-						i += chunk.step_size;
-					}
+					function(&mut data, chunk);
 				});
 			}
 		});
@@ -156,11 +154,16 @@ impl<'a> DataVector<'a>
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		Chunk::execute_partial(&mut array, vectorization_length, 4, buffer, |array,i,_|
+		Chunk::execute_partial(&mut array, vectorization_length, 4, buffer, |array,chunk|
 		{
-			let vector = f32x4::load(array, i);
-			let incremented = vector + increment_vector;
-			incremented.store(array, i);
+			let mut i = chunk.start;
+			while i <= chunk.end
+			{
+				let vector = f32x4::load(array, i);
+				let incremented = vector + increment_vector;
+				incremented.store(array, i);
+				i += chunk.step_size;
+			}
 		});
 		/*let mut i = 0;
 		while i < vectorization_length
@@ -256,8 +259,7 @@ fn partition_small_arrays_test()
 #[test]
 fn partition_large_arrays_test()
 {
-	let result = Chunk::partition(6777, 4);
-	// test assumes that the chunk number is set to 8
+	let result = Chunk::partition_in_number(6777, 4, 8);
 	assert_eq!(result, 
 		vec![ Chunk::new(0, 0, 843, 4), 
 		  Chunk::new(1, 844, 1687, 4),
@@ -275,7 +277,7 @@ fn execute_on_array_test()
 {
 	let mut array = [0.0; 1000];
 	let mut buffer = DataBuffer::new();
-	Chunk::execute(&mut array, 4, &mut buffer, |arr,start,_|arr[start] = 5.0);
+	Chunk::execute(&mut array, 4, &mut buffer, |arr,chunk|arr[chunk.start] = 5.0);
 }
 
 #[test]

@@ -8,3 +8,4 @@ git = "https://github.com/carllerche/hamcrest-rust.git"
 [dependencies]
 simd = { git = "https://github.com/huonw/simd" }
 scoped_threadpool = "0.1.*"
+num_cpus = "0.2.6"
