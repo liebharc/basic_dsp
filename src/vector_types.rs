@@ -16,6 +16,19 @@ impl Complex
 	}
 }
 
+pub struct DataBuffer
+{
+	pool: Pool,
+}
+
+impl DataBuffer
+{
+	pub fn new() -> DataBuffer
+	{
+		return DataBuffer { pool: Pool::new(8) };
+	}
+}
+
 #[allow(dead_code)]
 const NUM_CHUNKS: usize = 8;
 
@@ -65,20 +78,20 @@ impl Chunk
 		}
 	}
 	
-	fn execute<F>(array: & mut [f32], step_size: usize, function: F)
+	fn execute<F>(array: & mut [f32], step_size: usize, buffer:  &mut DataBuffer, function: F)
 		where F: Fn(& mut [f32],usize,usize)  + Send
 	{
 		let array_length = array.len();
-		Chunk::execute_partial(array, array_length, step_size, function);
+		Chunk::execute_partial(array, array_length, step_size, buffer, function);
 	}
 	
-	fn execute_partial<F>(array: & mut [f32], array_length: usize, step_size: usize, function: F)
+	fn execute_partial<F>(array: & mut [f32], array_length: usize, step_size: usize, buffer:  &mut DataBuffer, function: F)
 		where F: Fn(& mut [f32],usize,usize) + Send
 	{
 		let chunks = Chunk::partition(array_length, step_size);
 		let data = Arc::new(Mutex::new(array));
 		let function = Arc::new(Mutex::new(function));
-		let mut pool = Pool::new(8);
+		let ref mut pool = buffer.pool;
 		pool.scoped(|scoped| 
 		{
 			for chunk in chunks 
@@ -109,6 +122,7 @@ pub struct DataVector<'a>
 	pub is_complex: bool
 }
 
+#[allow(unused_variables)]
 impl<'a> DataVector<'a>
 {
 	pub fn new<'b>(data: &'b mut[f32]) -> DataVector<'b>
@@ -135,14 +149,14 @@ impl<'a> DataVector<'a>
 		return self.data.len();
 	}
 	
-	pub fn inplace_real_offset(&mut self, offset: f32) 
+	pub fn inplace_real_offset(&mut self, offset: f32, buffer: &mut DataBuffer) 
 	{
 		let increment_vector = f32x4::splat(offset); 
 		let data_length = self.len();
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		Chunk::execute_partial(&mut array, vectorization_length, 4, |array,i,_|
+		Chunk::execute_partial(&mut array, vectorization_length, 4, buffer, |array,i,_|
 		{
 			let vector = f32x4::load(array, i);
 			let incremented = vector + increment_vector;
@@ -163,7 +177,7 @@ impl<'a> DataVector<'a>
 		}
 	}
 	
-	pub fn inplace_complex_offset(&mut self, offset: Complex)
+	pub fn inplace_complex_offset(&mut self, offset: Complex, buffer: &mut DataBuffer)
 	{
 		let real_imag = &[offset.real, offset.imag, offset.real, offset.imag];
 		let increment_vector = f32x4::load(real_imag, 0); 
@@ -186,7 +200,7 @@ impl<'a> DataVector<'a>
 		}
 	}
 	
-	pub fn inplace_real_scale(&mut self, scale: f32) 
+	pub fn inplace_real_scale(&mut self, scale: f32, buffer: &mut DataBuffer) 
 	{
 		let increment_vector = f32x4::splat(scale); 
 		let data_length = self.len();
@@ -208,7 +222,7 @@ impl<'a> DataVector<'a>
 		}
 	}
 	
-	pub fn inplace_complex_scale(&mut self, scale: Complex)
+	pub fn inplace_complex_scale(&mut self, scale: Complex, buffer: &mut DataBuffer)
 	{
 		let real_imag = &[scale.real, scale.imag, scale.real, scale.imag];
 		let increment_vector = f32x4::load(real_imag, 0); 
@@ -260,7 +274,8 @@ fn partition_large_arrays_test()
 fn execute_on_array_test()
 {
 	let mut array = [0.0; 1000];
-	Chunk::execute(&mut array, 4, |arr,start,_|arr[start] = 5.0);
+	let mut buffer = DataBuffer::new();
+	Chunk::execute(&mut array, 4, &mut buffer, |arr,start,_|arr[start] = 5.0);
 }
 
 #[test]
@@ -268,7 +283,8 @@ fn add_real_one_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 	let mut result = DataVector::new(&mut data);
-	result.inplace_real_offset(1.0);
+	let mut buffer = DataBuffer::new();
+	result.inplace_real_offset(1.0, &mut buffer);
 	assert_eq!(result.data, [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]);
 }
 
@@ -277,7 +293,8 @@ fn add_real_two_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 	let mut result = DataVector::new(&mut data);
-	result.inplace_real_offset(2.0);
+	let mut buffer = DataBuffer::new();
+	result.inplace_real_offset(2.0, &mut buffer);
 	assert_eq!(result.data, [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]);
 }
 
@@ -286,7 +303,8 @@ fn add_complex_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 	let mut result = DataVector::new(&mut data);
-	result.inplace_complex_offset(Complex::new(1.0, -1.0));
+	let mut buffer = DataBuffer::new();
+	result.inplace_complex_offset(Complex::new(1.0, -1.0), &mut buffer);
 	assert_eq!(result.data, [2.0, 1.0, 4.0, 3.0, 6.0, 5.0, 8.0, 7.0]);
 }
 
@@ -295,7 +313,8 @@ fn add_real_one_odd_number_of_elements_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0];
 	let mut result = DataVector::new(&mut data);
-	result.inplace_real_offset(1.0);
+	let mut buffer = DataBuffer::new();
+	result.inplace_real_offset(1.0, &mut buffer);
 	assert_eq!(result.data, [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
 }
 
@@ -304,7 +323,8 @@ fn add_complex_odd_number_of_elements_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
 	let mut result = DataVector::new(&mut data);
-	result.inplace_complex_offset(Complex::new(1.0, -1.0));
+	let mut buffer = DataBuffer::new();
+	result.inplace_complex_offset(Complex::new(1.0, -1.0), &mut buffer);
 	assert_eq!(result.data, [2.0, 1.0, 4.0, 3.0, 6.0, 5.0]);
 }
 
@@ -313,7 +333,8 @@ fn scale_real_two_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 	let mut result = DataVector::new(&mut data);
-	result.inplace_real_scale(2.0);
+	let mut buffer = DataBuffer::new();
+	result.inplace_real_scale(2.0, &mut buffer);
 	assert_eq!(result.data, [2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0]);
 }
 
@@ -322,7 +343,8 @@ fn scale_real_half_test_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 	let mut result = DataVector::new(&mut data);
-	result.inplace_real_scale(0.5);
+	let mut buffer = DataBuffer::new();
+	result.inplace_real_scale(0.5, &mut buffer);
 	assert_eq!(result.data, [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]);
 }
 
@@ -331,7 +353,8 @@ fn scale_complex_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 	let mut result = DataVector::new(&mut data);
-	result.inplace_complex_scale(Complex::new(2.0, -0.5));
+	let mut buffer = DataBuffer::new();
+	result.inplace_complex_scale(Complex::new(2.0, -0.5), &mut buffer);
 	assert_eq!(result.data, [2.0, -1.0, 6.0, -2.0, 10.0, -3.0, 14.0, -4.0]);
 }
 
@@ -340,7 +363,8 @@ fn scale_real_two_odd_number_of_elements_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0];
 	let mut result = DataVector::new(&mut data);
-	result.inplace_real_scale(2.0);
+	let mut buffer = DataBuffer::new();
+	result.inplace_real_scale(2.0, &mut buffer);
 	assert_eq!(result.data, [2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0]);
 }
 
@@ -349,6 +373,7 @@ fn scale_complex_odd_number_of_elements_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
 	let mut result = DataVector::new(&mut data);
-	result.inplace_complex_scale(Complex::new(2.0, -0.5));
+	let mut buffer = DataBuffer::new();
+	result.inplace_complex_scale(Complex::new(2.0, -0.5), &mut buffer);
 	assert_eq!(result.data, [2.0, -1.0, 6.0, -2.0, 10.0, -3.0]);
 }
