@@ -7,3 +7,4 @@ authors = ["Christian Liebhardt <christian.liebhardt@arcor.de>"]
 git = "https://github.com/carllerche/hamcrest-rust.git"
 [dependencies]
 simd = { git = "https://github.com/huonw/simd" }
+scoped_threadpool = "0.1.*"
