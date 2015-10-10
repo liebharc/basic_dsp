@@ -1,4 +1,7 @@
 [package]
-name = "hello_world"
+name = "basic_dsp"
 version = "0.1.0"
 authors = ["Christian Liebhardt <christian.liebhardt@arcor.de>"]
+
+[dev-dependencies.hamcrest]
+git = "https://github.com/carllerche/hamcrest-rust.git"
