@@ -1,18 +1,19 @@
 #[allow(dead_code)]
-pub struct RealVector<'a>
+pub struct DataVector<'a> 
 {
-	pub data: &'a mut[f64],
+	pub data: &'a mut[f32],
 	length_valids: usize,
-	pub delta: f64
+	pub delta: f64,
+	pub is_complex: bool
 }
 
 #[allow(dead_code)]
-impl<'a> RealVector<'a>
+impl<'a> DataVector<'a>
 {
-	pub fn new<'b>(data: &'b mut[f64]) -> RealVector<'b>
+	pub fn new<'b>(data: &'b mut[f32]) -> DataVector<'b>
 	{
 		let length_valids = data.len();
-		return RealVector { data: data, length_valids: length_valids, delta: 1.0 };
+		return DataVector { data: data, length_valids: length_valids, delta: 1.0, is_complex: false };
 	}
 
     pub fn len(&self) -> usize 
