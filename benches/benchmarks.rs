@@ -25,7 +25,19 @@ fn add_real_vector_benchmark(b: &mut Bencher)
 {
 	let mut data = [0.0; DEFAULT_DATA_SIZE];
 	let mut result = DataVector::new(&mut data);
-	let mut buffer = DataBuffer::new();
+	let mut buffer = DataBuffer::new("test", PerformanceHint::None);
+	b.iter(|| {
+		result.inplace_real_offset(1.0, &mut buffer);
+		return result.data[0];
+		});
+}
+
+#[bench]
+fn add_real_vector_multicore_benchmark(b: &mut Bencher)
+{
+	let mut data = [0.0; DEFAULT_DATA_SIZE];
+	let mut result = DataVector::new(&mut data);
+	let mut buffer = DataBuffer::new("test", PerformanceHint::AggressiveParallize);
 	b.iter(|| {
 		result.inplace_real_offset(1.0, &mut buffer);
 		return result.data[0];
@@ -38,7 +50,7 @@ fn add_complex_vector_benchmark(b: &mut Bencher)
 {
 	let mut data = [0.0; DEFAULT_DATA_SIZE];
 	let mut result = DataVector::new(&mut data);
-	let mut buffer = DataBuffer::new();
+	let mut buffer = DataBuffer::new("test", PerformanceHint::None);
 	b.iter(move|| {
 		let complex = Complex::new(1.0, -1.0);
 		result.inplace_complex_offset(complex, &mut buffer);
@@ -51,7 +63,7 @@ fn scale_real_one_vector_benchmark(b: &mut Bencher)
 {
 	let mut data = [0.0; DEFAULT_DATA_SIZE];
 	let mut result = DataVector::new(&mut data);
-	let mut buffer = DataBuffer::new();
+	let mut buffer = DataBuffer::new("test", PerformanceHint::None);
 	b.iter(move|| {
 		result.inplace_real_scale(2.0, &mut buffer);
 		return result.data[0];
@@ -63,7 +75,7 @@ fn scale_complex_vector_benchmark(b: &mut Bencher)
 {
 	let mut data = [0.0; DEFAULT_DATA_SIZE];
 	let mut result = DataVector::new(&mut data);
-	let mut buffer = DataBuffer::new();
+	let mut buffer = DataBuffer::new("test", PerformanceHint::None);
 	b.iter(move|| {
 		let complex = Complex::new(2.0, -2.0);
 		result.inplace_complex_scale(complex, &mut buffer);
