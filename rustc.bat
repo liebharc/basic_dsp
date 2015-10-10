@@ -1,0 +1,1 @@
+@"C:\Program Files\Rust nightly 1.5\bin\rustc.exe" -C target-cpu=native -C target-feature=+sse2,+sse3 %*
