@@ -1,0 +1,16 @@
+1. Method overloading via: http://stackoverflow.com/questions/25265527/how-can-i-approximate-method-overloading
+2. Think about: Complex and real vectors, f32 and f64 based vectors
+3. More basic functions:
+- Sqrt
+- Magnitude²
+- Magnitude
+- Abs
+- Phase/Angle
+- Unwrap
+- Wrap
+- FFT/IFFT
+- Correlation
+- Convolve
+- Resample based on convolve
+- Window functions
+4. Think about more domain specfic functions such as frequency estimation
