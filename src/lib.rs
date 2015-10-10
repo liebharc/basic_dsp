@@ -1,30 +1,28 @@
 #![feature(test)]
-#![feature(core_simd)]
 #![feature(step_by)]
 mod vector_types;
 use vector_types::*;
 extern crate test;
 #[allow(unused_imports)]
 use test::Bencher;
-#[allow(deprecated)]
-use std::simd::f32x4;
+extern crate simd;
+use simd::f32x4;
 
-#[allow(deprecated)]
 pub fn add_one(data: &mut DataVector) 
 {
-	let increment_vector = f32x4(1.0, 1.0, 1.0, 1.0); 
+	let increment_vector = f32x4::splat(1.0); 
 	let data_length = data.len();
 	let scalar_length = data_length % 4;
 	let vectorization_length = data_length - scalar_length;
 	let mut array = &mut data.data;
 	for i in (0..vectorization_length).step_by(4)
 	{ 
-		let vector = f32x4(array[i], array[i+1], array[i+2], array[i+3]);
-		let incremted = vector + increment_vector;
-		array[i] = incremted.0;
-		array[i + 1] = incremted.1;
-		array[i + 2] = incremted.2;
-		array[i + 3] = incremted.3;
+		let vector = f32x4::load(array, i);
+		let incremented = vector + increment_vector;
+		array[i] = incremented.extract(0);
+		array[i + 1] = incremented.extract(1);
+		array[i + 2] = incremented.extract(2);
+		array[i + 3] = incremented.extract(3);
 	}
 	
 	for i in vectorization_length..data_length

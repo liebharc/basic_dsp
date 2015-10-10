@@ -5,4 +5,5 @@ authors = ["Christian Liebhardt <christian.liebhardt@arcor.de>"]
 
 [dev-dependencies.hamcrest]
 git = "https://github.com/carllerche/hamcrest-rust.git"
+[dependencies]
 simd = { git = "https://github.com/huonw/simd" }
