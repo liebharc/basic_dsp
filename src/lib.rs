@@ -1,13 +1,15 @@
 #![feature(test)]
 #![feature(core_simd)]
 #![feature(step_by)]
-
 mod vector_types;
 use vector_types::*;
 extern crate test;
+#[allow(unused_imports)]
 use test::Bencher;
+#[allow(deprecated)]
 use std::simd::f32x4;
 
+#[allow(deprecated)]
 pub fn add_one(data: &mut DataVector) 
 {
 	let increment_vector = f32x4(1.0, 1.0, 1.0, 1.0); 
@@ -62,7 +64,7 @@ fn add_one_test_odd_number_of_elements()
 #[bench]
 fn add_one_benchmark(b: &mut Bencher)
 {
-	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
+	let mut data = [0.0; 20000];
 	let mut result = DataVector::new(&mut data);
 	b.iter(|| {
 		add_one(&mut result);
@@ -73,7 +75,7 @@ fn add_one_benchmark(b: &mut Bencher)
 #[bench]
 fn add_one_scalar_benchmark(b: &mut Bencher)
 {
-	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
+	let mut data = [0.0; 20000];
 	let mut result = DataVector::new(&mut data);
 	b.iter(|| {
 		add_one_scalar(&mut result);
