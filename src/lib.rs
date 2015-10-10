@@ -1,9 +1,5 @@
-#![feature(test)]
-mod vector_types;
+pub mod vector_types;
 use vector_types::*;
-extern crate test;
-#[allow(unused_imports)]
-use test::Bencher;
 extern crate simd;
 use simd::f32x4;
 
@@ -29,18 +25,6 @@ pub fn add_one(data: &mut DataVector)
 	}
 }
 
-pub fn add_one_scalar(data: &mut DataVector) 
-{
-	let data_length = data.len();
-	let mut array = &mut data.data;
-	let mut i = 0;
-    while i < data_length
-	{ 
-		array[i] = array[i] + 1.0;
-		i += 1;
-	}
-}
-
 #[test]
 fn add_one_test()
 {
@@ -57,26 +41,4 @@ fn add_one_test_odd_number_of_elements()
 	let mut result = DataVector::new(&mut data);
 	add_one(&mut result);
 	assert_eq!(result.data, [2.0, 3.0, 4.0]);
-}
-
-#[bench]
-fn add_one_benchmark(b: &mut Bencher)
-{
-	let mut data = [0.0; 20000];
-	let mut result = DataVector::new(&mut data);
-	b.iter(|| {
-		add_one(&mut result);
-		return result.data[0];
-		});
-}
-
-#[bench]
-fn add_one_scalar_benchmark(b: &mut Bencher)
-{
-	let mut data = [0.0; 20000];
-	let mut result = DataVector::new(&mut data);
-	b.iter(|| {
-		add_one_scalar(&mut result);
-		return result.data[0];
-		});
 }
