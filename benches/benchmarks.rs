@@ -18,7 +18,7 @@ pub fn add_one_scalar(data: &mut DataVector)
 }
 
 #[bench]
-fn add_real_one_vector_benchmark(b: &mut Bencher)
+fn add_real_vector_benchmark(b: &mut Bencher)
 {
 	let mut data = [0.0; 10000];
 	let mut result = DataVector::new(&mut data);
@@ -36,6 +36,29 @@ fn add_complex_vector_benchmark(b: &mut Bencher)
 	b.iter(|| {
 		let complex = Complex::new(1.0, -1.0);
 		result.inplace_complex_offset(complex);
+		return result.data[0];
+		});
+}
+
+#[bench]
+fn scale_real_one_vector_benchmark(b: &mut Bencher)
+{
+	let mut data = [0.0; 10000];
+	let mut result = DataVector::new(&mut data);
+	b.iter(|| {
+		result.inplace_real_scale(2.0);
+		return result.data[0];
+		});
+}
+
+#[bench]
+fn scale_complex_vector_benchmark(b: &mut Bencher)
+{
+	let mut data = [0.0; 10000];
+	let mut result = DataVector::new(&mut data);
+	b.iter(|| {
+		let complex = Complex::new(2.0, -2.0);
+		result.inplace_complex_scale(complex);
 		return result.data[0];
 		});
 }
