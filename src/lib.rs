@@ -46,12 +46,12 @@ pub fn add_one(data: &mut RealVector)
 fn add_one_test()
 {
 	let mut result = 
-	RealVector 
-	{ 
-		data: &mut[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0], 
-		length_valids: 10, 
-		delta: 1.0
-	};
+		RealVector 
+		{ 
+			data: &mut[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0], 
+			length_valids: 10, 
+			delta: 1.0
+		};
 	add_one(&mut result);
 	assert_eq!(result.data, [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0]);
 }
@@ -60,12 +60,12 @@ fn add_one_test()
 fn add_one_test_odd_number_of_elements()
 {
 	let mut result = 
-	RealVector 
-	{ 
-		data: &mut[1.0, 2.0, 3.0], 
-		length_valids: 3, 
-		delta: 1.0
-	};
+		RealVector 
+		{ 
+			data: &mut[1.0, 2.0, 3.0], 
+			length_valids: 3, 
+			delta: 1.0
+		};
 	add_one(&mut result);
 	assert_eq!(result.data, [2.0, 3.0, 4.0]);
 }
