@@ -1,3 +1,6 @@
+
+use simd::f32x4;
+
 pub struct Complex
 {
 	pub real: f32,
@@ -46,5 +49,50 @@ impl<'a> DataVector<'a>
 	pub fn allocated_length(&self) -> usize 
 	{
 		return self.data.len();
+	}
+	
+	pub fn inplace_real_offset(&mut self, offset: f32) 
+	{
+		let increment_vector = f32x4::splat(offset); 
+		let data_length = self.len();
+		let scalar_length = data_length % 4;
+		let vectorization_length = data_length - scalar_length;
+		let array = &mut self.data;
+		let mut i = 0;
+		while i < vectorization_length
+		{ 
+			let vector = f32x4::load(array, i);
+			let incremented = vector + increment_vector;
+			incremented.store(array, i);
+			i += 4;
+		}
+		
+		for i in vectorization_length..data_length
+		{
+			array[i] = array[i] + offset;
+		}
+	}
+	
+	pub fn inplace_complex_offset(&mut self, offset: Complex)
+	{
+		let real_imag = &[offset.real, offset.imag, offset.real, offset.imag];
+		let increment_vector = f32x4::load(real_imag, 0); 
+		let data_length = self.len();
+		let scalar_length = data_length % 4;
+		let vectorization_length = data_length - scalar_length;
+		let mut array = &mut self.data;
+		let mut i = 0;
+		while i < vectorization_length
+		{ 
+			let vector = f32x4::load(array, i);
+			let incremented = vector + increment_vector;
+			incremented.store(array, i);
+			i += 4;
+		}
+		
+		for i in vectorization_length..data_length
+		{
+			array[i] = array[i] + real_imag[i % 2];
+		}
 	}
 }

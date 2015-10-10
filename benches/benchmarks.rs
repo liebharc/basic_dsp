@@ -3,7 +3,6 @@ extern crate test;
 use test::Bencher;
 
 extern crate basic_dsp;
-use basic_dsp::*;
 use basic_dsp::vector_types::*;
 
 pub fn add_one_scalar(data: &mut DataVector) 
@@ -24,7 +23,7 @@ fn add_real_one_vector_benchmark(b: &mut Bencher)
 	let mut data = [0.0; 10000];
 	let mut result = DataVector::new(&mut data);
 	b.iter(|| {
-		inplace_real_offset(&mut result, 1.0);
+		result.inplace_real_offset(1.0);
 		return result.data[0];
 		});
 }
@@ -36,7 +35,7 @@ fn add_complex_vector_benchmark(b: &mut Bencher)
 	let mut result = DataVector::new(&mut data);
 	b.iter(|| {
 		let complex = Complex::new(1.0, -1.0);
-		inplace_complex_offset(&mut result, complex);
+		result.inplace_complex_offset(complex);
 		return result.data[0];
 		});
 }
