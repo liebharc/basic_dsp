@@ -1,3 +1,17 @@
+pub struct Complex
+{
+	pub real: f32,
+	pub imag: f32
+}
+
+impl Complex
+{
+	pub fn new(real: f32, imag: f32) -> Complex
+	{
+		return Complex { real: real, imag: imag };
+	}
+}
+
 #[allow(dead_code)]
 pub struct DataVector<'a> 
 {
