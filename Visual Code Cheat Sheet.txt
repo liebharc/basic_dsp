@@ -1,0 +1,6 @@
+Ctrl+Shift+P and type tasks to see and run tasks
+
+ctrl+shift+r: Task Run
+ctrl+shift+b: Task Build
+ctrl+shift+t: Task Test
+ctrl+shift+c: Task Compile
