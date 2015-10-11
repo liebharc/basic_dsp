@@ -1,4 +1,5 @@
 #![feature(test)]
+#![feature(box_syntax)] 
 extern crate test;
 use test::Bencher;
 
@@ -18,12 +19,12 @@ pub fn add_one_scalar(data: &mut DataVector)
 }
 
 #[allow(dead_code)]
-const DEFAULT_DATA_SIZE: usize = 100000;
+const DEFAULT_DATA_SIZE: usize = 2000000;
 
 #[bench]
 fn add_real_vector_benchmark(b: &mut Bencher)
 {
-	let mut data = [0.0; DEFAULT_DATA_SIZE];
+	let mut data: Box<[f32]> = box [0.0; DEFAULT_DATA_SIZE];
 	let mut result = DataVector::new(&mut data);
 	let mut buffer = DataBuffer::new("test", PerformanceHint::None);
 	b.iter(|| {
@@ -35,7 +36,7 @@ fn add_real_vector_benchmark(b: &mut Bencher)
 #[bench]
 fn add_real_vector_multicore_benchmark(b: &mut Bencher)
 {
-	let mut data = [0.0; DEFAULT_DATA_SIZE];
+	let mut data: Box<[f32]> = box [0.0; DEFAULT_DATA_SIZE];
 	let mut result = DataVector::new(&mut data);
 	let mut buffer = DataBuffer::new("test", PerformanceHint::AggressiveParallize);
 	b.iter(|| {
@@ -44,11 +45,10 @@ fn add_real_vector_multicore_benchmark(b: &mut Bencher)
 		});
 }
 
-
 #[bench]
 fn add_complex_vector_benchmark(b: &mut Bencher)
 {
-	let mut data = [0.0; DEFAULT_DATA_SIZE];
+	let mut data: Box<[f32]> = box [0.0; DEFAULT_DATA_SIZE];
 	let mut result = DataVector::new(&mut data);
 	let mut buffer = DataBuffer::new("test", PerformanceHint::None);
 	b.iter(move|| {
@@ -61,7 +61,7 @@ fn add_complex_vector_benchmark(b: &mut Bencher)
 #[bench]
 fn scale_real_one_vector_benchmark(b: &mut Bencher)
 {
-	let mut data = [0.0; DEFAULT_DATA_SIZE];
+	let mut data: Box<[f32]> = box [0.0; DEFAULT_DATA_SIZE];
 	let mut result = DataVector::new(&mut data);
 	let mut buffer = DataBuffer::new("test", PerformanceHint::None);
 	b.iter(move|| {
@@ -73,7 +73,7 @@ fn scale_real_one_vector_benchmark(b: &mut Bencher)
 #[bench]
 fn scale_complex_vector_benchmark(b: &mut Bencher)
 {
-	let mut data = [0.0; DEFAULT_DATA_SIZE];
+	let mut data: Box<[f32]> = box [0.0; DEFAULT_DATA_SIZE];
 	let mut result = DataVector::new(&mut data);
 	let mut buffer = DataBuffer::new("test", PerformanceHint::None);
 	b.iter(move|| {
@@ -86,7 +86,7 @@ fn scale_complex_vector_benchmark(b: &mut Bencher)
 #[bench]
 fn add_real_one_scalar_benchmark(b: &mut Bencher)
 {
-	let mut data = [0.0; DEFAULT_DATA_SIZE];
+	let mut data: Box<[f32]> = box [0.0; DEFAULT_DATA_SIZE];
 	let mut result = DataVector::new(&mut data);
 	b.iter(move|| {
 		add_one_scalar(&mut result);

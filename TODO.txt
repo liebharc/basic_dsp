@@ -1,16 +1,29 @@
+0. Think about a better basic data type, which is heap allocated and fixed size and numeric
+https://gist.github.com/lindahua/f5b06fafcc86d0547ab5
 1. Method overloading via: http://stackoverflow.com/questions/25265527/how-can-i-approximate-method-overloading
 2. Think about: Complex and real vectors, f32 and f64 based vectors
-3. More basic functions:
+3. Think about time and frequency domain
+4. Think about some lazyness: Only guarantee calculation if the data result
+	is requested from the caller
+...
+9. More basic functions:
 - Sqrt
+- Real <-> complex conversions
 - Magnitude²
 - Magnitude
 - Abs
 - Phase/Angle
 - Unwrap
+- Exp, Power
+- Log, Log10
 - Wrap
+- Complex Conj
+- Zero Insertion (useful for real -> complex conversion too)
+- Differential, Cummulative Sum or Integrate
 - FFT/IFFT
 - Correlation
 - Convolve
 - Resample based on convolve
 - Window functions
-4. Think about more domain specfic functions such as frequency estimation
+...
+10. Think about more domain specfic functions such as frequency estimation
