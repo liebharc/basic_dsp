@@ -19,7 +19,7 @@ pub fn add_offset_reference(data: &mut DataVector, offset: f32)
 }
 
 #[allow(dead_code)]
-const DEFAULT_DATA_SIZE: usize = 10000;
+const DEFAULT_DATA_SIZE: usize = 10000000;
 
 #[bench]
 fn add_real_one_scalar_benchmark(b: &mut Bencher)

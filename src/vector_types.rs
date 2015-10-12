@@ -81,23 +81,37 @@ impl Chunk
 	fn execute_partial<F>(array: & mut [f32], array_length: usize, step_size: usize, buffer:  &mut DataBuffer, function: F)
 		where F: Fn(&mut [f32]) + Send + 'static + Sync
 	{
-		let chunks = Chunk::partition(array, array_length, step_size);
-		let ref mut pool = buffer.pool; // TODO: Check if this saves time or if creating a new pool every time is as fast as reusing the pool
-		pool.for_(chunks, |chunk|
-			{
-				function(chunk);
-			});
+		if Chunk::perform_parallel_execution(array_length)
+		{
+			let chunks = Chunk::partition(array, array_length, step_size);
+			let ref mut pool = buffer.pool; // TODO: Check if this saves time or if creating a new pool every time is as fast as reusing the pool
+			pool.for_(chunks, |chunk|
+				{
+					function(chunk);
+				});
+		}
+		else
+		{
+			function(&mut array[0..array_length]);
+		}
 	}
 	
 	fn execute_partial_with_arguments<T,F>(array: & mut [f32], array_length: usize, step_size: usize, buffer:  &mut DataBuffer, function: F, arguments: T)
 		where F: Fn(& mut [f32], T) + Send + 'static + Sync, T : Sync + Copy
 	{
-		let chunks = Chunk::partition(array, array_length, step_size);
-		let ref mut pool = buffer.pool;
-		pool.for_(chunks, |chunk|
-			{
-				function(chunk, arguments);
-			});
+		if Chunk::perform_parallel_execution(array_length)
+		{
+			let chunks = Chunk::partition(array, array_length, step_size);
+			let ref mut pool = buffer.pool;
+			pool.for_(chunks, |chunk|
+				{
+					function(chunk, arguments);
+				});
+		}
+		else
+		{
+			function(&mut array[0..array_length], arguments);
+		}
 	}
 }
 
@@ -178,15 +192,8 @@ impl<'a> DataVector<'a>
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		if Chunk::perform_parallel_execution(vectorization_length)
-		{
-			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, DataVector::inplace_real_scale_simd, scaling_vector);
-		}
-		else		
-		{
-			DataVector::inplace_real_scale_simd(array, scaling_vector);
-		}
-		
+		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, DataVector::inplace_real_scale_simd, scaling_vector);
+				
 		for i in vectorization_length..data_length
 		{
 			array[i] = array[i] * factor;
@@ -212,14 +219,7 @@ impl<'a> DataVector<'a>
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		if Chunk::perform_parallel_execution(vectorization_length)
-		{
-			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, DataVector::inplace_complex_scale_simd, scaling_vector);
-		}
-		else		
-		{
-			DataVector::inplace_complex_scale_simd(array, scaling_vector);
-		}
+		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, DataVector::inplace_complex_scale_simd, scaling_vector);
 		
 		for i in vectorization_length..data_length
 		{
