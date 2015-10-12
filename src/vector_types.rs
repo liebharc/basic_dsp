@@ -22,6 +22,7 @@ impl Complex
 
 pub struct DataBuffer
 {
+	// Storing the pool saves a little bit of initialization time
 	pool: Pool,
 }
 
@@ -84,7 +85,7 @@ impl Chunk
 		if Chunk::perform_parallel_execution(array_length)
 		{
 			let chunks = Chunk::partition(array, array_length, step_size);
-			let ref mut pool = buffer.pool; // TODO: Check if this saves time or if creating a new pool every time is as fast as reusing the pool
+			let ref mut pool = buffer.pool;
 			pool.for_(chunks, |chunk|
 				{
 					function(chunk);
