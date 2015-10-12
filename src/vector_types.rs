@@ -1,4 +1,5 @@
 use simd::f32x4;
+use simd::x86::sse3::Sse3F32x4;
 use simple_parallel::Pool;
 use std::slice::ChunksMut;
 use num_cpus;
@@ -194,7 +195,6 @@ impl<'a> DataVector<'a>
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
 		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, DataVector::inplace_real_scale_simd, scaling_vector);
-				
 		for i in vectorization_length..data_length
 		{
 			array[i] = array[i] * factor;
@@ -221,7 +221,6 @@ impl<'a> DataVector<'a>
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
 		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, DataVector::inplace_complex_scale_simd, scaling_vector);
-		
 		for i in vectorization_length..data_length
 		{
 			array[i] = array[i] * if i % 2 == 0 { factor.real} else {factor.imag };
@@ -230,32 +229,20 @@ impl<'a> DataVector<'a>
 		
 	fn inplace_complex_scale_simd(array: &mut [f32], scaling_vector: f32x4)
 	{
+		let scaling_real = f32x4::splat(scaling_vector.extract(0));
+		let scaling_imag = f32x4::splat(scaling_vector.extract(1));
 		let mut i = 0;
-		let shuffled = f32x4::new(scaling_vector.extract(1), scaling_vector.extract(0), scaling_vector.extract(3), scaling_vector.extract(2));
-		let mut temp = [0.0; 4];
 		while i < array.len()
-		{ 
+		{
 			let vector = f32x4::load(array, i);
-			let parallel = vector * scaling_vector;
-			let cross = vector * shuffled;
-			parallel.store(&mut temp, 0);
-			array[i] = temp[0] - temp[1];
-			array[i + 2] = temp[2] - temp[3];
-			cross.store(&mut temp, 0);
-			array[i + 1] = temp[0] + temp[1];
-			array[i + 3] = temp[2] + temp[3];
+			let parallel = scaling_real * vector;
+			// There should be a shufps operation which shuffles the vector
+			let vector = f32x4::new(vector.extract(1), vector.extract(0), vector.extract(3), vector.extract(2)); 
+			let cross = scaling_imag * vector;
+			let result = parallel.addsub(cross);
+			result.store(array, i);
 			i += 4;
 		}
-	
-		/*let mut i = 0;
-		while i < array.len()
-		{ 
-			let real = array[i];
-			let imag = array[i + 1];
-			array[i] = real * factor.real - imag * factor.imag;
-			array[i + 1] = real * factor.imag + imag * factor.real;
-			i += 2;
-		}*/
 	}
 }
 
