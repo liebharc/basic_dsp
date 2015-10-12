@@ -25,6 +25,8 @@ pub struct DataBuffer
 {
 	// Storing the pool saves a little bit of initialization time
 	pool: Pool,
+	
+	// TODO: buffer vectors so that they can be reused
 }
 
 impl DataBuffer
@@ -49,11 +51,13 @@ struct Chunk
 #[allow(dead_code)]
 impl Chunk
 {
+	#[inline]
 	fn perform_parallel_execution(array_length: usize) -> bool
 	{
 		array_length > 1000000
 	}
 	
+	#[inline]
 	fn partition_in_number(array: &mut [f32], array_length: usize, step_size: usize, number_of_chunks: usize) -> ChunksMut<f32>
 	{
 		let mut chunk_size = array_length / number_of_chunks;
@@ -68,11 +72,13 @@ impl Chunk
 		}	
 	}
 		
+	#[inline]
 	fn partition(array: &mut [f32], array_length: usize, step_size: usize) -> ChunksMut<f32>
 	{
 		Chunk::partition_in_number(array, array_length, step_size, num_cpus::get())
 	}
 	
+	#[inline]
 	fn execute<F>(array: & mut [f32], step_size: usize, buffer:  &mut DataBuffer, function: F)
 		where F: Fn(&mut [f32])  + Send + 'static + Sync
 	{
@@ -80,6 +86,7 @@ impl Chunk
 		Chunk::execute_partial(array, array_length, step_size, buffer, function);
 	}
 	
+	#[inline]
 	fn execute_partial<F>(array: & mut [f32], array_length: usize, step_size: usize, buffer:  &mut DataBuffer, function: F)
 		where F: Fn(&mut [f32]) + Send + 'static + Sync
 	{
@@ -98,6 +105,7 @@ impl Chunk
 		}
 	}
 	
+	#[inline]
 	fn execute_partial_with_arguments<T,F>(array: & mut [f32], array_length: usize, step_size: usize, buffer:  &mut DataBuffer, function: F, arguments: T)
 		where F: Fn(& mut [f32], T) + Send + 'static + Sync, T : Sync + Copy
 	{
@@ -117,35 +125,47 @@ impl Chunk
 	}
 }
 
-pub struct DataVector<'a>
+pub enum DataVectorDomain {
+	Time,
+    Frequency
+}
+
+pub trait DataVector<'a> {
+    // The element that this vector stores.
+    //type Elem;
+	
+	fn domain() -> DataVectorDomain;
+	
+	fn is_complex() -> bool;
+	
+	fn points(&self) -> usize;
+	
+	fn allocated_size(&self) -> usize;
+	
+	fn delta(&self) -> f64;
+}
+
+pub struct RealTimeVector32<'a>
 {
 	data: &'a mut [f32],
-	length: usize,
 	delta: f64
 }
 
-#[allow(unused_variables)]
-impl<'a> DataVector<'a>
+impl<'a> RealTimeVector32<'a>
 {
-	pub fn new<'b>(data: &'b mut [f32]) -> DataVector<'b>
+	pub fn new<'b>(data: &'b mut [f32]) -> RealTimeVector32<'b>
 	{
-		let length = data.len();
-		DataVector { data: data, length: length, delta: 1.0 }
+		RealTimeVector32 { data: data, delta: 1.0 }
 	}
 	
-	pub fn len(&self) -> usize 
+	fn len(&self) -> usize 
 	{
-		self.length
+		self.data.len()
     }
 	
 	pub fn data(&self) -> &[f32]
 	{
 		self.data
-	}
-	
-	pub fn delta(&self) -> f64
-	{
-		self.delta
 	}
 	
 	pub fn inplace_complex_offset(&mut self, offset: Complex, buffer: &mut DataBuffer) 
@@ -158,6 +178,7 @@ impl<'a> DataVector<'a>
 		self.inplace_offset(&[offset, offset, offset, offset], buffer);
 	}
 	
+	#[inline]
 	fn inplace_offset(&mut self, offset: &[f32; 4], buffer: &mut DataBuffer) 
 	{
 		let increment_vector = f32x4::load(offset, 0); 
@@ -167,11 +188,11 @@ impl<'a> DataVector<'a>
 		let mut array = &mut self.data;
 		if Chunk::perform_parallel_execution(vectorization_length)
 		{
-			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, DataVector::inplace_offset_simd, increment_vector);
+			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, RealTimeVector32::inplace_offset_simd, increment_vector);
 		}
 		else		
 		{
-			DataVector::inplace_offset_simd(array, increment_vector);
+			RealTimeVector32::inplace_offset_simd(array, increment_vector);
 		}
 		
 		for i in vectorization_length..data_length
@@ -180,6 +201,7 @@ impl<'a> DataVector<'a>
 		}
 	}
 		
+	#[inline]
 	fn inplace_offset_simd(array: &mut [f32], increment_vector: f32x4)
 	{
 		let mut i = 0;
@@ -199,13 +221,14 @@ impl<'a> DataVector<'a>
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, DataVector::inplace_real_scale_simd, scaling_vector);
+		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, RealTimeVector32::inplace_real_scale_simd, scaling_vector);
 		for i in vectorization_length..data_length
 		{
 			array[i] = array[i] * factor;
 		}
 	}
 		
+	#[inline]
 	fn inplace_real_scale_simd(array: &mut [f32], scaling_vector: f32x4)
 	{
 		let mut i = 0;
@@ -225,13 +248,14 @@ impl<'a> DataVector<'a>
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, DataVector::inplace_complex_scale_simd, scaling_vector);
+		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, RealTimeVector32::inplace_complex_scale_simd, scaling_vector);
 		for i in vectorization_length..data_length
 		{
 			array[i] = array[i] * if i % 2 == 0 { factor.real} else {factor.imag };
 		}
 	}
-		
+	
+	#[inline]	
 	fn inplace_complex_scale_simd(array: &mut [f32], scaling_vector: f32x4)
 	{
 		let scaling_real = f32x4::splat(scaling_vector.extract(0));
@@ -254,9 +278,10 @@ impl<'a> DataVector<'a>
 	{
 		let mut array = &mut self.data;
 		let length = array.len();
-		Chunk::execute_partial(&mut array, length, 4, buffer, DataVector::inplace_abs_real_par);
+		Chunk::execute_partial(&mut array, length, 4, buffer, RealTimeVector32::inplace_abs_real_par);
 	}
 	
+	#[inline]
 	fn inplace_abs_real_par(array: &mut [f32])
 	{
 		let mut i = 0;
@@ -273,7 +298,7 @@ impl<'a> DataVector<'a>
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		Chunk::execute_partial(&mut array, vectorization_length, 4, buffer, DataVector::inplace_complex_abs_simd);
+		Chunk::execute_partial(&mut array, vectorization_length, 4, buffer, RealTimeVector32::inplace_complex_abs_simd);
 		let mut i = vectorization_length;
 		while i + 1 < data_length
 		{
@@ -282,6 +307,7 @@ impl<'a> DataVector<'a>
 		}
 	}
 	
+	#[inline]
 	fn inplace_complex_abs_simd(array: &mut [f32])
 	{
 		let mut i = 0;
@@ -302,7 +328,7 @@ impl<'a> DataVector<'a>
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		Chunk::execute_partial(&mut array, vectorization_length, 4, buffer, DataVector::inplace_complex_abs_squared_simd);
+		Chunk::execute_partial(&mut array, vectorization_length, 4, buffer, RealTimeVector32::inplace_complex_abs_squared_simd);
 		let mut i = vectorization_length;
 		while i + 1 < data_length
 		{
@@ -311,6 +337,7 @@ impl<'a> DataVector<'a>
 		}
 	}
 	
+	#[inline]
 	fn inplace_complex_abs_squared_simd(array: &mut [f32])
 	{
 		let mut i = 0;
@@ -324,6 +351,86 @@ impl<'a> DataVector<'a>
 		}
 	}
 	
+}
+
+impl<'a> DataVector<'a> for RealTimeVector32<'a>
+{
+	fn domain() -> DataVectorDomain
+	{
+		DataVectorDomain::Time
+	}
+	
+	fn is_complex() -> bool
+	{
+		false
+	}
+	
+	fn points(&self) -> usize
+	{
+		self.data.len()
+	}
+	
+	fn allocated_size(&self) -> usize
+	{
+		self.points()
+	}
+	
+	fn delta(&self) -> f64
+	{
+		self.delta
+	}
+}
+
+pub struct ComplexTimeVector32<'a>
+{
+	data: &'a mut [f32],
+	delta: f64
+}
+
+impl<'a> ComplexTimeVector32<'a>
+{
+	pub fn new<'b>(data: &'b mut [f32]) -> RealTimeVector32<'b>
+	{
+		RealTimeVector32 { data: data, delta: 1.0 }
+	}
+	
+	fn len(&self) -> usize 
+	{
+		self.data.len()
+    }
+	
+	pub fn data(&self) -> &[f32]
+	{
+		self.data
+	}
+}
+
+impl<'a> DataVector<'a> for ComplexTimeVector32<'a>
+{
+	fn domain() -> DataVectorDomain
+	{
+		DataVectorDomain::Time
+	}
+	
+	fn is_complex() -> bool
+	{
+		true
+	}
+	
+	fn points(&self) -> usize
+	{
+		self.allocated_size() / 2
+	}
+	
+	fn allocated_size(&self) -> usize
+	{
+		self.data.len()
+	}
+	
+	fn delta(&self) -> f64
+	{
+		self.delta
+	}
 }
 
 #[test]
@@ -366,7 +473,7 @@ fn partition_array_considering_step_size()
 fn add_real_one_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-	let mut result = DataVector::new(&mut data);
+	let mut result = RealTimeVector32::new(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_real_offset(1.0, &mut buffer);
 	let expected = [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
@@ -379,7 +486,7 @@ fn add_real_two_test()
 {
 	// Test also that vector calls are possible
 	let mut data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
-	let mut result = DataVector::new(&mut data);
+	let mut result = RealTimeVector32::new(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_real_offset(2.0, &mut buffer);
 	assert_eq!(result.data, [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]);
@@ -390,7 +497,7 @@ fn add_real_two_test()
 fn add_complex_test()
 {
 	let mut data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
-	let mut result = DataVector::new(&mut data);
+	let mut result = RealTimeVector32::new(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_complex_offset(Complex::new(1.0, -1.0), &mut buffer);
 	assert_eq!(result.data, [2.0, 1.0, 4.0, 3.0, 6.0, 5.0, 8.0, 7.0]);
@@ -401,7 +508,7 @@ fn add_complex_test()
 fn multiply_real_two_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-	let mut result = DataVector::new(&mut data);
+	let mut result = RealTimeVector32::new(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_real_scale(2.0, &mut buffer);
 	let expected = [2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0];
@@ -413,7 +520,7 @@ fn multiply_real_two_test()
 fn multiply_complex_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-	let mut result = DataVector::new(&mut data);
+	let mut result = RealTimeVector32::new(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_complex_scale(Complex::new(2.0, -3.0), &mut buffer);
 	let expected = [8.0, 1.0, 18.0, -1.0, 28.0, -3.0, 38.0, -5.0];
@@ -425,7 +532,7 @@ fn multiply_complex_test()
 fn abs_real_test()
 {
 	let mut data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0];
-	let mut result = DataVector::new(&mut data);
+	let mut result = RealTimeVector32::new(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_real_abs(&mut buffer);
 	let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
@@ -437,7 +544,7 @@ fn abs_real_test()
 fn abs_complex_test()
 {
 	let mut data = [3.0, 4.0, -3.0, 4.0, 3.0, -4.0, -3.0, -4.0];
-	let mut result = DataVector::new(&mut data);
+	let mut result = RealTimeVector32::new(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_complex_abs(&mut buffer);
 	// The last half is undefined, we will fix this later
@@ -450,7 +557,7 @@ fn abs_complex_test()
 fn abs_complex_squared_test()
 {
 	let mut data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0, 9.0, 10.0];
-	let mut result = DataVector::new(&mut data);
+	let mut result = RealTimeVector32::new(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_complex_abs_squared(&mut buffer);
 	// The last half is undefined, we will fix this later
