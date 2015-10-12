@@ -6,9 +6,6 @@
 9. More basic functions:
 - Sqrt
 - Real <-> complex conversions
-- Magnitude²
-- Magnitude
-- Abs
 - Phase/Angle
 - Unwrap
 - Exp, Power

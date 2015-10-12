@@ -249,6 +249,81 @@ impl<'a> DataVector<'a>
 			i += 4;
 		}
 	}
+	
+	pub fn inplace_real_abs(&mut self, buffer: &mut DataBuffer)
+	{
+		let mut array = &mut self.data;
+		let length = array.len();
+		Chunk::execute_partial(&mut array, length, 4, buffer, DataVector::inplace_abs_real_par);
+	}
+	
+	fn inplace_abs_real_par(array: &mut [f32])
+	{
+		let mut i = 0;
+		while i < array.len()
+		{
+			array[i] = array[i].abs();
+			i += 1;
+		}
+	}
+	
+	pub fn inplace_complex_abs(&mut self, buffer: &mut DataBuffer)
+	{
+		let data_length = self.len();
+		let scalar_length = data_length % 4;
+		let vectorization_length = data_length - scalar_length;
+		let mut array = &mut self.data;
+		Chunk::execute_partial(&mut array, vectorization_length, 4, buffer, DataVector::inplace_complex_abs_simd);
+		let mut i = vectorization_length;
+		while i + 1 < data_length
+		{
+			array[i / 2] = (array[i] * array[i] + array[i + 1] * array[i + 1]).sqrt();
+			i += 2;
+		}
+	}
+	
+	fn inplace_complex_abs_simd(array: &mut [f32])
+	{
+		let mut i = 0;
+		while i < array.len()
+		{ 
+			let vector = f32x4::load(array, i);
+			let squared = vector * vector;
+			let squared_sum = squared.hadd(squared);
+			let result = squared_sum.sqrt();
+			result.store(array, i / 2);
+			i += 4;
+		}
+	}
+	
+	pub fn inplace_complex_abs_squared(&mut self, buffer: &mut DataBuffer)
+	{
+		let data_length = self.len();
+		let scalar_length = data_length % 4;
+		let vectorization_length = data_length - scalar_length;
+		let mut array = &mut self.data;
+		Chunk::execute_partial(&mut array, vectorization_length, 4, buffer, DataVector::inplace_complex_abs_squared_simd);
+		let mut i = vectorization_length;
+		while i + 1 < data_length
+		{
+			array[i / 2] = array[i] * array[i] + array[i + 1] * array[i + 1];
+			i += 2;
+		}
+	}
+	
+	fn inplace_complex_abs_squared_simd(array: &mut [f32])
+	{
+		let mut i = 0;
+		while i < array.len()
+		{ 
+			let vector = f32x4::load(array, i);
+			let squared = vector * vector;
+			let squared_sum = squared.hadd(squared);
+			squared_sum.store(array, i / 2);
+			i += 4;
+		}
+	}
+	
 }
 
 #[test]
@@ -342,6 +417,44 @@ fn multiply_complex_test()
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_complex_scale(Complex::new(2.0, -3.0), &mut buffer);
 	let expected = [8.0, 1.0, 18.0, -1.0, 28.0, -3.0, 38.0, -5.0];
+	assert_eq!(result.data, expected);
+	assert_eq!(result.delta, 1.0);
+}
+
+#[test]
+fn abs_real_test()
+{
+	let mut data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0];
+	let mut result = DataVector::new(&mut data);
+	let mut buffer = DataBuffer::new("test");
+	result.inplace_real_abs(&mut buffer);
+	let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+	assert_eq!(result.data, expected);
+	assert_eq!(result.delta, 1.0);
+}
+
+#[test]
+fn abs_complex_test()
+{
+	let mut data = [3.0, 4.0, -3.0, 4.0, 3.0, -4.0, -3.0, -4.0];
+	let mut result = DataVector::new(&mut data);
+	let mut buffer = DataBuffer::new("test");
+	result.inplace_complex_abs(&mut buffer);
+	// The last half is undefined, we will fix this later
+	let expected = [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, -3.0, -4.0];
+	assert_eq!(result.data, expected);
+	assert_eq!(result.delta, 1.0);
+}
+
+#[test]
+fn abs_complex_squared_test()
+{
+	let mut data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0, 9.0, 10.0];
+	let mut result = DataVector::new(&mut data);
+	let mut buffer = DataBuffer::new("test");
+	result.inplace_complex_abs_squared(&mut buffer);
+	// The last half is undefined, we will fix this later
+	let expected = [5.0, 25.0, 61.0, 113.0, 181.0, 113.0, 7.0, -8.0, 9.0, 10.0];
 	assert_eq!(result.data, expected);
 	assert_eq!(result.delta, 1.0);
 }
