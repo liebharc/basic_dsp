@@ -119,7 +119,7 @@ impl Chunk
 
 pub struct DataVector<'a>
 {
-	pub data: &'a mut [f32],
+	data: &'a mut [f32],
 	length: usize,
 	delta: f64
 }
@@ -137,6 +137,11 @@ impl<'a> DataVector<'a>
 	{
 		self.length
     }
+	
+	pub fn data(&self) -> &[f32]
+	{
+		self.data
+	}
 	
 	pub fn delta(&self) -> f64
 	{
@@ -303,6 +308,7 @@ fn add_real_two_test()
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_real_offset(2.0, &mut buffer);
 	assert_eq!(result.data, [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]);
+	assert_eq!(result.delta, 1.0);
 }
 
 #[test]
@@ -313,6 +319,7 @@ fn add_complex_test()
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_complex_offset(Complex::new(1.0, -1.0), &mut buffer);
 	assert_eq!(result.data, [2.0, 1.0, 4.0, 3.0, 6.0, 5.0, 8.0, 7.0]);
+	assert_eq!(result.delta, 1.0);
 }
 
 #[test]
