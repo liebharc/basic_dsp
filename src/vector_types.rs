@@ -2,6 +2,7 @@ use multicore_support::{Chunk,DataBuffer};
 use simd::f32x4;
 use simd::x86::sse3::Sse3F32x4;
 use num::complex::Complex32;
+use std::mem;
 //use std::ops::Add; // TODO { Div, Mul, Neg, Sub};
 
 pub trait DataVector
@@ -93,7 +94,37 @@ macro_rules! define_real_basic_struct_members {
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false
 				}
-			} 
+			}
+		}
+	 }
+}
+
+macro_rules! define_real_operations_forward {
+    (from: $name:ident, to: $gen_type:ident)
+	 =>
+	 {
+		#[inline]
+		impl<'a> $name<'a>
+		{
+			pub fn inplace_real_offset(&mut self, offset: f32, buffer: &mut DataBuffer) 
+			{
+				self.to_gen().inplace_real_offset(offset, buffer);
+			}
+			
+			pub fn inplace_real_scale(&mut self, factor: f32, buffer: &mut DataBuffer) 
+			{
+				self.to_gen().inplace_real_scale(factor, buffer);
+			}
+					
+			pub fn inplace_real_abs(&mut self, buffer: &mut DataBuffer)
+			{
+				self.to_gen().inplace_real_abs(buffer);
+			}
+			
+			fn to_gen(&mut self) -> &mut $gen_type
+			{
+				unsafe { mem::transmute(self) }
+			}
 		}
 	 }
 }
@@ -130,31 +161,90 @@ macro_rules! define_complex_basic_struct_members {
 	 }
 }
 
+macro_rules! define_complex_operations_forward {
+    (from: $name:ident, to: $gen_type:ident)
+	 =>
+	 {
+		#[inline]
+		impl<'a> $name<'a>
+		{
+			pub fn inplace_complex_offset(&mut self, offset: Complex32, buffer: &mut DataBuffer) 
+			{
+				self.to_gen().inplace_complex_offset(offset, buffer);
+			}		
+			
+			// We are keeping this since scaling with a real number should be faster
+			pub fn inplace_real_scale(&mut self, factor: f32, buffer: &mut DataBuffer) 
+			{
+				self.to_gen().inplace_real_scale(factor, buffer);
+			}
+			
+			pub fn inplace_complex_scale(&mut self, factor: Complex32, buffer: &mut DataBuffer) 
+			{
+				self.to_gen().inplace_complex_scale(factor, buffer);
+			}
+			
+			pub fn inplace_complex_abs(&mut self, buffer: &mut DataBuffer)
+			{
+				self.to_gen().inplace_complex_abs(buffer);
+			}
+			
+			pub fn inplace_complex_abs_squared(&mut self, buffer: &mut DataBuffer)
+			{
+				self.to_gen().inplace_complex_abs_squared(buffer);
+			}
+			
+			fn to_gen(&mut self) -> &mut $gen_type
+			{
+				unsafe { mem::transmute(self) }
+			}
+		} 
+	 }
+}
+
 define_vector_struct!(struct DataVector32, f32);
 define_real_basic_struct_members!(impl DataVector32, DataVectorDomain::Time);
-define_real_basic_struct_members!(impl DataVector32, DataVectorDomain::Frequency);
+define_complex_basic_struct_members!(impl DataVector32, DataVectorDomain::Frequency);
+
 define_vector_struct!(struct RealTimeVector32, f32);
 define_real_basic_struct_members!(impl RealTimeVector32, DataVectorDomain::Time);
-define_vector_struct!(struct ComplexTimeVector32, f32);
-define_complex_basic_struct_members!(impl ComplexTimeVector32, DataVectorDomain::Time);
+define_real_operations_forward!(from: RealTimeVector32, to: DataVector32);
+
 define_vector_struct!(struct RealFreqVector32, f32);
 define_real_basic_struct_members!(impl RealFreqVector32, DataVectorDomain::Frequency);
+define_real_operations_forward!(from: RealFreqVector32, to: DataVector32);
+
+define_vector_struct!(struct ComplexTimeVector32, f32);
+define_complex_basic_struct_members!(impl ComplexTimeVector32, DataVectorDomain::Time);
+define_complex_operations_forward!(from: ComplexTimeVector32, to: DataVector32);
+
 define_vector_struct!(struct ComplexFreqVector32, f32);
 define_complex_basic_struct_members!(impl ComplexFreqVector32, DataVectorDomain::Frequency);
+define_complex_operations_forward!(from: ComplexFreqVector32, to: DataVector32);
+/*
 define_vector_struct!(struct DataVector64, f64);
 define_real_basic_struct_members!(impl DataVector64, DataVectorDomain::Time);
-define_real_basic_struct_members!(impl DataVector64, DataVectorDomain::Frequency);
+define_complex_basic_struct_members!(impl DataVector64, DataVectorDomain::Frequency);
+
 define_vector_struct!(struct RealTimeVector64, f64);
 define_real_basic_struct_members!(impl RealTimeVector64, DataVectorDomain::Time);
-define_vector_struct!(struct ComplexTimeVector64, f64);
-define_real_basic_struct_members!(impl ComplexTimeVector64, DataVectorDomain::Time);
+define_real_operations_forward!(from: RealTimeVector64, to: DataVector64);
+
 define_vector_struct!(struct RealFreqVector64, f64);
 define_real_basic_struct_members!(impl RealFreqVector64, DataVectorDomain::Frequency);
+define_real_operations_forward!(from: RealFreqVector64, to: DataVector64);
+
+define_vector_struct!(struct ComplexTimeVector64, f64);
+define_complex_basic_struct_members!(impl ComplexTimeVector64, DataVectorDomain::Time);
+define_complex_operations_forward!(from: ComplexTimeVector64, to: DataVector64);
+
 define_vector_struct!(struct ComplexFreqVector64, f64);
-define_real_basic_struct_members!(impl ComplexFreqVector64, DataVectorDomain::Frequency);
+define_complex_basic_struct_members!(impl ComplexFreqVector64, DataVectorDomain::Frequency);
+define_complex_operations_forward!(from: ComplexFreqVector64, to: DataVector64);
+*/
 
 #[inline]
-impl<'a> RealTimeVector32<'a>
+impl<'a> DataVector32<'a>
 {
 	pub fn inplace_complex_offset(&mut self, offset: Complex32, buffer: &mut DataBuffer) 
 	{
@@ -173,7 +263,7 @@ impl<'a> RealTimeVector32<'a>
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, RealTimeVector32::inplace_offset_simd, increment_vector);
+		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, DataVector32::inplace_offset_simd, increment_vector);
 		for i in vectorization_length..data_length
 		{
 			array[i] = array[i] + offset[i % 2];
@@ -199,7 +289,7 @@ impl<'a> RealTimeVector32<'a>
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, RealTimeVector32::inplace_real_scale_simd, scaling_vector);
+		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, DataVector32::inplace_real_scale_simd, scaling_vector);
 		for i in vectorization_length..data_length
 		{
 			array[i] = array[i] * factor;
@@ -225,7 +315,7 @@ impl<'a> RealTimeVector32<'a>
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, RealTimeVector32::inplace_complex_scale_simd, scaling_vector);
+		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, DataVector32::inplace_complex_scale_simd, scaling_vector);
 		for i in vectorization_length..data_length
 		{
 			array[i] = array[i] * if i % 2 == 0 { factor.re} else {factor.im };
@@ -254,7 +344,7 @@ impl<'a> RealTimeVector32<'a>
 	{
 		let mut array = &mut self.data;
 		let length = array.len();
-		Chunk::execute_partial(&mut array, length, 4, buffer, RealTimeVector32::inplace_abs_real_par);
+		Chunk::execute_partial(&mut array, length, 4, buffer, DataVector32::inplace_abs_real_par);
 	}
 	
 	fn inplace_abs_real_par(array: &mut [f32])
@@ -273,7 +363,7 @@ impl<'a> RealTimeVector32<'a>
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		Chunk::execute_partial(&mut array, vectorization_length, 4, buffer, RealTimeVector32::inplace_complex_abs_simd);
+		Chunk::execute_partial(&mut array, vectorization_length, 4, buffer, DataVector32::inplace_complex_abs_simd);
 		let mut i = vectorization_length;
 		while i + 1 < data_length
 		{
@@ -302,7 +392,7 @@ impl<'a> RealTimeVector32<'a>
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		Chunk::execute_partial(&mut array, vectorization_length, 4, buffer, RealTimeVector32::inplace_complex_abs_squared_simd);
+		Chunk::execute_partial(&mut array, vectorization_length, 4, buffer, DataVector32::inplace_complex_abs_squared_simd);
 		let mut i = vectorization_length;
 		while i + 1 < data_length
 		{
@@ -323,7 +413,6 @@ impl<'a> RealTimeVector32<'a>
 			i += 4;
 		}
 	}
-	
 }
 
 #[test]
@@ -364,7 +453,7 @@ fn add_real_two_test()
 fn add_complex_test()
 {
 	let mut data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
-	let mut result = RealTimeVector32::from_array(&mut data);
+	let mut result = ComplexTimeVector32::from_interleaved(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_complex_offset(Complex32::new(1.0, -1.0), &mut buffer);
 	assert_eq!(result.data, [2.0, 1.0, 4.0, 3.0, 6.0, 5.0, 8.0, 7.0]);
@@ -387,7 +476,7 @@ fn multiply_real_two_test()
 fn multiply_complex_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-	let mut result = RealTimeVector32::from_array(&mut data);
+	let mut result = ComplexTimeVector32::from_interleaved(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_complex_scale(Complex32::new(2.0, -3.0), &mut buffer);
 	let expected = [8.0, 1.0, 18.0, -1.0, 28.0, -3.0, 38.0, -5.0];
@@ -411,7 +500,7 @@ fn abs_real_test()
 fn abs_complex_test()
 {
 	let mut data = [3.0, 4.0, -3.0, 4.0, 3.0, -4.0, -3.0, -4.0];
-	let mut result = RealTimeVector32::from_array(&mut data);
+	let mut result = ComplexTimeVector32::from_interleaved(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_complex_abs(&mut buffer);
 	// The last half is undefined, we will fix this later
@@ -424,7 +513,7 @@ fn abs_complex_test()
 fn abs_complex_squared_test()
 {
 	let mut data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0, 9.0, 10.0];
-	let mut result = RealTimeVector32::from_array(&mut data);
+	let mut result = ComplexTimeVector32::from_interleaved(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_complex_abs_squared(&mut buffer);
 	// The last half is undefined, we will fix this later

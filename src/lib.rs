@@ -15,10 +15,10 @@ pub use vector_types::
 		ComplexTimeVector32, 
 		RealFreqVector32,
 		ComplexFreqVector32,
-		DataVector64, 
+		/*DataVector64, 
 		RealTimeVector64,
 		ComplexTimeVector64, 
 		RealFreqVector64,
-		ComplexFreqVector64
+		ComplexFreqVector64*/
 	};
 
