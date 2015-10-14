@@ -4,8 +4,11 @@ extern crate num_cpus;
 extern crate simple_parallel;
 extern crate num;
 mod vector_types;
+mod multicore_support;
+pub use multicore_support::DataBuffer;
 pub use vector_types::
 	{
+		DataVectorDomain,
 		DataVector,
 		DataVector32, 
 		RealTimeVector32,
@@ -16,7 +19,6 @@ pub use vector_types::
 		RealTimeVector64,
 		ComplexTimeVector64, 
 		RealFreqVector64,
-		ComplexFreqVector64,
-		DataBuffer
+		ComplexFreqVector64
 	};
 
