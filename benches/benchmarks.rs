@@ -4,7 +4,10 @@ extern crate test;
 use test::Bencher;
 
 extern crate basic_dsp;
-use basic_dsp::vector_types::*;
+use basic_dsp::vector_types::{DataVector, RealTimeVector32, DataBuffer};
+
+extern crate num;
+use num::complex::Complex32;
 
 pub fn add_offset_reference(array: &mut [f32], offset: f32) 
 {
@@ -33,7 +36,7 @@ fn add_real_one_scalar_benchmark(b: &mut Bencher)
 fn add_real_vector_benchmark(b: &mut Bencher)
 {
 	let mut data: Box<[f32]> = box [0.0; DEFAULT_DATA_SIZE];
-	let mut result = RealTimeVector32::new(&mut data);
+	let mut result = RealTimeVector32::from_array(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	b.iter(|| {
 		result.inplace_real_offset(2.0, &mut buffer);
@@ -45,10 +48,10 @@ fn add_real_vector_benchmark(b: &mut Bencher)
 fn scale_complex_vector_benchmark(b: &mut Bencher)
 {
 	let mut data: Box<[f32]> = box [0.0; DEFAULT_DATA_SIZE];
-	let mut result = RealTimeVector32::new(&mut data);
+	let mut result = RealTimeVector32::from_array(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	b.iter(|| {
-		result.inplace_complex_scale(Complex::new(-2.0, 2.0), &mut buffer);
+		result.inplace_complex_scale(Complex32::new(-2.0, 2.0), &mut buffer);
 		return result.data()[0];
 		});
 }
@@ -57,7 +60,7 @@ fn scale_complex_vector_benchmark(b: &mut Bencher)
 fn abs_real_vector_benchmark(b: &mut Bencher)
 {
 	let mut data: Box<[f32]> = box [0.0; DEFAULT_DATA_SIZE];
-	let mut result = RealTimeVector32::new(&mut data);
+	let mut result = RealTimeVector32::from_array(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	b.iter(|| {
 		result.inplace_real_abs(&mut buffer);
@@ -70,7 +73,7 @@ fn abs_real_vector_benchmark(b: &mut Bencher)
 fn abs_complex_vector_benchmark(b: &mut Bencher)
 {
 	let mut data: Box<[f32]> = box [0.0; DEFAULT_DATA_SIZE];
-	let mut result = RealTimeVector32::new(&mut data);
+	let mut result = RealTimeVector32::from_array(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	b.iter(|| {
 		result.inplace_complex_abs(&mut buffer);

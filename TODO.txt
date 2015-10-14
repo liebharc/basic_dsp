@@ -1,4 +1,5 @@
 2. Think about: Complex and real vectors, f32 and f64 based vectors
+See https://github.com/rust-num/num/blob/master/src/complex.rs for ideas
 3. Think about time and frequency domain
 4. Think about some lazyness: Only guarantee calculation if the data result
 	is requested from the caller.
