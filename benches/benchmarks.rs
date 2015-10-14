@@ -4,7 +4,7 @@ extern crate test;
 use test::Bencher;
 
 extern crate basic_dsp;
-use basic_dsp::vector_types::{DataVector, RealTimeVector32, DataBuffer};
+use basic_dsp::{DataVector, RealTimeVector32, DataBuffer};
 
 extern crate num;
 use num::complex::Complex32;
