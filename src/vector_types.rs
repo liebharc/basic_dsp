@@ -1,8 +1,9 @@
 use multicore_support::{Chunk,DataBuffer};
 use simd::f32x4;
 use simd::x86::sse3::Sse3F32x4;
-use num::complex::Complex32;
+use num::complex::{Complex32,Complex64};
 use std::mem;
+use num::traits::Float;
 //use std::ops::Add; // TODO { Div, Mul, Neg, Sub};
 
 pub trait DataVector
@@ -106,12 +107,12 @@ macro_rules! define_real_operations_forward {
 		#[inline]
 		impl<'a> $name<'a>
 		{
-			pub fn inplace_real_offset(&mut self, offset: f32, buffer: &mut DataBuffer) 
+			pub fn inplace_real_offset(&mut self, offset: <$name as DataVector>::E, buffer: &mut DataBuffer) 
 			{
 				self.to_gen().inplace_real_offset(offset, buffer);
 			}
 			
-			pub fn inplace_real_scale(&mut self, factor: f32, buffer: &mut DataBuffer) 
+			pub fn inplace_real_scale(&mut self, factor: <$name as DataVector>::E, buffer: &mut DataBuffer) 
 			{
 				self.to_gen().inplace_real_scale(factor, buffer);
 			}
@@ -162,24 +163,24 @@ macro_rules! define_complex_basic_struct_members {
 }
 
 macro_rules! define_complex_operations_forward {
-    (from: $name:ident, to: $gen_type:ident)
+    (from: $name:ident, to: $gen_type:ident, complex: $complex_type:ident)
 	 =>
-	 {
+	 { 
 		#[inline]
 		impl<'a> $name<'a>
 		{
-			pub fn inplace_complex_offset(&mut self, offset: Complex32, buffer: &mut DataBuffer) 
+			pub fn inplace_complex_offset(&mut self, offset: $complex_type, buffer: &mut DataBuffer) 
 			{
 				self.to_gen().inplace_complex_offset(offset, buffer);
 			}		
 			
 			// We are keeping this since scaling with a real number should be faster
-			pub fn inplace_real_scale(&mut self, factor: f32, buffer: &mut DataBuffer) 
+			pub fn inplace_real_scale(&mut self, factor: <$name as DataVector>::E, buffer: &mut DataBuffer) 
 			{
 				self.to_gen().inplace_real_scale(factor, buffer);
 			}
-			
-			pub fn inplace_complex_scale(&mut self, factor: Complex32, buffer: &mut DataBuffer) 
+				
+			pub fn inplace_complex_scale(&mut self, factor: $complex_type, buffer: &mut DataBuffer) 
 			{
 				self.to_gen().inplace_complex_scale(factor, buffer);
 			}
@@ -216,12 +217,12 @@ define_real_operations_forward!(from: RealFreqVector32, to: DataVector32);
 
 define_vector_struct!(struct ComplexTimeVector32, f32);
 define_complex_basic_struct_members!(impl ComplexTimeVector32, DataVectorDomain::Time);
-define_complex_operations_forward!(from: ComplexTimeVector32, to: DataVector32);
+define_complex_operations_forward!(from: ComplexTimeVector32, to: DataVector32, complex: Complex32);
 
 define_vector_struct!(struct ComplexFreqVector32, f32);
 define_complex_basic_struct_members!(impl ComplexFreqVector32, DataVectorDomain::Frequency);
-define_complex_operations_forward!(from: ComplexFreqVector32, to: DataVector32);
-/*
+define_complex_operations_forward!(from: ComplexFreqVector32, to: DataVector32, complex: Complex32);
+
 define_vector_struct!(struct DataVector64, f64);
 define_real_basic_struct_members!(impl DataVector64, DataVectorDomain::Time);
 define_complex_basic_struct_members!(impl DataVector64, DataVectorDomain::Frequency);
@@ -236,12 +237,11 @@ define_real_operations_forward!(from: RealFreqVector64, to: DataVector64);
 
 define_vector_struct!(struct ComplexTimeVector64, f64);
 define_complex_basic_struct_members!(impl ComplexTimeVector64, DataVectorDomain::Time);
-define_complex_operations_forward!(from: ComplexTimeVector64, to: DataVector64);
+define_complex_operations_forward!(from: ComplexTimeVector64, to: DataVector64, complex: Complex64);
 
 define_vector_struct!(struct ComplexFreqVector64, f64);
 define_complex_basic_struct_members!(impl ComplexFreqVector64, DataVectorDomain::Frequency);
-define_complex_operations_forward!(from: ComplexFreqVector64, to: DataVector64);
-*/
+define_complex_operations_forward!(from: ComplexFreqVector64, to: DataVector64, complex: Complex64);
 
 #[inline]
 impl<'a> DataVector32<'a>
@@ -344,10 +344,11 @@ impl<'a> DataVector32<'a>
 	{
 		let mut array = &mut self.data;
 		let length = array.len();
-		Chunk::execute_partial(&mut array, length, 4, buffer, DataVector32::inplace_abs_real_par);
+		Chunk::execute_partial(&mut array, length, 1, buffer, DataVector32::inplace_abs_real_par);
 	}
 	
-	fn inplace_abs_real_par(array: &mut [f32])
+	fn inplace_abs_real_par<T>(array: &mut [T])
+		where T : Float
 	{
 		let mut i = 0;
 		while i < array.len()
@@ -415,8 +416,121 @@ impl<'a> DataVector32<'a>
 	}
 }
 
+#[inline]
+impl<'a> DataVector64<'a>
+{
+	pub fn inplace_complex_offset(&mut self, offset: Complex64, buffer: &mut DataBuffer) 
+	{
+		self.inplace_offset(&[offset.re, offset.im], buffer);
+	}
+	
+	pub fn inplace_real_offset(&mut self, offset: f64, buffer: &mut DataBuffer) 
+	{
+		self.inplace_offset(&[offset, offset], buffer);
+	}
+	
+	fn inplace_offset(&mut self, offset: &[f64; 2], buffer: &mut DataBuffer) 
+	{
+		let data_length = self.len();
+		let mut array = &mut self.data;
+		Chunk::execute_partial_with_arguments(&mut array, data_length, 1, buffer, DataVector64::inplace_offset_parallel, offset);
+	}
+		
+	fn inplace_offset_parallel(array: &mut [f64], increment_vector: &[f64;2])
+	{
+		let mut i = 0;
+		while i < array.len()
+		{ 
+			array[i] = array[i] + increment_vector[i % 2];
+			i += 1;
+		}
+	}
+
+	pub fn inplace_real_scale(&mut self, factor: f64, buffer: &mut DataBuffer) 
+	{
+		let data_length = self.len();
+		let mut array = &mut self.data;
+		Chunk::execute_partial_with_arguments(&mut array, data_length, 1, buffer, DataVector64::inplace_real_scale_par, factor);
+	}
+		
+	fn inplace_real_scale_par(array: &mut [f64], factor: f64)
+	{
+		let mut i = 0;
+		while i < array.len()
+		{ 
+			array[i] = array[i] * factor;
+			i += 1;
+		}
+	}
+	
+	pub fn inplace_complex_scale(&mut self, factor: Complex64, buffer: &mut DataBuffer) 
+	{
+		let data_length = self.len();
+		let mut array = &mut self.data;
+		Chunk::execute_partial_with_arguments(&mut array, data_length, 1, buffer, DataVector64::inplace_complex_scale_par, factor);
+	}
+	
+	fn inplace_complex_scale_par(array: &mut [f64], factor: Complex64)
+	{
+		let mut i = 0;
+		while i < array.len()
+		{
+			let real = array[i];
+			let imag = array[i + 1];
+			array[i] = real * factor.re - imag * factor.im;
+			array[i + 1] = real * factor.im + imag * factor.re;
+			i += 2;
+		}
+	}
+		
+	pub fn inplace_real_abs(&mut self, buffer: &mut DataBuffer)
+	{
+		let mut array = &mut self.data;
+		let length = array.len();
+		Chunk::execute_partial(&mut array, length, 1, buffer, DataVector32::inplace_abs_real_par);
+	}
+	
+	pub fn inplace_complex_abs(&mut self, buffer: &mut DataBuffer)
+	{
+		let data_length = self.len();
+		let mut array = &mut self.data;
+		Chunk::execute_partial(&mut array, data_length, 1, buffer, DataVector64::inplace_complex_abs_par);
+	}
+	
+	fn inplace_complex_abs_par(array: &mut [f64])
+	{
+		let mut i = 0;
+		while i < array.len()
+		{ 
+			let real = array[i];
+			let imag = array[i + 1];
+			array[i / 2] = (real * real + imag * imag).sqrt();
+			i += 2;
+		}
+	}
+	
+	pub fn inplace_complex_abs_squared(&mut self, buffer: &mut DataBuffer)
+	{
+		let data_length = self.len();
+		let mut array = &mut self.data;
+		Chunk::execute_partial(&mut array, data_length, 1, buffer, DataVector64::inplace_complex_abs_squared_par);
+	}
+	
+	fn inplace_complex_abs_squared_par(array: &mut [f64])
+	{
+		let mut i = 0;
+		while i < array.len()
+		{ 
+			let real = array[i];
+			let imag = array[i + 1];
+			array[i / 2] = real * real + imag * imag;
+			i += 2;
+		}
+	}
+}
+
 #[test]
-fn construct_real_time_vector_test()
+fn construct_real_time_vector_32_test()
 {
 	let mut array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 	let vector = RealTimeVector32::from_array(&mut array);
@@ -426,7 +540,7 @@ fn construct_real_time_vector_test()
 }
 
 #[test]
-fn add_real_one_test()
+fn add_real_one_32_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 	let mut result = RealTimeVector32::from_array(&mut data);
@@ -438,7 +552,7 @@ fn add_real_one_test()
 }
 
 #[test]
-fn add_real_two_test()
+fn add_real_two_32_test()
 {
 	// Test also that vector calls are possible
 	let mut data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
@@ -450,7 +564,7 @@ fn add_real_two_test()
 }
 
 #[test]
-fn add_complex_test()
+fn add_complex_32_test()
 {
 	let mut data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
 	let mut result = ComplexTimeVector32::from_interleaved(&mut data);
@@ -461,7 +575,7 @@ fn add_complex_test()
 }
 
 #[test]
-fn multiply_real_two_test()
+fn multiply_real_two_32_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 	let mut result = RealTimeVector32::from_array(&mut data);
@@ -473,7 +587,7 @@ fn multiply_real_two_test()
 }
 
 #[test]
-fn multiply_complex_test()
+fn multiply_complex_32_test()
 {
 	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 	let mut result = ComplexTimeVector32::from_interleaved(&mut data);
@@ -485,7 +599,7 @@ fn multiply_complex_test()
 }
 
 #[test]
-fn abs_real_test()
+fn abs_real_32_test()
 {
 	let mut data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0];
 	let mut result = RealTimeVector32::from_array(&mut data);
@@ -497,7 +611,7 @@ fn abs_real_test()
 }
 
 #[test]
-fn abs_complex_test()
+fn abs_complex_32_test()
 {
 	let mut data = [3.0, 4.0, -3.0, 4.0, 3.0, -4.0, -3.0, -4.0];
 	let mut result = ComplexTimeVector32::from_interleaved(&mut data);
@@ -510,7 +624,7 @@ fn abs_complex_test()
 }
 
 #[test]
-fn abs_complex_squared_test()
+fn abs_complex_squared_32_test()
 {
 	let mut data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0, 9.0, 10.0];
 	let mut result = ComplexTimeVector32::from_interleaved(&mut data);
@@ -518,6 +632,42 @@ fn abs_complex_squared_test()
 	result.inplace_complex_abs_squared(&mut buffer);
 	// The last half is undefined, we will fix this later
 	let expected = [5.0, 25.0, 61.0, 113.0, 181.0, 113.0, 7.0, -8.0, 9.0, 10.0];
+	assert_eq!(result.data, expected);
+	assert_eq!(result.delta, 1.0);
+}
+
+#[test]
+fn add_real_one_64_test()
+{
+	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+	let mut result = DataVector64::from_array(&mut data);
+	let mut buffer = DataBuffer::new("test");
+	result.inplace_real_offset(1.0, &mut buffer);
+	let expected = [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
+	assert_eq!(result.data, expected);
+	assert_eq!(result.delta, 1.0);
+}
+
+#[test]
+fn multiply_real_two_64_test()
+{
+	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+	let mut result = DataVector64::from_array(&mut data);
+	let mut buffer = DataBuffer::new("test");
+	result.inplace_real_scale(2.0, &mut buffer);
+	let expected = [2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0];
+	assert_eq!(result.data, expected);
+	assert_eq!(result.delta, 1.0);
+}
+
+#[test]
+fn multiply_complex_64_test()
+{
+	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+	let mut result = DataVector64::from_interleaved(&mut data);
+	let mut buffer = DataBuffer::new("test");
+	result.inplace_complex_scale(Complex64::new(2.0, -3.0), &mut buffer);
+	let expected = [8.0, 1.0, 18.0, -1.0, 28.0, -3.0, 38.0, -5.0];
 	assert_eq!(result.data, expected);
 	assert_eq!(result.delta, 1.0);
 }

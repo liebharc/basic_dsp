@@ -1,6 +1,7 @@
 use num_cpus;
 use std::slice::ChunksMut;
 use simple_parallel::Pool;
+use num::traits::Float;
 
 pub struct DataBuffer
 {
@@ -30,7 +31,8 @@ impl Chunk
 	}
 	
 	#[inline]
-	fn partition_in_number(array: &mut [f32], array_length: usize, step_size: usize, number_of_chunks: usize) -> ChunksMut<f32>
+	fn partition_in_number<T>(array: &mut [T], array_length: usize, step_size: usize, number_of_chunks: usize) -> ChunksMut<T>
+		where T : Float + Copy + Clone + Send
 	{
 		let mut chunk_size = array_length / number_of_chunks;
 		chunk_size -= chunk_size % step_size;
@@ -45,22 +47,25 @@ impl Chunk
 	}
 		
 	#[inline]
-	fn partition(array: &mut [f32], array_length: usize, step_size: usize) -> ChunksMut<f32>
+	fn partition<T>(array: &mut [T], array_length: usize, step_size: usize) -> ChunksMut<T>
+		where T : Float + Copy + Clone + Send
 	{
 		Chunk::partition_in_number(array, array_length, step_size, num_cpus::get())
 	}
 	
 	#[inline]
-	pub fn execute<F>(array: & mut [f32], step_size: usize, buffer:  &mut DataBuffer, function: F)
-		where F: Fn(&mut [f32])  + Send + 'static + Sync
+	pub fn execute<F, T>(array: & mut [T], step_size: usize, buffer:  &mut DataBuffer, function: F)
+		where F: Fn(&mut [T])  + Send + 'static + Sync,
+			  T : Float + Copy + Clone + Send
 	{
 		let array_length = array.len();
 		Chunk::execute_partial(array, array_length, step_size, buffer, function);
 	}
 	
 	#[inline]
-	pub fn execute_partial<F>(array: & mut [f32], array_length: usize, step_size: usize, buffer:  &mut DataBuffer, function: F)
-		where F: Fn(&mut [f32]) + Send + 'static + Sync
+	pub fn execute_partial<F, T>(array: & mut [T], array_length: usize, step_size: usize, buffer:  &mut DataBuffer, function: F)
+		where F: Fn(&mut [T]) + Send + 'static + Sync,
+			  T : Float + Copy + Clone + Send
 	{
 		if Chunk::perform_parallel_execution(array_length)
 		{
@@ -78,8 +83,10 @@ impl Chunk
 	}
 	
 	#[inline]
-	pub fn execute_partial_with_arguments<T,F>(array: & mut [f32], array_length: usize, step_size: usize, buffer:  &mut DataBuffer, function: F, arguments: T)
-		where F: Fn(& mut [f32], T) + Send + 'static + Sync, T : Sync + Copy
+	pub fn execute_partial_with_arguments<T,S,F>(array: & mut [T], array_length: usize, step_size: usize, buffer:  &mut DataBuffer, function: F, arguments:S)
+		where F: Fn(& mut [T], S) + Send + 'static + Sync, 
+			  T: Float + Copy + Clone + Send,
+			  S: Sync + Copy
 	{
 		if Chunk::perform_parallel_execution(array_length)
 		{
