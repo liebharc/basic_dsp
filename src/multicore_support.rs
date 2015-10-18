@@ -6,17 +6,37 @@ use num::traits::Float;
 pub struct DataBuffer
 {
 	// Storing the pool saves a little bit of initialization time
-	pool: Pool,
+	pool: &'static mut Pool,
 	
 	// TODO: buffer vectors so that they can be reused
 }
 
 impl DataBuffer
 {
+	fn get_static_pool() -> &'static mut Pool
+	{
+		use std::sync::{Once, ONCE_INIT};
+		use std::mem::transmute;
+		unsafe
+		{
+			static mut pool: *mut Pool = 0 as *mut Pool;
+			static mut ONCE: Once = ONCE_INIT;
+			ONCE.call_once(||
+			{
+				pool = transmute::<Box<Pool>, *mut Pool>(box Pool::new(num_cpus::get()));
+			});
+			
+			let mut static_pool = &mut *pool;
+			//Pool::new(num_cpus::get())
+			static_pool
+		}
+	}
+
 	#[allow(unused_variables)]
 	pub fn new(name: &str) -> DataBuffer
 	{
-		return DataBuffer { pool: Pool::new(num_cpus::get()) };
+		let pool = DataBuffer::get_static_pool();
+		return DataBuffer { pool: pool };
 	}
 }
 
@@ -55,7 +75,7 @@ impl Chunk
 	
 	#[inline]
 	pub fn execute<F, T>(array: & mut [T], step_size: usize, buffer:  &mut DataBuffer, function: F)
-		where F: Fn(&mut [T])  + Send + 'static + Sync,
+		where F: Fn(&mut [T]) + 'static + Sync,
 			  T : Float + Copy + Clone + Send
 	{
 		let array_length = array.len();
@@ -64,7 +84,7 @@ impl Chunk
 	
 	#[inline]
 	pub fn execute_partial<F, T>(array: & mut [T], array_length: usize, step_size: usize, buffer:  &mut DataBuffer, function: F)
-		where F: Fn(&mut [T]) + Send + 'static + Sync,
+		where F: Fn(&mut [T]) + 'static + Sync,
 			  T : Float + Copy + Clone + Send
 	{
 		if Chunk::perform_parallel_execution(array_length)
@@ -84,7 +104,7 @@ impl Chunk
 	
 	#[inline]
 	pub fn execute_partial_with_arguments<T,S,F>(array: & mut [T], array_length: usize, step_size: usize, buffer:  &mut DataBuffer, function: F, arguments:S)
-		where F: Fn(& mut [T], S) + Send + 'static + Sync, 
+		where F: Fn(& mut [T], S) + 'static + Sync, 
 			  T: Float + Copy + Clone + Send,
 			  S: Sync + Copy
 	{

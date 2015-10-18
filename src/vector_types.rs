@@ -246,6 +246,13 @@ define_complex_operations_forward!(from: ComplexFreqVector64, to: DataVector64, 
 #[inline]
 impl<'a> DataVector32<'a>
 {
+	pub fn complex_offset(&mut self, offset: Complex32, buffer: &mut DataBuffer)
+		-> DataVector32 
+	{
+		self.inplace_offset(&[offset.re, offset.im, offset.re, offset.im], buffer);
+		DataVector32 { data: self.data, .. *self }
+	}
+
 	pub fn inplace_complex_offset(&mut self, offset: Complex32, buffer: &mut DataBuffer) 
 	{
 		self.inplace_offset(&[offset.re, offset.im, offset.re, offset.im], buffer);
@@ -527,6 +534,17 @@ impl<'a> DataVector64<'a>
 			i += 2;
 		}
 	}
+}
+
+#[test]
+fn new_syntax()
+{
+	let mut data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
+	let mut vector = DataVector32::from_interleaved(&mut data);
+	let mut buffer = DataBuffer::new("test");
+	let result = vector.complex_offset(Complex32::new(1.0, -1.0), &mut buffer);
+	assert_eq!(result.data, [2.0, 1.0, 4.0, 3.0, 6.0, 5.0, 8.0, 7.0]);
+	assert_eq!(result.delta, 1.0);
 }
 
 #[test]
