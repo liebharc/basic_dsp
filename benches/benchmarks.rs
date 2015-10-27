@@ -5,7 +5,8 @@ use test::Bencher;
 
 extern crate basic_dsp;
 use basic_dsp::{
-	DataVector, 
+	DataVector,
+	DataVector32, 
 	RealTimeVector32, 
 	ComplexTimeVector32, 
 	RealTimeVector64, 
@@ -46,7 +47,19 @@ fn add_real_vector_32_benchmark(b: &mut Bencher)
 	let mut buffer = DataBuffer::new("test");
 	b.iter(|| {
 		result.inplace_real_offset(2.0, &mut buffer);
-		return result.data()[0];
+		return result.data(&mut buffer)[0];;
+		});
+}
+
+#[bench]
+fn multi_operations_vector_32_benchmark(b: &mut Bencher)
+{
+	let mut data: Box<[f32]> = box [0.0; DEFAULT_DATA_SIZE];
+	let mut result = DataVector32::from_array(&mut data);
+	let mut buffer = DataBuffer::new("test");
+	b.iter(|| {
+		result.multi_operation_example(&mut buffer);
+		return result.data(&mut buffer)[0];;
 		});
 }
 
@@ -58,7 +71,7 @@ fn scale_complex_vector_32_benchmark(b: &mut Bencher)
 	let mut buffer = DataBuffer::new("test");
 	b.iter(|| {
 		result.inplace_complex_scale(Complex32::new(-2.0, 2.0), &mut buffer);
-		return result.data()[0];
+		return result.data(&mut buffer)[0];;
 		});
 }
 
@@ -70,7 +83,7 @@ fn abs_real_vector_32_benchmark(b: &mut Bencher)
 	let mut buffer = DataBuffer::new("test");
 	b.iter(|| {
 		result.inplace_real_abs(&mut buffer);
-		return result.data()[0];
+		return result.data(&mut buffer)[0];;
 		});
 }
 
@@ -83,7 +96,7 @@ fn abs_complex_vector_32_benchmark(b: &mut Bencher)
 	let mut buffer = DataBuffer::new("test");
 	b.iter(|| {
 		result.inplace_complex_abs(&mut buffer);
-		return result.data()[0];
+		return result.data(&mut buffer)[0];;
 		});
 }
 
@@ -95,7 +108,7 @@ fn add_real_vector_64_benchmark(b: &mut Bencher)
 	let mut buffer = DataBuffer::new("test");
 	b.iter(|| {
 		result.inplace_real_offset(2.0, &mut buffer);
-		return result.data()[0];
+		return result.data(&mut buffer)[0];;
 		});
 }
 
@@ -107,7 +120,7 @@ fn scale_complex_vector_64_benchmark(b: &mut Bencher)
 	let mut buffer = DataBuffer::new("test");
 	b.iter(|| {
 		result.inplace_complex_scale(Complex64::new(-2.0, 2.0), &mut buffer);
-		return result.data()[0];
+		return result.data(&mut buffer)[0];;
 		});
 }
 
@@ -119,7 +132,7 @@ fn abs_real_vector_64_benchmark(b: &mut Bencher)
 	let mut buffer = DataBuffer::new("test");
 	b.iter(|| {
 		result.inplace_real_abs(&mut buffer);
-		return result.data()[0];
+		return result.data(&mut buffer)[0];;
 		});
 }
 
@@ -132,6 +145,6 @@ fn abs_complex_vector_64_benchmark(b: &mut Bencher)
 	let mut buffer = DataBuffer::new("test");
 	b.iter(|| {
 		result.inplace_complex_abs(&mut buffer);
-		return result.data()[0];
+		return result.data(&mut buffer)[0];;
 		});
 }

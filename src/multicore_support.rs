@@ -27,7 +27,6 @@ impl DataBuffer
 			});
 			
 			let mut static_pool = &mut *pool;
-			//Pool::new(num_cpus::get())
 			static_pool
 		}
 	}

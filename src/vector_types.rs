@@ -3,13 +3,14 @@ use simd::f32x4;
 use simd::x86::sse3::Sse3F32x4;
 use num::complex::{Complex32,Complex64};
 use std::mem;
+use std::vec;
+use std::sync::Arc;
 use num::traits::Float;
-//use std::ops::Add; // TODO { Div, Mul, Neg, Sub};
 
 pub trait DataVector
 {
 	type E;
-	fn data(&self) -> &[Self::E];
+	fn data(&self, &buffer: &mut DataBuffer) -> &[Self::E];
 	fn delta(&self) -> Self::E;
 	fn domain(&self) -> DataVectorDomain;
 	fn is_complex(&self) -> bool;
@@ -25,6 +26,24 @@ pub enum DataVectorDomain {
     Frequency
 }
 
+#[derive(Copy)]
+#[derive(Clone)]
+#[derive(PartialEq)]
+#[derive(Debug)]
+#[allow(dead_code)]
+enum Operation32
+{
+	AddReal(f32),
+	AddComplex(Complex32),
+	//AddVector(&'a DataVector32<'a>),
+	MultiplyReal(f32),
+	MultiplyComplex(Complex32),
+	//MultiplyVector(&'a DataVector32<'a>),
+	AbsReal,
+	AbsComplex,
+	Sqrt
+}
+
 macro_rules! define_vector_struct {
     (struct $name:ident,$data_type:ident) => {
 		pub struct $name<'a>
@@ -32,7 +51,8 @@ macro_rules! define_vector_struct {
 			data: &'a mut [$data_type],
 			delta: $data_type,
 			domain: DataVectorDomain,
-			is_complex: bool
+			is_complex: bool,
+			operations: Vec<Operation32>
 		}
 		
 		#[inline]
@@ -45,8 +65,9 @@ macro_rules! define_vector_struct {
 				self.data.len()
 			}
 			
-			fn data(&self) -> &[$data_type]
+			fn data(&self, buffer: &mut DataBuffer) -> &[$data_type]
 			{
+				// self.perfom_pending_operations(buffer);
 				self.data
 			}
 			
@@ -82,7 +103,8 @@ macro_rules! define_real_basic_struct_members {
 				  data: data, 
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
-				  is_complex: false
+				  is_complex: false,
+				  operations: Vec::with_capacity(10)
 				}
 			}
 			
@@ -93,7 +115,8 @@ macro_rules! define_real_basic_struct_members {
 				  data: data, 
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
-				  is_complex: false
+				  is_complex: false,
+				  operations: Vec::with_capacity(10)
 				}
 			}
 		}
@@ -144,7 +167,8 @@ macro_rules! define_complex_basic_struct_members {
 				  data: data, 
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
-				  is_complex: true
+				  is_complex: true,
+				  operations: Vec::with_capacity(10)
 				}
 			}
 			
@@ -155,7 +179,8 @@ macro_rules! define_complex_basic_struct_members {
 				  data: data, 
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
-				  is_complex: true
+				  is_complex: true,
+				  operations: Vec::with_capacity(10)
 				}
 			}
 		} 
@@ -243,18 +268,118 @@ define_vector_struct!(struct ComplexFreqVector64, f64);
 define_complex_basic_struct_members!(impl ComplexFreqVector64, DataVectorDomain::Frequency);
 define_complex_operations_forward!(from: ComplexFreqVector64, to: DataVector64, complex: Complex64);
 
+const DEFAULT_GRANUALRITY: usize = 4;
+
 #[inline]
 impl<'a> DataVector32<'a>
 {
-	pub fn complex_offset(&mut self, offset: Complex32, buffer: &mut DataBuffer)
+	fn perfom_pending_operations(&mut self, buffer: &mut DataBuffer)
+		-> DataVector32
+	{
+		let data_length = self.len();
+		let scalar_length = data_length % 4;
+		let vectorization_length = data_length - scalar_length;
+		let mut array = &mut self.data;
+		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, buffer, DataVector32::perform_operations_par, &self.operations);
+		DataVector32 { data: array, operations: self.operations.clone(), .. *self }
+	}
+	
+	fn perform_operations_par(array: &mut [f32], operations: &Vec<Operation32>)
+	{
+		let mut i = 0;
+		while i < array.len()
+		{ 
+			let mut vector = f32x4::load(array, i);
+			let mut j = 0;
+			while j < operations.len()
+			{
+				let operation = &operations[j];
+				match *operation
+				{
+					Operation32::AddReal(value) =>
+					{
+						let increment_vector = f32x4::splat(value); 
+						vector = vector + increment_vector;
+					}
+					Operation32::AddComplex(value) =>
+					{
+						let increment_vector = f32x4::load(&[value.re, value.im, value.re, value.im], 0); 
+						vector = vector + increment_vector;
+					}
+					/*Operation32::AddVector(value) =>
+					{
+						// TODO
+					}*/
+					Operation32::MultiplyReal(value) =>
+					{
+						let scale_vector = f32x4::splat(value); 
+						vector = vector * scale_vector;
+					}
+					Operation32::MultiplyComplex(value) =>
+					{
+						let scaling_real = f32x4::splat(value.re);
+						let scaling_imag = f32x4::splat(value.im);
+						let parallel = scaling_real * vector;
+						// There should be a shufps operation which shuffles the vector
+						let shuffled = f32x4::new(vector.extract(1), vector.extract(0), vector.extract(3), vector.extract(2)); 
+						let cross = scaling_imag * shuffled;
+						vector = parallel.addsub(cross);
+					}
+					/*Operation32::MultiplyVector(value) =>
+					{
+						// TODO
+					}*/
+					Operation32::AbsReal =>
+					{
+						vector.store(array, i);
+						{
+							let mut content = &mut array[i .. i + 4];
+							let mut k = 0;
+							while k < 4
+							{
+								content[k] = content[k].abs();
+								k = k + 1;
+							}
+						}
+						vector = f32x4::load(array, i);
+					}
+					Operation32::AbsComplex =>
+					{
+						let squared = vector * vector;
+						let squared_sum = squared.hadd(squared);
+						vector = squared_sum;
+					}
+					Operation32::Sqrt =>
+					{
+						vector.store(array, i);
+						{
+							let mut content = &mut array[i .. i + 4];
+							let mut k = 0;
+							while k < 4
+							{
+								content[k] = content[k].sqrt();
+								k = k + 1;
+							}
+						}
+						vector = f32x4::load(array, i);
+					}
+				}
+				j += 1;
+			}
+		
+			vector.store(array, i);	
+			i += 4;
+		}
+	}	pub fn complex_offset(&mut self, offset: Complex32, buffer: &mut DataBuffer)
 		-> DataVector32 
 	{
 		self.inplace_offset(&[offset.re, offset.im, offset.re, offset.im], buffer);
-		DataVector32 { data: self.data, .. *self }
+		DataVector32 { data: self.data, operations: self.operations.clone(), .. *self }
 	}
 
 	pub fn inplace_complex_offset(&mut self, offset: Complex32, buffer: &mut DataBuffer) 
 	{
+		self.operations.push(Operation32::AddComplex(offset));
 		self.inplace_offset(&[offset.re, offset.im, offset.re, offset.im], buffer);
 	}
 	
@@ -270,7 +395,7 @@ impl<'a> DataVector32<'a>
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, DataVector32::inplace_offset_simd, increment_vector);
+		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, buffer, DataVector32::inplace_offset_simd, increment_vector);
 		for i in vectorization_length..data_length
 		{
 			array[i] = array[i] + offset[i % 2];
@@ -322,7 +447,7 @@ impl<'a> DataVector32<'a>
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, DataVector32::inplace_complex_scale_simd, scaling_vector);
+		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, buffer, DataVector32::inplace_complex_scale_simd, scaling_vector);
 		for i in vectorization_length..data_length
 		{
 			array[i] = array[i] * if i % 2 == 0 { factor.re} else {factor.im };
@@ -347,6 +472,27 @@ impl<'a> DataVector32<'a>
 		}
 	}
 	
+	pub fn inplace_complex_abs(&mut self, buffer: &mut DataBuffer)
+	{
+		let data_length = self.len();
+		let scalar_length = data_length % 4;
+		let vectorization_length = data_length - scalar_length;
+		let mut array = &mut self.data;
+		Chunk::execute_partial(&mut array, vectorization_length, 4, buffer, DataVector32::inplace_complex_abs_simd);
+		let mut i = vectorization_length;
+		while i + 1 < data_length
+		{
+			array[i / 2] = (array[i] * array[i] + array[i + 1] * array[i + 1]).sqrt();
+			i += 2;
+		}
+	}
+	
+	pub fn multi_operation_example(&mut self, buffer: &mut DataBuffer)
+	{
+		self.operations.push(Operation32::MultiplyComplex(Complex32::new(-1.0, 1.0)));
+		self.perfom_pending_operations(buffer);
+	}
+	
 	pub fn inplace_real_abs(&mut self, buffer: &mut DataBuffer)
 	{
 		let mut array = &mut self.data;
@@ -362,21 +508,6 @@ impl<'a> DataVector32<'a>
 		{
 			array[i] = array[i].abs();
 			i += 1;
-		}
-	}
-	
-	pub fn inplace_complex_abs(&mut self, buffer: &mut DataBuffer)
-	{
-		let data_length = self.len();
-		let scalar_length = data_length % 4;
-		let vectorization_length = data_length - scalar_length;
-		let mut array = &mut self.data;
-		Chunk::execute_partial(&mut array, vectorization_length, 4, buffer, DataVector32::inplace_complex_abs_simd);
-		let mut i = vectorization_length;
-		while i + 1 < data_length
-		{
-			array[i / 2] = (array[i] * array[i] + array[i + 1] * array[i + 1]).sqrt();
-			i += 2;
 		}
 	}
 	
@@ -552,7 +683,7 @@ fn construct_real_time_vector_32_test()
 {
 	let mut array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 	let vector = RealTimeVector32::from_array(&mut array);
-	assert_eq!(vector.data(), [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+	assert_eq!(vector.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
 	assert_eq!(vector.delta(), 1.0);
 	assert_eq!(vector.domain(), DataVectorDomain::Time);
 }
