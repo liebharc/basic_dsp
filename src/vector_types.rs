@@ -340,8 +340,7 @@ impl<'a> DataVector32<'a>
 					}
 					Operation32::AddComplex(value) =>
 					{
-						let increment_vector = f32x4::load(&[value.re, value.im, value.re, value.im], 0); 
-						vector = vector + increment_vector;
+						vector = vector.add_complex(value);
 					}
 					/*Operation32::AddVector(value) =>
 					{
@@ -526,7 +525,9 @@ impl<'a> DataVector32<'a>
 	
 	pub fn multi_operation_example(&mut self, buffer: &mut DataBuffer)
 	{
-		self.operations.push(Operation32::MultiplyComplex(Complex32::new(-1.0, 1.0)));
+		self.operations.push(Operation32::AddReal(1.0));
+		self.operations.push(Operation32::AddComplex(Complex32::new(1.0, 1.0)));
+		//self.operations.push(Operation32::MultiplyComplex(Complex32::new(-1.0, 1.0)));
 		self.perfom_pending_operations(buffer);
 	}
 	
