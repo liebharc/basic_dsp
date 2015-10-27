@@ -1,16 +1,15 @@
 use multicore_support::{Chunk,DataBuffer};
 use simd::f32x4;
 use simd::x86::sse3::Sse3F32x4;
+use simd_extensions::SimdExtensions32;
 use num::complex::{Complex32,Complex64};
 use std::mem;
-use std::vec;
-use std::sync::Arc;
 use num::traits::Float;
 
 pub trait DataVector
 {
 	type E;
-	fn data(&self, &buffer: &mut DataBuffer) -> &[Self::E];
+	fn data(&mut self, &buffer: &mut DataBuffer) -> &[Self::E];
 	fn delta(&self) -> Self::E;
 	fn domain(&self) -> DataVectorDomain;
 	fn is_complex(&self) -> bool;
@@ -65,7 +64,7 @@ macro_rules! define_vector_struct {
 				self.data.len()
 			}
 			
-			fn data(&self, buffer: &mut DataBuffer) -> &[$data_type]
+			fn data(&mut self, buffer: &mut DataBuffer) -> &[$data_type]
 			{
 				// self.perfom_pending_operations(buffer);
 				self.data
@@ -123,6 +122,22 @@ macro_rules! define_real_basic_struct_members {
 	 }
 }
 
+macro_rules! define_generic_operations_forward {
+    (from: $name:ident, to: $gen_type:ident)
+	 =>
+	 {
+		#[inline]
+		impl<'a> $name<'a>
+		{
+			fn perfom_pending_operations(&mut self, buffer: &mut DataBuffer) -> $name
+			{
+				$name::from_gen(self.to_gen().perfom_pending_operations(buffer))
+			}
+		}
+	}
+}
+
+
 macro_rules! define_real_operations_forward {
     (from: $name:ident, to: $gen_type:ident)
 	 =>
@@ -148,6 +163,11 @@ macro_rules! define_real_operations_forward {
 			fn to_gen(&mut self) -> &mut $gen_type
 			{
 				unsafe { mem::transmute(self) }
+			}
+			
+			fn from_gen(other: $gen_type) -> $name
+			{
+				unsafe { mem::transmute(other) }
 			}
 		}
 	 }
@@ -224,6 +244,11 @@ macro_rules! define_complex_operations_forward {
 			{
 				unsafe { mem::transmute(self) }
 			}
+			
+			fn from_gen(other: $gen_type) -> $name
+			{
+				unsafe { mem::transmute(other) }
+			}
 		} 
 	 }
 }
@@ -234,18 +259,22 @@ define_complex_basic_struct_members!(impl DataVector32, DataVectorDomain::Freque
 
 define_vector_struct!(struct RealTimeVector32, f32);
 define_real_basic_struct_members!(impl RealTimeVector32, DataVectorDomain::Time);
+define_generic_operations_forward!(from: RealTimeVector32, to: DataVector32);
 define_real_operations_forward!(from: RealTimeVector32, to: DataVector32);
 
 define_vector_struct!(struct RealFreqVector32, f32);
 define_real_basic_struct_members!(impl RealFreqVector32, DataVectorDomain::Frequency);
+define_generic_operations_forward!(from: RealFreqVector32, to: DataVector32);
 define_real_operations_forward!(from: RealFreqVector32, to: DataVector32);
 
 define_vector_struct!(struct ComplexTimeVector32, f32);
 define_complex_basic_struct_members!(impl ComplexTimeVector32, DataVectorDomain::Time);
+define_generic_operations_forward!(from: ComplexTimeVector32, to: DataVector32);
 define_complex_operations_forward!(from: ComplexTimeVector32, to: DataVector32, complex: Complex32);
 
 define_vector_struct!(struct ComplexFreqVector32, f32);
 define_complex_basic_struct_members!(impl ComplexFreqVector32, DataVectorDomain::Frequency);
+define_generic_operations_forward!(from: ComplexFreqVector32, to: DataVector32);
 define_complex_operations_forward!(from: ComplexFreqVector32, to: DataVector32, complex: Complex32);
 
 define_vector_struct!(struct DataVector64, f64);
@@ -254,18 +283,22 @@ define_complex_basic_struct_members!(impl DataVector64, DataVectorDomain::Freque
 
 define_vector_struct!(struct RealTimeVector64, f64);
 define_real_basic_struct_members!(impl RealTimeVector64, DataVectorDomain::Time);
+define_generic_operations_forward!(from: RealTimeVector64, to: DataVector64);
 define_real_operations_forward!(from: RealTimeVector64, to: DataVector64);
 
 define_vector_struct!(struct RealFreqVector64, f64);
 define_real_basic_struct_members!(impl RealFreqVector64, DataVectorDomain::Frequency);
+define_generic_operations_forward!(from: RealFreqVector64, to: DataVector64);
 define_real_operations_forward!(from: RealFreqVector64, to: DataVector64);
 
 define_vector_struct!(struct ComplexTimeVector64, f64);
 define_complex_basic_struct_members!(impl ComplexTimeVector64, DataVectorDomain::Time);
+define_generic_operations_forward!(from: ComplexTimeVector64, to: DataVector64);
 define_complex_operations_forward!(from: ComplexTimeVector64, to: DataVector64, complex: Complex64);
 
 define_vector_struct!(struct ComplexFreqVector64, f64);
 define_complex_basic_struct_members!(impl ComplexFreqVector64, DataVectorDomain::Frequency);
+define_generic_operations_forward!(from: ComplexFreqVector64, to: DataVector64);
 define_complex_operations_forward!(from: ComplexFreqVector64, to: DataVector64, complex: Complex64);
 
 const DEFAULT_GRANUALRITY: usize = 4;
@@ -276,6 +309,11 @@ impl<'a> DataVector32<'a>
 	fn perfom_pending_operations(&mut self, buffer: &mut DataBuffer)
 		-> DataVector32
 	{
+		if self.operations.len() == 0
+		{
+			return DataVector32 { data: self.data, operations: self.operations.clone(), .. *self };
+		}
+		
 		let data_length = self.len();
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
@@ -298,8 +336,7 @@ impl<'a> DataVector32<'a>
 				{
 					Operation32::AddReal(value) =>
 					{
-						let increment_vector = f32x4::splat(value); 
-						vector = vector + increment_vector;
+						vector = vector.add_real(value);
 					}
 					Operation32::AddComplex(value) =>
 					{
@@ -557,6 +594,13 @@ impl<'a> DataVector32<'a>
 #[inline]
 impl<'a> DataVector64<'a>
 {
+	fn perfom_pending_operations(&mut self, buffer: &mut DataBuffer)
+		-> DataVector64
+	{
+		// TODO implement
+		DataVector64 { data: self.data, operations: self.operations.clone(), .. *self }
+	}
+
 	pub fn inplace_complex_offset(&mut self, offset: Complex64, buffer: &mut DataBuffer) 
 	{
 		self.inplace_offset(&[offset.re, offset.im], buffer);

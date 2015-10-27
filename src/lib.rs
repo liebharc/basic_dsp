@@ -6,6 +6,7 @@ extern crate num;
 mod vector_types;
 mod multicore_support;
 mod simd_dummy;
+mod simd_extensions;
 pub use multicore_support::DataBuffer;
 pub use vector_types::
 	{
