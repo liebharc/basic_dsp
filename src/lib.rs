@@ -4,10 +4,11 @@ extern crate num_cpus;
 extern crate simple_parallel;
 extern crate num;
 mod vector_types;
+mod databuffer;
 mod multicore_support;
 mod simd_dummy;
 mod simd_extensions;
-pub use multicore_support::DataBuffer;
+pub use databuffer::DataBuffer;
 pub use vector_types::
 	{
 		DataVectorDomain,
