@@ -13,7 +13,7 @@ use num::traits::Float;
 #[derive(PartialEq)]
 #[derive(Debug)]
 #[allow(dead_code)]
-enum Operation32
+pub enum Operation32
 {
 	AddReal(f32),
 	AddComplex(Complex32),
@@ -55,23 +55,25 @@ const DEFAULT_GRANUALRITY: usize = 4;
 #[inline]
 impl<'a> DataVector32<'a>
 {
-	fn perfom_pending_operations(&mut self, buffer: &mut DataBuffer)
+	pub fn perform_operations(&mut self, operations: &[Operation32], buffer: &mut DataBuffer)
 		-> DataVector32
 	{
-		/*if self.operations.len() == 0
+		if operations.len() == 0
 		{
-			return DataVector32 { data: self.data, operations: self.operations.clone(), .. *self };
+			return DataVector32 { data: self.data, .. *self };
 		}
 		
 		let data_length = self.len();
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
-		let mut array = &mut self.data;
-		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, buffer, DataVector32::perform_operations_par, &self.operations);*/
+		{
+			let mut array = &mut self.data;
+			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, buffer, DataVector32::perform_operations_par, operations);
+		}
 		DataVector32 { data: self.data, .. *self }
 	}
 	
-	fn perform_operations_par(array: &mut [f32], operations: &Vec<Operation32>)
+	fn perform_operations_par(array: &mut [f32], operations: &[Operation32])
 	{
 		let mut i = 0;
 		while i < array.len()
@@ -269,14 +271,6 @@ impl<'a> DataVector32<'a>
 			array[i / 2] = (array[i] * array[i] + array[i + 1] * array[i + 1]).sqrt();
 			i += 2;
 		}
-	}
-	
-	pub fn multi_operation_example(&mut self, buffer: &mut DataBuffer)
-	{
-		/*self.operations.push(Operation32::AddReal(1.0));
-		self.operations.push(Operation32::AddComplex(Complex32::new(1.0, 1.0)));*/
-		//self.operations.push(Operation32::MultiplyComplex(Complex32::new(-1.0, 1.0)));
-		//self.perfom_pending_operations(buffer);
 	}
 	
 	pub fn inplace_real_abs(&mut self, buffer: &mut DataBuffer)

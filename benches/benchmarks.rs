@@ -9,8 +9,7 @@ use basic_dsp::{
 	DataVector32, 
 	RealTimeVector32, 
 	ComplexTimeVector32, 
-	RealTimeVector64, 
-	ComplexTimeVector64,
+	Operation32,
 	DataBuffer};
 
 extern crate num;
@@ -58,7 +57,11 @@ fn multi_operations_vector_32_benchmark(b: &mut Bencher)
 	let mut result = DataVector32::from_array(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	b.iter(|| {
-		result.multi_operation_example(&mut buffer);
+		result.perform_operations(
+			&[Operation32::AddReal(1.0),
+			Operation32::AddComplex(Complex32::new(1.0, 1.0)),
+			Operation32::MultiplyComplex(Complex32::new(-1.0, 1.0))],
+			&mut buffer);
 		return result.data(&mut buffer)[0];;
 		});
 }

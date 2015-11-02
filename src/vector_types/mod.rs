@@ -29,7 +29,6 @@ macro_rules! define_vector_struct {
 			
 			fn data(&mut self, buffer: &mut DataBuffer) -> &[$data_type]
 			{
-				// self.perfom_pending_operations(buffer);
 				self.data
 			}
 			
@@ -90,9 +89,9 @@ macro_rules! define_generic_operations_forward {
 		#[inline]
 		impl<'a> $name<'a>
 		{
-			fn perfom_pending_operations(&mut self, buffer: &mut DataBuffer) -> $name
+			pub fn perform_operations(&mut self, operations: &[Operation32], buffer: &mut DataBuffer) -> $name
 			{
-				$name::from_gen(self.to_gen().perfom_pending_operations(buffer))
+				$name::from_gen(self.to_gen().perform_operations(operations, buffer))
 			}
 		}
 	}
@@ -228,6 +227,7 @@ pub use vector_types::vector32::
 		ComplexTimeVector32, 
 		RealFreqVector32,
 		ComplexFreqVector32,
+		Operation32
 	};
 pub use vector_types::vector64::
 	{	

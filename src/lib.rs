@@ -22,6 +22,7 @@ pub use vector_types::
 		RealTimeVector64,
 		ComplexTimeVector64, 
 		RealFreqVector64,
-		ComplexFreqVector64
+		ComplexFreqVector64,
+		Operation32
 	};
 
