@@ -5,7 +5,11 @@ macro_rules! define_vector_struct {
 			data: &'a mut [$data_type],
 			delta: $data_type,
 			domain: DataVectorDomain,
-			is_complex: bool
+			is_complex: bool,
+			points: usize
+			// We could need here (or in one of the traits/impl):
+			// - A view for complex data types with transmute
+			// - A temporary array to store data in
 		}
 		
 		#[inline]
@@ -21,7 +25,17 @@ macro_rules! define_vector_struct {
 			
 			fn data(&mut self, buffer: &mut DataBuffer) -> &[$data_type]
 			{
-				self.data
+				let valid_length =
+				 if self.is_complex
+				 {
+					 self.points * 2
+				 }
+				 else
+				 {
+					 self.points
+				 };
+				 
+				&self.data[0 .. valid_length]
 			}
 			
 			fn delta(&self) -> $data_type
@@ -51,23 +65,27 @@ macro_rules! define_real_basic_struct_members {
 		{
 			pub fn from_array<'b>(data: &'b mut [<$name as DataVector>::E]) -> $name<'b>
 			{
+				let data_length = data.len();
 				$name 
 				{ 
 				  data: data, 
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
-				  is_complex: false
+				  is_complex: false,
+				  points: data_length
 				}
 			}
 			
 			pub fn from_array_with_delta<'b>(data: &'b mut [<$name as DataVector>::E], delta: <$name as DataVector>::E) -> $name<'b>
 			{
+				let data_length = data.len();
 				$name 
 				{ 
 				  data: data, 
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
-				  is_complex: false
+				  is_complex: false,
+				  points: data_length
 				}
 			}
 		}
@@ -136,23 +154,27 @@ macro_rules! define_complex_basic_struct_members {
 		{
 			pub fn from_interleaved<'b>(data: &'b mut [<$name as DataVector>::E]) -> $name<'b>
 			{
+				let data_length = data.len();
 				$name 
 				{ 
 				  data: data, 
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
-				  is_complex: true
+				  is_complex: true,
+				  points: data_length / 2
 				}
 			}
 			
 			pub fn from_interleaved_with_delta<'b>(data: &'b mut [<$name as DataVector>::E], delta: <$name as DataVector>::E) -> $name<'b>
 			{
+				let data_length = data.len();
 				$name 
 				{ 
 				  data: data, 
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
-				  is_complex: true
+				  is_complex: true,
+				  points: data_length / 2
 				}
 			}
 		} 

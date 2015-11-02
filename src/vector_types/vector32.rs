@@ -271,6 +271,8 @@ impl<'a> DataVector32<'a>
 			array[i / 2] = (array[i] * array[i] + array[i + 1] * array[i + 1]).sqrt();
 			i += 2;
 		}
+		
+		self.is_complex = false;
 	}
 	
 	pub fn inplace_real_abs(&mut self, buffer: &mut DataBuffer)
@@ -318,6 +320,7 @@ impl<'a> DataVector32<'a>
 			array[i / 2] = array[i] * array[i] + array[i + 1] * array[i + 1];
 			i += 2;
 		}
+		self.is_complex = false;
 	}
 	
 	fn inplace_complex_abs_squared_simd(array: &mut [f32])
@@ -433,9 +436,8 @@ fn abs_complex_32_test()
 	let mut result = ComplexTimeVector32::from_interleaved(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_complex_abs(&mut buffer);
-	// The last half is undefined, we will fix this later
-	let expected = [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, -3.0, -4.0];
-	assert_eq!(result.data, expected);
+	let expected = [5.0, 5.0, 5.0, 5.0];
+	assert_eq!(result.data(&mut buffer), expected);
 	assert_eq!(result.delta, 1.0);
 }
 
@@ -446,8 +448,7 @@ fn abs_complex_squared_32_test()
 	let mut result = ComplexTimeVector32::from_interleaved(&mut data);
 	let mut buffer = DataBuffer::new("test");
 	result.inplace_complex_abs_squared(&mut buffer);
-	// The last half is undefined, we will fix this later
-	let expected = [5.0, 25.0, 61.0, 113.0, 181.0, 113.0, 7.0, -8.0, 9.0, 10.0];
-	assert_eq!(result.data, expected);
+	let expected = [5.0, 25.0, 61.0, 113.0, 181.0];
+	assert_eq!(result.data(&mut buffer), expected);
 	assert_eq!(result.delta, 1.0);
 }
