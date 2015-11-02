@@ -152,7 +152,9 @@ impl<'a> DataVector32<'a>
 			vector.store(array, i);	
 			i += 4;
 		}
-	}	pub fn complex_offset(&mut self, offset: Complex32, buffer: &mut DataBuffer)
+	}	
+	
+	pub fn complex_offset(&mut self, offset: Complex32, buffer: &mut DataBuffer)
 		-> DataVector32 
 	{
 		self.inplace_offset(&[offset.re, offset.im, offset.re, offset.im], buffer);
