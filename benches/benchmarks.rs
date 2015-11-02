@@ -99,7 +99,7 @@ fn abs_complex_vector_32_benchmark(b: &mut Bencher)
 		return result.data(&mut buffer)[0];;
 		});
 }
-
+/*
 #[bench]
 fn add_real_vector_64_benchmark(b: &mut Bencher)
 {
@@ -147,4 +147,4 @@ fn abs_complex_vector_64_benchmark(b: &mut Bencher)
 		result.inplace_complex_abs(&mut buffer);
 		return result.data(&mut buffer)[0];;
 		});
-}
+}*/
