@@ -1,13 +1,7 @@
-use multicore_support::Chunk;
 use super::general::{DataVector,DataVectorDomain};
-use super::vector32::DataVector32;
-use databuffer::DataBuffer;
-use simd::f32x4;
-use simd::x86::sse3::Sse3F32x4;
-use simd_extensions::SimdExtensions32;
-use num::complex::{Complex32,Complex64};
+use databuffer::DataBuffer;	
+use num::complex::Complex64;
 use std::mem;
-use num::traits::Float;
 
 define_vector_struct!(struct DataVector64, f64);
 define_real_basic_struct_members!(impl DataVector64, DataVectorDomain::Time);
@@ -33,18 +27,12 @@ define_complex_basic_struct_members!(impl ComplexFreqVector64, DataVectorDomain:
 // define_generic_operations_forward!(from: ComplexFreqVector64, to: DataVector64);
 define_complex_operations_forward!(from: ComplexFreqVector64, to: DataVector64, complex: Complex64);
 
-const DEFAULT_GRANUALRITY: usize = 4;
+// const DEFAULT_GRANUALRITY: usize = 4;
 
 #[inline]
+#[allow(unused_variables)]
 impl<'a> DataVector64<'a>
 {
-	fn perfom_pending_operations(&mut self, buffer: &mut DataBuffer)
-		-> DataVector64
-	{
-		panic!("Unimplemented");
-		//DataVector64 { data: self.data, .. *self }
-	}
-
 	pub fn inplace_complex_offset(&mut self, offset: Complex64, buffer: &mut DataBuffer) 
 	{
 		panic!("Unimplemented");

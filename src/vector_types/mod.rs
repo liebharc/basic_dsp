@@ -1,12 +1,3 @@
-use multicore_support::Chunk;
-use databuffer::DataBuffer;
-use simd::f32x4;
-use simd::x86::sse3::Sse3F32x4;
-use simd_extensions::SimdExtensions32;
-use num::complex::{Complex32,Complex64};
-use std::mem;
-use num::traits::Float;
-
 macro_rules! define_vector_struct {
     (struct $name:ident,$data_type:ident) => {
 		pub struct $name<'a>
@@ -18,6 +9,7 @@ macro_rules! define_vector_struct {
 		}
 		
 		#[inline]
+		#[allow(unused_variables)]
 		impl<'a> DataVector for $name<'a>
 		{
 			type E = $data_type;
@@ -120,11 +112,13 @@ macro_rules! define_real_operations_forward {
 				self.to_gen().inplace_real_abs(buffer);
 			}
 			
+			#[allow(dead_code)]
 			fn to_gen(&mut self) -> &mut $gen_type
 			{
 				unsafe { mem::transmute(self) }
 			}
 			
+			#[allow(dead_code)]
 			fn from_gen(other: $gen_type) -> $name
 			{
 				unsafe { mem::transmute(other) }
@@ -198,11 +192,13 @@ macro_rules! define_complex_operations_forward {
 				self.to_gen().inplace_complex_abs_squared(buffer);
 			}
 			
+			#[allow(dead_code)]
 			fn to_gen(&mut self) -> &mut $gen_type
 			{
 				unsafe { mem::transmute(self) }
 			}
 			
+			#[allow(dead_code)]
 			fn from_gen(other: $gen_type) -> $name
 			{
 				unsafe { mem::transmute(other) }
