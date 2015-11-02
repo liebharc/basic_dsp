@@ -13,7 +13,7 @@ use basic_dsp::{
 	DataBuffer};
 
 extern crate num;
-use num::complex::{Complex32,Complex64};
+use num::complex::Complex32;
 
 pub fn add_offset_reference(array: &mut [f32], offset: f32) 
 {

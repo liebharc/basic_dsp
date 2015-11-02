@@ -2,7 +2,6 @@ use multicore_support::Chunk;
 use super::general::{DataVector,DataVectorDomain};
 use databuffer::DataBuffer;
 use simd::f32x4;
-use simd::x86::sse3::Sse3F32x4;
 use simd_extensions::SimdExtensions32;
 use num::complex::Complex32;
 use std::mem;
@@ -66,6 +65,11 @@ impl<'a> DataVector32<'a>
 		let data_length = self.len();
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
+		if scalar_length > 0
+		{
+			panic!("perform_operations requires right now that the array length is dividable by 4")
+		}
+		
 		{
 			let mut array = &mut self.data;
 			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, buffer, DataVector32::perform_operations_par, operations);
@@ -99,18 +103,11 @@ impl<'a> DataVector32<'a>
 					}*/
 					Operation32::MultiplyReal(value) =>
 					{
-						let scale_vector = f32x4::splat(value); 
-						vector = vector * scale_vector;
+						vector = vector.scale_real(value);
 					}
 					Operation32::MultiplyComplex(value) =>
 					{
-						let scaling_real = f32x4::splat(value.re);
-						let scaling_imag = f32x4::splat(value.im);
-						let parallel = scaling_real * vector;
-						// There should be a shufps operation which shuffles the vector
-						let shuffled = f32x4::new(vector.extract(1), vector.extract(0), vector.extract(3), vector.extract(2)); 
-						let cross = scaling_imag * shuffled;
-						vector = parallel.addsub(cross);
+						vector = vector.scale_complex(value);
 					}
 					/*Operation32::MultiplyVector(value) =>
 					{
@@ -132,9 +129,7 @@ impl<'a> DataVector32<'a>
 					}
 					Operation32::AbsComplex =>
 					{
-						let squared = vector * vector;
-						let squared_sum = squared.hadd(squared);
-						vector = squared_sum;
+						vector = vector.complex_abs();
 					}
 					Operation32::Sqrt =>
 					{
@@ -202,25 +197,24 @@ impl<'a> DataVector32<'a>
 	
 	pub fn inplace_real_scale(&mut self, factor: f32, buffer: &mut DataBuffer) 
 	{
-		let scaling_vector = f32x4::splat(factor); 
 		let data_length = self.len();
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, DataVector32::inplace_real_scale_simd, scaling_vector);
+		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, buffer, DataVector32::inplace_real_scale_simd, factor);
 		for i in vectorization_length..data_length
 		{
 			array[i] = array[i] * factor;
 		}
 	}
 		
-	fn inplace_real_scale_simd(array: &mut [f32], scaling_vector: f32x4)
+	fn inplace_real_scale_simd(array: &mut [f32], value: f32)
 	{
 		let mut i = 0;
 		while i < array.len()
 		{ 
 			let vector = f32x4::load(array, i);
-			let scaled = vector * scaling_vector;
+			let scaled = vector.scale_real(value);
 			scaled.store(array, i);
 			i += 4;
 		}
@@ -228,31 +222,24 @@ impl<'a> DataVector32<'a>
 	
 	pub fn inplace_complex_scale(&mut self, factor: Complex32, buffer: &mut DataBuffer) 
 	{
-		let scaling_vector = f32x4::load(&[factor.re, factor.im, factor.re, factor.im], 0);
 		let data_length = self.len();
 		let scalar_length = data_length % 4;
 		let vectorization_length = data_length - scalar_length;
 		let mut array = &mut self.data;
-		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, buffer, DataVector32::inplace_complex_scale_simd, scaling_vector);
+		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, buffer, DataVector32::inplace_complex_scale_simd, factor);
 		for i in vectorization_length..data_length
 		{
 			array[i] = array[i] * if i % 2 == 0 { factor.re} else {factor.im };
 		}
 	}
 	
-	fn inplace_complex_scale_simd(array: &mut [f32], scaling_vector: f32x4)
+	fn inplace_complex_scale_simd(array: &mut [f32], value: Complex32)
 	{
-		let scaling_real = f32x4::splat(scaling_vector.extract(0));
-		let scaling_imag = f32x4::splat(scaling_vector.extract(1));
 		let mut i = 0;
 		while i < array.len()
 		{
 			let vector = f32x4::load(array, i);
-			let parallel = scaling_real * vector;
-			// There should be a shufps operation which shuffles the vector
-			let vector = f32x4::new(vector.extract(1), vector.extract(0), vector.extract(3), vector.extract(2)); 
-			let cross = scaling_imag * vector;
-			let result = parallel.addsub(cross);
+			let result = vector.scale_complex(value);
 			result.store(array, i);
 			i += 4;
 		}
@@ -299,9 +286,7 @@ impl<'a> DataVector32<'a>
 		while i < array.len()
 		{ 
 			let vector = f32x4::load(array, i);
-			let squared = vector * vector;
-			let squared_sum = squared.hadd(squared);
-			let result = squared_sum.sqrt();
+			let result = vector.complex_abs();
 			result.store(array, i / 2);
 			i += 4;
 		}
@@ -329,9 +314,8 @@ impl<'a> DataVector32<'a>
 		while i < array.len()
 		{ 
 			let vector = f32x4::load(array, i);
-			let squared = vector * vector;
-			let squared_sum = squared.hadd(squared);
-			squared_sum.store(array, i / 2);
+			let result = vector.complex_abs_squared();
+			result.store(array, i / 2);
 			i += 4;
 		}
 	}
