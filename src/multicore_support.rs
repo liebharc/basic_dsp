@@ -1,12 +1,30 @@
 use num_cpus;
 use std::slice::ChunksMut;
 use num::traits::Float;
-use databuffer::{DataBuffer, DataBufferAccess};
+use simple_parallel::Pool;
 
 pub struct Chunk;
 #[allow(dead_code)]
 impl Chunk
 {
+	fn get_static_pool() -> &'static mut Pool
+	{
+		use std::sync::{Once, ONCE_INIT};
+		use std::mem::transmute;
+		unsafe
+		{
+			static mut pool: *mut Pool = 0 as *mut Pool;
+			static mut ONCE: Once = ONCE_INIT;
+			ONCE.call_once(||
+			{
+				pool = transmute::<Box<Pool>, *mut Pool>(box Pool::new(num_cpus::get()));
+			});
+			
+			let mut static_pool = &mut *pool;
+			static_pool
+		}
+	}
+
 	#[inline]
 	fn perform_parallel_execution(array_length: usize) -> bool
 	{
@@ -37,23 +55,23 @@ impl Chunk
 	}
 	
 	#[inline]
-	pub fn execute<F, T>(array: & mut [T], step_size: usize, buffer:  &mut DataBuffer, function: F)
+	pub fn execute<F, T>(array: & mut [T], step_size: usize, function: F)
 		where F: Fn(&mut [T]) + 'static + Sync,
 			  T : Float + Copy + Clone + Send
 	{
 		let array_length = array.len();
-		Chunk::execute_partial(array, array_length, step_size, buffer, function);
+		Chunk::execute_partial(array, array_length, step_size, function);
 	}
 	
 	#[inline]
-	pub fn execute_partial<F, T>(array: & mut [T], array_length: usize, step_size: usize, buffer:  &mut DataBuffer, function: F)
+	pub fn execute_partial<F, T>(array: & mut [T], array_length: usize, step_size: usize, function: F)
 		where F: Fn(&mut [T]) + 'static + Sync,
 			  T : Float + Copy + Clone + Send
 	{
 		if Chunk::perform_parallel_execution(array_length)
 		{
 			let chunks = Chunk::partition(array, array_length, step_size);
-			let ref mut pool = buffer.pool();
+			let ref mut pool = Chunk::get_static_pool();
 			pool.for_(chunks, |chunk|
 				{
 					function(chunk);
@@ -66,7 +84,7 @@ impl Chunk
 	}
 	
 	#[inline]
-	pub fn execute_partial_with_arguments<T,S,F>(array: & mut [T], array_length: usize, step_size: usize, buffer:  &mut DataBuffer, function: F, arguments:S)
+	pub fn execute_partial_with_arguments<T,S,F>(array: & mut [T], array_length: usize, step_size: usize, function: F, arguments:S)
 		where F: Fn(& mut [T], S) + 'static + Sync, 
 			  T: Float + Copy + Clone + Send,
 			  S: Sync + Copy
@@ -74,7 +92,7 @@ impl Chunk
 		if Chunk::perform_parallel_execution(array_length)
 		{
 			let chunks = Chunk::partition(array, array_length, step_size);
-			let ref mut pool = buffer.pool();
+			let ref mut pool = Chunk::get_static_pool();
 			pool.for_(chunks, |chunk|
 				{
 					function(chunk, arguments);

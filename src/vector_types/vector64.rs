@@ -1,5 +1,4 @@
 use super::general::{DataVector,DataVectorDomain};
-use databuffer::DataBuffer;	
 use num::complex::Complex64;
 use std::mem;
 
@@ -33,13 +32,13 @@ define_complex_operations_forward!(from: ComplexFreqVector64, to: DataVector64, 
 #[allow(unused_variables)]
 impl<'a> DataVector64<'a>
 {
-	pub fn inplace_complex_offset(&mut self, offset: Complex64, buffer: &mut DataBuffer) 
+	pub fn inplace_complex_offset(&mut self, offset: Complex64) 
 	{
 		panic!("Unimplemented");
 		// self.inplace_offset(&[offset.re, offset.im], buffer);
 	}
 	
-	pub fn inplace_real_offset(&mut self, offset: f64, buffer: &mut DataBuffer) 
+	pub fn inplace_real_offset(&mut self, offset: f64) 
 	{
 		panic!("Unimplemented");
 		// self.inplace_offset(&[offset, offset], buffer);
@@ -62,7 +61,7 @@ impl<'a> DataVector64<'a>
 		}
 	}*/
 
-	pub fn inplace_real_scale(&mut self, factor: f64, buffer: &mut DataBuffer) 
+	pub fn inplace_real_scale(&mut self, factor: f64) 
 	{
 		panic!("Unimplemented");
 		/*let data_length = self.len();
@@ -80,7 +79,7 @@ impl<'a> DataVector64<'a>
 		}
 	}*/
 	
-	pub fn inplace_complex_scale(&mut self, factor: Complex64, buffer: &mut DataBuffer) 
+	pub fn inplace_complex_scale(&mut self, factor: Complex64) 
 	{
 		panic!("Unimplemented");
 		/*
@@ -102,7 +101,7 @@ impl<'a> DataVector64<'a>
 		}
 	}*/
 		
-	pub fn inplace_real_abs(&mut self, buffer: &mut DataBuffer)
+	pub fn inplace_real_abs(&mut self)
 	{
 		panic!("Unimplemented");
 		/*let mut array = &mut self.data;
@@ -110,7 +109,7 @@ impl<'a> DataVector64<'a>
 		Chunk::execute_partial(&mut array, length, 1, buffer, DataVector32::inplace_abs_real_par);*/
 	}
 	
-	pub fn inplace_complex_abs(&mut self, buffer: &mut DataBuffer)
+	pub fn inplace_complex_abs(&mut self)
 	{
 		panic!("Unimplemented");
 		/*
@@ -131,7 +130,7 @@ impl<'a> DataVector64<'a>
 		}
 	}*/
 	
-	pub fn inplace_complex_abs_squared(&mut self, buffer: &mut DataBuffer)
+	pub fn inplace_complex_abs_squared(&mut self)
 	{
 		panic!("Unimplemented");
 		/*
