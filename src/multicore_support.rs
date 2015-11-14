@@ -151,26 +151,31 @@ impl Chunk
 	}
 }
 
-#[test]
-fn partition_array()
-{
-	let mut array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-	let chunks = Chunk::partition_in_number(&mut array, 8, 4, 2);
-	assert_eq!(chunks.len(), 2);
-	for chunk in chunks
+#[cfg(test)]
+mod tests {
+	use super::*;
+	
+	#[test]
+	fn partition_array()
 	{
-		assert_eq!(chunk.len(), 4);
+		let mut array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+		let chunks = Chunk::partition_in_number(&mut array, 8, 4, 2);
+		assert_eq!(chunks.len(), 2);
+		for chunk in chunks
+		{
+			assert_eq!(chunk.len(), 4);
+		}
 	}
-}
-
-#[test]
-fn partition_array_considering_step_size()
-{
-	let mut array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0];
-	let chunks = Chunk::partition_in_number(&mut array, 8, 4, 2);
-	assert_eq!(chunks.len(), 2);
-	for chunk in chunks
+	
+	#[test]
+	fn partition_array_considering_step_size()
 	{
-		assert_eq!(chunk.len(), 4);
+		let mut array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0];
+		let chunks = Chunk::partition_in_number(&mut array, 8, 4, 2);
+		assert_eq!(chunks.len(), 2);
+		for chunk in chunks
+		{
+			assert_eq!(chunk.len(), 4);
+		}
 	}
 }

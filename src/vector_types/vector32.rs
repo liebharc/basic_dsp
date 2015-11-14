@@ -345,99 +345,106 @@ impl DataVector32
 	}
 }
 
-#[test]
-fn construct_real_time_vector_32_test()
-{
-	let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-	let vector = RealTimeVector32::from_array(&array);
-	assert_eq!(vector.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
-	assert_eq!(vector.delta(), 1.0);
-	assert_eq!(vector.domain(), DataVectorDomain::Time);
-}
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use super::super::general::{DataVector,DataVectorDomain};
+	use num::complex::Complex32;
 
-#[test]
-fn add_real_one_32_test()
-{
-	let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-	let vector = RealTimeVector32::from_array(&mut data);
-	let result = vector.inplace_real_offset(1.0);
-	let expected = [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
-	assert_eq!(result.data, expected);
-	assert_eq!(result.delta, 1.0);
-}
-
-#[test]
-fn add_real_two_32_test()
-{
-	// Test also that vector calls are possible
-	let data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
-	let result = RealTimeVector32::from_array(&data);
-	let result = result.inplace_real_offset(2.0);
-	assert_eq!(result.data, [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]);
-	assert_eq!(result.delta, 1.0);
-}
-
-#[test]
-fn add_complex_32_test()
-{
-	let data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
-	let result = ComplexTimeVector32::from_interleaved(&data);
-	let result = result.inplace_complex_offset(Complex32::new(1.0, -1.0));
-	assert_eq!(result.data, [2.0, 1.0, 4.0, 3.0, 6.0, 5.0, 8.0, 7.0]);
-	assert_eq!(result.delta, 1.0);
-}
-
-#[test]
-fn multiply_real_two_32_test()
-{
-	let data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-	let result = RealTimeVector32::from_array(&data);
-	let result = result.inplace_real_scale(2.0);
-	let expected = [2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0];
-	assert_eq!(result.data, expected);
-	assert_eq!(result.delta, 1.0);
-}
-
-#[test]
-fn multiply_complex_32_test()
-{
-	let data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-	let result = ComplexTimeVector32::from_interleaved(&data);
-	let result = result.inplace_complex_scale(Complex32::new(2.0, -3.0));
-	let expected = [8.0, 1.0, 18.0, -1.0, 28.0, -3.0, 38.0, -5.0];
-	assert_eq!(result.data, expected);
-	assert_eq!(result.delta, 1.0);
-}
-
-#[test]
-fn abs_real_32_test()
-{
-	let data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0];
-	let result = RealTimeVector32::from_array(&data);
-	let result = result.inplace_real_abs();
-	let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-	assert_eq!(result.data, expected);
-	assert_eq!(result.delta, 1.0);
-}
-
-#[test]
-fn abs_complex_32_test()
-{
-	let data = [3.0, 4.0, -3.0, 4.0, 3.0, -4.0, -3.0, -4.0];
-	let result = ComplexTimeVector32::from_interleaved(&data);
-	let result = result.inplace_complex_abs();
-	let expected = [5.0, 5.0, 5.0, 5.0];
-	assert_eq!(result.data(), expected);
-	assert_eq!(result.delta, 1.0);
-}
-
-#[test]
-fn abs_complex_squared_32_test()
-{
-	let data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0, 9.0, 10.0];
-	let result = ComplexTimeVector32::from_interleaved(&data);
-	let result = result.inplace_complex_abs_squared();
-	let expected = [5.0, 25.0, 61.0, 113.0, 181.0];
-	assert_eq!(result.data(), expected);
-	assert_eq!(result.delta, 1.0);
+	#[test]
+	fn construct_real_time_vector_32_test()
+	{
+		let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+		let vector = RealTimeVector32::from_array(&array);
+		assert_eq!(vector.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+		assert_eq!(vector.delta(), 1.0);
+		assert_eq!(vector.domain(), DataVectorDomain::Time);
+	}
+	
+	#[test]
+	fn add_real_one_32_test()
+	{
+		let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+		let vector = RealTimeVector32::from_array(&mut data);
+		let result = vector.inplace_real_offset(1.0);
+		let expected = [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
+		assert_eq!(result.data, expected);
+		assert_eq!(result.delta, 1.0);
+	}
+	
+	#[test]
+	fn add_real_two_32_test()
+	{
+		// Test also that vector calls are possible
+		let data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
+		let result = RealTimeVector32::from_array(&data);
+		let result = result.inplace_real_offset(2.0);
+		assert_eq!(result.data, [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]);
+		assert_eq!(result.delta, 1.0);
+	}
+	
+	#[test]
+	fn add_complex_32_test()
+	{
+		let data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
+		let result = ComplexTimeVector32::from_interleaved(&data);
+		let result = result.inplace_complex_offset(Complex32::new(1.0, -1.0));
+		assert_eq!(result.data, [2.0, 1.0, 4.0, 3.0, 6.0, 5.0, 8.0, 7.0]);
+		assert_eq!(result.delta, 1.0);
+	}
+	
+	#[test]
+	fn multiply_real_two_32_test()
+	{
+		let data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+		let result = RealTimeVector32::from_array(&data);
+		let result = result.inplace_real_scale(2.0);
+		let expected = [2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0];
+		assert_eq!(result.data, expected);
+		assert_eq!(result.delta, 1.0);
+	}
+	
+	#[test]
+	fn multiply_complex_32_test()
+	{
+		let data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+		let result = ComplexTimeVector32::from_interleaved(&data);
+		let result = result.inplace_complex_scale(Complex32::new(2.0, -3.0));
+		let expected = [8.0, 1.0, 18.0, -1.0, 28.0, -3.0, 38.0, -5.0];
+		assert_eq!(result.data, expected);
+		assert_eq!(result.delta, 1.0);
+	}
+	
+	#[test]
+	fn abs_real_32_test()
+	{
+		let data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0];
+		let result = RealTimeVector32::from_array(&data);
+		let result = result.inplace_real_abs();
+		let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+		assert_eq!(result.data, expected);
+		assert_eq!(result.delta, 1.0);
+	}
+	
+	#[test]
+	fn abs_complex_32_test()
+	{
+		let data = [3.0, 4.0, -3.0, 4.0, 3.0, -4.0, -3.0, -4.0];
+		let result = ComplexTimeVector32::from_interleaved(&data);
+		let result = result.inplace_complex_abs();
+		let expected = [5.0, 5.0, 5.0, 5.0];
+		assert_eq!(result.data(), expected);
+		assert_eq!(result.delta, 1.0);
+	}
+	
+	#[test]
+	fn abs_complex_squared_32_test()
+	{
+		let data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0, 9.0, 10.0];
+		let result = ComplexTimeVector32::from_interleaved(&data);
+		let result = result.inplace_complex_abs_squared();
+		let expected = [5.0, 25.0, 61.0, 113.0, 181.0];
+		assert_eq!(result.data(), expected);
+		assert_eq!(result.delta, 1.0);
+	}
 }
