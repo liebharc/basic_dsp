@@ -3,7 +3,6 @@ use super::general::{DataVector,DataVectorDomain};
 use simd::f32x4;
 use simd_extensions::SimdExtensions32;
 use num::complex::Complex32;
-use std::mem;
 use num::traits::Float;
 
 #[derive(Copy)]
