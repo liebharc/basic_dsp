@@ -131,19 +131,19 @@ macro_rules! define_real_operations_forward {
 		#[inline]
 		impl $name
 		{
-			pub fn inplace_real_offset(self, offset: <$name as DataVector>::E) -> $name
+			pub fn real_offset(self, offset: <$name as DataVector>::E) -> $name
 			{
-				$name::from_gen(self.to_gen().inplace_real_offset(offset))
+				$name::from_gen(self.to_gen().real_offset(offset))
 			}
 			
-			pub fn inplace_real_scale(self, factor: <$name as DataVector>::E) -> $name
+			pub fn real_scale(self, factor: <$name as DataVector>::E) -> $name
 			{
-				$name::from_gen(self.to_gen().inplace_real_scale(factor))
+				$name::from_gen(self.to_gen().real_scale(factor))
 			}
 					
-			pub fn inplace_real_abs(self) -> $name
+			pub fn real_abs(self) -> $name
 			{
-				$name::from_gen(self.to_gen().inplace_real_abs()) 
+				$name::from_gen(self.to_gen().real_abs()) 
 			}
 			
 			fn to_gen(self) -> $gen_type
@@ -234,30 +234,30 @@ macro_rules! define_complex_operations_forward {
 		#[inline]
 		impl $name
 		{
-			pub fn inplace_complex_offset(self, offset: $complex_type) -> $name
+			pub fn complex_offset(self, offset: $complex_type) -> $name
 			{
-				$name::from_gen(self.to_gen().inplace_complex_offset(offset))
+				$name::from_gen(self.to_gen().complex_offset(offset))
 			}		
 			
 			// We are keeping this since scaling with a real number should be faster
-			pub fn inplace_real_scale(self, factor: <$name as DataVector>::E) -> $name
+			pub fn real_scale(self, factor: <$name as DataVector>::E) -> $name
 			{
-				$name::from_gen(self.to_gen().inplace_real_scale(factor))
+				$name::from_gen(self.to_gen().real_scale(factor))
 			}
 				
-			pub fn inplace_complex_scale(self, factor: $complex_type) -> $name
+			pub fn complex_scale(self, factor: $complex_type) -> $name
 			{
-				$name::from_gen(self.to_gen().inplace_complex_scale(factor))
+				$name::from_gen(self.to_gen().complex_scale(factor))
 			}
 			
-			pub fn inplace_complex_abs(self) -> $real_partner
+			pub fn complex_abs(self) -> $real_partner
 			{
-				$real_partner::from_gen(self.to_gen().inplace_complex_abs())
+				$real_partner::from_gen(self.to_gen().complex_abs())
 			}
 			
-			pub fn inplace_complex_abs_squared(self) -> $real_partner
+			pub fn complex_abs_squared(self) -> $real_partner
 			{
-				$real_partner::from_gen(self.to_gen().inplace_complex_abs_squared())
+				$real_partner::from_gen(self.to_gen().complex_abs_squared())
 			}
 			
 			fn to_gen(self) -> $gen_type

@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Christian Liebhardt <christian.liebhardt@arcor.de>"]
 
 [features]
-slow_tests = []
+slow_test = []
 
 [dev-dependencies.hamcrest]
 git = "https://github.com/carllerche/hamcrest-rust.git"

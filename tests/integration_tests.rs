@@ -2,8 +2,8 @@ extern crate basic_dsp;
 extern crate rand;
 extern crate num;
 
-#[cfg(feature = "slow_tests")]
-mod slow_tests {
+#[cfg(feature = "slow_test")]
+mod slow_test {
     
     use rand::*;
     use basic_dsp::{
@@ -61,7 +61,7 @@ mod slow_tests {
             let scalar = create_data_with_len(201511142, iteration, 1);
             let expected = real_add_scalar(&a, scalar[0]);
             let vector = RealTimeVector32::from_array(&a);
-            let result = vector.inplace_real_offset(scalar[0]);
+            let result = vector.real_offset(scalar[0]);
             assert_eq!(expected, result.data());
             
         }
@@ -74,7 +74,7 @@ mod slow_tests {
             let scalar = create_data_with_len(201511143, iteration, 1);
             let expected = real_add_scalar(&a, scalar[0]);
             let vector = RealTimeVector32::from_array(&a);
-            let result = vector.inplace_real_offset(scalar[0]);
+            let result = vector.real_offset(scalar[0]);
             assert_eq!(expected, result.data());
         }
     }

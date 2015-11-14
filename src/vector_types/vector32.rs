@@ -152,13 +152,13 @@ impl DataVector32
 		}
 	}
 
-	pub fn inplace_complex_offset(mut self, offset: Complex32)  -> DataVector32
+	pub fn complex_offset(mut self, offset: Complex32)  -> DataVector32
 	{
 		self.inplace_offset(&[offset.re, offset.im, offset.re, offset.im]);
 		self
 	}
 	
-	pub fn inplace_real_offset(mut self, offset: f32) -> DataVector32
+	pub fn real_offset(mut self, offset: f32) -> DataVector32
 	{
 		self.inplace_offset(&[offset, offset, offset, offset]);
 		self
@@ -190,7 +190,7 @@ impl DataVector32
 		}
 	}
 	
-	pub fn inplace_real_scale(mut self, factor: f32) -> DataVector32
+	pub fn real_scale(mut self, factor: f32) -> DataVector32
 	{
 		{
 			let data_length = self.len();
@@ -218,7 +218,7 @@ impl DataVector32
 		}
 	}
 	
-	pub fn inplace_complex_scale(mut self, factor: Complex32) -> DataVector32
+	pub fn complex_scale(mut self, factor: Complex32) -> DataVector32
 	{
 		{
 			let data_length = self.len();
@@ -246,7 +246,7 @@ impl DataVector32
 		}
 	}
 	
-	pub fn inplace_complex_abs(mut self) -> DataVector32
+	pub fn complex_abs(mut self) -> DataVector32
 	{
 		{
 			let data_length = self.len();
@@ -254,7 +254,7 @@ impl DataVector32
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
 			let mut temp = &mut self.temp;
-			Chunk::execute_partial_with_temp(&mut array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, DataVector32::inplace_complex_abs_simd);
+			Chunk::execute_partial_with_temp(&mut array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, DataVector32::complex_abs_simd);
 			let mut i = vectorization_length;
 			while i + 1 < data_length
 			{
@@ -267,17 +267,17 @@ impl DataVector32
 		self.swap_data_temp()
 	}
 	
-	pub fn inplace_real_abs(mut self) -> DataVector32
+	pub fn real_abs(mut self) -> DataVector32
 	{
 		{
 			let mut array = &mut self.data;
 			let length = array.len();
-			Chunk::execute_partial(&mut array, length, 1, DataVector32::inplace_abs_real_par);
+			Chunk::execute_partial(&mut array, length, 1, DataVector32::abs_real_par);
 		}
 		self
 	}
 	
-	fn inplace_abs_real_par<T>(array: &mut [T])
+	fn abs_real_par<T>(array: &mut [T])
 		where T : Float
 	{
 		let mut i = 0;
@@ -288,7 +288,7 @@ impl DataVector32
 		}
 	}
 	
-	fn inplace_complex_abs_simd(array: &[f32], target: &mut [f32])
+	fn complex_abs_simd(array: &[f32], target: &mut [f32])
 	{
 		let mut i = 0;
 		let mut j = 0;
@@ -302,7 +302,7 @@ impl DataVector32
 		}
 	}
 	
-	pub fn inplace_complex_abs_squared(mut self) -> DataVector32
+	pub fn complex_abs_squared(mut self) -> DataVector32
 	{
 		{
 			let data_length = self.len();
@@ -310,7 +310,7 @@ impl DataVector32
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
 			let mut temp = &mut self.temp;
-			Chunk::execute_partial_with_temp(&mut array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, DataVector32::inplace_complex_abs_squared_simd);
+			Chunk::execute_partial_with_temp(&mut array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, DataVector32::complex_abs_squared_simd);
 			let mut i = vectorization_length;
 			while i + 1 < data_length
 			{
@@ -322,7 +322,7 @@ impl DataVector32
 		self.swap_data_temp()
 	}
 	
-	fn inplace_complex_abs_squared_simd(array: &[f32], target: &mut [f32])
+	fn complex_abs_squared_simd(array: &[f32], target: &mut [f32])
 	{
 		let mut i = 0;
 		let mut j = 0;
@@ -366,7 +366,7 @@ mod tests {
 	{
 		let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 		let vector = RealTimeVector32::from_array(&mut data);
-		let result = vector.inplace_real_offset(1.0);
+		let result = vector.real_offset(1.0);
 		let expected = [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
 		assert_eq!(result.data, expected);
 		assert_eq!(result.delta, 1.0);
@@ -378,7 +378,7 @@ mod tests {
 		// Test also that vector calls are possible
 		let data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
 		let result = RealTimeVector32::from_array(&data);
-		let result = result.inplace_real_offset(2.0);
+		let result = result.real_offset(2.0);
 		assert_eq!(result.data, [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]);
 		assert_eq!(result.delta, 1.0);
 	}
@@ -388,7 +388,7 @@ mod tests {
 	{
 		let data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
 		let result = ComplexTimeVector32::from_interleaved(&data);
-		let result = result.inplace_complex_offset(Complex32::new(1.0, -1.0));
+		let result = result.complex_offset(Complex32::new(1.0, -1.0));
 		assert_eq!(result.data, [2.0, 1.0, 4.0, 3.0, 6.0, 5.0, 8.0, 7.0]);
 		assert_eq!(result.delta, 1.0);
 	}
@@ -398,7 +398,7 @@ mod tests {
 	{
 		let data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 		let result = RealTimeVector32::from_array(&data);
-		let result = result.inplace_real_scale(2.0);
+		let result = result.real_scale(2.0);
 		let expected = [2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0];
 		assert_eq!(result.data, expected);
 		assert_eq!(result.delta, 1.0);
@@ -409,7 +409,7 @@ mod tests {
 	{
 		let data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 		let result = ComplexTimeVector32::from_interleaved(&data);
-		let result = result.inplace_complex_scale(Complex32::new(2.0, -3.0));
+		let result = result.complex_scale(Complex32::new(2.0, -3.0));
 		let expected = [8.0, 1.0, 18.0, -1.0, 28.0, -3.0, 38.0, -5.0];
 		assert_eq!(result.data, expected);
 		assert_eq!(result.delta, 1.0);
@@ -420,7 +420,7 @@ mod tests {
 	{
 		let data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0];
 		let result = RealTimeVector32::from_array(&data);
-		let result = result.inplace_real_abs();
+		let result = result.real_abs();
 		let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 		assert_eq!(result.data, expected);
 		assert_eq!(result.delta, 1.0);
@@ -431,7 +431,7 @@ mod tests {
 	{
 		let data = [3.0, 4.0, -3.0, 4.0, 3.0, -4.0, -3.0, -4.0];
 		let result = ComplexTimeVector32::from_interleaved(&data);
-		let result = result.inplace_complex_abs();
+		let result = result.complex_abs();
 		let expected = [5.0, 5.0, 5.0, 5.0];
 		assert_eq!(result.data(), expected);
 		assert_eq!(result.delta, 1.0);
@@ -442,7 +442,7 @@ mod tests {
 	{
 		let data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0, 9.0, 10.0];
 		let result = ComplexTimeVector32::from_interleaved(&data);
-		let result = result.inplace_complex_abs_squared();
+		let result = result.complex_abs_squared();
 		let expected = [5.0, 25.0, 61.0, 113.0, 181.0];
 		assert_eq!(result.data(), expected);
 		assert_eq!(result.delta, 1.0);

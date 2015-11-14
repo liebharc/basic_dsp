@@ -72,13 +72,13 @@
             ]
         },
         {
-            "taskName": "integration-tests",
+            "taskName": "integration-test",
             "suppressTaskName": true,
             "showOutput": "always",
             "args": [
                 "test",
                 "--features",
-                "slow_tests"
+                "slow_test"
             ],
             "problemMatcher": [
                 {
