@@ -63,6 +63,19 @@ macro_rules! define_real_basic_struct_members {
 		#[inline]
 		impl $name
 		{
+			pub fn from_array_no_copy(data: Vec<<$name as DataVector>::E>) -> $name
+			{
+				let data_length = data.len();
+				$name 
+				{ 
+				  data: data, 
+				  delta: 1.0,
+				  domain: DataVectorDomain::$domain,
+				  is_complex: false,
+				  points: data_length
+				}
+			}
+		
 			pub fn from_array(data: &[<$name as DataVector>::E]) -> $name
 			{
 				let data_length = data.len();
@@ -164,6 +177,19 @@ macro_rules! define_complex_basic_struct_members {
 		#[inline]
 		impl $name
 		{
+			pub fn from_interleaved_no_copy(data: Vec<<$name as DataVector>::E>) -> $name
+			{
+				let data_length = data.len();
+				$name 
+				{ 
+				  data: data , 
+				  delta: 1.0,
+				  domain: DataVectorDomain::$domain,
+				  is_complex: true,
+				  points: data_length / 2
+				}
+			}
+			
 			pub fn from_interleaved(data: &[<$name as DataVector>::E]) -> $name
 			{
 				let data_length = data.len();

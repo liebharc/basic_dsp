@@ -1,45 +1,9 @@
-Intel i7 8 cores:
-Reference library:
-abs_real_vector_32_benchmark 4,2000,000ns
-abs_real_vector_64_benchmark 8,7000,000ns
-
-date; cargo bench
-
-Tuesday, October 27, 2015 12:41:00 PM
-     Running target\release\basic_dsp-c91243f1aaa58c67.exe
-
-running 16 tests
-test multicore_support::partition_array ... ignored
-test multicore_support::partition_array_considering_step_size ... ignored
-test multicore_support::partition_array_in_tiny_pieces ... ignored
-test vector_types::abs_complex_32_test ... ignored
-test vector_types::abs_complex_squared_32_test ... ignored
-test vector_types::abs_real_32_test ... ignored
-test vector_types::add_complex_32_test ... ignored
-test vector_types::add_real_one_32_test ... ignored
-test vector_types::add_real_one_64_test ... ignored
-test vector_types::add_real_two_32_test ... ignored
-test vector_types::construct_real_time_vector_32_test ... ignored
-test vector_types::multiply_complex_32_test ... ignored
-test vector_types::multiply_complex_64_test ... ignored
-test vector_types::multiply_real_two_32_test ... ignored
-test vector_types::multiply_real_two_64_test ... ignored
-test vector_types::new_syntax ... ignored
-
-test result: ok. 0 passed; 0 failed; 16 ignored; 0 measured
-
-     Running target\release\benchmarks-5990a17fdd2e8b7d.exe
-
-running 10 tests
-test abs_complex_vector_32_benchmark      ... bench:   3,846,639 ns/iter (+/- 148,369)
-test abs_complex_vector_64_benchmark      ... bench:   7,890,120 ns/iter (+/- 499,209)
-test abs_real_vector_32_benchmark         ... bench:   4,313,724 ns/iter (+/- 270,239)
-test abs_real_vector_64_benchmark         ... bench:   8,472,028 ns/iter (+/- 574,752)
-test add_real_one_scalar_32_benchmark     ... bench:   4,529,662 ns/iter (+/- 594,282)
-test add_real_vector_32_benchmark         ... bench:   4,196,444 ns/iter (+/- 27,846)
-test add_real_vector_64_benchmark         ... bench:   8,382,772 ns/iter (+/- 280,334)
-test multi_operations_vector_32_benchmark ... bench:   5,915,886 ns/iter (+/- 2,262,681)
-test scale_complex_vector_32_benchmark    ... bench:   4,243,931 ns/iter (+/- 105,516)
-test scale_complex_vector_64_benchmark    ... bench:   8,685,694 ns/iter (+/- 686,889)
-
-test result: ok. 0 passed; 0 failed; 0 ignored; 10 measured
+running 7 tests
+test abs_complex_vector_32_benchmark      ... bench:  15,834,162 ns/iter (+/- 914,389)
+test abs_real_vector_32_benchmark         ... bench:  16,703,963 ns/iter (+/- 2,169,865)
+test add_real_one_scalar_32_benchmark     ... bench:  16,744,394 ns/iter (+/- 2,091,169)
+test add_real_vector_32_benchmark         ... bench:  16,116,850 ns/iter (+/- 1,781,452)
+test multi_operations_vector_32_benchmark ... bench:  17,575,963 ns/iter (+/- 2,161,739)
+test scale_complex_vector_32_benchmark    ... bench:  16,135,764 ns/iter (+/- 1,330,510)
+test vector_creation_32_benchmark         ... bench:  11,492,891 ns/iter (+/- 1,266,349)
+test result: ok. 0 passed; 0 failed; 0 ignored; 7 measured
