@@ -3,13 +3,13 @@ macro_rules! define_vector_struct {
 		pub struct $name
 		{
 			data: Vec<$data_type>,
+			temp: Vec<$data_type>,
 			delta: $data_type,
 			domain: DataVectorDomain,
 			is_complex: bool,
 			points: usize
 			// We could need here (or in one of the traits/impl):
 			// - A view for complex data types with transmute
-			// - A temporary array to store data in
 		}
 		
 		#[inline]
@@ -69,6 +69,7 @@ macro_rules! define_real_basic_struct_members {
 				$name 
 				{ 
 				  data: data, 
+				  temp: vec![0.0; data_length],
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
@@ -82,6 +83,7 @@ macro_rules! define_real_basic_struct_members {
 				$name 
 				{ 
 				  data: data.to_vec(), 
+				  temp: vec![0.0; data_length],
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
@@ -95,6 +97,7 @@ macro_rules! define_real_basic_struct_members {
 				$name 
 				{ 
 				  data: data.to_vec(), 
+				  temp: vec![0.0; data_length],
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
@@ -148,6 +151,7 @@ macro_rules! define_real_operations_forward {
 				$gen_type 
 				{ 
 				  data: self.data,
+				  temp: self.temp,
 				  delta: self.delta,
 				  domain: self.domain,
 				  is_complex: self.is_complex,
@@ -160,6 +164,7 @@ macro_rules! define_real_operations_forward {
 				$name 
 				{ 
 				  data: other.data,
+				  temp: other.temp,
 				  delta: other.delta,
 				  domain: other.domain,
 				  is_complex: other.is_complex,
@@ -182,7 +187,8 @@ macro_rules! define_complex_basic_struct_members {
 				let data_length = data.len();
 				$name 
 				{ 
-				  data: data , 
+				  data: data,
+				  temp: vec![0.0; data_length],
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
@@ -196,6 +202,7 @@ macro_rules! define_complex_basic_struct_members {
 				$name 
 				{ 
 				  data: data.to_vec(), 
+				  temp: vec![0.0; data_length],
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
@@ -209,6 +216,7 @@ macro_rules! define_complex_basic_struct_members {
 				$name 
 				{ 
 				  data: data.to_vec(), 
+				  temp: vec![0.0; data_length],
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
@@ -257,6 +265,7 @@ macro_rules! define_complex_operations_forward {
 				$gen_type 
 				{ 
 				  data: self.data,
+				  temp: self.temp,
 				  delta: self.delta,
 				  domain: self.domain,
 				  is_complex: self.is_complex,
@@ -269,6 +278,7 @@ macro_rules! define_complex_operations_forward {
 				$name 
 				{ 
 				  data: other.data,
+				  temp: other.temp,
 				  delta: other.delta,
 				  domain: other.domain,
 				  is_complex: other.is_complex,

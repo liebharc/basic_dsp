@@ -10,6 +10,7 @@ pub trait SimdExtensions32
 	fn scale_complex(self, value: Complex32) -> f32x4;
 	fn complex_abs_squared(self) -> f32x4;
 	fn complex_abs(self) -> f32x4;
+	fn store_half(self, target: &mut [f32], index: usize);
 }
 
 impl SimdExtensions32 for f32x4
@@ -55,4 +56,12 @@ impl SimdExtensions32 for f32x4
 		let squared_sum = squared.hadd(squared);
 		squared_sum.sqrt()
 	}
+	
+	fn store_half(self, target: &mut [f32], index: usize)
+	{
+		let mut temp = [0.0; 4];
+		self.store(&mut temp, 0);
+		target[index] = temp[0];
+		target[index + 1] = temp[1];
+	} 
 } 

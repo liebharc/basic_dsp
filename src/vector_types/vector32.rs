@@ -253,17 +253,18 @@ impl DataVector32
 			let scalar_length = data_length % 4;
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
-			Chunk::execute_partial(&mut array, vectorization_length, 4, DataVector32::inplace_complex_abs_simd);
+			let mut temp = &mut self.temp;
+			Chunk::execute_partial_with_temp(&mut array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, DataVector32::inplace_complex_abs_simd);
 			let mut i = vectorization_length;
 			while i + 1 < data_length
 			{
-				array[i / 2] = (array[i] * array[i] + array[i + 1] * array[i + 1]).sqrt();
+				temp[i / 2] = (array[i] * array[i] + array[i + 1] * array[i + 1]).sqrt();
 				i += 2;
 			}
-			
 			self.is_complex = false;
 		}
-		self
+		
+		self.swap_data_temp()
 	}
 	
 	pub fn inplace_real_abs(mut self) -> DataVector32
@@ -287,15 +288,17 @@ impl DataVector32
 		}
 	}
 	
-	fn inplace_complex_abs_simd(array: &mut [f32])
+	fn inplace_complex_abs_simd(array: &[f32], target: &mut [f32])
 	{
 		let mut i = 0;
+		let mut j = 0;
 		while i < array.len()
 		{ 
 			let vector = f32x4::load(array, i);
 			let result = vector.complex_abs();
-			result.store(array, i / 2);
+			result.store_half(target, j);
 			i += 4;
+			j += 2;
 		}
 	}
 	
@@ -306,28 +309,39 @@ impl DataVector32
 			let scalar_length = data_length % 4;
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
-			Chunk::execute_partial(&mut array, vectorization_length, 4, DataVector32::inplace_complex_abs_squared_simd);
+			let mut temp = &mut self.temp;
+			Chunk::execute_partial_with_temp(&mut array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, DataVector32::inplace_complex_abs_squared_simd);
 			let mut i = vectorization_length;
 			while i + 1 < data_length
 			{
-				array[i / 2] = array[i] * array[i] + array[i + 1] * array[i + 1];
+				temp[i / 2] = array[i] * array[i] + array[i + 1] * array[i + 1];
 				i += 2;
 			}
 			self.is_complex = false;
 		}
-		self
+		self.swap_data_temp()
 	}
 	
-	fn inplace_complex_abs_squared_simd(array: &mut [f32])
+	fn inplace_complex_abs_squared_simd(array: &[f32], target: &mut [f32])
 	{
 		let mut i = 0;
+		let mut j = 0;
 		while i < array.len()
 		{ 
 			let vector = f32x4::load(array, i);
 			let result = vector.complex_abs_squared();
-			result.store(array, i / 2);
+			result.store_half(target, j);
 			i += 4;
+			j += 2;
 		}
+	}
+	
+	fn swap_data_temp(mut self) -> DataVector32
+	{
+		let temp = self.temp;
+		self.temp = self.data;
+		self.data = temp;
+		self
 	}
 }
 

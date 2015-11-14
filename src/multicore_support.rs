@@ -37,14 +37,7 @@ impl Chunk
 	{
 		let mut chunk_size = array_length / number_of_chunks;
 		chunk_size -= chunk_size % step_size;
-		if chunk_size > 0
-		{
-			array[0 .. array_length].chunks_mut(chunk_size)
-		}
-		else
-		{
-			array[0 .. array_length].chunks_mut(array_length)
-		}	
+		array[0 .. array_length].chunks_mut(chunk_size)
 	}
 		
 	#[inline]
@@ -55,7 +48,7 @@ impl Chunk
 	}
 	
 	#[inline]
-	pub fn execute<F, T>(array: & mut [T], step_size: usize, function: F)
+	pub fn execute<F, T>(array: &mut [T], step_size: usize, function: F)
 		where F: Fn(&mut [T]) + 'static + Sync,
 			  T : Float + Copy + Clone + Send
 	{
@@ -64,7 +57,7 @@ impl Chunk
 	}
 	
 	#[inline]
-	pub fn execute_partial<F, T>(array: & mut [T], array_length: usize, step_size: usize, function: F)
+	pub fn execute_partial<F, T>(array: &mut [T], array_length: usize, step_size: usize, function: F)
 		where F: Fn(&mut [T]) + 'static + Sync,
 			  T : Float + Copy + Clone + Send
 	{
@@ -84,8 +77,8 @@ impl Chunk
 	}
 	
 	#[inline]
-	pub fn execute_partial_with_arguments<T,S,F>(array: & mut [T], array_length: usize, step_size: usize, function: F, arguments:S)
-		where F: Fn(& mut [T], S) + 'static + Sync, 
+	pub fn execute_partial_with_arguments<T,S,F>(array: &mut [T], array_length: usize, step_size: usize, function: F, arguments:S)
+		where F: Fn(&mut [T], S) + 'static + Sync, 
 			  T: Float + Copy + Clone + Send,
 			  S: Sync + Copy
 	{
@@ -103,17 +96,58 @@ impl Chunk
 			function(&mut array[0..array_length], arguments);
 		}
 	}
-}
-
-#[test]
-fn partition_array_in_tiny_pieces()
-{
-	let mut array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-	let chunks = Chunk::partition_in_number(&mut array, 8, 4, 8);
-	assert_eq!(chunks.len(), 1);
-	for chunk in chunks
+	
+	#[inline]
+	pub fn execute_with_temp<F, T>(array: &mut [T], step_size: usize, temp: &mut [T], temp_step_size: usize, function: F)
+		where F: Fn(&[T], &mut [T]) + 'static + Sync,
+			  T : Float + Copy + Clone + Send
 	{
-		assert_eq!(chunk.len(), 8);
+		let array_length = array.len();
+		let temp_length = temp.len();
+		Chunk::execute_partial_with_temp(array, array_length, step_size, temp, temp_length, temp_step_size, function);
+	}
+	
+	#[inline]
+	pub fn execute_partial_with_temp<F, T>(array: &mut [T], array_length: usize, step_size: usize, temp: &mut [T], temp_length: usize, temp_step_size: usize, function: F)
+		where F: Fn(&[T], &mut [T]) + 'static + Sync,
+			  T : Float + Copy + Clone + Send
+	{
+		if Chunk::perform_parallel_execution(array_length)
+		{
+			let chunks = Chunk::partition(array, array_length, step_size);
+			let temps = Chunk::partition(temp, temp_length, temp_step_size);
+			let ref mut pool = Chunk::get_static_pool();
+			pool.for_(chunks.zip(temps), |chunk|
+				{
+					function(chunk.0, chunk.1);
+				});
+		}
+		else
+		{
+			function(&array[0..array_length], &mut temp[0..temp_length]);
+		}
+	}
+	
+	#[inline]
+	pub fn execute_partial_with_temp_and_arguments<T,S,F>(array: &mut [T], array_length: usize, step_size: usize, temp: &mut [T], temp_length: usize, temp_step_size: usize, function: F, arguments:S)
+		where F: Fn(&[T], &mut [T], S) + 'static + Sync, 
+			  T: Float + Copy + Clone + Send,
+			  S: Sync + Copy
+	{
+		if Chunk::perform_parallel_execution(array_length)
+		{
+			let chunks = Chunk::partition(array, array_length, step_size);
+			let temps = Chunk::partition(temp, temp_length, temp_step_size);
+			let ref mut pool = Chunk::get_static_pool();
+			pool.for_(chunks.zip(temps), |chunk|
+				{
+					function(chunk.0, chunk.1, arguments);
+				});
+		}
+		else
+		{
+			function(&mut array[0..array_length], temp, arguments);
+		}
 	}
 }
 
