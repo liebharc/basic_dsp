@@ -3,8 +3,13 @@ name = "basic_dsp"
 version = "0.1.0"
 authors = ["Christian Liebhardt <christian.liebhardt@arcor.de>"]
 
+[features]
+slow_tests = []
+
 [dev-dependencies.hamcrest]
 git = "https://github.com/carllerche/hamcrest-rust.git"
+[dev-dependencies.rand]
+rand = "0.3"
 [dependencies]
 simd = { git = "https://github.com/huonw/simd" }
 num_cpus = "0.2.6"
