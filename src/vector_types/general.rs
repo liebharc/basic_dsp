@@ -1,7 +1,7 @@
 pub trait DataVector
 {
 	type E;
-	fn data(&mut self) -> &[Self::E];
+	fn data(&self) -> &[Self::E];
 	fn delta(&self) -> Self::E;
 	fn domain(&self) -> DataVectorDomain;
 	fn is_complex(&self) -> bool;

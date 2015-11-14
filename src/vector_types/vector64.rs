@@ -19,26 +19,26 @@ define_real_operations_forward!(from: RealFreqVector64, to: DataVector64);
 define_vector_struct!(struct ComplexTimeVector64, f64);
 define_complex_basic_struct_members!(impl ComplexTimeVector64, DataVectorDomain::Time);
 // define_generic_operations_forward!(from: ComplexTimeVector64, to: DataVector64);
-define_complex_operations_forward!(from: ComplexTimeVector64, to: DataVector64, complex: Complex64);
+define_complex_operations_forward!(from: ComplexTimeVector64, to: DataVector64, complex: Complex64, real_partner: RealTimeVector64);
 
 define_vector_struct!(struct ComplexFreqVector64, f64);
 define_complex_basic_struct_members!(impl ComplexFreqVector64, DataVectorDomain::Frequency);
 // define_generic_operations_forward!(from: ComplexFreqVector64, to: DataVector64);
-define_complex_operations_forward!(from: ComplexFreqVector64, to: DataVector64, complex: Complex64);
+define_complex_operations_forward!(from: ComplexFreqVector64, to: DataVector64, complex: Complex64, real_partner: RealTimeVector64);
 
 // const DEFAULT_GRANUALRITY: usize = 4;
 
 #[inline]
 #[allow(unused_variables)]
-impl<'a> DataVector64<'a>
+impl DataVector64
 {
-	pub fn inplace_complex_offset(&mut self, offset: Complex64) 
+	pub fn inplace_complex_offset(mut self, offset: Complex64) -> DataVector64
 	{
 		panic!("Unimplemented");
 		// self.inplace_offset(&[offset.re, offset.im], buffer);
 	}
 	
-	pub fn inplace_real_offset(&mut self, offset: f64) 
+	pub fn inplace_real_offset(mut self, offset: f64) -> DataVector64
 	{
 		panic!("Unimplemented");
 		// self.inplace_offset(&[offset, offset], buffer);
@@ -61,7 +61,7 @@ impl<'a> DataVector64<'a>
 		}
 	}*/
 
-	pub fn inplace_real_scale(&mut self, factor: f64) 
+	pub fn inplace_real_scale(mut self, factor: f64) -> DataVector64
 	{
 		panic!("Unimplemented");
 		/*let data_length = self.len();
@@ -79,7 +79,7 @@ impl<'a> DataVector64<'a>
 		}
 	}*/
 	
-	pub fn inplace_complex_scale(&mut self, factor: Complex64) 
+	pub fn inplace_complex_scale(mut self, factor: Complex64) -> DataVector64
 	{
 		panic!("Unimplemented");
 		/*
@@ -101,7 +101,7 @@ impl<'a> DataVector64<'a>
 		}
 	}*/
 		
-	pub fn inplace_real_abs(&mut self)
+	pub fn inplace_real_abs(mut self) -> DataVector64
 	{
 		panic!("Unimplemented");
 		/*let mut array = &mut self.data;
@@ -109,7 +109,7 @@ impl<'a> DataVector64<'a>
 		Chunk::execute_partial(&mut array, length, 1, buffer, DataVector32::inplace_abs_real_par);*/
 	}
 	
-	pub fn inplace_complex_abs(&mut self)
+	pub fn inplace_complex_abs(mut self) -> DataVector64
 	{
 		panic!("Unimplemented");
 		/*
@@ -130,7 +130,7 @@ impl<'a> DataVector64<'a>
 		}
 	}*/
 	
-	pub fn inplace_complex_abs_squared(&mut self)
+	pub fn inplace_complex_abs_squared(mut self) -> DataVector64
 	{
 		panic!("Unimplemented");
 		/*

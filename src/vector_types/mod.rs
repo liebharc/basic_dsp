@@ -1,8 +1,8 @@
 macro_rules! define_vector_struct {
     (struct $name:ident,$data_type:ident) => {
-		pub struct $name<'a>
+		pub struct $name
 		{
-			data: &'a mut [$data_type],
+			data: Vec<$data_type>,
 			delta: $data_type,
 			domain: DataVectorDomain,
 			is_complex: bool,
@@ -14,7 +14,7 @@ macro_rules! define_vector_struct {
 		
 		#[inline]
 		#[allow(unused_variables)]
-		impl<'a> DataVector for $name<'a>
+		impl DataVector for $name
 		{
 			type E = $data_type;
 			
@@ -23,7 +23,7 @@ macro_rules! define_vector_struct {
 				self.data.len()
 			}
 			
-			fn data(&mut self) -> &[$data_type]
+			fn data(&self) -> &[$data_type]
 			{
 				let valid_length =
 				 if self.is_complex
@@ -61,14 +61,14 @@ macro_rules! define_real_basic_struct_members {
 	 =>
 	 {
 		#[inline]
-		impl<'a> $name<'a>
+		impl $name
 		{
-			pub fn from_array<'b>(data: &'b mut [<$name as DataVector>::E]) -> $name<'b>
+			pub fn from_array(data: &[<$name as DataVector>::E]) -> $name
 			{
 				let data_length = data.len();
 				$name 
 				{ 
-				  data: data, 
+				  data: data.to_vec(), 
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
@@ -76,12 +76,12 @@ macro_rules! define_real_basic_struct_members {
 				}
 			}
 			
-			pub fn from_array_with_delta<'b>(data: &'b mut [<$name as DataVector>::E], delta: <$name as DataVector>::E) -> $name<'b>
+			pub fn from_array_with_delta(data: &[<$name as DataVector>::E], delta: <$name as DataVector>::E) -> $name
 			{
 				let data_length = data.len();
 				$name 
 				{ 
-				  data: data, 
+				  data: data.to_vec(), 
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
@@ -97,9 +97,9 @@ macro_rules! define_generic_operations_forward {
 	 =>
 	 {
 		#[inline]
-		impl<'a> $name<'a>
+		impl $name
 		{
-			pub fn perform_operations(&mut self, operations: &[Operation32]) -> $name
+			pub fn perform_operations(mut self, operations: &[Operation32]) -> $name
 			{
 				$name::from_gen(self.to_gen().perform_operations(operations))
 			}
@@ -113,31 +113,29 @@ macro_rules! define_real_operations_forward {
 	 =>
 	 {
 		#[inline]
-		impl<'a> $name<'a>
+		impl $name
 		{
-			pub fn inplace_real_offset(&mut self, offset: <$name as DataVector>::E) 
+			pub fn inplace_real_offset(mut self, offset: <$name as DataVector>::E) -> $name
 			{
-				self.to_gen().inplace_real_offset(offset);
+				$name::from_gen(self.to_gen().inplace_real_offset(offset))
 			}
 			
-			pub fn inplace_real_scale(&mut self, factor: <$name as DataVector>::E) 
+			pub fn inplace_real_scale(mut self, factor: <$name as DataVector>::E) -> $name
 			{
-				self.to_gen().inplace_real_scale(factor);
+				$name::from_gen(self.to_gen().inplace_real_scale(factor))
 			}
 					
-			pub fn inplace_real_abs(&mut self)
+			pub fn inplace_real_abs(mut self) -> $name
 			{
-				self.to_gen().inplace_real_abs();
+				$name::from_gen(self.to_gen().inplace_real_abs()) 
 			}
 			
-			#[allow(dead_code)]
-			fn to_gen(&mut self) -> &mut $gen_type
+			fn to_gen(mut self) -> $gen_type
 			{
 				unsafe { mem::transmute(self) }
 			}
 			
-			#[allow(dead_code)]
-			fn from_gen(other: $gen_type) -> $name
+			fn from_gen(mut other: $gen_type) -> $name
 			{
 				unsafe { mem::transmute(other) }
 			}
@@ -150,14 +148,14 @@ macro_rules! define_complex_basic_struct_members {
 	 =>
 	 {
 		#[inline]
-		impl<'a> $name<'a>
+		impl $name
 		{
-			pub fn from_interleaved<'b>(data: &'b mut [<$name as DataVector>::E]) -> $name<'b>
+			pub fn from_interleaved(data: &[<$name as DataVector>::E]) -> $name
 			{
 				let data_length = data.len();
 				$name 
 				{ 
-				  data: data, 
+				  data: data.to_vec(), 
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
@@ -165,12 +163,12 @@ macro_rules! define_complex_basic_struct_members {
 				}
 			}
 			
-			pub fn from_interleaved_with_delta<'b>(data: &'b mut [<$name as DataVector>::E], delta: <$name as DataVector>::E) -> $name<'b>
+			pub fn from_interleaved_with_delta(data: &[<$name as DataVector>::E], delta: <$name as DataVector>::E) -> $name
 			{
 				let data_length = data.len();
 				$name 
 				{ 
-				  data: data, 
+				  data: data.to_vec(), 
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
@@ -182,46 +180,44 @@ macro_rules! define_complex_basic_struct_members {
 }
 
 macro_rules! define_complex_operations_forward {
-    (from: $name:ident, to: $gen_type:ident, complex: $complex_type:ident)
+    (from: $name:ident, to: $gen_type:ident, complex: $complex_type:ident, real_partner: $real_partner:ident)
 	 =>
 	 { 
 		#[inline]
-		impl<'a> $name<'a>
+		impl $name
 		{
-			pub fn inplace_complex_offset(&mut self, offset: $complex_type) 
+			pub fn inplace_complex_offset(mut self, offset: $complex_type) -> $name
 			{
-				self.to_gen().inplace_complex_offset(offset);
+				$name::from_gen(self.to_gen().inplace_complex_offset(offset))
 			}		
 			
 			// We are keeping this since scaling with a real number should be faster
-			pub fn inplace_real_scale(&mut self, factor: <$name as DataVector>::E) 
+			pub fn inplace_real_scale(mut self, factor: <$name as DataVector>::E) -> $name
 			{
-				self.to_gen().inplace_real_scale(factor);
+				$name::from_gen(self.to_gen().inplace_real_scale(factor))
 			}
 				
-			pub fn inplace_complex_scale(&mut self, factor: $complex_type) 
+			pub fn inplace_complex_scale(mut self, factor: $complex_type) -> $name
 			{
-				self.to_gen().inplace_complex_scale(factor);
+				$name::from_gen(self.to_gen().inplace_complex_scale(factor))
 			}
 			
-			pub fn inplace_complex_abs(&mut self)
+			pub fn inplace_complex_abs(mut self) -> $real_partner
 			{
-				self.to_gen().inplace_complex_abs();
+				$real_partner::from_gen(self.to_gen().inplace_complex_abs())
 			}
 			
-			pub fn inplace_complex_abs_squared(&mut self)
+			pub fn inplace_complex_abs_squared(mut self) -> $real_partner
 			{
-				self.to_gen().inplace_complex_abs_squared();
+				$real_partner::from_gen(self.to_gen().inplace_complex_abs_squared())
 			}
 			
-			#[allow(dead_code)]
-			fn to_gen(&mut self) -> &mut $gen_type
+			fn to_gen(mut self) -> $gen_type
 			{
 				unsafe { mem::transmute(self) }
 			}
 			
-			#[allow(dead_code)]
-			fn from_gen(other: $gen_type) -> $name
+			fn from_gen(mut other: $gen_type) -> $name
 			{
 				unsafe { mem::transmute(other) }
 			}
