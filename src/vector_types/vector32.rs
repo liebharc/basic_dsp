@@ -226,9 +226,14 @@ impl DataVector32
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
 			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, DataVector32::inplace_complex_scale_simd, factor);
-			for i in vectorization_length..data_length
+			let mut i = vectorization_length;
+			while i < data_length
 			{
-				array[i] = array[i] * if i % 2 == 0 { factor.re} else {factor.im };
+				let complex = Complex32::new(array[i], array[i + 1]);
+				let result = complex * factor;
+				array[i] = result.re;
+				array[i + 1] = result.im;
+				i += 2;
 			}
 		}
 		self
