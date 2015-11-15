@@ -4,11 +4,47 @@ extern crate num;
 
 #[cfg(feature = "slow_test")]
 mod slow_test {
-    
     use rand::*;
     use basic_dsp::{
         DataVector,
         RealTimeVector32};
+        
+    fn assert_vector_eq(left: &[f32], right: &[f32]) {
+        let mut errors = Vec::new();
+        if left.len() != right.len()
+        {
+            errors.push(format!("Size difference {} != {}", left.len(), right.len()));
+        }
+        
+        let len = if left.len() < right.len() { left.len() } else { right.len() };
+        let mut differences = 0;
+        let mut first_difference = false;
+        let tolerance = 1e-12;
+        for i in 0 .. len {
+            if (left[i] - right[i]).abs() > tolerance
+            {
+                differences += 1;
+                if !first_difference
+                {
+                    errors.push(format!("First difference at index {}, left: {} != right: {}", i, left[i], right[i]));
+                    first_difference = true;
+                }
+            }
+        }
+        
+        if differences > 0
+        {
+            errors.push(format!("Total number of differences: {}/{}={}%", differences, len, differences*100/len));
+        }
+        
+        if errors.len() > 0
+        {
+            let all_errors = errors.join("\n");
+            let header = "-----------------------".to_owned();
+            let full_text = format!("\n{}\n{}\n{}\n", header, all_errors, header);
+            panic!(full_text);
+        }
+    }
     
     fn create_data(seed: usize, iteration: usize, from: usize, to: usize) -> Vec<f32>
     {
@@ -62,20 +98,53 @@ mod slow_test {
             let expected = real_add_scalar(&a, scalar[0]);
             let vector = RealTimeVector32::from_array(&a);
             let result = vector.real_offset(scalar[0]);
-            assert_eq!(expected, result.data());
-            
+            assert_vector_eq(&expected, &result.data());
         }
     }
     
     #[test]
     fn add_real_vector32_large() {
         for iteration in 0 .. 3 {
-            let a = create_data(201511141, iteration, 1000001, 2000000);
+            let a = create_data(201511142, iteration, 1000001, 2000000);
             let scalar = create_data_with_len(201511143, iteration, 1);
             let expected = real_add_scalar(&a, scalar[0]);
             let vector = RealTimeVector32::from_array(&a);
             let result = vector.real_offset(scalar[0]);
-            assert_eq!(expected, result.data());
+            assert_vector_eq(&expected, &result.data());
+        }
+    }
+    
+    fn real_mulitply_scalar(a: &Vec<f32>, value: f32) -> Vec<f32>
+    {
+        let mut result = vec![0.0; a.len()];
+        for i in 0 .. a.len() {
+            result[i] = a[i] * value;
+        }
+        
+        result
+    }
+    
+    #[test]
+    fn multiply_real_vector32_small() {
+        for iteration in 0 .. 10 {
+            let a = create_data(201511143, iteration, 10000, 1000000);
+            let scalar = create_data_with_len(201511142, iteration, 1);
+            let expected = real_mulitply_scalar(&a, scalar[0]);
+            let vector = RealTimeVector32::from_array(&a);
+            let result = vector.real_scale(scalar[0]);
+            assert_vector_eq(&expected, &result.data());
+        }
+    }
+    
+    #[test]
+    fn multiply_real_vector32_large() {
+        for iteration in 0 .. 3 {
+            let a = create_data(201511144, iteration, 1000001, 2000000);
+            let scalar = create_data_with_len(201511143, iteration, 1);
+            let expected = real_mulitply_scalar(&a, scalar[0]);
+            let vector = RealTimeVector32::from_array(&a);
+            let result = vector.real_scale(scalar[0]);
+            assert_vector_eq(&expected, &result.data());
         }
     }
 }
