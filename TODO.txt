@@ -1,8 +1,3 @@
-3. Clean up method names 
-4. Think about some lazyness: Only guarantee calculation if the data result
-	is requested from the caller.
-	This might be necessary if the vector has been moved to the GPU
-...
 9. More basic functions:
 - Sqrt
 - Real <-> complex conversions
