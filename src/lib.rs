@@ -1,4 +1,17 @@
 #![feature(box_syntax)]
+//! Basic digital signal processing (DSP) operations
+//!
+//! The basic building blocks are 1xN (one times N) or Nx1 real or compelex vectors where N is typically at least in the order
+//! of magnitude of a couple of thousand elements. This crate tries to balance between a clear API and performance.
+//! This project started as small pet project to learn more about DSP, CPU architecture and Rust. Since learning
+//! involves making mistakes, don't expect things to be flawless or even close to flawless.
+//!
+//! This library isn't suited - from my point of view - for game programming. If you are looking for vector types to do
+//! 2D or 3D graphics calculations then you unfortunately have to continue with your search. However there seem to be 
+//! a lot of suitable crates on `crates.io` for you.
+//!
+//! The vector types don't distinguish between 1xN or Nx1. This is a difference to other conventions such as in MATLAB.
+//! The reason for this decision is that it seems to be more practical to ignore the shape of the vector.
 extern crate simd;
 extern crate num_cpus;
 extern crate simple_parallel;
