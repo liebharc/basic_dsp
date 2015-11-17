@@ -5,6 +5,12 @@ use simd_extensions::SimdExtensions32;
 use num::complex::Complex32;
 use num::traits::Float;
 
+/// An alternative way to define operations on a vector.
+/// Warning: Highly unstable and not even fully implemented right now.
+///
+/// In future this enum will likely be deleted or hidden and be replaced with a builder
+/// pattern. The advantage of this is that with the builder we have the means to define at 
+/// compile time what kind of vector will result from the given set of operations.
 #[derive(Copy)]
 #[derive(Clone)]
 #[derive(PartialEq)]
@@ -52,6 +58,33 @@ const DEFAULT_GRANUALRITY: usize = 4;
 #[inline]
 impl DataVector32
 {
+	/// Perform a set of operations on the given vector. 
+	/// Warning: Highly unstable and not even fully implemented right now.
+	///
+	/// With this approach we change how we operate on vectors. If you perform
+	/// `M` operations on a vector with the length `N` you iterate wit hall other methods like this:
+	///
+	/// ```
+	/// // pseudocode:
+	/// // for m in M:
+	/// //  for n in N:
+	/// //    execute m on n
+	/// ```
+	///
+	/// with this method the pattern is changed slighly:
+	///
+	/// ```
+	/// // pseudocode:
+	/// // for n in N:
+	/// //  for m in M:
+	/// //    execute m on n
+	/// ```
+	///
+	/// Both variants have the same complexity however the second one is benificial since we
+	/// have increased locality this way. This should help us by making better use of registers and 
+	/// CPU buffers. This might also help since for large data we might have the chance in future to 
+	/// move the data to a GPU, run all operations and get the result back. In this case the GPU is fast
+	/// for many operations but the roundtrips on the bus should be minimized to keep the speed advantage.
 	pub fn perform_operations(mut self, operations: &[Operation32])
 		-> DataVector32
 	{

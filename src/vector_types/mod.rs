@@ -40,6 +40,7 @@ macro_rules! define_vector_struct {
 		{
 			type E = $data_type;
 			
+			
 			fn len(&self) -> usize 
 			{
 				self.data.len()
@@ -74,6 +75,18 @@ macro_rules! define_vector_struct {
 			{
 				self.is_complex
 			}
+			
+			fn points(&self) -> usize
+			{
+				if self.is_complex
+				{
+					self.len() / 2
+				}
+				else
+				{
+					self.len()
+				}
+			}
 		}
     }
 }
@@ -85,6 +98,11 @@ macro_rules! define_real_basic_struct_members {
 		#[inline]
 		impl $name
 		{
+			/// Creates a real `DataVector` by consuming a `Vec`. 
+			///
+			/// This operation is more memory efficient than the other options to create a vector,
+			/// however if used outside of Rust then it holds the risk that the user will access 
+			/// the data parameter after the vector has been created causing all types of issues.  
 			pub fn from_array_no_copy(data: Vec<<$name as DataVector>::E>) -> $name
 			{
 				let data_length = data.len();
@@ -99,6 +117,7 @@ macro_rules! define_real_basic_struct_members {
 				}
 			}
 		
+			/// Creates a real `DataVector` from an array or sequence. `delta` is defaulted to `1`.
 			pub fn from_array(data: &[<$name as DataVector>::E]) -> $name
 			{
 				let data_length = data.len();
@@ -113,6 +132,7 @@ macro_rules! define_real_basic_struct_members {
 				}
 			}
 			
+			/// Creates a real `DataVector` from an array or sequence and sets `delta` to the given value.
 			pub fn from_array_with_delta(data: &[<$name as DataVector>::E], delta: <$name as DataVector>::E) -> $name
 			{
 				let data_length = data.len();
