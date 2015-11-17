@@ -150,44 +150,32 @@ macro_rules! define_real_basic_struct_members {
 	 }
 }
 
-macro_rules! define_generic_operations_forward {
-    (from: $name:ident, to: $gen_type:ident)
-	 =>
-	 {
-		#[inline]
-		impl $name
-		{
-			pub fn perform_operations(self, operations: &[Operation32]) -> $name
-			{
-				$name::from_gen(self.to_gen().perform_operations(operations))
-			}
-		}
-	}
-}
-
-
 macro_rules! define_real_operations_forward {
     (from: $name:ident, to: $gen_type:ident)
 	 =>
 	 {
-		#[inline]
-		impl $name
+	 	#[inline]
+		impl RealVectorOperations for $name
 		{
-			pub fn real_offset(self, offset: <$name as DataVector>::E) -> $name
+			fn real_offset(self, offset: <$name as DataVector>::E) -> $name
 			{
 				$name::from_gen(self.to_gen().real_offset(offset))
 			}
 			
-			pub fn real_scale(self, factor: <$name as DataVector>::E) -> $name
+			fn real_scale(self, factor: <$name as DataVector>::E) -> $name
 			{
 				$name::from_gen(self.to_gen().real_scale(factor))
 			}
 					
-			pub fn real_abs(self) -> $name
+			fn real_abs(self) -> $name
 			{
 				$name::from_gen(self.to_gen().real_abs()) 
 			}
-			
+		}
+	 
+		#[inline]
+		impl $name
+		{		
 			fn to_gen(self) -> $gen_type
 			{
 				$gen_type 
@@ -224,6 +212,11 @@ macro_rules! define_complex_basic_struct_members {
 		#[inline]
 		impl $name
 		{
+			/// Creates a complex `DataVector` by consuming a `Vec`. Data is in interleaved format: `i0, q0, i1, q1, ...`. 
+			///
+			/// This operation is more memory efficient than the other options to create a vector,
+			/// however if used outside of Rust then it holds the risk that the user will access 
+			/// the data parameter after the vector has been created causing all types of issues.  
 			pub fn from_interleaved_no_copy(data: Vec<<$name as DataVector>::E>) -> $name
 			{
 				let data_length = data.len();
@@ -238,6 +231,7 @@ macro_rules! define_complex_basic_struct_members {
 				}
 			}
 			
+			/// Creates a complex `DataVector` by consuming a `Vec`. Data is in interleaved format: `i0, q0, i1, q1, ...`. `delta` is defaulted to `1`.
 			pub fn from_interleaved(data: &[<$name as DataVector>::E]) -> $name
 			{
 				let data_length = data.len();
@@ -252,6 +246,7 @@ macro_rules! define_complex_basic_struct_members {
 				}
 			}
 			
+			/// Creates a complex `DataVector` by consuming a `Vec`. Data is in interleaved format: `i0, q0, i1, q1, ...`. `delta` is set to the given value.
 			pub fn from_interleaved_with_delta(data: &[<$name as DataVector>::E], delta: <$name as DataVector>::E) -> $name
 			{
 				let data_length = data.len();
@@ -273,35 +268,36 @@ macro_rules! define_complex_operations_forward {
     (from: $name:ident, to: $gen_type:ident, complex: $complex_type:ident, real_partner: $real_partner:ident)
 	 =>
 	 { 
-		#[inline]
-		impl $name
+	 	#[inline]
+		impl ComplexVectorOperations for $name
 		{
-			pub fn complex_offset(self, offset: $complex_type) -> $name
+			type RealPartner = $real_partner;
+			type Complex = $complex_type;
+			
+			fn complex_offset(self, offset: $complex_type) -> $name
 			{
 				$name::from_gen(self.to_gen().complex_offset(offset))
-			}		
-			
-			// We are keeping this since scaling with a real number should be faster
-			pub fn real_scale(self, factor: <$name as DataVector>::E) -> $name
-			{
-				$name::from_gen(self.to_gen().real_scale(factor))
 			}
 				
-			pub fn complex_scale(self, factor: $complex_type) -> $name
+			fn complex_scale(self, factor: $complex_type) -> $name
 			{
 				$name::from_gen(self.to_gen().complex_scale(factor))
 			}
 			
-			pub fn complex_abs(self) -> $real_partner
+			fn complex_abs(self) -> $real_partner
 			{
 				$real_partner::from_gen(self.to_gen().complex_abs())
 			}
 			
-			pub fn complex_abs_squared(self) -> $real_partner
+			fn complex_abs_squared(self) -> $real_partner
 			{
 				$real_partner::from_gen(self.to_gen().complex_abs_squared())
 			}
-			
+		}
+	 	
+		#[inline]
+		impl $name
+		{
 			fn to_gen(self) -> $gen_type
 			{
 				$gen_type 
@@ -339,6 +335,10 @@ pub use vector_types::general::
 	{
 		DataVectorDomain,
 		DataVector,
+		RealVectorOperations,
+		ComplexVectorOperations,
+		TimeDomainOperations,
+		FrequencyDomainOperations,		
 	};
 pub use vector_types::vector32::
 	{

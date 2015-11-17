@@ -9,6 +9,8 @@ mod bench {
 	use test::Bencher;
 	use basic_dsp::{
 		DataVector,
+		RealVectorOperations,
+		ComplexVectorOperations,
 		DataVector32, 
 		RealTimeVector32, 
 		ComplexTimeVector32, 

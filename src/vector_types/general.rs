@@ -40,3 +40,119 @@ pub enum DataVectorDomain {
 	/// Frequency domain, the x-axis in in [Hz]
     Frequency
 }
+
+/// Defines all operations which are valid on `DataVectors` containing real data.
+pub trait RealVectorOperations : DataVector {
+	/// Adds a scalar to the vector.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
+	/// let result = vector.real_offset(2.0);
+	/// assert_eq!([3.0, 4.0], result.data());
+	/// ```
+	fn real_offset(self, offset: Self::E) -> Self;
+	
+	/// Multiplies the vector with a scalar.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
+	/// let result = vector.real_scale(4.0);
+	/// assert_eq!([4.0, 8.0], result.data());
+	/// ```
+	fn real_scale(self, offset: Self::E) -> Self;
+	
+	/// Gets the absolute value of all vector elements.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, -2.0]);
+	/// let result = vector.real_abs();
+	/// assert_eq!([1.0, 2.0], result.data());
+	/// ```
+	fn real_abs(self) -> Self;
+}
+
+/// Defines all operations which are valid on `DataVectors` containing complex data.
+pub trait ComplexVectorOperations : DataVector {
+	type RealPartner;
+	type Complex;
+	
+	/// Adds a scalar to the vector.
+	/// # Example
+	///
+	/// ```
+	/// # extern crate num;
+	/// # extern crate basic_dsp;
+	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+	/// use num::complex::Complex32;
+	/// # fn main() { 
+	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+	/// let result = vector.complex_offset(Complex32::new(-1.0, 2.0));
+	/// assert_eq!([0.0, 4.0, 2.0, 6.0], result.data());
+	/// # }
+	/// ```
+	fn complex_offset(self, offset: Self::Complex) -> Self;
+	
+	/// Multiplies the vector with a scalar.
+	/// # Example
+	///
+	/// ```
+	/// # extern crate num;
+	/// # extern crate basic_dsp;
+	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+	/// use num::complex::Complex32;
+	/// # fn main() { 
+	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+	/// let result = vector.complex_scale(Complex32::new(-1.0, 2.0));
+	/// assert_eq!([-5.0, 0.0, -11.0, 2.0], result.data());
+	/// # }
+	/// ```
+	fn complex_scale(self, factor: Self::Complex) -> Self;
+	
+	/// Gets the absolute value or magnitude of all vector elements.
+	/// # Example
+	///
+	/// ```
+	/// # extern crate num;
+	/// # extern crate basic_dsp;
+	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+	/// use num::complex::Complex32;
+	/// # fn main() { 
+	/// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
+	/// let result = vector.complex_abs();
+	/// assert_eq!([5.0, 5.0], result.data());
+	/// # }
+	/// ```
+	fn complex_abs(self) -> Self::RealPartner;
+	
+	/// Gets the square root of the absolute value of all vector elements.
+	/// # Example
+	///
+	/// ```
+	/// # extern crate num;
+	/// # extern crate basic_dsp;
+	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+	/// use num::complex::Complex32;
+	/// # fn main() { 
+	/// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
+	/// let result = vector.complex_abs_squared();
+	/// assert_eq!([25.0, 25.0], result.data());
+	/// # }
+	/// ```
+	fn complex_abs_squared(self) -> Self::RealPartner;
+}
+
+/// Defines all operations which are valid on `DataVectors` containing real data.
+pub trait TimeDomainOperations : DataVector {
+	fn fft(self) -> Self;
+}
+
+/// Defines all operations which are valid on `DataVectors` containing complex data.
+pub trait FrequencyDomainOperations : DataVector {
+	fn ifft(self) -> Self;
+}

@@ -8,6 +8,8 @@ mod slow_test {
     use basic_dsp::{
         DataVector,
         RealTimeVector32,
+        RealVectorOperations,
+        ComplexVectorOperations,
         ComplexTimeVector32};
     use num::complex::Complex32;
         
@@ -254,32 +256,6 @@ mod slow_test {
         }
         
         from_complex(&result)
-    }
-    
-    #[test]
-    fn complex_mutiply_real_scalar_vector32_small() {
-        for iteration in 0 .. 10 {
-            let a = create_data_even(2015111410, iteration, 10000, 1000000);
-            let scalar = create_data_with_len(2015111413, iteration, 1);
-            let scalar = scalar[0];
-            let expected = complex_multiply_scalar(&a, Complex32::new(scalar, 0.0));
-            let vector = ComplexTimeVector32::from_interleaved(&a);
-            let result = vector.real_scale(scalar);
-            assert_vector_eq(&expected, &result.data());
-        }
-    }
-    
-    #[test]
-    fn complex_mutiply_real_scalar_vector32_large() {
-        for iteration in 0 .. 3 {
-            let a = create_data_even(2015111411, iteration, 1000001, 2000000);
-            let scalar = create_data_with_len(2015111414, iteration, 1);
-            let scalar = scalar[0];
-            let expected = complex_multiply_scalar(&a, Complex32::new(scalar, 0.0));
-            let vector = ComplexTimeVector32::from_interleaved(&a);
-            let result = vector.real_scale(scalar);
-            assert_vector_eq(&expected, &result.data());
-        }
     }
     
     #[test]

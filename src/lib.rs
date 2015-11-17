@@ -24,6 +24,10 @@ pub use vector_types::
 	{
 		DataVectorDomain,
 		DataVector,
+		RealVectorOperations,
+		ComplexVectorOperations,
+		TimeDomainOperations,
+		FrequencyDomainOperations,
 		DataVector32, 
 		RealTimeVector32,
 		ComplexTimeVector32, 

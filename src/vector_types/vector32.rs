@@ -1,5 +1,9 @@
 use multicore_support::Chunk;
-use super::general::{DataVector,DataVectorDomain};
+use super::general::{
+	DataVector,
+	DataVectorDomain,
+	RealVectorOperations,
+	ComplexVectorOperations};
 use simd::f32x4;
 use simd_extensions::SimdExtensions32;
 use num::complex::Complex32;
@@ -35,25 +39,132 @@ define_complex_basic_struct_members!(impl DataVector32, DataVectorDomain::Freque
 
 define_vector_struct!(struct RealTimeVector32, f32);
 define_real_basic_struct_members!(impl RealTimeVector32, DataVectorDomain::Time);
-define_generic_operations_forward!(from: RealTimeVector32, to: DataVector32);
 define_real_operations_forward!(from: RealTimeVector32, to: DataVector32);
 
 define_vector_struct!(struct RealFreqVector32, f32);
 define_real_basic_struct_members!(impl RealFreqVector32, DataVectorDomain::Frequency);
-define_generic_operations_forward!(from: RealFreqVector32, to: DataVector32);
 define_real_operations_forward!(from: RealFreqVector32, to: DataVector32);
 
 define_vector_struct!(struct ComplexTimeVector32, f32);
 define_complex_basic_struct_members!(impl ComplexTimeVector32, DataVectorDomain::Time);
-define_generic_operations_forward!(from: ComplexTimeVector32, to: DataVector32);
 define_complex_operations_forward!(from: ComplexTimeVector32, to: DataVector32, complex: Complex32, real_partner: RealTimeVector32);
 
 define_vector_struct!(struct ComplexFreqVector32, f32);
 define_complex_basic_struct_members!(impl ComplexFreqVector32, DataVectorDomain::Frequency);
-define_generic_operations_forward!(from: ComplexFreqVector32, to: DataVector32);
 define_complex_operations_forward!(from: ComplexFreqVector32, to: DataVector32, complex: Complex32, real_partner: RealTimeVector32);
 
 const DEFAULT_GRANUALRITY: usize = 4;
+
+#[inline]
+impl RealVectorOperations for DataVector32
+{
+	fn real_offset(mut self, offset: f32) -> DataVector32
+	{
+		self.inplace_offset(&[offset, offset, offset, offset]);
+		self
+	}
+	
+	fn real_scale(mut self, factor: f32) -> DataVector32
+	{
+		{
+			let data_length = self.len();
+			let scalar_length = data_length % 4;
+			let vectorization_length = data_length - scalar_length;
+			let mut array = &mut self.data;
+			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, DataVector32::inplace_real_scale_simd, factor);
+			for i in vectorization_length..data_length
+			{
+				array[i] = array[i] * factor;
+			}
+		}
+		self
+	}
+	
+	fn real_abs(mut self) -> DataVector32
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(&mut array, length, 1, DataVector32::abs_real_par);
+		}
+		self
+	}
+}
+
+#[inline]
+impl ComplexVectorOperations for DataVector32
+{
+	type RealPartner = DataVector32;
+	type Complex = Complex32;
+	
+	fn complex_offset(mut self, offset: Complex32)  -> DataVector32
+	{
+		self.inplace_offset(&[offset.re, offset.im, offset.re, offset.im]);
+		self
+	}
+	
+	fn complex_scale(mut self, factor: Complex32) -> DataVector32
+	{
+		{
+			let data_length = self.len();
+			let scalar_length = data_length % 4;
+			let vectorization_length = data_length - scalar_length;
+			let mut array = &mut self.data;
+			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, DataVector32::inplace_complex_scale_simd, factor);
+			let mut i = vectorization_length;
+			while i < data_length
+			{
+				let complex = Complex32::new(array[i], array[i + 1]);
+				let result = complex * factor;
+				array[i] = result.re;
+				array[i + 1] = result.im;
+				i += 2;
+			}
+		}
+		self
+	}
+	
+	fn complex_abs(mut self) -> DataVector32
+	{
+		{
+			let data_length = self.len();
+			let scalar_length = data_length % 4;
+			let vectorization_length = data_length - scalar_length;
+			let mut array = &mut self.data;
+			let mut temp = &mut self.temp;
+			Chunk::execute_partial_with_temp(&mut array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, DataVector32::complex_abs_simd);
+			let mut i = vectorization_length;
+			while i + 1 < data_length
+			{
+				temp[i / 2] = (array[i] * array[i] + array[i + 1] * array[i + 1]).sqrt();
+				i += 2;
+			}
+			self.is_complex = false;
+		}
+		
+		self.swap_data_temp()
+	}
+	
+	fn complex_abs_squared(mut self) -> DataVector32
+	{
+		{
+			let data_length = self.len();
+			let scalar_length = data_length % 4;
+			let vectorization_length = data_length - scalar_length;
+			let mut array = &mut self.data;
+			let mut temp = &mut self.temp;
+			Chunk::execute_partial_with_temp(&mut array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, DataVector32::complex_abs_squared_simd);
+			let mut i = vectorization_length;
+			while i + 1 < data_length
+			{
+				temp[i / 2] = array[i] * array[i] + array[i + 1] * array[i + 1];
+				i += 2;
+			}
+			self.is_complex = false;
+		}
+		self.swap_data_temp()
+	}
+}
 
 #[inline]
 impl DataVector32
@@ -184,18 +295,6 @@ impl DataVector32
 			i += 4;
 		}
 	}
-
-	pub fn complex_offset(mut self, offset: Complex32)  -> DataVector32
-	{
-		self.inplace_offset(&[offset.re, offset.im, offset.re, offset.im]);
-		self
-	}
-	
-	pub fn real_offset(mut self, offset: f32) -> DataVector32
-	{
-		self.inplace_offset(&[offset, offset, offset, offset]);
-		self
-	}
 	
 	fn inplace_offset(&mut self, offset: &[f32; 4]) 
 	{
@@ -222,22 +321,6 @@ impl DataVector32
 			i += 4;
 		}
 	}
-	
-	pub fn real_scale(mut self, factor: f32) -> DataVector32
-	{
-		{
-			let data_length = self.len();
-			let scalar_length = data_length % 4;
-			let vectorization_length = data_length - scalar_length;
-			let mut array = &mut self.data;
-			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, DataVector32::inplace_real_scale_simd, factor);
-			for i in vectorization_length..data_length
-			{
-				array[i] = array[i] * factor;
-			}
-		}
-		self
-	}
 		
 	fn inplace_real_scale_simd(array: &mut [f32], value: f32)
 	{
@@ -251,27 +334,6 @@ impl DataVector32
 		}
 	}
 	
-	pub fn complex_scale(mut self, factor: Complex32) -> DataVector32
-	{
-		{
-			let data_length = self.len();
-			let scalar_length = data_length % 4;
-			let vectorization_length = data_length - scalar_length;
-			let mut array = &mut self.data;
-			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, DataVector32::inplace_complex_scale_simd, factor);
-			let mut i = vectorization_length;
-			while i < data_length
-			{
-				let complex = Complex32::new(array[i], array[i + 1]);
-				let result = complex * factor;
-				array[i] = result.re;
-				array[i + 1] = result.im;
-				i += 2;
-			}
-		}
-		self
-	}
-	
 	fn inplace_complex_scale_simd(array: &mut [f32], value: Complex32)
 	{
 		let mut i = 0;
@@ -283,38 +345,7 @@ impl DataVector32
 			i += 4;
 		}
 	}
-	
-	pub fn complex_abs(mut self) -> DataVector32
-	{
-		{
-			let data_length = self.len();
-			let scalar_length = data_length % 4;
-			let vectorization_length = data_length - scalar_length;
-			let mut array = &mut self.data;
-			let mut temp = &mut self.temp;
-			Chunk::execute_partial_with_temp(&mut array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, DataVector32::complex_abs_simd);
-			let mut i = vectorization_length;
-			while i + 1 < data_length
-			{
-				temp[i / 2] = (array[i] * array[i] + array[i + 1] * array[i + 1]).sqrt();
-				i += 2;
-			}
-			self.is_complex = false;
-		}
 		
-		self.swap_data_temp()
-	}
-	
-	pub fn real_abs(mut self) -> DataVector32
-	{
-		{
-			let mut array = &mut self.data;
-			let length = array.len();
-			Chunk::execute_partial(&mut array, length, 1, DataVector32::abs_real_par);
-		}
-		self
-	}
-	
 	fn abs_real_par<T>(array: &mut [T])
 		where T : Float
 	{
@@ -338,26 +369,6 @@ impl DataVector32
 			i += 4;
 			j += 2;
 		}
-	}
-	
-	pub fn complex_abs_squared(mut self) -> DataVector32
-	{
-		{
-			let data_length = self.len();
-			let scalar_length = data_length % 4;
-			let vectorization_length = data_length - scalar_length;
-			let mut array = &mut self.data;
-			let mut temp = &mut self.temp;
-			Chunk::execute_partial_with_temp(&mut array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, DataVector32::complex_abs_squared_simd);
-			let mut i = vectorization_length;
-			while i + 1 < data_length
-			{
-				temp[i / 2] = array[i] * array[i] + array[i + 1] * array[i + 1];
-				i += 2;
-			}
-			self.is_complex = false;
-		}
-		self.swap_data_temp()
 	}
 	
 	fn complex_abs_squared_simd(array: &[f32], target: &mut [f32])
@@ -386,7 +397,11 @@ impl DataVector32
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use super::super::general::{DataVector,DataVectorDomain};
+	use super::super::general::{
+		DataVector,
+		DataVectorDomain,
+		RealVectorOperations,
+		ComplexVectorOperations};
 	use num::complex::Complex32;
 
 	#[test]
