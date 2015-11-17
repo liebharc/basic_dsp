@@ -4,8 +4,8 @@ pub trait DataVector
 	/// The underlying data type of the vector: `f32` or `f64`. 
 	type E;
 	
-	/// Gives direct access to the underlying data sequence. It's highly discouraged to use this function.
-	/// It's even more discouraged to hold references to this array while executing operations on the vector,
+	/// Gives direct access to the underlying data sequence. It's recommended to use the `Index functions .
+	/// For users outside of Rust: It's discouraged to hold references to this array while executing operations on the vector,
 	/// since the vector may decide at any operation to invalidate the array. 
 	fn data(&self) -> &[Self::E];
 	
