@@ -4,6 +4,7 @@ use super::general::{
 	RealVectorOperations,
 	ComplexVectorOperations};
 use num::complex::Complex64;
+use std::ops::{Index, IndexMut, Range, RangeTo, RangeFrom, RangeFull};
 
 define_vector_struct!(struct DataVector64, f64);
 define_real_basic_struct_members!(impl DataVector64, DataVectorDomain::Time);

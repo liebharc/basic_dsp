@@ -1,5 +1,4 @@
-8. Indexer
-9. More basic functions:
+1. More basic functions:
 - Sqrt
 - Real <-> complex conversions
 - Phase/Angle
@@ -18,5 +17,5 @@
 - Resample based on convolve
 - Window functions
 ...
-10. Think about more domain specfic functions such as frequency estimation
-11. Take a look at https://github.com/sebcrozet/nalgebra
+2. Think about more domain specfic functions such as frequency estimation
+3. Take a look at https://github.com/sebcrozet/nalgebra

@@ -8,6 +8,7 @@ use simd::f32x4;
 use simd_extensions::SimdExtensions32;
 use num::complex::Complex32;
 use num::traits::Float;
+use std::ops::{Index, IndexMut, Range, RangeTo, RangeFrom, RangeFull};
 
 /// An alternative way to define operations on a vector.
 /// Warning: Highly unstable and not even fully implemented right now.
@@ -499,5 +500,17 @@ mod tests {
 		let expected = [5.0, 25.0, 61.0, 113.0, 181.0];
 		assert_eq!(result.data(), expected);
 		assert_eq!(result.delta, 1.0);
+	}
+	
+	#[test]
+	fn indexer_test()
+	{
+		let data = [1.0, 2.0, 3.0, 4.0];
+		let mut result = ComplexTimeVector32::from_interleaved(&data);
+		assert_eq!(result[0], 1.0);
+		result[0] = 5.0;
+		assert_eq!(result[0], 5.0);
+		let expected = [5.0, 2.0, 3.0, 4.0];
+		assert_eq!(result.data(), expected);
 	}
 }

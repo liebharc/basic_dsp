@@ -88,6 +88,96 @@ macro_rules! define_vector_struct {
 				}
 			}
 		}
+		
+		impl Index<usize> for $name
+		{
+			type Output = $data_type;
+		
+			fn index(&self, index: usize) -> &$data_type
+			{
+				&self.data[index]
+			}
+		}
+		
+		impl IndexMut<usize> for $name
+		{
+			fn index_mut(&mut self, index: usize) -> &mut $data_type
+			{
+				&mut self.data[index]
+			}
+		}
+		
+		impl Index<Range<usize>> for $name
+		{
+			type Output = [$data_type];
+		
+			fn index(&self, index: Range<usize>) -> &[$data_type]
+			{
+				&self.data[index]
+			}
+		}
+		
+		impl IndexMut<Range<usize>> for $name
+		{
+			fn index_mut(&mut self, index: Range<usize>) -> &mut [$data_type]
+			{
+				&mut self.data[index]
+			}
+		}
+		
+		impl Index<RangeFrom<usize>> for $name
+		{
+			type Output = [$data_type];
+		
+			fn index(&self, index: RangeFrom<usize>) -> &[$data_type]
+			{
+				&self.data[index]
+			}
+		}
+		
+		impl IndexMut<RangeFrom<usize>> for $name
+		{
+			fn index_mut(&mut self, index: RangeFrom<usize>) -> &mut [$data_type]
+			{
+				&mut self.data[index]
+			}
+		}
+		
+		impl Index<RangeTo<usize>> for $name
+		{
+			type Output = [$data_type];
+		
+			fn index(&self, index: RangeTo<usize>) -> &[$data_type]
+			{
+				&self.data[index]
+			}
+		}
+		
+		impl IndexMut<RangeTo<usize>> for $name
+		{
+			fn index_mut(&mut self, index: RangeTo<usize>) -> &mut [$data_type]
+			{
+				&mut self.data[index]
+			}
+		}
+		
+		impl Index<RangeFull> for $name
+		{
+			type Output = [$data_type];
+		
+			fn index(&self, index: RangeFull) -> &[$data_type]
+			{
+				&self.data[index]
+			}
+		}
+		
+		impl IndexMut<RangeFull> for $name
+		{
+			fn index_mut(&mut self, index: RangeFull) -> &mut [$data_type]
+			{
+				&mut self.data[index]
+			}
+		}
     }
 }
 
