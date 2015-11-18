@@ -14,7 +14,7 @@ macro_rules! define_vector_struct {
 		///
 		/// The first two flavors define meta information about the vector and provide compile time information what
 		/// operations are available with the given vector and how this will transform the vector. This makes sure that
-		/// you will never trigger an invalid operation during runtime. In case that this isn't desired or the information
+		/// some invalid operations are already discovered at compile time. In case that this isn't desired or the information
 		/// about the vector isn't known at compile time there are the generic [`DataVector32`](struct.DataVector32.html) and [`DataVector64`](struct.DataVector64.html) vectors
 		/// available.
 		///
@@ -181,6 +181,21 @@ macro_rules! define_vector_struct {
     }
 }
 
+macro_rules! define_generic_operations_forward {
+	(from: $name:ident, to: $gen_type:ident)
+	 =>
+	 {
+	 	#[inline]
+		impl GenericVectorOperations for $name
+		{
+			fn add_vector(self, other: &Self) -> Self
+			{
+				$name::from_gen(self.to_gen().add_vector(&other.to_gen_borrow()))
+			}
+		}
+	}	
+}
+
 macro_rules! define_real_basic_struct_members {
     (impl $name:ident, DataVectorDomain::$domain:ident)
 	 =>
@@ -277,6 +292,11 @@ macro_rules! define_real_operations_forward {
 				  is_complex: self.is_complex,
 				  points: self.points
 				}
+			}
+			
+			fn to_gen_borrow(&self) -> &$gen_type
+			{
+				unsafe { mem::transmute(self) }
 			}
 			
 			fn from_gen(other: $gen_type) -> $name
@@ -399,6 +419,11 @@ macro_rules! define_complex_operations_forward {
 				  is_complex: self.is_complex,
 				  points: self.points
 				}
+			}
+			
+			fn to_gen_borrow(&self) -> &$gen_type
+			{
+				unsafe { mem::transmute(self) }
 			}
 			
 			fn from_gen(other: $gen_type) -> $name

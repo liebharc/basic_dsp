@@ -41,6 +41,11 @@ pub enum DataVectorDomain {
     Frequency
 }
 
+/// Defines all operations which are valid on all `DataVectors`.
+pub trait GenericVectorOperations : DataVector {
+	fn add_vector(self, other: &Self) -> Self;
+}
+
 /// Defines all operations which are valid on `DataVectors` containing real data.
 pub trait RealVectorOperations : DataVector {
 	/// Adds a scalar to the vector.

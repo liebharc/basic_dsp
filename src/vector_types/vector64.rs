@@ -1,10 +1,12 @@
 use super::general::{
 	DataVector,
 	DataVectorDomain,
+	GenericVectorOperations,
 	RealVectorOperations,
 	ComplexVectorOperations};
 use num::complex::Complex64;
 use std::ops::{Index, IndexMut, Range, RangeTo, RangeFrom, RangeFull};
+use std::mem;
 
 define_vector_struct!(struct DataVector64, f64);
 define_real_basic_struct_members!(impl DataVector64, DataVectorDomain::Time);
@@ -12,21 +14,35 @@ define_complex_basic_struct_members!(impl DataVector64, DataVectorDomain::Freque
 
 define_vector_struct!(struct RealTimeVector64, f64);
 define_real_basic_struct_members!(impl RealTimeVector64, DataVectorDomain::Time);
+define_generic_operations_forward!(from: RealTimeVector64, to: DataVector64);
 define_real_operations_forward!(from: RealTimeVector64, to: DataVector64);
 
 define_vector_struct!(struct RealFreqVector64, f64);
 define_real_basic_struct_members!(impl RealFreqVector64, DataVectorDomain::Frequency);
+define_generic_operations_forward!(from: RealFreqVector64, to: DataVector64);
 define_real_operations_forward!(from: RealFreqVector64, to: DataVector64);
 
 define_vector_struct!(struct ComplexTimeVector64, f64);
 define_complex_basic_struct_members!(impl ComplexTimeVector64, DataVectorDomain::Time);
+define_generic_operations_forward!(from: ComplexTimeVector64, to: DataVector64);
 define_complex_operations_forward!(from: ComplexTimeVector64, to: DataVector64, complex: Complex64, real_partner: RealTimeVector64);
 
 define_vector_struct!(struct ComplexFreqVector64, f64);
 define_complex_basic_struct_members!(impl ComplexFreqVector64, DataVectorDomain::Frequency);
+define_generic_operations_forward!(from: ComplexFreqVector64, to: DataVector64);
 define_complex_operations_forward!(from: ComplexFreqVector64, to: DataVector64, complex: Complex64, real_partner: RealTimeVector64);
 
 // const DEFAULT_GRANUALRITY: usize = 4;
+
+#[inline]
+#[allow(unused_variables)]
+impl GenericVectorOperations for DataVector64
+{
+	fn add_vector(self, other: &DataVector64) -> DataVector64
+	{
+		panic!("Unimplemented");
+	}
+}
 
 #[inline]
 #[allow(unused_variables)]

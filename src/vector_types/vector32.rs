@@ -2,6 +2,7 @@ use multicore_support::Chunk;
 use super::general::{
 	DataVector,
 	DataVectorDomain,
+	GenericVectorOperations,
 	RealVectorOperations,
 	ComplexVectorOperations};
 use simd::f32x4;
@@ -9,6 +10,7 @@ use simd_extensions::SimdExtensions32;
 use num::complex::Complex32;
 use num::traits::Float;
 use std::ops::{Index, IndexMut, Range, RangeTo, RangeFrom, RangeFull};
+use std::mem;
 
 /// An alternative way to define operations on a vector.
 /// Warning: Highly unstable and not even fully implemented right now.
@@ -40,21 +42,49 @@ define_complex_basic_struct_members!(impl DataVector32, DataVectorDomain::Freque
 
 define_vector_struct!(struct RealTimeVector32, f32);
 define_real_basic_struct_members!(impl RealTimeVector32, DataVectorDomain::Time);
+define_generic_operations_forward!(from: RealTimeVector32, to: DataVector32);
 define_real_operations_forward!(from: RealTimeVector32, to: DataVector32);
 
 define_vector_struct!(struct RealFreqVector32, f32);
 define_real_basic_struct_members!(impl RealFreqVector32, DataVectorDomain::Frequency);
+define_generic_operations_forward!(from: RealFreqVector32, to: DataVector32);
 define_real_operations_forward!(from: RealFreqVector32, to: DataVector32);
 
 define_vector_struct!(struct ComplexTimeVector32, f32);
 define_complex_basic_struct_members!(impl ComplexTimeVector32, DataVectorDomain::Time);
+define_generic_operations_forward!(from: ComplexTimeVector32, to: DataVector32);
 define_complex_operations_forward!(from: ComplexTimeVector32, to: DataVector32, complex: Complex32, real_partner: RealTimeVector32);
 
 define_vector_struct!(struct ComplexFreqVector32, f32);
 define_complex_basic_struct_members!(impl ComplexFreqVector32, DataVectorDomain::Frequency);
+define_generic_operations_forward!(from: ComplexFreqVector32, to: DataVector32);
 define_complex_operations_forward!(from: ComplexFreqVector32, to: DataVector32, complex: Complex32, real_partner: RealTimeVector32);
 
 const DEFAULT_GRANUALRITY: usize = 4;
+
+#[inline]
+impl GenericVectorOperations for DataVector32
+{
+	fn add_vector(mut self, other: &DataVector32) -> DataVector32
+	{
+		{
+			let len = self.len();
+			if len != other.len()
+			{
+				panic!("Vectors must have the same size");
+			}
+			
+			let mut array = &mut self.data;
+			
+			for i in 0..len
+			{
+				array[i] = array[i] + other[i];
+			}
+		}
+		
+		self
+	}
+}
 
 #[inline]
 impl RealVectorOperations for DataVector32
@@ -78,6 +108,7 @@ impl RealVectorOperations for DataVector32
 				array[i] = array[i] * factor;
 			}
 		}
+		
 		self
 	}
 	
@@ -401,6 +432,7 @@ mod tests {
 	use super::super::general::{
 		DataVector,
 		DataVectorDomain,
+		GenericVectorOperations,
 		RealVectorOperations,
 		ComplexVectorOperations};
 	use num::complex::Complex32;
@@ -511,6 +543,18 @@ mod tests {
 		result[0] = 5.0;
 		assert_eq!(result[0], 5.0);
 		let expected = [5.0, 2.0, 3.0, 4.0];
+		assert_eq!(result.data(), expected);
+	}
+	
+	#[test]
+	fn add_vector_test()
+	{
+		let data1 = [1.0, 2.0, 3.0, 4.0];
+		let vector1 = ComplexTimeVector32::from_interleaved(&data1);
+		let data2 = [5.0, 7.0, 9.0, 11.0];
+		let vector2 = ComplexTimeVector32::from_interleaved(&data2);
+		let result = vector1.add_vector(&vector2);
+		let expected = [6.0, 9.0, 12.0, 15.0];
 		assert_eq!(result.data(), expected);
 	}
 }
