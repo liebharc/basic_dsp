@@ -24,6 +24,7 @@ pub use vector_types::
 	{
 		DataVectorDomain,
 		DataVector,
+		GenericVectorOperations,
 		RealVectorOperations,
 		ComplexVectorOperations,
 		TimeDomainOperations,

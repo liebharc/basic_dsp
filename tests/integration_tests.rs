@@ -8,6 +8,7 @@ mod slow_test {
     use basic_dsp::{
         DataVector,
         RealTimeVector32,
+        GenericVectorOperations,
         RealVectorOperations,
         ComplexVectorOperations,
         ComplexTimeVector32};
@@ -346,6 +347,150 @@ mod slow_test {
             let expected = complex_abs_sq(&a);
             let vector = ComplexTimeVector32::from_interleaved(&a);
             let result = vector.complex_abs_squared();
+            assert_vector_eq(&expected, &result.data());
+        }
+    }
+    
+    fn real_add_vector(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
+    {
+        let mut result = vec![0.0; a.len()];
+        for i in 0 .. a.len() {
+            result[i] = a[i] + b[i];
+        }
+        
+        result
+    }
+    
+    #[test]
+    fn real_add_vector_vector32_small() {
+        for iteration in 0 .. 10 {
+            let a = create_data(201511171, iteration, 10000, 1000000);
+            let b = create_data_with_len(201511172, iteration, a.len());
+            let expected = real_add_vector(&a, &b);
+            let vector1 = RealTimeVector32::from_array(&a);
+            let vector2 = RealTimeVector32::from_array(&b);
+            let result = vector1.add_vector(&vector2);
+            assert_vector_eq(&expected, &result.data());
+        }
+    }
+    
+    #[test]
+    fn real_add_vector_vector32_large() {
+        for iteration in 0 .. 3 {
+            let a = create_data(201511173, iteration, 1000001, 2000000);
+            let b = create_data_with_len(201511174, iteration, a.len());
+            let expected = real_add_vector(&a, &b);
+            let vector1 = RealTimeVector32::from_array(&a);
+            let vector2 = RealTimeVector32::from_array(&b);
+            let result = vector1.add_vector(&vector2);
+            assert_vector_eq(&expected, &result.data());
+        }
+    }
+    
+    fn real_sub_vector(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
+    {
+        let mut result = vec![0.0; a.len()];
+        for i in 0 .. a.len() {
+            result[i] = a[i] - b[i];
+        }
+        
+        result
+    }
+    
+    #[test]
+    fn real_sub_vector_vector32_small() {
+        for iteration in 0 .. 10 {
+            let a = create_data(201511171, iteration, 10000, 1000000);
+            let b = create_data_with_len(201511172, iteration, a.len());
+            let expected = real_sub_vector(&a, &b);
+            let vector1 = RealTimeVector32::from_array(&a);
+            let vector2 = RealTimeVector32::from_array(&b);
+            let result = vector1.subtract_vector(&vector2);
+            assert_vector_eq(&expected, &result.data());
+        }
+    }
+    
+    #[test]
+    fn real_sub_vector_vector32_large() {
+        for iteration in 0 .. 3 {
+            let a = create_data(201511173, iteration, 1000001, 2000000);
+            let b = create_data_with_len(201511174, iteration, a.len());
+            let expected = real_sub_vector(&a, &b);
+            let vector1 = RealTimeVector32::from_array(&a);
+            let vector2 = RealTimeVector32::from_array(&b);
+            let result = vector1.subtract_vector(&vector2);
+            assert_vector_eq(&expected, &result.data());
+        }
+    }
+    
+    fn real_vector_mul(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
+    {
+        let mut result = vec![0.0; a.len()];
+        for i in 0 .. a.len() {
+            result[i] = a[i] * b[i];
+        }
+        
+        result
+    }
+    
+    #[test]
+    fn real_mul_vector_vector32_small() {
+        for iteration in 0 .. 10 {
+            let a = create_data(201511171, iteration, 10000, 1000000);
+            let b = create_data_with_len(201511172, iteration, a.len());
+            let expected = real_vector_mul(&a, &b);
+            let vector1 = RealTimeVector32::from_array(&a);
+            let vector2 = RealTimeVector32::from_array(&b);
+            let result = vector1.multiply_vector(&vector2);
+            assert_vector_eq(&expected, &result.data());
+        }
+    }
+    
+    #[test]
+    fn real_mul_vector_vector32_large() {
+        for iteration in 0 .. 3 {
+            let a = create_data(201511173, iteration, 1000001, 2000000);
+            let b = create_data_with_len(201511174, iteration, a.len());
+            let expected = real_vector_mul(&a, &b);
+            let vector1 = RealTimeVector32::from_array(&a);
+            let vector2 = RealTimeVector32::from_array(&b);
+            let result = vector1.multiply_vector(&vector2);
+            assert_vector_eq(&expected, &result.data());
+        }
+    }
+    
+    fn real_vector_div(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
+    {
+        let mut result = vec![0.0; a.len()];
+        for i in 0 .. a.len() {
+            result[i] = a[i] / b[i];
+        }
+        
+        result
+    }
+    
+    #[test]
+    fn real_div_vector_vector32_small() {
+        for iteration in 0 .. 10 {
+            let a = create_data(201511171, iteration, 10000, 1000000);
+            let b = create_data_with_len(201511172, iteration, a.len());
+            let expected = real_vector_div(&a, &b);
+            let vector1 = RealTimeVector32::from_array(&a);
+            let vector2 = RealTimeVector32::from_array(&b);
+            let result = vector1.divide_vector(&vector2);
+            assert_vector_eq(&expected, &result.data());
+        }
+    }
+    
+    #[test]
+    fn real_div_vector_vector32_large() {
+        for iteration in 0 .. 3 {
+            let a = create_data(201511173, iteration, 1000001, 2000000);
+            let b = create_data_with_len(201511174, iteration, a.len());
+            let expected = real_vector_div(&a, &b);
+            let vector1 = RealTimeVector32::from_array(&a);
+            let vector2 = RealTimeVector32::from_array(&b);
+            let result = vector1.divide_vector(&vector2);
             assert_vector_eq(&expected, &result.data());
         }
     }

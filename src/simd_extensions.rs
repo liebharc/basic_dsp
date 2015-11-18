@@ -11,6 +11,8 @@ pub trait SimdExtensions32
 	fn complex_abs_squared(self) -> f32x4;
 	fn complex_abs(self) -> f32x4;
 	fn store_half(self, target: &mut [f32], index: usize);
+	fn mul_complex(self, value: f32x4) -> f32x4;
+	fn div_complex(self, value: f32x4) -> f32x4;
 }
 
 impl SimdExtensions32 for f32x4
@@ -42,6 +44,16 @@ impl SimdExtensions32 for f32x4
 		let shuffled = f32x4::new(self.extract(1), self.extract(0), self.extract(3), self.extract(2)); 
 		let cross = scaling_imag * shuffled;
 		parallel.addsub(cross)
+	}
+	
+	fn mul_complex(self, value: f32x4) -> f32x4
+	{
+		panic!("Not implemented");
+	}
+	
+	fn div_complex(self, value: f32x4) -> f32x4
+	{
+		panic!("Not implemented");
 	}
 	
 	fn complex_abs_squared(self) -> f32x4

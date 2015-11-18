@@ -188,9 +188,24 @@ macro_rules! define_generic_operations_forward {
 	 	#[inline]
 		impl GenericVectorOperations for $name
 		{
-			fn add_vector(self, other: &Self) -> Self
+			fn add_vector(self, summand: &Self) -> Self
 			{
-				$name::from_gen(self.to_gen().add_vector(&other.to_gen_borrow()))
+				$name::from_gen(self.to_gen().add_vector(&summand.to_gen_borrow()))
+			}
+	
+			fn subtract_vector(self, subtrahend: &Self) -> Self
+			{
+				$name::from_gen(self.to_gen().subtract_vector(&subtrahend.to_gen_borrow()))
+			}
+			
+			fn multiply_vector(self, factor: &Self) -> Self
+			{
+				$name::from_gen(self.to_gen().multiply_vector(&factor.to_gen_borrow()))
+			}
+			
+			fn divide_vector(self, divisor: &Self) -> Self
+			{
+				$name::from_gen(self.to_gen().divide_vector(&divisor.to_gen_borrow()))
 			}
 		}
 	}	
@@ -450,6 +465,7 @@ pub use vector_types::general::
 	{
 		DataVectorDomain,
 		DataVector,
+		GenericVectorOperations,
 		RealVectorOperations,
 		ComplexVectorOperations,
 		TimeDomainOperations,

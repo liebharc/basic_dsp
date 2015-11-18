@@ -65,24 +65,92 @@ const DEFAULT_GRANUALRITY: usize = 4;
 #[inline]
 impl GenericVectorOperations for DataVector32
 {
-	fn add_vector(mut self, other: &DataVector32) -> DataVector32
+	fn add_vector(mut self, summand: &DataVector32) -> DataVector32
 	{
 		{
 			let len = self.len();
-			if len != other.len()
+			if len != summand.len()
 			{
 				panic!("Vectors must have the same size");
 			}
 			
+			let data_length = self.len();
+			let scalar_length = data_length % 4;
+			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
-			
-			for i in 0..len
+			let other = &summand.data;
+			Chunk::execute_original_to_target(&other,  &mut array, vectorization_length, 4,  DataVector32::add_vector_simd);
+			let mut i = vectorization_length;
+			while i < data_length
 			{
 				array[i] = array[i] + other[i];
+				i += 1;
 			}
 		}
 		
 		self
+	}
+	
+	fn subtract_vector(mut self, subtrahend: &DataVector32) -> DataVector32
+	{
+		{
+			let len = self.len();
+			if len != subtrahend.len()
+			{
+				panic!("Vectors must have the same size");
+			}
+				
+			let data_length = self.len();
+			let scalar_length = data_length % 4;
+			let vectorization_length = data_length - scalar_length;
+			let mut array = &mut self.data;
+			let other = &subtrahend.data;
+			Chunk::execute_original_to_target(&other,  &mut array, vectorization_length, 4,  DataVector32::sub_vector_simd);
+			let mut i = vectorization_length;
+			while i < data_length
+			{
+				array[i] = array[i] - other[i];
+				i += 1;
+			}
+		}
+		
+		self
+	}
+	
+	fn multiply_vector(self, factor: &DataVector32) -> DataVector32
+	{
+		let len = self.len();
+		if len != factor.len()
+		{
+			panic!("Vectors must have the same size");
+		}
+		
+		if self.is_complex
+		{
+			self.multiply_vector_complex(factor)
+		}
+		else
+		{
+			self.multiply_vector_real(factor)
+		}
+	}
+	
+	fn divide_vector(self, divisor: &DataVector32) -> DataVector32
+	{
+		let len = self.len();
+		if len != divisor.len()
+		{
+			panic!("Vectors must have the same size");
+		}
+		
+		if self.is_complex
+		{
+			self.divide_vector_complex(divisor)
+		}
+		else
+		{
+			self.divide_vector_real(divisor)
+		}
 	}
 }
 
@@ -325,6 +393,180 @@ impl DataVector32
 		
 			vector.store(array, i);	
 			i += 4;
+		}
+	}
+	
+	fn add_vector_simd(original: &[f32], range: Range<usize>, target: &mut [f32])
+	{
+		let mut i = 0;
+		let mut j = range.start;
+		while i < target.len()
+		{ 
+			let vector1 = f32x4::load(original, j);
+			let vector2 = f32x4::load(target, i);
+			let result = vector1 + vector2;
+			result.store(target, i);
+			i += 4;
+			j += 4;
+		}
+	}
+	
+	fn sub_vector_simd(original: &[f32], range: Range<usize>, target: &mut [f32])
+	{
+		let mut i = 0;
+		let mut j = range.start;
+		while i < target.len()
+		{ 
+			let vector1 = f32x4::load(original, j);
+			let vector2 = f32x4::load(target, i);
+			let result = vector2 - vector1;
+			result.store(target, i);
+			i += 4;
+			j += 4;
+		}
+	}
+	
+	fn multiply_vector_complex(mut self, factor: &DataVector32) -> DataVector32
+	{
+		{
+			let data_length = self.len();
+			let scalar_length = data_length % 4;
+			let vectorization_length = data_length - scalar_length;
+			let mut array = &mut self.data;
+			let other = &factor.data;
+			Chunk::execute_original_to_target(&other,  &mut array, vectorization_length, 4,  DataVector32::mul_vector_complex_simd);
+			let mut i = vectorization_length;
+			while i < data_length
+			{
+				let complex1 = Complex32::new(array[i], array[i + 1]);
+				let complex2 = Complex32::new(other[i], other[i + 1]);
+				let result = complex1 * complex2;
+				array[i] = result.re;
+				array[i + 1] = result.im;
+				i += 2;
+			}
+		}
+		self
+	}
+	
+	fn mul_vector_complex_simd(original: &[f32], range: Range<usize>, target: &mut [f32])
+	{
+		let mut i = 0;
+		let mut j = range.start;
+		while i < target.len()
+		{ 
+			let vector1 = f32x4::load(original, j);
+			let vector2 = f32x4::load(target, i);
+			let result = vector2.mul_complex(vector1);
+			result.store(target, i);
+			i += 4;
+			j += 4;
+		}
+	}
+	
+	fn multiply_vector_real(mut self, factor: &DataVector32) -> DataVector32
+	{
+		{
+			let data_length = self.len();
+			let scalar_length = data_length % 4;
+			let vectorization_length = data_length - scalar_length;
+			let mut array = &mut self.data;
+			let other = &factor.data;
+			Chunk::execute_original_to_target(&other,  &mut array, vectorization_length, 4,  DataVector32::mul_vector_real_simd);
+			let mut i = vectorization_length;
+			while i < data_length
+			{
+				array[i] = array[i] * other[i];
+				i += 1;
+			}
+		}
+		self
+	}
+	
+	fn mul_vector_real_simd(original: &[f32], range: Range<usize>, target: &mut [f32])
+	{
+		let mut i = 0;
+		let mut j = range.start;
+		while i < target.len()
+		{ 
+			let vector1 = f32x4::load(original, j);
+			let vector2 = f32x4::load(target, i);
+			let result = vector2 * vector1;
+			result.store(target, i);
+			i += 4;
+			j += 4;
+		}
+	}
+	
+	fn divide_vector_complex(mut self, divisor: &DataVector32) -> DataVector32
+	{
+		{
+			let data_length = self.len();
+			let scalar_length = data_length % 4;
+			let vectorization_length = data_length - scalar_length;
+			let mut array = &mut self.data;
+			let other = &divisor.data;
+			Chunk::execute_original_to_target(&other,  &mut array, vectorization_length, 4,  DataVector32::divide_vector_complex_simd);
+			let mut i = vectorization_length;
+			while i < data_length
+			{
+				let complex1 = Complex32::new(array[i], array[i + 1]);
+				let complex2 = Complex32::new(other[i], other[i + 1]);
+				let result = complex1 / complex2;
+				array[i] = result.re;
+				array[i + 1] = result.im;
+				i += 2;
+			}
+		}
+		self
+	}
+	
+	fn divide_vector_complex_simd(original: &[f32], range: Range<usize>, target: &mut [f32])
+	{
+		let mut i = 0;
+		let mut j = range.start;
+		while i < target.len()
+		{ 
+			let vector1 = f32x4::load(original, j);
+			let vector2 = f32x4::load(target, i);
+			let result = vector2.div_complex(vector1);
+			result.store(target, i);
+			i += 4;
+			j += 4;
+		}
+	}
+	
+	fn divide_vector_real(mut self, divisor: &DataVector32) -> DataVector32
+	{
+		{
+			let data_length = self.len();
+			let scalar_length = data_length % 4;
+			let vectorization_length = data_length - scalar_length;
+			let mut array = &mut self.data;
+			let other = &divisor.data;
+			Chunk::execute_original_to_target(&other,  &mut array, vectorization_length, 4,  DataVector32::div_vector_real_simd);
+			let mut i = vectorization_length;
+			while i < data_length
+			{
+				array[i] = array[i] / other[i];
+				i += 1;
+			}
+		}
+		self
+	}
+	
+	fn div_vector_real_simd(original: &[f32], range: Range<usize>, target: &mut [f32])
+	{
+		let mut i = 0;
+		let mut j = range.start;
+		while i < target.len()
+		{ 
+			let vector1 = f32x4::load(original, j);
+			let vector2 = f32x4::load(target, i);
+			let result = vector2 / vector1;
+			result.store(target, i);
+			i += 4;
+			j += 4;
 		}
 	}
 	

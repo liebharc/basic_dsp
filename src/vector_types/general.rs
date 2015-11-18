@@ -43,7 +43,53 @@ pub enum DataVectorDomain {
 
 /// Defines all operations which are valid on all `DataVectors`.
 pub trait GenericVectorOperations : DataVector {
-	fn add_vector(self, other: &Self) -> Self;
+	/// Calculates the sum of `self + summand`. It consumes self and returns the result.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
+	/// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
+	/// let result = vector1.add_vector(&vector2);
+	/// assert_eq!([11.0, 13.0], result.data());
+	/// ```
+	fn add_vector(self, summand: &Self) -> Self;
+	
+	/// Calculates the difference of `self - subtrahend`. It consumes self and returns the result.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
+	/// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
+	/// let result = vector1.subtract_vector(&vector2);
+	/// assert_eq!([-9.0, -9.0], result.data());
+	/// ```
+	fn subtract_vector(self, subtrahend: &Self) -> Self;
+	
+	/// Calculates the product of `self * factor`. It consumes self and returns the result.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
+	/// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
+	/// let result = vector1.multiply_vector(&vector2);
+	/// assert_eq!([10.0, 22.0], result.data());
+	/// ```
+	fn multiply_vector(self, factor: &Self) -> Self;
+	
+	/// Calculates the quotient of `self / summand`. It consumes self and returns the result.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector1 = RealTimeVector32::from_array(&[10.0, 22.0]);
+	/// let vector2 = RealTimeVector32::from_array(&[2.0, 11.0]);
+	/// let result = vector1.divide_vector(&vector2);
+	/// assert_eq!([5.0, 2.0], result.data());
+	/// ```
+	fn divide_vector(self, divisor: &Self) -> Self;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.

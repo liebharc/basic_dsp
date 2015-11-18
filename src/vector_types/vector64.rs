@@ -38,7 +38,22 @@ define_complex_operations_forward!(from: ComplexFreqVector64, to: DataVector64, 
 #[allow(unused_variables)]
 impl GenericVectorOperations for DataVector64
 {
-	fn add_vector(self, other: &DataVector64) -> DataVector64
+	fn add_vector(self, summand: &DataVector64) -> DataVector64
+	{
+		panic!("Unimplemented");
+	}
+
+	fn subtract_vector(self, subtrahend: &DataVector64) -> DataVector64
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn multiply_vector(self, factor: &DataVector64) -> DataVector64
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn divide_vector(self, divisor: &DataVector64) -> DataVector64
 	{
 		panic!("Unimplemented");
 	}
