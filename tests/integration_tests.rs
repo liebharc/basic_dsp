@@ -494,4 +494,80 @@ mod slow_test {
             assert_vector_eq(&expected, &result.data());
         }
     }
+    
+    fn complex_vector_mul(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
+    {
+        let a = to_complex(a);
+        let b = to_complex(b);
+        let mut result = vec![Complex32::new(0.0, 0.0); a.len()];
+        for i in 0 .. a.len() {
+            result[i] = a[i] * b[i];
+        }
+        
+        from_complex(&result)
+    }
+    
+    #[test]
+    fn complex_mul_vector_vector32_small() {
+        for iteration in 0 .. 10 {
+            let a = create_data_even(201511171, iteration, 10000, 1000000);
+            let b = create_data_with_len(201511172, iteration, a.len());
+            let expected = complex_vector_mul(&a, &b);
+            let vector1 = ComplexTimeVector32::from_interleaved(&a);
+            let vector2 = ComplexTimeVector32::from_interleaved(&b);
+            let result = vector1.multiply_vector(&vector2);
+            assert_vector_eq(&expected, &result.data());
+        }
+    }
+    
+    #[test]
+    fn complex_mul_vector_vector32_large() {
+        for iteration in 0 .. 3 {
+            let a = create_data_even(201511173, iteration, 1000001, 2000000);
+            let b = create_data_with_len(201511174, iteration, a.len());
+            let expected = complex_vector_mul(&a, &b);
+            let vector1 = ComplexTimeVector32::from_interleaved(&a);
+            let vector2 = ComplexTimeVector32::from_interleaved(&b);
+            let result = vector1.multiply_vector(&vector2);
+            assert_vector_eq(&expected, &result.data());
+        }
+    }
+    
+    fn complex_vector_div(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
+    {
+        let a = to_complex(a);
+        let b = to_complex(b);
+        let mut result = vec![Complex32::new(0.0, 0.0); a.len()];
+        for i in 0 .. a.len() {
+            result[i] = a[i] / b[i];
+        }
+        
+        from_complex(&result)
+    }
+    
+    #[test]
+    fn complex_div_vector_vector32_small() {
+        for iteration in 0 .. 10 {
+            let a = create_data_even(201511171, iteration, 10000, 1000000);
+            let b = create_data_with_len(201511172, iteration, a.len());
+            let expected = complex_vector_div(&a, &b);
+            let vector1 = ComplexTimeVector32::from_interleaved(&a);
+            let vector2 = ComplexTimeVector32::from_interleaved(&b);
+            let result = vector1.divide_vector(&vector2);
+            assert_vector_eq(&expected, &result.data());
+        }
+    }
+    
+    #[test]
+    fn complex_div_vector_vector32_large() {
+        for iteration in 0 .. 3 {
+            let a = create_data_even(201511173, iteration, 1000001, 2000000);
+            let b = create_data_with_len(201511174, iteration, a.len());
+            let expected = complex_vector_div(&a, &b);
+            let vector1 = ComplexTimeVector32::from_interleaved(&a);
+            let vector2 = ComplexTimeVector32::from_interleaved(&b);
+            let result = vector1.divide_vector(&vector2);
+            assert_vector_eq(&expected, &result.data());
+        }
+    }
 }

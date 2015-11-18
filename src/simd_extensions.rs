@@ -25,7 +25,7 @@ impl SimdExtensions32 for f32x4
 	
 	fn add_complex(self, value: Complex32) -> f32x4
 	{
-		let increment = f32x4::load(&[value.re, value.im, value.re, value.im], 0);
+		let increment = f32x4::new(value.re, value.im, value.re, value.im);
 		self + increment
 	}
 	
@@ -48,12 +48,29 @@ impl SimdExtensions32 for f32x4
 	
 	fn mul_complex(self, value: f32x4) -> f32x4
 	{
-		panic!("Not implemented");
+		let scaling_real = f32x4::new(value.extract(0), value.extract(0), value.extract(2), value.extract(2));
+		let scaling_imag = f32x4::new(value.extract(1), value.extract(1), value.extract(3), value.extract(3));
+		let parallel = scaling_real * self;
+		// There should be a shufps operation which shuffles the vector self
+		let shuffled = f32x4::new(self.extract(1), self.extract(0), self.extract(3), self.extract(2)); 
+		let cross = scaling_imag * shuffled;
+		parallel.addsub(cross)
 	}
 	
 	fn div_complex(self, value: f32x4) -> f32x4
 	{
-		panic!("Not implemented");
+		let scaling_imag = f32x4::new(self.extract(0), self.extract(0), self.extract(2), self.extract(2));
+		let scaling_real = f32x4::new(self.extract(1), self.extract(1), self.extract(3), self.extract(3));
+		let parallel = scaling_real * value;
+		// There should be a shufps operation which shuffles the vector self
+		let shuffled = f32x4::new(value.extract(1), value.extract(0), value.extract(3), value.extract(2)); 
+		let cross = scaling_imag * shuffled;
+		let mul = parallel.addsub(cross);
+		let square = shuffled * shuffled;
+		let square_shuffled = f32x4::new(square.extract(1), square.extract(0), square.extract(3), square.extract(2));
+		let sum = square + square_shuffled;
+		let div = mul / sum;
+		f32x4::new(div.extract(1), div.extract(0), div.extract(3), div.extract(2))
 	}
 	
 	fn complex_abs_squared(self) -> f32x4
