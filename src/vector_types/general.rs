@@ -280,6 +280,68 @@ pub trait ComplexVectorOperations : DataVector {
 	/// # }
 	/// ```
 	fn complex_conj(self) -> Self;
+	
+	/// Gets all real elements.
+	/// # Example
+	///
+	/// ```
+	/// # extern crate num;
+	/// # extern crate basic_dsp;
+	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+	/// # fn main() { 
+	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+	/// let result = vector.to_real();
+	/// assert_eq!([1.0, 3.0], result.data());
+	/// # }
+	/// ```
+	fn to_real(self) -> Self::RealPartner;
+	
+	/// Gets all imag elements.
+	/// # Example
+	///
+	/// ```
+	/// # extern crate num;
+	/// # extern crate basic_dsp;
+	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+	/// # fn main() { 
+	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+	/// let result = vector.to_imag();
+	/// assert_eq!([2.0, 4.0], result.data());
+	/// # }
+	/// ```
+	fn to_imag(self) -> Self::RealPartner;
+	
+	/// Copies all real elements into the given vector.
+	/// # Example
+	///
+	/// ```
+	/// # extern crate num;
+	/// # extern crate basic_dsp;
+	/// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOperations, DataVector};
+	/// # fn main() { 
+	/// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
+	/// let vector = ComplexTimeVector32::from_real_imag(&[1.0, 3.0], &[2.0, 4.0]);
+	/// vector.get_real(&mut result);
+	/// assert_eq!([1.0, 3.0], result.data());
+	/// # }
+	/// ```
+	fn get_real(&self, destination: &mut Self::RealPartner);
+	
+	/// Copies all imag elements into the given vector.
+	/// # Example
+	///
+	/// ```
+	/// # extern crate num;
+	/// # extern crate basic_dsp;
+	/// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOperations, DataVector};
+	/// # fn main() { 
+	/// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
+	/// let vector = ComplexTimeVector32::from_real_imag(&[1.0, 3.0], &[2.0, 4.0]);
+	/// vector.get_imag(&mut result);
+	/// assert_eq!([2.0, 4.0], result.data());
+	/// # }
+	/// ```
+	fn get_imag(&self, destination: &mut Self::RealPartner);
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.

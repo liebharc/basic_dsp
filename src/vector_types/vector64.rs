@@ -207,6 +207,26 @@ impl DataVector64
 	{
 		panic!("Unimplemented");
 	}
+	
+	pub fn to_real(self) -> DataVector64
+	{
+		panic!("Unimplemented");
+	}
+
+	pub fn to_imag(self) -> DataVector64
+	{
+		panic!("Unimplemented");
+	}	
+			
+	pub fn get_real(&self, destination: &mut DataVector64)
+	{
+		panic!("Unimplemented");
+	}
+	
+	pub fn get_imag(&self, destination: &mut DataVector64)
+	{
+		panic!("Unimplemented");
+	}
 }
 /*
 #[test]

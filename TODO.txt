@@ -1,5 +1,4 @@
 1. More basic functions:
-- Real <-> complex conversions
 - Phase/Angle
 - Unwrap
 - Exp, Power
@@ -13,6 +12,7 @@
 - Convolve
 - Resample based on convolve
 - Window functions
+- get_real_imag function
 ...
 2. Think about more domain specfic functions such as frequency estimation
 3. Take a look at https://github.com/sebcrozet/nalgebra

@@ -239,16 +239,7 @@ macro_rules! define_real_basic_struct_members {
 			/// Creates a real `DataVector` from an array or sequence. `delta` is defaulted to `1`.
 			pub fn from_array(data: &[<$name as DataVector>::E]) -> $name
 			{
-				let data_length = data.len();
-				$name 
-				{ 
-				  data: data.to_vec(), 
-				  temp: vec![0.0; data_length],
-				  delta: 1.0,
-				  domain: DataVectorDomain::$domain,
-				  is_complex: false,
-				  valid_len: data_length
-				}
+				$name::from_array_with_delta(data, 1.0)
 			}
 			
 			/// Creates a real `DataVector` from an array or sequence and sets `delta` to the given value.
@@ -325,6 +316,12 @@ macro_rules! define_real_operations_forward {
 				unsafe { mem::transmute(self) }
 			}
 			
+			#[allow(dead_code)]
+			fn to_gen_mut_borrow(&mut self) -> &mut $gen_type
+			{
+				unsafe { mem::transmute(self) }
+			}
+			
 			fn from_gen(other: $gen_type) -> $name
 			{
 				$name 
@@ -367,28 +364,58 @@ macro_rules! define_complex_basic_struct_members {
 				}
 			}
 			
-			/// Creates a complex `DataVector` by consuming a `Vec`. Data is in interleaved format: `i0, q0, i1, q1, ...`. `delta` is defaulted to `1`.
+			/// Creates a complex `DataVector` from an array or sequence. Data is in interleaved format: `i0, q0, i1, q1, ...`. `delta` is defaulted to `1`.
 			pub fn from_interleaved(data: &[<$name as DataVector>::E]) -> $name
 			{
-				let data_length = data.len();
-				$name 
-				{ 
-				  data: data.to_vec(), 
-				  temp: vec![0.0; data_length],
-				  delta: 1.0,
-				  domain: DataVectorDomain::$domain,
-				  is_complex: true,
-				  valid_len: data_length
-				}
+				$name::from_interleaved_with_delta(data, 1.0)
 			}
 			
-			/// Creates a complex `DataVector` by consuming a `Vec`. Data is in interleaved format: `i0, q0, i1, q1, ...`. `delta` is set to the given value.
+			/// Creates a complex `DataVector` from an array or sequence. Data is in interleaved format: `i0, q0, i1, q1, ...`. `delta` is set to the given value.
 			pub fn from_interleaved_with_delta(data: &[<$name as DataVector>::E], delta: <$name as DataVector>::E) -> $name
 			{
 				let data_length = data.len();
 				$name 
 				{ 
 				  data: data.to_vec(), 
+				  temp: vec![0.0; data_length],
+				  delta: delta,
+				  domain: DataVectorDomain::$domain,
+				  is_complex: true,
+				  valid_len: data_length
+				}
+			}
+			
+			/// Creates a complex  `DataVector` from an array with real and an array imaginary data. `delta` is set to 1.
+			///
+			/// Arrays must have the same length.
+			pub fn from_real_imag(real: &[<$name as DataVector>::E], imag: &[<$name as DataVector>::E])
+				-> $name
+			{
+				$name::from_real_imag_with_delta(real, imag, 1.0)
+			}
+			
+			/// Creates a complex  `DataVector` from an array with real and an array imaginary data. `delta` is set to the given value 1.
+			///
+			/// Arrays must have the same length.
+			pub fn from_real_imag_with_delta(real: &[<$name as DataVector>::E], imag: &[<$name as DataVector>::E], delta: <$name as DataVector>::E)
+				-> $name
+			{
+				if real.len() != imag.len()
+				{
+					panic!("Input lengths differ: real has {} elements and imag has {} elements", real.len(), imag.len());
+				}
+				
+				let mut data = Vec::with_capacity(real.len() + imag.len());
+				for i in 0 .. real.len() {
+					data.push(real[i]);
+					data.push(imag[i]);
+				}
+				
+				let data_length = data.len();
+				
+				$name 
+				{ 
+				  data: data, 
 				  temp: vec![0.0; data_length],
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
@@ -434,6 +461,26 @@ macro_rules! define_complex_operations_forward {
 			{
 				$name::from_gen(self.to_gen().complex_conj())
 			}
+			
+			fn to_real(self) -> Self::RealPartner
+			{
+				$real_partner::from_gen(self.to_gen().to_real())
+			}
+	
+			fn to_imag(self) -> Self::RealPartner
+			{
+				$real_partner::from_gen(self.to_gen().to_imag())
+			}	
+					
+			fn get_real(&self, destination: &mut Self::RealPartner)
+			{
+				self.to_gen_borrow().get_real(destination.to_gen_mut_borrow())
+			}
+			
+			fn get_imag(&self, destination: &mut Self::RealPartner)
+			{
+				self.to_gen_borrow().get_imag(destination.to_gen_mut_borrow())
+			}
 		}
 	 	
 		#[inline]
@@ -453,6 +500,12 @@ macro_rules! define_complex_operations_forward {
 			}
 			
 			fn to_gen_borrow(&self) -> &$gen_type
+			{
+				unsafe { mem::transmute(self) }
+			}
+			
+			#[allow(dead_code)]
+			fn to_gen_mut_borrow(&mut self) -> &mut $gen_type
 			{
 				unsafe { mem::transmute(self) }
 			}
