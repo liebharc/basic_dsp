@@ -15,12 +15,12 @@ define_complex_basic_struct_members!(impl DataVector64, DataVectorDomain::Freque
 define_vector_struct!(struct RealTimeVector64, f64);
 define_real_basic_struct_members!(impl RealTimeVector64, DataVectorDomain::Time);
 define_generic_operations_forward!(from: RealTimeVector64, to: DataVector64);
-define_real_operations_forward!(from: RealTimeVector64, to: DataVector64);
+define_real_operations_forward!(from: RealTimeVector64, to: DataVector64, complex_partner: ComplexTimeVector64);
 
 define_vector_struct!(struct RealFreqVector64, f64);
 define_real_basic_struct_members!(impl RealFreqVector64, DataVectorDomain::Frequency);
 define_generic_operations_forward!(from: RealFreqVector64, to: DataVector64);
-define_real_operations_forward!(from: RealFreqVector64, to: DataVector64);
+define_real_operations_forward!(from: RealFreqVector64, to: DataVector64, complex_partner: ComplexFreqVector64);
 
 define_vector_struct!(struct ComplexTimeVector64, f64);
 define_complex_basic_struct_members!(impl ComplexTimeVector64, DataVectorDomain::Time);
@@ -199,6 +199,11 @@ impl DataVector64
 	}
 	
 	pub fn complex_conj(self) -> DataVector64
+	{
+		panic!("Unimplemented");
+	}
+	
+	pub fn to_complex(self) -> DataVector64
 	{
 		panic!("Unimplemented");
 	}

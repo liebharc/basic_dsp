@@ -43,12 +43,12 @@ define_complex_basic_struct_members!(impl DataVector32, DataVectorDomain::Freque
 define_vector_struct!(struct RealTimeVector32, f32);
 define_real_basic_struct_members!(impl RealTimeVector32, DataVectorDomain::Time);
 define_generic_operations_forward!(from: RealTimeVector32, to: DataVector32);
-define_real_operations_forward!(from: RealTimeVector32, to: DataVector32);
+define_real_operations_forward!(from: RealTimeVector32, to: DataVector32, complex_partner: ComplexTimeVector32);
 
 define_vector_struct!(struct RealFreqVector32, f32);
 define_real_basic_struct_members!(impl RealFreqVector32, DataVectorDomain::Frequency);
 define_generic_operations_forward!(from: RealFreqVector32, to: DataVector32);
-define_real_operations_forward!(from: RealFreqVector32, to: DataVector32);
+define_real_operations_forward!(from: RealFreqVector32, to: DataVector32, complex_partner: ComplexFreqVector32);
 
 define_vector_struct!(struct ComplexTimeVector32, f32);
 define_complex_basic_struct_members!(impl ComplexTimeVector32, DataVectorDomain::Time);
@@ -185,6 +185,8 @@ impl GenericVectorOperations for DataVector32
 #[inline]
 impl RealVectorOperations for DataVector32
 {
+	type ComplexPartner = DataVector32;
+	
 	fn real_offset(mut self, offset: f32) -> DataVector32
 	{
 		self.inplace_offset(&[offset, offset, offset, offset]);
@@ -226,6 +228,13 @@ impl RealVectorOperations for DataVector32
 			Chunk::execute_partial(&mut array, length, 1, DataVector32::real_sqrt_par);
 		}
 		self
+	}
+	
+	fn to_complex(self) -> DataVector32
+	{
+		let mut result = self.zero_interleave_real();
+		result.is_complex = true;
+		result
 	}
 }
 
@@ -278,6 +287,7 @@ impl ComplexVectorOperations for DataVector32
 				i += 2;
 			}
 			self.is_complex = false;
+			self.valid_len = self.valid_len / 2;
 		}
 		
 		self.swap_data_temp()
@@ -299,6 +309,7 @@ impl ComplexVectorOperations for DataVector32
 				i += 2;
 			}
 			self.is_complex = false;
+			self.valid_len = self.valid_len / 2;
 		}
 		self.swap_data_temp()
 	}
@@ -454,7 +465,7 @@ impl DataVector32
 			temp.resize(length, 0.0);
 		}
 		
-		self.points = if self.is_complex { length / 2 } else { length };
+		self.valid_len = length;
 	}
 	
 	fn add_vector_simd(original: &[f32], range: Range<usize>, target: &mut [f32])

@@ -134,6 +134,8 @@ pub trait GenericVectorOperations : DataVector {
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
 pub trait RealVectorOperations : DataVector {
+	type ComplexPartner;
+	
 	/// Adds a scalar to the vector.
 	/// # Example
 	///
@@ -181,6 +183,17 @@ pub trait RealVectorOperations : DataVector {
 	/// assert!(result[0].is_nan());
 	/// ```
 	fn real_sqrt(self) -> Self;
+	
+	/// Converts the real vector into a complex vector.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
+	/// let result = vector.to_complex();
+	/// assert_eq!([1.0, 0.0, 2.0, 0.0], result.data());
+	/// ```
+	fn to_complex(self) -> Self::ComplexPartner;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing complex data.

@@ -29,7 +29,7 @@ macro_rules! define_vector_struct {
 			delta: $data_type,
 			domain: DataVectorDomain,
 			is_complex: bool,
-			points: usize
+			valid_len: usize
 			// We could need here (or in one of the traits/impl):
 			// - A view for complex data types with transmute
 		}
@@ -42,14 +42,7 @@ macro_rules! define_vector_struct {
 			
 			fn len(&self) -> usize 
 			{
-				if self.is_complex
-				{
-					self.points * 2
-				}
-				else
-				{
-					self.points
-				}
+				self.valid_len
 			}
 			
 			fn allocated_len(&self) -> usize
@@ -81,7 +74,7 @@ macro_rules! define_vector_struct {
 			
 			fn points(&self) -> usize
 			{
-				self.points
+				self.valid_len / if self.is_complex { 2 } else { 1 }
 			}
 		}
 		
@@ -239,7 +232,7 @@ macro_rules! define_real_basic_struct_members {
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
-				  points: data_length
+				  valid_len: data_length
 				}
 			}
 		
@@ -254,7 +247,7 @@ macro_rules! define_real_basic_struct_members {
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
-				  points: data_length
+				  valid_len: data_length
 				}
 			}
 			
@@ -269,7 +262,7 @@ macro_rules! define_real_basic_struct_members {
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
-				  points: data_length
+				  valid_len: data_length
 				}
 			}
 		}
@@ -277,12 +270,14 @@ macro_rules! define_real_basic_struct_members {
 }
 
 macro_rules! define_real_operations_forward {
-    (from: $name:ident, to: $gen_type:ident)
+    (from: $name:ident, to: $gen_type:ident, complex_partner: $complex_partner:ident)
 	 =>
-	 {
+	 {	 
 	 	#[inline]
 		impl RealVectorOperations for $name
 		{
+			type ComplexPartner = $complex_partner; 
+			
 			fn real_offset(self, offset: <$name as DataVector>::E) -> $name
 			{
 				$name::from_gen(self.to_gen().real_offset(offset))
@@ -302,6 +297,11 @@ macro_rules! define_real_operations_forward {
 			{
 				$name::from_gen(self.to_gen().real_sqrt()) 
 			}
+			
+			fn to_complex(self) -> $complex_partner
+			{
+				$complex_partner::from_gen(self.to_gen().to_complex()) 
+			}
 		}
 	 
 		#[inline]
@@ -316,7 +316,7 @@ macro_rules! define_real_operations_forward {
 				  delta: self.delta,
 				  domain: self.domain,
 				  is_complex: self.is_complex,
-				  points: self.points
+				  valid_len: self.valid_len
 				}
 			}
 			
@@ -334,7 +334,7 @@ macro_rules! define_real_operations_forward {
 				  delta: other.delta,
 				  domain: other.domain,
 				  is_complex: other.is_complex,
-				  points: other.points
+				  valid_len: other.valid_len
 				}
 			}
 		}
@@ -363,7 +363,7 @@ macro_rules! define_complex_basic_struct_members {
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
-				  points: data_length / 2
+				  valid_len: data_length
 				}
 			}
 			
@@ -378,7 +378,7 @@ macro_rules! define_complex_basic_struct_members {
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
-				  points: data_length / 2
+				  valid_len: data_length
 				}
 			}
 			
@@ -393,7 +393,7 @@ macro_rules! define_complex_basic_struct_members {
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
-				  points: data_length / 2
+				  valid_len: data_length
 				}
 			}
 		} 
@@ -448,7 +448,7 @@ macro_rules! define_complex_operations_forward {
 				  delta: self.delta,
 				  domain: self.domain,
 				  is_complex: self.is_complex,
-				  points: self.points
+				  valid_len: self.valid_len
 				}
 			}
 			
@@ -466,7 +466,7 @@ macro_rules! define_complex_operations_forward {
 				  delta: other.delta,
 				  domain: other.domain,
 				  is_complex: other.is_complex,
-				  points: other.points
+				  valid_len: other.valid_len
 				}
 			}
 		} 
