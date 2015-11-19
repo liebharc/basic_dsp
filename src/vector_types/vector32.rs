@@ -189,6 +189,16 @@ impl RealVectorOperations for DataVector32
 		}
 		self
 	}
+	
+	fn real_sqrt(mut self) -> DataVector32
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(&mut array, length, 1, DataVector32::real_sqrt_par);
+		}
+		self
+	}
 }
 
 #[inline]
@@ -263,6 +273,16 @@ impl ComplexVectorOperations for DataVector32
 			self.is_complex = false;
 		}
 		self.swap_data_temp()
+	}
+	
+	fn complex_conj(mut self) -> DataVector32
+	{
+		{
+			let mut array = &mut self.data;
+			Chunk::execute(&mut array, 2, DataVector32::complex_conj_par);
+		}
+		
+		self
 	}
 }
 
@@ -631,6 +651,17 @@ impl DataVector32
 		}
 	}
 	
+	fn real_sqrt_par<T>(array: &mut [T])
+		where T : Float
+	{
+		let mut i = 0;
+		while i < array.len()
+		{
+			array[i] = array[i].sqrt();
+			i += 1;
+		}
+	}
+	
 	fn complex_abs_simd(array: &[f32], target: &mut [f32])
 	{
 		let mut i = 0;
@@ -656,6 +687,15 @@ impl DataVector32
 			result.store_half(target, j);
 			i += 4;
 			j += 2;
+		}
+	}
+	
+	fn complex_conj_par(array: &mut [f32])
+	{
+		let mut i = 1;
+		while i < array.len() {
+			array[i] = -array[i];
+			i += 2;
 		}
 	}
 	

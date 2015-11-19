@@ -291,6 +291,11 @@ macro_rules! define_real_operations_forward {
 			{
 				$name::from_gen(self.to_gen().real_abs()) 
 			}
+			
+			fn real_sqrt(self) -> $name
+			{
+				$name::from_gen(self.to_gen().real_sqrt()) 
+			}
 		}
 	 
 		#[inline]
@@ -417,6 +422,11 @@ macro_rules! define_complex_operations_forward {
 			fn complex_abs_squared(self) -> $real_partner
 			{
 				$real_partner::from_gen(self.to_gen().complex_abs_squared())
+			}
+			
+			fn complex_conj(self) -> $name
+			{
+				$name::from_gen(self.to_gen().complex_conj())
 			}
 		}
 	 	

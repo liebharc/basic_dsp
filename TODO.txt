@@ -1,12 +1,10 @@
 1. More basic functions:
-- Sqrt
 - Real <-> complex conversions
 - Phase/Angle
 - Unwrap
 - Exp, Power
 - Log, Log10
 - Wrap
-- Complex Conj
 - Zero Insertion (useful for real -> complex conversion too)
 - Differential, Cummulative Sum or Integrate (this requires for parallel computation that we are able to
  access the last element of the previous data chunk. It might be the easiest to achieve that by performing the operation
@@ -19,3 +17,5 @@
 ...
 2. Think about more domain specfic functions such as frequency estimation
 3. Take a look at https://github.com/sebcrozet/nalgebra
+4. Add performance hints which e.g. specify if all operations should be run in parallel (aggressive parallelization) 
+   or only those with were a significant performance boost would be expected.

@@ -126,6 +126,21 @@ pub trait RealVectorOperations : DataVector {
 	/// assert_eq!([1.0, 2.0], result.data());
 	/// ```
 	fn real_abs(self) -> Self;
+	
+	/// Gets the square root of all vector elements.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+	/// # use std::f32;
+	/// let vector = RealTimeVector32::from_array(&[1.0, 4.0, 9.0, 16.0, 25.0]);
+	/// let result = vector.real_sqrt();
+	/// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0], result.data());
+	/// let vector = RealTimeVector32::from_array(&[-1.0]);
+	/// let result = vector.real_sqrt();
+	/// assert!(result[0].is_nan());
+	/// ```
+	fn real_sqrt(self) -> Self;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing complex data.
@@ -196,6 +211,22 @@ pub trait ComplexVectorOperations : DataVector {
 	/// # }
 	/// ```
 	fn complex_abs_squared(self) -> Self::RealPartner;
+	
+	/// Calculates the complex conjugate of the vector. 
+	/// # Example
+	///
+	/// ```
+	/// # extern crate num;
+	/// # extern crate basic_dsp;
+	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+	/// use num::complex::Complex32;
+	/// # fn main() { 
+	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+	/// let result = vector.complex_conj();
+	/// assert_eq!([1.0, -2.0, 3.0, -4.0], result.data());
+	/// # }
+	/// ```
+	fn complex_conj(self) -> Self;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.

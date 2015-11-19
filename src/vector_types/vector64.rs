@@ -182,6 +182,16 @@ impl DataVector64
 			i += 2;
 		}
 	}*/
+	
+	pub fn real_sqrt(self) -> DataVector64
+	{
+		panic!("Unimplemented");
+	}
+	
+	pub fn complex_conj(self) -> DataVector64
+	{
+		panic!("Unimplemented");
+	}
 }
 /*
 #[test]
