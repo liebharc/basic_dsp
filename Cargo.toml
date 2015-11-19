@@ -13,6 +13,6 @@ rand = "0.3"
 [dependencies]
 simd = { git = "https://github.com/huonw/simd" }
 num_cpus = "0.2.6"
-simple_parallel = "0.2.1"
+simple_parallel = "0.3.0"
 num = "0.1.27"
 rustfft = "1.0.0"

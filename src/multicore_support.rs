@@ -8,29 +8,28 @@ pub struct Chunk;
 #[allow(dead_code)]
 impl Chunk
 {
-	//fn get_static_pool() -> &'static mut Pool
-	fn get_static_pool() -> Pool
+	fn get_static_pool() -> &'static mut Pool
 	{
-		// TODO thread safe singleton, a lock should be okay
-		// since if everything goes well the CPU is totally busy if the pool
-		// is still in use 
-		/*use std::sync::{Once, ONCE_INIT};
 		use std::mem::transmute;
+		use std::sync::{Once, ONCE_INIT};
 		unsafe
 		{
 			static mut pool: *mut Pool = 0 as *mut Pool;
 			static mut ONCE: Once = ONCE_INIT;
 			ONCE.call_once(||
 			{
-				pool = transmute::<Box<Pool>, *mut Pool>(box Pool::new(num_cpus::get()));
+				pool = transmute::<Box<Pool>, *mut Pool>(box Pool::new(num_cpus::get() * 2));
 			});
 			
 			let mut static_pool = &mut *pool;
 			static_pool
-		}*/
-		
-		Pool::new(num_cpus::get())
+		}
 	}
+	
+	/*fn get_static_pool() -> Pool
+	{
+		Pool::new(num_cpus::get())
+	}*/
 
 	#[inline]
 	fn perform_parallel_execution(array_length: usize) -> bool
@@ -78,7 +77,7 @@ impl Chunk
 	fn partition<T>(array: &mut [T], array_length: usize, step_size: usize) -> ChunksMut<T>
 		where T : Float + Copy + Clone + Send + Sync
 	{
-		Chunk::partition_in_number(array, array_length, step_size, num_cpus::get())
+		Chunk::partition_in_number(array, array_length, step_size, num_cpus::get() * 2)
 	}
 	
 	#[inline]
