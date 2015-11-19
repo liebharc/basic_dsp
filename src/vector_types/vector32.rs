@@ -152,6 +152,34 @@ impl GenericVectorOperations for DataVector32
 			self.divide_vector_real(divisor)
 		}
 	}
+	
+	fn zero_pad(mut self, points: usize) -> Self
+	{
+		{
+			let len_before = self.len();
+			let len = if self.is_complex { 2 * points } else { points };
+			self.reallocate(len);
+			let array = &mut self.data;
+			for i in len_before..len
+			{
+				array[i] = 0.0;
+			}
+		}
+		
+		self
+	}
+	
+	fn zero_interleave(self) -> Self
+	{
+		if self.is_complex
+		{
+			self.zero_interleave_complex()
+		}
+		else
+		{
+			self.zero_interleave_real()
+		}
+	}
 }
 
 #[inline]
@@ -414,6 +442,19 @@ impl DataVector32
 			vector.store(array, i);	
 			i += 4;
 		}
+	}
+	
+	fn reallocate(&mut self, length: usize)
+	{
+		if length > self.allocated_len()
+		{
+			let data = &mut self.data;
+			data.resize(length, 0.0);
+			let temp = &mut self.temp;
+			temp.resize(length, 0.0);
+		}
+		
+		self.points = if self.is_complex { length / 2 } else { length };
 	}
 	
 	fn add_vector_simd(original: &[f32], range: Range<usize>, target: &mut [f32])
@@ -696,6 +737,72 @@ impl DataVector32
 		while i < array.len() {
 			array[i] = -array[i];
 			i += 2;
+		}
+	}
+	
+	fn zero_interleave_complex(mut self) -> Self
+	{
+		{
+			let new_len = 2 * self.len();
+			self.reallocate(new_len);
+			let data_length = new_len;
+			let mut target = &mut self.temp;
+			let source = &self.data;
+			Chunk::execute_original_to_target(&source,  &mut target, data_length, 4,  DataVector32::zero_interleave_complex_par);
+		}
+		self.swap_data_temp()
+	}
+	
+	fn zero_interleave_real(mut self) -> Self
+	{
+		{
+			let new_len = 2 * self.len();
+			self.reallocate(new_len);
+			let data_length = new_len;
+			let mut target = &mut self.temp;
+			let source = &self.data;
+			Chunk::execute_original_to_target(&source,  &mut target, data_length, 2,  DataVector32::zero_interleave_real_par);
+		}
+		self.swap_data_temp()
+	}
+	
+	fn zero_interleave_complex_par(original: &[f32], range: Range<usize>, target: &mut [f32])
+	{
+		let mut i = 0;
+		let mut j = range.start;
+		while i < target.len() / 2 {
+			if i % 2 == 0
+			{
+				target[2 * i] = original[j];
+				target[2 * i + 1] = original[j + 1];
+				j += 2;
+			}
+			else
+			{
+				target[2 * i] = 0.0;
+				target[2 * i + 1] = 0.0;
+			}
+			
+			i += 1;
+		}
+	}
+	
+	fn zero_interleave_real_par(original: &[f32], range: Range<usize>, target: &mut [f32])
+	{
+		let mut i = 0;
+		let mut j = range.start;
+		while i < target.len() {
+			if i % 2 == 0
+			{
+				target[i] = original[j];
+				j += 1;
+			}
+			else
+			{
+				target[i] = 0.0;
+			}
+			
+			i += 1;
 		}
 	}
 	

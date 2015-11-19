@@ -57,6 +57,16 @@ impl GenericVectorOperations for DataVector64
 	{
 		panic!("Unimplemented");
 	}
+	
+	fn zero_pad(self, points: usize) -> Self
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn zero_interleave(self) -> Self
+	{
+		panic!("Unimplemented");
+	}
 }
 
 #[inline]

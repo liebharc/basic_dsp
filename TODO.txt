@@ -5,7 +5,6 @@
 - Exp, Power
 - Log, Log10
 - Wrap
-- Zero Insertion (useful for real -> complex conversion too)
 - Differential, Cummulative Sum or Integrate (this requires for parallel computation that we are able to
  access the last element of the previous data chunk. It might be the easiest to achieve that by performing the operation
  on the temp array and give all function calls the complete org array as immutable)

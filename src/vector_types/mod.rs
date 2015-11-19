@@ -40,23 +40,26 @@ macro_rules! define_vector_struct {
 		{
 			type E = $data_type;
 			
-			
 			fn len(&self) -> usize 
+			{
+				if self.is_complex
+				{
+					self.points * 2
+				}
+				else
+				{
+					self.points
+				}
+			}
+			
+			fn allocated_len(&self) -> usize
 			{
 				self.data.len()
 			}
 			
 			fn data(&self) -> &[$data_type]
 			{
-				let valid_length =
-				 if self.is_complex
-				 {
-					 self.points * 2
-				 }
-				 else
-				 {
-					 self.points
-				 };
+				let valid_length = self.len();
 				 
 				&self.data[0 .. valid_length]
 			}
@@ -78,14 +81,7 @@ macro_rules! define_vector_struct {
 			
 			fn points(&self) -> usize
 			{
-				if self.is_complex
-				{
-					self.len() / 2
-				}
-				else
-				{
-					self.len()
-				}
+				self.points
 			}
 		}
 		
@@ -206,6 +202,16 @@ macro_rules! define_generic_operations_forward {
 			fn divide_vector(self, divisor: &Self) -> Self
 			{
 				$name::from_gen(self.to_gen().divide_vector(&divisor.to_gen_borrow()))
+			}
+			
+			fn zero_pad(self, points: usize) -> Self
+			{
+				$name::from_gen(self.to_gen().zero_pad(points))
+			}
+			
+			fn zero_interleave(self) -> Self
+			{
+				$name::from_gen(self.to_gen().zero_interleave())
 			}
 		}
 	}	

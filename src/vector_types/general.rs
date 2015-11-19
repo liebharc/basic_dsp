@@ -1,4 +1,7 @@
 /// DataVector gives access to the basic properties of all data vectors
+///
+/// A DataVector allocates memory if necessary. It will however never shrink/free memory unless it's 
+/// deleted and dropped.
 pub trait DataVector
 {
 	/// The underlying data type of the vector: `f32` or `f64`. 
@@ -20,13 +23,17 @@ pub trait DataVector
 	/// on this vector.
 	fn is_complex(&self) -> bool;
 	
-	/// The allocated length of the vector. The allocated length may be larger than the length of valid points. 
-	/// In most cases you likely want to have `points` instead.
+	/// The number of valid elements in the the vector.
 	fn len(&self) -> usize;
 	
 	/// The number of valid points. If the vector is complex then every valid point consists of two floating point numbers,
 	/// while for real vectors every point only consists of one floating point number.
 	fn points(&self) -> usize;
+	
+	/// Gets the number of allocated elements in the underlying vector.
+	/// The allocated length may be larger than the length of valid points. 
+	/// In most cases you likely want to have `len`or `points` instead.
+	fn allocated_len(&self) -> usize;
 }
 
 /// The domain of a data vector
@@ -90,6 +97,39 @@ pub trait GenericVectorOperations : DataVector {
 	/// assert_eq!([5.0, 2.0], result.data());
 	/// ```
 	fn divide_vector(self, divisor: &Self) -> Self;
+	
+	/// Appends zeros add the end of the vector until the vector has the size given in the points argument.
+	///
+	/// Note: Each point is two floating point numbers if the vector is complex.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
+	/// let result = vector.zero_pad(4);
+	/// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());
+	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0]);
+	/// let result = vector.zero_pad(2);
+	/// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());
+	/// ```
+	fn zero_pad(self, points: usize) -> Self;
+	
+	/// Ineterleaves zeros afeter every vector element.
+	///
+	/// Note: Remember that each complex number consists of two floating points and interleaving 
+	/// will take that into account.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
+	/// let result = vector.zero_interleave();
+	/// assert_eq!([1.0, 0.0, 2.0, 0.0], result.data());
+	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+	/// let result = vector.zero_interleave();
+	/// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], result.data());
+	/// ```
+	fn zero_interleave(self) -> Self;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
