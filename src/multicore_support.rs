@@ -184,14 +184,14 @@ impl Chunk
 	}
 	
 	#[inline]
-	pub fn execute_original_to_target<F, T>(original: &[T], original_length: usize, target: &mut [T], target_length: usize, step_size: usize, function: F)
+	pub fn execute_original_to_target<F, T>(original: &[T], original_length: usize, original_step: usize, target: &mut [T], target_length: usize, target_step: usize, function: F)
 		where F: Fn(&[T], Range<usize>, &mut [T]) + 'static + Sync,
 			  T : Float + Copy + Clone + Send + Sync
 	{
 		if Chunk::perform_parallel_execution(target_length)
 		{
-			let chunks = Chunk::partition(target, target_length, step_size);
-			let ranges = Chunk::partition_in_ranges(original_length, step_size, chunks.len());
+			let chunks = Chunk::partition(target, target_length, target_step);
+			let ranges = Chunk::partition_in_ranges(original_length, original_step, chunks.len());
 			let ref mut pool = Chunk::get_static_pool();
 			pool.for_(chunks.zip(ranges), |chunk|
 				{
@@ -200,20 +200,20 @@ impl Chunk
 		}
 		else
 		{
-			function(original, Range { start: 0, end: target_length }, &mut target[0..target_length]);
+			function(original, Range { start: 0, end: original_length }, &mut target[0..target_length]);
 		}
 	}
 	
 	#[inline]
-	pub fn execute_original_to_target_with_arguments<T,S,F>(original: &[T], original_length: usize, target: &mut [T], target_length: usize, step_size: usize, function: F, arguments:S)
+	pub fn execute_original_to_target_with_arguments<T,S,F>(original: &[T], original_length: usize, original_step: usize, target: &mut [T], target_length: usize, target_step: usize, function: F, arguments:S)
 		where F: Fn(&[T], Range<usize>, &mut [T], S) + 'static + Sync,
 			  T : Float + Copy + Clone + Send + Sync,
 			  S: Sync + Copy
 	{
 		if Chunk::perform_parallel_execution(target_length)
 		{
-			let chunks = Chunk::partition(target, target_length, step_size);
-			let ranges = Chunk::partition_in_ranges(original_length, step_size, chunks.len());
+			let chunks = Chunk::partition(target, target_length, target_step);
+			let ranges = Chunk::partition_in_ranges(original_length, original_step, chunks.len());
 			let ref mut pool = Chunk::get_static_pool();
 			pool.for_(chunks.zip(ranges), |chunk|
 				{
@@ -222,7 +222,7 @@ impl Chunk
 		}
 		else
 		{
-			function(original, Range { start: 0, end: target_length }, &mut target[0..target_length], arguments);
+			function(original, Range { start: 0, end: original_length }, &mut target[0..target_length], arguments);
 		}
 	}
 }

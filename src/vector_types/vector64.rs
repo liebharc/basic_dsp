@@ -71,19 +71,131 @@ impl GenericVectorOperations for DataVector64
 
 #[inline]
 #[allow(unused_variables)]
-impl DataVector64
+impl RealVectorOperations for DataVector64
 {
-	pub fn complex_offset(self, offset: Complex64) -> DataVector64
+	type ComplexPartner = DataVector64;
+	
+	fn real_offset(self, offset: f64) -> DataVector64
+	{
+		panic!("Unimplemented");
+		// self.inplace_offset(&[offset, offset], buffer);
+	}
+	
+	fn real_scale(self, factor: f64) -> DataVector64
+	{
+		panic!("Unimplemented");
+		/*let data_length = self.len();
+		let mut array = &mut self.data;
+		Chunk::execute_partial_with_arguments(&mut array, data_length, 1, buffer, DataVector64::inplace_real_scale_par, factor);*/
+	}
+	
+	fn real_abs(self) -> DataVector64
+	{
+		panic!("Unimplemented");
+		/*let mut array = &mut self.data;
+		let length = array.len();
+		Chunk::execute_partial(&mut array, length, 1, buffer, DataVector32::inplace_abs_real_par);*/
+	}
+	
+	fn real_sqrt(self) -> DataVector64
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn to_complex(self) -> DataVector64
+	{
+		panic!("Unimplemented");
+	}
+}
+
+#[inline]
+#[allow(unused_variables)]
+impl ComplexVectorOperations for DataVector64
+{
+	type RealPartner = DataVector64;
+	type Complex = Complex64;
+	
+	fn complex_offset(self, offset: Complex64) -> DataVector64
 	{
 		panic!("Unimplemented");
 		// self.inplace_offset(&[offset.re, offset.im], buffer);
 	}
 	
-	pub fn real_offset(self, offset: f64) -> DataVector64
+	fn complex_scale(self, factor: Complex64) -> DataVector64
 	{
 		panic!("Unimplemented");
-		// self.inplace_offset(&[offset, offset], buffer);
+		/*
+		let data_length = self.len();
+		let mut array = &mut self.data;
+		Chunk::execute_partial_with_arguments(&mut array, data_length, 1, buffer, DataVector64::inplace_complex_scale_par, factor);*/
 	}
+	
+	fn complex_abs(self) -> DataVector64
+	{
+		panic!("Unimplemented");
+		/*
+		let data_length = self.len();
+		let mut array = &mut self.data;
+		Chunk::execute_partial(&mut array, data_length, 1, buffer, DataVector64::inplace_complex_abs_par);*/
+	}
+	
+	fn get_complex_abs(&self, destination: &mut DataVector64)
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn complex_abs_squared(self) -> DataVector64
+	{
+		panic!("Unimplemented");
+		/*
+		let data_length = self.len();
+		let mut array = &mut self.data;
+		Chunk::execute_partial(&mut array, data_length, 1, buffer, DataVector64::inplace_complex_abs_squared_par);*/
+	}
+	
+	fn complex_conj(self) -> DataVector64
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn to_real(self) -> DataVector64
+	{
+		panic!("Unimplemented");
+	}
+
+	fn to_imag(self) -> DataVector64
+	{
+		panic!("Unimplemented");
+	}	
+			
+	fn get_real(&self, destination: &mut DataVector64)
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn get_imag(&self, destination: &mut DataVector64)
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn phase(self) -> DataVector64
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn get_phase(&self, destination: &mut DataVector64)
+	{
+		panic!("Unimplemented");
+	}
+}
+
+#[inline]
+#[allow(unused_variables)]
+impl DataVector64
+{
+	
+	
+	
 	/*
 	fn inplace_offset(&mut self, offset: &[f64; 2], buffer: &mut DataBuffer) 
 	{
@@ -102,13 +214,7 @@ impl DataVector64
 		}
 	}*/
 
-	pub fn real_scale(self, factor: f64) -> DataVector64
-	{
-		panic!("Unimplemented");
-		/*let data_length = self.len();
-		let mut array = &mut self.data;
-		Chunk::execute_partial_with_arguments(&mut array, data_length, 1, buffer, DataVector64::inplace_real_scale_par, factor);*/
-	}
+	
 	/*
 	fn inplace_real_scale_par(array: &mut [f64], factor: f64)
 	{
@@ -120,14 +226,7 @@ impl DataVector64
 		}
 	}*/
 	
-	pub fn complex_scale(self, factor: Complex64) -> DataVector64
-	{
-		panic!("Unimplemented");
-		/*
-		let data_length = self.len();
-		let mut array = &mut self.data;
-		Chunk::execute_partial_with_arguments(&mut array, data_length, 1, buffer, DataVector64::inplace_complex_scale_par, factor);*/
-	}
+	
 	/*
 	fn inplace_complex_scale_par(array: &mut [f64], factor: Complex64)
 	{
@@ -142,22 +241,7 @@ impl DataVector64
 		}
 	}*/
 		
-	pub fn real_abs(self) -> DataVector64
-	{
-		panic!("Unimplemented");
-		/*let mut array = &mut self.data;
-		let length = array.len();
-		Chunk::execute_partial(&mut array, length, 1, buffer, DataVector32::inplace_abs_real_par);*/
-	}
 	
-	pub fn complex_abs(self) -> DataVector64
-	{
-		panic!("Unimplemented");
-		/*
-		let data_length = self.len();
-		let mut array = &mut self.data;
-		Chunk::execute_partial(&mut array, data_length, 1, buffer, DataVector64::inplace_complex_abs_par);*/
-	}
 	/*
 	fn inplace_complex_abs_par(array: &mut [f64])
 	{
@@ -171,14 +255,7 @@ impl DataVector64
 		}
 	}*/
 	
-	pub fn complex_abs_squared(self) -> DataVector64
-	{
-		panic!("Unimplemented");
-		/*
-		let data_length = self.len();
-		let mut array = &mut self.data;
-		Chunk::execute_partial(&mut array, data_length, 1, buffer, DataVector64::inplace_complex_abs_squared_par);*/
-	}
+	
 	
 	/*
 	fn inplace_complex_abs_squared_par(array: &mut [f64])
@@ -192,41 +269,6 @@ impl DataVector64
 			i += 2;
 		}
 	}*/
-	
-	pub fn real_sqrt(self) -> DataVector64
-	{
-		panic!("Unimplemented");
-	}
-	
-	pub fn complex_conj(self) -> DataVector64
-	{
-		panic!("Unimplemented");
-	}
-	
-	pub fn to_complex(self) -> DataVector64
-	{
-		panic!("Unimplemented");
-	}
-	
-	pub fn to_real(self) -> DataVector64
-	{
-		panic!("Unimplemented");
-	}
-
-	pub fn to_imag(self) -> DataVector64
-	{
-		panic!("Unimplemented");
-	}	
-			
-	pub fn get_real(&self, destination: &mut DataVector64)
-	{
-		panic!("Unimplemented");
-	}
-	
-	pub fn get_imag(&self, destination: &mut DataVector64)
-	{
-		panic!("Unimplemented");
-	}
 }
 /*
 #[test]

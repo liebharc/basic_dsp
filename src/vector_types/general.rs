@@ -251,6 +251,22 @@ pub trait ComplexVectorOperations : DataVector {
 	/// ```
 	fn complex_abs(self) -> Self::RealPartner;
 	
+	/// Copies the absolute value or magnitude of all vector elements into the given target vector.
+	/// # Example
+	///
+	/// ```
+	/// # extern crate num;
+	/// # extern crate basic_dsp;
+	/// use basic_dsp::{ComplexTimeVector32, RealTimeVector32, ComplexVectorOperations, DataVector};
+	/// # fn main() { 
+	/// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
+	/// let mut result = RealTimeVector32::from_array(&[0.0]);
+	/// vector.get_complex_abs(&mut result);
+	/// assert_eq!([5.0, 5.0], result.data());
+	/// # }
+	/// ```
+	fn get_complex_abs(&self, destination: &mut Self::RealPartner);
+	
 	/// Gets the square root of the absolute value of all vector elements.
 	/// # Example
 	///
@@ -344,6 +360,37 @@ pub trait ComplexVectorOperations : DataVector {
 	/// # }
 	/// ```
 	fn get_imag(&self, destination: &mut Self::RealPartner);
+	
+	/// Gets the phase of all elements in [rad].
+	/// # Example
+	///
+	/// ```
+	/// # extern crate num;
+	/// # extern crate basic_dsp;
+	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+	/// # fn main() { 
+	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0]);
+	/// let result = vector.phase();
+	/// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.data());
+	/// # }
+	/// ```
+	fn phase(self) -> Self::RealPartner;
+	
+	/// Copies the phase of all elements in [rad] into the given vector.
+	/// # Example
+	///
+	/// ```
+	/// # extern crate num;
+	/// # extern crate basic_dsp;
+	/// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOperations, DataVector};
+	/// # fn main() { 
+	/// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
+	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0]);
+	/// vector.get_phase(&mut result);
+	/// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.data());
+	/// # }
+	/// ```
+	fn get_phase(&self, destination: &mut Self::RealPartner);
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.

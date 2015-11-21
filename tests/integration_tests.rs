@@ -29,7 +29,7 @@ mod slow_test {
         let len = if left.len() < right.len() { left.len() } else { right.len() };
         let mut differences = 0;
         let mut first_difference = false;
-        let tolerance = 1e-12;
+        let tolerance = 1e-6;
         for i in 0 .. len {
             if (left[i] - right[i]).abs() > tolerance
             {
@@ -84,6 +84,26 @@ mod slow_test {
         let mut data = vec![0.0; len];
         for i in 0..len {
             data[i] = rng.gen_range(-10.0, 10.0);
+        }
+        data
+    }
+    
+    fn create_data_even_in_range(seed: usize, iteration: usize, from: usize, to: usize, range_start: f32, range_end: f32) -> Vec<f32>
+    {
+        let len_seed: &[_] = &[seed, iteration];
+        let mut rng: StdRng = SeedableRng::from_seed(len_seed);
+        let len = rng.gen_range(from, to);
+        let len = len + len % 2;
+        create_data_in_range_with_len(seed, iteration, len, range_start, range_end)
+    }
+    
+    fn create_data_in_range_with_len(seed: usize, iteration: usize, len: usize, range_start: f32, range_end: f32) -> Vec<f32>
+    {
+        let seed: &[_] = &[seed, iteration];
+        let mut rng: StdRng = SeedableRng::from_seed(seed);
+        let mut data = vec![0.0; len];
+        for i in 0..len {
+            data[i] = rng.gen_range(range_start, range_end);
         }
         data
     }
@@ -711,6 +731,54 @@ mod slow_test {
             assert_eq!(imag_vector.delta(), delta);
             assert_eq!(real_result.is_complex(), false);
             assert_eq!(real_result.delta(), delta);
+        }
+    }
+    
+     #[test]
+    fn abs_phase_conversions_vector32_small() {
+        for iteration in 0 .. 10 {
+            let abs = create_data_even_in_range(201511205, iteration, 10000, 1000000, 0.0, 10.0);
+            let phase = create_data_in_range_with_len(201511202, iteration, abs.len(), -1.57, 1.57);
+            let delta = create_delta(3561159, iteration);
+            let complex = ComplexTimeVector32::from_mag_phase_with_delta(&abs, &phase, delta);
+            let mut abs_vector = RealTimeVector32::from_array_no_copy(vec![0.0; 0]);
+            let mut phase_vector = RealTimeVector32::from_array_no_copy(vec![0.0; 0]);
+            complex.get_complex_abs(&mut abs_vector);
+            complex.get_phase(&mut phase_vector);
+            let phase_result = complex.phase();
+            assert_vector_eq_with_reason(&abs, &abs_vector.data(), "Failure in get_complex_abs");
+            assert_vector_eq_with_reason(&phase, &phase_vector.data(), "Failure in get_phase");
+            assert_vector_eq_with_reason(&phase, &phase_result.data(), "Failure in to_real");
+            assert_eq!(abs_vector.is_complex(), false);
+            assert_eq!(abs_vector.delta(), delta);
+            assert_eq!(phase_vector.is_complex(), false);
+            assert_eq!(phase_vector.delta(), delta);
+            assert_eq!(phase_result.is_complex(), false);
+            assert_eq!(phase_result.delta(), delta);
+        }
+    }
+    
+    #[test]
+    fn abs_phase_conversions_vector32_large() {
+        for iteration in 0 .. 3 {
+            let abs = create_data_even_in_range(201511203, iteration, 1000001, 2000000, 0.0, 10.0);
+            let phase = create_data_in_range_with_len(201511204, iteration, abs.len(), -1.57, 1.57);
+            let delta = create_delta(3561159, iteration);
+            let complex = ComplexTimeVector32::from_mag_phase_with_delta(&abs, &phase, delta);
+            let mut abs_vector = RealTimeVector32::from_array_no_copy(vec![0.0; 0]);
+            let mut phase_vector = RealTimeVector32::from_array_no_copy(vec![0.0; 0]);
+            complex.get_complex_abs(&mut abs_vector);
+            complex.get_phase(&mut phase_vector);
+            let phase_result = complex.phase();
+            assert_vector_eq_with_reason(&abs, &abs_vector.data(), "Failure in get_complex_abs");
+            assert_vector_eq_with_reason(&phase, &phase_vector.data(), "Failure in get_phase");
+            assert_vector_eq_with_reason(&phase, &phase_result.data(), "Failure in to_real");
+            assert_eq!(abs_vector.is_complex(), false);
+            assert_eq!(abs_vector.delta(), delta);
+            assert_eq!(phase_vector.is_complex(), false);
+            assert_eq!(phase_vector.delta(), delta);
+            assert_eq!(phase_result.is_complex(), false);
+            assert_eq!(phase_result.delta(), delta);
         }
     }
 }

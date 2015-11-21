@@ -423,6 +423,46 @@ macro_rules! define_complex_basic_struct_members {
 				  valid_len: data_length
 				}
 			}
+			
+			/// Creates a complex  `DataVector` from an array with magnitude and an array with phase data. `delta` is set to 1.
+			///
+			/// Arrays must have the same length. Phase must be in [rad].
+			pub fn from_mag_phase(magnitude: &[<$name as DataVector>::E], phase: &[<$name as DataVector>::E])
+				-> $name
+			{
+				$name::from_mag_phase_with_delta(magnitude, phase, 1.0)
+			}
+			
+			/// Creates a complex  `DataVector` from an array with magnitude and an array with phase data. `delta` is set to the given value 1.
+			///
+			/// Arrays must have the same length. Phase must be in [rad].
+			pub fn from_mag_phase_with_delta(magnitude: &[<$name as DataVector>::E], phase: &[<$name as DataVector>::E], delta: <$name as DataVector>::E)
+				-> $name
+			{
+				if magnitude.len() != phase.len()
+				{
+					panic!("Input lengths differ: magnitude has {} elements and phase has {} elements", magnitude.len(), phase.len());
+				}
+				
+				let mut data = Vec::with_capacity(magnitude.len() + phase.len());
+				for i in 0 .. magnitude.len() {
+					let complex = <$name as ComplexVectorOperations>::Complex::from_polar(&magnitude[i], &phase[i]);
+					data.push(complex.re);
+					data.push(complex.im);
+				}
+				
+				let data_length = data.len();
+				
+				$name 
+				{ 
+				  data: data, 
+				  temp: vec![0.0; data_length],
+				  delta: delta,
+				  domain: DataVectorDomain::$domain,
+				  is_complex: true,
+				  valid_len: data_length
+				}
+			}
 		} 
 	 }
 }
@@ -450,6 +490,11 @@ macro_rules! define_complex_operations_forward {
 			fn complex_abs(self) -> $real_partner
 			{
 				$real_partner::from_gen(self.to_gen().complex_abs())
+			}
+			
+			fn get_complex_abs(&self, destination: &mut Self::RealPartner)
+			{
+				self.to_gen_borrow().get_complex_abs(destination.to_gen_mut_borrow())
 			}
 			
 			fn complex_abs_squared(self) -> $real_partner
@@ -480,6 +525,16 @@ macro_rules! define_complex_operations_forward {
 			fn get_imag(&self, destination: &mut Self::RealPartner)
 			{
 				self.to_gen_borrow().get_imag(destination.to_gen_mut_borrow())
+			}
+			
+			fn phase(self) -> Self::RealPartner
+			{
+				$real_partner::from_gen(self.to_gen().phase())
+			}
+			
+			fn get_phase(&self, destination: &mut Self::RealPartner)
+			{
+				self.to_gen_borrow().get_phase(destination.to_gen_mut_borrow())
 			}
 		}
 	 	

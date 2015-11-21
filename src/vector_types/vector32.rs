@@ -79,7 +79,7 @@ impl GenericVectorOperations for DataVector32
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
 			let other = &summand.data;
-			Chunk::execute_original_to_target(&other, vectorization_length, &mut array, vectorization_length, 4,  DataVector32::add_vector_simd);
+			Chunk::execute_original_to_target(&other, vectorization_length, 4, &mut array, vectorization_length, 4,  DataVector32::add_vector_simd);
 			let mut i = vectorization_length;
 			while i < data_length
 			{
@@ -105,7 +105,7 @@ impl GenericVectorOperations for DataVector32
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
 			let other = &subtrahend.data;
-			Chunk::execute_original_to_target(&other, vectorization_length, &mut array, vectorization_length, 4,  DataVector32::sub_vector_simd);
+			Chunk::execute_original_to_target(&other, vectorization_length, 4, &mut array, vectorization_length, 4,  DataVector32::sub_vector_simd);
 			let mut i = vectorization_length;
 			while i < data_length
 			{
@@ -277,9 +277,9 @@ impl ComplexVectorOperations for DataVector32
 			let data_length = self.len();
 			let scalar_length = data_length % 4;
 			let vectorization_length = data_length - scalar_length;
-			let mut array = &mut self.data;
+			let array = &self.data;
 			let mut temp = &mut self.temp;
-			Chunk::execute_partial_with_temp(&mut array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, DataVector32::complex_abs_simd);
+			Chunk::execute_original_to_target(&array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2,  DataVector32::complex_abs_simd);
 			let mut i = vectorization_length;
 			while i + 1 < data_length
 			{
@@ -291,6 +291,26 @@ impl ComplexVectorOperations for DataVector32
 		}
 		
 		self.swap_data_temp()
+	}
+	
+	fn get_complex_abs(&self, destination: &mut DataVector32)
+	{
+		let data_length = self.len();
+		destination.reallocate(data_length / 2);
+		let scalar_length = data_length % 4;
+		let vectorization_length = data_length - scalar_length;
+		let array = &self.data;
+		let mut temp = &mut destination.data;
+		Chunk::execute_original_to_target(&array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2,  DataVector32::complex_abs_simd);
+		let mut i = vectorization_length;
+		while i + 1 < data_length
+		{
+			temp[i / 2] = (array[i] * array[i] + array[i + 1] * array[i + 1]).sqrt();
+			i += 2;
+		}
+		
+		destination.is_complex = false;
+		destination.delta = self.delta;
 	}
 	
 	fn complex_abs_squared(mut self) -> DataVector32
@@ -330,7 +350,7 @@ impl ComplexVectorOperations for DataVector32
 			let len = self.len();
 			let mut array = &mut self.temp;
 			let source = &self.data;
-			Chunk::execute_original_to_target(&source, len, &mut array, len / 2, 2,  DataVector32::copy_real_parts_par);
+			Chunk::execute_original_to_target(&source, len, 2, &mut array, len / 2, 1,  DataVector32::copy_real_parts_par);
 		}
 		
 		self.is_complex = false;
@@ -344,7 +364,7 @@ impl ComplexVectorOperations for DataVector32
 			let len = self.len();
 			let mut array = &mut self.temp;
 			let source = &self.data;
-			Chunk::execute_original_to_target(&source, len, &mut array, len / 2, 2,  DataVector32::copy_imag_parts_par);
+			Chunk::execute_original_to_target(&source, len, 2, &mut array, len / 2, 1,  DataVector32::copy_imag_parts_par);
 		}
 		
 		self.is_complex = false;
@@ -356,24 +376,47 @@ impl ComplexVectorOperations for DataVector32
 	{
 		let len = self.len();
 		destination.reallocate(len / 2);
-		
-		let len= self.len();
 		destination.delta = self.delta;
+		destination.is_complex = false;
 		let mut array = &mut destination.data;
 		let source = &self.data;
-		Chunk::execute_original_to_target(&source, len, &mut array, len / 2, 2,  DataVector32::copy_real_parts_par);
+		Chunk::execute_original_to_target(&source, len, 2, &mut array, len / 2, 1,  DataVector32::copy_real_parts_par);
 	}
 	
 	fn get_imag(&self, destination: &mut DataVector32)
 	{
 		let len = self.len();
 		destination.reallocate(len / 2);
-		
-		let len = self.len();
 		destination.delta = self.delta;
+		destination.is_complex = false;
 		let mut array = &mut destination.data;
 		let source = &self.data;
-		Chunk::execute_original_to_target(&source, len, &mut array, len / 2, 2,  DataVector32::copy_imag_parts_par);
+		Chunk::execute_original_to_target(&source, len, 2, &mut array, len / 2, 1,  DataVector32::copy_imag_parts_par);
+	}
+	
+	fn phase(mut self) -> DataVector32
+	{
+		{
+			let len = self.len();
+			let mut array = &mut self.temp;
+			let source = &self.data;
+			Chunk::execute_original_to_target(&source, len, 2, &mut array, len / 2, 1,  DataVector32::phase_par);
+		}
+		
+		self.is_complex = false;
+		self.valid_len = self.valid_len / 2;
+		self.swap_data_temp()
+	}
+	
+	fn get_phase(&self, destination: &mut DataVector32)
+	{
+		let len = self.len();
+		destination.reallocate(len / 2);
+		destination.delta = self.delta;
+		destination.is_complex = false;
+		let mut array = &mut destination.data;
+		let source = &self.data;
+		Chunk::execute_original_to_target(&source, len, 2, &mut array, len / 2, 1,  DataVector32::phase_par);
 	}
 }
 
@@ -574,6 +617,19 @@ impl DataVector32
 		}
 	}
 	
+	fn phase_par(original: &[f32], range: Range<usize>, target: &mut [f32])
+	{
+		let mut i = range.start;
+		let mut j = 0;
+		while j < target.len()
+		{ 
+			let complex = Complex32::new(original[i], original[i + 1]);
+			target[j] = complex.arg();
+			i += 2;
+			j += 1;
+		}
+	}
+	
 	fn multiply_vector_complex(mut self, factor: &DataVector32) -> DataVector32
 	{
 		{
@@ -582,7 +638,7 @@ impl DataVector32
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
 			let other = &factor.data;
-			Chunk::execute_original_to_target(&other, vectorization_length, &mut array, vectorization_length, 4,  DataVector32::mul_vector_complex_simd);
+			Chunk::execute_original_to_target(&other, vectorization_length, 4, &mut array, vectorization_length, 4,  DataVector32::mul_vector_complex_simd);
 			let mut i = vectorization_length;
 			while i < data_length
 			{
@@ -620,7 +676,7 @@ impl DataVector32
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
 			let other = &factor.data;
-			Chunk::execute_original_to_target(&other, vectorization_length, &mut array, vectorization_length, 4,  DataVector32::mul_vector_real_simd);
+			Chunk::execute_original_to_target(&other, vectorization_length, 4, &mut array, vectorization_length, 4,  DataVector32::mul_vector_real_simd);
 			let mut i = vectorization_length;
 			while i < data_length
 			{
@@ -654,7 +710,7 @@ impl DataVector32
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
 			let other = &divisor.data;
-			Chunk::execute_original_to_target(&other, vectorization_length, &mut array, vectorization_length, 4,  DataVector32::divide_vector_complex_simd);
+			Chunk::execute_original_to_target(&other, vectorization_length, 4, &mut array, vectorization_length, 4,  DataVector32::divide_vector_complex_simd);
 			let mut i = vectorization_length;
 			while i < data_length
 			{
@@ -692,7 +748,7 @@ impl DataVector32
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
 			let other = &divisor.data;
-			Chunk::execute_original_to_target(&other, vectorization_length, &mut array, vectorization_length, 4,  DataVector32::div_vector_real_simd);
+			Chunk::execute_original_to_target(&other, vectorization_length, 4, &mut array, vectorization_length, 4,  DataVector32::div_vector_real_simd);
 			let mut i = vectorization_length;
 			while i < data_length
 			{
@@ -790,17 +846,17 @@ impl DataVector32
 		}
 	}
 	
-	fn complex_abs_simd(array: &[f32], target: &mut [f32])
+	fn complex_abs_simd(original: &[f32], range: Range<usize>, target: &mut [f32])
 	{
 		let mut i = 0;
-		let mut j = 0;
-		while i < array.len()
+		let mut j = range.start;
+		while i < target.len()
 		{ 
-			let vector = f32x4::load(array, i);
+			let vector = f32x4::load(original, j);
 			let result = vector.complex_abs();
-			result.store_half(target, j);
-			i += 4;
-			j += 2;
+			result.store_half(target, i);
+			j += 4;
+			i += 2;
 		}
 	}
 	
@@ -835,7 +891,7 @@ impl DataVector32
 			let data_length = new_len;
 			let mut target = &mut self.temp;
 			let source = &self.data;
-			Chunk::execute_original_to_target(&source, data_length, &mut target, data_length, 4,  DataVector32::zero_interleave_complex_par);
+			Chunk::execute_original_to_target(&source, data_length, 4, &mut target, data_length, 4,  DataVector32::zero_interleave_complex_par);
 		}
 		self.swap_data_temp()
 	}
@@ -848,7 +904,7 @@ impl DataVector32
 			let data_length = new_len;
 			let mut target = &mut self.temp;
 			let source = &self.data;
-			Chunk::execute_original_to_target(&source, data_length, &mut target, data_length, 2,  DataVector32::zero_interleave_real_par);
+			Chunk::execute_original_to_target(&source, data_length, 4, &mut target, data_length, 2,  DataVector32::zero_interleave_real_par);
 		}
 		self.swap_data_temp()
 	}
