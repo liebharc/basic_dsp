@@ -358,6 +358,7 @@ impl ComplexVectorOperations for DataVector32
 		destination.reallocate(len / 2);
 		
 		let len= self.len();
+		destination.delta = self.delta;
 		let mut array = &mut destination.data;
 		let source = &self.data;
 		Chunk::execute_original_to_target(&source, len, &mut array, len / 2, 2,  DataVector32::copy_real_parts_par);
@@ -369,6 +370,7 @@ impl ComplexVectorOperations for DataVector32
 		destination.reallocate(len / 2);
 		
 		let len = self.len();
+		destination.delta = self.delta;
 		let mut array = &mut destination.data;
 		let source = &self.data;
 		Chunk::execute_original_to_target(&source, len, &mut array, len / 2, 2,  DataVector32::copy_imag_parts_par);
@@ -550,8 +552,8 @@ impl DataVector32
 	
 	fn copy_real_parts_par(original: &[f32], range: Range<usize>, target: &mut [f32])
 	{
-		let mut i = 0;
-		let mut j = range.start;
+		let mut i = range.start;
+		let mut j = 0;
 		while j < target.len()
 		{ 
 			target[j] = original[i];
@@ -562,8 +564,8 @@ impl DataVector32
 	
 	fn copy_imag_parts_par(original: &[f32], range: Range<usize>, target: &mut [f32])
 	{
-		let mut i = 1;
-		let mut j = range.start;
+		let mut i = range.start + 1;
+		let mut j = 0;
 		while j < target.len()
 		{ 
 			target[j] = original[i];

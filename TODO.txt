@@ -1,9 +1,10 @@
 1. More basic functions:
 - Phase/Angle
 - Unwrap
+- Complex vector from abs and phase (from polar)
 - Exp, Power
 - Log, Log10
-- Wrap
+- Wrap/Modulo
 - Differential, Cummulative Sum or Integrate (this requires for parallel computation that we are able to
  access the last element of the previous data chunk. It might be the easiest to achieve that by performing the operation
  on the temp array and give all function calls the complete org array as immutable)
@@ -16,5 +17,10 @@
 ...
 2. Think about more domain specfic functions such as frequency estimation
 3. Take a look at https://github.com/sebcrozet/nalgebra
-4. Add performance hints which e.g. specify if all operations should be run in parallel (aggressive parallelization) 
-   or only those with were a significant performance boost would be expected.
+4. Figure out if we can speed up the parallel task creation on Windows.
+5. Add performance hints which e.g. specify if all operations should be run in parallel (aggressive parallelization) 
+   or only those with were a significant performance boost would be expected.#
+...
+1000. Add CUDA support, the SIMD library might have an example how we can output low level operations
+    for the GPU. Perhaps using macros to define an assembler language (as far as necessary) for our operations
+    would also be an option. 

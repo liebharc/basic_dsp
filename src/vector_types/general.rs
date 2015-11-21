@@ -170,6 +170,8 @@ pub trait RealVectorOperations : DataVector {
 	fn real_abs(self) -> Self;
 	
 	/// Gets the square root of all vector elements.
+	///
+	/// The sqrt of a negative number gives NaN and not a complex vector.  
 	/// # Example
 	///
 	/// ```
