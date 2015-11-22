@@ -102,6 +102,41 @@ impl RealVectorOperations for DataVector64
 		panic!("Unimplemented");
 	}
 	
+	fn real_square(self) -> Self
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn real_root(self, degree: Self::E) -> Self
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn real_power(self, exponent: Self::E) -> Self
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn real_logn(self) -> Self
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn real_expn(self) -> Self
+	{
+		panic!("Unimplemented");
+	}
+
+	fn real_log_base(self, base: Self::E) -> Self
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn real_exp_base(self, base: Self::E) -> Self
+	{
+		panic!("Unimplemented");
+	}
+	
 	fn to_complex(self) -> DataVector64
 	{
 		panic!("Unimplemented");

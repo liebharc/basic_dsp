@@ -230,6 +230,76 @@ impl RealVectorOperations for DataVector32
 		self
 	}
 	
+	fn real_square(mut self) -> Self
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(&mut array, length, 1, DataVector32::real_square_par);
+		}
+		self
+	}
+	
+	fn real_root(mut self, degree: Self::E) -> Self
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial_with_arguments(&mut array, length, 1, DataVector32::real_root_par, degree);
+		}
+		self
+	}
+	
+	fn real_power(mut self, exponent: Self::E) -> Self
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial_with_arguments(&mut array, length, 1, DataVector32::real_power_par, exponent);
+		}
+		self
+	}
+	
+	fn real_logn(mut self) -> Self
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(&mut array, length, 1, DataVector32::real_logn_par);
+		}
+		self
+	}
+	
+	fn real_expn(mut self) -> Self
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(&mut array, length, 1, DataVector32::real_expn_par);
+		}
+		self
+	}
+
+	fn real_log_base(mut self, base: Self::E) -> Self
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial_with_arguments(&mut array, length, 1, DataVector32::real_log_base_par, base);
+		}
+		self
+	}
+	
+	fn real_exp_base(mut self, base: Self::E) -> Self
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial_with_arguments(&mut array, length, 1, DataVector32::real_exp_base_par, base);
+		}
+		self
+	}
+	
 	fn to_complex(self) -> DataVector32
 	{
 		let mut result = self.zero_interleave_real();
@@ -842,6 +912,83 @@ impl DataVector32
 		while i < array.len()
 		{
 			array[i] = array[i].sqrt();
+			i += 1;
+		}
+	}
+	
+	fn real_square_par<T>(array: &mut [T])
+		where T : Float
+	{
+		let mut i = 0;
+		while i < array.len()
+		{
+			array[i] = array[i] * array[i];
+			i += 1;
+		}
+	}
+	
+	fn real_root_par(array: &mut [f32], base: f32)
+	{
+		let base = 1.0 / base;
+		let mut i = 0;
+		while i < array.len()
+		{
+			array[i] = array[i].powf(base);
+			i += 1;
+		}
+	}
+	
+	fn real_power_par<T>(array: &mut [T], base: T)
+		where T : Float
+	{
+		let mut i = 0;
+		while i < array.len()
+		{
+			array[i] = array[i].powf(base);
+			i += 1;
+		}
+	}
+	
+	fn real_logn_par<T>(array: &mut [T])
+		where T : Float
+	{
+		let mut i = 0;
+		while i < array.len()
+		{
+			array[i] = array[i].ln();
+			i += 1;
+		}
+	}
+	
+	fn real_expn_par<T>(array: &mut [T])
+		where T : Float
+	{
+		let mut i = 0;
+		while i < array.len()
+		{
+			array[i] = array[i].exp();
+			i += 1;
+		}
+	}
+	
+	fn real_log_base_par<T>(array: &mut [T], base: T)
+		where T : Float
+	{
+		let mut i = 0;
+		while i < array.len()
+		{
+			array[i] = array[i].log(base);
+			i += 1;
+		}
+	}
+	
+	fn real_exp_base_par<T>(array: &mut [T], base: T)
+		where T : Float
+	{
+		let mut i = 0;
+		while i < array.len()
+		{
+			array[i] = base.powf(array[i]);
 			i += 1;
 		}
 	}

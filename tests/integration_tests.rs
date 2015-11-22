@@ -781,4 +781,86 @@ mod slow_test {
             assert_eq!(phase_result.delta(), delta);
         }
     }
+    
+    #[test]
+    fn real_square_sqrt_vector32_small() {
+        for iteration in 0 .. 10 {
+            let a = create_data_even_in_range(201511210, iteration, 10000, 1000000, 0.0, 10.0);
+            let delta = create_delta(3561159, iteration);
+            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
+            let result = vector.real_square().real_sqrt();
+            assert_vector_eq(&a, &result.data());
+            assert_eq!(result.is_complex(), false);
+            assert_eq!(result.delta(), delta);
+        }
+    }
+    
+    #[test]
+    fn real_square_sqrt__vector32_large() {
+        for iteration in 0 .. 3 {
+            let a = create_data_even_in_range(201511212, iteration, 1000001, 20000000, 0.0, 10.0);
+            let delta = create_delta(3561159, iteration);
+            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
+            let result = vector.real_square().real_sqrt();
+            assert_vector_eq(&a, &result.data());
+            assert_eq!(result.is_complex(), false);
+            assert_eq!(result.delta(), delta);
+        }
+    }
+    
+    #[test]
+    fn real_expn_logn_vector32_small() {
+        for iteration in 0 .. 10 {
+            let a = create_data(201511210, iteration, 10000, 1000000);
+            let delta = create_delta(3561159, iteration);
+            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
+            let result = vector.real_expn().real_logn();
+            assert_vector_eq(&a, &result.data());
+            assert_eq!(result.is_complex(), false);
+            assert_eq!(result.delta(), delta);
+        }
+    }
+    
+    #[test]
+    fn real_expn_logn__vector32_large() {
+        for iteration in 0 .. 3 {
+            let a = create_data(201511212, iteration, 1000001, 2000000);
+            let delta = create_delta(3561159, iteration);
+            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
+            let result = vector.real_expn().real_logn();
+            assert_vector_eq(&a, &result.data());
+            assert_eq!(result.is_complex(), false);
+            assert_eq!(result.delta(), delta);
+        }
+    }
+    
+    #[test]
+    fn real_exp_log_vector32_small() {
+        for iteration in 0 .. 10 {
+            let a = create_data(201511210, iteration, 10000, 1000000);
+            let base = create_data_even_in_range(201511213, iteration, 1, 2, 0.1, 20.0);
+            let base = base[0];
+            let delta = create_delta(3561159, iteration);
+            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
+            let result = vector.real_exp_base(base).real_log_base(base);
+            assert_vector_eq(&a, &result.data());
+            assert_eq!(result.is_complex(), false);
+            assert_eq!(result.delta(), delta);
+        }
+    }
+    
+    #[test]
+    fn real_exp_log__vector32_large() {
+        for iteration in 0 .. 3 {
+            let a = create_data(201511212, iteration, 1000001, 2000000);
+            let base = create_data_even_in_range(201511213, iteration, 1, 2, 0.1, 20.0);
+            let base = base[0];
+            let delta = create_delta(3561159, iteration);
+            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
+            let result = vector.real_exp_base(base).real_log_base(base);
+            assert_vector_eq(&a, &result.data());
+            assert_eq!(result.is_complex(), false);
+            assert_eq!(result.delta(), delta);
+        }
+    }
 }

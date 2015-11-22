@@ -186,6 +186,93 @@ pub trait RealVectorOperations : DataVector {
 	/// ```
 	fn real_sqrt(self) -> Self;
 	
+	/// Squares all vector elements.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0]);
+	/// let result = vector.real_square();
+	/// assert_eq!([1.0, 4.0, 9.0, 16.0, 25.0], result.data());
+	/// ```
+	fn real_square(self) -> Self;
+	
+	/// Calculates the n-th root of every vector element.
+	///
+	/// If the result would be a complex number then the vector will contain a NaN instead. So the vector
+	/// will never convert itself to a complex vector during this operation.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 8.0, 27.0]);
+	/// let result = vector.real_root(3.0);
+	/// assert_eq!([1.0, 2.0, 3.0], result.data());
+	/// ```
+	fn real_root(self, degree: Self::E) -> Self;
+	
+	/// Raises every vector element to the given power.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
+	/// let result = vector.real_power(3.0);
+	/// assert_eq!([1.0, 8.0, 27.0], result.data());
+	/// ```
+	fn real_power(self, exponent: Self::E) -> Self;
+	
+	/// Calculates the natural logarithm to the base e for every vector element.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[2.718281828459045	, 7.389056, 20.085537]);
+	/// let result = vector.real_logn();
+	/// assert_eq!([0.99999994, 2.0, 3.0], result.data());
+	/// ```
+	fn real_logn(self) -> Self;
+	
+	/// Calculates the natural exponential to the base e for every vector element.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
+	/// let result = vector.real_expn();
+	/// assert_eq!([2.71828182846, 7.389056, 20.085537], result.data());
+	/// ```
+	fn real_expn(self) -> Self;
+	
+	/// Calculates the logarithm to the given base for every vector element.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[10.0, 100.0, 1000.0]);
+	/// let result = vector.real_log_base(10.0);
+	/// assert_eq!([1.0, 2.0, 3.0], result.data());
+	/// ```
+	fn real_log_base(self, base: Self::E) -> Self;
+	
+	/// Calculates the exponential to the given base for every vector element.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
+	/// let result = vector.real_exp_base(10.0);
+	/// assert_eq!([10.0, 100.0, 1000.0], result.data());
+	/// ```
+	fn real_exp_base(self, base: Self::E) -> Self;
+	
 	/// Converts the real vector into a complex vector.
 	/// # Example
 	///

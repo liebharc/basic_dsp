@@ -289,6 +289,41 @@ macro_rules! define_real_operations_forward {
 				$name::from_gen(self.to_gen().real_sqrt()) 
 			}
 			
+			fn real_square(self) -> Self
+			{
+				$name::from_gen(self.to_gen().real_square()) 
+			}
+			
+			fn real_root(self, degree: Self::E) -> Self
+			{
+				$name::from_gen(self.to_gen().real_root(degree)) 
+			}
+			
+			fn real_power(self, exponent: Self::E) -> Self
+			{
+				$name::from_gen(self.to_gen().real_power(exponent)) 
+			}
+			
+			fn real_logn(self) -> Self
+			{
+				$name::from_gen(self.to_gen().real_logn()) 
+			}
+			
+			fn real_expn(self) -> Self
+			{
+				$name::from_gen(self.to_gen().real_expn()) 
+			}
+		
+			fn real_log_base(self, base: Self::E) -> Self
+			{
+				$name::from_gen(self.to_gen().real_log_base(base)) 
+			}
+			
+			fn real_exp_base(self, base: Self::E) -> Self
+			{
+				$name::from_gen(self.to_gen().real_exp_base(base)) 
+			}
+			
 			fn to_complex(self) -> $complex_partner
 			{
 				$complex_partner::from_gen(self.to_gen().to_complex()) 
