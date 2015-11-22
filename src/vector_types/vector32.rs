@@ -180,6 +180,62 @@ impl GenericVectorOperations for DataVector32
 			self.zero_interleave_real()
 		}
 	}
+	
+	fn diff(mut self) -> Self
+	{
+		{
+			let data_length = self.len();
+			let mut target = &mut self.temp;
+			let org = &self.data;
+			if self.is_complex {
+				self.valid_len -= 2;
+				Chunk::execute_original_to_target(&org, data_length, 2, &mut target, data_length, 2, DataVector32::complex_diff_par);
+			}
+			else {
+				self.valid_len -= 1;
+				Chunk::execute_original_to_target(&org, data_length, 1, &mut target, data_length, 1, DataVector32::real_diff_par);
+			}
+		}
+		
+		self.swap_data_temp()
+	}
+	
+	fn diff_with_start(mut self) -> Self
+	{
+		{
+			let data_length = self.len();
+			let mut target = &mut self.temp;
+			let org = &self.data;
+			if self.is_complex {
+				Chunk::execute_original_to_target(&org, data_length, 2, &mut target, data_length, 2, DataVector32::complex_diff_with_start_par);
+			}
+			else {
+				Chunk::execute_original_to_target(&org, data_length, 1, &mut target, data_length, 1, DataVector32::real_diff_with_start_par);
+			}
+		}
+		
+		self.swap_data_temp()
+	}
+	
+	fn cum_sum(mut self) -> Self
+	{
+		{
+			let data_length = self.len();
+			let mut data = &mut self.data;
+			let mut i = 0;
+			let mut j = 1;
+			if self.is_complex {
+				i = 2;
+			}
+			
+			while j < data_length {
+				data[j] = data[j] + data[i];
+				i += 1;
+				j += 1;
+			}
+		}
+		self
+	}
 }
 
 #[inline]
@@ -305,6 +361,42 @@ impl RealVectorOperations for DataVector32
 		let mut result = self.zero_interleave_real();
 		result.is_complex = true;
 		result
+	}
+	
+	fn wrap(mut self, divisor: Self::E) -> Self
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial_with_arguments(&mut array, length, 1, DataVector32::real_modulo_par, divisor);
+		}
+		self
+	}
+	
+	fn unwrap(mut self, divisor: Self::E) -> Self
+	{
+		{
+			let data_length = self.len();
+			let mut data = &mut self.data;
+			let mut i = 0;
+			let mut j = 1;
+			let half = divisor / 2.0;
+			while j < data_length {
+				let mut diff = data[j] - data[i];
+				diff = diff % divisor;
+				if diff > half {
+					diff -= divisor;
+				}
+				else if diff < -half {
+					diff += divisor;
+				}
+				data[j] = data[i] + diff;
+				
+				i += 1;
+				j += 1;
+			}
+		}
+		self
 	}
 }
 
@@ -1102,6 +1194,87 @@ impl DataVector32
 		self.temp = self.data;
 		self.data = temp;
 		self
+	}
+	
+	fn complex_diff_par(original: &[f32], range: Range<usize>, target: &mut [f32])
+	{
+		let mut i = 0;
+		let mut j = range.start;
+		let mut len = target.len();
+		if range.end == original.len() - 1
+		{
+			len -= 2;
+		}
+		
+		while i < len
+		{ 
+			target[i] = original[j + 2] - original[i];
+			i += 1;
+			j += 1;
+		}
+	}
+	
+	fn real_diff_par(original: &[f32], range: Range<usize>, target: &mut [f32])
+	{
+		let mut i = 0;
+		let mut j = range.start;
+		let mut len = target.len();
+		if range.end >= original.len() - 1
+		{
+			len -= 1;
+		}
+			
+		while i < len
+		{ 
+			target[i] = original[j + 1] - original[j];
+			i += 1;
+			j += 1;
+		}
+	}
+	
+	fn complex_diff_with_start_par(original: &[f32], range: Range<usize>, target: &mut [f32])
+	{
+		let mut i = 0;
+		let mut j = range.start;
+		if j == 0 {
+			i = 2;
+			j = 2;
+			target[0] = original[0];
+			target[1] = original[1];
+		}
+		
+		while i < target.len()
+		{ 
+			target[i] = original[j] - original[j - 2];
+			i += 1;
+			j += 1;
+		}
+	}
+	
+	fn real_diff_with_start_par(original: &[f32], range: Range<usize>, target: &mut [f32])
+	{
+		let mut i = 0;
+		let mut j = range.start;
+		if j == 0 {
+			i = 1;
+			j = 1;
+			target[0] = original[0];
+		}
+		
+		while i < target.len()
+		{ 
+			target[i] = original[j] - original[j - 1];
+			i += 1;
+			j += 1;
+		}
+	}
+	
+	fn real_modulo_par(array: &mut [f32], value: f32) {
+		let mut i = 0;
+		while i < array.len() {
+			array[i] = array[i] % value;
+			i += 1;
+		}
 	}
 }
 

@@ -130,6 +130,43 @@ pub trait GenericVectorOperations : DataVector {
 	/// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], result.data());
 	/// ```
 	fn zero_interleave(self) -> Self;
+	
+	/// Calculates the delta of each elements to its previous element. This will decrease the vector length by one point. 
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[2.0, 3.0, 2.0, 6.0]);
+	/// let result = vector.diff();
+	/// assert_eq!([1.0, -1.0, 4.0], result.data());
+	/// ```
+	fn diff(self) -> Self;
+	
+	/// Calculates the delta of each elements to its previous element. The first element
+	/// will remain unchanged.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[2.0, 3.0, 2.0, 6.0]);
+	/// let result = vector.diff_with_start();
+	/// assert_eq!([2.0, 1.0, -1.0, 4.0], result.data());
+	/// ```
+	fn diff_with_start(self) -> Self;
+	
+	/// Calculates the cumulative sum of all elements. This operation undoes the `diff_with_start`operation.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[2.0, 1.0, -1.0, 4.0]);
+	/// let result = vector.cum_sum();
+	/// assert_eq!([2.0, 3.0, 2.0, 6.0], result.data());
+	/// ```
+	fn cum_sum(self) -> Self;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
@@ -274,6 +311,7 @@ pub trait RealVectorOperations : DataVector {
 	fn real_exp_base(self, base: Self::E) -> Self;
 	
 	/// Converts the real vector into a complex vector.
+	///
 	/// # Example
 	///
 	/// ```
@@ -283,6 +321,32 @@ pub trait RealVectorOperations : DataVector {
 	/// assert_eq!([1.0, 0.0, 2.0, 0.0], result.data());
 	/// ```
 	fn to_complex(self) -> Self::ComplexPartner;
+	
+	/// Each value in the vector is devided by the divisor and the remainder is stored in the resulting 
+	/// vector. This the same a modulo operation or to phase wrapping.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+	/// let result = vector.wrap(4.0);
+	/// assert_eq!([1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0], result.data());
+	/// ```
+	fn wrap(self, divisor: Self::E) -> Self;
+	
+	/// This function corrects the jumps in the given vector which occur due to wrap or modulo operations.
+	/// This will undo a wrap operation only if the deltas are smaller than half the divisor.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0]);
+	/// let result = vector.unwrap(4.0);
+	/// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], result.data());
+	/// ```
+	fn unwrap(self, divisor: Self::E) -> Self;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing complex data.

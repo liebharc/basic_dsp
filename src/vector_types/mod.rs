@@ -206,6 +206,21 @@ macro_rules! define_generic_operations_forward {
 			{
 				$name::from_gen(self.to_gen().zero_interleave())
 			}
+			
+			fn diff(self) -> Self
+			{
+				$name::from_gen(self.to_gen().diff())
+			}
+			
+			fn diff_with_start(self) -> Self
+			{
+				$name::from_gen(self.to_gen().diff_with_start())
+			}
+			
+			fn cum_sum(self) -> Self
+			{
+				$name::from_gen(self.to_gen().cum_sum())
+			}
 		}
 	}	
 }
@@ -327,6 +342,16 @@ macro_rules! define_real_operations_forward {
 			fn to_complex(self) -> $complex_partner
 			{
 				$complex_partner::from_gen(self.to_gen().to_complex()) 
+			}
+			
+			fn wrap(self, divisor: Self::E) -> Self
+			{
+				$name::from_gen(self.to_gen().wrap(divisor))
+			}
+			
+			fn unwrap(self, divisor: Self::E) -> Self
+			{
+				$name::from_gen(self.to_gen().unwrap(divisor))
 			}
 		}
 	 

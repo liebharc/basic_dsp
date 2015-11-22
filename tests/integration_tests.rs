@@ -796,7 +796,7 @@ mod slow_test {
     }
     
     #[test]
-    fn real_square_sqrt__vector32_large() {
+    fn real_square_sqrt_vector32_large() {
         for iteration in 0 .. 3 {
             let a = create_data_even_in_range(201511212, iteration, 1000001, 20000000, 0.0, 10.0);
             let delta = create_delta(3561159, iteration);
@@ -822,7 +822,7 @@ mod slow_test {
     }
     
     #[test]
-    fn real_expn_logn__vector32_large() {
+    fn real_expn_logn_vector32_large() {
         for iteration in 0 .. 3 {
             let a = create_data(201511212, iteration, 1000001, 2000000);
             let delta = create_delta(3561159, iteration);
@@ -850,7 +850,7 @@ mod slow_test {
     }
     
     #[test]
-    fn real_exp_log__vector32_large() {
+    fn real_exp_log_vector32_large() {
         for iteration in 0 .. 3 {
             let a = create_data(201511212, iteration, 1000001, 2000000);
             let base = create_data_even_in_range(201511213, iteration, 1, 2, 0.1, 20.0);

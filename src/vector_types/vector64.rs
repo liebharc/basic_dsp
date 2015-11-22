@@ -67,6 +67,21 @@ impl GenericVectorOperations for DataVector64
 	{
 		panic!("Unimplemented");
 	}
+	
+	fn diff(self) -> Self
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn diff_with_start(self) -> Self
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn cum_sum(self) -> Self
+	{
+		panic!("Unimplemented");
+	}
 }
 
 #[inline]
@@ -138,6 +153,16 @@ impl RealVectorOperations for DataVector64
 	}
 	
 	fn to_complex(self) -> DataVector64
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn wrap(self, divisor: Self::E) -> Self
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn unwrap(self, divisor: Self::E) -> Self
 	{
 		panic!("Unimplemented");
 	}
