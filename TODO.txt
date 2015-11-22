@@ -1,5 +1,4 @@
 1. More basic functions:
-- FFT/IFFT
 - Correlation
 - Convolve
 - Resample based on convolve
@@ -7,6 +6,7 @@
 - FFT with window functions
 - get_real_imag and get_mag_phase function, both require to copy results into two target arrays and that's why it's not 
     there right now.
+- real FFT/symmetric IFFT
 ...
 2. Think about more domain specfic functions such as frequency estimation
 3. Take a look at https://github.com/sebcrozet/nalgebra

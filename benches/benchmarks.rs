@@ -11,6 +11,8 @@ mod bench {
 		DataVector,
 		RealVectorOperations,
 		ComplexVectorOperations,
+        TimeDomainOperations,
+        FrequencyDomainOperations,
 		DataVector32, 
 		RealTimeVector32, 
 		ComplexTimeVector32, 
@@ -25,6 +27,16 @@ mod bench {
 	
 	impl VectorBox<DataVector32>
 	{
+		fn with_size(size: usize) -> VectorBox<DataVector32>
+		{
+			let data = vec![0.0; size];
+			let vector = DataVector32::from_interleaved_no_copy(data);
+			VectorBox
+			{
+				vector: Box::into_raw(Box::new(vector))
+			}
+		}
+		
 		fn new() -> VectorBox<DataVector32>
 		{
 			let data = vec![0.0; DEFAULT_DATA_SIZE];
@@ -167,6 +179,24 @@ mod bench {
 		let mut vector = VectorBox::<DataVector32>::new();
 		b.iter(|| {
 			vector.execute(|v|  { v.complex_abs() } )
+		});
+	}
+	
+	#[bench]
+	fn fft_complex_vector_32_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<DataVector32>::with_size(100000);
+		b.iter(|| {
+			vector.execute(|v|  { v.plain_fft() } )
+		});
+	}
+	
+	#[bench]
+	fn ifft_complex_vector_32_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<DataVector32>::with_size(100000);
+		b.iter(|| {
+			vector.execute(|v|  { v.plain_ifft() } )
 		});
 	}
 	
