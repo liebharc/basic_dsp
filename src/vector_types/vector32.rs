@@ -225,7 +225,7 @@ impl GenericVectorOperations for DataVector32
 			let mut i = 0;
 			let mut j = 1;
 			if self.is_complex {
-				i = 2;
+				j = 2;
 			}
 			
 			while j < data_length {

@@ -863,4 +863,186 @@ mod slow_test {
             assert_eq!(result.delta(), delta);
         }
     }
+    
+    fn real_vector_diff(a: &Vec<f32>) -> Vec<f32>
+    {
+        let mut result = vec![0.0; a.len()];
+        result[0] = a[0];
+        for i in 1 .. a.len() {
+            result[i] = a[i] - a[i - 1];
+        }
+        
+        result
+    }
+    
+    #[test]
+    fn real_diff_vector32_small() {
+        for iteration in 0 .. 10 {
+            let a = create_data(201511210, iteration, 10000, 1000000);
+            let delta = create_delta(3561159, iteration);
+            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
+            let expected = real_vector_diff(&a);
+            let result = vector.diff_with_start();
+            assert_vector_eq(&expected, &result.data());
+            assert_eq!(result.is_complex(), false);
+            assert_eq!(result.delta(), delta);
+        }
+    }
+    
+    #[test]
+    fn real_diff_vector32_large() {
+        for iteration in 0 .. 3 {
+            let a = create_data(201511212, iteration, 1000001, 2000000);
+            let delta = create_delta(3561159, iteration);
+            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
+            let expected = real_vector_diff(&a);
+            let result = vector.diff_with_start();
+            assert_vector_eq(&expected, &result.data());
+            assert_eq!(result.is_complex(), false);
+            assert_eq!(result.delta(), delta);
+        }
+    }
+    
+    fn complex_vector_diff(a: &Vec<f32>) -> Vec<f32>
+    {
+        let a = to_complex(a);
+        let mut result = vec![Complex32::new(0.0, 0.0); a.len()];
+        result[0] = a[0];
+        for i in 1 .. a.len() {
+            result[i] = a[i] - a[i - 1];
+        }
+        
+        from_complex(&result)
+    }
+    
+    #[test]
+    fn complex_diff_vector32_small() {
+        for iteration in 0 .. 10 {
+            let a = create_data_even(201511210, iteration, 10000, 1000000);
+            let delta = create_delta(3561159, iteration);
+            let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let expected = complex_vector_diff(&a);
+            let result = vector.diff_with_start();
+            assert_vector_eq(&expected, &result.data());
+            assert_eq!(result.is_complex(), true);
+            assert_eq!(result.delta(), delta);
+        }
+    }
+    
+    #[test]
+    fn complex_diff_vector32_large() {
+        for iteration in 0 .. 3 {
+            let a = create_data_even(201511212, iteration, 1000001, 2000000);
+            let delta = create_delta(3561159, iteration);
+            let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let expected = complex_vector_diff(&a);
+            let result = vector.diff_with_start();
+            assert_vector_eq(&expected, &result.data());
+            assert_eq!(result.is_complex(), true);
+            assert_eq!(result.delta(), delta);
+        }
+    }
+    
+    fn complex_vector_cum_sum(a: &Vec<f32>) -> Vec<f32>
+    {
+        let a = to_complex(a);
+        let mut result = vec![Complex32::new(0.0, 0.0); a.len()];
+        result[0] = a[0];
+        for i in 1 .. a.len() {
+            result[i] = a[i] + result[i - 1];
+        }
+        
+        from_complex(&result)
+    }
+    
+    #[test]
+    fn complex_cum_sum_vector32_small() {
+        for iteration in 0 .. 10 {
+            let a = create_data_even(201511210, iteration, 10000, 1000000);
+            let delta = create_delta(3561159, iteration);
+            let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let expected = complex_vector_cum_sum(&a);
+            let result = vector.cum_sum();
+            assert_vector_eq(&expected, &result.data());
+            assert_eq!(result.is_complex(), true);
+            assert_eq!(result.delta(), delta);
+        }
+    }
+    
+    #[test]
+    fn complex_cum_sum_vector32_large() {
+        for iteration in 0 .. 3 {
+            let a = create_data_even(201511212, iteration, 1000001, 2000000);
+            let delta = create_delta(3561159, iteration);
+            let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let expected = complex_vector_cum_sum(&a);
+            let result = vector.cum_sum();
+            assert_vector_eq(&expected, &result.data());
+            assert_eq!(result.is_complex(), true);
+            assert_eq!(result.delta(), delta);
+        }
+    }
+    
+    fn real_vector_cum_sum(a: &Vec<f32>) -> Vec<f32>
+    {
+        let mut result = vec![0.0; a.len()];
+        result[0] = a[0];
+        for i in 1 .. a.len() {
+            result[i] = a[i] + result[i - 1];
+        }
+        
+        result
+    }
+    
+    #[test]
+    fn real_cum_sum_vector32_small() {
+        for iteration in 0 .. 10 {
+            let a = create_data(201511210, iteration, 10000, 1000000);
+            let delta = create_delta(3561159, iteration);
+            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
+            let expected = real_vector_cum_sum(&a);
+            let result = vector.cum_sum();
+            assert_vector_eq(&expected, &result.data());
+            assert_eq!(result.is_complex(), false);
+            assert_eq!(result.delta(), delta);
+        }
+    }
+    
+    #[test]
+    fn real_cum_sum_vector32_large() {
+        for iteration in 0 .. 3 {
+            let a = create_data(201511212, iteration, 1000001, 2000000);
+            let delta = create_delta(3561159, iteration);
+            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
+            let expected = real_vector_cum_sum(&a);
+            let result = vector.cum_sum();
+            assert_vector_eq(&expected, &result.data());
+            assert_eq!(result.is_complex(), false);
+            assert_eq!(result.delta(), delta);
+        }
+    }
+     
+    #[test]
+    fn real_wrap_unwrap_vector32_positive_large() {
+        let a = vec![1.0; 2000000];
+        let linear_seq = real_vector_cum_sum(&a);
+        let delta = 0.1;
+        let vector = RealTimeVector32::from_array_with_delta(&linear_seq, delta);
+        let result = vector.wrap(8.0).unwrap(8.0);
+        assert_vector_eq(&linear_seq, &result.data());
+        assert_eq!(result.is_complex(), false);
+        assert_eq!(result.delta(), delta);
+    }
+    
+    #[test]
+    fn real_wrap_unwrap_vector32_lnegative_arge() {
+        let a = vec![-1.0; 2000000];
+        let linear_seq = real_vector_cum_sum(&a);
+        let delta = 0.1;
+        let vector = RealTimeVector32::from_array_with_delta(&linear_seq, delta);
+        let result = vector.wrap(8.0).unwrap(8.0);
+        assert_vector_eq(&linear_seq, &result.data());
+        assert_eq!(result.is_complex(), false);
+        assert_eq!(result.delta(), delta);
+    }
 }
