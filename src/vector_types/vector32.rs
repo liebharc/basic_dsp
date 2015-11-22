@@ -4,6 +4,8 @@ use super::general::{
 	DataVectorDomain,
 	GenericVectorOperations,
 	RealVectorOperations,
+	TimeDomainOperations,
+	FrequencyDomainOperations,
 	ComplexVectorOperations};
 use simd::f32x4;
 use simd_extensions::SimdExtensions32;
@@ -11,6 +13,7 @@ use num::complex::Complex32;
 use num::traits::Float;
 use std::ops::{Index, IndexMut, Range, RangeTo, RangeFrom, RangeFull};
 use std::mem;
+use rustfft::FFT;
 
 /// An alternative way to define operations on a vector.
 /// Warning: Highly unstable and not even fully implemented right now.
@@ -1276,6 +1279,72 @@ impl DataVector32
 			i += 1;
 		}
 	}
+	
+	fn array_to_complex(array: &[f32]) -> &[Complex32] {
+		unsafe { 
+			let len = array.len();
+			let trans: &[Complex32] = mem::transmute(array);
+			&trans[0 .. len / 2]
+		}
+	}
+	
+	fn array_to_complex_mut(array: &mut [f32]) -> &mut [Complex32] {
+		unsafe { 
+			let len = array.len();
+			let trans: &mut [Complex32] = mem::transmute(array);
+			&mut trans[0 .. len / 2]			
+		}
+	}
+}
+
+impl TimeDomainOperations for DataVector32 {
+	type FreqPartner = DataVector32;
+	fn plain_fft(mut self) -> DataVector32 {
+		{
+			let points = self.points();
+			let rbw = (points as f32)  / self.delta;
+			self.delta = rbw;
+			let mut fft = FFT::new(points, false);
+			let signal = &self.data;
+			let spectrum = &mut self.temp;
+			let signal = DataVector32::array_to_complex(signal);
+			let spectrum = DataVector32::array_to_complex_mut(spectrum);
+			fft.process(signal, spectrum);
+		}
+		self.swap_data_temp()
+	}
+}
+
+impl TimeDomainOperations for ComplexTimeVector32 {
+	type FreqPartner = ComplexFreqVector32;
+	fn plain_fft(self) -> ComplexFreqVector32 {
+		ComplexFreqVector32::from_gen(self.to_gen().plain_fft())
+	}
+}
+
+impl FrequencyDomainOperations for DataVector32 {
+	type TimePartner = DataVector32;
+	fn plain_ifft(mut self) -> DataVector32 {
+		{
+			let points = self.points();
+			let mut fft = FFT::new(points, true);
+			let delta = (points as f32)  / self.delta;
+			self.delta = delta;
+			let signal = &self.data;
+			let spectrum = &mut self.temp;
+			let signal = DataVector32::array_to_complex(signal);
+			let spectrum = DataVector32::array_to_complex_mut(spectrum);
+			fft.process(signal, spectrum);
+		}
+		self.swap_data_temp()
+	}
+}
+
+impl FrequencyDomainOperations for ComplexFreqVector32 {
+	type TimePartner = ComplexTimeVector32;
+	fn plain_ifft(self) -> ComplexTimeVector32 {
+		ComplexTimeVector32::from_gen(self.to_gen().plain_ifft())
+	}
 }
 
 #[cfg(test)]
@@ -1430,5 +1499,23 @@ mod tests {
 		let expected = [-1.0, -2.0, 4.0, -3.0, -8.0/13.0, 27.0/13.0];
 		assert_eq!(result.data, expected);
 		assert_eq!(result.delta, 1.0);
+	}
+	
+	#[test]
+	fn array_to_complex_test()
+	{
+		let a = [1.0; 10];
+		let c = DataVector32::array_to_complex(&a);
+		let expected = [Complex32::new(1.0, 1.0); 5];
+		assert_eq!(&expected, c);
+	}
+	
+	#[test]
+	fn array_to_complex_mut_test()
+	{
+		let mut a = [1.0; 10];
+		let c = DataVector32::array_to_complex_mut(&mut a);
+		let expected = [Complex32::new(1.0, 1.0); 5];
+		assert_eq!(&expected, c);
 	}
 }

@@ -546,10 +546,42 @@ pub trait ComplexVectorOperations : DataVector {
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
 pub trait TimeDomainOperations : DataVector {
-	fn fft(self) -> Self;
+	type FreqPartner;
+	
+	/// Performs a Fast Fourier Transformation transforming a time domain vector
+	/// into a frequency domain vector. 
+	/// 
+	/// This version of the FFT neither applies a window nor does it scale the 
+	/// vector.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{ComplexTimeVector32, TimeDomainOperations, DataVector};
+	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254]);
+	/// let result = vector.plain_fft();
+	/// assert_eq!([0.0, 0.0, 3.0, 0.0, 0.0, 0.0], result.data());
+	/// ```
+	fn plain_fft(self) -> Self::FreqPartner;
+	
+	// TODO add fft method which also applies a window
 }
 
 /// Defines all operations which are valid on `DataVectors` containing complex data.
 pub trait FrequencyDomainOperations : DataVector {
-	fn ifft(self) -> Self;
+	type TimePartner;
+	
+	/// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
+	/// into a time domain vector.
+	/// 
+	/// This version of the IFFT neither applies a window nor does it scale the 
+	/// vector.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{ComplexFreqVector32, FrequencyDomainOperations, DataVector};
+	/// let vector = ComplexFreqVector32::from_interleaved(&[0.0, 0.0, 1.0, 0.0, 0.0, 0.0]);
+	/// let result = vector.plain_ifft();
+	/// assert_eq!([1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254], result.data());
+	/// ```
+	fn plain_ifft(self) -> Self::TimePartner;
 }

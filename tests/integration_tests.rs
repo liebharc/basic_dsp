@@ -10,11 +10,17 @@ mod slow_test {
         RealTimeVector32,
         GenericVectorOperations,
         RealVectorOperations,
+        TimeDomainOperations,
+        FrequencyDomainOperations,
         ComplexVectorOperations,
         ComplexTimeVector32};
     use num::complex::Complex32;
     
     fn assert_vector_eq_with_reason(left: &[f32], right: &[f32], reason: &str) {
+        assert_vector_eq_with_reason_and_tolerance(left, right, 1e-6, reason);
+    }
+    
+    fn assert_vector_eq_with_reason_and_tolerance(left: &[f32], right: &[f32], tolerance: f32, reason: &str) {
         let mut errors = Vec::new();
         if reason.len() > 0
         {
@@ -29,7 +35,6 @@ mod slow_test {
         let len = if left.len() < right.len() { left.len() } else { right.len() };
         let mut differences = 0;
         let mut first_difference = false;
-        let tolerance = 1e-6;
         for i in 0 .. len {
             if (left[i] - right[i]).abs() > tolerance
             {
@@ -1044,5 +1049,20 @@ mod slow_test {
         assert_vector_eq(&linear_seq, &result.data());
         assert_eq!(result.is_complex(), false);
         assert_eq!(result.delta(), delta);
+    }
+    
+    #[test]
+    fn complex_fft_ifft_vector32_large() {
+        for iteration in 0 .. 3 {
+            let a = create_data_even(201511212, iteration, 10001, 20000);
+            let points = (a.len() / 2) as f32;
+            let delta = create_delta(3561159, iteration);
+            let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let freq = vector.plain_fft().complex_scale(Complex32::new(1.0 / points, 0.0));
+            let result= freq.plain_ifft();
+            assert_vector_eq_with_reason_and_tolerance(&a, &result.data(), 1e-4, "IFFT must invert FFT");
+            assert_eq!(result.is_complex(), true);
+            assert_eq!(result.delta(), delta);
+        }
     }
 }

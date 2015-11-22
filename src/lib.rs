@@ -24,6 +24,7 @@ extern crate simd;
 extern crate num_cpus;
 extern crate simple_parallel;
 extern crate num;
+extern crate rustfft;
 mod vector_types;
 mod multicore_support;
 mod simd_dummy;
