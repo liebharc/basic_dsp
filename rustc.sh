@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 # Runs rustc and enables SIMD CPU features
-rustc -C target-cpu=native -C target-feature=+sse2,+sse3 %*
+rustc -C target-cpu=native -C target-feature=+sse2,+sse3
