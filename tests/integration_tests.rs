@@ -1060,7 +1060,7 @@ mod slow_test {
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let freq = vector.plain_fft().complex_scale(Complex32::new(1.0 / points, 0.0));
             let result= freq.plain_ifft();
-            assert_vector_eq_with_reason_and_tolerance(&a, &result.data(), 1e-4, "IFFT must invert FFT");
+            assert_vector_eq_with_reason_and_tolerance(&a, &result.data(), 1e-3, "IFFT must invert FFT");
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);
         }
