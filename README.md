@@ -1,5 +1,7 @@
-`basic_dsp`
-[![Build Status](https://api.travis-ci.org/liebharc/basic_dsp.png](https://travis-ci.org/liebharc/basic_dsp)
+# `basic_dsp`
+
+[![Build Status](https://api.travis-ci.org/liebharc/basic_dsp.png)](https://travis-ci.org/liebharc/basic_dsp)
+
 Basic digital signal processing (DSP) operations
 
 The basic building blocks are 1xN (one times N) or Nx1 real or compelex vectors where N is typically at least in the order of magnitude of a couple of thousand elements. This crate tries to balance between a clear API and performance.
