@@ -25,6 +25,4 @@ env:
   global:
     # override the default `--features unstable` used for the nightly branch which would make the build fail
     - TRAVIS_CARGO_NIGHTLY_FEATURE=""
-    # Likely someone will kill me for hardcoding the path here, but right now I've no better away how to tell Travis
-    # that it needs to use rustc with certain compiler flags.
-    - RUSTC="/home/travis/build/liebharc/basic_dsp/rustc.sh"
+    - RUSTC="$TRAVIS_BUILD_DIR/rustc.sh"

@@ -270,7 +270,12 @@ pub trait RealVectorOperations : DataVector {
 	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
 	/// let vector = RealTimeVector32::from_array(&[2.718281828459045	, 7.389056, 20.085537]);
 	/// let result = vector.real_logn();
-	/// assert_eq!([0.99999994, 2.0, 3.0], result.data());
+	/// let actual = result.data();
+	/// let expected = &[1.0, 2.0, 3.0];
+	/// assert_eq!(actual.len(), expected.len());
+	/// for i in 0..actual.len() {
+	///		assert!((actual[i] - expected[i]).abs() < 1e-4);
+	/// }
 	/// ```
 	fn real_logn(self) -> Self;
 	
@@ -559,7 +564,12 @@ pub trait TimeDomainOperations : DataVector {
 	/// use basic_dsp::{ComplexTimeVector32, TimeDomainOperations, DataVector};
 	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254]);
 	/// let result = vector.plain_fft();
-	/// assert_eq!([0.0, 0.0, 3.0, 0.0, 0.0, 0.0], result.data());
+	/// let actual = result.data();
+	/// let expected = &[0.0, 0.0, 3.0, 0.0, 0.0, 0.0];
+	/// assert_eq!(actual.len(), expected.len());
+	/// for i in 0..actual.len() {
+	///		assert!((actual[i] - expected[i]).abs() < 1e-4);
+	/// }
 	/// ```
 	fn plain_fft(self) -> Self::FreqPartner;
 	
@@ -581,7 +591,12 @@ pub trait FrequencyDomainOperations : DataVector {
 	/// use basic_dsp::{ComplexFreqVector32, FrequencyDomainOperations, DataVector};
 	/// let vector = ComplexFreqVector32::from_interleaved(&[0.0, 0.0, 1.0, 0.0, 0.0, 0.0]);
 	/// let result = vector.plain_ifft();
-	/// assert_eq!([1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254], result.data());
+	/// let actual = result.data();
+	/// let expected = &[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254];
+	/// assert_eq!(actual.len(), expected.len());
+	/// for i in 0..actual.len() {
+	///		assert!((actual[i] - expected[i]).abs() < 1e-4);
+	/// }
 	/// ```
 	fn plain_ifft(self) -> Self::TimePartner;
 }
