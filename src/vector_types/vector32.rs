@@ -8,7 +8,7 @@ use super::general::{
 	FrequencyDomainOperations,
 	ComplexVectorOperations};
 use simd::f32x4;
-use simd_extensions::SimdExtensions32;
+use simd_extensions::SimdExtensions;
 use num::complex::Complex32;
 use num::traits::Float;
 use std::ops::{Index, IndexMut, Range, RangeTo, RangeFrom, RangeFull};

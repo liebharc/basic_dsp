@@ -27,7 +27,6 @@ extern crate num;
 extern crate rustfft;
 mod vector_types;
 mod multicore_support;
-mod simd_dummy;
 mod simd_extensions;
 pub use vector_types::
 	{

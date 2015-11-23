@@ -2,21 +2,26 @@ use simd::f32x4;
 use simd::x86::sse3::Sse3F32x4;
 use num::complex::Complex32;
 
-pub trait SimdExtensions32
+pub trait SimdExtensions
 {
-	fn add_real(self, value: f32) -> f32x4;
-	fn add_complex(self, value: Complex32) -> f32x4;
-	fn scale_real(self, value: f32) -> f32x4;
-	fn scale_complex(self, value: Complex32) -> f32x4;
-	fn complex_abs_squared(self) -> f32x4;
-	fn complex_abs(self) -> f32x4;
-	fn store_half(self, target: &mut [f32], index: usize);
-	fn mul_complex(self, value: f32x4) -> f32x4;
-	fn div_complex(self, value: f32x4) -> f32x4;
+	type Real;
+	type Complex;
+	fn add_real(self, value: Self::Real) -> Self;
+	fn add_complex(self, value: Self::Complex) -> Self;
+	fn scale_real(self, value: Self::Real) -> Self;
+	fn scale_complex(self, value: Self::Complex) -> Self;
+	fn complex_abs_squared(self) -> Self;
+	fn complex_abs(self) -> Self;
+	fn store_half(self, target: &mut [Self::Real], index: usize);
+	fn mul_complex(self, value: Self) -> Self;
+	fn div_complex(self, value: Self) -> Self;
 }
 
-impl SimdExtensions32 for f32x4
+impl SimdExtensions for f32x4
 {
+	type Real = f32;
+	type Complex = Complex32;
+	
 	fn add_real(self, value: f32) -> f32x4
 	{
 		let increment = f32x4::splat(value);
