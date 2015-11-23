@@ -27,4 +27,4 @@ env:
     - TRAVIS_CARGO_NIGHTLY_FEATURE=""
     # Likely someone will kill me for hardcoding the path here, but right now I've no better away how to tell Travis
     # that it needs to use rustc with certain compiler flags.
-    - RUSTC="/home/travis/build/liebharc/basic_dsp/rust.sh"
+    - RUSTC="/home/travis/build/liebharc/basic_dsp/rustc.sh"
