@@ -1,6 +1,7 @@
 use simd::f32x4;
 use simd::x86::sse3::Sse3F32x4;
-use num::complex::Complex32;
+use num::complex::{Complex32, Complex64};
+use simd::x86::sse2::f64x2; // Using the avx f64x4 would be more attractive but isn't supported by all x86 CPUs
 
 pub trait SimdExtensions
 {
@@ -97,5 +98,73 @@ impl SimdExtensions for f32x4
 		self.store(&mut temp, 0);
 		target[index] = temp[0];
 		target[index + 1] = temp[1];
+	} 
+} 
+
+impl SimdExtensions for f64x2
+{
+	type Real = f64;
+	type Complex = Complex64;
+	
+	fn add_real(self, value: f64) -> f64x2
+	{
+		let increment = f64x2::splat(value);
+		self + increment
+	}
+	
+	fn add_complex(self, value: Complex64) -> f64x2
+	{
+		let increment = f64x2::new(value.re, value.im);
+		self + increment
+	}
+	
+	fn scale_real(self, value: f64) -> f64x2
+	{
+		let scale_vector = f64x2::splat(value); 
+		self * scale_vector
+	}
+	
+	fn scale_complex(self, value: Complex64) -> f64x2
+	{
+		let complex = Complex64::new(self.extract(0), self.extract(1));
+		let result = complex * value;
+		f64x2::new(result.re, result.im)
+	}
+	
+	fn mul_complex(self, value: f64x2) -> f64x2
+	{
+		let complex = Complex64::new(self.extract(0), self.extract(1));
+		let value = Complex64::new(value.extract(0), value.extract(1));
+		let result = complex * value;
+		f64x2::new(result.re, result.im)
+	}
+	
+	fn div_complex(self, value: f64x2) -> f64x2
+	{
+		let complex = Complex64::new(self.extract(0), self.extract(1));
+		let value = Complex64::new(value.extract(0), value.extract(1));
+		let result = complex / value;
+		f64x2::new(result.re, result.im)
+	}
+	
+	fn complex_abs_squared(self) -> f64x2
+	{
+		let a = self.extract(0);
+		let b = self.extract(1);
+		let result = a * a + b * b;
+		f64x2::new(result, result)
+	}
+	
+	fn complex_abs(self) -> f64x2
+	{
+		let a = self.extract(0);
+		let b = self.extract(1);
+		let result = (a * a + b * b).sqrt();
+		f64x2::new(result, result)
+	}
+	
+	fn store_half(self, target: &mut [f64], index: usize)
+	{
+		target[index] = self.extract(0);
 	} 
 } 
