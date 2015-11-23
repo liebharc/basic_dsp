@@ -16,8 +16,7 @@ before_script:
 script:
   - |
       travis-cargo build &&
-      travis-cargo test &&
-      travis-cargo integration-tests &&  
+      travis-cargo test --features slow_test &&
       travis-cargo bench &&
       travis-cargo doc
   
