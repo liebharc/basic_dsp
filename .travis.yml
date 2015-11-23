@@ -17,10 +17,10 @@ script:
   - |
       travis-cargo build &&
       travis-cargo test &&
-      travis-cargo integration-tests &&	  
+      travis-cargo integration-tests &&  
       travis-cargo bench &&
       travis-cargo doc
-	  
+  
 env:
   global:
     # override the default `--features unstable` used for the nightly branch which would make the build fail
