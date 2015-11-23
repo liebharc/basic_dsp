@@ -1,0 +1,22 @@
+language: rust
+sudo: false
+
+# we you unstable issues and need Rust nightly
+# however we of course hope that we will be able to use stable at some point
+rust:
+  - nightly
+
+# load travis-cargo
+before_script:
+  - |
+      pip install 'travis-cargo<0.2' --user &&
+      export PATH=$HOME/.local/bin:$PATH
+
+# compile, test all, benchmark and create documentation
+script:
+  - |
+      travis-cargo build &&
+      travis-cargo test &&
+      travis-cargo integration-tests &&	  
+      travis-cargo bench &&
+      travis-cargo doc -- --features doc
