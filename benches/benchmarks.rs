@@ -174,15 +174,6 @@ mod bench {
 	}
 	
 	#[bench]
-	fn abs_complex_vector_32_benchmark(b: &mut Bencher)
-	{
-		let mut vector = VectorBox::<DataVector32>::new();
-		b.iter(|| {
-			vector.execute(|v|  { v.complex_abs() } )
-		});
-	}
-	
-	#[bench]
 	fn fft_complex_vector_32_benchmark(b: &mut Bencher)
 	{
 		let mut vector = VectorBox::<DataVector32>::with_size(100000);

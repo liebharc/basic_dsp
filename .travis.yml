@@ -1,20 +1,30 @@
 language: rust
 sudo: false
+
+# we you unstable issues and need Rust nightly
+# however we of course hope that we will be able to use stable at some point
 rust:
 - nightly
+
+# compile, test all, benchmark and create documentation
 script:
 - |
   cargo build &&
   cargo test --features slow_test &&
   cargo bench &&
   cargo doc
+  
 env:
   global:
+  # Add certain compiler flags with the rustc wrapper script
   - RUSTC="$TRAVIS_BUILD_DIR/rustc.sh"
+  
+# upload the documentation to github
 deploy:
   provider: releases
   api_key:
     secure: fvuzBOsJ1PRRpXpx8JclbtCNoS4vm9CEzHg5wE7HJZRfGcdNPGChEU8Lid1WNnLFmsYO3KRJLL1blsrCigaCrNOKebpHWF9n8uldJ+XlXkL9IR1pfgCqlZ4Wm5el7C2zx0/F99HnVvhGw5NpItzW+Dna99U2I61ltS2FmL0SWDKPklIAYJt4GlMIX8cOnUlmFncaKxSnDwVDPpBq3C33di3QJMp4Rp9kQrU/1FxuPYTWPf7Wgx1QmTjZEwWtQ45k/uetNOkvwlSPR5bDI7EJoP2s1BKqzFQU5cseYqDg16iXQmWOVQyIv5rw7YRzZ3cBO346pXkDpj+QNMexCUhBlz4OtufCmcReZsMZev3a+8pmEDTuxQnfJdO5yxHl0VC7Kq3J1rSWAm7fLaJlzXVCXKqd7j658TPaFHOxsLqms73hF7LluazybhF1Z4bLAnPwF6hA3kaeefrQsolRzxP0qaquwyqF7rRMFMxU6UFg2YGEc4evEpmJ8Si9aCqKVYQW4uF7pDmf9eCRrGJ/Db+I/O/HIrnc+oIzbGZbaZTyiVtEUnJ/L/0VZpf6yx1MUFGXZYbgC2RtlRncnLxCHCAoSBL7vy/+dKO7vw6pzW4lo8XLgIgeONvOOwNEUODqqQLBTQG/6qelcgovHUUIpoijuM/iHCqCLEJAsK/ZxOCZc9k=
   file: target/doc/basic_dsp
   on:
+    tags: true
     repo: liebharc/basic_dsp
