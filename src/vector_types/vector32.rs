@@ -248,7 +248,16 @@ impl RealVectorOperations for DataVector32
 	
 	fn real_offset(mut self, offset: f32) -> DataVector32
 	{
-		self.inplace_offset(&[offset, offset, offset, offset]);
+        {
+            let len = self.len();
+            let mut array = &mut self.data;
+            Chunk::execute_partial_with_arguments(&mut array, len, 1, offset, |array, v| {
+                for i in 0..array.len()
+                {
+                    array[i] += v;
+                }
+            });
+        }
 		self
 	}
 	
@@ -259,7 +268,7 @@ impl RealVectorOperations for DataVector32
 			let scalar_length = data_length % 4;
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
-			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, DataVector32::inplace_real_scale_simd, factor);
+			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, factor, DataVector32::inplace_real_scale_simd);
 			for i in vectorization_length..data_length
 			{
 				array[i] = array[i] * factor;
@@ -304,7 +313,7 @@ impl RealVectorOperations for DataVector32
 		{
 			let mut array = &mut self.data;
 			let length = array.len();
-			Chunk::execute_partial_with_arguments(&mut array, length, 1, DataVector32::real_root_par, degree);
+			Chunk::execute_partial_with_arguments(&mut array, length, 1, degree, DataVector32::real_root_par);
 		}
 		self
 	}
@@ -314,7 +323,7 @@ impl RealVectorOperations for DataVector32
 		{
 			let mut array = &mut self.data;
 			let length = array.len();
-			Chunk::execute_partial_with_arguments(&mut array, length, 1, DataVector32::real_power_par, exponent);
+			Chunk::execute_partial_with_arguments(&mut array, length, 1, exponent, DataVector32::real_power_par);
 		}
 		self
 	}
@@ -344,7 +353,7 @@ impl RealVectorOperations for DataVector32
 		{
 			let mut array = &mut self.data;
 			let length = array.len();
-			Chunk::execute_partial_with_arguments(&mut array, length, 1, DataVector32::real_log_base_par, base);
+			Chunk::execute_partial_with_arguments(&mut array, length, 1, base, DataVector32::real_log_base_par);
 		}
 		self
 	}
@@ -354,7 +363,7 @@ impl RealVectorOperations for DataVector32
 		{
 			let mut array = &mut self.data;
 			let length = array.len();
-			Chunk::execute_partial_with_arguments(&mut array, length, 1, DataVector32::real_exp_base_par, base);
+			Chunk::execute_partial_with_arguments(&mut array, length, 1, base, DataVector32::real_exp_base_par);
 		}
 		self
 	}
@@ -371,7 +380,7 @@ impl RealVectorOperations for DataVector32
 		{
 			let mut array = &mut self.data;
 			let length = array.len();
-			Chunk::execute_partial_with_arguments(&mut array, length, 1, DataVector32::real_modulo_par, divisor);
+			Chunk::execute_partial_with_arguments(&mut array, length, 1, divisor, DataVector32::real_modulo_par);
 		}
 		self
 	}
@@ -411,7 +420,32 @@ impl ComplexVectorOperations for DataVector32
 	
 	fn complex_offset(mut self, offset: Complex32)  -> DataVector32
 	{
-		self.inplace_offset(&[offset.re, offset.im, offset.re, offset.im]);
+		{
+            let data_length = self.len();
+			let scalar_length = data_length % 4;
+			let vectorization_length = data_length - scalar_length;
+            let mut array = &mut self.data;
+            let vector_offset = f32x4::new(offset.re, offset.im, offset.re, offset.im);
+            Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, vector_offset, |array, v| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    let data = f32x4::load(array, i);
+                    let result = data + v;
+                    result.store(array, i);
+                    i += 4;
+                }
+            });
+            
+            let mut i = vectorization_length;
+            while i < data_length
+			{
+				array[i] += offset.re;
+				array[i + 1] += offset.im;
+				i += 2;
+			}
+        }
+        
 		self
 	}
 	
@@ -422,7 +456,7 @@ impl ComplexVectorOperations for DataVector32
 			let scalar_length = data_length % 4;
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
-			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, DataVector32::inplace_complex_scale_simd, factor);
+			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, factor, DataVector32::inplace_complex_scale_simd);
 			let mut i = vectorization_length;
 			while i < data_length
 			{
@@ -633,7 +667,7 @@ impl DataVector32
 		
 		{
 			let mut array = &mut self.data;
-			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, DataVector32::perform_operations_par, operations);
+			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, operations, DataVector32::perform_operations_par);
 		}
 		DataVector32 { data: self.data, .. self }
 	}
@@ -936,32 +970,6 @@ impl DataVector32
 			result.store(target, i);
 			i += 4;
 			j += 4;
-		}
-	}
-	
-	fn inplace_offset(&mut self, offset: &[f32; 4]) 
-	{
-		let increment_vector = f32x4::load(offset, 0); 
-		let data_length = self.len();
-		let scalar_length = data_length % 4;
-		let vectorization_length = data_length - scalar_length;
-		let mut array = &mut self.data;
-		Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, DataVector32::inplace_offset_simd, increment_vector);
-		for i in vectorization_length..data_length
-		{
-			array[i] = array[i] + offset[i % 2];
-		}
-	}
-		
-	fn inplace_offset_simd(array: &mut [f32], increment_vector: f32x4)
-	{
-		let mut i = 0;
-		while i < array.len()
-		{ 
-			let vector = f32x4::load(array, i);
-			let incremented = vector + increment_vector;
-			incremented.store(array, i);
-			i += 4;
 		}
 	}
 		

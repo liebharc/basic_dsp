@@ -110,7 +110,7 @@ impl Chunk
 	}
 	
 	#[inline]
-	pub fn execute_partial_with_arguments<T,S,F>(array: &mut [T], array_length: usize, step_size: usize, function: F, arguments:S)
+	pub fn execute_partial_with_arguments<T,S,F>(array: &mut [T], array_length: usize, step_size: usize, arguments:S, function: F)
 		where F: Fn(&mut [T], S) + 'static + Sync, 
 			  T: Float + Copy + Clone + Send + Sync,
 			  S: Sync + Copy
@@ -162,7 +162,7 @@ impl Chunk
 	}
 	
 	#[inline]
-	pub fn execute_partial_with_temp_and_arguments<T,S,F>(array: &mut [T], array_length: usize, step_size: usize, temp: &mut [T], temp_length: usize, temp_step_size: usize, function: F, arguments:S)
+	pub fn execute_partial_with_temp_and_arguments<T,S,F>(array: &mut [T], array_length: usize, step_size: usize, temp: &mut [T], temp_length: usize, temp_step_size: usize, arguments:S, function: F)
 		where F: Fn(&[T], &mut [T], S) + 'static + Sync, 
 			  T: Float + Copy + Clone + Send + Sync,
 			  S: Sync + Copy
@@ -205,7 +205,7 @@ impl Chunk
 	}
 	
 	#[inline]
-	pub fn execute_original_to_target_with_arguments<T,S,F>(original: &[T], original_length: usize, original_step: usize, target: &mut [T], target_length: usize, target_step: usize, function: F, arguments:S)
+	pub fn execute_original_to_target_with_arguments<T,S,F>(original: &[T], original_length: usize, original_step: usize, target: &mut [T], target_length: usize, target_step: usize, arguments:S, function: F)
 		where F: Fn(&[T], Range<usize>, &mut [T], S) + 'static + Sync,
 			  T : Float + Copy + Clone + Send + Sync,
 			  S: Sync + Copy

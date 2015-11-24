@@ -109,7 +109,7 @@ mod bench {
 		}
 	}
 
-	const DEFAULT_DATA_SIZE: usize = 10000000;
+	const DEFAULT_DATA_SIZE: usize = 10000;
 	
 	#[bench]
 	fn add_real_one_scalar_32_benchmark(b: &mut Bencher)
@@ -132,11 +132,20 @@ mod bench {
 	}
 	
 	#[bench]
-	fn add_real_vector_32_benchmark(b: &mut Bencher)
+	fn add_real_32_benchmark(b: &mut Bencher)
 	{
 		let mut vector = VectorBox::<RealTimeVector32>::new();
 		b.iter(|| {
 			vector.execute(|v|  { v.real_offset(2.0) } )
+		});
+	}
+    
+    #[bench]
+	fn add_complex_32_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<ComplexTimeVector32>::new();
+		b.iter(|| {
+			vector.execute(|v|  { v.complex_offset(Complex32::new(2.0, -5.0)) } )
 		});
 	}
 	
@@ -176,7 +185,7 @@ mod bench {
 	#[bench]
 	fn fft_complex_vector_32_benchmark(b: &mut Bencher)
 	{
-		let mut vector = VectorBox::<DataVector32>::with_size(100000);
+		let mut vector = VectorBox::<DataVector32>::with_size(10000);
 		b.iter(|| {
 			vector.execute(|v|  { v.plain_fft() } )
 		});
@@ -185,7 +194,7 @@ mod bench {
 	#[bench]
 	fn ifft_complex_vector_32_benchmark(b: &mut Bencher)
 	{
-		let mut vector = VectorBox::<DataVector32>::with_size(100000);
+		let mut vector = VectorBox::<DataVector32>::with_size(10000);
 		b.iter(|| {
 			vector.execute(|v|  { v.plain_ifft() } )
 		});
