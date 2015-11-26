@@ -16,3 +16,7 @@ num_cpus = "0.2.6"
 simple_parallel = "0.3.0"
 num = "0.1.27"
 rustfft = "1.0.0"
+
+[[test]]
+name = "test"
+path = "tests/test.rs"
