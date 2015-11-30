@@ -11,6 +11,24 @@ pub struct VectorBox<T>
     vector: *mut T
 }
 
+#[derive(Copy)]
+#[derive(Clone)]
+#[derive(PartialEq)]
+#[derive(Debug)]
+pub enum Size {
+	Small,
+    Medium,
+    Large
+}
+
+fn translate_size(size: Size) -> usize {
+    match size {
+        Size::Small => DEFAULT_DATA_SIZE,
+        Size::Medium => 100000,
+        Size::Large => 500000
+    }
+}
+
 impl VectorBox<DataVector32>
 {
     pub fn with_size(is_complex: bool, size: usize) -> VectorBox<DataVector32>
@@ -28,9 +46,10 @@ impl VectorBox<DataVector32>
         }
     }
     
-    pub fn new(is_complex: bool) -> VectorBox<DataVector32>
+    pub fn new(size: Size, is_complex: bool) -> VectorBox<DataVector32>
     {
-        let data = vec![0.0; DEFAULT_DATA_SIZE];
+        let size = translate_size(size);
+        let data = vec![0.0; size];
         let vector = 
             if is_complex {
                 DataVector32::from_interleaved_no_copy(data)
@@ -46,9 +65,10 @@ impl VectorBox<DataVector32>
 
 impl VectorBox<RealTimeVector32>
 {
-    pub fn new() -> VectorBox<RealTimeVector32>
+    pub fn new(size: Size) -> VectorBox<RealTimeVector32>
     {
-        let data = vec![0.0; DEFAULT_DATA_SIZE];
+        let size = translate_size(size);
+        let data = vec![0.0; size];
         let vector = RealTimeVector32::from_array_no_copy(data);
         VectorBox
         {
@@ -59,9 +79,10 @@ impl VectorBox<RealTimeVector32>
 
 impl VectorBox<ComplexTimeVector32>
 {
-    pub fn new() -> VectorBox<ComplexTimeVector32>
+    pub fn new(size: Size) -> VectorBox<ComplexTimeVector32>
     {
-        let data = vec![0.0; DEFAULT_DATA_SIZE];
+        let size = translate_size(size);
+        let data = vec![0.0; size];
         let vector = ComplexTimeVector32::from_interleaved_no_copy(data);
         VectorBox
         {

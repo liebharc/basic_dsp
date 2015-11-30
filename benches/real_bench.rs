@@ -3,17 +3,14 @@ mod bench {
 	use test::Bencher;
 	use basic_dsp::{
 		DataVector,
+        GenericVectorOperations,
 		RealVectorOperations,
-		ComplexVectorOperations,
-        TimeDomainOperations,
-        FrequencyDomainOperations,
 		DataVector32, 
 		RealTimeVector32, 
-		ComplexTimeVector32, 
 		Operation32};
 	use num::complex::Complex32;
 	use std::boxed::Box;
-    use tools::{VectorBox, DEFAULT_DATA_SIZE};
+    use tools::{VectorBox, DEFAULT_DATA_SIZE, Size};
 	
 	pub fn add_offset_reference(array: &mut [f32], offset: f32) 
 	{
@@ -46,18 +43,9 @@ mod bench {
 	}
 	
 	#[bench]
-	fn real_offset_32_benchmark(b: &mut Bencher)
-	{
-		let mut vector = VectorBox::<RealTimeVector32>::new();
-		b.iter(|| {
-			vector.execute(|v|  { v.real_offset(2.0) } )
-		});
-	}
-	
-	#[bench]
 	fn multi_operations_vector_32_benchmark(b: &mut Bencher)
 	{
-		let mut vector = VectorBox::<DataVector32>::new(true);
+		let mut vector = VectorBox::<DataVector32>::new(Size::Small, true);
 		b.iter(|| {
 			vector.execute(|v|  
 				{
@@ -68,13 +56,121 @@ mod bench {
 				})
 		});
 	}
-	
-	#[bench]
-	fn real_abs_32_benchmark(b: &mut Bencher)
+    
+    #[bench]
+	fn real_offset_32s_benchmark(b: &mut Bencher)
 	{
-		let mut vector = VectorBox::<RealTimeVector32>::new();
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
+		b.iter(|| {
+			vector.execute(|v|  { v.real_offset(2.0) } )
+		});
+	}
+    
+    #[bench]
+	fn real_offset_32m_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Medium);
+		b.iter(|| {
+			vector.execute(|v|  { v.real_offset(2.0) } )
+		});
+	}
+    
+    #[bench]
+	fn real_scale_32m_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Medium);
+		b.iter(|| {
+			vector.execute(|v|  { v.real_scale(2.0) } )
+		});
+	}
+    
+    #[bench]
+	fn real_abs_32s_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
 		b.iter(|| {
 			vector.execute(|v|  { v.real_abs() } )
+		});
+    }
+    
+    #[bench]
+	fn real_square_32s_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
+		b.iter(|| {
+			vector.execute(|v|  { v.real_square() } )
+		});
+    }
+    
+    #[bench]
+	fn real_root_32s_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
+		b.iter(|| {
+			vector.execute(|v|  { v.real_root(3.0) } )
+		});
+    }
+    
+    #[bench]
+	fn real_power_32s_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
+		b.iter(|| {
+			vector.execute(|v|  { v.real_power(3.0) } )
+		});
+    }
+    
+    #[bench]
+	fn real_logn_32s_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
+		b.iter(|| {
+			vector.execute(|v|  { v.real_logn() } )
+		});
+    }
+    
+    #[bench]
+	fn real_expn_32s_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
+		b.iter(|| {
+			vector.execute(|v|  { v.real_expn() } )
+		});
+    }
+    
+    #[bench]
+	fn wrap_32s_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
+		b.iter(|| {
+			vector.execute(|v|  { v.wrap(10.0) } )
+		});
+    }
+    
+    #[bench]
+	fn unwrap_32s_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
+		b.iter(|| {
+			vector.execute(|v|  { v.unwrap(10.0) } )
+		});
+    }
+    
+    #[bench]
+	fn diff_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
+		b.iter(|| {
+			vector.execute(|v|  { v.diff_with_start() } )
+		});
+    }
+    
+    #[bench]
+	fn cum_sum_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
+		b.iter(|| {
+			vector.execute(|v|  { v.cum_sum() } )
 		});
     }
 }
