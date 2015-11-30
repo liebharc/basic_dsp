@@ -8,7 +8,7 @@ mod bench {
     use tools::{VectorBox, Size};
     
     #[bench]
-	fn complex_offset_32_benchmark(b: &mut Bencher)
+	fn complex_offset_32s_benchmark(b: &mut Bencher)
 	{
 		let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Small);
 		b.iter(|| {
@@ -17,11 +17,20 @@ mod bench {
 	}
 	
 	#[bench]
-	fn complex_scale_32_benchmark(b: &mut Bencher)
+	fn complex_scale_32s_benchmark(b: &mut Bencher)
 	{
 		let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Small);
 		b.iter(|| {
 			vector.execute(|v|  { v.complex_scale(Complex32::new(-2.0, 2.0)) } )
+		});
+	}
+    
+    #[bench]
+	fn complex_conj_32s_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Small);
+		b.iter(|| {
+			vector.execute(|v|  { v.complex_conj() } )
 		});
 	}
 }
