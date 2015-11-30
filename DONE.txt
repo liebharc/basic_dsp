@@ -1,5 +1,0 @@
-- Non locked multi core operations: https://users.rust-lang.org/t/writing-to-same-array-across-threads/2823/6
-- Discarded: Method overloading via: http://stackoverflow.com/questions/25265527/how-can-i-approximate-method-overloading
-	Reason is that it looks like Rust syntactic sugar and we want the API to be nice for other languages too
-- Discarded: Think about a better basic data type, which is heap allocated and fixed size and numeric https://gist.github.com/lindahua/f5b06fafcc86d0547ab5
-	Reason is that it makes more sense to let the user of the library decide if heap or stack allocation is desired

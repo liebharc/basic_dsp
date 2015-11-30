@@ -20,3 +20,7 @@ rustfft = "1.0.0"
 [[test]]
 name = "test"
 path = "tests/test.rs"
+
+[[bench]]
+name = "bench"
+path = "benches/bench.rs"

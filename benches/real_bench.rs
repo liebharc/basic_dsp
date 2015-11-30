@@ -1,0 +1,80 @@
+#[cfg(test)]
+mod bench {
+	use test::Bencher;
+	use basic_dsp::{
+		DataVector,
+		RealVectorOperations,
+		ComplexVectorOperations,
+        TimeDomainOperations,
+        FrequencyDomainOperations,
+		DataVector32, 
+		RealTimeVector32, 
+		ComplexTimeVector32, 
+		Operation32};
+	use num::complex::Complex32;
+	use std::boxed::Box;
+    use tools::{VectorBox, DEFAULT_DATA_SIZE};
+	
+	pub fn add_offset_reference(array: &mut [f32], offset: f32) 
+	{
+		let mut i = 0;
+		while i < array.len()
+		{
+			array[i] = array[i] + offset;
+			i += 1;
+		}
+	}
+	
+	#[bench]
+	fn add_offset_reference_32(b: &mut Bencher)
+	{
+		let mut data: Box<[f32]> = box [0.0; DEFAULT_DATA_SIZE];
+		b.iter(move|| {
+			add_offset_reference(&mut data, 1.0);
+			return data[0];
+			});
+	}
+	
+	#[bench]
+	fn vector_creation_32_benchmark(b: &mut Bencher)
+	{
+		b.iter(|| {
+			let data = vec![0.0; DEFAULT_DATA_SIZE];
+			let result = DataVector32::from_interleaved_no_copy(data);
+			return result.delta();;
+			});
+	}
+	
+	#[bench]
+	fn real_offset_32_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new();
+		b.iter(|| {
+			vector.execute(|v|  { v.real_offset(2.0) } )
+		});
+	}
+	
+	#[bench]
+	fn multi_operations_vector_32_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<DataVector32>::new(true);
+		b.iter(|| {
+			vector.execute(|v|  
+				{
+					  v.perform_operations(
+						&[Operation32::AddReal(1.0),
+						Operation32::AddComplex(Complex32::new(1.0, 1.0)),
+						Operation32::MultiplyComplex(Complex32::new(-1.0, 1.0))])
+				})
+		});
+	}
+	
+	#[bench]
+	fn real_abs_32_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new();
+		b.iter(|| {
+			vector.execute(|v|  { v.real_abs() } )
+		});
+    }
+}
