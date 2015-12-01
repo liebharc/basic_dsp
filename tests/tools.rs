@@ -110,8 +110,8 @@ pub fn create_delta(seed: usize, iteration: usize)
 
 use std::sync::{Arc, Mutex};
 
-pub const RANGE_SINGLE_CORE: Range<usize> = Range { start: 10000, end: 1000000 };
-pub const RANGE_MULTI_CORE: Range<usize> = Range { start: 1000001, end: 2000000 };
+pub const RANGE_SINGLE_CORE: Range<usize> = Range { start: 10000, end: 100000 };
+pub const RANGE_MULTI_CORE: Range<usize> = Range { start: 100001, end: 200000 };
 
 pub fn parameterized_vector_test<F>(test_code: F)
     where F: Fn(usize, Range<usize>) + Send + 'static + Sync

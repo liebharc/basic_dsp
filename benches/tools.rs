@@ -25,7 +25,7 @@ fn translate_size(size: Size) -> usize {
     match size {
         Size::Small => DEFAULT_DATA_SIZE,
         Size::Medium => 100000,
-        Size::Large => 500000
+        Size::Large => 1000000
     }
 }
 

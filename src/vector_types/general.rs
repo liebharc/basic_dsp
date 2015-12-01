@@ -326,6 +326,32 @@ pub trait RealVectorOperations : DataVector {
 	/// assert_eq!([1.0, 0.0, 2.0, 0.0], result.data());
 	/// ```
 	fn to_complex(self) -> Self::ComplexPartner;
+    
+    /// Calculates the sine of each element in radians.
+    ///
+    /// # Example
+	///
+	/// ```
+    /// use std::f32;
+    /// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[f32::consts::PI/2.0, -f32::consts::PI/2.0]);
+    /// let result = vector.real_sin();
+	/// assert_eq!([1.0, -1.0], result.data());
+    /// ```
+    fn real_sin(self) -> Self;
+    
+    /// Calculates the cosine of each element in radians.
+    ///
+    /// # Example
+	///
+	/// ```
+    /// use std::f32;
+    /// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[2.0 * f32::consts::PI, f32::consts::PI]);
+    /// let result = vector.real_cos();
+	/// assert_eq!([1.0, -1.0], result.data());
+    /// ```
+    fn real_cos(self) -> Self;
 	
 	/// Each value in the vector is devided by the divisor and the remainder is stored in the resulting 
 	/// vector. This the same a modulo operation or to phase wrapping.

@@ -151,6 +151,16 @@ impl RealVectorOperations for DataVector64
 	{
 		panic!("Unimplemented");
 	}
+    
+    fn real_sin(self) -> Self
+    {
+        panic!("Unimplemented");
+    }
+    
+    fn real_cos(self) -> Self
+    {
+        panic!("Unimplemented");
+    }
 	
 	fn to_complex(self) -> DataVector64
 	{

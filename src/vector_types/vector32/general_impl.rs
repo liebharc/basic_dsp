@@ -1,4 +1,4 @@
-use multicore_support::Chunk;
+use multicore_support::{Chunk, Complexity};
 use super::super::general::{
 	DataVector,
 	GenericVectorOperations};
@@ -24,7 +24,7 @@ impl GenericVectorOperations for DataVector32
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
 			let other = &summand.data;
-			Chunk::execute_original_to_target(&other, vectorization_length, 4, &mut array, vectorization_length, 4,  |original, range, target| {
+			Chunk::execute_original_to_target(Complexity::Small, &other, vectorization_length, 4, &mut array, vectorization_length, 4,  |original, range, target| {
                 let mut i = 0;
                 let mut j = range.start;
                 while i < target.len()
@@ -62,7 +62,7 @@ impl GenericVectorOperations for DataVector32
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
 			let other = &subtrahend.data;
-			Chunk::execute_original_to_target(&other, vectorization_length, 4, &mut array, vectorization_length, 4,   |original, range, target| {
+			Chunk::execute_original_to_target(Complexity::Small, &other, vectorization_length, 4, &mut array, vectorization_length, 4,   |original, range, target| {
                 let mut i = 0;
                 let mut j = range.start;
                 while i < target.len()
@@ -158,7 +158,7 @@ impl GenericVectorOperations for DataVector32
 			let org = &self.data;
 			if self.is_complex {
 				self.valid_len -= 2;
-				Chunk::execute_original_to_target(&org, data_length, 2, &mut target, data_length, 2, |original, range, target| {
+				Chunk::execute_original_to_target(Complexity::Small, &org, data_length, 2, &mut target, data_length, 2, |original, range, target| {
                     let mut i = 0;
                     let mut j = range.start;
                     let mut len = target.len();
@@ -177,7 +177,7 @@ impl GenericVectorOperations for DataVector32
 			}
 			else {
 				self.valid_len -= 1;
-				Chunk::execute_original_to_target(&org, data_length, 1, &mut target, data_length, 1, |original, range, target| {
+				Chunk::execute_original_to_target(Complexity::Small, &org, data_length, 1, &mut target, data_length, 1, |original, range, target| {
                     let mut i = 0;
                     let mut j = range.start;
                     let mut len = target.len();
@@ -206,7 +206,7 @@ impl GenericVectorOperations for DataVector32
 			let mut target = &mut self.temp;
 			let org = &self.data;
 			if self.is_complex {
-				Chunk::execute_original_to_target(&org, data_length, 2, &mut target, data_length, 2, |original, range, target| {
+				Chunk::execute_original_to_target(Complexity::Small, &org, data_length, 2, &mut target, data_length, 2, |original, range, target| {
                     let mut i = 0;
                     let mut j = range.start;
                     if j == 0 {
@@ -225,7 +225,7 @@ impl GenericVectorOperations for DataVector32
                 });
 			}
 			else {
-				Chunk::execute_original_to_target(&org, data_length, 1, &mut target, data_length, 1, |original, range, target| {
+				Chunk::execute_original_to_target(Complexity::Small, &org, data_length, 1, &mut target, data_length, 1, |original, range, target| {
                     let mut i = 0;
                     let mut j = range.start;
                     if j == 0 {
@@ -277,7 +277,7 @@ impl DataVector32 {
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
 			let other = &factor.data;
-			Chunk::execute_original_to_target(&other, vectorization_length, 4, &mut array, vectorization_length, 4, |original, range, target| {
+			Chunk::execute_original_to_target(Complexity::Small, &other, vectorization_length, 4, &mut array, vectorization_length, 4, |original, range, target| {
                 let mut i = 0;
                 let mut j = range.start;
                 while i < target.len()
@@ -312,7 +312,7 @@ impl DataVector32 {
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
 			let other = &factor.data;
-			Chunk::execute_original_to_target(&other, vectorization_length, 4, &mut array, vectorization_length, 4, |original, range, target| {
+			Chunk::execute_original_to_target(Complexity::Small, &other, vectorization_length, 4, &mut array, vectorization_length, 4, |original, range, target| {
                 let mut i = 0;
                 let mut j = range.start;
                 while i < target.len()
@@ -343,7 +343,7 @@ impl DataVector32 {
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
 			let other = &divisor.data;
-			Chunk::execute_original_to_target(&other, vectorization_length, 4, &mut array, vectorization_length, 4,  |original, range, target| {
+			Chunk::execute_original_to_target(Complexity::Small, &other, vectorization_length, 4, &mut array, vectorization_length, 4,  |original, range, target| {
                 let mut i = 0;
                 let mut j = range.start;
                 while i < target.len()
@@ -378,7 +378,7 @@ impl DataVector32 {
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
 			let other = &divisor.data;
-			Chunk::execute_original_to_target(&other, vectorization_length, 4, &mut array, vectorization_length, 4,  |original, range, target| {
+			Chunk::execute_original_to_target(Complexity::Small, &other, vectorization_length, 4, &mut array, vectorization_length, 4,  |original, range, target| {
                 let mut i = 0;
                 let mut j = range.start;
                 while i < target.len()
@@ -409,7 +409,7 @@ impl DataVector32 {
 			let data_length = new_len;
 			let mut target = &mut self.temp;
 			let source = &self.data;
-			Chunk::execute_original_to_target(&source, data_length, 4, &mut target, data_length, 4,  |original, range, target| {
+			Chunk::execute_original_to_target(Complexity::Small, &source, data_length, 4, &mut target, data_length, 4,  |original, range, target| {
                 let mut i = 0;
                 let mut j = range.start;
                 while i < target.len() / 2 {
@@ -440,7 +440,7 @@ impl DataVector32 {
 			let data_length = new_len;
 			let mut target = &mut self.temp;
 			let source = &self.data;
-			Chunk::execute_original_to_target(&source, data_length, 4, &mut target, data_length, 2,  |original, range, target| {
+			Chunk::execute_original_to_target(Complexity::Small, &source, data_length, 4, &mut target, data_length, 2,  |original, range, target| {
                 let mut i = 0;
                 let mut j = range.start;
                 while i < target.len() {

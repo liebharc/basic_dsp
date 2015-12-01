@@ -23,7 +23,7 @@ mod bench {
 	}
 	
 	#[bench]
-	fn add_offset_reference_32(b: &mut Bencher)
+	fn real_offset_32s_reference(b: &mut Bencher)
 	{
 		let mut data: Box<[f32]> = box [0.0; DEFAULT_DATA_SIZE];
 		b.iter(move|| {
@@ -70,6 +70,15 @@ mod bench {
 	fn real_offset_32m_benchmark(b: &mut Bencher)
 	{
 		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Medium);
+		b.iter(|| {
+			vector.execute(|v|  { v.real_offset(2.0) } )
+		});
+	}
+    
+    #[bench]
+	fn real_offset_32l_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Large);
 		b.iter(|| {
 			vector.execute(|v|  { v.real_offset(2.0) } )
 		});
@@ -124,6 +133,24 @@ mod bench {
 	fn real_logn_32s_benchmark(b: &mut Bencher)
 	{
 		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
+		b.iter(|| {
+			vector.execute(|v|  { v.real_logn() } )
+		});
+    }
+    
+    #[bench]
+	fn real_logn_32m_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Medium);
+		b.iter(|| {
+			vector.execute(|v|  { v.real_logn() } )
+		});
+    }
+    
+    #[bench]
+	fn real_logn_32l_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Large);
 		b.iter(|| {
 			vector.execute(|v|  { v.real_logn() } )
 		});

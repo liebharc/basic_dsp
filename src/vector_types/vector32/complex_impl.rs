@@ -1,4 +1,4 @@
-use multicore_support::Chunk;
+use multicore_support::{Chunk, Complexity};
 use super::super::general::{
 	DataVector,
 	ComplexVectorOperations};
@@ -23,7 +23,7 @@ impl ComplexVectorOperations for DataVector32
 			let vectorization_length = data_length - scalar_length;
             let mut array = &mut self.data;
             let vector_offset = f32x4::new(offset.re, offset.im, offset.re, offset.im);
-            Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, vector_offset, |array, v| {
+            Chunk::execute_partial_with_arguments(Complexity::Small, &mut array, vectorization_length, DEFAULT_GRANUALRITY, vector_offset, |array, v| {
                 let mut i = 0;
                 while i < array.len()
                 {
@@ -53,7 +53,7 @@ impl ComplexVectorOperations for DataVector32
 			let scalar_length = data_length % 4;
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
-			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, factor, |array, value| {
+			Chunk::execute_partial_with_arguments(Complexity::Small, &mut array, vectorization_length, DEFAULT_GRANUALRITY, factor, |array, value| {
                 let mut i = 0;
                 while i < array.len()
                 { 
@@ -84,7 +84,7 @@ impl ComplexVectorOperations for DataVector32
 			let vectorization_length = data_length - scalar_length;
 			let array = &self.data;
 			let mut temp = &mut self.temp;
-			Chunk::execute_original_to_target(&array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, DataVector32::complex_abs_simd);
+			Chunk::execute_original_to_target(Complexity::Small, &array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, DataVector32::complex_abs_simd);
 			let mut i = vectorization_length;
 			while i + 1 < data_length
 			{
@@ -106,7 +106,7 @@ impl ComplexVectorOperations for DataVector32
 		let vectorization_length = data_length - scalar_length;
 		let array = &self.data;
 		let mut temp = &mut destination.data;
-		Chunk::execute_original_to_target(&array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, DataVector32::complex_abs_simd);
+		Chunk::execute_original_to_target(Complexity::Small, &array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, DataVector32::complex_abs_simd);
 		let mut i = vectorization_length;
 		while i + 1 < data_length
 		{
@@ -124,12 +124,12 @@ impl ComplexVectorOperations for DataVector32
 			let data_length = self.len();
 			let scalar_length = data_length % 4;
 			let vectorization_length = data_length - scalar_length;
-			let mut array = &mut self.data;
+			let array = &mut self.data;
 			let mut temp = &mut self.temp;
-			Chunk::execute_partial_with_temp(&mut array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, |array, target| {
-                let mut i = 0;
+			Chunk::execute_original_to_target(Complexity::Small, &array, vectorization_length, 4, &mut temp, vectorization_length / 2, 2, |array, range, target| {
+                let mut i = range.start;
                 let mut j = 0;
-                while i < array.len()
+                while j < target.len()
                 { 
                     let vector = f32x4::load(array, i);
                     let result = vector.complex_abs_squared();
@@ -154,7 +154,7 @@ impl ComplexVectorOperations for DataVector32
 	{
 		{
 			let mut array = &mut self.data;
-			Chunk::execute(&mut array, 2, |array| {
+			Chunk::execute(Complexity::Small, &mut array, 2, |array| {
                 let mut i = 1;
                 while i < array.len() {
                     array[i] = -array[i];
@@ -172,7 +172,7 @@ impl ComplexVectorOperations for DataVector32
 			let len = self.len();
 			let mut array = &mut self.temp;
 			let source = &self.data;
-			Chunk::execute_original_to_target(&source, len, 2, &mut array, len / 2, 1, |original, range, target| {
+			Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1, |original, range, target| {
                 let mut i = range.start;
                 let mut j = 0;
                 while j < target.len()
@@ -195,7 +195,7 @@ impl ComplexVectorOperations for DataVector32
 			let len = self.len();
 			let mut array = &mut self.temp;
 			let source = &self.data;
-			Chunk::execute_original_to_target(&source, len, 2, &mut array, len / 2, 1, |original, range, target| {
+			Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1, |original, range, target| {
                 let mut i = range.start + 1;
                 let mut j = 0;
                 while j < target.len()
@@ -220,7 +220,7 @@ impl ComplexVectorOperations for DataVector32
 		destination.is_complex = false;
 		let mut array = &mut destination.data;
 		let source = &self.data;
-		Chunk::execute_original_to_target(&source, len, 2, &mut array, len / 2, 1, |original, range, target| {
+		Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1, |original, range, target| {
             let mut i = range.start;
             let mut j = 0;
             while j < target.len()
@@ -240,7 +240,7 @@ impl ComplexVectorOperations for DataVector32
 		destination.is_complex = false;
 		let mut array = &mut destination.data;
 		let source = &self.data;
-		Chunk::execute_original_to_target(&source, len, 2, &mut array, len / 2, 1,  |original, range, target| {
+		Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1,  |original, range, target| {
             let mut i = range.start + 1;
             let mut j = 0;
             while j < target.len()
@@ -258,7 +258,7 @@ impl ComplexVectorOperations for DataVector32
 			let len = self.len();
 			let mut array = &mut self.temp;
 			let source = &self.data;
-			Chunk::execute_original_to_target(&source, len, 2, &mut array, len / 2, 1,  DataVector32::phase_par);
+			Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1,  DataVector32::phase_par);
 		}
 		
 		self.is_complex = false;
@@ -274,7 +274,7 @@ impl ComplexVectorOperations for DataVector32
 		destination.is_complex = false;
 		let mut array = &mut destination.data;
 		let source = &self.data;
-		Chunk::execute_original_to_target(&source, len, 2, &mut array, len / 2, 1,  DataVector32::phase_par);
+		Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1,  DataVector32::phase_par);
 	}
 }
 

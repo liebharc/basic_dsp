@@ -1,4 +1,4 @@
-use multicore_support::Chunk;
+use multicore_support::{Chunk, Complexity};
 use super::super::general::{
 	DataVector,
     GenericVectorOperations,
@@ -18,7 +18,7 @@ impl RealVectorOperations for DataVector32
         {
             let len = self.len();
             let mut array = &mut self.data;
-            Chunk::execute_partial_with_arguments(&mut array, len, 1, offset, |array, v| {
+            Chunk::execute_partial_with_arguments(Complexity::Small, &mut array, len, 1, offset, |array, v| {
                 for i in 0..array.len()
                 {
                     array[i] += v;
@@ -35,7 +35,7 @@ impl RealVectorOperations for DataVector32
 			let scalar_length = data_length % 4;
 			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
-			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, 4, factor, |array, value| {
+			Chunk::execute_partial_with_arguments(Complexity::Small, &mut array, vectorization_length, 4, factor, |array, value| {
                 let mut i = 0;
                 while i < array.len()
                 { 
@@ -59,7 +59,7 @@ impl RealVectorOperations for DataVector32
 		{
 			let mut array = &mut self.data;
 			let length = array.len();
-			Chunk::execute_partial(&mut array, length, 1, |chunk| {
+			Chunk::execute_partial(Complexity::Small, &mut array, length, 1, |chunk| {
                 for i in 0..chunk.len() {
                     chunk[i] = chunk[i].abs();
                 }
@@ -73,7 +73,7 @@ impl RealVectorOperations for DataVector32
 		{
 			let mut array = &mut self.data;
 			let length = array.len();
-			Chunk::execute_partial(&mut array, length, 1, |array| {
+			Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
                 let mut i = 0;
                 while i < array.len()
                 {
@@ -90,7 +90,7 @@ impl RealVectorOperations for DataVector32
 		{
 			let mut array = &mut self.data;
 			let length = array.len();
-			Chunk::execute_partial(&mut array, length, 1, |array| {
+			Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
                 let mut i = 0;
                 while i < array.len()
                 {
@@ -107,7 +107,7 @@ impl RealVectorOperations for DataVector32
 		{
 			let mut array = &mut self.data;
 			let length = array.len();
-			Chunk::execute_partial_with_arguments(&mut array, length, 1, degree, |array, base| {
+			Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 1, degree, |array, base| {
                 let base = 1.0 / base;
                 let mut i = 0;
                 while i < array.len()
@@ -125,7 +125,7 @@ impl RealVectorOperations for DataVector32
 		{
 			let mut array = &mut self.data;
 			let length = array.len();
-			Chunk::execute_partial_with_arguments(&mut array, length, 1, exponent, |array, base| {
+			Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 1, exponent, |array, base| {
                 let mut i = 0;
                 while i < array.len()
                 {
@@ -142,7 +142,7 @@ impl RealVectorOperations for DataVector32
 		{
 			let mut array = &mut self.data;
 			let length = array.len();
-			Chunk::execute_partial(&mut array, length, 1, |array| {
+			Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
                 let mut i = 0;
                 while i < array.len()
                 {
@@ -159,7 +159,7 @@ impl RealVectorOperations for DataVector32
 		{
 			let mut array = &mut self.data;
 			let length = array.len();
-			Chunk::execute_partial(&mut array, length, 1, |array| {
+			Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
                 let mut i = 0;
                 while i < array.len()
                 {
@@ -176,7 +176,7 @@ impl RealVectorOperations for DataVector32
 		{
 			let mut array = &mut self.data;
 			let length = array.len();
-			Chunk::execute_partial_with_arguments(&mut array, length, 1, base, |array, base| {
+			Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 1, base, |array, base| {
                 let mut i = 0;
                 while i < array.len()
                 {
@@ -193,7 +193,7 @@ impl RealVectorOperations for DataVector32
 		{
 			let mut array = &mut self.data;
 			let length = array.len();
-			Chunk::execute_partial_with_arguments(&mut array, length, 1, base, |array, base| {
+			Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 1, base, |array, base| {
                 let mut i = 0;
                 while i < array.len()
                 {
@@ -217,7 +217,7 @@ impl RealVectorOperations for DataVector32
 		{
 			let mut array = &mut self.data;
 			let length = array.len();
-			Chunk::execute_partial_with_arguments(&mut array, length, 1, divisor, |array, value| {
+			Chunk::execute_partial_with_arguments(Complexity::Small, &mut array, length, 1, divisor, |array, value| {
                 let mut i = 0;
                 while i < array.len() {
                     array[i] = array[i] % value;
@@ -250,6 +250,40 @@ impl RealVectorOperations for DataVector32
 				i += 1;
 				j += 1;
 			}
+		}
+		self
+	}
+    
+    fn real_sin(mut self) -> Self
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    array[i] = array[i].sin();
+                    i += 1;
+                }
+            });
+		}
+		self
+	}
+    
+    fn real_cos(mut self) -> Self
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    array[i] = array[i].cos();
+                    i += 1;
+                }
+            });
 		}
 		self
 	}

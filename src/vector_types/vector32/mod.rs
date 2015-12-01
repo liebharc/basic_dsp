@@ -3,7 +3,7 @@ pub mod real_impl;
 pub mod complex_impl;
 pub mod time_freq_impl;
 
-use multicore_support::Chunk;
+use multicore_support::{Chunk,Complexity};
 use super::general::{
 	DataVector,
 	DataVectorDomain,
@@ -115,7 +115,7 @@ impl DataVector32
 		
 		{
 			let mut array = &mut self.data;
-			Chunk::execute_partial_with_arguments(&mut array, vectorization_length, DEFAULT_GRANUALRITY, operations, DataVector32::perform_operations_par);
+			Chunk::execute_partial_with_arguments(Complexity::Large, &mut array, vectorization_length, DEFAULT_GRANUALRITY, operations, DataVector32::perform_operations_par);
 		}
 		DataVector32 { data: self.data, .. self }
 	}

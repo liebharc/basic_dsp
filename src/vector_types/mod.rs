@@ -271,6 +271,54 @@ macro_rules! define_real_basic_struct_members {
 				  valid_len: data_length
 				}
 			}
+            
+            /// Creates a real and empty `DataVector` and sets `delta` to 1.0 value.
+            pub fn real_empty() -> $name
+            {
+                $name 
+				{ 
+				  data: vec![0.0; 0], 
+				  temp: vec![0.0; 0],
+				  delta: 1.0,
+				  domain: DataVectorDomain::$domain,
+				  is_complex: false,
+				  valid_len: 0
+				}
+            }
+            
+            /// Creates a real and empty `DataVector` and sets `delta` to the given value.
+            pub fn real_empty_with_delta(delta: <$name as DataVector>::E) -> $name
+            {
+                $name 
+				{ 
+				  data: vec![0.0; 0], 
+				  temp: vec![0.0; 0],
+				  delta: delta,
+				  domain: DataVectorDomain::$domain,
+				  is_complex: false,
+				  valid_len: 0
+				}
+            }
+            
+            /// Creates a real `DataVector` with `length` elements all set to the value of `constant`. `delta` is defaulted to `1`.
+			pub fn from_constant(constant: <$name as DataVector>::E, length: usize) -> $name
+			{
+				$name::from_constant_with_delta(constant, length, 1.0)
+			}
+			
+			/// Creates a real `DataVector` with `length` elements all set to the value of `constant` and sets `delta` to the given value.
+			pub fn from_constant_with_delta(constant: <$name as DataVector>::E, length: usize, delta: <$name as DataVector>::E) -> $name
+			{
+				$name 
+				{ 
+				  data: vec![constant; length],
+				  temp: vec![0.0; length],
+				  delta: delta,
+				  domain: DataVectorDomain::$domain,
+				  is_complex: false,
+				  valid_len: length
+				}
+			}
 		}
 	 }
 }
@@ -332,6 +380,16 @@ macro_rules! define_real_operations_forward {
 			fn real_log_base(self, base: Self::E) -> Self
 			{
 				$name::from_gen(self.to_gen().real_log_base(base)) 
+			}
+            
+            fn real_sin(self) -> Self
+			{
+				$name::from_gen(self.to_gen().real_sin()) 
+			}
+            
+            fn real_cos(self) -> Self
+			{
+				$name::from_gen(self.to_gen().real_cos()) 
 			}
 			
 			fn real_exp_base(self, base: Self::E) -> Self
@@ -444,6 +502,34 @@ macro_rules! define_complex_basic_struct_members {
 				  valid_len: data_length
 				}
 			}
+            
+            /// Creates a complex and empty `DataVector` and sets `delta` to 1.0 value.
+            pub fn complex_empty() -> $name
+            {
+                $name 
+				{ 
+				  data: vec![0.0; 0], 
+				  temp: vec![0.0; 0],
+				  delta: 1.0,
+				  domain: DataVectorDomain::$domain,
+				  is_complex: true,
+				  valid_len: 0
+				}
+            }
+            
+            /// Creates a complex and empty `DataVector` and sets `delta` to the given value.
+            pub fn complex_empty_with_delta(delta: <$name as DataVector>::E) -> $name
+            {
+                $name 
+				{ 
+				  data: vec![0.0; 0], 
+				  temp: vec![0.0; 0],
+				  delta: delta,
+				  domain: DataVectorDomain::$domain,
+				  is_complex: true,
+				  valid_len: 0
+				}
+            }
 			
 			/// Creates a complex  `DataVector` from an array with real and an array imaginary data. `delta` is set to 1.
 			///
