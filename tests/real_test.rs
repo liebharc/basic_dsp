@@ -37,7 +37,7 @@ mod slow_test {
             let expected = real_add_scalar(&a, scalar[0]);
             let delta = create_delta(3561159, iteration);
             let vector = RealTimeVector32::from_array_with_delta(&a, delta);
-            let result = vector.real_offset(scalar[0]);
+            let result = vector.real_offset(scalar[0]).unwrap();
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);
@@ -62,7 +62,7 @@ mod slow_test {
             let expected = real_mulitply_scalar(&a, scalar[0]);
             let delta = create_delta(3561159, iteration);
             let vector = RealTimeVector32::from_array_with_delta(&a, delta);
-            let result = vector.real_scale(scalar[0]);
+            let result = vector.real_scale(scalar[0]).unwrap();
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);
@@ -86,7 +86,7 @@ mod slow_test {
             let expected = real_abs(&a);
             let delta = create_delta(3561159, iteration);
             let vector = RealTimeVector32::from_array_with_delta(&a, delta);
-            let result = vector.real_abs();
+            let result = vector.real_abs().unwrap();
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);
@@ -203,7 +203,7 @@ mod slow_test {
             let a = create_data_even_in_range(201511210, iteration, range.start, range.end, 0.0, 10.0);
             let delta = create_delta(3561159, iteration);
             let vector = RealTimeVector32::from_array_with_delta(&a, delta);
-            let result = vector.real_square().real_sqrt();
+            let result = vector.real_square().unwrap().real_sqrt().unwrap();
             assert_vector_eq(&a, &result.data());
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);
@@ -216,7 +216,7 @@ mod slow_test {
             let a = create_data(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
             let vector = RealTimeVector32::from_array_with_delta(&a, delta);
-            let result = vector.real_expn().real_logn();
+            let result = vector.real_expn().unwrap().real_logn().unwrap();
             assert_vector_eq(&a, &result.data());
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);
@@ -231,7 +231,7 @@ mod slow_test {
             let base = base[0];
             let delta = create_delta(3561159, iteration);
             let vector = RealTimeVector32::from_array_with_delta(&a, delta);
-            let result = vector.real_exp_base(base).real_log_base(base);
+            let result = vector.real_exp_base(base).unwrap().real_log_base(base).unwrap();
             assert_vector_eq(&a, &result.data());
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);
@@ -294,7 +294,8 @@ mod slow_test {
         let linear_seq = real_vector_cum_sum(&a);
         let delta = 0.1;
         let vector = RealTimeVector32::from_array_with_delta(&linear_seq, delta);
-        let result = vector.wrap(8.0).unwrap(8.0);
+        // Be careful because of the two meanings of unwrap depending on the type
+        let result = vector.wrap(8.0).unwrap().unwrap(8.0).unwrap();
         assert_vector_eq(&linear_seq, &result.data());
         assert_eq!(result.is_complex(), false);
         assert_eq!(result.delta(), delta);
@@ -306,7 +307,8 @@ mod slow_test {
         let linear_seq = real_vector_cum_sum(&a);
         let delta = 0.1;
         let vector = RealTimeVector32::from_array_with_delta(&linear_seq, delta);
-        let result = vector.wrap(8.0).unwrap(8.0);
+        // Be careful because of the two meanings of unwrap depending on the type
+        let result = vector.wrap(8.0).unwrap().unwrap(8.0).unwrap();
         assert_vector_eq(&linear_seq, &result.data());
         assert_eq!(result.is_complex(), false);
         assert_eq!(result.delta(), delta);

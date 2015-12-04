@@ -262,7 +262,7 @@ mod tests {
 	{
 		let mut data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 		let vector = RealTimeVector32::from_array(&mut data);
-		let result = vector.real_offset(1.0);
+		let result = vector.real_offset(1.0).unwrap();
 		let expected = [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
 		assert_eq!(result.data, expected);
 		assert_eq!(result.delta, 1.0);
@@ -274,7 +274,7 @@ mod tests {
 		// Test also that vector calls are possible
 		let data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
 		let result = RealTimeVector32::from_array(&data);
-		let result = result.real_offset(2.0);
+		let result = result.real_offset(2.0).unwrap();
 		assert_eq!(result.data, [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]);
 		assert_eq!(result.delta, 1.0);
 	}
@@ -294,7 +294,7 @@ mod tests {
 	{
 		let data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 		let result = RealTimeVector32::from_array(&data);
-		let result = result.real_scale(2.0);
+		let result = result.real_scale(2.0).unwrap();
 		let expected = [2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0];
 		assert_eq!(result.data, expected);
 		assert_eq!(result.delta, 1.0);
@@ -316,7 +316,7 @@ mod tests {
 	{
 		let data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0];
 		let result = RealTimeVector32::from_array(&data);
-		let result = result.real_abs();
+		let result = result.real_abs().unwrap();
 		let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 		assert_eq!(result.data, expected);
 		assert_eq!(result.delta, 1.0);

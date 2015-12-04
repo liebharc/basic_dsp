@@ -89,13 +89,13 @@ impl RealVectorOperations for DataVector64
 {
 	type ComplexPartner = DataVector64;
 	
-	fn real_offset(self, offset: f64) -> DataVector64
+	fn real_offset(self, offset: f64) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 		// self.inplace_offset(&[offset, offset], buffer);
 	}
 	
-	fn real_scale(self, factor: f64) -> DataVector64
+	fn real_scale(self, factor: f64) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 		/*let data_length = self.len();
@@ -103,7 +103,7 @@ impl RealVectorOperations for DataVector64
 		Chunk::execute_partial_with_arguments(&mut array, data_length, 1, buffer, DataVector64::inplace_real_scale_par, factor);*/
 	}
 	
-	fn real_abs(self) -> DataVector64
+	fn real_abs(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 		/*let mut array = &mut self.data;
@@ -111,52 +111,52 @@ impl RealVectorOperations for DataVector64
 		Chunk::execute_partial(&mut array, length, 1, buffer, DataVector32::inplace_abs_real_par);*/
 	}
 	
-	fn real_sqrt(self) -> DataVector64
+	fn real_sqrt(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn real_square(self) -> Self
+	fn real_square(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn real_root(self, degree: Self::E) -> Self
+	fn real_root(self, degree: Self::E) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn real_power(self, exponent: Self::E) -> Self
+	fn real_power(self, exponent: Self::E) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn real_logn(self) -> Self
+	fn real_logn(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn real_expn(self) -> Self
+	fn real_expn(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 
-	fn real_log_base(self, base: Self::E) -> Self
+	fn real_log_base(self, base: Self::E) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn real_exp_base(self, base: Self::E) -> Self
+	fn real_exp_base(self, base: Self::E) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
     
-    fn real_sin(self) -> Self
+    fn real_sin(self) -> VecResult<Self>
     {
         panic!("Unimplemented");
     }
     
-    fn real_cos(self) -> Self
+    fn real_cos(self) -> VecResult<Self>
     {
         panic!("Unimplemented");
     }
@@ -166,12 +166,12 @@ impl RealVectorOperations for DataVector64
 		panic!("Unimplemented");
 	}
 	
-	fn wrap(self, divisor: Self::E) -> Self
+	fn wrap(self, divisor: Self::E) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn unwrap(self, divisor: Self::E) -> Self
+	fn unwrap(self, divisor: Self::E) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}

@@ -333,69 +333,69 @@ macro_rules! define_real_operations_forward {
 		{
 			type ComplexPartner = $complex_partner; 
 			
-			fn real_offset(self, offset: <$name as DataVector>::E) -> $name
+			fn real_offset(self, offset: <$name as DataVector>::E) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().real_offset(offset))
+				$name::from_genres(self.to_gen().real_offset(offset))
 			}
 			
-			fn real_scale(self, factor: <$name as DataVector>::E) -> $name
+			fn real_scale(self, factor: <$name as DataVector>::E) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().real_scale(factor))
+				$name::from_genres(self.to_gen().real_scale(factor))
 			}
 					
-			fn real_abs(self) -> $name
+			fn real_abs(self) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().real_abs()) 
+				$name::from_genres(self.to_gen().real_abs()) 
 			}
 			
-			fn real_sqrt(self) -> $name
+			fn real_sqrt(self) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().real_sqrt()) 
+				$name::from_genres(self.to_gen().real_sqrt()) 
 			}
 			
-			fn real_square(self) -> Self
+			fn real_square(self) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().real_square()) 
+				$name::from_genres(self.to_gen().real_square()) 
 			}
 			
-			fn real_root(self, degree: Self::E) -> Self
+			fn real_root(self, degree: Self::E) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().real_root(degree)) 
+				$name::from_genres(self.to_gen().real_root(degree)) 
 			}
 			
-			fn real_power(self, exponent: Self::E) -> Self
+			fn real_power(self, exponent: Self::E) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().real_power(exponent)) 
+				$name::from_genres(self.to_gen().real_power(exponent)) 
 			}
 			
-			fn real_logn(self) -> Self
+			fn real_logn(self) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().real_logn()) 
+				$name::from_genres(self.to_gen().real_logn()) 
 			}
 			
-			fn real_expn(self) -> Self
+			fn real_expn(self) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().real_expn()) 
+				$name::from_genres(self.to_gen().real_expn()) 
 			}
 		
-			fn real_log_base(self, base: Self::E) -> Self
+			fn real_log_base(self, base: Self::E) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().real_log_base(base)) 
+				$name::from_genres(self.to_gen().real_log_base(base)) 
 			}
             
-            fn real_sin(self) -> Self
+            fn real_sin(self) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().real_sin()) 
+				$name::from_genres(self.to_gen().real_sin()) 
 			}
             
-            fn real_cos(self) -> Self
+            fn real_cos(self) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().real_cos()) 
+				$name::from_genres(self.to_gen().real_cos()) 
 			}
 			
-			fn real_exp_base(self, base: Self::E) -> Self
+			fn real_exp_base(self, base: Self::E) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().real_exp_base(base)) 
+				$name::from_genres(self.to_gen().real_exp_base(base)) 
 			}
 			
 			fn to_complex(self) -> VecResult<$complex_partner>
@@ -403,14 +403,14 @@ macro_rules! define_real_operations_forward {
 				$complex_partner::from_genres(self.to_gen().to_complex()) 
 			}
 			
-			fn wrap(self, divisor: Self::E) -> Self
+			fn wrap(self, divisor: Self::E) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().wrap(divisor))
+				$name::from_genres(self.to_gen().wrap(divisor))
 			}
 			
-			fn unwrap(self, divisor: Self::E) -> Self
+			fn unwrap(self, divisor: Self::E) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().unwrap(divisor))
+				$name::from_genres(self.to_gen().unwrap(divisor))
 			}
 		}
 	 
