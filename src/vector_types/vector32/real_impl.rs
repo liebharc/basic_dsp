@@ -1,6 +1,7 @@
 use multicore_support::{Chunk, Complexity};
 use super::super::general::{
 	DataVector,
+    VecResult,
     GenericVectorOperations,
 	RealVectorOperations};
 use super::DataVector32;
@@ -205,11 +206,19 @@ impl RealVectorOperations for DataVector32
 		self
 	}
 	
-	fn to_complex(self) -> DataVector32
+	fn to_complex(self) -> VecResult<Self>
 	{
-		let mut result = self.zero_interleave();
-		result.is_complex = true;
-		result
+		let result = self.zero_interleave();
+        match result {
+            Ok(mut vec) => { 
+                vec.is_complex = true;
+                Ok(vec)
+            },
+            Err((r, mut vec)) => {
+                vec.is_complex = true;
+                Err((r, vec))
+            }
+        }
 	}
 	
 	fn wrap(mut self, divisor: Self::E) -> Self

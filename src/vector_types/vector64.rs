@@ -1,5 +1,6 @@
 use super::general::{
 	DataVector,
+    VecResult,
 	DataVectorDomain,
 	GenericVectorOperations,
 	RealVectorOperations,
@@ -32,53 +33,51 @@ define_complex_basic_struct_members!(impl ComplexFreqVector64, DataVectorDomain:
 define_generic_operations_forward!(from: ComplexFreqVector64, to: DataVector64);
 define_complex_operations_forward!(from: ComplexFreqVector64, to: DataVector64, complex: Complex64, real_partner: RealTimeVector64);
 
-// const DEFAULT_GRANUALRITY: usize = 4;
-
 #[inline]
 #[allow(unused_variables)]
 impl GenericVectorOperations for DataVector64
 {
-	fn add_vector(self, summand: &DataVector64) -> DataVector64
+	fn add_vector(self, summand: &Self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 
-	fn subtract_vector(self, subtrahend: &DataVector64) -> DataVector64
+	fn subtract_vector(self, subtrahend: &Self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn multiply_vector(self, factor: &DataVector64) -> DataVector64
+	fn multiply_vector(self, factor: &Self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn divide_vector(self, divisor: &DataVector64) -> DataVector64
+	fn divide_vector(self, divisor: &Self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn zero_pad(self, points: usize) -> Self
+	fn zero_pad(self, points: usize) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn zero_interleave(self) -> Self
+	fn zero_interleave(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn diff(self) -> Self
+	fn diff(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn diff_with_start(self) -> Self
+	fn diff_with_start(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn cum_sum(self) -> Self
+	fn cum_sum(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
@@ -162,7 +161,7 @@ impl RealVectorOperations for DataVector64
         panic!("Unimplemented");
     }
 	
-	fn to_complex(self) -> DataVector64
+	fn to_complex(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}

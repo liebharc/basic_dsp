@@ -1,8 +1,10 @@
+use std::result;
+
 /// DataVector gives access to the basic properties of all data vectors
 ///
 /// A DataVector allocates memory if necessary. It will however never shrink/free memory unless it's 
 /// deleted and dropped.
-pub trait DataVector
+pub trait DataVector : Sized
 {
 	/// The underlying data type of the vector: `f32` or `f64`. 
 	type E;
@@ -57,10 +59,10 @@ pub trait GenericVectorOperations : DataVector {
 	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
 	/// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
 	/// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
-	/// let result = vector1.add_vector(&vector2);
+	/// let result = vector1.add_vector(&vector2).expect("Ignoring error handling in examples");
 	/// assert_eq!([11.0, 13.0], result.data());
 	/// ```
-	fn add_vector(self, summand: &Self) -> Self;
+	fn add_vector(self, summand: &Self) -> VecResult<Self>;
 	
 	/// Calculates the difference of `self - subtrahend`. It consumes self and returns the result.
 	/// # Example
@@ -69,10 +71,10 @@ pub trait GenericVectorOperations : DataVector {
 	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
 	/// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
 	/// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
-	/// let result = vector1.subtract_vector(&vector2);
+	/// let result = vector1.subtract_vector(&vector2).expect("Ignoring error handling in examples");
 	/// assert_eq!([-9.0, -9.0], result.data());
 	/// ```
-	fn subtract_vector(self, subtrahend: &Self) -> Self;
+	fn subtract_vector(self, subtrahend: &Self) -> VecResult<Self>;
 	
 	/// Calculates the product of `self * factor`. It consumes self and returns the result.
 	/// # Example
@@ -81,10 +83,10 @@ pub trait GenericVectorOperations : DataVector {
 	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
 	/// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
 	/// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
-	/// let result = vector1.multiply_vector(&vector2);
+	/// let result = vector1.multiply_vector(&vector2).expect("Ignoring error handling in examples");
 	/// assert_eq!([10.0, 22.0], result.data());
 	/// ```
-	fn multiply_vector(self, factor: &Self) -> Self;
+	fn multiply_vector(self, factor: &Self) -> VecResult<Self>;
 	
 	/// Calculates the quotient of `self / summand`. It consumes self and returns the result.
 	/// # Example
@@ -93,10 +95,10 @@ pub trait GenericVectorOperations : DataVector {
 	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
 	/// let vector1 = RealTimeVector32::from_array(&[10.0, 22.0]);
 	/// let vector2 = RealTimeVector32::from_array(&[2.0, 11.0]);
-	/// let result = vector1.divide_vector(&vector2);
+	/// let result = vector1.divide_vector(&vector2).expect("Ignoring error handling in examples");
 	/// assert_eq!([5.0, 2.0], result.data());
 	/// ```
-	fn divide_vector(self, divisor: &Self) -> Self;
+	fn divide_vector(self, divisor: &Self) -> VecResult<Self>;
 	
 	/// Appends zeros add the end of the vector until the vector has the size given in the points argument.
 	///
@@ -106,13 +108,13 @@ pub trait GenericVectorOperations : DataVector {
 	/// ```
 	/// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, GenericVectorOperations, DataVector};
 	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let result = vector.zero_pad(4);
+	/// let result = vector.zero_pad(4).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());
 	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0]);
-	/// let result = vector.zero_pad(2);
+	/// let result = vector.zero_pad(2).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());
 	/// ```
-	fn zero_pad(self, points: usize) -> Self;
+	fn zero_pad(self, points: usize) -> VecResult<Self>;
 	
 	/// Ineterleaves zeros afeter every vector element.
 	///
@@ -123,13 +125,13 @@ pub trait GenericVectorOperations : DataVector {
 	/// ```
 	/// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, GenericVectorOperations, DataVector};
 	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let result = vector.zero_interleave();
+	/// let result = vector.zero_interleave().expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 0.0, 2.0, 0.0], result.data());
 	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-	/// let result = vector.zero_interleave();
+	/// let result = vector.zero_interleave().expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], result.data());
 	/// ```
-	fn zero_interleave(self) -> Self;
+	fn zero_interleave(self) -> VecResult<Self>;
 	
 	/// Calculates the delta of each elements to its previous element. This will decrease the vector length by one point. 
 	///
@@ -138,10 +140,10 @@ pub trait GenericVectorOperations : DataVector {
 	/// ```
 	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
 	/// let vector = RealTimeVector32::from_array(&[2.0, 3.0, 2.0, 6.0]);
-	/// let result = vector.diff();
+	/// let result = vector.diff().expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, -1.0, 4.0], result.data());
 	/// ```
-	fn diff(self) -> Self;
+	fn diff(self) -> VecResult<Self>;
 	
 	/// Calculates the delta of each elements to its previous element. The first element
 	/// will remain unchanged.
@@ -151,10 +153,10 @@ pub trait GenericVectorOperations : DataVector {
 	/// ```
 	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
 	/// let vector = RealTimeVector32::from_array(&[2.0, 3.0, 2.0, 6.0]);
-	/// let result = vector.diff_with_start();
+	/// let result = vector.diff_with_start().expect("Ignoring error handling in examples");
 	/// assert_eq!([2.0, 1.0, -1.0, 4.0], result.data());
 	/// ```
-	fn diff_with_start(self) -> Self;
+	fn diff_with_start(self) -> VecResult<Self>;
 	
 	/// Calculates the cumulative sum of all elements. This operation undoes the `diff_with_start`operation.
 	///
@@ -163,10 +165,10 @@ pub trait GenericVectorOperations : DataVector {
 	/// ```
 	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
 	/// let vector = RealTimeVector32::from_array(&[2.0, 1.0, -1.0, 4.0]);
-	/// let result = vector.cum_sum();
+	/// let result = vector.cum_sum().expect("Ignoring error handling in examples");
 	/// assert_eq!([2.0, 3.0, 2.0, 6.0], result.data());
 	/// ```
-	fn cum_sum(self) -> Self;
+	fn cum_sum(self) -> VecResult<Self>;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
@@ -322,10 +324,10 @@ pub trait RealVectorOperations : DataVector {
 	/// ```
 	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
 	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let result = vector.to_complex();
+	/// let result = vector.to_complex().expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 0.0, 2.0, 0.0], result.data());
 	/// ```
-	fn to_complex(self) -> Self::ComplexPartner;
+	fn to_complex(self) -> VecResult<Self::ComplexPartner>;
     
     /// Calculates the sine of each element in radians.
     ///
@@ -626,3 +628,5 @@ pub trait FrequencyDomainOperations : DataVector {
 	/// ```
 	fn plain_ifft(self) -> Self::TimePartner;
 }
+
+pub type VecResult<T> = result::Result<T, (&'static str, T)>;

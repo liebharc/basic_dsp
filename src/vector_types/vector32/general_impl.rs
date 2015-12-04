@@ -1,7 +1,8 @@
 use multicore_support::{Chunk, Complexity};
 use super::super::general::{
 	DataVector,
-	GenericVectorOperations};
+	GenericVectorOperations,
+    VecResult};
 use super::DataVector32;
 use simd::f32x4;
 use num::complex::Complex32;
@@ -10,14 +11,11 @@ use simd_extensions::SimdExtensions;
 #[inline]
 impl GenericVectorOperations for DataVector32
 {
-	fn add_vector(mut self, summand: &DataVector32) -> DataVector32
+	fn add_vector(mut self, summand: &Self) -> VecResult<Self>
 	{
 		{
 			let len = self.len();
-			if len != summand.len()
-			{
-				panic!("Vectors must have the same size");
-			}
+            reject_if!(self, len != summand.len(), "Vectors must have the same size");
 			
 			let data_length = self.len();
 			let scalar_length = data_length % 4;
@@ -45,17 +43,14 @@ impl GenericVectorOperations for DataVector32
 			}
 		}
 		
-		self
+		Ok(self)
 	}
 	
-	fn subtract_vector(mut self, subtrahend: &DataVector32) -> DataVector32
+	fn subtract_vector(mut self, subtrahend: &Self) -> VecResult<Self>
 	{
 		{
 			let len = self.len();
-			if len != subtrahend.len()
-			{
-				panic!("Vectors must have the same size");
-			}
+			reject_if!(self, len != subtrahend.len(), "Vectors must have the same size");
 				
 			let data_length = self.len();
 			let scalar_length = data_length % 4;
@@ -83,46 +78,40 @@ impl GenericVectorOperations for DataVector32
 			}
 		}
 		
-		self
+		Ok(self)
 	}
 	
-	fn multiply_vector(self, factor: &DataVector32) -> DataVector32
+	fn multiply_vector(self, factor: &Self) -> VecResult<Self>
 	{
 		let len = self.len();
-		if len != factor.len()
-		{
-			panic!("Vectors must have the same size");
-		}
+		reject_if!(self, len != factor.len(), "Vectors must have the same size");
 		
 		if self.is_complex
 		{
-			self.multiply_vector_complex(factor)
+			Ok(self.multiply_vector_complex(factor))
 		}
 		else
 		{
-			self.multiply_vector_real(factor)
+			Ok(self.multiply_vector_real(factor))
 		}
 	}
 	
-	fn divide_vector(self, divisor: &DataVector32) -> DataVector32
+	fn divide_vector(self, divisor: &Self) -> VecResult<Self>
 	{
 		let len = self.len();
-		if len != divisor.len()
-		{
-			panic!("Vectors must have the same size");
-		}
+		reject_if!(self, len != divisor.len(), "Vectors must have the same size");
 		
 		if self.is_complex
 		{
-			self.divide_vector_complex(divisor)
+			Ok(self.divide_vector_complex(divisor))
 		}
 		else
 		{
-			self.divide_vector_real(divisor)
+			Ok(self.divide_vector_real(divisor))
 		}
 	}
 	
-	fn zero_pad(mut self, points: usize) -> Self
+	fn zero_pad(mut self, points: usize) -> VecResult<Self>
 	{
 		{
 			let len_before = self.len();
@@ -135,22 +124,22 @@ impl GenericVectorOperations for DataVector32
 			}
 		}
 		
-		self
+		Ok(self)
 	}
 	
-	fn zero_interleave(self) -> Self
+	fn zero_interleave(self) -> VecResult<Self>
 	{
 		if self.is_complex
 		{
-			self.zero_interleave_complex()
+			Ok(self.zero_interleave_complex())
 		}
 		else
 		{
-			self.zero_interleave_real()
+			Ok(self.zero_interleave_real())
 		}
 	}
 	
-	fn diff(mut self) -> Self
+	fn diff(mut self) -> VecResult<Self>
 	{
 		{
 			let data_length = self.len();
@@ -196,10 +185,10 @@ impl GenericVectorOperations for DataVector32
 			}
 		}
 		
-		self.swap_data_temp()
+		Ok(self.swap_data_temp())
 	}
 	
-	fn diff_with_start(mut self) -> Self
+	fn diff_with_start(mut self) -> VecResult<Self>
 	{
 		{
 			let data_length = self.len();
@@ -244,10 +233,10 @@ impl GenericVectorOperations for DataVector32
 			}
 		}
 		
-		self.swap_data_temp()
+		Ok(self.swap_data_temp())
 	}
 	
-	fn cum_sum(mut self) -> Self
+	fn cum_sum(mut self) -> VecResult<Self>
 	{
 		{
 			let data_length = self.len();
@@ -264,7 +253,7 @@ impl GenericVectorOperations for DataVector32
 				j += 1;
 			}
 		}
-		self
+		Ok(self)
 	}
 }
 

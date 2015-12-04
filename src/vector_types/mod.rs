@@ -22,6 +22,7 @@ macro_rules! define_vector_struct {
 		/// two times faster than 64bit vectors for most operations. But remember that you should benchmark first
 		/// before you give away accuracy for performance unless however you are sure that 32bit accuracy is certainly good
 		/// enough.
+        #[derive(Debug)]        
 		pub struct $name
 		{
 			data: Vec<$data_type>,
@@ -177,49 +178,49 @@ macro_rules! define_generic_operations_forward {
 	 	#[inline]
 		impl GenericVectorOperations for $name
 		{
-			fn add_vector(self, summand: &Self) -> Self
+			fn add_vector(self, summand: &Self) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().add_vector(&summand.to_gen_borrow()))
+				$name::from_genres(self.to_gen().add_vector(&summand.to_gen_borrow()))
 			}
 	
-			fn subtract_vector(self, subtrahend: &Self) -> Self
+			fn subtract_vector(self, subtrahend: &Self) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().subtract_vector(&subtrahend.to_gen_borrow()))
+				$name::from_genres(self.to_gen().subtract_vector(&subtrahend.to_gen_borrow()))
 			}
 			
-			fn multiply_vector(self, factor: &Self) -> Self
+			fn multiply_vector(self, factor: &Self) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().multiply_vector(&factor.to_gen_borrow()))
+				$name::from_genres(self.to_gen().multiply_vector(&factor.to_gen_borrow()))
 			}
 			
-			fn divide_vector(self, divisor: &Self) -> Self
+			fn divide_vector(self, divisor: &Self) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().divide_vector(&divisor.to_gen_borrow()))
+				$name::from_genres(self.to_gen().divide_vector(&divisor.to_gen_borrow()))
 			}
 			
-			fn zero_pad(self, points: usize) -> Self
+			fn zero_pad(self, points: usize) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().zero_pad(points))
+				$name::from_genres(self.to_gen().zero_pad(points))
 			}
 			
-			fn zero_interleave(self) -> Self
+			fn zero_interleave(self) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().zero_interleave())
+				$name::from_genres(self.to_gen().zero_interleave())
 			}
 			
-			fn diff(self) -> Self
+			fn diff(self) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().diff())
+				$name::from_genres(self.to_gen().diff())
 			}
 			
-			fn diff_with_start(self) -> Self
+			fn diff_with_start(self) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().diff_with_start())
+				$name::from_genres(self.to_gen().diff_with_start())
 			}
 			
-			fn cum_sum(self) -> Self
+			fn cum_sum(self) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().cum_sum())
+				$name::from_genres(self.to_gen().cum_sum())
 			}
 		}
 	}	
@@ -397,9 +398,9 @@ macro_rules! define_real_operations_forward {
 				$name::from_gen(self.to_gen().real_exp_base(base)) 
 			}
 			
-			fn to_complex(self) -> $complex_partner
+			fn to_complex(self) -> VecResult<$complex_partner>
 			{
-				$complex_partner::from_gen(self.to_gen().to_complex()) 
+				$complex_partner::from_genres(self.to_gen().to_complex()) 
 			}
 			
 			fn wrap(self, divisor: Self::E) -> Self
@@ -451,6 +452,14 @@ macro_rules! define_real_operations_forward {
 				  is_complex: other.is_complex,
 				  valid_len: other.valid_len
 				}
+			}
+            
+            fn from_genres(other: VecResult<$gen_type>) -> VecResult<$name>
+			{
+				match other {
+                    Ok(v) => Ok($name::from_gen(v)),
+                    Err((r, v)) => Err((r, $name::from_gen(v)))
+                }
 			}
 		}
 	 }
@@ -723,8 +732,25 @@ macro_rules! define_complex_operations_forward {
 				  valid_len: other.valid_len
 				}
 			}
+            
+            fn from_genres(other: VecResult<$gen_type>) -> VecResult<$name>
+			{
+				match other {
+                    Ok(v) => Ok($name::from_gen(v)),
+                    Err((r, v)) => Err((r, $name::from_gen(v)))
+                }
+			}
 		} 
 	 }
+}
+
+macro_rules! reject_if {
+    ($self_: ident, $condition: expr, $message: expr) => {
+        if $condition
+        {
+            return Err(($message, $self_));
+        }
+    }
 }
 
 pub mod general;
@@ -735,6 +761,7 @@ pub use vector_types::general::
 	{
 		DataVectorDomain,
 		DataVector,
+        VecResult,
 		GenericVectorOperations,
 		RealVectorOperations,
 		ComplexVectorOperations,

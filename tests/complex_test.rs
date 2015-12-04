@@ -156,7 +156,7 @@ mod slow_test {
             let delta = create_delta(3561159, iteration);
             let vector1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let vector2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
-            let result = vector1.multiply_vector(&vector2);
+            let result = vector1.multiply_vector(&vector2).unwrap();
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);
@@ -184,7 +184,7 @@ mod slow_test {
             let delta = create_delta(3561159, iteration);
             let vector1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let vector2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
-            let result = vector1.divide_vector(&vector2);
+            let result = vector1.divide_vector(&vector2).unwrap();
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);
@@ -258,7 +258,7 @@ mod slow_test {
             let delta = create_delta(3561159, iteration);
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let expected = complex_vector_diff(&a);
-            let result = vector.diff_with_start();
+            let result = vector.diff_with_start().unwrap();
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);
@@ -284,7 +284,7 @@ mod slow_test {
             let delta = create_delta(3561159, iteration);
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let expected = complex_vector_cum_sum(&a);
-            let result = vector.cum_sum();
+            let result = vector.cum_sum().unwrap();
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);

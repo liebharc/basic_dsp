@@ -6,6 +6,7 @@ pub mod time_freq_impl;
 use multicore_support::{Chunk,Complexity};
 use super::general::{
 	DataVector,
+    VecResult,
 	DataVectorDomain,
 	GenericVectorOperations,
 	RealVectorOperations,
@@ -362,7 +363,7 @@ mod tests {
 		let vector1 = ComplexTimeVector32::from_interleaved(&data1);
 		let data2 = [5.0, 7.0, 9.0, 11.0];
 		let vector2 = ComplexTimeVector32::from_interleaved(&data2);
-		let result = vector1.add_vector(&vector2);
+		let result = vector1.add_vector(&vector2).unwrap();
 		let expected = [6.0, 9.0, 12.0, 15.0];
 		assert_eq!(result.data(), expected);
 	}
@@ -372,7 +373,7 @@ mod tests {
 	{
 		let a = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
 		let b = ComplexTimeVector32::from_interleaved(&[2.0, -3.0, -2.0, 3.0, 2.0, -3.0, -2.0, 3.0]);
-		let result = a.multiply_vector(&b);
+		let result = a.multiply_vector(&b).unwrap();
 		let expected = [8.0, 1.0, -18.0, 1.0, 28.0, -3.0, -38.0, 5.0];
 		assert_eq!(result.data, expected);
 		assert_eq!(result.delta, 1.0);
@@ -383,7 +384,7 @@ mod tests {
 	{
 		let a = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
 		let b = ComplexTimeVector32::from_interleaved(&[-1.0, 0.0, 0.0, 1.0, 2.0, -3.0]);
-		let result = a.divide_vector(&b);
+		let result = a.divide_vector(&b).unwrap();
 		let expected = [-1.0, -2.0, 4.0, -3.0, -8.0/13.0, 27.0/13.0];
 		assert_eq!(result.data, expected);
 		assert_eq!(result.delta, 1.0);

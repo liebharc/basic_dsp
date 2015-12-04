@@ -1,8 +1,11 @@
 use basic_dsp::{
+    DataVector,
     DataVector32, 
+    VecResult,
     RealTimeVector32, 
     ComplexTimeVector32};
 use std::boxed::Box;
+use std::fmt::Debug;
 
 pub const DEFAULT_DATA_SIZE: usize = 10000;
 
@@ -100,6 +103,19 @@ impl<T> VectorBox<T>
         unsafe {
             let vector = Box::from_raw(self.vector);
             let result = function(*vector);
+            self.vector = Box::into_raw(Box::new(result));
+        }
+        
+        true
+    }
+    
+    pub fn execute_res<F>(&mut self, function: F) -> bool
+        where F: Fn(T) -> VecResult<T> + 'static + Sync,
+        T: DataVector + Debug
+    {
+        unsafe {
+            let vector = Box::from_raw(self.vector);
+            let result = function(*vector).unwrap();
             self.vector = Box::into_raw(Box::new(result));
         }
         

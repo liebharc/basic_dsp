@@ -32,6 +32,7 @@ pub use vector_types::
 	{
 		DataVectorDomain,
 		DataVector,
+        VecResult,
 		GenericVectorOperations,
 		RealVectorOperations,
 		ComplexVectorOperations,

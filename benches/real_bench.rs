@@ -188,7 +188,7 @@ mod bench {
 	{
 		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
 		b.iter(|| {
-			vector.execute(|v|  { v.diff_with_start() } )
+			vector.execute_res(|v|  { v.diff_with_start() } )
 		});
     }
     
@@ -197,7 +197,7 @@ mod bench {
 	{
 		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
 		b.iter(|| {
-			vector.execute(|v|  { v.cum_sum() } )
+			vector.execute_res(|v|  { v.cum_sum() } )
 		});
     }
 }
