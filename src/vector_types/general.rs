@@ -397,11 +397,11 @@ pub trait ComplexVectorOperations : DataVector {
 	/// use num::complex::Complex32;
 	/// # fn main() { 
 	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-	/// let result = vector.complex_offset(Complex32::new(-1.0, 2.0));
+	/// let result = vector.complex_offset(Complex32::new(-1.0, 2.0)).expect("Ignoring error handling in examples");
 	/// assert_eq!([0.0, 4.0, 2.0, 6.0], result.data());
 	/// # }
 	/// ```
-	fn complex_offset(self, offset: Self::Complex) -> Self;
+	fn complex_offset(self, offset: Self::Complex) -> VecResult<Self>;
 	
 	/// Multiplies the vector with a scalar.
 	/// # Example
@@ -413,11 +413,11 @@ pub trait ComplexVectorOperations : DataVector {
 	/// use num::complex::Complex32;
 	/// # fn main() { 
 	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-	/// let result = vector.complex_scale(Complex32::new(-1.0, 2.0));
+	/// let result = vector.complex_scale(Complex32::new(-1.0, 2.0)).expect("Ignoring error handling in examples");
 	/// assert_eq!([-5.0, 0.0, -11.0, 2.0], result.data());
 	/// # }
 	/// ```
-	fn complex_scale(self, factor: Self::Complex) -> Self;
+	fn complex_scale(self, factor: Self::Complex) -> VecResult<Self>;
 	
 	/// Gets the absolute value or magnitude of all vector elements.
 	/// # Example
@@ -429,11 +429,11 @@ pub trait ComplexVectorOperations : DataVector {
 	/// use num::complex::Complex32;
 	/// # fn main() { 
 	/// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
-	/// let result = vector.complex_abs();
+	/// let result = vector.complex_abs().expect("Ignoring error handling in examples");
 	/// assert_eq!([5.0, 5.0], result.data());
 	/// # }
 	/// ```
-	fn complex_abs(self) -> Self::RealPartner;
+	fn complex_abs(self) -> VecResult<Self::RealPartner>;
 	
 	/// Copies the absolute value or magnitude of all vector elements into the given target vector.
 	/// # Example
@@ -461,11 +461,11 @@ pub trait ComplexVectorOperations : DataVector {
 	/// use num::complex::Complex32;
 	/// # fn main() { 
 	/// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
-	/// let result = vector.complex_abs_squared();
+	/// let result = vector.complex_abs_squared().expect("Ignoring error handling in examples");
 	/// assert_eq!([25.0, 25.0], result.data());
 	/// # }
 	/// ```
-	fn complex_abs_squared(self) -> Self::RealPartner;
+	fn complex_abs_squared(self) -> VecResult<Self::RealPartner>;
 	
 	/// Calculates the complex conjugate of the vector. 
 	/// # Example
@@ -477,11 +477,11 @@ pub trait ComplexVectorOperations : DataVector {
 	/// use num::complex::Complex32;
 	/// # fn main() { 
 	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-	/// let result = vector.complex_conj();
+	/// let result = vector.complex_conj().expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, -2.0, 3.0, -4.0], result.data());
 	/// # }
 	/// ```
-	fn complex_conj(self) -> Self;
+	fn complex_conj(self) -> VecResult<Self>;
 	
 	/// Gets all real elements.
 	/// # Example
@@ -492,11 +492,11 @@ pub trait ComplexVectorOperations : DataVector {
 	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
 	/// # fn main() { 
 	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-	/// let result = vector.to_real();
+	/// let result = vector.to_real().expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 3.0], result.data());
 	/// # }
 	/// ```
-	fn to_real(self) -> Self::RealPartner;
+	fn to_real(self) -> VecResult<Self::RealPartner>;
 	
 	/// Gets all imag elements.
 	/// # Example
@@ -507,11 +507,11 @@ pub trait ComplexVectorOperations : DataVector {
 	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
 	/// # fn main() { 
 	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-	/// let result = vector.to_imag();
+	/// let result = vector.to_imag().expect("Ignoring error handling in examples");
 	/// assert_eq!([2.0, 4.0], result.data());
 	/// # }
 	/// ```
-	fn to_imag(self) -> Self::RealPartner;
+	fn to_imag(self) -> VecResult<Self::RealPartner>;
 	
 	/// Copies all real elements into the given vector.
 	/// # Example
@@ -554,11 +554,11 @@ pub trait ComplexVectorOperations : DataVector {
 	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
 	/// # fn main() { 
 	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0]);
-	/// let result = vector.phase();
+	/// let result = vector.phase().expect("Ignoring error handling in examples");
 	/// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.data());
 	/// # }
 	/// ```
-	fn phase(self) -> Self::RealPartner;
+	fn phase(self) -> VecResult<Self::RealPartner>;
 	
 	/// Copies the phase of all elements in [rad] into the given vector.
 	/// # Example
@@ -591,7 +591,7 @@ pub trait TimeDomainOperations : DataVector {
 	/// ```
 	/// use basic_dsp::{ComplexTimeVector32, TimeDomainOperations, DataVector};
 	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254]);
-	/// let result = vector.plain_fft();
+	/// let result = vector.plain_fft().expect("Ignoring error handling in examples");
 	/// let actual = result.data();
 	/// let expected = &[0.0, 0.0, 3.0, 0.0, 0.0, 0.0];
 	/// assert_eq!(actual.len(), expected.len());
@@ -599,7 +599,7 @@ pub trait TimeDomainOperations : DataVector {
 	///		assert!((actual[i] - expected[i]).abs() < 1e-4);
 	/// }
 	/// ```
-	fn plain_fft(self) -> Self::FreqPartner;
+	fn plain_fft(self) -> VecResult<Self::FreqPartner>;
 	
 	// TODO add fft method which also applies a window
 }
@@ -618,7 +618,7 @@ pub trait FrequencyDomainOperations : DataVector {
 	/// ```
 	/// use basic_dsp::{ComplexFreqVector32, FrequencyDomainOperations, DataVector};
 	/// let vector = ComplexFreqVector32::from_interleaved(&[0.0, 0.0, 1.0, 0.0, 0.0, 0.0]);
-	/// let result = vector.plain_ifft();
+	/// let result = vector.plain_ifft().expect("Ignoring error handling in examples");
 	/// let actual = result.data();
 	/// let expected = &[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254];
 	/// assert_eq!(actual.len(), expected.len());
@@ -626,7 +626,7 @@ pub trait FrequencyDomainOperations : DataVector {
 	///		assert!((actual[i] - expected[i]).abs() < 1e-4);
 	/// }
 	/// ```
-	fn plain_ifft(self) -> Self::TimePartner;
+	fn plain_ifft(self) -> VecResult<Self::TimePartner>;
 }
 
 pub type VecResult<T> = result::Result<T, (&'static str, T)>;

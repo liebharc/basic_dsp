@@ -51,7 +51,7 @@ mod slow_test {
             let expected = complex_add_scalar(&a, scalar);
             let delta = create_delta(3561159, iteration);
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
-            let result = vector.complex_offset(scalar);
+            let result = vector.complex_offset(scalar).unwrap();
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);
@@ -78,7 +78,7 @@ mod slow_test {
             let expected = complex_multiply_scalar(&a, scalar);
             let delta = create_delta(3561159, iteration);
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
-            let result = vector.complex_scale(scalar);
+            let result = vector.complex_scale(scalar).unwrap();
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);
@@ -103,7 +103,7 @@ mod slow_test {
             let expected = complex_abs(&a);
             let delta = create_delta(3561159, iteration);
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
-            let result = vector.complex_abs();
+            let result = vector.complex_abs().unwrap();
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);
@@ -128,7 +128,7 @@ mod slow_test {
             let expected = complex_abs_sq(&a);
             let delta = create_delta(3561159, iteration);
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
-            let result = vector.complex_abs_squared();
+            let result = vector.complex_abs_squared().unwrap();
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);
@@ -202,7 +202,7 @@ mod slow_test {
             let mut imag_vector = RealTimeVector32::from_array_no_copy(vec![0.0; 0]);
             complex.get_real(&mut real_vector);
             complex.get_imag(&mut imag_vector);
-            let real_result = complex.to_real();
+            let real_result = complex.to_real().unwrap();
             assert_vector_eq_with_reason(&real, &real_vector.data(), "Failure in get_real");
             assert_vector_eq_with_reason(&real, &real_result.data(), "Failure in get_imag");
             assert_vector_eq_with_reason(&imag, &imag_vector.data(), "Failure in to_real");
@@ -226,7 +226,7 @@ mod slow_test {
             let mut phase_vector = RealTimeVector32::from_array_no_copy(vec![0.0; 0]);
             complex.get_complex_abs(&mut abs_vector);
             complex.get_phase(&mut phase_vector);
-            let phase_result = complex.phase();
+            let phase_result = complex.phase().unwrap();
             assert_vector_eq_with_reason(&abs, &abs_vector.data(), "Failure in get_complex_abs");
             assert_vector_eq_with_reason(&phase, &phase_vector.data(), "Failure in get_phase");
             assert_vector_eq_with_reason(&phase, &phase_result.data(), "Failure in phase");

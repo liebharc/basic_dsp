@@ -184,13 +184,13 @@ impl ComplexVectorOperations for DataVector64
 	type RealPartner = DataVector64;
 	type Complex = Complex64;
 	
-	fn complex_offset(self, offset: Complex64) -> DataVector64
+	fn complex_offset(self, offset: Complex64) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 		// self.inplace_offset(&[offset.re, offset.im], buffer);
 	}
 	
-	fn complex_scale(self, factor: Complex64) -> DataVector64
+	fn complex_scale(self, factor: Complex64) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 		/*
@@ -199,7 +199,7 @@ impl ComplexVectorOperations for DataVector64
 		Chunk::execute_partial_with_arguments(&mut array, data_length, 1, buffer, DataVector64::inplace_complex_scale_par, factor);*/
 	}
 	
-	fn complex_abs(self) -> DataVector64
+	fn complex_abs(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 		/*
@@ -213,7 +213,7 @@ impl ComplexVectorOperations for DataVector64
 		panic!("Unimplemented");
 	}
 	
-	fn complex_abs_squared(self) -> DataVector64
+	fn complex_abs_squared(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 		/*
@@ -222,37 +222,37 @@ impl ComplexVectorOperations for DataVector64
 		Chunk::execute_partial(&mut array, data_length, 1, buffer, DataVector64::inplace_complex_abs_squared_par);*/
 	}
 	
-	fn complex_conj(self) -> DataVector64
+	fn complex_conj(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn to_real(self) -> DataVector64
+	fn to_real(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 
-	fn to_imag(self) -> DataVector64
+	fn to_imag(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}	
 			
-	fn get_real(&self, destination: &mut DataVector64)
+	fn get_real(&self, destination: &mut Self)
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn get_imag(&self, destination: &mut DataVector64)
+	fn get_imag(&self, destination: &mut Self)
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn phase(self) -> DataVector64
+	fn phase(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn get_phase(&self, destination: &mut DataVector64)
+	fn get_phase(&self, destination: &mut Self)
 	{
 		panic!("Unimplemented");
 	}

@@ -632,19 +632,19 @@ macro_rules! define_complex_operations_forward {
 			type RealPartner = $real_partner;
 			type Complex = $complex_type;
 			
-			fn complex_offset(self, offset: $complex_type) -> $name
+			fn complex_offset(self, offset: $complex_type) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().complex_offset(offset))
+				$name::from_genres(self.to_gen().complex_offset(offset))
 			}
 				
-			fn complex_scale(self, factor: $complex_type) -> $name
+			fn complex_scale(self, factor: $complex_type) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().complex_scale(factor))
+				$name::from_genres(self.to_gen().complex_scale(factor))
 			}
 			
-			fn complex_abs(self) -> $real_partner
+			fn complex_abs(self) -> VecResult<$real_partner>
 			{
-				$real_partner::from_gen(self.to_gen().complex_abs())
+				$real_partner::from_genres(self.to_gen().complex_abs())
 			}
 			
 			fn get_complex_abs(&self, destination: &mut Self::RealPartner)
@@ -652,24 +652,24 @@ macro_rules! define_complex_operations_forward {
 				self.to_gen_borrow().get_complex_abs(destination.to_gen_mut_borrow())
 			}
 			
-			fn complex_abs_squared(self) -> $real_partner
+			fn complex_abs_squared(self) -> VecResult<$real_partner>
 			{
-				$real_partner::from_gen(self.to_gen().complex_abs_squared())
+				$real_partner::from_genres(self.to_gen().complex_abs_squared())
 			}
 			
-			fn complex_conj(self) -> $name
+			fn complex_conj(self) -> VecResult<Self>
 			{
-				$name::from_gen(self.to_gen().complex_conj())
+				$name::from_genres(self.to_gen().complex_conj())
 			}
 			
-			fn to_real(self) -> Self::RealPartner
+			fn to_real(self) -> VecResult<Self::RealPartner>
 			{
-				$real_partner::from_gen(self.to_gen().to_real())
+				$real_partner::from_genres(self.to_gen().to_real())
 			}
 	
-			fn to_imag(self) -> Self::RealPartner
+			fn to_imag(self) -> VecResult<Self::RealPartner>
 			{
-				$real_partner::from_gen(self.to_gen().to_imag())
+				$real_partner::from_genres(self.to_gen().to_imag())
 			}	
 					
 			fn get_real(&self, destination: &mut Self::RealPartner)
@@ -682,9 +682,9 @@ macro_rules! define_complex_operations_forward {
 				self.to_gen_borrow().get_imag(destination.to_gen_mut_borrow())
 			}
 			
-			fn phase(self) -> Self::RealPartner
+			fn phase(self) -> VecResult<Self::RealPartner>
 			{
-				$real_partner::from_gen(self.to_gen().phase())
+				$real_partner::from_genres(self.to_gen().phase())
 			}
 			
 			fn get_phase(&self, destination: &mut Self::RealPartner)

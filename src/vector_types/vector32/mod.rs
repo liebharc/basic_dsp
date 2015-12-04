@@ -284,7 +284,7 @@ mod tests {
 	{
 		let data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
 		let result = ComplexTimeVector32::from_interleaved(&data);
-		let result = result.complex_offset(Complex32::new(1.0, -1.0));
+		let result = result.complex_offset(Complex32::new(1.0, -1.0)).unwrap();
 		assert_eq!(result.data, [2.0, 1.0, 4.0, 3.0, 6.0, 5.0, 8.0, 7.0]);
 		assert_eq!(result.delta, 1.0);
 	}
@@ -305,7 +305,7 @@ mod tests {
 	{
 		let data = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 		let result = ComplexTimeVector32::from_interleaved(&data);
-		let result = result.complex_scale(Complex32::new(2.0, -3.0));
+		let result = result.complex_scale(Complex32::new(2.0, -3.0)).unwrap();
 		let expected = [8.0, 1.0, 18.0, -1.0, 28.0, -3.0, 38.0, -5.0];
 		assert_eq!(result.data, expected);
 		assert_eq!(result.delta, 1.0);
@@ -327,7 +327,7 @@ mod tests {
 	{
 		let data = [3.0, 4.0, -3.0, 4.0, 3.0, -4.0, -3.0, -4.0];
 		let result = ComplexTimeVector32::from_interleaved(&data);
-		let result = result.complex_abs();
+		let result = result.complex_abs().unwrap();
 		let expected = [5.0, 5.0, 5.0, 5.0];
 		assert_eq!(result.data(), expected);
 		assert_eq!(result.delta, 1.0);
@@ -338,7 +338,7 @@ mod tests {
 	{
 		let data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0, 9.0, 10.0];
 		let result = ComplexTimeVector32::from_interleaved(&data);
-		let result = result.complex_abs_squared();
+		let result = result.complex_abs_squared().unwrap();
 		let expected = [5.0, 25.0, 61.0, 113.0, 181.0];
 		assert_eq!(result.data(), expected);
 		assert_eq!(result.delta, 1.0);

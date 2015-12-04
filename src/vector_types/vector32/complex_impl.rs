@@ -1,6 +1,7 @@
 use multicore_support::{Chunk, Complexity};
 use super::super::general::{
 	DataVector,
+    VecResult,
 	ComplexVectorOperations};
 use super::{DataVector32, DEFAULT_GRANUALRITY};
 use simd::f32x4;
@@ -15,7 +16,7 @@ impl ComplexVectorOperations for DataVector32
 	type RealPartner = DataVector32;
 	type Complex = Complex32;
 	
-	fn complex_offset(mut self, offset: Complex32)  -> DataVector32
+	fn complex_offset(mut self, offset: Complex32)  -> VecResult<Self>
 	{
 		{
             let data_length = self.len();
@@ -43,10 +44,10 @@ impl ComplexVectorOperations for DataVector32
 			}
         }
         
-		self
+		Ok(self)
 	}
 	
-	fn complex_scale(mut self, factor: Complex32) -> DataVector32
+	fn complex_scale(mut self, factor: Complex32) -> VecResult<Self>
 	{
 		{
 			let data_length = self.len();
@@ -73,10 +74,10 @@ impl ComplexVectorOperations for DataVector32
 				i += 2;
 			}
 		}
-		self
+		Ok(self)
 	}
 	
-	fn complex_abs(mut self) -> DataVector32
+	fn complex_abs(mut self) -> VecResult<Self>
 	{
 		{
 			let data_length = self.len();
@@ -95,10 +96,10 @@ impl ComplexVectorOperations for DataVector32
 			self.valid_len = self.valid_len / 2;
 		}
 		
-		self.swap_data_temp()
+		Ok(self.swap_data_temp())
 	}
 	
-	fn get_complex_abs(&self, destination: &mut DataVector32)
+	fn get_complex_abs(&self, destination: &mut Self)
 	{
 		let data_length = self.len();
 		destination.reallocate(data_length / 2);
@@ -118,7 +119,7 @@ impl ComplexVectorOperations for DataVector32
 		destination.delta = self.delta;
 	}
 	
-	fn complex_abs_squared(mut self) -> DataVector32
+	fn complex_abs_squared(mut self) -> VecResult<Self>
 	{
 		{
 			let data_length = self.len();
@@ -147,10 +148,11 @@ impl ComplexVectorOperations for DataVector32
 			self.is_complex = false;
 			self.valid_len = self.valid_len / 2;
 		}
-		self.swap_data_temp()
+		
+        Ok(self.swap_data_temp())
 	}
 	
-	fn complex_conj(mut self) -> DataVector32
+	fn complex_conj(mut self) -> VecResult<Self>
 	{
 		{
 			let mut array = &mut self.data;
@@ -163,10 +165,10 @@ impl ComplexVectorOperations for DataVector32
             });
 		}
 		
-		self
+		Ok(self)
 	}
 	
-	fn to_real(mut self) -> DataVector32
+	fn to_real(mut self) -> VecResult<Self>
 	{
 		{
 			let len = self.len();
@@ -186,10 +188,10 @@ impl ComplexVectorOperations for DataVector32
 		
 		self.is_complex = false;
 		self.valid_len = self.valid_len / 2;
-		self.swap_data_temp()
+		Ok(self.swap_data_temp())
 	}
 
-	fn to_imag(mut self) -> DataVector32
+	fn to_imag(mut self) -> VecResult<Self>
 	{
 		{
 			let len = self.len();
@@ -209,10 +211,10 @@ impl ComplexVectorOperations for DataVector32
 		
 		self.is_complex = false;
 		self.valid_len = self.valid_len / 2;
-		self.swap_data_temp()
+		Ok(self.swap_data_temp())
 	}	
 			
-	fn get_real(&self, destination: &mut DataVector32)
+	fn get_real(&self, destination: &mut Self)
 	{
 		let len = self.len();
 		destination.reallocate(len / 2);
@@ -232,7 +234,7 @@ impl ComplexVectorOperations for DataVector32
         });
 	}
 	
-	fn get_imag(&self, destination: &mut DataVector32)
+	fn get_imag(&self, destination: &mut Self)
 	{
 		let len = self.len();
 		destination.reallocate(len / 2);
@@ -252,7 +254,7 @@ impl ComplexVectorOperations for DataVector32
         });
 	}
 	
-	fn phase(mut self) -> DataVector32
+	fn phase(mut self) -> VecResult<Self>
 	{
 		{
 			let len = self.len();
@@ -263,10 +265,10 @@ impl ComplexVectorOperations for DataVector32
 		
 		self.is_complex = false;
 		self.valid_len = self.valid_len / 2;
-		self.swap_data_temp()
+		Ok(self.swap_data_temp())
 	}
 	
-	fn get_phase(&self, destination: &mut DataVector32)
+	fn get_phase(&self, destination: &mut Self)
 	{
 		let len = self.len();
 		destination.reallocate(len / 2);
