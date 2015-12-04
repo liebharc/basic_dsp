@@ -647,7 +647,7 @@ macro_rules! define_complex_operations_forward {
 				$real_partner::from_genres(self.to_gen().complex_abs())
 			}
 			
-			fn get_complex_abs(&self, destination: &mut Self::RealPartner)
+			fn get_complex_abs(&self, destination: &mut Self::RealPartner) -> VoidResult
 			{
 				self.to_gen_borrow().get_complex_abs(destination.to_gen_mut_borrow())
 			}
@@ -672,12 +672,12 @@ macro_rules! define_complex_operations_forward {
 				$real_partner::from_genres(self.to_gen().to_imag())
 			}	
 					
-			fn get_real(&self, destination: &mut Self::RealPartner)
+			fn get_real(&self, destination: &mut Self::RealPartner) -> VoidResult
 			{
 				self.to_gen_borrow().get_real(destination.to_gen_mut_borrow())
 			}
 			
-			fn get_imag(&self, destination: &mut Self::RealPartner)
+			fn get_imag(&self, destination: &mut Self::RealPartner) -> VoidResult
 			{
 				self.to_gen_borrow().get_imag(destination.to_gen_mut_borrow())
 			}
@@ -687,7 +687,7 @@ macro_rules! define_complex_operations_forward {
 				$real_partner::from_genres(self.to_gen().phase())
 			}
 			
-			fn get_phase(&self, destination: &mut Self::RealPartner)
+			fn get_phase(&self, destination: &mut Self::RealPartner) -> VoidResult
 			{
 				self.to_gen_borrow().get_phase(destination.to_gen_mut_borrow())
 			}
@@ -762,6 +762,7 @@ pub use vector_types::general::
 		DataVectorDomain,
 		DataVector,
         VecResult,
+        VoidResult,
 		GenericVectorOperations,
 		RealVectorOperations,
 		ComplexVectorOperations,

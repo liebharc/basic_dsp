@@ -7,6 +7,7 @@ use multicore_support::{Chunk,Complexity};
 use super::general::{
 	DataVector,
     VecResult,
+    VoidResult,
 	DataVectorDomain,
 	GenericVectorOperations,
 	RealVectorOperations,

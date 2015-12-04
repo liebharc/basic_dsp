@@ -1,6 +1,7 @@
 use super::general::{
 	DataVector,
     VecResult,
+    VoidResult,
 	DataVectorDomain,
 	GenericVectorOperations,
 	RealVectorOperations,
@@ -208,7 +209,7 @@ impl ComplexVectorOperations for DataVector64
 		Chunk::execute_partial(&mut array, data_length, 1, buffer, DataVector64::inplace_complex_abs_par);*/
 	}
 	
-	fn get_complex_abs(&self, destination: &mut DataVector64)
+	fn get_complex_abs(&self, destination: &mut DataVector64) -> VoidResult
 	{
 		panic!("Unimplemented");
 	}
@@ -237,12 +238,12 @@ impl ComplexVectorOperations for DataVector64
 		panic!("Unimplemented");
 	}	
 			
-	fn get_real(&self, destination: &mut Self)
+	fn get_real(&self, destination: &mut Self) -> VoidResult
 	{
 		panic!("Unimplemented");
 	}
 	
-	fn get_imag(&self, destination: &mut Self)
+	fn get_imag(&self, destination: &mut Self) -> VoidResult
 	{
 		panic!("Unimplemented");
 	}
@@ -252,7 +253,7 @@ impl ComplexVectorOperations for DataVector64
 		panic!("Unimplemented");
 	}
 	
-	fn get_phase(&self, destination: &mut Self)
+	fn get_phase(&self, destination: &mut Self) -> VoidResult
 	{
 		panic!("Unimplemented");
 	}

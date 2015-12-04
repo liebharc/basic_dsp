@@ -2,6 +2,7 @@ use multicore_support::{Chunk, Complexity};
 use super::super::general::{
 	DataVector,
     VecResult,
+    VoidResult,
 	ComplexVectorOperations};
 use super::{DataVector32, DEFAULT_GRANUALRITY};
 use simd::f32x4;
@@ -99,7 +100,7 @@ impl ComplexVectorOperations for DataVector32
 		Ok(self.swap_data_temp())
 	}
 	
-	fn get_complex_abs(&self, destination: &mut Self)
+	fn get_complex_abs(&self, destination: &mut Self) -> VoidResult
 	{
 		let data_length = self.len();
 		destination.reallocate(data_length / 2);
@@ -117,6 +118,7 @@ impl ComplexVectorOperations for DataVector32
 		
 		destination.is_complex = false;
 		destination.delta = self.delta;
+        Ok(())
 	}
 	
 	fn complex_abs_squared(mut self) -> VecResult<Self>
@@ -214,7 +216,7 @@ impl ComplexVectorOperations for DataVector32
 		Ok(self.swap_data_temp())
 	}	
 			
-	fn get_real(&self, destination: &mut Self)
+	fn get_real(&self, destination: &mut Self) -> VoidResult
 	{
 		let len = self.len();
 		destination.reallocate(len / 2);
@@ -232,9 +234,11 @@ impl ComplexVectorOperations for DataVector32
                 j += 1;
             }
         });
+        
+        Ok(())
 	}
 	
-	fn get_imag(&self, destination: &mut Self)
+	fn get_imag(&self, destination: &mut Self) -> VoidResult
 	{
 		let len = self.len();
 		destination.reallocate(len / 2);
@@ -252,6 +256,8 @@ impl ComplexVectorOperations for DataVector32
                 j += 1;
             }
         });
+        
+        Ok(())
 	}
 	
 	fn phase(mut self) -> VecResult<Self>
@@ -268,7 +274,7 @@ impl ComplexVectorOperations for DataVector32
 		Ok(self.swap_data_temp())
 	}
 	
-	fn get_phase(&self, destination: &mut Self)
+	fn get_phase(&self, destination: &mut Self) -> VoidResult
 	{
 		let len = self.len();
 		destination.reallocate(len / 2);
@@ -277,6 +283,7 @@ impl ComplexVectorOperations for DataVector32
 		let mut array = &mut destination.data;
 		let source = &self.data;
 		Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1,  DataVector32::phase_par);
+        Ok(())
 	}
 }
 

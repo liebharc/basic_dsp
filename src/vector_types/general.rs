@@ -445,11 +445,11 @@ pub trait ComplexVectorOperations : DataVector {
 	/// # fn main() { 
 	/// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
 	/// let mut result = RealTimeVector32::from_array(&[0.0]);
-	/// vector.get_complex_abs(&mut result);
+	/// vector.get_complex_abs(&mut result).expect("Ignoring error handling in examples");
 	/// assert_eq!([5.0, 5.0], result.data());
 	/// # }
 	/// ```
-	fn get_complex_abs(&self, destination: &mut Self::RealPartner);
+	fn get_complex_abs(&self, destination: &mut Self::RealPartner) -> VoidResult;
 	
 	/// Gets the square root of the absolute value of all vector elements.
 	/// # Example
@@ -523,11 +523,11 @@ pub trait ComplexVectorOperations : DataVector {
 	/// # fn main() { 
 	/// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
 	/// let vector = ComplexTimeVector32::from_real_imag(&[1.0, 3.0], &[2.0, 4.0]);
-	/// vector.get_real(&mut result);
+	/// vector.get_real(&mut result).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 3.0], result.data());
 	/// # }
 	/// ```
-	fn get_real(&self, destination: &mut Self::RealPartner);
+	fn get_real(&self, destination: &mut Self::RealPartner) -> VoidResult;
 	
 	/// Copies all imag elements into the given vector.
 	/// # Example
@@ -539,11 +539,11 @@ pub trait ComplexVectorOperations : DataVector {
 	/// # fn main() { 
 	/// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
 	/// let vector = ComplexTimeVector32::from_real_imag(&[1.0, 3.0], &[2.0, 4.0]);
-	/// vector.get_imag(&mut result);
+	/// vector.get_imag(&mut result).expect("Ignoring error handling in examples");
 	/// assert_eq!([2.0, 4.0], result.data());
 	/// # }
 	/// ```
-	fn get_imag(&self, destination: &mut Self::RealPartner);
+	fn get_imag(&self, destination: &mut Self::RealPartner) -> VoidResult;
 	
 	/// Gets the phase of all elements in [rad].
 	/// # Example
@@ -570,11 +570,11 @@ pub trait ComplexVectorOperations : DataVector {
 	/// # fn main() { 
 	/// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
 	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0]);
-	/// vector.get_phase(&mut result);
+	/// vector.get_phase(&mut result).expect("Ignoring error handling in examples");
 	/// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.data());
 	/// # }
 	/// ```
-	fn get_phase(&self, destination: &mut Self::RealPartner);
+	fn get_phase(&self, destination: &mut Self::RealPartner) -> VoidResult;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
@@ -630,3 +630,5 @@ pub trait FrequencyDomainOperations : DataVector {
 }
 
 pub type VecResult<T> = result::Result<T, (&'static str, T)>;
+
+pub type VoidResult = result::Result<(), &'static str>;
