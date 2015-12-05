@@ -200,8 +200,8 @@ mod slow_test {
             let complex = ComplexTimeVector32::from_real_imag_with_delta(&real, &imag, delta);
             let mut real_vector = RealTimeVector32::from_array_no_copy(vec![0.0; 0]);
             let mut imag_vector = RealTimeVector32::from_array_no_copy(vec![0.0; 0]);
-            complex.get_real(&mut real_vector);
-            complex.get_imag(&mut imag_vector);
+            complex.get_real(&mut real_vector).unwrap();
+            complex.get_imag(&mut imag_vector).unwrap();
             let real_result = complex.to_real().unwrap();
             assert_vector_eq_with_reason(&real, &real_vector.data(), "Failure in get_real");
             assert_vector_eq_with_reason(&real, &real_result.data(), "Failure in get_imag");
@@ -224,8 +224,8 @@ mod slow_test {
             let complex = ComplexTimeVector32::from_mag_phase_with_delta(&abs, &phase, delta);
             let mut abs_vector = RealTimeVector32::from_array_no_copy(vec![0.0; 0]);
             let mut phase_vector = RealTimeVector32::from_array_no_copy(vec![0.0; 0]);
-            complex.get_complex_abs(&mut abs_vector);
-            complex.get_phase(&mut phase_vector);
+            complex.get_complex_abs(&mut abs_vector).unwrap();
+            complex.get_phase(&mut phase_vector).unwrap();
             let phase_result = complex.phase().unwrap();
             assert_vector_eq_with_reason(&abs, &abs_vector.data(), "Failure in get_complex_abs");
             assert_vector_eq_with_reason(&phase, &phase_vector.data(), "Failure in get_phase");

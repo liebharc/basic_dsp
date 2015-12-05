@@ -1,6 +1,7 @@
 # `basic_dsp`
 
 [![Build Status](https://api.travis-ci.org/liebharc/basic_dsp.png)](https://travis-ci.org/liebharc/basic_dsp)
+(This crate uses Rust nightly and might be unstable for longer periods)
 
 Basic digital signal processing (DSP) operations
 
