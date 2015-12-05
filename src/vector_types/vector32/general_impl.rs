@@ -11,7 +11,7 @@ use simd_extensions::SimdExtensions;
 #[inline]
 impl GenericVectorOperations for DataVector32
 {
-	fn add_vector(mut self, summand: &Self) -> VecResult<Self>
+	extern fn add_vector(mut self, summand: &Self) -> VecResult<Self>
 	{
 		{
 			let len = self.len();
@@ -46,7 +46,7 @@ impl GenericVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	fn subtract_vector(mut self, subtrahend: &Self) -> VecResult<Self>
+	extern fn subtract_vector(mut self, subtrahend: &Self) -> VecResult<Self>
 	{
 		{
 			let len = self.len();
@@ -81,7 +81,7 @@ impl GenericVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	fn multiply_vector(self, factor: &Self) -> VecResult<Self>
+	extern fn multiply_vector(self, factor: &Self) -> VecResult<Self>
 	{
 		let len = self.len();
 		reject_if!(self, len != factor.len(), "Vectors must have the same size");
@@ -96,7 +96,7 @@ impl GenericVectorOperations for DataVector32
 		}
 	}
 	
-	fn divide_vector(self, divisor: &Self) -> VecResult<Self>
+	extern fn divide_vector(self, divisor: &Self) -> VecResult<Self>
 	{
 		let len = self.len();
 		reject_if!(self, len != divisor.len(), "Vectors must have the same size");
@@ -111,7 +111,7 @@ impl GenericVectorOperations for DataVector32
 		}
 	}
 	
-	fn zero_pad(mut self, points: usize) -> VecResult<Self>
+	extern fn zero_pad(mut self, points: usize) -> VecResult<Self>
 	{
 		{
 			let len_before = self.len();
@@ -127,7 +127,7 @@ impl GenericVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	fn zero_interleave(self) -> VecResult<Self>
+	extern fn zero_interleave(self) -> VecResult<Self>
 	{
 		if self.is_complex
 		{
@@ -139,7 +139,7 @@ impl GenericVectorOperations for DataVector32
 		}
 	}
 	
-	fn diff(mut self) -> VecResult<Self>
+	extern fn diff(mut self) -> VecResult<Self>
 	{
 		{
 			let data_length = self.len();
@@ -188,7 +188,7 @@ impl GenericVectorOperations for DataVector32
 		Ok(self.swap_data_temp())
 	}
 	
-	fn diff_with_start(mut self) -> VecResult<Self>
+	extern fn diff_with_start(mut self) -> VecResult<Self>
 	{
 		{
 			let data_length = self.len();
@@ -236,7 +236,7 @@ impl GenericVectorOperations for DataVector32
 		Ok(self.swap_data_temp())
 	}
 	
-	fn cum_sum(mut self) -> VecResult<Self>
+	extern fn cum_sum(mut self) -> VecResult<Self>
 	{
 		{
 			let data_length = self.len();

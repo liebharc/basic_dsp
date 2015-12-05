@@ -1,5 +1,3 @@
-#![feature(box_syntax)]
-#![feature(vec_resize)]
 //! Basic digital signal processing (DSP) operations
 //!
 //! The basic building blocks are 1xN (one times N) or Nx1 real or compelex vectors where N is typically at least in the order

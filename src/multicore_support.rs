@@ -34,7 +34,7 @@ impl Chunk
 			static mut ONCE: Once = ONCE_INIT;
 			ONCE.call_once(||
 			{
-				pool = transmute::<Box<Pool>, *mut Pool>(box Pool::new(num_cpus::get()));
+				pool = transmute::<Box<Pool>, *mut Pool>(Box::new(Pool::new(num_cpus::get())));
 			});
 			
 			let mut static_pool = &mut *pool;
