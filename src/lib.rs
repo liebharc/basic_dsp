@@ -34,6 +34,7 @@ pub use vector_types::
 		DataVector,
         VecResult,
         VoidResult,
+        ErrorReason,
 		GenericVectorOperations,
 		RealVectorOperations,
 		ComplexVectorOperations,

@@ -763,6 +763,7 @@ pub use vector_types::general::
 		DataVector,
         VecResult,
         VoidResult,
+        ErrorReason,
 		GenericVectorOperations,
 		RealVectorOperations,
 		ComplexVectorOperations,
