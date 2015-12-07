@@ -62,7 +62,7 @@ pub trait GenericVectorOperations : DataVector {
 	/// let result = vector1.add_vector(&vector2).expect("Ignoring error handling in examples");
 	/// assert_eq!([11.0, 13.0], result.data());
 	/// ```
-	extern fn add_vector(self, summand: &Self) -> VecResult<Self>;
+	fn add_vector(self, summand: &Self) -> VecResult<Self>;
 	
 	/// Calculates the difference of `self - subtrahend`. It consumes self and returns the result.
 	/// # Example
@@ -74,7 +74,7 @@ pub trait GenericVectorOperations : DataVector {
 	/// let result = vector1.subtract_vector(&vector2).expect("Ignoring error handling in examples");
 	/// assert_eq!([-9.0, -9.0], result.data());
 	/// ```
-	extern fn subtract_vector(self, subtrahend: &Self) -> VecResult<Self>;
+	fn subtract_vector(self, subtrahend: &Self) -> VecResult<Self>;
 	
 	/// Calculates the product of `self * factor`. It consumes self and returns the result.
 	/// # Example
@@ -86,7 +86,7 @@ pub trait GenericVectorOperations : DataVector {
 	/// let result = vector1.multiply_vector(&vector2).expect("Ignoring error handling in examples");
 	/// assert_eq!([10.0, 22.0], result.data());
 	/// ```
-	extern fn multiply_vector(self, factor: &Self) -> VecResult<Self>;
+	fn multiply_vector(self, factor: &Self) -> VecResult<Self>;
 	
 	/// Calculates the quotient of `self / summand`. It consumes self and returns the result.
 	/// # Example
@@ -98,7 +98,7 @@ pub trait GenericVectorOperations : DataVector {
 	/// let result = vector1.divide_vector(&vector2).expect("Ignoring error handling in examples");
 	/// assert_eq!([5.0, 2.0], result.data());
 	/// ```
-	extern fn divide_vector(self, divisor: &Self) -> VecResult<Self>;
+	fn divide_vector(self, divisor: &Self) -> VecResult<Self>;
 	
 	/// Appends zeros add the end of the vector until the vector has the size given in the points argument.
 	///
@@ -114,7 +114,7 @@ pub trait GenericVectorOperations : DataVector {
 	/// let result = vector.zero_pad(2).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());
 	/// ```
-	extern fn zero_pad(self, points: usize) -> VecResult<Self>;
+	fn zero_pad(self, points: usize) -> VecResult<Self>;
 	
 	/// Ineterleaves zeros afeter every vector element.
 	///
@@ -131,7 +131,7 @@ pub trait GenericVectorOperations : DataVector {
 	/// let result = vector.zero_interleave().expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], result.data());
 	/// ```
-	extern fn zero_interleave(self) -> VecResult<Self>;
+	fn zero_interleave(self) -> VecResult<Self>;
 	
 	/// Calculates the delta of each elements to its previous element. This will decrease the vector length by one point. 
 	///
@@ -143,7 +143,7 @@ pub trait GenericVectorOperations : DataVector {
 	/// let result = vector.diff().expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, -1.0, 4.0], result.data());
 	/// ```
-	extern fn diff(self) -> VecResult<Self>;
+	fn diff(self) -> VecResult<Self>;
 	
 	/// Calculates the delta of each elements to its previous element. The first element
 	/// will remain unchanged.
@@ -156,7 +156,7 @@ pub trait GenericVectorOperations : DataVector {
 	/// let result = vector.diff_with_start().expect("Ignoring error handling in examples");
 	/// assert_eq!([2.0, 1.0, -1.0, 4.0], result.data());
 	/// ```
-	extern fn diff_with_start(self) -> VecResult<Self>;
+	fn diff_with_start(self) -> VecResult<Self>;
 	
 	/// Calculates the cumulative sum of all elements. This operation undoes the `diff_with_start`operation.
 	///
@@ -168,7 +168,7 @@ pub trait GenericVectorOperations : DataVector {
 	/// let result = vector.cum_sum().expect("Ignoring error handling in examples");
 	/// assert_eq!([2.0, 3.0, 2.0, 6.0], result.data());
 	/// ```
-	extern fn cum_sum(self) -> VecResult<Self>;
+	fn cum_sum(self) -> VecResult<Self>;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
@@ -184,7 +184,7 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.real_offset(2.0).expect("Ignoring error handling in examples");
 	/// assert_eq!([3.0, 4.0], result.data());
 	/// ```
-	extern fn real_offset(self, offset: Self::E) -> VecResult<Self>;
+	fn real_offset(self, offset: Self::E) -> VecResult<Self>;
 	
 	/// Multiplies the vector with a scalar.
 	/// # Example
@@ -195,7 +195,7 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.real_scale(4.0).expect("Ignoring error handling in examples");
 	/// assert_eq!([4.0, 8.0], result.data());
 	/// ```
-	extern fn real_scale(self, offset: Self::E) -> VecResult<Self>;
+	fn real_scale(self, offset: Self::E) -> VecResult<Self>;
 	
 	/// Gets the absolute value of all vector elements.
 	/// # Example
@@ -206,7 +206,7 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.real_abs().expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0], result.data());
 	/// ```
-	extern fn real_abs(self) -> VecResult<Self>;
+	fn real_abs(self) -> VecResult<Self>;
 	
 	/// Gets the square root of all vector elements.
 	///
@@ -223,7 +223,7 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.real_sqrt().expect("Ignoring error handling in examples");
 	/// assert!(result[0].is_nan());
 	/// ```
-	extern fn real_sqrt(self) -> VecResult<Self>;
+	fn real_sqrt(self) -> VecResult<Self>;
 	
 	/// Squares all vector elements.
 	///
@@ -235,7 +235,7 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.real_square().expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 4.0, 9.0, 16.0, 25.0], result.data());
 	/// ```
-	extern fn real_square(self) -> VecResult<Self>;
+	fn real_square(self) -> VecResult<Self>;
 	
 	/// Calculates the n-th root of every vector element.
 	///
@@ -250,7 +250,7 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.real_root(3.0).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 3.0], result.data());
 	/// ```
-	extern fn real_root(self, degree: Self::E) -> VecResult<Self>;
+	fn real_root(self, degree: Self::E) -> VecResult<Self>;
 	
 	/// Raises every vector element to the given power.
 	///
@@ -262,7 +262,7 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.real_power(3.0).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 8.0, 27.0], result.data());
 	/// ```
-	extern fn real_power(self, exponent: Self::E) -> VecResult<Self>;
+	fn real_power(self, exponent: Self::E) -> VecResult<Self>;
 	
 	/// Calculates the natural logarithm to the base e for every vector element.
 	///
@@ -279,7 +279,7 @@ pub trait RealVectorOperations : DataVector {
 	///		assert!((actual[i] - expected[i]).abs() < 1e-4);
 	/// }
 	/// ```
-	extern fn real_logn(self) -> VecResult<Self>;
+	fn real_logn(self) -> VecResult<Self>;
 	
 	/// Calculates the natural exponential to the base e for every vector element.
 	///
@@ -291,7 +291,7 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.real_expn().expect("Ignoring error handling in examples");
 	/// assert_eq!([2.71828182846, 7.389056, 20.085537], result.data());
 	/// ```
-	extern fn real_expn(self) -> VecResult<Self>;
+	fn real_expn(self) -> VecResult<Self>;
 	
 	/// Calculates the logarithm to the given base for every vector element.
 	///
@@ -303,7 +303,7 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.real_log_base(10.0).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 3.0], result.data());
 	/// ```
-	extern fn real_log_base(self, base: Self::E) -> VecResult<Self>;
+	fn real_log_base(self, base: Self::E) -> VecResult<Self>;
 	
 	/// Calculates the exponential to the given base for every vector element.
 	///
@@ -315,7 +315,7 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.real_exp_base(10.0).expect("Ignoring error handling in examples");
 	/// assert_eq!([10.0, 100.0, 1000.0], result.data());
 	/// ```
-	extern fn real_exp_base(self, base: Self::E) -> VecResult<Self>;
+	fn real_exp_base(self, base: Self::E) -> VecResult<Self>;
 	
 	/// Converts the real vector into a complex vector.
 	///
@@ -327,7 +327,7 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.to_complex().expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 0.0, 2.0, 0.0], result.data());
 	/// ```
-	extern fn to_complex(self) -> VecResult<Self::ComplexPartner>;
+	fn to_complex(self) -> VecResult<Self::ComplexPartner>;
     
     /// Calculates the sine of each element in radians.
     ///
@@ -340,7 +340,7 @@ pub trait RealVectorOperations : DataVector {
     /// let result = vector.real_sin().expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, -1.0], result.data());
     /// ```
-    extern fn real_sin(self) -> VecResult<Self>;
+    fn real_sin(self) -> VecResult<Self>;
     
     /// Calculates the cosine of each element in radians.
     ///
@@ -353,7 +353,7 @@ pub trait RealVectorOperations : DataVector {
     /// let result = vector.real_cos().expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, -1.0], result.data());
     /// ```
-    extern fn real_cos(self) -> VecResult<Self>;
+    fn real_cos(self) -> VecResult<Self>;
 	
 	/// Each value in the vector is devided by the divisor and the remainder is stored in the resulting 
 	/// vector. This the same a modulo operation or to phase wrapping.
@@ -366,7 +366,7 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.wrap(4.0).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0], result.data());
 	/// ```
-	extern fn wrap(self, divisor: Self::E) -> VecResult<Self>;
+	fn wrap(self, divisor: Self::E) -> VecResult<Self>;
 	
 	/// This function corrects the jumps in the given vector which occur due to wrap or modulo operations.
 	/// This will undo a wrap operation only if the deltas are smaller than half the divisor.
@@ -379,7 +379,7 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.unwrap(4.0).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], result.data());
 	/// ```
-	extern fn unwrap(self, divisor: Self::E) -> VecResult<Self>;
+	fn unwrap(self, divisor: Self::E) -> VecResult<Self>;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing complex data.
@@ -401,7 +401,7 @@ pub trait ComplexVectorOperations : DataVector {
 	/// assert_eq!([0.0, 4.0, 2.0, 6.0], result.data());
 	/// # }
 	/// ```
-	extern fn complex_offset(self, offset: Self::Complex) -> VecResult<Self>;
+	fn complex_offset(self, offset: Self::Complex) -> VecResult<Self>;
 	
 	/// Multiplies the vector with a scalar.
 	/// # Example
@@ -417,7 +417,7 @@ pub trait ComplexVectorOperations : DataVector {
 	/// assert_eq!([-5.0, 0.0, -11.0, 2.0], result.data());
 	/// # }
 	/// ```
-	extern fn complex_scale(self, factor: Self::Complex) -> VecResult<Self>;
+	fn complex_scale(self, factor: Self::Complex) -> VecResult<Self>;
 	
 	/// Gets the absolute value or magnitude of all vector elements.
 	/// # Example
@@ -433,7 +433,7 @@ pub trait ComplexVectorOperations : DataVector {
 	/// assert_eq!([5.0, 5.0], result.data());
 	/// # }
 	/// ```
-	extern fn complex_abs(self) -> VecResult<Self::RealPartner>;
+	fn complex_abs(self) -> VecResult<Self::RealPartner>;
 	
 	/// Copies the absolute value or magnitude of all vector elements into the given target vector.
 	/// # Example
@@ -449,7 +449,7 @@ pub trait ComplexVectorOperations : DataVector {
 	/// assert_eq!([5.0, 5.0], result.data());
 	/// # }
 	/// ```
-	extern fn get_complex_abs(&self, destination: &mut Self::RealPartner) -> VoidResult;
+	fn get_complex_abs(&self, destination: &mut Self::RealPartner) -> VoidResult;
 	
 	/// Gets the square root of the absolute value of all vector elements.
 	/// # Example
@@ -465,7 +465,7 @@ pub trait ComplexVectorOperations : DataVector {
 	/// assert_eq!([25.0, 25.0], result.data());
 	/// # }
 	/// ```
-	extern fn complex_abs_squared(self) -> VecResult<Self::RealPartner>;
+	fn complex_abs_squared(self) -> VecResult<Self::RealPartner>;
 	
 	/// Calculates the complex conjugate of the vector. 
 	/// # Example
@@ -481,7 +481,7 @@ pub trait ComplexVectorOperations : DataVector {
 	/// assert_eq!([1.0, -2.0, 3.0, -4.0], result.data());
 	/// # }
 	/// ```
-	extern fn complex_conj(self) -> VecResult<Self>;
+	fn complex_conj(self) -> VecResult<Self>;
 	
 	/// Gets all real elements.
 	/// # Example
@@ -496,7 +496,7 @@ pub trait ComplexVectorOperations : DataVector {
 	/// assert_eq!([1.0, 3.0], result.data());
 	/// # }
 	/// ```
-	extern fn to_real(self) -> VecResult<Self::RealPartner>;
+	fn to_real(self) -> VecResult<Self::RealPartner>;
 	
 	/// Gets all imag elements.
 	/// # Example
@@ -511,7 +511,7 @@ pub trait ComplexVectorOperations : DataVector {
 	/// assert_eq!([2.0, 4.0], result.data());
 	/// # }
 	/// ```
-	extern fn to_imag(self) -> VecResult<Self::RealPartner>;
+	fn to_imag(self) -> VecResult<Self::RealPartner>;
 	
 	/// Copies all real elements into the given vector.
 	/// # Example
@@ -527,7 +527,7 @@ pub trait ComplexVectorOperations : DataVector {
 	/// assert_eq!([1.0, 3.0], result.data());
 	/// # }
 	/// ```
-	extern fn get_real(&self, destination: &mut Self::RealPartner) -> VoidResult;
+	fn get_real(&self, destination: &mut Self::RealPartner) -> VoidResult;
 	
 	/// Copies all imag elements into the given vector.
 	/// # Example
@@ -543,7 +543,7 @@ pub trait ComplexVectorOperations : DataVector {
 	/// assert_eq!([2.0, 4.0], result.data());
 	/// # }
 	/// ```
-	extern fn get_imag(&self, destination: &mut Self::RealPartner) -> VoidResult;
+	fn get_imag(&self, destination: &mut Self::RealPartner) -> VoidResult;
 	
 	/// Gets the phase of all elements in [rad].
 	/// # Example
@@ -558,7 +558,7 @@ pub trait ComplexVectorOperations : DataVector {
 	/// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.data());
 	/// # }
 	/// ```
-	extern fn phase(self) -> VecResult<Self::RealPartner>;
+	fn phase(self) -> VecResult<Self::RealPartner>;
 	
 	/// Copies the phase of all elements in [rad] into the given vector.
 	/// # Example
@@ -574,7 +574,7 @@ pub trait ComplexVectorOperations : DataVector {
 	/// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.data());
 	/// # }
 	/// ```
-	extern fn get_phase(&self, destination: &mut Self::RealPartner) -> VoidResult;
+	fn get_phase(&self, destination: &mut Self::RealPartner) -> VoidResult;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
@@ -599,7 +599,7 @@ pub trait TimeDomainOperations : DataVector {
 	///		assert!((actual[i] - expected[i]).abs() < 1e-4);
 	/// }
 	/// ```
-	extern fn plain_fft(self) -> VecResult<Self::FreqPartner>;
+	fn plain_fft(self) -> VecResult<Self::FreqPartner>;
 	
 	// TODO add fft method which also applies a window
 }
@@ -626,7 +626,7 @@ pub trait FrequencyDomainOperations : DataVector {
 	///		assert!((actual[i] - expected[i]).abs() < 1e-4);
 	/// }
 	/// ```
-	extern fn plain_ifft(self) -> VecResult<Self::TimePartner>;
+	fn plain_ifft(self) -> VecResult<Self::TimePartner>;
 }
 
 pub type VecResult<T> = result::Result<T, (&'static str, T)>;

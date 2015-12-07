@@ -38,47 +38,47 @@ define_complex_operations_forward!(from: ComplexFreqVector64, to: DataVector64, 
 #[allow(unused_variables)]
 impl GenericVectorOperations for DataVector64
 {
-	extern fn add_vector(self, summand: &Self) -> VecResult<Self>
+	fn add_vector(self, summand: &Self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 
-	extern fn subtract_vector(self, subtrahend: &Self) -> VecResult<Self>
+	fn subtract_vector(self, subtrahend: &Self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn multiply_vector(self, factor: &Self) -> VecResult<Self>
+	fn multiply_vector(self, factor: &Self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn divide_vector(self, divisor: &Self) -> VecResult<Self>
+	fn divide_vector(self, divisor: &Self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn zero_pad(self, points: usize) -> VecResult<Self>
+	fn zero_pad(self, points: usize) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn zero_interleave(self) -> VecResult<Self>
+	fn zero_interleave(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn diff(self) -> VecResult<Self>
+	fn diff(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn diff_with_start(self) -> VecResult<Self>
+	fn diff_with_start(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn cum_sum(self) -> VecResult<Self>
+	fn cum_sum(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
@@ -90,13 +90,13 @@ impl RealVectorOperations for DataVector64
 {
 	type ComplexPartner = DataVector64;
 	
-	extern fn real_offset(self, offset: f64) -> VecResult<Self>
+	fn real_offset(self, offset: f64) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 		// self.inplace_offset(&[offset, offset], buffer);
 	}
 	
-	extern fn real_scale(self, factor: f64) -> VecResult<Self>
+	fn real_scale(self, factor: f64) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 		/*let data_length = self.len();
@@ -104,7 +104,7 @@ impl RealVectorOperations for DataVector64
 		Chunk::execute_partial_with_arguments(&mut array, data_length, 1, buffer, DataVector64::inplace_real_scale_par, factor);*/
 	}
 	
-	extern fn real_abs(self) -> VecResult<Self>
+	fn real_abs(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 		/*let mut array = &mut self.data;
@@ -112,67 +112,67 @@ impl RealVectorOperations for DataVector64
 		Chunk::execute_partial(&mut array, length, 1, buffer, DataVector32::inplace_abs_real_par);*/
 	}
 	
-	extern fn real_sqrt(self) -> VecResult<Self>
+	fn real_sqrt(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn real_square(self) -> VecResult<Self>
+	fn real_square(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn real_root(self, degree: Self::E) -> VecResult<Self>
+	fn real_root(self, degree: Self::E) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn real_power(self, exponent: Self::E) -> VecResult<Self>
+	fn real_power(self, exponent: Self::E) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn real_logn(self) -> VecResult<Self>
+	fn real_logn(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn real_expn(self) -> VecResult<Self>
+	fn real_expn(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 
-	extern fn real_log_base(self, base: Self::E) -> VecResult<Self>
+	fn real_log_base(self, base: Self::E) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn real_exp_base(self, base: Self::E) -> VecResult<Self>
+	fn real_exp_base(self, base: Self::E) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
     
-    extern fn real_sin(self) -> VecResult<Self>
+    fn real_sin(self) -> VecResult<Self>
     {
         panic!("Unimplemented");
     }
     
-    extern fn real_cos(self) -> VecResult<Self>
+    fn real_cos(self) -> VecResult<Self>
     {
         panic!("Unimplemented");
     }
 	
-	extern fn to_complex(self) -> VecResult<Self>
+	fn to_complex(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn wrap(self, divisor: Self::E) -> VecResult<Self>
+	fn wrap(self, divisor: Self::E) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn unwrap(self, divisor: Self::E) -> VecResult<Self>
+	fn unwrap(self, divisor: Self::E) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
@@ -185,13 +185,13 @@ impl ComplexVectorOperations for DataVector64
 	type RealPartner = DataVector64;
 	type Complex = Complex64;
 	
-	extern fn complex_offset(self, offset: Complex64) -> VecResult<Self>
+	fn complex_offset(self, offset: Complex64) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 		// self.inplace_offset(&[offset.re, offset.im], buffer);
 	}
 	
-	extern fn complex_scale(self, factor: Complex64) -> VecResult<Self>
+	fn complex_scale(self, factor: Complex64) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 		/*
@@ -200,7 +200,7 @@ impl ComplexVectorOperations for DataVector64
 		Chunk::execute_partial_with_arguments(&mut array, data_length, 1, buffer, DataVector64::inplace_complex_scale_par, factor);*/
 	}
 	
-	extern fn complex_abs(self) -> VecResult<Self>
+	fn complex_abs(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 		/*
@@ -209,12 +209,12 @@ impl ComplexVectorOperations for DataVector64
 		Chunk::execute_partial(&mut array, data_length, 1, buffer, DataVector64::inplace_complex_abs_par);*/
 	}
 	
-	extern fn get_complex_abs(&self, destination: &mut DataVector64) -> VoidResult
+	fn get_complex_abs(&self, destination: &mut DataVector64) -> VoidResult
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn complex_abs_squared(self) -> VecResult<Self>
+	fn complex_abs_squared(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 		/*
@@ -223,37 +223,37 @@ impl ComplexVectorOperations for DataVector64
 		Chunk::execute_partial(&mut array, data_length, 1, buffer, DataVector64::inplace_complex_abs_squared_par);*/
 	}
 	
-	extern fn complex_conj(self) -> VecResult<Self>
+	fn complex_conj(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn to_real(self) -> VecResult<Self>
+	fn to_real(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 
-	extern fn to_imag(self) -> VecResult<Self>
+	fn to_imag(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}	
 			
-	extern fn get_real(&self, destination: &mut Self) -> VoidResult
+	fn get_real(&self, destination: &mut Self) -> VoidResult
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn get_imag(&self, destination: &mut Self) -> VoidResult
+	fn get_imag(&self, destination: &mut Self) -> VoidResult
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn phase(self) -> VecResult<Self>
+	fn phase(self) -> VecResult<Self>
 	{
 		panic!("Unimplemented");
 	}
 	
-	extern fn get_phase(&self, destination: &mut Self) -> VoidResult
+	fn get_phase(&self, destination: &mut Self) -> VoidResult
 	{
 		panic!("Unimplemented");
 	}

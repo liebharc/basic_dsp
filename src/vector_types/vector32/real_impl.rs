@@ -14,7 +14,7 @@ impl RealVectorOperations for DataVector32
 {
 	type ComplexPartner = DataVector32;
 	
-	extern fn real_offset(mut self, offset: f32) -> VecResult<Self>
+	fn real_offset(mut self, offset: f32) -> VecResult<Self>
 	{
         {
             let len = self.len();
@@ -29,7 +29,7 @@ impl RealVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	extern fn real_scale(mut self, factor: f32) -> VecResult<Self>
+	fn real_scale(mut self, factor: f32) -> VecResult<Self>
 	{
 		{
 			let data_length = self.len();
@@ -54,7 +54,7 @@ impl RealVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	extern fn real_abs(mut self) -> VecResult<Self>
+	fn real_abs(mut self) -> VecResult<Self>
 	{
 		{
 			let mut array = &mut self.data;
@@ -68,7 +68,7 @@ impl RealVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	extern fn real_sqrt(mut self) -> VecResult<Self>
+	fn real_sqrt(mut self) -> VecResult<Self>
 	{
 		{
 			let mut array = &mut self.data;
@@ -85,7 +85,7 @@ impl RealVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	extern fn real_square(mut self) -> VecResult<Self>
+	fn real_square(mut self) -> VecResult<Self>
 	{
 		{
 			let mut array = &mut self.data;
@@ -102,7 +102,7 @@ impl RealVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	extern fn real_root(mut self, degree: Self::E) -> VecResult<Self>
+	fn real_root(mut self, degree: Self::E) -> VecResult<Self>
 	{
 		{
 			let mut array = &mut self.data;
@@ -120,7 +120,7 @@ impl RealVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	extern fn real_power(mut self, exponent: Self::E) -> VecResult<Self>
+	fn real_power(mut self, exponent: Self::E) -> VecResult<Self>
 	{
 		{
 			let mut array = &mut self.data;
@@ -137,7 +137,7 @@ impl RealVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	extern fn real_logn(mut self) -> VecResult<Self>
+	fn real_logn(mut self) -> VecResult<Self>
 	{
 		{
 			let mut array = &mut self.data;
@@ -154,7 +154,7 @@ impl RealVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	extern fn real_expn(mut self) -> VecResult<Self>
+	fn real_expn(mut self) -> VecResult<Self>
 	{
 		{
 			let mut array = &mut self.data;
@@ -171,7 +171,7 @@ impl RealVectorOperations for DataVector32
 		Ok(self)
 	}
 
-	extern fn real_log_base(mut self, base: Self::E) -> VecResult<Self>
+	fn real_log_base(mut self, base: Self::E) -> VecResult<Self>
 	{
 		{
 			let mut array = &mut self.data;
@@ -188,7 +188,7 @@ impl RealVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	extern fn real_exp_base(mut self, base: Self::E) -> VecResult<Self>
+	fn real_exp_base(mut self, base: Self::E) -> VecResult<Self>
 	{
 		{
 			let mut array = &mut self.data;
@@ -205,7 +205,7 @@ impl RealVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	extern fn to_complex(self) -> VecResult<Self>
+	fn to_complex(self) -> VecResult<Self>
 	{
 		let result = self.zero_interleave();
         match result {
@@ -220,7 +220,7 @@ impl RealVectorOperations for DataVector32
         }
 	}
 	
-	extern fn wrap(mut self, divisor: Self::E) -> VecResult<Self>
+	fn wrap(mut self, divisor: Self::E) -> VecResult<Self>
 	{
 		{
 			let mut array = &mut self.data;
@@ -236,7 +236,7 @@ impl RealVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	extern fn unwrap(mut self, divisor: Self::E) -> VecResult<Self>
+	fn unwrap(mut self, divisor: Self::E) -> VecResult<Self>
 	{
 		{
 			let data_length = self.len();
@@ -262,7 +262,7 @@ impl RealVectorOperations for DataVector32
 		Ok(self)
 	}
     
-    extern fn real_sin(mut self) -> VecResult<Self>
+    fn real_sin(mut self) -> VecResult<Self>
 	{
 		{
 			let mut array = &mut self.data;
@@ -279,7 +279,7 @@ impl RealVectorOperations for DataVector32
 		Ok(self)
 	}
     
-    extern fn real_cos(mut self) -> VecResult<Self>
+    fn real_cos(mut self) -> VecResult<Self>
 	{
 		{
 			let mut array = &mut self.data;

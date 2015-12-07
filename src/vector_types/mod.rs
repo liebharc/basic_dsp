@@ -178,47 +178,47 @@ macro_rules! define_generic_operations_forward {
 	 	#[inline]
 		impl GenericVectorOperations for $name
 		{
-			extern fn add_vector(self, summand: &Self) -> VecResult<Self>
+			fn add_vector(self, summand: &Self) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().add_vector(&summand.to_gen_borrow()))
 			}
 	
-			extern fn subtract_vector(self, subtrahend: &Self) -> VecResult<Self>
+			fn subtract_vector(self, subtrahend: &Self) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().subtract_vector(&subtrahend.to_gen_borrow()))
 			}
 			
-			extern fn multiply_vector(self, factor: &Self) -> VecResult<Self>
+			fn multiply_vector(self, factor: &Self) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().multiply_vector(&factor.to_gen_borrow()))
 			}
 			
-			extern fn divide_vector(self, divisor: &Self) -> VecResult<Self>
+			fn divide_vector(self, divisor: &Self) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().divide_vector(&divisor.to_gen_borrow()))
 			}
 			
-			extern fn zero_pad(self, points: usize) -> VecResult<Self>
+			fn zero_pad(self, points: usize) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().zero_pad(points))
 			}
 			
-			extern fn zero_interleave(self) -> VecResult<Self>
+			fn zero_interleave(self) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().zero_interleave())
 			}
 			
-			extern fn diff(self) -> VecResult<Self>
+			fn diff(self) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().diff())
 			}
 			
-			extern fn diff_with_start(self) -> VecResult<Self>
+			fn diff_with_start(self) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().diff_with_start())
 			}
 			
-			extern fn cum_sum(self) -> VecResult<Self>
+			fn cum_sum(self) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().cum_sum())
 			}
@@ -333,82 +333,82 @@ macro_rules! define_real_operations_forward {
 		{
 			type ComplexPartner = $complex_partner; 
 			
-			extern fn real_offset(self, offset: <$name as DataVector>::E) -> VecResult<Self>
+			fn real_offset(self, offset: <$name as DataVector>::E) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().real_offset(offset))
 			}
 			
-			extern fn real_scale(self, factor: <$name as DataVector>::E) -> VecResult<Self>
+			fn real_scale(self, factor: <$name as DataVector>::E) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().real_scale(factor))
 			}
 					
-			extern fn real_abs(self) -> VecResult<Self>
+			fn real_abs(self) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().real_abs()) 
 			}
 			
-			extern fn real_sqrt(self) -> VecResult<Self>
+			fn real_sqrt(self) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().real_sqrt()) 
 			}
 			
-			extern fn real_square(self) -> VecResult<Self>
+			fn real_square(self) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().real_square()) 
 			}
 			
-			extern fn real_root(self, degree: Self::E) -> VecResult<Self>
+			fn real_root(self, degree: Self::E) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().real_root(degree)) 
 			}
 			
-			extern fn real_power(self, exponent: Self::E) -> VecResult<Self>
+			fn real_power(self, exponent: Self::E) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().real_power(exponent)) 
 			}
 			
-			extern fn real_logn(self) -> VecResult<Self>
+			fn real_logn(self) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().real_logn()) 
 			}
 			
-			extern fn real_expn(self) -> VecResult<Self>
+			fn real_expn(self) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().real_expn()) 
 			}
 		
-			extern fn real_log_base(self, base: Self::E) -> VecResult<Self>
+			fn real_log_base(self, base: Self::E) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().real_log_base(base)) 
 			}
             
-            extern fn real_sin(self) -> VecResult<Self>
+            fn real_sin(self) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().real_sin()) 
 			}
             
-            extern fn real_cos(self) -> VecResult<Self>
+            fn real_cos(self) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().real_cos()) 
 			}
 			
-			extern fn real_exp_base(self, base: Self::E) -> VecResult<Self>
+			fn real_exp_base(self, base: Self::E) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().real_exp_base(base)) 
 			}
 			
-			extern fn to_complex(self) -> VecResult<$complex_partner>
+			fn to_complex(self) -> VecResult<$complex_partner>
 			{
 				$complex_partner::from_genres(self.to_gen().to_complex()) 
 			}
 			
-			extern fn wrap(self, divisor: Self::E) -> VecResult<Self>
+			fn wrap(self, divisor: Self::E) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().wrap(divisor))
 			}
 			
-			extern fn unwrap(self, divisor: Self::E) -> VecResult<Self>
+			fn unwrap(self, divisor: Self::E) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().unwrap(divisor))
 			}
@@ -632,62 +632,62 @@ macro_rules! define_complex_operations_forward {
 			type RealPartner = $real_partner;
 			type Complex = $complex_type;
 			
-			extern fn complex_offset(self, offset: $complex_type) -> VecResult<Self>
+			fn complex_offset(self, offset: $complex_type) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().complex_offset(offset))
 			}
 				
-			extern fn complex_scale(self, factor: $complex_type) -> VecResult<Self>
+			fn complex_scale(self, factor: $complex_type) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().complex_scale(factor))
 			}
 			
-			extern fn complex_abs(self) -> VecResult<$real_partner>
+			fn complex_abs(self) -> VecResult<$real_partner>
 			{
 				$real_partner::from_genres(self.to_gen().complex_abs())
 			}
 			
-			extern fn get_complex_abs(&self, destination: &mut Self::RealPartner) -> VoidResult
+			fn get_complex_abs(&self, destination: &mut Self::RealPartner) -> VoidResult
 			{
 				self.to_gen_borrow().get_complex_abs(destination.to_gen_mut_borrow())
 			}
 			
-			extern fn complex_abs_squared(self) -> VecResult<$real_partner>
+			fn complex_abs_squared(self) -> VecResult<$real_partner>
 			{
 				$real_partner::from_genres(self.to_gen().complex_abs_squared())
 			}
 			
-			extern fn complex_conj(self) -> VecResult<Self>
+			fn complex_conj(self) -> VecResult<Self>
 			{
 				$name::from_genres(self.to_gen().complex_conj())
 			}
 			
-			extern fn to_real(self) -> VecResult<Self::RealPartner>
+			fn to_real(self) -> VecResult<Self::RealPartner>
 			{
 				$real_partner::from_genres(self.to_gen().to_real())
 			}
 	
-			extern fn to_imag(self) -> VecResult<Self::RealPartner>
+			fn to_imag(self) -> VecResult<Self::RealPartner>
 			{
 				$real_partner::from_genres(self.to_gen().to_imag())
 			}	
 					
-			extern fn get_real(&self, destination: &mut Self::RealPartner) -> VoidResult
+			fn get_real(&self, destination: &mut Self::RealPartner) -> VoidResult
 			{
 				self.to_gen_borrow().get_real(destination.to_gen_mut_borrow())
 			}
 			
-			extern fn get_imag(&self, destination: &mut Self::RealPartner) -> VoidResult
+			fn get_imag(&self, destination: &mut Self::RealPartner) -> VoidResult
 			{
 				self.to_gen_borrow().get_imag(destination.to_gen_mut_borrow())
 			}
 			
-			extern fn phase(self) -> VecResult<Self::RealPartner>
+			fn phase(self) -> VecResult<Self::RealPartner>
 			{
 				$real_partner::from_genres(self.to_gen().phase())
 			}
 			
-			extern fn get_phase(&self, destination: &mut Self::RealPartner) -> VoidResult
+			fn get_phase(&self, destination: &mut Self::RealPartner) -> VoidResult
 			{
 				self.to_gen_borrow().get_phase(destination.to_gen_mut_borrow())
 			}

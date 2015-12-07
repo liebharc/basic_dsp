@@ -8,7 +8,7 @@ use rustfft::FFT;
 
 impl TimeDomainOperations for DataVector32 {
 	type FreqPartner = DataVector32;
-	extern fn plain_fft(mut self) -> VecResult<Self> {
+	fn plain_fft(mut self) -> VecResult<Self> {
 		{
 			let points = self.points();
 			let rbw = (points as f32)  / self.delta;
@@ -27,14 +27,14 @@ impl TimeDomainOperations for DataVector32 {
 
 impl TimeDomainOperations for ComplexTimeVector32 {
 	type FreqPartner = ComplexFreqVector32;
-	extern fn plain_fft(self) -> VecResult<ComplexFreqVector32> {
+	fn plain_fft(self) -> VecResult<ComplexFreqVector32> {
 		ComplexFreqVector32::from_genres(self.to_gen().plain_fft())
 	}
 }
 
 impl FrequencyDomainOperations for DataVector32 {
 	type TimePartner = DataVector32;
-	extern fn plain_ifft(mut self) -> VecResult<Self> {
+	fn plain_ifft(mut self) -> VecResult<Self> {
 		{
 			let points = self.points();
 			let mut fft = FFT::new(points, true);
@@ -52,7 +52,7 @@ impl FrequencyDomainOperations for DataVector32 {
 
 impl FrequencyDomainOperations for ComplexFreqVector32 {
 	type TimePartner = ComplexTimeVector32;
-	extern fn plain_ifft(self) -> VecResult<ComplexTimeVector32> {
+	fn plain_ifft(self) -> VecResult<ComplexTimeVector32> {
 		ComplexTimeVector32::from_genres(self.to_gen().plain_ifft())
 	}
 }

@@ -17,7 +17,7 @@ impl ComplexVectorOperations for DataVector32
 	type RealPartner = DataVector32;
 	type Complex = Complex32;
 	
-	extern fn complex_offset(mut self, offset: Complex32)  -> VecResult<Self>
+	fn complex_offset(mut self, offset: Complex32)  -> VecResult<Self>
 	{
 		{
             let data_length = self.len();
@@ -48,7 +48,7 @@ impl ComplexVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	extern fn complex_scale(mut self, factor: Complex32) -> VecResult<Self>
+	fn complex_scale(mut self, factor: Complex32) -> VecResult<Self>
 	{
 		{
 			let data_length = self.len();
@@ -78,7 +78,7 @@ impl ComplexVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	extern fn complex_abs(mut self) -> VecResult<Self>
+	fn complex_abs(mut self) -> VecResult<Self>
 	{
 		{
 			let data_length = self.len();
@@ -100,7 +100,7 @@ impl ComplexVectorOperations for DataVector32
 		Ok(self.swap_data_temp())
 	}
 	
-	extern fn get_complex_abs(&self, destination: &mut Self) -> VoidResult
+	fn get_complex_abs(&self, destination: &mut Self) -> VoidResult
 	{
 		let data_length = self.len();
 		destination.reallocate(data_length / 2);
@@ -121,7 +121,7 @@ impl ComplexVectorOperations for DataVector32
         Ok(())
 	}
 	
-	extern fn complex_abs_squared(mut self) -> VecResult<Self>
+	fn complex_abs_squared(mut self) -> VecResult<Self>
 	{
 		{
 			let data_length = self.len();
@@ -154,7 +154,7 @@ impl ComplexVectorOperations for DataVector32
         Ok(self.swap_data_temp())
 	}
 	
-	extern fn complex_conj(mut self) -> VecResult<Self>
+	fn complex_conj(mut self) -> VecResult<Self>
 	{
 		{
 			let mut array = &mut self.data;
@@ -170,7 +170,7 @@ impl ComplexVectorOperations for DataVector32
 		Ok(self)
 	}
 	
-	extern fn to_real(mut self) -> VecResult<Self>
+	fn to_real(mut self) -> VecResult<Self>
 	{
 		{
 			let len = self.len();
@@ -193,7 +193,7 @@ impl ComplexVectorOperations for DataVector32
 		Ok(self.swap_data_temp())
 	}
 
-	extern fn to_imag(mut self) -> VecResult<Self>
+	fn to_imag(mut self) -> VecResult<Self>
 	{
 		{
 			let len = self.len();
@@ -216,7 +216,7 @@ impl ComplexVectorOperations for DataVector32
 		Ok(self.swap_data_temp())
 	}	
 			
-	extern fn get_real(&self, destination: &mut Self) -> VoidResult
+	fn get_real(&self, destination: &mut Self) -> VoidResult
 	{
 		let len = self.len();
 		destination.reallocate(len / 2);
@@ -238,7 +238,7 @@ impl ComplexVectorOperations for DataVector32
         Ok(())
 	}
 	
-	extern fn get_imag(&self, destination: &mut Self) -> VoidResult
+	fn get_imag(&self, destination: &mut Self) -> VoidResult
 	{
 		let len = self.len();
 		destination.reallocate(len / 2);
@@ -260,7 +260,7 @@ impl ComplexVectorOperations for DataVector32
         Ok(())
 	}
 	
-	extern fn phase(mut self) -> VecResult<Self>
+	fn phase(mut self) -> VecResult<Self>
 	{
 		{
 			let len = self.len();
@@ -274,7 +274,7 @@ impl ComplexVectorOperations for DataVector32
 		Ok(self.swap_data_temp())
 	}
 	
-	extern fn get_phase(&self, destination: &mut Self) -> VoidResult
+	fn get_phase(&self, destination: &mut Self) -> VoidResult
 	{
 		let len = self.len();
 		destination.reallocate(len / 2);
