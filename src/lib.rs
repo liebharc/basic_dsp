@@ -27,7 +27,7 @@ extern crate rustfft;
 mod vector_types;
 mod multicore_support;
 mod simd_extensions;
-mod interop_facade;
+pub mod interop_facade;
 pub use vector_types::
 	{
 		DataVectorDomain,
@@ -52,4 +52,3 @@ pub use vector_types::
 		ComplexFreqVector64,
 		Operation32
 	};
-pub use interop_facade::*;

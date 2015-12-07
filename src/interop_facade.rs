@@ -1,3 +1,6 @@
+//! Clients using other programming languages should use the functions
+//! in this mod. Please refer to the other chapters of the help for documentation of the functions
+
 #[allow(unused_imports)]
 use vector_types::
 	{
@@ -23,11 +26,20 @@ use vector_types::
 		ComplexFreqVector64,
 		Operation32
 	};
+use num::complex::Complex32;
 
+/// Result of a vector operation. Check the ```result_code```.
 #[repr(C)]
 pub struct VectorResult<T> {
-    result_code: i32,
-    vector: Box<T>
+    /// This value is zero in case of error. All other values mean that an error
+    /// occurred and the data in the vector might be unchanged or invalid. Error codes:
+    /// 1. Vectors must have the same size.
+    /// all other values are undefined. If you see a value which isn't listed here then
+    /// please report a bug.
+    pub result_code: i32,
+    
+    /// A pointer to a data vector.
+    pub vector: Box<T>
 }
     
 fn translate_error(reason: ErrorReason) -> i32 {
@@ -43,6 +55,18 @@ macro_rules! convert_vec {
             match result {
                 Ok(vec) => VectorResult { result_code: 0, vector: Box::new(vec) },
                 Err((res, vec)) => VectorResult { result_code: translate_error(res), vector: Box::new(vec) }
+            }
+        }
+    }
+}
+
+macro_rules! convert_void {
+    ($operation: expr) => {
+        {
+            let result = $operation;
+            match result {
+                Ok(()) => 0,
+                Err(res) => translate_error(res) 
             }
         }
     }
@@ -70,6 +94,228 @@ pub extern fn set_value32(vector: &mut DataVector32, index: usize, value : f32) 
 }
 
 #[no_mangle]
-pub extern fn real_offset32(vector: Box<DataVector32>, offset: f32) -> VectorResult<DataVector32> {
-    convert_vec!(vector.real_offset(offset))
+pub extern fn is_complex32(vector: &DataVector32) -> bool {
+    vector.is_complex()
+}
+
+/// Returns the vector domain as integer:
+/// 0 for time domain
+/// 1 for frequency domain
+/// if the function returns another value then please report a bug.
+#[no_mangle]
+pub extern fn get_domain32(vector: &DataVector32) -> i32 {
+    match vector.domain() {
+        DataVectorDomain::Time => 0,
+        DataVectorDomain::Frequency => 1,
+    }
+}
+
+#[no_mangle]
+pub extern fn get_len32(vector: &DataVector32) -> usize {
+    vector.len()
+}
+
+#[no_mangle]
+pub extern fn get_points32(vector: &DataVector32) -> usize {
+    vector.points()
+}
+
+#[no_mangle]
+pub extern fn get_allocated_len32(vector: &DataVector32) -> usize {
+    vector.allocated_len()
+}
+
+#[no_mangle]
+pub extern fn add_vector32(vector: Box<DataVector32>, operand: &DataVector32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.add_vector(operand))
+}
+
+#[no_mangle]
+pub extern fn subtract_vector32(vector: Box<DataVector32>, operand: &DataVector32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.subtract_vector(operand))
+}
+
+#[no_mangle]
+pub extern fn divide_vector32(vector: Box<DataVector32>, operand: &DataVector32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.divide_vector(operand))
+}
+
+#[no_mangle]
+pub extern fn multiply_vector32(vector: Box<DataVector32>, operand: &DataVector32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.multiply_vector(operand))
+}
+
+#[no_mangle]
+pub extern fn zero_pad32(vector: Box<DataVector32>, points: usize) -> VectorResult<DataVector32> {
+    convert_vec!(vector.zero_pad(points))
+}
+
+#[no_mangle]
+pub extern fn zero_interleave32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.zero_interleave())
+}
+
+#[no_mangle]
+pub extern fn diff32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.diff())
+}
+
+#[no_mangle]
+pub extern fn diff_with_start32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.diff_with_start())
+}
+
+#[no_mangle]
+pub extern fn cum_sum32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.cum_sum())
+}
+
+#[no_mangle]
+pub extern fn real_offset32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.real_offset(value))
+}
+
+#[no_mangle]
+pub extern fn real_scale32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.real_scale(value))
+}
+
+#[no_mangle]
+pub extern fn real_abs32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.real_abs())
+}
+
+#[no_mangle]
+pub extern fn real_sqrt32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.real_sqrt())
+}
+
+#[no_mangle]
+pub extern fn real_square32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.real_square())
+}
+
+#[no_mangle]
+pub extern fn real_root32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.real_root(value))
+}
+
+#[no_mangle]
+pub extern fn real_power32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.real_power(value))
+}
+
+#[no_mangle]
+pub extern fn real_logn32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.real_logn())
+}
+
+#[no_mangle]
+pub extern fn real_expn32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.real_expn())
+}
+
+#[no_mangle]
+pub extern fn real_log_base32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.real_log_base(value))
+}
+
+#[no_mangle]
+pub extern fn real_exp_base32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.real_exp_base(value))
+}
+
+#[no_mangle]
+pub extern fn to_complex32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.to_complex())
+}
+
+#[no_mangle]
+pub extern fn real_sin32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.real_sin())
+}
+
+#[no_mangle]
+pub extern fn real_cos32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.real_cos())
+}
+
+#[no_mangle]
+pub extern fn wrap32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.wrap(value))
+}
+
+#[no_mangle]
+pub extern fn unwrap32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.unwrap(value))
+}
+
+#[no_mangle]
+pub extern fn complex_offset32(vector: Box<DataVector32>, real: f32, imag: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.complex_offset(Complex32::new(real, imag)))
+}
+
+#[no_mangle]
+pub extern fn complex_scale32(vector: Box<DataVector32>, real: f32, imag: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.complex_scale(Complex32::new(real, imag)))
+}
+
+#[no_mangle]
+pub extern fn complex_abs32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.complex_abs())
+}
+
+#[no_mangle]
+pub extern fn get_complex_abs32(vector: Box<DataVector32>, destination: &mut DataVector32) -> i32 {
+    convert_void!(vector.get_complex_abs(destination))
+}
+
+#[no_mangle]
+pub extern fn complex_abs_squared32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.complex_abs_squared())
+}
+
+#[no_mangle]
+pub extern fn complex_conj32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.complex_conj())
+}
+
+#[no_mangle]
+pub extern fn to_real32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.to_real())
+}
+
+#[no_mangle]
+pub extern fn to_imag32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.to_imag())
+}
+
+#[no_mangle]
+pub extern fn get_real32(vector: Box<DataVector32>, destination: &mut DataVector32) -> i32 {
+    convert_void!(vector.get_real(destination))
+}
+
+#[no_mangle]
+pub extern fn get_imag32(vector: Box<DataVector32>, destination: &mut DataVector32) -> i32 {
+    convert_void!(vector.get_imag(destination))
+}
+
+#[no_mangle]
+pub extern fn phase32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.phase())
+}
+
+#[no_mangle]
+pub extern fn get_phase32(vector: Box<DataVector32>, destination: &mut DataVector32) -> i32 {
+    convert_void!(vector.get_phase(destination))
+}
+
+#[no_mangle]
+pub extern fn plain_fft32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.plain_fft())
+}
+
+#[no_mangle]
+pub extern fn plain_ifft32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.plain_ifft())
 }
