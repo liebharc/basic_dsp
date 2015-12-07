@@ -629,6 +629,14 @@ pub trait FrequencyDomainOperations : DataVector {
 	fn plain_ifft(self) -> VecResult<Self::TimePartner>;
 }
 
-pub type VecResult<T> = result::Result<T, (&'static str, T)>;
+#[derive(Copy)]
+#[derive(Clone)]
+#[derive(PartialEq)]
+#[derive(Debug)]
+pub enum ErrorReason {
+	VectorsMustHaveTheSameSize,
+}
 
-pub type VoidResult = result::Result<(), &'static str>;
+pub type VecResult<T> = result::Result<T, (ErrorReason, T)>;
+
+pub type VoidResult = result::Result<(), ErrorReason>;

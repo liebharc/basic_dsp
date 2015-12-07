@@ -2,7 +2,8 @@ use multicore_support::{Chunk, Complexity};
 use super::super::general::{
 	DataVector,
 	GenericVectorOperations,
-    VecResult};
+    VecResult,
+    ErrorReason};
 use super::DataVector32;
 use simd::f32x4;
 use num::complex::Complex32;
@@ -15,7 +16,7 @@ impl GenericVectorOperations for DataVector32
 	{
 		{
 			let len = self.len();
-            reject_if!(self, len != summand.len(), "Vectors must have the same size");
+            reject_if!(self, len != summand.len(), ErrorReason::VectorsMustHaveTheSameSize);
 			
 			let data_length = self.len();
 			let scalar_length = data_length % 4;
@@ -50,7 +51,7 @@ impl GenericVectorOperations for DataVector32
 	{
 		{
 			let len = self.len();
-			reject_if!(self, len != subtrahend.len(), "Vectors must have the same size");
+			reject_if!(self, len != subtrahend.len(), ErrorReason::VectorsMustHaveTheSameSize);
 				
 			let data_length = self.len();
 			let scalar_length = data_length % 4;
@@ -84,7 +85,7 @@ impl GenericVectorOperations for DataVector32
 	fn multiply_vector(self, factor: &Self) -> VecResult<Self>
 	{
 		let len = self.len();
-		reject_if!(self, len != factor.len(), "Vectors must have the same size");
+		reject_if!(self, len != factor.len(), ErrorReason::VectorsMustHaveTheSameSize);
 		
 		if self.is_complex
 		{
@@ -99,7 +100,7 @@ impl GenericVectorOperations for DataVector32
 	fn divide_vector(self, divisor: &Self) -> VecResult<Self>
 	{
 		let len = self.len();
-		reject_if!(self, len != divisor.len(), "Vectors must have the same size");
+		reject_if!(self, len != divisor.len(), ErrorReason::VectorsMustHaveTheSameSize);
 		
 		if self.is_complex
 		{
