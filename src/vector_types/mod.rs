@@ -302,13 +302,13 @@ macro_rules! define_real_basic_struct_members {
             }
             
             /// Creates a real `DataVector` with `length` elements all set to the value of `constant`. `delta` is defaulted to `1`.
-			pub fn from_constant(constant: <$name as DataVector>::E, length: usize) -> $name
+			pub fn real_from_constant(constant: <$name as DataVector>::E, length: usize) -> $name
 			{
-				$name::from_constant_with_delta(constant, length, 1.0)
+				$name::real_from_constant_with_delta(constant, length, 1.0)
 			}
 			
 			/// Creates a real `DataVector` with `length` elements all set to the value of `constant` and sets `delta` to the given value.
-			pub fn from_constant_with_delta(constant: <$name as DataVector>::E, length: usize, delta: <$name as DataVector>::E) -> $name
+			pub fn real_from_constant_with_delta(constant: <$name as DataVector>::E, length: usize, delta: <$name as DataVector>::E) -> $name
 			{
 				$name 
 				{ 
@@ -539,6 +539,26 @@ macro_rules! define_complex_basic_struct_members {
 				  valid_len: 0
 				}
             }
+            
+            /// Creates a complex `DataVector` with `length` elements all set to the value of `constant`. `delta` is defaulted to `1`.
+			pub fn complex_from_constant(constant: <$name as DataVector>::E, length: usize) -> $name
+			{
+				$name::complex_from_constant_with_delta(constant, length, 1.0)
+			}
+			
+			/// Creates a complex `DataVector` with `length` elements all set to the value of `constant` and sets `delta` to the given value.
+			pub fn complex_from_constant_with_delta(constant: <$name as DataVector>::E, length: usize, delta: <$name as DataVector>::E) -> $name
+			{
+				$name 
+				{ 
+				  data: vec![constant; length],
+				  temp: vec![0.0; length],
+				  delta: delta,
+				  domain: DataVectorDomain::$domain,
+				  is_complex: true,
+				  valid_len: length
+				}
+			}
 			
 			/// Creates a complex  `DataVector` from an array with real and an array imaginary data. `delta` is set to 1.
 			///

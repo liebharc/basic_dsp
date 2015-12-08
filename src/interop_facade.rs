@@ -78,8 +78,15 @@ pub fn delete_vector32(vector: Box<DataVector32>) {
 }
  
 #[no_mangle]
-pub extern fn real_from_constant32(constant: f32, size: usize) -> Box<DataVector32> {
-	let vector = Box::new(DataVector32::from_constant(constant, size));
+pub extern fn new32(is_complex: i32, domain: i32, init_value: f32, length: usize, delta: f32) -> Box<DataVector32> {
+    let domain = if domain == 0 {
+            DataVectorDomain::Time
+        }
+        else {
+            DataVectorDomain::Frequency
+        };
+        
+	let vector = Box::new(DataVector32::new(is_complex != 0, domain, init_value, length, delta));
     vector
 }
 
@@ -94,8 +101,13 @@ pub extern fn set_value32(vector: &mut DataVector32, index: usize, value : f32) 
 }
 
 #[no_mangle]
-pub extern fn is_complex32(vector: &DataVector32) -> bool {
-    vector.is_complex()
+pub extern fn is_complex32(vector: &DataVector32) -> i32 {
+    if vector.is_complex() {
+        1
+    } 
+    else {
+        0
+    }
 }
 
 /// Returns the vector domain as integer:
@@ -258,6 +270,11 @@ pub extern fn complex_offset32(vector: Box<DataVector32>, real: f32, imag: f32) 
 #[no_mangle]
 pub extern fn complex_scale32(vector: Box<DataVector32>, real: f32, imag: f32) -> VectorResult<DataVector32> {
     convert_vec!(vector.complex_scale(Complex32::new(real, imag)))
+}
+
+#[no_mangle]
+pub extern fn complex_divide32(vector: Box<DataVector32>, real: f32, imag: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.complex_scale(Complex32::new(1.0, 0.0) / Complex32::new(real, imag)))
 }
 
 #[no_mangle]

@@ -1,6 +1,7 @@
 use multicore_support::{Chunk, Complexity};
 use super::super::general::{
 	DataVector,
+    DataVectorDomain,
 	GenericVectorOperations,
     VecResult,
     ErrorReason};
@@ -8,6 +9,21 @@ use super::DataVector32;
 use simd::f32x4;
 use num::complex::Complex32;
 use simd_extensions::SimdExtensions;
+
+impl DataVector32 {
+    /// Creates a new generic data vector from the given arguments.
+    pub fn new(is_complex: bool, domain: DataVectorDomain, init_value: f32, length: usize, delta: f32) -> DataVector32 {
+        DataVector32 
+        { 
+            data: vec![init_value; length],
+            temp: vec![0.0; length],
+            delta: delta,
+            domain: domain,
+            is_complex: is_complex,
+            valid_len: length
+        }
+    }
+}
 
 #[inline]
 impl GenericVectorOperations for DataVector32
