@@ -2,6 +2,8 @@
 mod bench {
 	use test::Bencher;
 	use basic_dsp::{
+        DataVector,
+        GenericVectorOperations,
 		ComplexVectorOperations,
 		ComplexTimeVector32};
 	use num::complex::Complex32;
@@ -31,6 +33,19 @@ mod bench {
 		let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Small);
 		b.iter(|| {
 			vector.execute_res(|v|  { v.complex_conj() } )
+		});
+	}
+    
+    #[bench]
+	fn complex_vector_multiplication_32s_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Small);
+		b.iter(|| {
+			vector.execute_res(|v| {
+                let len = v.len(); 
+                let operand = ComplexTimeVector32::complex_from_constant(0.0, len);
+                v.multiply_vector(&operand) 
+            } )
 		});
 	}
 }

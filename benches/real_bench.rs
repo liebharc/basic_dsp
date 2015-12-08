@@ -200,4 +200,17 @@ mod bench {
 			vector.execute_res(|v|  { v.cum_sum() } )
 		});
     }
+    
+    #[bench]
+	fn real_vector_multiplication_32s_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
+		b.iter(|| {
+			vector.execute_res(|v| {
+                let len = v.len(); 
+                let operand = RealTimeVector32::real_from_constant(0.0, len);
+                v.multiply_vector(&operand) 
+            } )
+		});
+	}
 }

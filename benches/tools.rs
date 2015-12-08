@@ -11,7 +11,8 @@ pub const DEFAULT_DATA_SIZE: usize = 10000;
 
 pub struct VectorBox<T>
 {
-    vector: *mut T
+    vector: *mut T,
+    size: usize
 }
 
 #[derive(Copy)]
@@ -45,7 +46,8 @@ impl VectorBox<DataVector32>
             };
         VectorBox
         {
-            vector: Box::into_raw(Box::new(vector))
+            vector: Box::into_raw(Box::new(vector)),
+            size: size
         }
     }
     
@@ -61,7 +63,8 @@ impl VectorBox<DataVector32>
             };
         VectorBox
         {
-            vector: Box::into_raw(Box::new(vector))
+            vector: Box::into_raw(Box::new(vector)),
+            size: size
         }
     }
 }
@@ -75,7 +78,8 @@ impl VectorBox<RealTimeVector32>
         let vector = RealTimeVector32::from_array_no_copy(data);
         VectorBox
         {
-            vector: Box::into_raw(Box::new(vector))
+            vector: Box::into_raw(Box::new(vector)),
+            size: size
         }
     }
 }
@@ -89,7 +93,8 @@ impl VectorBox<ComplexTimeVector32>
         let vector = ComplexTimeVector32::from_interleaved_no_copy(data);
         VectorBox
         {
-            vector: Box::into_raw(Box::new(vector))
+            vector: Box::into_raw(Box::new(vector)),
+            size: size
         }
     }
 }
@@ -97,6 +102,10 @@ impl VectorBox<ComplexTimeVector32>
 #[allow(dead_code)]
 impl<T> VectorBox<T>
 {
+    pub fn len(&self) -> usize {
+        self.size
+    }
+    
     pub fn execute<F>(&mut self, function: F) -> bool
         where F: Fn(T) -> T + 'static + Sync
     {
