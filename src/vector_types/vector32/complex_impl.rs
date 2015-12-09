@@ -157,14 +157,27 @@ impl ComplexVectorOperations for DataVector32
 	fn complex_conj(mut self) -> VecResult<Self>
 	{
 		{
+            let data_length = self.len();
+			let scalar_length = data_length % 4;
+			let vectorization_length = data_length - scalar_length;
 			let mut array = &mut self.data;
-			Chunk::execute(Complexity::Small, &mut array, 2, |array| {
-                let mut i = 1;
+			Chunk::execute_partial(Complexity::Small, &mut array, 4, vectorization_length, |array| {
+                let multiplicator = f32x4::new(1.0, -1.0, 1.0, -1.0);
+                let mut i = 0;
                 while i < array.len() {
-                    array[i] = -array[i];
-                    i += 2;
+                    let vector = f32x4::load(array, i);
+                    let result = vector * multiplicator;
+                    result.store(array, i);
+                    i += 4;
                 }
             });
+            
+            let mut i = vectorization_length;
+			while i + 2 < data_length
+			{
+				array[i] = -array[i];
+                i += 2;
+			}
 		}
 		
 		Ok(self)

@@ -17,14 +17,24 @@ impl RealVectorOperations for DataVector32
 	fn real_offset(mut self, offset: f32) -> VecResult<Self>
 	{
         {
-            let len = self.len();
+            let data_length = self.len();
+			let scalar_length = data_length % 4;
+            let vectorization_length = data_length - scalar_length;
             let mut array = &mut self.data;
-            Chunk::execute_partial_with_arguments(Complexity::Small, &mut array, len, 1, offset, |array, v| {
-                for i in 0..array.len()
-                {
-                    array[i] += v;
+            Chunk::execute_partial_with_arguments(Complexity::Small, &mut array, vectorization_length, 4, offset, |array, value| {
+                let mut i = 0;
+                while i < array.len()
+                { 
+                    let vector = f32x4::load(array, i);
+                    let scaled = vector.add_real(value);
+                    scaled.store(array, i);
+                    i += 4;
                 }
             });
+			for i in vectorization_length..data_length
+			{
+				array[i] = array[i] + offset;
+			}
         }
 		Ok(self)
 	}
@@ -71,16 +81,24 @@ impl RealVectorOperations for DataVector32
 	fn real_sqrt(mut self) -> VecResult<Self>
 	{
 		{
+            let data_length = self.len();
 			let mut array = &mut self.data;
-			let length = array.len();
-			Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
+            let scalar_length = data_length % 4;
+			let vectorization_length = data_length - scalar_length;
+			Chunk::execute_partial(Complexity::Small, &mut array, vectorization_length, 4, |array| {
                 let mut i = 0;
                 while i < array.len()
                 {
-                    array[i] = array[i].sqrt();
-                    i += 1;
+                    let vector = f32x4::load(array, i);
+                    let result = vector.sqrt();
+                    result.store(array, i);
+                    i += 4;
                 }
             });
+            for i in vectorization_length..data_length
+			{
+				array[i] = array[i].sqrt();
+			}
 		}
 		Ok(self)
 	}
@@ -88,16 +106,25 @@ impl RealVectorOperations for DataVector32
 	fn real_square(mut self) -> VecResult<Self>
 	{
 		{
+			let data_length = self.len();
 			let mut array = &mut self.data;
-			let length = array.len();
-			Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
+            let scalar_length = data_length % 4;
+			let vectorization_length = data_length - scalar_length;
+			Chunk::execute_partial(Complexity::Small, &mut array, vectorization_length, 4, |array| {
                 let mut i = 0;
                 while i < array.len()
                 {
-                    array[i] = array[i] * array[i];
-                    i += 1;
+                    let a = f32x4::load(array, i);
+                    let result = a * a;
+                    result.store(array, i);
+                    i += 4;
                 }
             });
+            
+            for i in vectorization_length..data_length
+			{
+				array[i] = array[i] * array[i];
+			}
 		}
 		Ok(self)
 	}
@@ -246,15 +273,17 @@ impl RealVectorOperations for DataVector32
 			let half = divisor / 2.0;
 			while j < data_length {
 				let mut diff = data[j] - data[i];
-				diff = diff % divisor;
 				if diff > half {
+                    diff = diff % divisor;
 					diff -= divisor;
+                    data[j] = data[i] + diff;
 				}
 				else if diff < -half {
+                    diff = diff % divisor;
 					diff += divisor;
+                    data[j] = data[i] + diff;
 				}
-				data[j] = data[i] + diff;
-				
+								
 				i += 1;
 				j += 1;
 			}
