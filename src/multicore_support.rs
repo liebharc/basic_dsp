@@ -36,6 +36,18 @@ impl MultiCoreSettings {
     }
 }
 
+impl Clone for MultiCoreSettings {
+    fn clone(&self) -> Self {
+        MultiCoreSettings {
+            core_limit: self.core_limit
+        }
+    }
+
+    fn clone_from(&mut self, source: &Self) {
+        self.core_limit = source.core_limit;
+    }
+}
+
 /// Contains logic which helps to perform an operation
 /// in parallel by dividing an array into chunks.
 pub struct Chunk;

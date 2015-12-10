@@ -169,6 +169,31 @@ macro_rules! define_vector_struct {
 				&mut self.data[index]
 			}
 		}
+        
+        impl Clone for $name {
+            fn clone(&self) -> Self {
+                let data_length = self.data.len(); 
+                $name 
+				{ 
+				  data: self.data.clone(), 
+				  temp: vec![0.0; data_length],
+				  delta: self.delta,
+				  domain: self.domain,
+				  is_complex: self.is_complex,
+				  valid_len: self.valid_len,
+                  multicore_settings: self.multicore_settings.clone()
+				}
+            }
+
+            fn clone_from(&mut self, source: &Self) {
+                 self.data = source.data.clone();
+                 self.temp.resize(self.data.len(), 0.0);
+                 self.domain = source.domain;
+                 self.is_complex = source.is_complex;
+                 self.valid_len = source.valid_len;
+                 self.multicore_settings = source.multicore_settings.clone();
+            }
+        }
     }
 }
 
