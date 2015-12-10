@@ -30,7 +30,8 @@ macro_rules! define_vector_struct {
 			delta: $data_type,
 			domain: DataVectorDomain,
 			is_complex: bool,
-			valid_len: usize
+			valid_len: usize,
+            multicore_settings: MultiCoreSettings 
 			// We could need here (or in one of the traits/impl):
 			// - A view for complex data types with transmute
 		}
@@ -248,7 +249,8 @@ macro_rules! define_real_basic_struct_members {
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
-				  valid_len: data_length
+				  valid_len: data_length,
+                  multicore_settings: MultiCoreSettings::new()
 				}
 			}
 		
@@ -269,7 +271,8 @@ macro_rules! define_real_basic_struct_members {
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
-				  valid_len: data_length
+				  valid_len: data_length,
+                  multicore_settings: MultiCoreSettings::new()
 				}
 			}
             
@@ -283,7 +286,8 @@ macro_rules! define_real_basic_struct_members {
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
-				  valid_len: 0
+				  valid_len: 0,
+                  multicore_settings: MultiCoreSettings::new()
 				}
             }
             
@@ -297,7 +301,8 @@ macro_rules! define_real_basic_struct_members {
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
-				  valid_len: 0
+				  valid_len: 0,
+                  multicore_settings: MultiCoreSettings::new()
 				}
             }
             
@@ -317,7 +322,8 @@ macro_rules! define_real_basic_struct_members {
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
-				  valid_len: length
+				  valid_len: length,
+                  multicore_settings: MultiCoreSettings::new()
 				}
 			}
 		}
@@ -426,7 +432,8 @@ macro_rules! define_real_operations_forward {
 				  delta: self.delta,
 				  domain: self.domain,
 				  is_complex: self.is_complex,
-				  valid_len: self.valid_len
+				  valid_len: self.valid_len,
+                  multicore_settings: MultiCoreSettings::new()
 				}
 			}
 			
@@ -450,7 +457,8 @@ macro_rules! define_real_operations_forward {
 				  delta: other.delta,
 				  domain: other.domain,
 				  is_complex: other.is_complex,
-				  valid_len: other.valid_len
+				  valid_len: other.valid_len,
+                  multicore_settings: MultiCoreSettings::new()
 				}
 			}
             
@@ -487,7 +495,8 @@ macro_rules! define_complex_basic_struct_members {
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
-				  valid_len: data_length
+				  valid_len: data_length,
+                  multicore_settings: MultiCoreSettings::new()
 				}
 			}
 			
@@ -508,7 +517,8 @@ macro_rules! define_complex_basic_struct_members {
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
-				  valid_len: data_length
+				  valid_len: data_length,
+                  multicore_settings: MultiCoreSettings::new()
 				}
 			}
             
@@ -522,7 +532,8 @@ macro_rules! define_complex_basic_struct_members {
 				  delta: 1.0,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
-				  valid_len: 0
+				  valid_len: 0,
+                  multicore_settings: MultiCoreSettings::new()
 				}
             }
             
@@ -536,7 +547,8 @@ macro_rules! define_complex_basic_struct_members {
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
-				  valid_len: 0
+				  valid_len: 0,
+                  multicore_settings: MultiCoreSettings::new()
 				}
             }
             
@@ -556,7 +568,8 @@ macro_rules! define_complex_basic_struct_members {
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
-				  valid_len: length
+				  valid_len: length,
+                  multicore_settings: MultiCoreSettings::new()
 				}
 			}
 			
@@ -595,7 +608,8 @@ macro_rules! define_complex_basic_struct_members {
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
-				  valid_len: data_length
+				  valid_len: data_length,
+                  multicore_settings: MultiCoreSettings::new()
 				}
 			}
 			
@@ -635,7 +649,8 @@ macro_rules! define_complex_basic_struct_members {
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
-				  valid_len: data_length
+				  valid_len: data_length,
+                  multicore_settings: MultiCoreSettings::new()
 				}
 			}
 		} 
@@ -725,7 +740,8 @@ macro_rules! define_complex_operations_forward {
 				  delta: self.delta,
 				  domain: self.domain,
 				  is_complex: self.is_complex,
-				  valid_len: self.valid_len
+				  valid_len: self.valid_len,
+                  multicore_settings: MultiCoreSettings::new()
 				}
 			}
 			
@@ -749,7 +765,8 @@ macro_rules! define_complex_operations_forward {
 				  delta: other.delta,
 				  domain: other.domain,
 				  is_complex: other.is_complex,
-				  valid_len: other.valid_len
+				  valid_len: other.valid_len,
+                  multicore_settings: MultiCoreSettings::new()
 				}
 			}
             
@@ -773,11 +790,11 @@ macro_rules! reject_if {
     }
 }
 
-pub mod general;
+pub mod definitions;
 pub mod vector32;
 pub mod vector64;
 
-pub use vector_types::general::
+pub use vector_types::definitions::
 	{
 		DataVectorDomain,
 		DataVector,

@@ -1,4 +1,4 @@
-use super::general::{
+use super::definitions::{
 	DataVector,
     VecResult,
     VoidResult,
@@ -9,6 +9,7 @@ use super::general::{
 use num::complex::Complex64;
 use std::ops::{Index, IndexMut, Range, RangeTo, RangeFrom, RangeFull};
 use std::mem;
+use super::super::multicore_support::MultiCoreSettings;
 
 define_vector_struct!(struct DataVector64, f64);
 define_real_basic_struct_members!(impl DataVector64, DataVectorDomain::Time);

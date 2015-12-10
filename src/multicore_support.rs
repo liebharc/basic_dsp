@@ -17,6 +17,25 @@ pub enum Complexity {
     Large
 }
 
+/// Hold parameters which specifiy how multiple cores are used
+/// to execute an operation.
+#[derive(Debug)]    
+pub struct MultiCoreSettings {
+    #[allow(dead_code)]
+    core_limit: usize
+    // TODO: Specify and use options such as core/thread limits
+}
+
+impl MultiCoreSettings {
+    pub fn new() -> MultiCoreSettings {
+        // Initialize the pool
+        let _pool = Chunk::get_static_pool();
+        MultiCoreSettings {
+            core_limit: num_cpus::get()
+        }
+    }
+}
+
 /// Contains logic which helps to perform an operation
 /// in parallel by dividing an array into chunks.
 pub struct Chunk;

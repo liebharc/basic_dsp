@@ -1,4 +1,4 @@
-use super::super::general::{
+use super::super::definitions::{
 	DataVector,
     VecResult,
 	TimeDomainOperations,

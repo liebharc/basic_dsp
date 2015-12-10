@@ -1,5 +1,5 @@
 use multicore_support::{Chunk, Complexity};
-use super::super::general::{
+use super::super::definitions::{
 	DataVector,
     VecResult,
     GenericVectorOperations,

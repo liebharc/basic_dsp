@@ -4,7 +4,7 @@ pub mod complex_impl;
 pub mod time_freq_impl;
 
 use multicore_support::{Chunk,Complexity};
-use super::general::{
+use super::definitions::{
 	DataVector,
     VecResult,
     VoidResult,
@@ -18,6 +18,7 @@ use num::complex::Complex32;
 use num::traits::Float;
 use std::ops::{Index, IndexMut, Range, RangeTo, RangeFrom, RangeFull};
 use std::mem;
+use super::super::multicore_support::MultiCoreSettings;
 
 /// An alternative way to define operations on a vector.
 /// Warning: Highly unstable and not even fully implemented right now.
@@ -240,7 +241,7 @@ impl DataVector32
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use super::super::general::{
+	use super::super::definitions::{
 		DataVector,
 		DataVectorDomain,
 		GenericVectorOperations,
