@@ -887,7 +887,7 @@ impl DataVector32 {
                 while i < array.len()
                 {
                     let complex = Complex32::new(array[i], array[i + 1]);
-                    let result = complex.log(base);
+                    let result = complex.log_base(base);
                     array[i] = result.re;
                     array[i + 1] = result.im;
                     i += 2;
@@ -924,7 +924,7 @@ impl DataVector32 {
                 while i < array.len()
                 {
                     let complex = Complex32::new(array[i], array[i + 1]);
-                    let result = complex.exp(base);
+                    let result = complex.exp_base(base);
                     array[i] = result.re;
                     array[i + 1] = result.im;
                     i += 2;

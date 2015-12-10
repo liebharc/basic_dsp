@@ -10,8 +10,8 @@ pub trait ComplexExtensions<T>
     fn powf(&self, value: T) -> Self;
     fn ln(&self) -> Self;
     fn expn(&self) -> Self;
-    fn log(&self, value: T) -> Self;
-    fn exp(&self, value: T) -> Self;
+    fn log_base(&self, value: T) -> Self;
+    fn exp_base(&self, value: T) -> Self;
 }
 
 #[allow(unused)]
@@ -48,7 +48,7 @@ impl<T> ComplexExtensions<T> for Complex<T>
         Complex::new(exp * self.im.cos(), exp * self.im.sin())
     }
     
-    fn log(&self, value: T) -> Self {
+    fn log_base(&self, value: T) -> Self {
         let (r, theta) = self.to_polar();
         let e = T::one().exp(); // there is for sure a faster way to get the constant, but I don't know how to do that in this generic context 
         Complex::new(r.log(value), theta * e.log(value))
@@ -56,7 +56,7 @@ impl<T> ComplexExtensions<T> for Complex<T>
     
     // Same as value.powf(self) but I would prefer to have this version
     // around too
-    fn exp(&self, value: T) -> Self {
+    fn exp_base(&self, value: T) -> Self {
         let ln = value.ln();
         let exp = (self.re * ln).exp();
         let im = self.im * ln; 
@@ -97,7 +97,7 @@ mod tests {
 	fn log_test()
 	{
 		let c = Complex32::new(2.0, -1.0);
-        let r = c.log(10.0);
+        let r = c.log_base(10.0);
         assert_eq!(r, Complex32::new(0.349485, -0.20135958));
 	}
     
@@ -105,7 +105,7 @@ mod tests {
 	fn exp_test()
 	{
 		let c = Complex32::new(2.0, -1.0);
-        let r = c.exp(10.0);
+        let r = c.exp_base(10.0);
         assert_eq!(r, Complex32::new(-66.82015, -74.39803));
 	}
 }
