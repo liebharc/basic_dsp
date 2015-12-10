@@ -223,6 +223,56 @@ macro_rules! define_generic_operations_forward {
 			{
 				$name::from_genres(self.to_gen().cum_sum())
 			}
+            
+            fn sqrt(self) -> VecResult<Self>
+			{
+				$name::from_genres(self.to_gen().sqrt()) 
+			}
+			
+			fn square(self) -> VecResult<Self>
+			{
+				$name::from_genres(self.to_gen().square()) 
+			}
+			
+			fn root(self, degree: Self::E) -> VecResult<Self>
+			{
+				$name::from_genres(self.to_gen().root(degree)) 
+			}
+			
+			fn power(self, exponent: Self::E) -> VecResult<Self>
+			{
+				$name::from_genres(self.to_gen().power(exponent)) 
+			}
+			
+			fn logn(self) -> VecResult<Self>
+			{
+				$name::from_genres(self.to_gen().logn()) 
+			}
+			
+			fn expn(self) -> VecResult<Self>
+			{
+				$name::from_genres(self.to_gen().expn()) 
+			}
+		
+			fn log_base(self, base: Self::E) -> VecResult<Self>
+			{
+				$name::from_genres(self.to_gen().log_base(base)) 
+			}
+            
+            fn sin(self) -> VecResult<Self>
+			{
+				$name::from_genres(self.to_gen().sin()) 
+			}
+            
+            fn cos(self) -> VecResult<Self>
+			{
+				$name::from_genres(self.to_gen().cos()) 
+			}
+			
+			fn exp_base(self, base: Self::E) -> VecResult<Self>
+			{
+				$name::from_genres(self.to_gen().exp_base(base)) 
+			}
 		}
 	}	
 }
@@ -353,57 +403,7 @@ macro_rules! define_real_operations_forward {
 			{
 				$name::from_genres(self.to_gen().real_abs()) 
 			}
-			
-			fn real_sqrt(self) -> VecResult<Self>
-			{
-				$name::from_genres(self.to_gen().real_sqrt()) 
-			}
-			
-			fn real_square(self) -> VecResult<Self>
-			{
-				$name::from_genres(self.to_gen().real_square()) 
-			}
-			
-			fn real_root(self, degree: Self::E) -> VecResult<Self>
-			{
-				$name::from_genres(self.to_gen().real_root(degree)) 
-			}
-			
-			fn real_power(self, exponent: Self::E) -> VecResult<Self>
-			{
-				$name::from_genres(self.to_gen().real_power(exponent)) 
-			}
-			
-			fn real_logn(self) -> VecResult<Self>
-			{
-				$name::from_genres(self.to_gen().real_logn()) 
-			}
-			
-			fn real_expn(self) -> VecResult<Self>
-			{
-				$name::from_genres(self.to_gen().real_expn()) 
-			}
-		
-			fn real_log_base(self, base: Self::E) -> VecResult<Self>
-			{
-				$name::from_genres(self.to_gen().real_log_base(base)) 
-			}
-            
-            fn real_sin(self) -> VecResult<Self>
-			{
-				$name::from_genres(self.to_gen().real_sin()) 
-			}
-            
-            fn real_cos(self) -> VecResult<Self>
-			{
-				$name::from_genres(self.to_gen().real_cos()) 
-			}
-			
-			fn real_exp_base(self, base: Self::E) -> VecResult<Self>
-			{
-				$name::from_genres(self.to_gen().real_exp_base(base)) 
-			}
-			
+						
 			fn to_complex(self) -> VecResult<$complex_partner>
 			{
 				$complex_partner::from_genres(self.to_gen().to_complex()) 

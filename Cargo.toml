@@ -13,13 +13,13 @@ slow_test = []
 [dev-dependencies.hamcrest]
 git = "https://github.com/carllerche/hamcrest-rust.git"
 [dev-dependencies.rand]
-rand = "0.3"
+rand = "*"
 [dependencies]
 simd = { git = "https://github.com/liebharc/simd" }
-num_cpus = "0.2.6"
-simple_parallel = "0.3.0"
-num = "0.1.27"
-rustfft = "1.0.0"
+num_cpus = "*"
+simple_parallel = "*"
+num = "*"
+rustfft = "*"
 
 [[test]]
 name = "test"

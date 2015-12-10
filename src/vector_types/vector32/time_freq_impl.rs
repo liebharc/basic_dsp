@@ -18,7 +18,7 @@ impl TimeDomainOperations for DataVector32 {
 			let spectrum = &mut self.temp;
 			let signal = DataVector32::array_to_complex(signal);
 			let spectrum = DataVector32::array_to_complex_mut(spectrum);
-			fft.process(signal, spectrum);
+			fft.process(&signal[0..points], &mut spectrum[0..points]);
 		}
 		
         Ok(self.swap_data_temp())
@@ -44,7 +44,7 @@ impl FrequencyDomainOperations for DataVector32 {
 			let spectrum = &mut self.temp;
 			let signal = DataVector32::array_to_complex(signal);
 			let spectrum = DataVector32::array_to_complex_mut(spectrum);
-			fft.process(signal, spectrum);
+			fft.process(&signal[0..points], &mut spectrum[0..points]);
 		}
 		Ok(self.swap_data_temp())
 	}

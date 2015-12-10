@@ -8,6 +8,7 @@ use super::super::definitions::{
 use super::DataVector32;
 use simd::f32x4;
 use num::complex::Complex32;
+use complex_extensions::ComplexExtensions;
 use simd_extensions::SimdExtensions;
 use super::super::super::multicore_support::MultiCoreSettings;
 
@@ -274,6 +275,106 @@ impl GenericVectorOperations for DataVector32
 		}
 		Ok(self)
 	}
+    
+    fn sqrt(self) -> VecResult<Self>
+	{
+        if self.is_complex() {
+          DataVector32::complex_sqrt(self)  
+        }
+        else {
+		  DataVector32::real_sqrt(self)
+        }
+	}
+	
+	fn square(self) -> VecResult<Self>
+	{
+        if self.is_complex() {
+          DataVector32::complex_square(self)  
+        }
+        else {
+		  DataVector32::real_square(self)
+        }
+	}
+	
+	fn root(self, degree: Self::E) -> VecResult<Self>
+	{
+        if self.is_complex() {
+          DataVector32::complex_root(self, degree)  
+        }
+        else {
+		  DataVector32::real_root(self, degree)
+        }
+	}
+	
+	fn power(self, exponent: Self::E) -> VecResult<Self>
+	{
+        if self.is_complex() {
+          DataVector32::complex_power(self, exponent)  
+        }
+        else {
+		  DataVector32::real_power(self, exponent)
+        }
+	}
+	
+	fn logn(self) -> VecResult<Self>
+	{
+        if self.is_complex() {
+          DataVector32::complex_logn(self)  
+        }
+        else {
+		  DataVector32::real_logn(self)
+        }
+	}
+	
+	fn expn(self) -> VecResult<Self>
+	{
+        if self.is_complex() {
+          DataVector32::complex_expn(self)  
+        }
+        else {
+		  DataVector32::real_expn(self)
+        }
+	}
+
+	fn log_base(self, base: Self::E) -> VecResult<Self>
+	{
+        if self.is_complex() {
+          DataVector32::complex_log_base(self, base)  
+        }
+        else {
+		  DataVector32::real_log_base(self, base)
+        }
+	}
+	
+	fn exp_base(self, base: Self::E) -> VecResult<Self>
+	{
+        if self.is_complex() {
+          DataVector32::complex_exp_base(self, base)  
+        }
+        else {
+		  DataVector32::real_exp_base(self, base)
+        }
+	}
+    
+    fn sin(self) -> VecResult<Self>
+    {
+        if self.is_complex() {
+          DataVector32::complex_sin(self)  
+        }
+        else {
+		  DataVector32::real_sin(self)
+        }
+    }
+    
+    fn cos(self) -> VecResult<Self>
+    {
+        if self.is_complex() {
+          DataVector32::complex_cos(self)  
+        }
+        else {
+		  DataVector32::real_cos(self)
+        }
+    }
 }
 
 impl DataVector32 {
@@ -467,5 +568,394 @@ impl DataVector32 {
             });
 		}
 		self.swap_data_temp()
+	}
+    
+    fn real_sqrt(mut self) -> VecResult<Self>
+	{
+		{
+            let data_length = self.len();
+			let mut array = &mut self.data;
+            let scalar_length = data_length % 4;
+			let vectorization_length = data_length - scalar_length;
+			Chunk::execute_partial(Complexity::Small, &mut array, vectorization_length, 4, |array| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    let vector = f32x4::load(array, i);
+                    let result = vector.sqrt();
+                    result.store(array, i);
+                    i += 4;
+                }
+            });
+            for i in vectorization_length..data_length
+			{
+				array[i] = array[i].sqrt();
+			}
+		}
+		Ok(self)
+	}
+    
+    fn complex_sqrt(mut self) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(Complexity::Medium, &mut array, length, 2, |array| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    let complex = Complex32::new(array[i], array[i + 1]);
+                    let result = complex.sqrt();
+                    array[i] = result.re;
+                    array[i + 1] = result.im;
+                    i += 2;
+                }
+            });
+		}
+		Ok(self)
+	}
+	
+	fn real_square(mut self) -> VecResult<Self>
+	{
+		{
+			let data_length = self.len();
+			let mut array = &mut self.data;
+            let scalar_length = data_length % 4;
+			let vectorization_length = data_length - scalar_length;
+			Chunk::execute_partial(Complexity::Small, &mut array, vectorization_length, 4, |array| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    let a = f32x4::load(array, i);
+                    let result = a * a;
+                    result.store(array, i);
+                    i += 4;
+                }
+            });
+            
+            for i in vectorization_length..data_length
+			{
+				array[i] = array[i] * array[i];
+			}
+		}
+		Ok(self)
+	}
+    
+    fn complex_square(mut self) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(Complexity::Medium, &mut array, length, 2, |array| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    let complex = Complex32::new(array[i], array[i + 1]);
+                    let result = complex * complex;
+                    array[i] = result.re;
+                    array[i + 1] = result.im;
+                    i += 2;
+                }
+            });
+		}
+		Ok(self)
+	}
+	
+	fn real_root(mut self, degree: f32) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 1, degree, |array, base| {
+                let base = 1.0 / base;
+                let mut i = 0;
+                while i < array.len()
+                {
+                    array[i] = array[i].powf(base);
+                    i += 1;
+                }
+            });
+		}
+		Ok(self)
+	}
+    
+    fn complex_root(mut self, base: f32) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 2, base, |array, base| {
+                let base = 1.0 / base;
+                let mut i = 0;
+                while i < array.len()
+                {
+                    let complex = Complex32::new(array[i], array[i + 1]);
+                    let result = complex.powf(base);
+                    array[i] = result.re;
+                    array[i + 1] = result.im;
+                    i += 2;
+                }
+            });
+		}
+		Ok(self)
+	}
+	
+	fn real_power(mut self, exponent: f32) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 1, exponent, |array, base| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    array[i] = array[i].powf(base);
+                    i += 1;
+                }
+            });
+		}
+		Ok(self)
+	}
+    
+    fn complex_power(mut self, base: f32) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 2, base, |array, base| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    let complex = Complex32::new(array[i], array[i + 1]);
+                    let result = complex.powf(base);
+                    array[i] = result.re;
+                    array[i + 1] = result.im;
+                    i += 2;
+                }
+            });
+		}
+		Ok(self)
+	}
+	
+	fn real_logn(mut self) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    array[i] = array[i].ln();
+                    i += 1;
+                }
+            });
+		}
+		Ok(self)
+	}
+    
+    fn complex_logn(mut self) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(Complexity::Medium, &mut array, length, 2, |array| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    let complex = Complex32::new(array[i], array[i + 1]);
+                    let result = complex.ln();
+                    array[i] = result.re;
+                    array[i + 1] = result.im;
+                    i += 2;
+                }
+            });
+		}
+		Ok(self)
+	}
+	
+	fn real_expn(mut self) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    array[i] = array[i].exp();
+                    i += 1;
+                }
+            });
+		}
+		Ok(self)
+	}
+    
+    fn complex_expn(mut self) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(Complexity::Medium, &mut array, length, 2, |array| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    let complex = Complex32::new(array[i], array[i + 1]);
+                    let result = complex.expn();
+                    array[i] = result.re;
+                    array[i + 1] = result.im;
+                    i += 2;
+                }
+            });
+		}
+		Ok(self)
+	}
+
+	fn real_log_base(mut self, base: f32) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 1, base, |array, base| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    array[i] = array[i].log(base);
+                    i += 1;
+                }
+            });
+		}
+		Ok(self)
+	}
+    
+    fn complex_log_base(mut self, base: f32) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 2, base, |array, base| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    let complex = Complex32::new(array[i], array[i + 1]);
+                    let result = complex.log(base);
+                    array[i] = result.re;
+                    array[i + 1] = result.im;
+                    i += 2;
+                }
+            });
+		}
+		Ok(self)
+	}
+	
+	fn real_exp_base(mut self, base: f32) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 1, base, |array, base| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    array[i] = base.powf(array[i]);
+                    i += 1;
+                }
+            });
+		}
+		Ok(self)
+	}
+    
+    fn complex_exp_base(mut self, base: f32) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 2, base, |array, base| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    let complex = Complex32::new(array[i], array[i + 1]);
+                    let result = complex.exp(base);
+                    array[i] = result.re;
+                    array[i + 1] = result.im;
+                    i += 2;
+                }
+            });
+		}
+		Ok(self)
+	}
+    
+    fn real_sin(mut self) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    array[i] = array[i].sin();
+                    i += 1;
+                }
+            });
+		}
+		Ok(self)
+	}
+    
+    fn complex_sin(mut self) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(Complexity::Medium, &mut array, length, 2, |array| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    let complex = Complex32::new(array[i], array[i + 1]);
+                    let result = complex.sin();
+                    array[i] = result.re;
+                    array[i + 1] = result.im;
+                    i += 2;
+                }
+            });
+		}
+		Ok(self)
+	}
+    
+    fn real_cos(mut self) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    array[i] = array[i].cos();
+                    i += 1;
+                }
+            });
+		}
+		Ok(self)
+	}
+    
+    fn complex_cos(mut self) -> VecResult<Self>
+	{
+		{
+			let mut array = &mut self.data;
+			let length = array.len();
+			Chunk::execute_partial(Complexity::Medium, &mut array, length, 2, |array| {
+                let mut i = 0;
+                while i < array.len()
+                {
+                    let complex = Complex32::new(array[i], array[i + 1]);
+                    let result = complex.cos();
+                    array[i] = result.re;
+                    array[i + 1] = result.im;
+                    i += 2;
+                }
+            });
+		}
+		Ok(self)
 	}
 }

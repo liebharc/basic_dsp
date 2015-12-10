@@ -83,6 +83,56 @@ impl GenericVectorOperations for DataVector64
 	{
 		panic!("Unimplemented");
 	}
+    
+    fn sqrt(self) -> VecResult<Self>
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn square(self) -> VecResult<Self>
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn root(self, degree: Self::E) -> VecResult<Self>
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn power(self, exponent: Self::E) -> VecResult<Self>
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn logn(self) -> VecResult<Self>
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn expn(self) -> VecResult<Self>
+	{
+		panic!("Unimplemented");
+	}
+
+	fn log_base(self, base: Self::E) -> VecResult<Self>
+	{
+		panic!("Unimplemented");
+	}
+	
+	fn exp_base(self, base: Self::E) -> VecResult<Self>
+	{
+		panic!("Unimplemented");
+	}
+    
+    fn sin(self) -> VecResult<Self>
+    {
+        panic!("Unimplemented");
+    }
+    
+    fn cos(self) -> VecResult<Self>
+    {
+        panic!("Unimplemented");
+    }
 }
 
 #[inline]
@@ -112,56 +162,6 @@ impl RealVectorOperations for DataVector64
 		let length = array.len();
 		Chunk::execute_partial(&mut array, length, 1, buffer, DataVector32::inplace_abs_real_par);*/
 	}
-	
-	fn real_sqrt(self) -> VecResult<Self>
-	{
-		panic!("Unimplemented");
-	}
-	
-	fn real_square(self) -> VecResult<Self>
-	{
-		panic!("Unimplemented");
-	}
-	
-	fn real_root(self, degree: Self::E) -> VecResult<Self>
-	{
-		panic!("Unimplemented");
-	}
-	
-	fn real_power(self, exponent: Self::E) -> VecResult<Self>
-	{
-		panic!("Unimplemented");
-	}
-	
-	fn real_logn(self) -> VecResult<Self>
-	{
-		panic!("Unimplemented");
-	}
-	
-	fn real_expn(self) -> VecResult<Self>
-	{
-		panic!("Unimplemented");
-	}
-
-	fn real_log_base(self, base: Self::E) -> VecResult<Self>
-	{
-		panic!("Unimplemented");
-	}
-	
-	fn real_exp_base(self, base: Self::E) -> VecResult<Self>
-	{
-		panic!("Unimplemented");
-	}
-    
-    fn real_sin(self) -> VecResult<Self>
-    {
-        panic!("Unimplemented");
-    }
-    
-    fn real_cos(self) -> VecResult<Self>
-    {
-        panic!("Unimplemented");
-    }
 	
 	fn to_complex(self) -> VecResult<Self>
 	{

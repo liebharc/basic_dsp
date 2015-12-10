@@ -198,43 +198,43 @@ pub extern fn real_abs32(vector: Box<DataVector32>) -> VectorResult<DataVector32
 }
 
 #[no_mangle]
-pub extern fn real_sqrt32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
-    convert_vec!(vector.real_sqrt())
+pub extern fn sqrt32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.sqrt())
 }
 
 #[no_mangle]
-pub extern fn real_square32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
-    convert_vec!(vector.real_square())
+pub extern fn square32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.square())
 }
 
 #[no_mangle]
-pub extern fn real_root32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
-    convert_vec!(vector.real_root(value))
+pub extern fn root32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.root(value))
 }
 
 #[no_mangle]
-pub extern fn real_power32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
-    convert_vec!(vector.real_power(value))
+pub extern fn power32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.power(value))
 }
 
 #[no_mangle]
-pub extern fn real_logn32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
-    convert_vec!(vector.real_logn())
+pub extern fn logn32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.logn())
 }
 
 #[no_mangle]
-pub extern fn real_expn32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
-    convert_vec!(vector.real_expn())
+pub extern fn expn32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.expn())
 }
 
 #[no_mangle]
-pub extern fn real_log_base32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
-    convert_vec!(vector.real_log_base(value))
+pub extern fn log_base32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.log_base(value))
 }
 
 #[no_mangle]
-pub extern fn real_exp_base32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
-    convert_vec!(vector.real_exp_base(value))
+pub extern fn exp_base32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.exp_base(value))
 }
 
 #[no_mangle]
@@ -243,13 +243,13 @@ pub extern fn to_complex32(vector: Box<DataVector32>) -> VectorResult<DataVector
 }
 
 #[no_mangle]
-pub extern fn real_sin32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
-    convert_vec!(vector.real_sin())
+pub extern fn sin32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.sin())
 }
 
 #[no_mangle]
-pub extern fn real_cos32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
-    convert_vec!(vector.real_cos())
+pub extern fn cos32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.cos())
 }
 
 #[no_mangle]

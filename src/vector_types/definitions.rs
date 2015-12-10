@@ -169,6 +169,141 @@ pub trait GenericVectorOperations : DataVector {
 	/// assert_eq!([2.0, 3.0, 2.0, 6.0], result.data());
 	/// ```
 	fn cum_sum(self) -> VecResult<Self>;
+    
+    /// Gets the square root of all vector elements.
+	///
+	/// The sqrt of a negative number gives NaN and not a complex vector.  
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// # use std::f32;
+	/// let vector = RealTimeVector32::from_array(&[1.0, 4.0, 9.0, 16.0, 25.0]);
+	/// let result = vector.sqrt().expect("Ignoring error handling in examples");
+	/// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0], result.data());
+	/// let vector = RealTimeVector32::from_array(&[-1.0]);
+	/// let result = vector.sqrt().expect("Ignoring error handling in examples");
+	/// assert!(result[0].is_nan());
+	/// ```
+	fn sqrt(self) -> VecResult<Self>;
+	
+	/// Squares all vector elements.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0]);
+	/// let result = vector.square().expect("Ignoring error handling in examples");
+	/// assert_eq!([1.0, 4.0, 9.0, 16.0, 25.0], result.data());
+	/// ```
+	fn square(self) -> VecResult<Self>;
+	
+	/// Calculates the n-th root of every vector element.
+	///
+	/// If the result would be a complex number then the vector will contain a NaN instead. So the vector
+	/// will never convert itself to a complex vector during this operation.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 8.0, 27.0]);
+	/// let result = vector.root(3.0).expect("Ignoring error handling in examples");
+	/// assert_eq!([1.0, 2.0, 3.0], result.data());
+	/// ```
+	fn root(self, degree: Self::E) -> VecResult<Self>;
+	
+	/// Raises every vector element to the given power.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
+	/// let result = vector.power(3.0).expect("Ignoring error handling in examples");
+	/// assert_eq!([1.0, 8.0, 27.0], result.data());
+	/// ```
+	fn power(self, exponent: Self::E) -> VecResult<Self>;
+	
+	/// Calculates the natural logarithm to the base e for every vector element.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[2.718281828459045	, 7.389056, 20.085537]);
+	/// let result = vector.logn().expect("Ignoring error handling in examples");
+	/// let actual = result.data();
+	/// let expected = &[1.0, 2.0, 3.0];
+	/// assert_eq!(actual.len(), expected.len());
+	/// for i in 0..actual.len() {
+	///		assert!((actual[i] - expected[i]).abs() < 1e-4);
+	/// }
+	/// ```
+	fn logn(self) -> VecResult<Self>;
+	
+	/// Calculates the natural exponential to the base e for every vector element.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
+	/// let result = vector.expn().expect("Ignoring error handling in examples");
+	/// assert_eq!([2.71828182846, 7.389056, 20.085537], result.data());
+	/// ```
+	fn expn(self) -> VecResult<Self>;
+	
+	/// Calculates the logarithm to the given base for every vector element.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[10.0, 100.0, 1000.0]);
+	/// let result = vector.log_base(10.0).expect("Ignoring error handling in examples");
+	/// assert_eq!([1.0, 2.0, 3.0], result.data());
+	/// ```
+	fn log_base(self, base: Self::E) -> VecResult<Self>;
+	
+	/// Calculates the exponential to the given base for every vector element.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
+	/// let result = vector.exp_base(10.0).expect("Ignoring error handling in examples");
+	/// assert_eq!([10.0, 100.0, 1000.0], result.data());
+	/// ```
+	fn exp_base(self, base: Self::E) -> VecResult<Self>;
+    
+    /// Calculates the sine of each element in radians.
+    ///
+    /// # Example
+	///
+	/// ```
+    /// use std::f32;
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[f32::consts::PI/2.0, -f32::consts::PI/2.0]);
+    /// let result = vector.sin().expect("Ignoring error handling in examples");
+	/// assert_eq!([1.0, -1.0], result.data());
+    /// ```
+    fn sin(self) -> VecResult<Self>;
+    
+    /// Calculates the cosine of each element in radians.
+    ///
+    /// # Example
+	///
+	/// ```
+    /// use std::f32;
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[2.0 * f32::consts::PI, f32::consts::PI]);
+    /// let result = vector.cos().expect("Ignoring error handling in examples");
+	/// assert_eq!([1.0, -1.0], result.data());
+    /// ```
+    fn cos(self) -> VecResult<Self>;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
@@ -207,116 +342,7 @@ pub trait RealVectorOperations : DataVector {
 	/// assert_eq!([1.0, 2.0], result.data());
 	/// ```
 	fn real_abs(self) -> VecResult<Self>;
-	
-	/// Gets the square root of all vector elements.
-	///
-	/// The sqrt of a negative number gives NaN and not a complex vector.  
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
-	/// # use std::f32;
-	/// let vector = RealTimeVector32::from_array(&[1.0, 4.0, 9.0, 16.0, 25.0]);
-	/// let result = vector.real_sqrt().expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0], result.data());
-	/// let vector = RealTimeVector32::from_array(&[-1.0]);
-	/// let result = vector.real_sqrt().expect("Ignoring error handling in examples");
-	/// assert!(result[0].is_nan());
-	/// ```
-	fn real_sqrt(self) -> VecResult<Self>;
-	
-	/// Squares all vector elements.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0]);
-	/// let result = vector.real_square().expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 4.0, 9.0, 16.0, 25.0], result.data());
-	/// ```
-	fn real_square(self) -> VecResult<Self>;
-	
-	/// Calculates the n-th root of every vector element.
-	///
-	/// If the result would be a complex number then the vector will contain a NaN instead. So the vector
-	/// will never convert itself to a complex vector during this operation.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 8.0, 27.0]);
-	/// let result = vector.real_root(3.0).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 2.0, 3.0], result.data());
-	/// ```
-	fn real_root(self, degree: Self::E) -> VecResult<Self>;
-	
-	/// Raises every vector element to the given power.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
-	/// let result = vector.real_power(3.0).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 8.0, 27.0], result.data());
-	/// ```
-	fn real_power(self, exponent: Self::E) -> VecResult<Self>;
-	
-	/// Calculates the natural logarithm to the base e for every vector element.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[2.718281828459045	, 7.389056, 20.085537]);
-	/// let result = vector.real_logn().expect("Ignoring error handling in examples");
-	/// let actual = result.data();
-	/// let expected = &[1.0, 2.0, 3.0];
-	/// assert_eq!(actual.len(), expected.len());
-	/// for i in 0..actual.len() {
-	///		assert!((actual[i] - expected[i]).abs() < 1e-4);
-	/// }
-	/// ```
-	fn real_logn(self) -> VecResult<Self>;
-	
-	/// Calculates the natural exponential to the base e for every vector element.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
-	/// let result = vector.real_expn().expect("Ignoring error handling in examples");
-	/// assert_eq!([2.71828182846, 7.389056, 20.085537], result.data());
-	/// ```
-	fn real_expn(self) -> VecResult<Self>;
-	
-	/// Calculates the logarithm to the given base for every vector element.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[10.0, 100.0, 1000.0]);
-	/// let result = vector.real_log_base(10.0).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 2.0, 3.0], result.data());
-	/// ```
-	fn real_log_base(self, base: Self::E) -> VecResult<Self>;
-	
-	/// Calculates the exponential to the given base for every vector element.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
-	/// let result = vector.real_exp_base(10.0).expect("Ignoring error handling in examples");
-	/// assert_eq!([10.0, 100.0, 1000.0], result.data());
-	/// ```
-	fn real_exp_base(self, base: Self::E) -> VecResult<Self>;
-	
+		
 	/// Converts the real vector into a complex vector.
 	///
 	/// # Example
@@ -329,32 +355,6 @@ pub trait RealVectorOperations : DataVector {
 	/// ```
 	fn to_complex(self) -> VecResult<Self::ComplexPartner>;
     
-    /// Calculates the sine of each element in radians.
-    ///
-    /// # Example
-	///
-	/// ```
-    /// use std::f32;
-    /// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
-    /// let vector = RealTimeVector32::from_array(&[f32::consts::PI/2.0, -f32::consts::PI/2.0]);
-    /// let result = vector.real_sin().expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, -1.0], result.data());
-    /// ```
-    fn real_sin(self) -> VecResult<Self>;
-    
-    /// Calculates the cosine of each element in radians.
-    ///
-    /// # Example
-	///
-	/// ```
-    /// use std::f32;
-    /// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
-    /// let vector = RealTimeVector32::from_array(&[2.0 * f32::consts::PI, f32::consts::PI]);
-    /// let result = vector.real_cos().expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, -1.0], result.data());
-    /// ```
-    fn real_cos(self) -> VecResult<Self>;
-	
 	/// Each value in the vector is devided by the divisor and the remainder is stored in the resulting 
 	/// vector. This the same a modulo operation or to phase wrapping.
 	///
