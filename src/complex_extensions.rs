@@ -68,13 +68,18 @@ impl<T> ComplexExtensions<T> for Complex<T>
 mod tests {
 	use super::*;
 	use num::complex::Complex32;
+    
+    fn assert_complex(left: Complex32, right: Complex32) {
+        assert!((left.re - right.re).abs() < 1e-4);
+        assert!((left.im - right.im).abs() < 1e-4);
+    }
 	
     #[test]
 	fn powf_test()
 	{
 		let c = Complex32::new(2.0, -1.0);
         let r = c.powf(3.5);
-        assert_eq!(r, Complex32::new(-0.8684746, -16.695934));
+        assert_complex(r, Complex32::new(-0.8684746, -16.695934));
 	}
     
     #[test]
@@ -82,7 +87,7 @@ mod tests {
 	{
 		let c = Complex32::new(2.0, -1.0);
         let r = c.ln();
-        assert_eq!(r, Complex32::new(0.804719, -0.4636476));
+        assert_complex(r, Complex32::new(0.804719, -0.4636476));
 	}
     
     #[test]
@@ -90,7 +95,7 @@ mod tests {
 	{
 		let c = Complex32::new(2.0, -1.0);
         let r = c.expn();
-        assert_eq!(r, Complex32::new(3.9923239, -6.217676));
+        assert_complex(r, Complex32::new(3.9923239, -6.217676));
 	}
     
     #[test]
@@ -98,7 +103,7 @@ mod tests {
 	{
 		let c = Complex32::new(2.0, -1.0);
         let r = c.log_base(10.0);
-        assert_eq!(r, Complex32::new(0.349485, -0.20135958));
+        assert_complex(r, Complex32::new(0.349485, -0.20135958));
 	}
     
     #[test]
@@ -106,6 +111,6 @@ mod tests {
 	{
 		let c = Complex32::new(2.0, -1.0);
         let r = c.exp_base(10.0);
-        assert_eq!(r, Complex32::new(-66.82015, -74.39803));
+        assert_complex(r, Complex32::new(-66.82015, -74.39803));
 	}
 }
