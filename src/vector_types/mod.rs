@@ -293,6 +293,11 @@ macro_rules! define_generic_operations_forward {
 			{
 				$name::from_genres(self.to_gen().cos()) 
 			}
+            
+            fn swap_halves(self) -> VecResult<Self>
+			{
+				$name::from_genres(self.to_gen().swap_halves()) 
+			}
 			
 			fn exp_base(self, base: Self::E) -> VecResult<Self>
 			{

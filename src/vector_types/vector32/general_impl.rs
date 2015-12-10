@@ -375,6 +375,55 @@ impl GenericVectorOperations for DataVector32
 		  DataVector32::real_cos(self)
         }
     }
+    
+    fn swap_halves(mut self) -> VecResult<Self>
+    {
+        {
+            use std::ptr;
+            let mut len = self.points();
+            let mut start = len;
+            let is_odd = len % 2 == 1;
+            if !self.is_complex {
+                if is_odd {
+                    // Copy middle element
+                    let data = &self.data;;
+                    let target = &mut self.temp;
+                    target[len / 2] = data[len / 2];
+                    start = start + 1;
+                }
+                
+                len = len / 2;
+                start = start / 2;
+            }
+            else {
+                if is_odd {
+                    let data = &self.data;;
+                    let target = &mut self.temp;
+                    // Copy middle element
+                    target[len - 1] = data[len - 1];
+                    target[len] = data[len];
+                    start = start + 1;
+                    len = len - 1;
+                }
+            }
+                     
+            // First half
+            let data = &self.data[start] as *const f32;
+            let target = &mut self.temp[0] as *mut f32;
+            unsafe {
+                ptr::copy(data, target, len);
+            }
+            
+            // Second half
+            let data = &self.data[0] as *const f32;
+            let target = &mut self.temp[start] as *mut f32;
+            unsafe {
+                ptr::copy(data, target, len);
+            }
+        }
+		
+		Ok(self.swap_data_temp())
+    }
 }
 
 impl DataVector32 {

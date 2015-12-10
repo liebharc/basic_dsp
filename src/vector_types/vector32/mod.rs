@@ -409,4 +409,40 @@ mod tests {
 		let expected = [Complex32::new(1.0, 1.0); 5];
 		assert_eq!(&expected, c);
 	}
+    
+    #[test]
+	fn swap_halves_real_even_test()
+	{
+		let mut a = [1.0, 2.0, 3.0, 4.0];
+		let c = RealTimeVector32::from_array(&mut a);
+        let r = c.swap_halves().unwrap();
+		assert_eq!(r.data(), &[3.0, 4.0, 1.0, 2.0]);
+	}
+    
+    #[test]
+	fn swap_halves_real_odd_test()
+	{
+		let mut a = [1.0, 2.0, 3.0, 4.0, 5.0];
+		let c = RealTimeVector32::from_array(&mut a);
+        let r = c.swap_halves().unwrap();
+		assert_eq!(r.data(), &[4.0, 5.0, 3.0, 1.0, 2.0]);
+	}
+    
+    #[test]
+	fn swap_halves_complex_even_test()
+	{
+		let mut a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+		let c = ComplexTimeVector32::from_interleaved(&mut a);
+        let r = c.swap_halves().unwrap();
+		assert_eq!(r.data(), &[5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0]);
+	}
+    
+    #[test]
+	fn swap_halves_complex_odd_test()
+	{
+		let mut a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
+		let c = ComplexTimeVector32::from_interleaved(&mut a);
+        let r = c.swap_halves().unwrap();
+		assert_eq!(r.data(), &[7.0, 8.0, 9.0, 10.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0]);
+	}
 }

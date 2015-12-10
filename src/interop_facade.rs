@@ -263,6 +263,11 @@ pub extern fn unwrap32(vector: Box<DataVector32>, value: f32) -> VectorResult<Da
 }
 
 #[no_mangle]
+pub extern fn swap_halves32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.swap_halves())
+}
+
+#[no_mangle]
 pub extern fn complex_offset32(vector: Box<DataVector32>, real: f32, imag: f32) -> VectorResult<DataVector32> {
     convert_vec!(vector.complex_offset(Complex32::new(real, imag)))
 }

@@ -133,6 +133,11 @@ impl GenericVectorOperations for DataVector64
     {
         panic!("Unimplemented");
     }
+    
+    fn swap_halves(self) -> VecResult<Self>
+    {
+        panic!("Unimplemented");
+    }
 }
 
 #[inline]

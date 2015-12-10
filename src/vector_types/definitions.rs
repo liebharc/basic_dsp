@@ -304,6 +304,18 @@ pub trait GenericVectorOperations : DataVector {
 	/// assert_eq!([1.0, -1.0], result.data());
     /// ```
     fn cos(self) -> VecResult<Self>;
+    
+    /// This function swaps both halves of the vector.
+	///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+	/// let result = vector.swap_halves().expect("Ignoring error handling in examples");
+	/// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], result.data());
+	/// ```
+    fn swap_halves(self) -> VecResult<Self>;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
