@@ -42,44 +42,85 @@ macro_rules! impl_real_complex_arg_dispatch {
     }
 }
 
-macro_rules! impl_trig_function_real_complex {
+macro_rules! impl_function_call_real_complex {
     ($data_type: ident; $real_name: ident, $real_op: ident; $complex_name: ident, $complex_op: ident) => {
         fn $real_name(mut self) -> VecResult<Self>
-                {
+        {
+            {
+                let mut array = &mut self.data;
+                let length = array.len();
+                Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
+                    let mut i = 0;
+                    while i < array.len()
                     {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                array[i] = array[i].$real_op();
-                                i += 1;
-                            }
-                        });
+                        array[i] = array[i].$real_op();
+                        i += 1;
                     }
-                    Ok(self)
-                }
-                
-                fn $complex_name(mut self) -> VecResult<Self>
-                {
+                });
+            }
+            Ok(self)
+        }
+        
+        fn $complex_name(mut self) -> VecResult<Self>
+        {
+            {
+                let mut array = &mut self.data;
+                let length = array.len();
+                Chunk::execute_partial(Complexity::Medium, &mut array, length, 2, |array| {
+                    let mut i = 0;
+                    while i < array.len()
                     {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial(Complexity::Medium, &mut array, length, 2, |array| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                let result = complex.$complex_op();
-                                array[i] = result.re;
-                                array[i + 1] = result.im;
-                                i += 2;
-                            }
-                        });
+                        let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
+                        let result = complex.$complex_op();
+                        array[i] = result.re;
+                        array[i + 1] = result.im;
+                        i += 2;
                     }
-                    Ok(self)
-                }
+                });
+            }
+            Ok(self)
+        }
+    }
+}
+
+macro_rules! impl_function_call_real_arg_complex {
+    ($data_type: ident; $real_name: ident, $real_op: ident; $complex_name: ident, $complex_op: ident) => {
+        fn $real_name(mut self, value: $data_type) -> VecResult<Self>
+        {
+            {
+                let mut array = &mut self.data;
+                let length = array.len();
+                Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 1, value, |array, value| {
+                    let mut i = 0;
+                    while i < array.len()
+                    {
+                        array[i] = array[i].$real_op(value);
+                        i += 1;
+                    }
+                });
+            }
+            Ok(self)
+        }
+        
+        fn $complex_name(mut self, value: $data_type) -> VecResult<Self>
+        {
+            {
+                let mut array = &mut self.data;
+                let length = array.len();
+                Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 2, value, |array, value| {
+                    let mut i = 0;
+                    while i < array.len()
+                    {
+                        let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
+                        let result = complex.$complex_op(value);
+                        array[i] = result.re;
+                        array[i + 1] = result.im;
+                        i += 2;
+                    }
+                });
+            }
+            Ok(self)
+        }
     }
 }
 
@@ -785,153 +826,10 @@ macro_rules! add_general_impl {
                     Ok(self)
                 }
                 
-                fn real_power(mut self, exponent: $data_type) -> VecResult<Self>
-                {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 1, exponent, |array, base| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                array[i] = array[i].powf(base);
-                                i += 1;
-                            }
-                        });
-                    }
-                    Ok(self)
-                }
-                
-                fn complex_power(mut self, base: $data_type) -> VecResult<Self>
-                {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 2, base, |array, base| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                let result = complex.powf(base);
-                                array[i] = result.re;
-                                array[i + 1] = result.im;
-                                i += 2;
-                            }
-                        });
-                    }
-                    Ok(self)
-                }
-                
-                fn real_logn(mut self) -> VecResult<Self>
-                {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                array[i] = array[i].ln();
-                                i += 1;
-                            }
-                        });
-                    }
-                    Ok(self)
-                }
-                
-                fn complex_logn(mut self) -> VecResult<Self>
-                {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial(Complexity::Medium, &mut array, length, 2, |array| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                let result = complex.ln();
-                                array[i] = result.re;
-                                array[i + 1] = result.im;
-                                i += 2;
-                            }
-                        });
-                    }
-                    Ok(self)
-                }
-                
-                fn real_expn(mut self) -> VecResult<Self>
-                {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                array[i] = array[i].exp();
-                                i += 1;
-                            }
-                        });
-                    }
-                    Ok(self)
-                }
-                
-                fn complex_expn(mut self) -> VecResult<Self>
-                {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial(Complexity::Medium, &mut array, length, 2, |array| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                let result = complex.expn();
-                                array[i] = result.re;
-                                array[i + 1] = result.im;
-                                i += 2;
-                            }
-                        });
-                    }
-                    Ok(self)
-                }
-            
-                fn real_log_base(mut self, base: $data_type) -> VecResult<Self>
-                {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 1, base, |array, base| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                array[i] = array[i].log(base);
-                                i += 1;
-                            }
-                        });
-                    }
-                    Ok(self)
-                }
-                
-                fn complex_log_base(mut self, base: $data_type) -> VecResult<Self>
-                {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 2, base, |array, base| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                let result = complex.log_base(base);
-                                array[i] = result.re;
-                                array[i + 1] = result.im;
-                                i += 2;
-                            }
-                        });
-                    }
-                    Ok(self)
-                }
+                impl_function_call_real_arg_complex!($data_type; real_power, powf; complex_power, powf);
+                impl_function_call_real_complex!($data_type; real_logn, ln; complex_logn, ln);
+                impl_function_call_real_complex!($data_type; real_expn, exp; complex_expn, expn);
+                impl_function_call_real_arg_complex!($data_type; real_log_base, log; complex_log_base, log_base);
                 
                 fn real_exp_base(mut self, base: $data_type) -> VecResult<Self>
                 {
@@ -970,8 +868,8 @@ macro_rules! add_general_impl {
                     Ok(self)
                 }
                                
-                impl_trig_function_real_complex!($data_type; real_sin, sin; complex_sin, sin);
-                impl_trig_function_real_complex!($data_type; real_cos, cos; complex_cos, cos);
+                impl_function_call_real_complex!($data_type; real_sin, sin; complex_sin, sin);
+                impl_function_call_real_complex!($data_type; real_cos, cos; complex_cos, cos);
             }
         )*
      }
