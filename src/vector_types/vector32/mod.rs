@@ -44,9 +44,6 @@ pub enum Operation<T>
 	Sqrt
 }
 
-pub type Operation32 = Operation<f32>;
-pub type Operation64 = Operation<f64>;
-
 define_vector_struct!(struct GenericDataVector);
 
 define_vector_struct!(struct RealTimeVector);

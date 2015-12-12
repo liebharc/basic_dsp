@@ -865,8 +865,6 @@ pub use vector_types::definitions::
 pub use vector_types::vector32::
 	{
         Operation,
-        Operation32,
-        Operation64,
 		DataVector32, 
 		RealTimeVector32,
 		ComplexTimeVector32, 

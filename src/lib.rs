@@ -51,9 +51,7 @@ pub use vector_types::
 		ComplexTimeVector64, 
 		RealFreqVector64,
 		ComplexFreqVector64,
-        Operation,
-		Operation32,
-        Operation64
+        Operation
 	};
  use num::traits::Float;   
  

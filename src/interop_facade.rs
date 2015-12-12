@@ -24,7 +24,7 @@ use vector_types::
 		ComplexTimeVector64, 
 		RealFreqVector64,
 		ComplexFreqVector64,
-		Operation32
+		Operation
 	};
 use num::complex::Complex32;
 
