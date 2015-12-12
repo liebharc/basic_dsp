@@ -1,5 +1,5 @@
 use multicore_support::{Chunk, Complexity};
-use super::super::definitions::{
+use super::definitions::{
 	DataVector,
     VecResult,
     VoidResult,

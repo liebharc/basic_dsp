@@ -1,5 +1,5 @@
 use multicore_support::{Chunk, Complexity};
-use super::super::definitions::{
+use super::definitions::{
 	DataVector,
     DataVectorDomain,
 	GenericVectorOperations,
@@ -10,7 +10,7 @@ use num::complex::Complex;
 use num::traits::Float;
 use complex_extensions::ComplexExtensions;
 use simd_extensions::{Simd, Reg32, Reg64};
-use super::super::super::multicore_support::MultiCoreSettings;
+use multicore_support::MultiCoreSettings;
 
 macro_rules! add_general_impl {
     ($($data_type:ident, $reg:ident);*)

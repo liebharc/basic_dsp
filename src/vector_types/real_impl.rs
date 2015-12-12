@@ -1,10 +1,10 @@
 use multicore_support::{Chunk, Complexity};
-use super::super::definitions::{
+use super::definitions::{
 	DataVector,
     VecResult,
     GenericVectorOperations,
 	RealVectorOperations};
-use super::GenericDataVector;
+use super::GenericDataVector;    
 use simd_extensions::{Simd, Reg32, Reg64};
 use num::traits::Float;
 
