@@ -253,6 +253,55 @@ pub extern fn cos32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
 }
 
 #[no_mangle]
+pub extern fn tan32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.tan())
+}
+
+#[no_mangle]
+pub extern fn asin32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.asin())
+}
+
+#[no_mangle]
+pub extern fn acos32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.acos())
+}
+
+#[no_mangle]
+pub extern fn atan32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.tan())
+}
+
+#[no_mangle]
+pub extern fn sinh32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.sinh())
+}
+#[no_mangle]
+pub extern fn cosh32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.cosh())
+}
+
+#[no_mangle]
+pub extern fn tanh32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.tanh())
+}
+
+#[no_mangle]
+pub extern fn asinh32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.asinh())
+}
+
+#[no_mangle]
+pub extern fn acosh32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.acosh())
+}
+
+#[no_mangle]
+pub extern fn atanh32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.atanh())
+}
+
+#[no_mangle]
 pub extern fn wrap32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
     convert_vec!(vector.wrap(value))
 }
@@ -340,4 +389,9 @@ pub extern fn plain_fft32(vector: Box<DataVector32>) -> VectorResult<DataVector3
 #[no_mangle]
 pub extern fn plain_ifft32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
     convert_vec!(vector.plain_ifft())
+}
+
+#[no_mangle]
+pub extern fn clone32(vector: Box<DataVector32>) -> Box<DataVector32> {
+    vector.clone()
 }

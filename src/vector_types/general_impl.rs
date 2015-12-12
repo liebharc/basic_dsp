@@ -452,6 +452,16 @@ macro_rules! add_general_impl {
                 impl_real_complex_arg_dispatch!(exp_base, $data_type, base, real_exp_base, complex_exp_base);
                 impl_real_complex_dispatch!(sin, real_sin, complex_sin);
                 impl_real_complex_dispatch!(cos, real_cos, complex_cos);
+                impl_real_complex_dispatch!(tan, real_tan, complex_tan);
+                impl_real_complex_dispatch!(asin, real_asin, complex_asin);
+                impl_real_complex_dispatch!(acos, real_acos, complex_acos);
+                impl_real_complex_dispatch!(atan, real_atan, complex_atan);
+                impl_real_complex_dispatch!(sinh, real_sinh, complex_sinh);
+                impl_real_complex_dispatch!(cosh, real_cosh, complex_cosh);
+                impl_real_complex_dispatch!(tanh, real_tanh, complex_tanh);
+                impl_real_complex_dispatch!(asinh, real_asinh, complex_asinh);
+                impl_real_complex_dispatch!(acosh, real_acosh, complex_acosh);
+                impl_real_complex_dispatch!(atanh, real_atanh, complex_atanh);
                 
                 fn swap_halves(mut self) -> VecResult<Self>
                 {
@@ -870,6 +880,16 @@ macro_rules! add_general_impl {
                                
                 impl_function_call_real_complex!($data_type; real_sin, sin; complex_sin, sin);
                 impl_function_call_real_complex!($data_type; real_cos, cos; complex_cos, cos);
+                impl_function_call_real_complex!($data_type; real_tan, tan; complex_tan, tan);
+                impl_function_call_real_complex!($data_type; real_asin, asin; complex_asin, asin);
+                impl_function_call_real_complex!($data_type; real_acos, acos; complex_acos, acos);
+                impl_function_call_real_complex!($data_type; real_atan, atan; complex_atan, atan);
+                impl_function_call_real_complex!($data_type; real_sinh, sinh; complex_sinh, sinh);
+                impl_function_call_real_complex!($data_type; real_cosh, cosh; complex_cosh, cosh);
+                impl_function_call_real_complex!($data_type; real_tanh, tanh; complex_tanh, tanh);
+                impl_function_call_real_complex!($data_type; real_asinh, asinh; complex_asinh, asinh);
+                impl_function_call_real_complex!($data_type; real_acosh, acosh; complex_acosh, acosh);
+                impl_function_call_real_complex!($data_type; real_atanh, atanh; complex_atanh, atanh);
             }
         )*
      }

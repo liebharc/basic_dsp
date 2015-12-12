@@ -311,6 +311,46 @@ macro_rules! define_generic_operations_forward {
                 {
                     $name::from_genres(self.to_gen().cos()) 
                 }
+    
+                fn tan(self) -> VecResult<Self> {
+                    $name::from_genres(self.to_gen().tan()) 
+                }
+                
+                fn asin(self) -> VecResult<Self> {
+                    $name::from_genres(self.to_gen().asin()) 
+                }
+               
+                fn acos(self) -> VecResult<Self> {
+                    $name::from_genres(self.to_gen().acos()) 
+                }
+                
+                fn atan(self) -> VecResult<Self> {
+                    $name::from_genres(self.to_gen().atan()) 
+                }
+                
+                fn sinh(self) -> VecResult<Self> {
+                    $name::from_genres(self.to_gen().sinh()) 
+                }
+                
+                fn cosh(self) -> VecResult<Self> {
+                    $name::from_genres(self.to_gen().cosh()) 
+                }
+                
+                fn tanh(self) -> VecResult<Self> {
+                    $name::from_genres(self.to_gen().tanh()) 
+                }
+                
+                fn asinh(self) -> VecResult<Self> {
+                    $name::from_genres(self.to_gen().asinh()) 
+                }
+                
+                fn acosh(self) -> VecResult<Self> {
+                    $name::from_genres(self.to_gen().acosh()) 
+                }
+                
+                fn atanh(self) -> VecResult<Self> {
+                    $name::from_genres(self.to_gen().atanh()) 
+                }
                 
                 fn swap_halves(self) -> VecResult<Self>
                 {

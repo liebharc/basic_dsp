@@ -306,6 +306,36 @@ pub trait GenericVectorOperations<T>: DataVector<T>
     /// ```
     fn cos(self) -> VecResult<Self>;
     
+    /// Calculates the tangent of each element in radians.
+    fn tan(self) -> VecResult<Self>;
+    
+    /// Calculates the principal value of the inverse sine of each element in radians.
+    fn asin(self) -> VecResult<Self>;
+    
+    /// Calculates the principal value of the inverse cosine of each element in radians.
+    fn acos(self) -> VecResult<Self>;
+    
+    /// Calculates the principal value of the inverse tangent of each element in radians.
+    fn atan(self) -> VecResult<Self>;
+    
+    /// Calculates the hyperbolic sine each element in radians.
+    fn sinh(self) -> VecResult<Self>;
+    
+    /// Calculates the hyperbolic cosine each element in radians.
+    fn cosh(self) -> VecResult<Self>;
+    
+    /// Calculates the hyperbolic tangent each element in radians.
+    fn tanh(self) -> VecResult<Self>;
+    
+    /// Calculates the principal value of the inverse hyperbolic sine of each element in radians.
+    fn asinh(self) -> VecResult<Self>;
+    
+    /// Calculates the principal value of the inverse hyperbolic cosine of each element in radians.
+    fn acosh(self) -> VecResult<Self>;
+    
+    /// Calculates the principal value of the inverse hyperbolic tangent of each element in radians.
+    fn atanh(self) -> VecResult<Self>;
+    
     /// This function swaps both halves of the vector.
 	///
 	/// # Example
