@@ -12,6 +12,21 @@ use complex_extensions::ComplexExtensions;
 use simd_extensions::{Simd, Reg32, Reg64};
 use multicore_support::MultiCoreSettings;
 
+macro_rules! impl_real_complex_dispatch {
+    ($function_name: ident, $real_op: ident, $complex_op: ident)
+    => {
+        fn $function_name(self) -> VecResult<Self>
+        {
+            if self.is_complex() {
+                Self::$complex_op(self)  
+            }
+            else {
+                Self::$real_op(self)
+            }
+        }
+    }
+}
+
 macro_rules! impl_trig_function_real_complex {
     ($data_type: ident; $real_name: ident, $real_op: ident; $complex_name: ident, $complex_op: ident) => {
         fn $real_name(mut self) -> VecResult<Self>
@@ -252,17 +267,7 @@ macro_rules! add_general_impl {
                     Ok(self)
                 }
                 
-                fn zero_interleave(self) -> VecResult<Self>
-                {
-                    if self.is_complex
-                    {
-                        Ok(self.zero_interleave_complex())
-                    }
-                    else
-                    {
-                        Ok(self.zero_interleave_real())
-                    }
-                }
+                impl_real_complex_dispatch!(zero_interleave, zero_interleave_real, zero_interleave_complex);
                 
                 fn diff(mut self) -> VecResult<Self>
                 {
@@ -381,25 +386,8 @@ macro_rules! add_general_impl {
                     Ok(self)
                 }
                 
-                fn sqrt(self) -> VecResult<Self>
-                {
-                    if self.is_complex() {
-                        Self::complex_sqrt(self)  
-                    }
-                    else {
-                        Self::real_sqrt(self)
-                    }
-                }
-                
-                fn square(self) -> VecResult<Self>
-                {
-                    if self.is_complex() {
-                        Self::complex_square(self)  
-                    }
-                    else {
-                        Self::real_square(self)
-                    }
-                }
+                impl_real_complex_dispatch!(sqrt, real_sqrt, complex_sqrt);
+                impl_real_complex_dispatch!(square, real_square, complex_square);
                 
                 fn root(self, degree: $data_type) -> VecResult<Self>
                 {
@@ -421,25 +409,8 @@ macro_rules! add_general_impl {
                     }
                 }
                 
-                fn logn(self) -> VecResult<Self>
-                {
-                    if self.is_complex() {
-                        Self::complex_logn(self)  
-                    }
-                    else {
-                        Self::real_logn(self)
-                    }
-                }
-                
-                fn expn(self) -> VecResult<Self>
-                {
-                    if self.is_complex() {
-                        Self::complex_expn(self)  
-                    }
-                    else {
-                        Self::real_expn(self)
-                    }
-                }
+                impl_real_complex_dispatch!(logn, real_logn, complex_logn);
+                impl_real_complex_dispatch!(expn, real_expn, complex_expn);
             
                 fn log_base(self, base: $data_type) -> VecResult<Self>
                 {
@@ -461,25 +432,8 @@ macro_rules! add_general_impl {
                     }
                 }
                 
-                fn sin(self) -> VecResult<Self>
-                {
-                    if self.is_complex() {
-                        Self::complex_sin(self)  
-                    }
-                    else {
-                        Self::real_sin(self)
-                    }
-                }
-                
-                fn cos(self) -> VecResult<Self>
-                {
-                    if self.is_complex() {
-                        Self::complex_cos(self)  
-                    }
-                    else {
-                        Self::real_cos(self)
-                    }
-                }
+                impl_real_complex_dispatch!(sin, real_sin, complex_sin);
+                impl_real_complex_dispatch!(cos, real_cos, complex_cos);
                 
                 fn swap_halves(mut self) -> VecResult<Self>
                 {
@@ -664,7 +618,7 @@ macro_rules! add_general_impl {
                     self
                 }
                 
-                fn zero_interleave_complex(mut self) -> Self
+                fn zero_interleave_complex(mut self) -> VecResult<Self>
                 {
                     {
                         let new_len = 2 * self.len();
@@ -692,10 +646,10 @@ macro_rules! add_general_impl {
                             }
                         });
                     }
-                    self.swap_data_temp()
+                    Ok(self.swap_data_temp())
                 }
                 
-                fn zero_interleave_real(mut self) -> Self
+                fn zero_interleave_real(mut self) -> VecResult<Self>
                 {
                     {
                         let new_len = 2 * self.len();
@@ -721,7 +675,7 @@ macro_rules! add_general_impl {
                             }
                         });
                     }
-                    self.swap_data_temp()
+                    Ok(self.swap_data_temp())
                 }
                 
                 fn real_sqrt(mut self) -> VecResult<Self>
