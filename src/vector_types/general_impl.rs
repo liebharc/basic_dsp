@@ -12,6 +12,47 @@ use complex_extensions::ComplexExtensions;
 use simd_extensions::{Simd, Reg32, Reg64};
 use multicore_support::MultiCoreSettings;
 
+macro_rules! impl_trig_function_real_complex {
+    ($data_type: ident; $real_name: ident, $real_op: ident; $complex_name: ident, $complex_op: ident) => {
+        fn $real_name(mut self) -> VecResult<Self>
+                {
+                    {
+                        let mut array = &mut self.data;
+                        let length = array.len();
+                        Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
+                            let mut i = 0;
+                            while i < array.len()
+                            {
+                                array[i] = array[i].$real_op();
+                                i += 1;
+                            }
+                        });
+                    }
+                    Ok(self)
+                }
+                
+                fn $complex_name(mut self) -> VecResult<Self>
+                {
+                    {
+                        let mut array = &mut self.data;
+                        let length = array.len();
+                        Chunk::execute_partial(Complexity::Medium, &mut array, length, 2, |array| {
+                            let mut i = 0;
+                            while i < array.len()
+                            {
+                                let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
+                                let result = complex.$complex_op();
+                                array[i] = result.re;
+                                array[i + 1] = result.im;
+                                i += 2;
+                            }
+                        });
+                    }
+                    Ok(self)
+                }
+    }
+}
+
 macro_rules! add_general_impl {
     ($($data_type:ident, $reg:ident);*)
 	 =>
@@ -997,80 +1038,9 @@ macro_rules! add_general_impl {
                     }
                     Ok(self)
                 }
-                
-                fn real_sin(mut self) -> VecResult<Self>
-                {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                array[i] = array[i].sin();
-                                i += 1;
-                            }
-                        });
-                    }
-                    Ok(self)
-                }
-                
-                fn complex_sin(mut self) -> VecResult<Self>
-                {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial(Complexity::Medium, &mut array, length, 2, |array| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                let result = complex.sin();
-                                array[i] = result.re;
-                                array[i + 1] = result.im;
-                                i += 2;
-                            }
-                        });
-                    }
-                    Ok(self)
-                }
-                
-                fn real_cos(mut self) -> VecResult<Self>
-                {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                array[i] = array[i].cos();
-                                i += 1;
-                            }
-                        });
-                    }
-                    Ok(self)
-                }
-                
-                fn complex_cos(mut self) -> VecResult<Self>
-                {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial(Complexity::Medium, &mut array, length, 2, |array| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                let result = complex.cos();
-                                array[i] = result.re;
-                                array[i + 1] = result.im;
-                                i += 2;
-                            }
-                        });
-                    }
-                    Ok(self)
-                }
+                               
+                impl_trig_function_real_complex!($data_type; real_sin, sin; complex_sin, sin);
+                impl_trig_function_real_complex!($data_type; real_cos, cos; complex_cos, cos);
             }
         )*
      }
