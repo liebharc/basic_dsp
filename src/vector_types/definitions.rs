@@ -1,21 +1,21 @@
 use std::result;
+use num::complex::Complex;
+use super::super::RealNumber;
 
 /// DataVector gives access to the basic properties of all data vectors
 ///
 /// A DataVector allocates memory if necessary. It will however never shrink/free memory unless it's 
 /// deleted and dropped.
-pub trait DataVector : Sized
+pub trait DataVector<T> : Sized
+    where T : RealNumber
 {
-	/// The underlying data type of the vector: `f32` or `f64`. 
-	type E;
-	
-	/// Gives direct access to the underlying data sequence. It's recommended to use the `Index functions .
+    /// Gives direct access to the underlying data sequence. It's recommended to use the `Index functions .
 	/// For users outside of Rust: It's discouraged to hold references to this array while executing operations on the vector,
 	/// since the vector may decide at any operation to invalidate the array. 
-	fn data(&self) -> &[Self::E];
+	fn data(&self) -> &[T];
 	
 	/// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
-	fn delta(&self) -> Self::E;
+	fn delta(&self) -> T;
 	
 	/// The domain in which the data vector resides. Basically specifies the x-axis and the type of operations which
 	/// are valid on this vector.
@@ -51,7 +51,8 @@ pub enum DataVectorDomain {
 }
 
 /// Defines all operations which are valid on all `DataVectors`.
-pub trait GenericVectorOperations : DataVector {
+pub trait GenericVectorOperations<T>: DataVector<T> 
+    where T : RealNumber {
 	/// Calculates the sum of `self + summand`. It consumes self and returns the result.
 	/// # Example
 	///
@@ -212,7 +213,7 @@ pub trait GenericVectorOperations : DataVector {
 	/// let result = vector.root(3.0).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 3.0], result.data());
 	/// ```
-	fn root(self, degree: Self::E) -> VecResult<Self>;
+	fn root(self, degree: T) -> VecResult<Self>;
 	
 	/// Raises every vector element to the given power.
 	///
@@ -224,7 +225,7 @@ pub trait GenericVectorOperations : DataVector {
 	/// let result = vector.power(3.0).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 8.0, 27.0], result.data());
 	/// ```
-	fn power(self, exponent: Self::E) -> VecResult<Self>;
+	fn power(self, exponent: T) -> VecResult<Self>;
 	
 	/// Calculates the natural logarithm to the base e for every vector element.
 	///
@@ -265,7 +266,7 @@ pub trait GenericVectorOperations : DataVector {
 	/// let result = vector.log_base(10.0).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 3.0], result.data());
 	/// ```
-	fn log_base(self, base: Self::E) -> VecResult<Self>;
+	fn log_base(self, base: T) -> VecResult<Self>;
 	
 	/// Calculates the exponential to the given base for every vector element.
 	///
@@ -277,7 +278,7 @@ pub trait GenericVectorOperations : DataVector {
 	/// let result = vector.exp_base(10.0).expect("Ignoring error handling in examples");
 	/// assert_eq!([10.0, 100.0, 1000.0], result.data());
 	/// ```
-	fn exp_base(self, base: Self::E) -> VecResult<Self>;
+	fn exp_base(self, base: T) -> VecResult<Self>;
     
     /// Calculates the sine of each element in radians.
     ///
@@ -319,7 +320,8 @@ pub trait GenericVectorOperations : DataVector {
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
-pub trait RealVectorOperations : DataVector {
+pub trait RealVectorOperations<T> : DataVector<T> 
+    where T : RealNumber {
 	type ComplexPartner;
 	
 	/// Adds a scalar to the vector.
@@ -331,7 +333,7 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.real_offset(2.0).expect("Ignoring error handling in examples");
 	/// assert_eq!([3.0, 4.0], result.data());
 	/// ```
-	fn real_offset(self, offset: Self::E) -> VecResult<Self>;
+	fn real_offset(self, offset: T) -> VecResult<Self>;
 	
 	/// Multiplies the vector with a scalar.
 	/// # Example
@@ -342,7 +344,7 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.real_scale(4.0).expect("Ignoring error handling in examples");
 	/// assert_eq!([4.0, 8.0], result.data());
 	/// ```
-	fn real_scale(self, offset: Self::E) -> VecResult<Self>;
+	fn real_scale(self, offset: T) -> VecResult<Self>;
 	
 	/// Gets the absolute value of all vector elements.
 	/// # Example
@@ -378,7 +380,7 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.wrap(4.0).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0], result.data());
 	/// ```
-	fn wrap(self, divisor: Self::E) -> VecResult<Self>;
+	fn wrap(self, divisor: T) -> VecResult<Self>;
 	
 	/// This function corrects the jumps in the given vector which occur due to wrap or modulo operations.
 	/// This will undo a wrap operation only if the deltas are smaller than half the divisor.
@@ -391,13 +393,13 @@ pub trait RealVectorOperations : DataVector {
 	/// let result = vector.unwrap(4.0).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], result.data());
 	/// ```
-	fn unwrap(self, divisor: Self::E) -> VecResult<Self>;
+	fn unwrap(self, divisor: T) -> VecResult<Self>;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing complex data.
-pub trait ComplexVectorOperations : DataVector {
+pub trait ComplexVectorOperations<T> : DataVector<T> 
+    where T : RealNumber {
 	type RealPartner;
-	type Complex;
 	
 	/// Adds a scalar to the vector.
 	/// # Example
@@ -413,7 +415,7 @@ pub trait ComplexVectorOperations : DataVector {
 	/// assert_eq!([0.0, 4.0, 2.0, 6.0], result.data());
 	/// # }
 	/// ```
-	fn complex_offset(self, offset: Self::Complex) -> VecResult<Self>;
+	fn complex_offset(self, offset: Complex<T>) -> VecResult<Self>;
 	
 	/// Multiplies the vector with a scalar.
 	/// # Example
@@ -429,7 +431,7 @@ pub trait ComplexVectorOperations : DataVector {
 	/// assert_eq!([-5.0, 0.0, -11.0, 2.0], result.data());
 	/// # }
 	/// ```
-	fn complex_scale(self, factor: Self::Complex) -> VecResult<Self>;
+	fn complex_scale(self, factor: Complex<T>) -> VecResult<Self>;
 	
 	/// Gets the absolute value or magnitude of all vector elements.
 	/// # Example
@@ -590,7 +592,8 @@ pub trait ComplexVectorOperations : DataVector {
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
-pub trait TimeDomainOperations : DataVector {
+pub trait TimeDomainOperations<T> : DataVector<T> 
+    where T : RealNumber {
 	type FreqPartner;
 	
 	/// Performs a Fast Fourier Transformation transforming a time domain vector
@@ -617,7 +620,8 @@ pub trait TimeDomainOperations : DataVector {
 }
 
 /// Defines all operations which are valid on `DataVectors` containing complex data.
-pub trait FrequencyDomainOperations : DataVector {
+pub trait FrequencyDomainOperations<T> : DataVector<T> 
+    where T : RealNumber {
 	type TimePartner;
 	
 	/// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
@@ -641,6 +645,7 @@ pub trait FrequencyDomainOperations : DataVector {
 	fn plain_ifft(self) -> VecResult<Self::TimePartner>;
 }
 
+/// Enumeration of all error reasons
 #[derive(Copy)]
 #[derive(Clone)]
 #[derive(PartialEq)]
@@ -649,6 +654,9 @@ pub enum ErrorReason {
 	VectorsMustHaveTheSameSize,
 }
 
+/// Result contains on success the vector. On failure it contains an error reason and an vector with invalid data
+/// which still can be used in order to avoid memory allocation.
 pub type VecResult<T> = result::Result<T, (ErrorReason, T)>;
 
+/// Result an error reason in case of an error.
 pub type VoidResult = result::Result<(), ErrorReason>;

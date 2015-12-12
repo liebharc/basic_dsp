@@ -3,7 +3,6 @@ pub mod real_impl;
 pub mod complex_impl;
 pub mod time_freq_impl;
 
-use multicore_support::{Chunk,Complexity};
 use super::definitions::{
 	DataVector,
     VecResult,
@@ -12,10 +11,11 @@ use super::definitions::{
 	GenericVectorOperations,
 	RealVectorOperations,
 	ComplexVectorOperations};
-use simd::f32x4;
-use simd_extensions::SimdExtensions;
-use num::complex::Complex32;
-use num::traits::Float;
+use multicore_support::{Chunk, Complexity};
+use super::super::RealNumber;
+use simd_extensions::{Simd,Reg32};
+use num::complex::Complex;
+use num::traits::{Float,One,Zero};
 use std::ops::{Index, IndexMut, Range, RangeTo, RangeFrom, RangeFull};
 use std::mem;
 use super::super::multicore_support::MultiCoreSettings;
@@ -31,49 +31,57 @@ use super::super::multicore_support::MultiCoreSettings;
 #[derive(PartialEq)]
 #[derive(Debug)]
 #[allow(dead_code)]
-pub enum Operation32
+pub enum Operation<T>
 {
-	AddReal(f32),
-	AddComplex(Complex32),
+	AddReal(T),
+	AddComplex(Complex<T>),
 	//AddVector(&'a DataVector32<'a>),
-	MultiplyReal(f32),
-	MultiplyComplex(Complex32),
+	MultiplyReal(T),
+	MultiplyComplex(Complex<T>),
 	//MultiplyVector(&'a DataVector32<'a>),
 	AbsReal,
 	AbsComplex,
 	Sqrt
 }
 
-define_vector_struct!(struct DataVector32, f32);
-define_real_basic_struct_members!(impl DataVector32, DataVectorDomain::Time);
-define_complex_basic_struct_members!(impl DataVector32, DataVectorDomain::Frequency);
+pub type Operation32 = Operation<f32>;
+pub type Operation64 = Operation<f64>;
 
-define_vector_struct!(struct RealTimeVector32, f32);
-define_real_basic_struct_members!(impl RealTimeVector32, DataVectorDomain::Time);
-define_generic_operations_forward!(from: RealTimeVector32, to: DataVector32);
-define_real_operations_forward!(from: RealTimeVector32, to: DataVector32, complex_partner: ComplexTimeVector32);
+define_vector_struct!(struct GenericDataVector);
 
-define_vector_struct!(struct RealFreqVector32, f32);
-define_real_basic_struct_members!(impl RealFreqVector32, DataVectorDomain::Frequency);
-define_generic_operations_forward!(from: RealFreqVector32, to: DataVector32);
-define_real_operations_forward!(from: RealFreqVector32, to: DataVector32, complex_partner: ComplexFreqVector32);
+define_vector_struct!(struct RealTimeVector);
+define_real_basic_struct_members!(impl RealTimeVector, DataVectorDomain::Time);
+define_generic_operations_forward!(from: RealTimeVector, to: GenericDataVector, f32, f64);
+define_real_operations_forward!(from: RealTimeVector, to: GenericDataVector, complex_partner: ComplexTimeVector, f32, f64);
 
-define_vector_struct!(struct ComplexTimeVector32, f32);
-define_complex_basic_struct_members!(impl ComplexTimeVector32, DataVectorDomain::Time);
-define_generic_operations_forward!(from: ComplexTimeVector32, to: DataVector32);
-define_complex_operations_forward!(from: ComplexTimeVector32, to: DataVector32, complex: Complex32, real_partner: RealTimeVector32);
+define_vector_struct!(struct RealFreqVector);
+define_real_basic_struct_members!(impl RealFreqVector, DataVectorDomain::Frequency);
+define_generic_operations_forward!(from: RealFreqVector, to: GenericDataVector, f32, f64);
+define_real_operations_forward!(from: RealFreqVector, to: GenericDataVector, complex_partner: ComplexFreqVector, f32, f64);
 
-define_vector_struct!(struct ComplexFreqVector32, f32);
-define_complex_basic_struct_members!(impl ComplexFreqVector32, DataVectorDomain::Frequency);
-define_generic_operations_forward!(from: ComplexFreqVector32, to: DataVector32);
-define_complex_operations_forward!(from: ComplexFreqVector32, to: DataVector32, complex: Complex32, real_partner: RealTimeVector32);
+define_vector_struct!(struct ComplexTimeVector);
+define_complex_basic_struct_members!(impl ComplexTimeVector, DataVectorDomain::Time);
+define_generic_operations_forward!(from: ComplexTimeVector, to: GenericDataVector, f32, f64);
+define_complex_operations_forward!(from: ComplexTimeVector, to: GenericDataVector, complex: Complex, real_partner: RealTimeVector, f32, f64);
 
-const DEFAULT_GRANUALRITY: usize = 4;
+define_vector_struct!(struct ComplexFreqVector);
+define_complex_basic_struct_members!(impl ComplexFreqVector, DataVectorDomain::Frequency);
+define_generic_operations_forward!(from: ComplexFreqVector, to: GenericDataVector, f32, f64);
+define_complex_operations_forward!(from: ComplexFreqVector, to: GenericDataVector, complex: Complex, real_partner: RealTimeVector, f32, f64);
 
-#[inline]
-impl DataVector32
-{
-	/// Perform a set of operations on the given vector. 
+define_vector_struct_type_alias!(struct DataVector32, based_on: GenericDataVector, f32);
+define_vector_struct_type_alias!(struct RealTimeVector32, based_on: RealTimeVector, f32);
+define_vector_struct_type_alias!(struct RealFreqVector32, based_on: RealFreqVector, f32);
+define_vector_struct_type_alias!(struct ComplexTimeVector32, based_on: ComplexTimeVector, f32);
+define_vector_struct_type_alias!(struct ComplexFreqVector32, based_on: ComplexFreqVector, f32);
+define_vector_struct_type_alias!(struct DataVector64, based_on: GenericDataVector, f64);
+define_vector_struct_type_alias!(struct RealTimeVector64, based_on: RealTimeVector, f64);
+define_vector_struct_type_alias!(struct RealFreqVector64, based_on: RealFreqVector, f64);
+define_vector_struct_type_alias!(struct ComplexTimeVector64, based_on: ComplexTimeVector, f64);
+define_vector_struct_type_alias!(struct ComplexFreqVector64, based_on: ComplexFreqVector, f64);
+
+impl GenericDataVector<f32> {
+    /// Perform a set of operations on the given vector. 
 	/// Warning: Highly unstable and not even fully implemented right now.
 	///
 	/// With this approach we change how we operate on vectors. If you perform
@@ -100,10 +108,10 @@ impl DataVector32
 	/// CPU buffers. This might also help since for large data we might have the chance in future to 
 	/// move the data to a GPU, run all operations and get the result back. In this case the GPU is fast
 	/// for many operations but the roundtrips on the bus should be minimized to keep the speed advantage.
-	pub fn perform_operations(mut self, operations: &[Operation32])
-		-> DataVector32
+	pub fn perform_operations(mut self, operations: &[Operation<f32>])
+		-> Self
 	{
-		if operations.len() == 0
+        if operations.len() == 0
 		{
 			return DataVector32 { data: self.data, .. self };
 		}
@@ -118,28 +126,28 @@ impl DataVector32
 		
 		{
 			let mut array = &mut self.data;
-			Chunk::execute_partial_with_arguments(Complexity::Large, &mut array, vectorization_length, DEFAULT_GRANUALRITY, operations, DataVector32::perform_operations_par);
+			Chunk::execute_partial_with_arguments(Complexity::Large, &mut array, vectorization_length, Reg32::len(), operations, DataVector32::perform_operations_par);
 		}
 		DataVector32 { data: self.data, .. self }
 	}
-	
-	fn perform_operations_par(array: &mut [f32], operations: &[Operation32])
+    
+	fn perform_operations_par(array: &mut [f32], operations: &[Operation<f32>])
 	{
 		let mut i = 0;
 		while i < array.len()
 		{ 
-			let mut vector = f32x4::load(array, i);
+			let mut vector = Reg32::load(array, i);
 			let mut j = 0;
 			while j < operations.len()
 			{
 				let operation = &operations[j];
 				match *operation
 				{
-					Operation32::AddReal(value) =>
+					Operation::AddReal(value) =>
 					{
 						vector = vector.add_real(value);
 					}
-					Operation32::AddComplex(value) =>
+					Operation::AddComplex(value) =>
 					{
 						vector = vector.add_complex(value);
 					}
@@ -147,11 +155,11 @@ impl DataVector32
 					{
 						// TODO
 					}*/
-					Operation32::MultiplyReal(value) =>
+					Operation::MultiplyReal(value) =>
 					{
 						vector = vector.scale_real(value);
 					}
-					Operation32::MultiplyComplex(value) =>
+					Operation::MultiplyComplex(value) =>
 					{
 						vector = vector.scale_complex(value);
 					}
@@ -159,61 +167,66 @@ impl DataVector32
 					{
 						// TODO
 					}*/
-					Operation32::AbsReal =>
+					Operation::AbsReal =>
 					{
 						vector.store(array, i);
 						{
-							let mut content = &mut array[i .. i + 4];
+							let mut content = &mut array[i .. i + Reg32::len()];
 							let mut k = 0;
-							while k < 4
+							while k < Reg32::len()
 							{
 								content[k] = content[k].abs();
 								k = k + 1;
 							}
 						}
-						vector = f32x4::load(array, i);
+						vector = Reg32::load(array, i);
 					}
-					Operation32::AbsComplex =>
+					Operation::AbsComplex =>
 					{
 						vector = vector.complex_abs();
 					}
-					Operation32::Sqrt =>
+					Operation::Sqrt =>
 					{
 						vector.store(array, i);
 						{
-							let mut content = &mut array[i .. i + 4];
+							let mut content = &mut array[i .. i + Reg32::len()];
 							let mut k = 0;
-							while k < 4
+							while k < Reg32::len()
 							{
 								content[k] = content[k].sqrt();
 								k = k + 1;
 							}
 						}
-						vector = f32x4::load(array, i);
+						vector = Reg32::load(array, i);
 					}
 				}
 				j += 1;
 			}
 		
 			vector.store(array, i);	
-			i += 4;
+			i += Reg32::len();
 		}
 	}
-    
+}
+
+#[inline]
+impl<T> GenericDataVector<T> 
+    where T: RealNumber
+{  
     fn reallocate(&mut self, length: usize)
 	{
 		if length > self.allocated_len()
 		{
 			let data = &mut self.data;
-			data.resize(length, 0.0);
+			data.resize(length, T::zero());
 			let temp = &mut self.temp;
-			temp.resize(length, 0.0);
+			temp.resize(length, T::zero());
 		}
 		
 		self.valid_len = length;
 	}
 	
-	fn swap_data_temp(mut self) -> DataVector32
+	fn swap_data_temp(mut self) -> Self
 	{
 		let temp = self.temp;
 		self.temp = self.data;
@@ -221,18 +234,18 @@ impl DataVector32
 		self
 	}
 	
-	fn array_to_complex(array: &[f32]) -> &[Complex32] {
+	fn array_to_complex(array: &[T]) -> &[Complex<T>] {
 		unsafe { 
 			let len = array.len();
-			let trans: &[Complex32] = mem::transmute(array);
+			let trans: &[Complex<T>] = mem::transmute(array);
 			&trans[0 .. len / 2]
 		}
 	}
 	
-	fn array_to_complex_mut(array: &mut [f32]) -> &mut [Complex32] {
+	fn array_to_complex_mut(array: &mut [T]) -> &mut [Complex<T>] {
 		unsafe { 
 			let len = array.len();
-			let trans: &mut [Complex32] = mem::transmute(array);
+			let trans: &mut [Complex<T>] = mem::transmute(array);
 			&mut trans[0 .. len / 2]			
 		}
 	}

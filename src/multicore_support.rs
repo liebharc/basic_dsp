@@ -3,6 +3,7 @@ use std::slice::ChunksMut;
 use num::traits::Float;
 use simple_parallel::Pool;
 use std::ops::Range;
+use super::RealNumber;
 
 /// Indicates how complex an operation is and determines how many cores 
 /// will be used since operations with smaller complexity are memory bus bound
@@ -193,7 +194,7 @@ impl Chunk
             array: &mut [T], array_length: usize, step_size: usize, 
             arguments:S, function: F)
 		where F: Fn(&mut [T], S) + 'static + Sync, 
-			  T: Float + Copy + Clone + Send + Sync,
+			  T: RealNumber,
 			  S: Sync + Copy
 	{
 		let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity);

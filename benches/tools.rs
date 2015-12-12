@@ -3,7 +3,8 @@ use basic_dsp::{
     DataVector32, 
     VecResult,
     RealTimeVector32, 
-    ComplexTimeVector32};
+    ComplexTimeVector32,
+    DataVectorDomain};
 use std::boxed::Box;
 use std::fmt::Debug;
 
@@ -38,12 +39,7 @@ impl VectorBox<DataVector32>
     pub fn with_size(is_complex: bool, size: usize) -> VectorBox<DataVector32>
     {
         let data = vec![0.0; size];
-        let vector = 
-            if is_complex {
-                DataVector32::from_interleaved_no_copy(data)
-            } else {
-                DataVector32::from_array_no_copy(data)
-            };
+        let vector = DataVector32::from_array_no_copy(is_complex, DataVectorDomain::Time, data);
         VectorBox
         {
             vector: Box::into_raw(Box::new(vector)),
@@ -55,12 +51,7 @@ impl VectorBox<DataVector32>
     {
         let size = translate_size(size);
         let data = vec![0.0; size];
-        let vector = 
-            if is_complex {
-                DataVector32::from_interleaved_no_copy(data)
-            } else {
-                DataVector32::from_array_no_copy(data)
-            };
+        let vector = DataVector32::from_array_no_copy(is_complex, DataVectorDomain::Time, data);
         VectorBox
         {
             vector: Box::into_raw(Box::new(vector)),
@@ -120,7 +111,7 @@ impl<T> VectorBox<T>
     
     pub fn execute_res<F>(&mut self, function: F) -> bool
         where F: Fn(T) -> VecResult<T> + 'static + Sync,
-        T: DataVector + Debug
+        T: DataVector<f32> + Debug
     {
         unsafe {
             let vector = Box::from_raw(self.vector);

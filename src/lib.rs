@@ -51,5 +51,12 @@ pub use vector_types::
 		ComplexTimeVector64, 
 		RealFreqVector64,
 		ComplexFreqVector64,
-		Operation32
+        Operation,
+		Operation32,
+        Operation64
 	};
+ use num::traits::Float;   
+ 
+ pub trait RealNumber : Float + Copy + Clone + Send + Sync { }
+ impl<T> RealNumber for T
+  where T: Float + Copy + Clone + Send + Sync {}

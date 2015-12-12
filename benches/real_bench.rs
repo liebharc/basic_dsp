@@ -3,11 +3,12 @@ mod bench {
 	use test::Bencher;
 	use basic_dsp::{
 		DataVector,
+        DataVectorDomain,
         GenericVectorOperations,
 		RealVectorOperations,
 		DataVector32, 
-		RealTimeVector32, 
-		Operation32};
+		RealTimeVector32,
+        Operation};
 	use num::complex::Complex32;
 	use std::boxed::Box;
     use tools::{VectorBox, DEFAULT_DATA_SIZE, Size};
@@ -37,7 +38,7 @@ mod bench {
 	{
 		b.iter(|| {
 			let data = vec![0.0; DEFAULT_DATA_SIZE];
-			let result = DataVector32::from_interleaved_no_copy(data);
+			let result = DataVector32::from_array_no_copy(false, DataVectorDomain::Time, data);
 			return result.delta();;
 			});
 	}
@@ -50,9 +51,9 @@ mod bench {
 			vector.execute(|v|  
 				{
 					  v.perform_operations(
-						&[Operation32::AddReal(1.0),
-						Operation32::AddComplex(Complex32::new(1.0, 1.0)),
-						Operation32::MultiplyComplex(Complex32::new(-1.0, 1.0))])
+						&[Operation::AddReal(1.0),
+						Operation::AddComplex(Complex32::new(1.0, 1.0)),
+						Operation::MultiplyComplex(Complex32::new(-1.0, 1.0))])
 				})
 		});
 	}

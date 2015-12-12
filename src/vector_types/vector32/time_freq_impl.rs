@@ -3,56 +3,68 @@ use super::super::definitions::{
     VecResult,
 	TimeDomainOperations,
 	FrequencyDomainOperations};
-use super::{DataVector32, ComplexTimeVector32, ComplexFreqVector32};
+use super::{
+    GenericDataVector,
+    ComplexFreqVector,
+    ComplexTimeVector};
 use rustfft::FFT;
 
-impl TimeDomainOperations for DataVector32 {
-	type FreqPartner = DataVector32;
-	fn plain_fft(mut self) -> VecResult<Self> {
-		{
-			let points = self.points();
-			let rbw = (points as f32)  / self.delta;
-			self.delta = rbw;
-			let mut fft = FFT::new(points, false);
-			let signal = &self.data;
-			let spectrum = &mut self.temp;
-			let signal = DataVector32::array_to_complex(signal);
-			let spectrum = DataVector32::array_to_complex_mut(spectrum);
-			fft.process(&signal[0..points], &mut spectrum[0..points]);
-		}
-		
-        Ok(self.swap_data_temp())
-	}
+macro_rules! add_time_freq_impl {
+    ($($data_type:ident);*)
+	 =>
+	 {	 
+        $(
+            impl TimeDomainOperations<$data_type> for GenericDataVector<$data_type> {
+                type FreqPartner = GenericDataVector<$data_type>;
+                fn plain_fft(mut self) -> VecResult<Self> {
+                    {
+                        let points = self.points();
+                        let rbw = (points as $data_type)  / self.delta;
+                        self.delta = rbw;
+                        let mut fft = FFT::new(points, false);
+                        let signal = &self.data;
+                        let spectrum = &mut self.temp;
+                        let signal = Self::array_to_complex(signal);
+                        let spectrum = Self::array_to_complex_mut(spectrum);
+                        fft.process(&signal[0..points], &mut spectrum[0..points]);
+                    }
+                    
+                    Ok(self.swap_data_temp())
+                }
+            }
+            
+            impl TimeDomainOperations<$data_type> for ComplexTimeVector<$data_type> {
+                type FreqPartner = ComplexFreqVector<$data_type>;
+                fn plain_fft(self) -> VecResult<Self::FreqPartner> {
+                    Self::FreqPartner::from_genres(self.to_gen().plain_fft())
+                }
+            }
+            
+            impl FrequencyDomainOperations<$data_type> for GenericDataVector<$data_type> {
+                type TimePartner = GenericDataVector<$data_type>;
+                fn plain_ifft(mut self) -> VecResult<Self::TimePartner> {
+                    {
+                        let points = self.points();
+                        let mut fft = FFT::new(points, true);
+                        let delta = (points as $data_type)  / self.delta;
+                        self.delta = delta;
+                        let signal = &self.data;
+                        let spectrum = &mut self.temp;
+                        let signal = Self::array_to_complex(signal);
+                        let spectrum = Self::array_to_complex_mut(spectrum);
+                        fft.process(&signal[0..points], &mut spectrum[0..points]);
+                    }
+                    Ok(self.swap_data_temp())
+                }
+            }
+            
+            impl FrequencyDomainOperations<$data_type> for ComplexFreqVector<$data_type> {
+                type TimePartner = ComplexTimeVector<$data_type>;
+                fn plain_ifft(self) -> VecResult<Self::TimePartner> {
+                    Self::TimePartner::from_genres(self.to_gen().plain_ifft())
+                }
+            }
+        )*
+     }
 }
-
-impl TimeDomainOperations for ComplexTimeVector32 {
-	type FreqPartner = ComplexFreqVector32;
-	fn plain_fft(self) -> VecResult<ComplexFreqVector32> {
-		ComplexFreqVector32::from_genres(self.to_gen().plain_fft())
-	}
-}
-
-impl FrequencyDomainOperations for DataVector32 {
-	type TimePartner = DataVector32;
-	fn plain_ifft(mut self) -> VecResult<Self> {
-		{
-			let points = self.points();
-			let mut fft = FFT::new(points, true);
-			let delta = (points as f32)  / self.delta;
-			self.delta = delta;
-			let signal = &self.data;
-			let spectrum = &mut self.temp;
-			let signal = DataVector32::array_to_complex(signal);
-			let spectrum = DataVector32::array_to_complex_mut(spectrum);
-			fft.process(&signal[0..points], &mut spectrum[0..points]);
-		}
-		Ok(self.swap_data_temp())
-	}
-}
-
-impl FrequencyDomainOperations for ComplexFreqVector32 {
-	type TimePartner = ComplexTimeVector32;
-	fn plain_ifft(self) -> VecResult<ComplexTimeVector32> {
-		ComplexTimeVector32::from_genres(self.to_gen().plain_ifft())
-	}
-}
+add_time_freq_impl!(f32; f64);
