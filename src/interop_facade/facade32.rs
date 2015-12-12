@@ -1,6 +1,4 @@
-//! Clients using other programming languages should use the functions
-//! in this mod. Please refer to the other chapters of the help for documentation of the functions
-
+use super::*;
 #[allow(unused_imports)]
 use vector_types::
 	{
@@ -19,59 +17,10 @@ use vector_types::
 		ComplexTimeVector32, 
 		RealFreqVector32,
 		ComplexFreqVector32,
-		DataVector64, 
-		RealTimeVector64,
-		ComplexTimeVector64, 
-		RealFreqVector64,
-		ComplexFreqVector64,
 		Operation
 	};
 use num::complex::Complex32;
 
-/// Result of a vector operation. Check the ```result_code```.
-#[repr(C)]
-pub struct VectorResult<T> {
-    /// This value is zero in case of error. All other values mean that an error
-    /// occurred and the data in the vector might be unchanged or invalid. Error codes:
-    /// 1. Vectors must have the same size.
-    /// all other values are undefined. If you see a value which isn't listed here then
-    /// please report a bug.
-    pub result_code: i32,
-    
-    /// A pointer to a data vector.
-    pub vector: Box<T>
-}
-    
-fn translate_error(reason: ErrorReason) -> i32 {
-    match reason {
-        ErrorReason::VectorsMustHaveTheSameSize => 1,
-    }
-}
-
-macro_rules! convert_vec {
-    ($operation: expr) => {
-        {
-            let result = $operation;
-            match result {
-                Ok(vec) => VectorResult { result_code: 0, vector: Box::new(vec) },
-                Err((res, vec)) => VectorResult { result_code: translate_error(res), vector: Box::new(vec) }
-            }
-        }
-    }
-}
-
-macro_rules! convert_void {
-    ($operation: expr) => {
-        {
-            let result = $operation;
-            match result {
-                Ok(()) => 0,
-                Err(res) => translate_error(res) 
-            }
-        }
-    }
-}
-    
 #[no_mangle]
 pub fn delete_vector32(vector: Box<DataVector32>) {
     drop(vector);
