@@ -27,6 +27,21 @@ macro_rules! impl_real_complex_dispatch {
     }
 }
 
+macro_rules! impl_real_complex_arg_dispatch {
+    ($function_name: ident, $arg_type: ident, $arg: ident, $real_op: ident, $complex_op: ident)
+    => {
+        fn $function_name(self, $arg: $arg_type) -> VecResult<Self>
+        {
+            if self.is_complex() {
+                Self::$complex_op(self, $arg)  
+            }
+            else {
+                Self::$real_op(self, $arg)
+            }
+        }
+    }
+}
+
 macro_rules! impl_trig_function_real_complex {
     ($data_type: ident; $real_name: ident, $real_op: ident; $complex_name: ident, $complex_op: ident) => {
         fn $real_name(mut self) -> VecResult<Self>
@@ -388,50 +403,12 @@ macro_rules! add_general_impl {
                 
                 impl_real_complex_dispatch!(sqrt, real_sqrt, complex_sqrt);
                 impl_real_complex_dispatch!(square, real_square, complex_square);
-                
-                fn root(self, degree: $data_type) -> VecResult<Self>
-                {
-                    if self.is_complex() {
-                        Self::complex_root(self, degree)  
-                    }
-                    else {
-                        Self::real_root(self, degree)
-                    }
-                }
-                
-                fn power(self, exponent: $data_type) -> VecResult<Self>
-                {
-                    if self.is_complex() {
-                        Self::complex_power(self, exponent)  
-                    }
-                    else {
-                        Self::real_power(self, exponent)
-                    }
-                }
-                
+                impl_real_complex_arg_dispatch!(root, $data_type, degree, real_root, complex_root);
+                impl_real_complex_arg_dispatch!(power, $data_type, exponent, real_power, complex_power);
                 impl_real_complex_dispatch!(logn, real_logn, complex_logn);
                 impl_real_complex_dispatch!(expn, real_expn, complex_expn);
-            
-                fn log_base(self, base: $data_type) -> VecResult<Self>
-                {
-                    if self.is_complex() {
-                        Self::complex_log_base(self, base)  
-                    }
-                    else {
-                        Self::real_log_base(self, base)
-                    }
-                }
-                
-                fn exp_base(self, base: $data_type) -> VecResult<Self>
-                {
-                    if self.is_complex() {
-                        Self::complex_exp_base(self, base)  
-                    }
-                    else {
-                        Self::real_exp_base(self, base)
-                    }
-                }
-                
+                impl_real_complex_arg_dispatch!(log_base, $data_type, base, real_log_base, complex_log_base);
+                impl_real_complex_arg_dispatch!(exp_base, $data_type, base, real_exp_base, complex_exp_base);
                 impl_real_complex_dispatch!(sin, real_sin, complex_sin);
                 impl_real_complex_dispatch!(cos, real_cos, complex_cos);
                 
