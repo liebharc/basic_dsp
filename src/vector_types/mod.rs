@@ -215,7 +215,7 @@ macro_rules! define_vector_struct_type_alias {
 		/// The first two flavors define meta information about the vector and provide compile time information what
 		/// operations are available with the given vector and how this will transform the vector. This makes sure that
 		/// some invalid operations are already discovered at compile time. In case that this isn't desired or the information
-		/// about the vector isn't known at compile time there are the generic [`DataVector32`](struct.DataVector32.html) and [`DataVector64`](struct.DataVector64.html) vectors
+		/// about the vector isn't known at compile time there are the generic [`DataVector32`](type.DataVector32.html) and [`DataVector64`](type.DataVector64.html) vectors
 		/// available.
 		///
 		/// 32bit and 64bit flavors trade performance and memory consumption against accuracy. 32bit vectors are roughly
