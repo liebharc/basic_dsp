@@ -49,13 +49,16 @@ macro_rules! impl_function_call_real_complex {
             {
                 let mut array = &mut self.data;
                 let length = array.len();
-                Chunk::execute_partial(Complexity::Medium, &mut array, length, 1, |array| {
-                    let mut i = 0;
-                    while i < array.len()
-                    {
-                        array[i] = array[i].$real_op();
-                        i += 1;
-                    }
+                Chunk::execute_partial(
+                    Complexity::Medium, &self.multicore_settings,
+                    &mut array, length, 1, 
+                    |array| {
+                        let mut i = 0;
+                        while i < array.len()
+                        {
+                            array[i] = array[i].$real_op();
+                            i += 1;
+                        }
                 });
             }
             Ok(self)
@@ -66,16 +69,19 @@ macro_rules! impl_function_call_real_complex {
             {
                 let mut array = &mut self.data;
                 let length = array.len();
-                Chunk::execute_partial(Complexity::Medium, &mut array, length, 2, |array| {
-                    let mut i = 0;
-                    while i < array.len()
-                    {
-                        let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                        let result = complex.$complex_op();
-                        array[i] = result.re;
-                        array[i + 1] = result.im;
-                        i += 2;
-                    }
+                Chunk::execute_partial(
+                    Complexity::Medium, &self.multicore_settings,
+                    &mut array, length, 2, 
+                    |array| {
+                        let mut i = 0;
+                        while i < array.len()
+                        {
+                            let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
+                            let result = complex.$complex_op();
+                            array[i] = result.re;
+                            array[i + 1] = result.im;
+                            i += 2;
+                        }
                 });
             }
             Ok(self)
@@ -90,13 +96,16 @@ macro_rules! impl_function_call_real_arg_complex {
             {
                 let mut array = &mut self.data;
                 let length = array.len();
-                Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 1, value, |array, value| {
-                    let mut i = 0;
-                    while i < array.len()
-                    {
-                        array[i] = array[i].$real_op(value);
-                        i += 1;
-                    }
+                Chunk::execute_partial_with_arguments(
+                    Complexity::Medium, &self.multicore_settings,
+                    &mut array, length, 1, value, 
+                    |array, value| {
+                        let mut i = 0;
+                        while i < array.len()
+                        {
+                            array[i] = array[i].$real_op(value);
+                            i += 1;
+                        }
                 });
             }
             Ok(self)
@@ -107,16 +116,19 @@ macro_rules! impl_function_call_real_arg_complex {
             {
                 let mut array = &mut self.data;
                 let length = array.len();
-                Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 2, value, |array, value| {
-                    let mut i = 0;
-                    while i < array.len()
-                    {
-                        let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                        let result = complex.$complex_op(value);
-                        array[i] = result.re;
-                        array[i + 1] = result.im;
-                        i += 2;
-                    }
+                Chunk::execute_partial_with_arguments(
+                    Complexity::Medium, &self.multicore_settings,
+                    &mut array, length, 2, value, 
+                    |array, value| {
+                        let mut i = 0;
+                        while i < array.len()
+                        {
+                            let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
+                            let result = complex.$complex_op(value);
+                            array[i] = result.re;
+                            array[i + 1] = result.im;
+                            i += 2;
+                        }
                 });
             }
             Ok(self)
@@ -218,18 +230,22 @@ macro_rules! add_general_impl {
                         let vectorization_length = data_length - scalar_length;
                         let mut array = &mut self.data;
                         let other = &summand.data;
-                        Chunk::execute_original_to_target(Complexity::Small, &other, vectorization_length, $reg::len(), &mut array, vectorization_length, $reg::len(),  |original, range, target| {
-                            let mut i = 0;
-                            let mut j = range.start;
-                            while i < target.len()
-                            { 
-                                let vector1 = $reg::load(original, j);
-                                let vector2 = $reg::load(target, i);
-                                let result = vector1 + vector2;
-                                result.store(target, i);
-                                i += $reg::len();
-                                j += $reg::len();
-                            }
+                        Chunk::execute_original_to_target(
+                            Complexity::Small, &self.multicore_settings,
+                            &other, vectorization_length, $reg::len(), 
+                            &mut array, vectorization_length, $reg::len(), 
+                            |original, range, target| {
+                                let mut i = 0;
+                                let mut j = range.start;
+                                while i < target.len()
+                                { 
+                                    let vector1 = $reg::load(original, j);
+                                    let vector2 = $reg::load(target, i);
+                                    let result = vector1 + vector2;
+                                    result.store(target, i);
+                                    i += $reg::len();
+                                    j += $reg::len();
+                                }
                         });
                         let mut i = vectorization_length;
                         while i < data_length
@@ -253,18 +269,22 @@ macro_rules! add_general_impl {
                         let vectorization_length = data_length - scalar_length;
                         let mut array = &mut self.data;
                         let other = &subtrahend.data;
-                        Chunk::execute_original_to_target(Complexity::Small, &other, vectorization_length, $reg::len(), &mut array, vectorization_length, $reg::len(), |original, range, target| {
-                            let mut i = 0;
-                            let mut j = range.start;
-                            while i < target.len()
-                            { 
-                                let vector1 = $reg::load(original, j);
-                                let vector2 = $reg::load(target, i);
-                                let result = vector2 - vector1;
-                                result.store(target, i);
-                                i += $reg::len();
-                                j += $reg::len();
-                            }
+                        Chunk::execute_original_to_target(
+                            Complexity::Small, &self.multicore_settings,
+                            &other, vectorization_length, $reg::len(), 
+                            &mut array, vectorization_length, $reg::len(), 
+                            |original, range, target| {
+                                let mut i = 0;
+                                let mut j = range.start;
+                                while i < target.len()
+                                { 
+                                    let vector1 = $reg::load(original, j);
+                                    let vector2 = $reg::load(target, i);
+                                    let result = vector2 - vector1;
+                                    result.store(target, i);
+                                    i += $reg::len();
+                                    j += $reg::len();
+                                }
                         });
                         let mut i = vectorization_length;
                         while i < data_length
@@ -333,40 +353,48 @@ macro_rules! add_general_impl {
                         let mut target = temp_mut!(self, data_length);
                         if self.is_complex {
                             self.valid_len -= 2;
-                            Chunk::execute_original_to_target(Complexity::Small, &org, data_length, 2, &mut target, data_length, 2, |original, range, target| {
-                                let mut i = 0;
-                                let mut j = range.start;
-                                let mut len = target.len();
-                                if range.end == original.len() - 1
-                                {
-                                    len -= 2;
-                                }
-                                
-                                while i < len
-                                { 
-                                    target[i] = original[j + 2] - original[i];
-                                    i += 1;
-                                    j += 1;
-                                }
+                            Chunk::execute_original_to_target(
+                                Complexity::Small, &self.multicore_settings,
+                                &org, data_length, 2, 
+                                &mut target, data_length, 2, 
+                                |original, range, target| {
+                                    let mut i = 0;
+                                    let mut j = range.start;
+                                    let mut len = target.len();
+                                    if range.end == original.len() - 1
+                                    {
+                                        len -= 2;
+                                    }
+                                    
+                                    while i < len
+                                    { 
+                                        target[i] = original[j + 2] - original[i];
+                                        i += 1;
+                                        j += 1;
+                                    }
                             });
                         }
                         else {
                             self.valid_len -= 1;
-                            Chunk::execute_original_to_target(Complexity::Small, &org, data_length, 1, &mut target, data_length, 1, |original, range, target| {
-                                let mut i = 0;
-                                let mut j = range.start;
-                                let mut len = target.len();
-                                if range.end >= original.len() - 1
-                                {
-                                    len -= 1;
-                                }
-                                    
-                                while i < len
-                                { 
-                                    target[i] = original[j + 1] - original[j];
-                                    i += 1;
-                                    j += 1;
-                                }
+                            Chunk::execute_original_to_target(
+                                Complexity::Small, &self.multicore_settings,
+                                &org, data_length, 1, 
+                                &mut target, data_length, 1, 
+                                |original, range, target| {
+                                    let mut i = 0;
+                                    let mut j = range.start;
+                                    let mut len = target.len();
+                                    if range.end >= original.len() - 1
+                                    {
+                                        len -= 1;
+                                    }
+                                        
+                                    while i < len
+                                    { 
+                                        target[i] = original[j + 1] - original[j];
+                                        i += 1;
+                                        j += 1;
+                                    }
                             });
                         }
                     }
@@ -381,40 +409,48 @@ macro_rules! add_general_impl {
                         let mut target = temp_mut!(self, data_length);
                         let org = &self.data;
                         if self.is_complex {
-                            Chunk::execute_original_to_target(Complexity::Small, &org, data_length, 2, &mut target, data_length, 2, |original, range, target| {
-                                let mut i = 0;
-                                let mut j = range.start;
-                                if j == 0 {
-                                    i = 2;
-                                    j = 2;
-                                    target[0] = original[0];
-                                    target[1] = original[1];
-                                }
-                                
-                                while i < target.len()
-                                { 
-                                    target[i] = original[j] - original[j - 2];
-                                    i += 1;
-                                    j += 1;
-                                }
+                            Chunk::execute_original_to_target(
+                                Complexity::Small, &self.multicore_settings,
+                                &org, data_length, 2, 
+                                &mut target, data_length, 2, 
+                                |original, range, target| {
+                                    let mut i = 0;
+                                    let mut j = range.start;
+                                    if j == 0 {
+                                        i = 2;
+                                        j = 2;
+                                        target[0] = original[0];
+                                        target[1] = original[1];
+                                    }
+                                    
+                                    while i < target.len()
+                                    { 
+                                        target[i] = original[j] - original[j - 2];
+                                        i += 1;
+                                        j += 1;
+                                    }
                             });
                         }
                         else {
-                            Chunk::execute_original_to_target(Complexity::Small, &org, data_length, 1, &mut target, data_length, 1, |original, range, target| {
-                                let mut i = 0;
-                                let mut j = range.start;
-                                if j == 0 {
-                                    i = 1;
-                                    j = 1;
-                                    target[0] = original[0];
-                                }
-                                
-                                while i < target.len()
-                                { 
-                                    target[i] = original[j] - original[j - 1];
-                                    i += 1;
-                                    j += 1;
-                                }
+                            Chunk::execute_original_to_target(
+                                Complexity::Small, &self.multicore_settings,
+                                &org, data_length, 1, 
+                                &mut target, data_length, 1, 
+                                |original, range, target| {
+                                    let mut i = 0;
+                                    let mut j = range.start;
+                                    if j == 0 {
+                                        i = 1;
+                                        j = 1;
+                                        target[0] = original[0];
+                                    }
+                                    
+                                    while i < target.len()
+                                    { 
+                                        target[i] = original[j] - original[j - 1];
+                                        i += 1;
+                                        j += 1;
+                                    }
                             });
                         }
                     }
@@ -524,18 +560,22 @@ macro_rules! add_general_impl {
                         let vectorization_length = data_length - scalar_length;
                         let mut array = &mut self.data;
                         let other = &factor.data;
-                        Chunk::execute_original_to_target(Complexity::Small, &other, vectorization_length, $reg::len(), &mut array, vectorization_length, $reg::len(), |original, range, target| {
-                            let mut i = 0;
-                            let mut j = range.start;
-                            while i < target.len()
-                            { 
-                                let vector1 = $reg::load(original, j);
-                                let vector2 = $reg::load(target, i);
-                                let result = vector2.mul_complex(vector1);
-                                result.store(target, i);
-                                i += 4;
-                                j += 4;
-                            }
+                        Chunk::execute_original_to_target(
+                            Complexity::Small, &self.multicore_settings,
+                            &other, vectorization_length, $reg::len(), 
+                            &mut array, vectorization_length, $reg::len(), 
+                            |original, range, target| {
+                                let mut i = 0;
+                                let mut j = range.start;
+                                while i < target.len()
+                                { 
+                                    let vector1 = $reg::load(original, j);
+                                    let vector2 = $reg::load(target, i);
+                                    let result = vector2.mul_complex(vector1);
+                                    result.store(target, i);
+                                    i += 4;
+                                    j += 4;
+                                }
                         });
                         let mut i = vectorization_length;
                         while i < data_length
@@ -559,18 +599,22 @@ macro_rules! add_general_impl {
                         let vectorization_length = data_length - scalar_length;
                         let mut array = &mut self.data;
                         let other = &factor.data;
-                        Chunk::execute_original_to_target(Complexity::Small, &other, vectorization_length, $reg::len(), &mut array, vectorization_length, $reg::len(), |original, range, target| {
-                            let mut i = 0;
-                            let mut j = range.start;
-                            while i < target.len()
-                            { 
-                                let vector1 = $reg::load(original, j);
-                                let vector2 = $reg::load(target, i);
-                                let result = vector2 * vector1;
-                                result.store(target, i);
-                                i += $reg::len();
-                                j += $reg::len();
-                            }        
+                        Chunk::execute_original_to_target(
+                            Complexity::Small, &self.multicore_settings,
+                            &other, vectorization_length, $reg::len(), 
+                            &mut array, vectorization_length, $reg::len(), 
+                            |original, range, target| {
+                                let mut i = 0;
+                                let mut j = range.start;
+                                while i < target.len()
+                                { 
+                                    let vector1 = $reg::load(original, j);
+                                    let vector2 = $reg::load(target, i);
+                                    let result = vector2 * vector1;
+                                    result.store(target, i);
+                                    i += $reg::len();
+                                    j += $reg::len();
+                                }        
                         });
                         let mut i = vectorization_length;
                         while i < data_length
@@ -590,18 +634,22 @@ macro_rules! add_general_impl {
                         let vectorization_length = data_length - scalar_length;
                         let mut array = &mut self.data;
                         let other = &divisor.data;
-                        Chunk::execute_original_to_target(Complexity::Small, &other, vectorization_length, $reg::len(), &mut array, vectorization_length, $reg::len(),  |original, range, target| {
-                            let mut i = 0;
-                            let mut j = range.start;
-                            while i < target.len()
-                            { 
-                                let vector1 = $reg::load(original, j);
-                                let vector2 = $reg::load(target, i);
-                                let result = vector2.div_complex(vector1);
-                                result.store(target, i);
-                                i += 4;
-                                j += 4;
-                            }
+                        Chunk::execute_original_to_target(
+                            Complexity::Small, &self.multicore_settings,
+                            &other, vectorization_length, $reg::len(), 
+                            &mut array, vectorization_length, $reg::len(),  
+                            |original, range, target| {
+                                let mut i = 0;
+                                let mut j = range.start;
+                                while i < target.len()
+                                { 
+                                    let vector1 = $reg::load(original, j);
+                                    let vector2 = $reg::load(target, i);
+                                    let result = vector2.div_complex(vector1);
+                                    result.store(target, i);
+                                    i += 4;
+                                    j += 4;
+                                }
                         });
                         let mut i = vectorization_length;
                         while i < data_length
@@ -625,18 +673,22 @@ macro_rules! add_general_impl {
                         let vectorization_length = data_length - scalar_length;
                         let mut array = &mut self.data;
                         let other = &divisor.data;
-                        Chunk::execute_original_to_target(Complexity::Small, &other, vectorization_length, $reg::len(), &mut array, vectorization_length, $reg::len(), |original, range, target| {
-                            let mut i = 0;
-                            let mut j = range.start;
-                            while i < target.len()
-                            { 
-                                let vector1 = $reg::load(original, j);
-                                let vector2 = $reg::load(target, i);
-                                let result = vector2 / vector1;
-                                result.store(target, i);
-                                i += $reg::len();
-                                j += $reg::len();
-                            }
+                        Chunk::execute_original_to_target(
+                            Complexity::Small, &self.multicore_settings,
+                            &other, vectorization_length, $reg::len(), 
+                            &mut array, vectorization_length, $reg::len(), 
+                            |original, range, target| {
+                                let mut i = 0;
+                                let mut j = range.start;
+                                while i < target.len()
+                                { 
+                                    let vector1 = $reg::load(original, j);
+                                    let vector2 = $reg::load(target, i);
+                                    let result = vector2 / vector1;
+                                    result.store(target, i);
+                                    i += $reg::len();
+                                    j += $reg::len();
+                                }
                         });
                         let mut i = vectorization_length;
                         while i < data_length
@@ -656,24 +708,28 @@ macro_rules! add_general_impl {
                         let data_length = new_len;
                         let mut target = temp_mut!(self, data_length);
                         let source = &self.data;
-                        Chunk::execute_original_to_target(Complexity::Small, &source, data_length, $reg::len(), &mut target, data_length, $reg::len(), |original, range, target| {
-                            let mut i = 0;
-                            let mut j = range.start;
-                            while i < target.len() / 2 {
-                                if i % 2 == 0
-                                {
-                                    target[2 * i] = original[j];
-                                    target[2 * i + 1] = original[j + 1];
-                                    j += 2;
+                        Chunk::execute_original_to_target(
+                            Complexity::Small, &self.multicore_settings,
+                            &source, data_length, $reg::len(), 
+                            &mut target, data_length, $reg::len(), 
+                            |original, range, target| {
+                                let mut i = 0;
+                                let mut j = range.start;
+                                while i < target.len() / 2 {
+                                    if i % 2 == 0
+                                    {
+                                        target[2 * i] = original[j];
+                                        target[2 * i + 1] = original[j + 1];
+                                        j += 2;
+                                    }
+                                    else
+                                    {
+                                        target[2 * i] = 0.0;
+                                        target[2 * i + 1] = 0.0;
+                                    }
+                                    
+                                    i += 1;
                                 }
-                                else
-                                {
-                                    target[2 * i] = 0.0;
-                                    target[2 * i + 1] = 0.0;
-                                }
-                                
-                                i += 1;
-                            }
                         });
                     }
                     Ok(self.swap_data_temp())
@@ -687,22 +743,26 @@ macro_rules! add_general_impl {
                         let data_length = new_len;
                         let mut target = temp_mut!(self, data_length);
                         let source = &self.data;
-                        Chunk::execute_original_to_target(Complexity::Small, &source, data_length, 4, &mut target, data_length, 2,  |original, range, target| {
-                            let mut i = 0;
-                            let mut j = range.start;
-                            while i < target.len() {
-                                if i % 2 == 0
-                                {
-                                    target[i] = original[j];
-                                    j += 1;
+                        Chunk::execute_original_to_target(
+                            Complexity::Small, &self.multicore_settings,
+                            &source, data_length, 4, 
+                            &mut target, data_length, 2, 
+                            |original, range, target| {
+                                let mut i = 0;
+                                let mut j = range.start;
+                                while i < target.len() {
+                                    if i % 2 == 0
+                                    {
+                                        target[i] = original[j];
+                                        j += 1;
+                                    }
+                                    else
+                                    {
+                                        target[i] = 0.0;
+                                    }
+                                    
+                                    i += 1;
                                 }
-                                else
-                                {
-                                    target[i] = 0.0;
-                                }
-                                
-                                i += 1;
-                            }
                         });
                     }
                     Ok(self.swap_data_temp())
@@ -715,15 +775,18 @@ macro_rules! add_general_impl {
                         let mut array = &mut self.data;
                         let scalar_length = data_length % $reg::len();
                         let vectorization_length = data_length - scalar_length;
-                        Chunk::execute_partial(Complexity::Small, &mut array, vectorization_length, $reg::len(), |array| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                let vector = $reg::load(array, i);
-                                let result = vector.sqrt();
-                                result.store(array, i);
-                                i += $reg::len();
-                            }
+                        Chunk::execute_partial(
+                            Complexity::Small, &self.multicore_settings,
+                            &mut array, vectorization_length, $reg::len(), 
+                            |array| {
+                                let mut i = 0;
+                                while i < array.len()
+                                {
+                                    let vector = $reg::load(array, i);
+                                    let result = vector.sqrt();
+                                    result.store(array, i);
+                                    i += $reg::len();
+                                }
                         });
                         for i in vectorization_length..data_length
                         {
@@ -738,16 +801,19 @@ macro_rules! add_general_impl {
                     {
                         let mut array = &mut self.data;
                         let length = array.len();
-                        Chunk::execute_partial(Complexity::Medium, &mut array, length, 2, |array| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                let result = complex.sqrt();
-                                array[i] = result.re;
-                                array[i + 1] = result.im;
-                                i += 2;
-                            }
+                        Chunk::execute_partial(
+                            Complexity::Medium, &self.multicore_settings,
+                            &mut array, length, 2, 
+                            |array| {
+                                let mut i = 0;
+                                while i < array.len()
+                                {
+                                    let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
+                                    let result = complex.sqrt();
+                                    array[i] = result.re;
+                                    array[i + 1] = result.im;
+                                    i += 2;
+                                }
                         });
                     }
                     Ok(self)
@@ -760,15 +826,18 @@ macro_rules! add_general_impl {
                         let mut array = &mut self.data;
                         let scalar_length = data_length % $reg::len();
                         let vectorization_length = data_length - scalar_length;
-                        Chunk::execute_partial(Complexity::Small, &mut array, vectorization_length, $reg::len(), |array| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                let a = $reg::load(array, i);
-                                let result = a * a;
-                                result.store(array, i);
-                                i += $reg::len();
-                            }
+                        Chunk::execute_partial(
+                            Complexity::Small, &self.multicore_settings,
+                            &mut array, vectorization_length, $reg::len(), 
+                            |array| {
+                                let mut i = 0;
+                                while i < array.len()
+                                {
+                                    let a = $reg::load(array, i);
+                                    let result = a * a;
+                                    result.store(array, i);
+                                    i += $reg::len();
+                                }
                         });
                         
                         for i in vectorization_length..data_length
@@ -784,16 +853,19 @@ macro_rules! add_general_impl {
                     {
                         let mut array = &mut self.data;
                         let length = array.len();
-                        Chunk::execute_partial(Complexity::Medium, &mut array, length, 2, |array| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                let result = complex * complex;
-                                array[i] = result.re;
-                                array[i + 1] = result.im;
-                                i += 2;
-                            }
+                        Chunk::execute_partial(
+                            Complexity::Medium, &self.multicore_settings,
+                            &mut array, length, 2, 
+                            |array| {
+                                let mut i = 0;
+                                while i < array.len()
+                                {
+                                    let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
+                                    let result = complex * complex;
+                                    array[i] = result.re;
+                                    array[i + 1] = result.im;
+                                    i += 2;
+                                }
                         });
                     }
                     Ok(self)
@@ -804,14 +876,17 @@ macro_rules! add_general_impl {
                     {
                         let mut array = &mut self.data;
                         let length = array.len();
-                        Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 1, degree, |array, base| {
-                            let base = 1.0 / base;
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                array[i] = array[i].powf(base);
-                                i += 1;
-                            }
+                        Chunk::execute_partial_with_arguments(
+                            Complexity::Medium, &self.multicore_settings,
+                            &mut array, length, 1, degree, 
+                            |array, base| {
+                                let base = 1.0 / base;
+                                let mut i = 0;
+                                while i < array.len()
+                                {
+                                    array[i] = array[i].powf(base);
+                                    i += 1;
+                                }
                         });
                     }
                     Ok(self)
@@ -822,17 +897,20 @@ macro_rules! add_general_impl {
                     {
                         let mut array = &mut self.data;
                         let length = array.len();
-                        Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 2, base, |array, base| {
-                            let base = 1.0 / base;
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                let result = complex.powf(base);
-                                array[i] = result.re;
-                                array[i + 1] = result.im;
-                                i += 2;
-                            }
+                        Chunk::execute_partial_with_arguments(
+                            Complexity::Medium, &self.multicore_settings, 
+                            &mut array, length, 2, base, 
+                            |array, base| {
+                                let base = 1.0 / base;
+                                let mut i = 0;
+                                while i < array.len()
+                                {
+                                    let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
+                                    let result = complex.powf(base);
+                                    array[i] = result.re;
+                                    array[i + 1] = result.im;
+                                    i += 2;
+                                }
                         });
                     }
                     Ok(self)
@@ -848,13 +926,16 @@ macro_rules! add_general_impl {
                     {
                         let mut array = &mut self.data;
                         let length = array.len();
-                        Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 1, base, |array, base| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                array[i] = base.powf(array[i]);
-                                i += 1;
-                            }
+                        Chunk::execute_partial_with_arguments(
+                            Complexity::Medium, &self.multicore_settings,
+                            &mut array, length, 1, base, 
+                            |array, base| {
+                                let mut i = 0;
+                                while i < array.len()
+                                {
+                                    array[i] = base.powf(array[i]);
+                                    i += 1;
+                                }
                         });
                     }
                     Ok(self)
@@ -865,16 +946,19 @@ macro_rules! add_general_impl {
                     {
                         let mut array = &mut self.data;
                         let length = array.len();
-                        Chunk::execute_partial_with_arguments(Complexity::Medium, &mut array, length, 2, base, |array, base| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                let result = complex.exp_base(base);
-                                array[i] = result.re;
-                                array[i + 1] = result.im;
-                                i += 2;
-                            }
+                        Chunk::execute_partial_with_arguments(
+                            Complexity::Medium, &self.multicore_settings,
+                            &mut array, length, 2, base, 
+                            |array, base| {
+                                let mut i = 0;
+                                while i < array.len()
+                                {
+                                    let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
+                                    let result = complex.exp_base(base);
+                                    array[i] = result.re;
+                                    array[i + 1] = result.im;
+                                    i += 2;
+                                }
                         });
                     }
                     Ok(self)

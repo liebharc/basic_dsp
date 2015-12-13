@@ -29,15 +29,18 @@ macro_rules! add_complex_impl {
                         let vectorization_length = data_length - scalar_length;
                         let mut array = &mut self.data;
                         let vector_offset = $reg::from_complex(offset);
-                        Chunk::execute_partial_with_arguments(Complexity::Small, &mut array, vectorization_length, $reg::len(), vector_offset, |array, v| {
-                            let mut i = 0;
-                            while i < array.len()
-                            {
-                                let data = $reg::load(array, i);
-                                let result = data + v;
-                                result.store(array, i);
-                                i += $reg::len();
-                            }
+                        Chunk::execute_partial_with_arguments(
+                            Complexity::Small, &self.multicore_settings,
+                            &mut array, vectorization_length, $reg::len(), vector_offset, 
+                            |array, v| {
+                                let mut i = 0;
+                                while i < array.len()
+                                {
+                                    let data = $reg::load(array, i);
+                                    let result = data + v;
+                                    result.store(array, i);
+                                    i += $reg::len();
+                                }
                         });
                         
                         let mut i = vectorization_length;
@@ -59,15 +62,18 @@ macro_rules! add_complex_impl {
                         let scalar_length = data_length % $reg::len();
                         let vectorization_length = data_length - scalar_length;
                         let mut array = &mut self.data;
-                        Chunk::execute_partial_with_arguments(Complexity::Small, &mut array, vectorization_length, $reg::len(), factor, |array, value| {
-                            let mut i = 0;
-                            while i < array.len()
-                            { 
-                                let vector = $reg::load(array, i);
-                                let scaled = vector.scale_complex(value);
-                                scaled.store(array, i);
-                                i += $reg::len();
-                            }
+                        Chunk::execute_partial_with_arguments(
+                            Complexity::Small, &self.multicore_settings,
+                            &mut array, vectorization_length, $reg::len(), factor, 
+                                |array, value| {
+                                    let mut i = 0;
+                                    while i < array.len()
+                                    { 
+                                        let vector = $reg::load(array, i);
+                                        let scaled = vector.scale_complex(value);
+                                        scaled.store(array, i);
+                                        i += $reg::len();
+                                    }
                         });
                         let mut i = vectorization_length;
                         while i < data_length
@@ -90,7 +96,11 @@ macro_rules! add_complex_impl {
                         let vectorization_length = data_length - scalar_length;
                         let array = &self.data;
                         let mut temp = temp_mut!(self, data_length);
-                        Chunk::execute_original_to_target(Complexity::Small, &array, vectorization_length, $reg::len(), &mut temp, vectorization_length / 2, $reg::len() / 2, Self::complex_abs_simd);
+                        Chunk::execute_original_to_target(
+                            Complexity::Small, &self.multicore_settings,
+                            &array, vectorization_length, $reg::len(), 
+                            &mut temp, vectorization_length / 2, $reg::len() / 2, 
+                            Self::complex_abs_simd);
                         let mut i = vectorization_length;
                         while i + 1 < data_length
                         {
@@ -112,7 +122,11 @@ macro_rules! add_complex_impl {
                     let vectorization_length = data_length - scalar_length;
                     let array = &self.data;
                     let mut temp = &mut destination.data;
-                    Chunk::execute_original_to_target(Complexity::Small, &array, vectorization_length, $reg::len(), &mut temp, vectorization_length / 2, $reg::len() / 2, Self::complex_abs_simd);
+                    Chunk::execute_original_to_target(
+                        Complexity::Small, &self.multicore_settings,
+                        &array, vectorization_length, $reg::len(), 
+                        &mut temp, vectorization_length / 2, $reg::len() / 2, 
+                        Self::complex_abs_simd);
                     let mut i = vectorization_length;
                     while i + 1 < data_length
                     {
@@ -133,17 +147,21 @@ macro_rules! add_complex_impl {
                         let vectorization_length = data_length - scalar_length;
                         let array = &mut self.data;
                         let mut temp = temp_mut!(self, data_length);
-                        Chunk::execute_original_to_target(Complexity::Small, &array, vectorization_length,  $reg::len(), &mut temp, vectorization_length / 2, $reg::len() / 2, |array, range, target| {
-                            let mut i = range.start;
-                            let mut j = 0;
-                            while j < target.len()
-                            { 
-                                let vector = $reg::load(array, i);
-                                let result = vector.complex_abs_squared();
-                                result.store_half(target, j);
-                                i += $reg::len();
-                                j += $reg::len() / 2;
-                            }
+                        Chunk::execute_original_to_target(
+                            Complexity::Small, &self.multicore_settings,
+                            &array, vectorization_length,  $reg::len(), 
+                            &mut temp, vectorization_length / 2, $reg::len() / 2, 
+                            |array, range, target| {
+                                let mut i = range.start;
+                                let mut j = 0;
+                                while j < target.len()
+                                { 
+                                    let vector = $reg::load(array, i);
+                                    let result = vector.complex_abs_squared();
+                                    result.store_half(target, j);
+                                    i += $reg::len();
+                                    j += $reg::len() / 2;
+                                }
                         });
                         let mut i = vectorization_length;
                         while i + 1 < data_length
@@ -165,15 +183,18 @@ macro_rules! add_complex_impl {
                         let scalar_length = data_length % $reg::len();
                         let vectorization_length = data_length - scalar_length;
                         let mut array = &mut self.data;
-                        Chunk::execute_partial(Complexity::Small, &mut array, $reg::len(), vectorization_length, |array| {
-                            let multiplicator = $reg::from_complex(Complex::<$data_type>::new(1.0, -1.0));
-                            let mut i = 0;
-                            while i < array.len() {
-                                let vector = $reg::load(array, i);
-                                let result = vector * multiplicator;
-                                result.store(array, i);
-                                i += $reg::len();
-                            }
+                        Chunk::execute_partial(
+                            Complexity::Small, &self.multicore_settings,
+                            &mut array, $reg::len(), vectorization_length, 
+                            |array| {
+                                let multiplicator = $reg::from_complex(Complex::<$data_type>::new(1.0, -1.0));
+                                let mut i = 0;
+                                while i < array.len() {
+                                    let vector = $reg::load(array, i);
+                                    let result = vector * multiplicator;
+                                    result.store(array, i);
+                                    i += $reg::len();
+                                }
                         });
                         
                         let mut i = vectorization_length;
@@ -193,15 +214,18 @@ macro_rules! add_complex_impl {
                         let len = self.len();
                         let mut array = temp_mut!(self, len);
                         let source = &self.data;
-                        Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1, |original, range, target| {
-                            let mut i = range.start;
-                            let mut j = 0;
-                            while j < target.len()
-                            { 
-                                target[j] = original[i];
-                                i += 2;
-                                j += 1;
-                            }
+                        Chunk::execute_original_to_target(
+                            Complexity::Small, &self.multicore_settings,
+                            &source, len, 2, &mut array, len / 2, 1, 
+                            |original, range, target| {
+                                let mut i = range.start;
+                                let mut j = 0;
+                                while j < target.len()
+                                { 
+                                    target[j] = original[i];
+                                    i += 2;
+                                    j += 1;
+                                }
                         });
                     }
                     
@@ -216,15 +240,19 @@ macro_rules! add_complex_impl {
                         let len = self.len();
                         let mut array = temp_mut!(self, len);
                         let source = &self.data;
-                        Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1, |original, range, target| {
-                            let mut i = range.start + 1;
-                            let mut j = 0;
-                            while j < target.len()
-                            { 
-                                target[j] = original[i];
-                                i += 2;
-                                j += 1;
-                            }
+                        Chunk::execute_original_to_target(
+                            Complexity::Small, &self.multicore_settings,
+                            &source, len, 2, 
+                            &mut array, len / 2, 1, 
+                            |original, range, target| {
+                                let mut i = range.start + 1;
+                                let mut j = 0;
+                                while j < target.len()
+                                { 
+                                    target[j] = original[i];
+                                    i += 2;
+                                    j += 1;
+                                }
                         });
                     }
                     
@@ -241,15 +269,19 @@ macro_rules! add_complex_impl {
                     destination.is_complex = false;
                     let mut array = &mut destination.data;
                     let source = &self.data;
-                    Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1, |original, range, target| {
-                        let mut i = range.start;
-                        let mut j = 0;
-                        while j < target.len()
-                        { 
-                            target[j] = original[i];
-                            i += 2;
-                            j += 1;
-                        }
+                    Chunk::execute_original_to_target(
+                        Complexity::Small, &self.multicore_settings,
+                        &source, len, 2, 
+                        &mut array, len / 2, 1, 
+                        |original, range, target| {
+                            let mut i = range.start;
+                            let mut j = 0;
+                            while j < target.len()
+                            { 
+                                target[j] = original[i];
+                                i += 2;
+                                j += 1;
+                            }
                     });
                     
                     Ok(())
@@ -263,15 +295,19 @@ macro_rules! add_complex_impl {
                     destination.is_complex = false;
                     let mut array = &mut destination.data;
                     let source = &self.data;
-                    Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1,  |original, range, target| {
-                        let mut i = range.start + 1;
-                        let mut j = 0;
-                        while j < target.len()
-                        { 
-                            target[j] = original[i];
-                            i += 2;
-                            j += 1;
-                        }
+                    Chunk::execute_original_to_target(
+                        Complexity::Small, &self.multicore_settings,
+                        &source, len, 2, 
+                        &mut array, len / 2, 1, 
+                        |original, range, target| {
+                            let mut i = range.start + 1;
+                            let mut j = 0;
+                            while j < target.len()
+                            { 
+                                target[j] = original[i];
+                                i += 2;
+                                j += 1;
+                            }
                     });
                     
                     Ok(())
@@ -283,7 +319,11 @@ macro_rules! add_complex_impl {
                         let len = self.len();
                         let mut array = temp_mut!(self, len);
                         let source = &self.data;
-                        Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1,  Self::phase_par);
+                        Chunk::execute_original_to_target(
+                            Complexity::Small, &self.multicore_settings,
+                            &source, len, 2, 
+                            &mut array, len / 2, 1, 
+                            Self::phase_par);
                     }
                     
                     self.is_complex = false;
@@ -299,7 +339,11 @@ macro_rules! add_complex_impl {
                     destination.is_complex = false;
                     let mut array = &mut destination.data;
                     let source = &self.data;
-                    Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1,  Self::phase_par);
+                    Chunk::execute_original_to_target(
+                        Complexity::Small, &self.multicore_settings,
+                        &source, len, 2, 
+                        &mut array, len / 2, 1, 
+                        Self::phase_par);
                     Ok(())
                 }
                 
@@ -310,18 +354,22 @@ macro_rules! add_complex_impl {
                     let vectorization_length = data_length - scalar_length;
                     let array = &self.data;
                     let other = &factor.data;
-                    let chunks = Chunk::get_a_fold_b(Complexity::Small, &other, vectorization_length, $reg::len(), &array, vectorization_length, $reg::len(), |original, range, target| {
-                        let mut i = 0;
-                        let mut j = range.start;
-                        let mut result = $reg::splat(0.0);
-                        while i < target.len()
-                        { 
-                            let vector1 = $reg::load(original, j);
-                            let vector2 = $reg::load(target, i);
-                            result = result + (vector2.mul_complex(vector1));
-                            i += $reg::len();
-                            j += $reg::len();
-                        }
+                    let chunks = Chunk::get_a_fold_b(
+                        Complexity::Small, &self.multicore_settings,
+                        &other, vectorization_length, $reg::len(), 
+                        &array, vectorization_length, $reg::len(), 
+                        |original, range, target| {
+                            let mut i = 0;
+                            let mut j = range.start;
+                            let mut result = $reg::splat(0.0);
+                            while i < target.len()
+                            { 
+                                let vector1 = $reg::load(original, j);
+                                let vector2 = $reg::load(target, i);
+                                result = result + (vector2.mul_complex(vector1));
+                                i += $reg::len();
+                                j += $reg::len();
+                            }
                         
                         result.sum_complex()        
                     });
@@ -342,45 +390,48 @@ macro_rules! add_complex_impl {
                 fn complex_statistics(&self) -> Statistics<Complex<$data_type>> {
                     let data_length = self.len();
                     let array = &self.data;
-                    let chunks = Chunk::get_chunked_results(Complexity::Small, &array, data_length, 2, |array, range| {
-                        let mut i = 0;
-                        let mut sum = Complex::<$data_type>::new(0.0, 0.0);
-                        let mut sum_squared = Complex::<$data_type>::new(0.0, 0.0);
-                        let mut max = Complex::<$data_type>::new(array[0], array[1]);
-                        let mut min = Complex::<$data_type>::new(array[0], array[1]);
-                        let mut max_norm = max.norm();
-                        let mut min_norm = min.norm();
-                        let mut max_index = 0;
-                        let mut min_index = 0;
-                        while i < array.len()
-                        { 
-                            let value = Complex::<$data_type>::new(array[i], array[i + 1]);
-                            sum = sum + value;
-                            sum_squared = sum_squared + value * value;
-                            if value.norm() > max_norm {
-                                max = value;
-                                max_index = (i + range.start) / 2;
-                                max_norm = max.norm();
-                            }
-                            else if value.norm() < min_norm  {
-                                min = value;
-                                min_index = (i + range.start) / 2;
-                                min_norm = min.norm();
+                    let chunks = Chunk::get_chunked_results(
+                        Complexity::Small, &self.multicore_settings,
+                        &array, data_length, 2, 
+                        |array, range| {
+                            let mut i = 0;
+                            let mut sum = Complex::<$data_type>::new(0.0, 0.0);
+                            let mut sum_squared = Complex::<$data_type>::new(0.0, 0.0);
+                            let mut max = Complex::<$data_type>::new(array[0], array[1]);
+                            let mut min = Complex::<$data_type>::new(array[0], array[1]);
+                            let mut max_norm = max.norm();
+                            let mut min_norm = min.norm();
+                            let mut max_index = 0;
+                            let mut min_index = 0;
+                            while i < array.len()
+                            { 
+                                let value = Complex::<$data_type>::new(array[i], array[i + 1]);
+                                sum = sum + value;
+                                sum_squared = sum_squared + value * value;
+                                if value.norm() > max_norm {
+                                    max = value;
+                                    max_index = (i + range.start) / 2;
+                                    max_norm = max.norm();
+                                }
+                                else if value.norm() < min_norm  {
+                                    min = value;
+                                    min_index = (i + range.start) / 2;
+                                    min_norm = min.norm();
+                                }
+                                
+                                i += 2;
                             }
                             
-                            i += 2;
-                        }
-                        
-                        Statistics {
-                            sum: sum,
-                            count: array.len(),
-                            average: Complex::<$data_type>::new(0.0, 0.0), 
-                            min: min,
-                            max: max, 
-                            rms: sum_squared, // this field therefore has a different meaning inside this function
-                            min_index: min_index,
-                            max_index: max_index,
-                        }    
+                            Statistics {
+                                sum: sum,
+                                count: array.len(),
+                                average: Complex::<$data_type>::new(0.0, 0.0), 
+                                min: min,
+                                max: max, 
+                                rms: sum_squared, // this field therefore has a different meaning inside this function
+                                min_index: min_index,
+                                max_index: max_index,
+                            }    
                     });
                     
                     let mut sum = Complex::<$data_type>::new(0.0, 0.0);

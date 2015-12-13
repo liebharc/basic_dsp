@@ -24,7 +24,6 @@ pub enum Complexity {
 /// to execute an operation.
 #[derive(Debug)]    
 pub struct MultiCoreSettings {
-    #[allow(dead_code)]
     pub core_limit: usize,
     pub early_temp_allocation: bool
     // TODO: Specify and use options such as core/thread limits
@@ -103,9 +102,12 @@ impl Chunk
     ///    for operations which only require a few CPU cycles already one or two cores will process data faster than the 
     ///    memory bus is able to provide and to transport back. Using more cores then only creates heat but no performance benefit.
 	#[inline]
-	fn determine_number_of_chunks(array_length: usize, complexity: Complexity) -> usize
+	fn determine_number_of_chunks(array_length: usize, complexity: Complexity, settings: &MultiCoreSettings) -> usize
 	{
-        let cores = num_cpus::get();
+        let mut cores = num_cpus::get();
+        if cores > settings.core_limit {
+            cores = settings.core_limit;
+        }
         if complexity == Complexity::Large || cores == 1 {
             cores
         }
@@ -114,7 +116,11 @@ impl Chunk
                 1
             }
             else {
-                2
+                if cores >= 2 {
+                    2  
+                } else {
+                    1
+                }
             }
         }
         else { // complexity == medium
@@ -122,7 +128,11 @@ impl Chunk
                 1
             }
             else if array_length < 50000 {
-                2
+                if cores >= 2 {
+                    2  
+                } else {
+                    1
+                }
             }
             else {
                 cores
@@ -181,21 +191,21 @@ impl Chunk
 		
     /// Executes the given function on the all elements of the array in parallel.
 	#[inline]
-	pub fn execute<F, T>(complexity: Complexity, array: &mut [T], step_size: usize, function: F)
+	pub fn execute<F, T>(complexity: Complexity, settings: &MultiCoreSettings, array: &mut [T], step_size: usize, function: F)
 		where F: Fn(&mut [T]) + 'static + Sync,
 			  T : Float + Copy + Clone + Send + Sync
 	{
 		let array_length = array.len();
-		Chunk::execute_partial(complexity, array, array_length, step_size, function);
+		Chunk::execute_partial(complexity, settings, array, array_length, step_size, function);
 	}
 	
     /// Executes the given function on the first `array_length` elements of the given array in parallel.
 	#[inline]
-	pub fn execute_partial<F, T>(complexity: Complexity, array: &mut [T], array_length: usize, step_size: usize, function: F)
+	pub fn execute_partial<F, T>(complexity: Complexity, settings: &MultiCoreSettings, array: &mut [T], array_length: usize, step_size: usize, function: F)
 		where F: Fn(&mut [T]) + 'static + Sync,
 			  T : Float + Copy + Clone + Send + Sync
 	{
-        let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity);
+        let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity, settings);
 		if number_of_chunks > 1
 		{
 			let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
@@ -216,13 +226,14 @@ impl Chunk
 	#[inline]
 	pub fn execute_partial_with_arguments<T,S,F>(
             complexity: Complexity, 
+            settings: &MultiCoreSettings, 
             array: &mut [T], array_length: usize, step_size: usize, 
             arguments:S, function: F)
 		where F: Fn(&mut [T], S) + 'static + Sync, 
 			  T: RealNumber,
 			  S: Sync + Copy
 	{
-		let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity);
+		let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity, settings);
 		if number_of_chunks > 1
 		{
 			let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
@@ -242,13 +253,14 @@ impl Chunk
 	#[inline]
 	pub fn execute_original_to_target<F, T>(
             complexity: Complexity, 
+            settings: &MultiCoreSettings, 
             original: &[T], original_length: usize, original_step: usize, 
             target: &mut [T], target_length: usize, target_step: usize, 
             function: F)
 		where F: Fn(&[T], Range<usize>, &mut [T]) + 'static + Sync,
 			  T : Float + Copy + Clone + Send + Sync
 	{
-		let number_of_chunks = Chunk::determine_number_of_chunks(original_length, complexity);
+		let number_of_chunks = Chunk::determine_number_of_chunks(original_length, complexity, settings);
 		if number_of_chunks > 1
 		{
 			let chunks = Chunk::partition_mut(target, target_length, target_step, number_of_chunks);
@@ -270,6 +282,7 @@ impl Chunk
 	#[inline]
 	pub fn get_a_fold_b<F, T, R>(
             complexity: Complexity, 
+            settings: &MultiCoreSettings, 
             a: &[T], a_len: usize, a_step: usize, 
             b: &[T], b_len: usize, b_step: usize, 
             function: F) -> Vec<R>
@@ -277,7 +290,7 @@ impl Chunk
 			  T: Float + Copy + Clone + Send + Sync,
               R: Send
 	{
-		let number_of_chunks = Chunk::determine_number_of_chunks(a_len, complexity);
+		let number_of_chunks = Chunk::determine_number_of_chunks(a_len, complexity, settings);
 		if number_of_chunks > 1
 		{
 			let chunks = Chunk::partition(b, b_len, b_step, number_of_chunks);
@@ -305,13 +318,14 @@ impl Chunk
 	#[inline]
 	pub fn get_chunked_results<F, T, R>(
             complexity: Complexity, 
+            settings: &MultiCoreSettings, 
             a: &[T], a_len: usize, a_step: usize, 
             function: F) -> Vec<R>
 		where F: Fn(&[T], Range<usize>) -> R + 'static + Sync,
 			  T: Float + Copy + Clone + Send + Sync,
               R: Send
 	{
-		let number_of_chunks = Chunk::determine_number_of_chunks(a_len, complexity);
+		let number_of_chunks = Chunk::determine_number_of_chunks(a_len, complexity, settings);
 		if number_of_chunks > 1
 		{
 			let chunks = Chunk::partition(a, a_len, a_step, number_of_chunks);
@@ -339,6 +353,7 @@ impl Chunk
 	#[inline]
 	pub fn execute_original_to_target_with_arguments<T,S,F>(
             complexity: Complexity, 
+            settings: &MultiCoreSettings, 
             original: &[T], original_length: usize, original_step: usize, 
             target: &mut [T], target_length: usize, target_step: usize, 
             arguments: S, function: F)
@@ -346,7 +361,7 @@ impl Chunk
 			  T : Float + Copy + Clone + Send + Sync,
 			  S: Sync + Copy
 	{
-		let number_of_chunks = Chunk::determine_number_of_chunks(original_length, complexity);
+		let number_of_chunks = Chunk::determine_number_of_chunks(original_length, complexity, settings);
 		if number_of_chunks > 1
 		{
 			let chunks = Chunk::partition_mut(target, target_length, target_step, number_of_chunks);
