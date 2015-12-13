@@ -514,6 +514,10 @@ macro_rules! define_real_operations_forward {
                 {
                     self.to_gen_borrow().real_dot_product(&factor.to_gen_borrow())
                 }
+                
+                fn real_statistics(&self) -> Statistics<$data_type> {
+                    self.to_gen_borrow().real_statistics()
+                }
             }
         )*
         
@@ -830,6 +834,10 @@ macro_rules! define_complex_operations_forward {
                 {
                     self.to_gen_borrow().complex_dot_product(&factor.to_gen_borrow())
                 }
+                
+                fn complex_statistics(&self) -> Statistics<Complex<$data_type>> {
+                    self.to_gen_borrow().complex_statistics()
+                }
             }
         )*
         
@@ -915,6 +923,7 @@ pub use vector_types::definitions::
 		ComplexVectorOperations,
 		TimeDomainOperations,
 		FrequencyDomainOperations,		
+        Statistics
 	};
 use num::complex::Complex;
 use RealNumber;

@@ -17,7 +17,8 @@ use vector_types::
 		ComplexTimeVector32, 
 		RealFreqVector32,
 		ComplexFreqVector32,
-		Operation
+		Operation,
+        Statistics
 	};
 use num::complex::Complex32;
 
@@ -107,13 +108,23 @@ pub extern fn multiply_vector32(vector: Box<DataVector32>, operand: &DataVector3
 }
 
 #[no_mangle]
-pub extern fn real_dot_product32(vector: Box<DataVector32>, operand: &DataVector32) -> ScalarResult<f32> {
+pub extern fn real_dot_product32(vector: &DataVector32, operand: &DataVector32) -> ScalarResult<f32> {
     convert_scalar!(vector.real_dot_product(operand), 0.0)
 }
 
 #[no_mangle]
-pub extern fn complex_dot_product32(vector: Box<DataVector32>, operand: &DataVector32) -> ScalarResult<Complex32> {
+pub extern fn complex_dot_product32(vector: &DataVector32, operand: &DataVector32) -> ScalarResult<Complex32> {
     convert_scalar!(vector.complex_dot_product(operand), Complex32::new(0.0, 0.0))
+}
+
+#[no_mangle]
+pub extern fn real_statistics32(vector: &DataVector32) -> Statistics<f32> {
+    vector.real_statistics()
+}
+
+#[no_mangle]
+pub extern fn complex_statistics32(vector: &DataVector32) -> Statistics<Complex32> {
+    vector.complex_statistics()
 }
 
 #[no_mangle]

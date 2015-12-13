@@ -271,7 +271,7 @@ impl Chunk
               R: Send
 	{
 		let number_of_chunks = Chunk::determine_number_of_chunks(a_len, complexity);
-		if number_of_chunks > 10
+		if number_of_chunks > 1
 		{
 			let chunks = Chunk::partition(b, b_len, b_step, number_of_chunks);
 			let ranges = Chunk::partition_in_ranges(a_len, a_step, chunks.len());
@@ -289,6 +289,40 @@ impl Chunk
 		else
 		{
 			let result = function(a, Range { start: 0, end: a_len }, &b[0..b_len]);
+            vec![result]
+		}
+	}
+    
+    /// Executes the given function on the all elements of the array in parallel. A result is
+    /// returned for each chunk.
+	#[inline]
+	pub fn get_chunked_results<F, T, R>(
+            complexity: Complexity, 
+            a: &[T], a_len: usize, a_step: usize, 
+            function: F) -> Vec<R>
+		where F: Fn(&[T], Range<usize>) -> R + 'static + Sync,
+			  T: Float + Copy + Clone + Send + Sync,
+              R: Send
+	{
+		let number_of_chunks = Chunk::determine_number_of_chunks(a_len, complexity);
+		if number_of_chunks > 1
+		{
+			let chunks = Chunk::partition(a, a_len, a_step, number_of_chunks);
+            let ranges = Chunk::partition_in_ranges(a_len, a_step, chunks.len());
+			let ref mut pool = Chunk::get_static_pool();
+            let result = Vec::with_capacity(chunks.len());
+            let stack_array = Mutex::new(result);
+            pool.for_(chunks.zip(ranges), |chunk|
+                {   
+                    let r = function(chunk.0, chunk.1);
+                    stack_array.lock().unwrap().push(r);
+                });
+            let mut guard = stack_array.lock().unwrap();
+            mem::replace(&mut guard, Vec::new())
+		}
+		else
+		{
+			let result = function(&a[0..a_len], Range { start: 0, end: a_len });
             vec![result]
 		}
 	}

@@ -3,6 +3,7 @@ use super::definitions::{
 	DataVector,
     VecResult,
     ScalarResult,
+    Statistics,
     GenericVectorOperations,
 	RealVectorOperations};
 use super::GenericDataVector;    
@@ -185,6 +186,75 @@ macro_rules! add_real_impl {
                     
                     let chunk_sum: $data_type = chunks.iter().fold(0.0, |a, b| a + b);
                     Ok(chunk_sum + sum)
+                }
+                
+                fn real_statistics(&self) -> Statistics<$data_type> {
+                    let data_length = self.len();
+                    let array = &self.data;
+                    let chunks = Chunk::get_chunked_results(Complexity::Small, &array, data_length, 1, |array, range| {
+                        let mut i = 0;
+                        let mut sum = 0.0;
+                        let mut sum_squared = 0.0;
+                        let mut max = array[0];
+                        let mut min = array[0];
+                        let mut max_index = 0;
+                        let mut min_index = 0;
+                        while i < array.len()
+                        { 
+                            sum += array[i];
+                            sum_squared += array[i] * array[i];
+                            if array[i] > max {
+                                max = array[i];
+                                max_index = i + range.start;
+                            }
+                            else if array[i] < min {
+                                min = array[i];
+                                min_index = i + range.start;
+                            }
+                            
+                            i += 1;
+                        }
+                        
+                        Statistics {
+                            sum: sum,
+                            count: array.len(),
+                            average: 0.0, 
+                            min: min,
+                            max: max, 
+                            rms: sum_squared, // this field therefore has a different meaning inside this function
+                            min_index: min_index,
+                            max_index: max_index,
+                        }    
+                    });
+                    
+                    let mut sum = 0.0;
+                    let mut max = chunks[0].max;
+                    let mut min = chunks[0].min;
+                    let mut max_index = chunks[0].max_index;
+                    let mut min_index = chunks[0].min_index;
+                    let mut sum_squared = 0.0;
+                    for stat in chunks {
+                        sum += stat.sum;
+                        sum_squared += stat.rms; // We stored sum_squared in the field rms
+                        if stat.max > max {
+                            max = stat.max;
+                            max_index = stat.max_index;
+                        }
+                        else if stat.min > min {
+                            min = stat.min;
+                            min_index = stat.min_index;
+                        }
+                    }
+                    Statistics {
+                        sum: sum,
+                        count: array.len(),
+                        average: sum / (array.len() as $data_type),
+                        min: min,
+                        max: max,
+                        rms: (sum_squared / (array.len() as $data_type)).sqrt(),
+                        min_index: min_index,
+                        max_index: max_index,
+                    }  
                 }
             }
         )*

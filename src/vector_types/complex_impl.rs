@@ -4,6 +4,7 @@ use super::definitions::{
     VecResult,
     VoidResult,
     ScalarResult,
+    Statistics,
 	ComplexVectorOperations};
 use super::GenericDataVector;
 use simd_extensions::{Simd,Reg32,Reg64};
@@ -336,6 +337,85 @@ macro_rules! add_complex_impl {
                     
                     let chunk_sum: Complex<$data_type> = chunks.iter().fold(Complex::<$data_type>::new(0.0, 0.0), |a, b| a + b);
                     Ok(chunk_sum + sum)
+                }
+                
+                fn complex_statistics(&self) -> Statistics<Complex<$data_type>> {
+                    let data_length = self.len();
+                    let array = &self.data;
+                    let chunks = Chunk::get_chunked_results(Complexity::Small, &array, data_length, 2, |array, range| {
+                        let mut i = 0;
+                        let mut sum = Complex::<$data_type>::new(0.0, 0.0);
+                        let mut sum_squared = Complex::<$data_type>::new(0.0, 0.0);
+                        let mut max = Complex::<$data_type>::new(array[0], array[1]);
+                        let mut min = Complex::<$data_type>::new(array[0], array[1]);
+                        let mut max_norm = max.norm();
+                        let mut min_norm = min.norm();
+                        let mut max_index = 0;
+                        let mut min_index = 0;
+                        while i < array.len()
+                        { 
+                            let value = Complex::<$data_type>::new(array[i], array[i + 1]);
+                            sum = sum + value;
+                            sum_squared = sum_squared + value * value;
+                            if value.norm() > max_norm {
+                                max = value;
+                                max_index = (i + range.start) / 2;
+                                max_norm = max.norm();
+                            }
+                            else if value.norm() < min_norm  {
+                                min = value;
+                                min_index = (i + range.start) / 2;
+                                min_norm = min.norm();
+                            }
+                            
+                            i += 2;
+                        }
+                        
+                        Statistics {
+                            sum: sum,
+                            count: array.len(),
+                            average: Complex::<$data_type>::new(0.0, 0.0), 
+                            min: min,
+                            max: max, 
+                            rms: sum_squared, // this field therefore has a different meaning inside this function
+                            min_index: min_index,
+                            max_index: max_index,
+                        }    
+                    });
+                    
+                    let mut sum = Complex::<$data_type>::new(0.0, 0.0);
+                    let mut max = chunks[0].max;
+                    let mut min = chunks[0].min;
+                    let mut max_index = chunks[0].max_index;
+                    let mut min_index = chunks[0].min_index;
+                    let mut max_norm = max.norm();
+                    let mut min_norm = min.norm();
+                    let mut sum_squared = Complex::<$data_type>::new(0.0, 0.0);
+                    for stat in chunks {
+                        sum = sum + stat.sum;
+                        sum_squared = sum_squared + stat.rms; // We stored sum_squared in the field rms
+                        if stat.max.norm() > max_norm {
+                            max = stat.max;
+                            max_norm = max.norm();
+                            max_index = stat.max_index;
+                        }
+                        else if stat.min.norm() > min_norm {
+                            min = stat.min;
+                            min_norm = min.norm();
+                            min_index = stat.min_index;
+                        }
+                    }
+                    let points = self.points();
+                    Statistics {
+                        sum: sum,
+                        count: points,
+                        average: sum / (points as $data_type),
+                        min: min,
+                        max: max,
+                        rms: (sum_squared / (points as $data_type)).sqrt(),
+                        min_index: min_index,
+                        max_index: max_index,
+                    }  
                 }
             }
             

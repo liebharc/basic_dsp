@@ -436,6 +436,24 @@ pub trait RealVectorOperations<T> : DataVector<T>
 	/// assert_eq!(122.0, result);
 	/// ```  
     fn real_dot_product(&self, factor: &Self) -> ScalarResult<T>;
+    
+    /// Calculates the statistics of the data contained in the vector.
+    /// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0]);
+	/// let result = vector.real_statistics();
+	/// assert_eq!(result.sum, 15.0);
+    /// assert_eq!(result.count, 5);
+    /// assert_eq!(result.average, 3.0);
+    /// assert!((result.rms - 3.3166).abs() < 1e-4);
+    /// assert_eq!(result.min, 1.0);
+    /// assert_eq!(result.min_index, 0);
+    /// assert_eq!(result.max, 5.0);
+    /// assert_eq!(result.max_index, 4);
+	/// ```  
+    fn real_statistics(&self) -> Statistics<T>;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing complex data.
@@ -648,6 +666,29 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
     /// }
 	/// ```  
     fn complex_dot_product(&self, factor: &Self) -> ScalarResult<Complex<T>>;
+    
+    /// Calculates the statistics of the data contained in the vector.
+    /// # Example
+	///
+	/// ```
+	/// # extern crate num;
+	/// # extern crate basic_dsp;
+    /// # use num::complex::Complex32;
+	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations};
+	/// # fn main() { 
+	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+	/// let result = vector.complex_statistics();
+	/// assert_eq!(result.sum, Complex32::new(9.0, 12.0));
+    /// assert_eq!(result.count, 3);
+    /// assert_eq!(result.average, Complex32::new(3.0, 4.0));
+    /// assert_eq!(result.rms, Complex32::new(3.4027193, 4.3102784));
+    /// assert_eq!(result.min, Complex32::new(1.0, 2.0));
+    /// assert_eq!(result.min_index, 0);
+    /// assert_eq!(result.max, Complex32::new(5.0, 6.0));
+    /// assert_eq!(result.max_index, 2);
+    /// }
+	/// ```  
+    fn complex_statistics(&self) -> Statistics<Complex<T>>;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
@@ -722,3 +763,16 @@ pub type VoidResult = result::Result<(), ErrorReason>;
 
 /// Result or a reason in case of an error.
 pub type ScalarResult<T> = result::Result<T, ErrorReason>;
+
+/// Statistics about the data in a vector
+#[repr(C)]
+pub struct Statistics<T> {
+    pub sum: T,
+    pub count: usize,
+    pub average: T,
+    pub rms: T,
+    pub min: T,
+    pub min_index: usize,
+    pub max: T,
+    pub max_index: usize
+}

@@ -17,7 +17,8 @@ use vector_types::
 		ComplexTimeVector64, 
 		RealFreqVector64,
 		ComplexFreqVector64,
-		Operation
+		Operation,
+        Statistics
 	};
 use num::complex::Complex64;
 
@@ -107,13 +108,23 @@ pub extern fn multiply_vector64(vector: Box<DataVector64>, operand: &DataVector6
 }
 
 #[no_mangle]
-pub extern fn real_dot_product64(vector: Box<DataVector64>, operand: &DataVector64) -> ScalarResult<f64> {
+pub extern fn real_dot_product64(vector: &DataVector64, operand: &DataVector64) -> ScalarResult<f64> {
     convert_scalar!(vector.real_dot_product(operand), 0.0)
 }
 
 #[no_mangle]
-pub extern fn complex_dot_product64(vector: Box<DataVector64>, operand: &DataVector64) -> ScalarResult<Complex64> {
+pub extern fn complex_dot_product64(vector: &DataVector64, operand: &DataVector64) -> ScalarResult<Complex64> {
     convert_scalar!(vector.complex_dot_product(operand), Complex64::new(0.0, 0.0))
+}
+
+#[no_mangle]
+pub extern fn real_statistics64(vector: &DataVector64) -> Statistics<f64> {
+    vector.real_statistics()
+}
+
+#[no_mangle]
+pub extern fn complex_statistics64(vector: &DataVector64) -> Statistics<Complex64> {
+    vector.complex_statistics()
 }
 
 #[no_mangle]
