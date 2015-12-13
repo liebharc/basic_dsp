@@ -32,7 +32,7 @@ pub struct MultiCoreSettings {
 impl MultiCoreSettings {
     pub fn new() -> MultiCoreSettings {
         // Initialize the pool
-        let _pool = Chunk::get_static_pool();
+        Chunk::init_static_pool();
         MultiCoreSettings {
             core_limit: num_cpus::get()
         }
@@ -51,27 +51,33 @@ impl Clone for MultiCoreSettings {
     }
 }
 
+static mut POOL: *mut Pool = 0 as *mut Pool;
+
 /// Contains logic which helps to perform an operation
 /// in parallel by dividing an array into chunks.
 pub struct Chunk;
 #[allow(dead_code)]
 impl Chunk
 {
-    /// Gives access to the thread pool singleton
-	fn get_static_pool() -> &'static mut Pool
-	{
-		use std::mem::transmute;
+    fn init_static_pool() {
+        use std::mem::transmute;
 		use std::sync::{Once, ONCE_INIT};
 		unsafe
 		{
-			static mut pool: *mut Pool = 0 as *mut Pool;
 			static mut ONCE: Once = ONCE_INIT;
 			ONCE.call_once(||
 			{
-				pool = transmute::<Box<Pool>, *mut Pool>(Box::new(Pool::new(num_cpus::get())));
+				POOL = transmute::<Box<Pool>, *mut Pool>(Box::new(Pool::new(num_cpus::get())));
 			});
-			
-			let mut static_pool = &mut *pool;
+		}
+    }
+    
+    /// Gives access to the thread pool singleton
+	fn get_static_pool() -> &'static mut Pool
+	{
+		unsafe
+		{
+			let mut static_pool = &mut *POOL;
 			static_pool
 		}
 	}
