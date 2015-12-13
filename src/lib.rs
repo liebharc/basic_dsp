@@ -10,7 +10,7 @@
 //! 2D or 3D graphics calculations then you unfortunately have to continue with your search. However there seem to be 
 //! a lot of suitable crates on `crates.io` for you.
 //!
-//! The vector types don't distinguish between 1xN or Nx1. This is a difference to other conventions such as in MATLAB.
+//! The vector types don't distinguish between 1xN or Nx1. This is a difference to other conventions such as in MATLAB or GNU Octave.
 //! The reason for this decision is that it seems to be more practical to ignore the shape of the vector.
 //!
 //! Right now the library uses pretty aggressive parallelization. So this means that it will keep all CPU cores busy

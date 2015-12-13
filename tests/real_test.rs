@@ -327,4 +327,19 @@ mod slow_test {
         assert_eq!(result.is_complex(), false);
         assert_eq!(result.delta(), delta);
     }
+    
+    #[test]
+    fn statistics_test32() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data(201511210, iteration, range.start, range.end);
+            let delta = create_delta(3561159, iteration);
+            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
+            let sum: f32 = a.iter().fold(0.0, |a,b| a + b);
+            let sum_sq: f32 = a.iter().map(|v| v * v).fold(0.0, |a,b| a + b);
+            let rms = (sum_sq / a.len() as f32).sqrt();
+            let result = vector.real_statistics();
+            assert_eq!(result.sum, sum);
+            assert_eq!(result.rms, rms);
+        });
+    }
 }

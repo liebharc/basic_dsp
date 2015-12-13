@@ -1,6 +1,7 @@
 use rand::*;
 use basic_dsp::DataVector;
 use std::ops::Range;
+use num::complex::Complex32;
 use std::thread;
 
 pub fn assert_vector_eq_with_reason(left: &[f32], right: &[f32], reason: &str) {
@@ -56,9 +57,21 @@ pub fn assert_close(left: f32, right: f32) {
     assert_in_tolerance(left, right, 1e-6);
 }
 
+pub fn assert_complex_close(left: Complex32, right: Complex32) {
+    assert_complex_in_tolerance(left, right, 1e-6);
+}
+
 pub fn assert_in_tolerance(left: f32, right: f32, tol: f32) {
     let tol = tol.abs();
     if (left - right).abs() > tol {
+        panic!(format!("{} != {} (tol: {})", left, right, tol));
+    }
+}
+
+pub fn assert_complex_in_tolerance(left: Complex32, right: Complex32, tol: f32) {
+    let tol = tol.abs();
+    if (left.re - right.re).abs() > tol ||
+       (left.im - right.im).abs() > tol {
         panic!(format!("{} != {} (tol: {})", left, right, tol));
     }
 }
