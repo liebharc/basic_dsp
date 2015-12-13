@@ -681,7 +681,7 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
 	/// assert_eq!(result.sum, Complex32::new(9.0, 12.0));
     /// assert_eq!(result.count, 3);
     /// assert_eq!(result.average, Complex32::new(3.0, 4.0));
-    /// assert_eq!(result.rms, Complex32::new(3.4027193, 4.3102784));
+    /// assert!((result.rms - Complex32::new(3.4027193, 4.3102784)).norm() < 1e-4);
     /// assert_eq!(result.min, Complex32::new(1.0, 2.0));
     /// assert_eq!(result.min_index, 0);
     /// assert_eq!(result.max, Complex32::new(5.0, 6.0));
