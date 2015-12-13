@@ -171,6 +171,20 @@ mod slow_test {
         });
     }
     
+    #[test]
+    fn real_dot_product32() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data(201511171, iteration, range.start, range.end);
+            let b = create_data_with_len(201511172, iteration, a.len());
+            let expected = real_vector_mul(&a, &b).iter().fold(0.0, |a, b| a + b);
+            let delta = create_delta(3561159, iteration);
+            let vector1 = RealTimeVector32::from_array_with_delta(&a, delta);
+            let vector2 = RealTimeVector32::from_array_with_delta(&b, delta);
+            let result = vector1.real_dot_product(&vector2).unwrap();
+            assert_in_tolerance(expected, result, 0.5);
+        });
+    }
+    
     fn real_vector_div(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
     {
         let mut result = vec![0.0; a.len()];

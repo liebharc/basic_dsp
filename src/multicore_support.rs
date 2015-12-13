@@ -1,8 +1,10 @@
 use num_cpus;
-use std::slice::ChunksMut;
+use std::slice::{Chunks, ChunksMut};
 use num::traits::Float;
 use simple_parallel::Pool;
 use std::ops::Range;
+use std::sync::Mutex;
+use std::mem;
 use super::RealNumber;
 
 /// Indicates how complex an operation is and determines how many cores 
@@ -114,11 +116,21 @@ impl Chunk
             }
         }
 	}
+    
+    /// Partitions an array into the given number of chunks. It makes sure that all chunks have the same size
+    /// and so it will happen that some elements at the end of the array are not part of any chunk. 
+	#[inline]
+	fn partition<T>(array: &[T], array_length: usize, step_size: usize, number_of_chunks: usize) -> Chunks<T>
+		where T : Float + Copy + Clone + Send
+	{
+		let chunk_size = Chunk::calc_chunk_size(array_length, step_size, number_of_chunks);
+		array[0 .. array_length].chunks(chunk_size)
+	}
 	
     /// Partitions an array into the given number of chunks. It makes sure that all chunks have the same size
     /// and so it will happen that some elements at the end of the array are not part of any chunk. 
 	#[inline]
-	fn partition<T>(array: &mut [T], array_length: usize, step_size: usize, number_of_chunks: usize) -> ChunksMut<T>
+	fn partition_mut<T>(array: &mut [T], array_length: usize, step_size: usize, number_of_chunks: usize) -> ChunksMut<T>
 		where T : Float + Copy + Clone + Send
 	{
 		let chunk_size = Chunk::calc_chunk_size(array_length, step_size, number_of_chunks);
@@ -173,7 +185,7 @@ impl Chunk
         let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity);
 		if number_of_chunks > 1
 		{
-			let chunks = Chunk::partition(array, array_length, step_size, number_of_chunks);
+			let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
 			let ref mut pool = Chunk::get_static_pool();
 			pool.for_(chunks, |chunk|
 				{
@@ -200,7 +212,7 @@ impl Chunk
 		let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity);
 		if number_of_chunks > 1
 		{
-			let chunks = Chunk::partition(array, array_length, step_size, number_of_chunks);
+			let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
 			let ref mut pool = Chunk::get_static_pool();
 			pool.for_(chunks, |chunk|
 				{
@@ -226,7 +238,7 @@ impl Chunk
 		let number_of_chunks = Chunk::determine_number_of_chunks(original_length, complexity);
 		if number_of_chunks > 1
 		{
-			let chunks = Chunk::partition(target, target_length, target_step, number_of_chunks);
+			let chunks = Chunk::partition_mut(target, target_length, target_step, number_of_chunks);
 			let ranges = Chunk::partition_in_ranges(original_length, original_step, chunks.len());
 			let ref mut pool = Chunk::get_static_pool();
 			pool.for_(chunks.zip(ranges), |chunk|
@@ -237,6 +249,41 @@ impl Chunk
 		else
 		{
 			function(original, Range { start: 0, end: original_length }, &mut target[0..target_length]);
+		}
+	}
+    
+    /// Executes the given function on the all elements of the array in parallel. A result is
+    /// returned for each chunk.
+	#[inline]
+	pub fn get_a_fold_b<F, T, R>(
+            complexity: Complexity, 
+            a: &[T], a_len: usize, a_step: usize, 
+            b: &[T], b_len: usize, b_step: usize, 
+            function: F) -> Vec<R>
+		where F: Fn(&[T], Range<usize>, &[T]) -> R + 'static + Sync,
+			  T: Float + Copy + Clone + Send + Sync,
+              R: Send
+	{
+		let number_of_chunks = Chunk::determine_number_of_chunks(a_len, complexity);
+		if number_of_chunks > 10
+		{
+			let chunks = Chunk::partition(b, b_len, b_step, number_of_chunks);
+			let ranges = Chunk::partition_in_ranges(a_len, a_step, chunks.len());
+			let ref mut pool = Chunk::get_static_pool();
+            let result = Vec::with_capacity(chunks.len());
+            let stack_array = Mutex::new(result);
+            pool.for_(chunks.zip(ranges), |chunk|
+                {   
+                    let r = function(a, chunk.1, chunk.0);
+                    stack_array.lock().unwrap().push(r);
+                });
+            let mut guard = stack_array.lock().unwrap();
+            mem::replace(&mut guard, Vec::new())
+		}
+		else
+		{
+			let result = function(a, Range { start: 0, end: a_len }, &b[0..b_len]);
+            vec![result]
 		}
 	}
 	
@@ -255,7 +302,7 @@ impl Chunk
 		let number_of_chunks = Chunk::determine_number_of_chunks(original_length, complexity);
 		if number_of_chunks > 1
 		{
-			let chunks = Chunk::partition(target, target_length, target_step, number_of_chunks);
+			let chunks = Chunk::partition_mut(target, target_length, target_step, number_of_chunks);
 			let ranges = Chunk::partition_in_ranges(original_length, original_step, chunks.len());
 			let ref mut pool = Chunk::get_static_pool();
 			pool.for_(chunks.zip(ranges), |chunk|
@@ -279,7 +326,7 @@ mod tests {
 	fn partition_array()
 	{
 		let mut array = [0.0; 256];
-		let chunks = Chunk::partition(&mut array, 256, 4, 2);
+		let chunks = Chunk::partition_mut(&mut array, 256, 4, 2);
 		assert_eq!(chunks.len(), 2);
 		for chunk in chunks
 		{
@@ -291,7 +338,7 @@ mod tests {
 	fn partition_array_8_cores()
 	{
 		let mut array = [0.0; 1023];
-		let chunks = Chunk::partition(&mut array, 1023, 4, 8);
+		let chunks = Chunk::partition_mut(&mut array, 1023, 4, 8);
 		assert_eq!(chunks.len(), 8);
 		let mut i = 0;
 		for chunk in chunks

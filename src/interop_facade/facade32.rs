@@ -107,6 +107,16 @@ pub extern fn multiply_vector32(vector: Box<DataVector32>, operand: &DataVector3
 }
 
 #[no_mangle]
+pub extern fn real_dot_product32(vector: Box<DataVector32>, operand: &DataVector32) -> ScalarResult<f32> {
+    convert_scalar!(vector.real_dot_product(operand), 0.0)
+}
+
+#[no_mangle]
+pub extern fn complex_dot_product32(vector: Box<DataVector32>, operand: &DataVector32) -> ScalarResult<Complex32> {
+    convert_scalar!(vector.complex_dot_product(operand), Complex32::new(0.0, 0.0))
+}
+
+#[no_mangle]
 pub extern fn zero_pad32(vector: Box<DataVector32>, points: usize) -> VectorResult<DataVector32> {
     convert_vec!(vector.zero_pad(points))
 }

@@ -3,6 +3,7 @@ use super::definitions::{
 	DataVector,
     VecResult,
     VoidResult,
+    ScalarResult,
 	ComplexVectorOperations};
 use super::GenericDataVector;
 use simd_extensions::{Simd,Reg32,Reg64};
@@ -299,6 +300,42 @@ macro_rules! add_complex_impl {
                     let source = &self.data;
                     Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1,  Self::phase_par);
                     Ok(())
+                }
+                
+                fn complex_dot_product(&self, factor: &Self) -> ScalarResult<Complex<$data_type>>
+                {
+                    let data_length = self.len();
+                    let scalar_length = data_length % $reg::len();
+                    let vectorization_length = data_length - scalar_length;
+                    let array = &self.data;
+                    let other = &factor.data;
+                    let chunks = Chunk::get_a_fold_b(Complexity::Small, &other, vectorization_length, $reg::len(), &array, vectorization_length, $reg::len(), |original, range, target| {
+                        let mut i = 0;
+                        let mut j = range.start;
+                        let mut result = $reg::splat(0.0);
+                        while i < target.len()
+                        { 
+                            let vector1 = $reg::load(original, j);
+                            let vector2 = $reg::load(target, i);
+                            result = result + (vector2.mul_complex(vector1));
+                            i += $reg::len();
+                            j += $reg::len();
+                        }
+                        
+                        result.sum_complex()        
+                    });
+                    let mut i = vectorization_length;
+                    let mut sum = Complex::<$data_type>::new(0.0, 0.0);
+                    while i < data_length
+                    {
+                        let a = Complex::<$data_type>::new(array[i], array[i + 1]);
+                        let b = Complex::<$data_type>::new(other[i], other[i + 1]);
+                        sum = sum + a * b;
+                        i += 2;
+                    }
+                    
+                    let chunk_sum: Complex<$data_type> = chunks.iter().fold(Complex::<$data_type>::new(0.0, 0.0), |a, b| a + b);
+                    Ok(chunk_sum + sum)
                 }
             }
             

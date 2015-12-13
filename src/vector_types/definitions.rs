@@ -424,6 +424,18 @@ pub trait RealVectorOperations<T> : DataVector<T>
 	/// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], result.data());
 	/// ```
 	fn unwrap(self, divisor: T) -> VecResult<Self>;
+    
+    /// Calculates the dot product of self and factor. Self and factor remain unchanged.
+    /// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+	/// let vector1 = RealTimeVector32::from_array(&[9.0, 2.0, 7.0]);
+	/// let vector2 = RealTimeVector32::from_array(&[4.0, 8.0, 10.0]);
+	/// let result = vector1.real_dot_product(&vector2).expect("Ignoring error handling in examples");
+	/// assert_eq!(122.0, result);
+	/// ```  
+    fn real_dot_product(&self, factor: &Self) -> ScalarResult<T>;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing complex data.
@@ -619,6 +631,23 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
 	/// # }
 	/// ```
 	fn get_phase(&self, destination: &mut Self::RealPartner) -> VoidResult;
+    
+    /// Calculates the dot product of self and factor. Self and factor remain unchanged.
+    /// # Example
+	///
+	/// ```
+    /// # extern crate num;
+	/// # extern crate basic_dsp;
+    /// # use num::complex::Complex32;
+	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations};
+	/// # fn main() { 
+	/// let vector1 = ComplexTimeVector32::from_interleaved(&[9.0, 2.0, 7.0, 1.0]);
+	/// let vector2 = ComplexTimeVector32::from_interleaved(&[4.0, 0.0, 10.0, 0.0]);
+	/// let result = vector1.complex_dot_product(&vector2).expect("Ignoring error handling in examples");
+	/// assert_eq!(Complex32::new(106.0, 18.0), result);
+    /// }
+	/// ```  
+    fn complex_dot_product(&self, factor: &Self) -> ScalarResult<Complex<T>>;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
@@ -688,5 +717,8 @@ pub enum ErrorReason {
 /// which still can be used in order to avoid memory allocation.
 pub type VecResult<T> = result::Result<T, (ErrorReason, T)>;
 
-/// Result an error reason in case of an error.
+/// Result or a reason in case of an error.
 pub type VoidResult = result::Result<(), ErrorReason>;
+
+/// Result or a reason in case of an error.
+pub type ScalarResult<T> = result::Result<T, ErrorReason>;

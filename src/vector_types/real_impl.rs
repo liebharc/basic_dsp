@@ -2,6 +2,7 @@ use multicore_support::{Chunk, Complexity};
 use super::definitions::{
 	DataVector,
     VecResult,
+    ScalarResult,
     GenericVectorOperations,
 	RealVectorOperations};
 use super::GenericDataVector;    
@@ -150,6 +151,40 @@ macro_rules! add_real_impl {
                         }
                     }
                     Ok(self)
+                }
+                
+                fn real_dot_product(&self, factor: &Self) -> ScalarResult<$data_type>
+                {
+                    let data_length = self.len();
+                    let scalar_length = data_length % $reg::len();
+                    let vectorization_length = data_length - scalar_length;
+                    let array = &self.data;
+                    let other = &factor.data;
+                    let chunks = Chunk::get_a_fold_b(Complexity::Small, &other, vectorization_length, $reg::len(), &array, vectorization_length, $reg::len(), |original, range, target| {
+                        let mut i = 0;
+                        let mut j = range.start;
+                        let mut result = $reg::splat(0.0);
+                        while i < target.len()
+                        { 
+                            let vector1 = $reg::load(original, j);
+                            let vector2 = $reg::load(target, i);
+                            result = result + (vector2 * vector1);
+                            i += $reg::len();
+                            j += $reg::len();
+                        }
+                        
+                        result.sum_real()        
+                    });
+                    let mut i = vectorization_length;
+                    let mut sum = 0.0;
+                    while i < data_length
+                    {
+                        sum += array[i] * other[i];
+                        i += 1;
+                    }
+                    
+                    let chunk_sum: $data_type = chunks.iter().fold(0.0, |a, b| a + b);
+                    Ok(chunk_sum + sum)
                 }
             }
         )*

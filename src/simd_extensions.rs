@@ -20,6 +20,8 @@ pub trait Simd<T>
 	fn store_half(self, target: &mut [T], index: usize);
 	fn mul_complex(self, value: Self) -> Self;
 	fn div_complex(self, value: Self) -> Self;
+    fn sum_real(&self) -> T;
+    fn sum_complex(&self) -> Complex<T>;
 }
 
 pub type Reg32 = f32x4;
@@ -124,7 +126,18 @@ impl Simd<f32> for f32x4
 		self.store(&mut temp, 0);
 		target[index] = temp[0];
 		target[index + 1] = temp[1];
-	} 
+	}
+    
+    fn sum_real(&self) -> f32 {
+        self.extract(0) +
+        self.extract(1) +
+        self.extract(2) +
+        self.extract(3)
+    }
+    
+    fn sum_complex(&self) -> Complex<f32> {
+        Complex::<f32>::new(self.extract(0) + self.extract(2), self.extract(1) + self.extract(3))
+    }
 } 
 
 impl Simd<f64> for f64x2
@@ -211,4 +224,13 @@ impl Simd<f64> for f64x2
 	{
 		target[index] = self.extract(0);
 	} 
+    
+    fn sum_real(&self) -> f64 {
+        self.extract(0) +
+        self.extract(1)
+    }
+    
+    fn sum_complex(&self) -> Complex<f64> {
+        Complex::<f64>::new(self.extract(0), self.extract(1))
+    }
 } 

@@ -163,6 +163,22 @@ mod slow_test {
         });
     }
     
+    
+    #[test]
+    fn complex_dot_product32() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data_even(201511171, iteration, range.start, range.end);
+            let b = create_data_with_len(201511172, iteration, a.len());
+            let expected = to_complex(&complex_vector_mul(&a, &b)).iter().fold(Complex32::new(0.0, 0.0), |a, b| a + b);
+            let delta = create_delta(3561159, iteration);
+            let vector1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let vector2 =ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
+            let result = vector1.complex_dot_product(&vector2).unwrap();
+            assert_in_tolerance(expected.re, result.re, 0.5);
+            assert_in_tolerance(expected.im, result.im, 0.5);
+        });
+    }
+    
     fn complex_vector_div(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
     {
         let a = to_complex(a);
@@ -215,7 +231,7 @@ mod slow_test {
         });
     }
     
-     #[test]
+    #[test]
     fn abs_phase_conversions_vector32() {
         parameterized_vector_test(|iteration, range| {
             let abs = create_data_even_in_range(201511203, iteration, range.start, range.end, 0.1, 10.0);

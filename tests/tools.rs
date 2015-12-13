@@ -52,6 +52,17 @@ pub fn assert_vector_eq(left: &[f32], right: &[f32]) {
     assert_vector_eq_with_reason(left, right, "");
 }
 
+pub fn assert_close(left: f32, right: f32) {
+    assert_in_tolerance(left, right, 1e-6);
+}
+
+pub fn assert_in_tolerance(left: f32, right: f32, tol: f32) {
+    let tol = tol.abs();
+    if (left - right).abs() > tol {
+        panic!(format!("{} != {} (tol: {})", left, right, tol));
+    }
+}
+
 pub fn create_data(seed: usize, iteration: usize, from: usize, to: usize) -> Vec<f32>
 {
     let len_seed: &[_] = &[seed, iteration];

@@ -509,6 +509,11 @@ macro_rules! define_real_operations_forward {
                 {
                     $name::from_genres(self.to_gen().unwrap(divisor))
                 }
+                
+                fn real_dot_product(&self, factor: &Self) -> ScalarResult<$data_type>
+                {
+                    self.to_gen_borrow().real_dot_product(&factor.to_gen_borrow())
+                }
             }
         )*
         
@@ -756,69 +761,74 @@ macro_rules! define_complex_operations_forward {
 	 =>
 	 { 
         $(
-	 	#[inline]
-		impl ComplexVectorOperations<$data_type> for $name<$data_type>
-		{
-			type RealPartner = $real_partner<$data_type>;
-			
-			fn complex_offset(self, offset: Complex<$data_type>) -> VecResult<Self>
-			{
-				$name::from_genres(self.to_gen().complex_offset(offset))
-			}
-				
-			fn complex_scale(self, factor: Complex<$data_type>) -> VecResult<Self>
-			{
-				$name::from_genres(self.to_gen().complex_scale(factor))
-			}
-			
-			fn complex_abs(self) -> VecResult<Self::RealPartner>
-			{
-				$real_partner::from_genres(self.to_gen().complex_abs())
-			}
-			
-			fn get_complex_abs(&self, destination: &mut Self::RealPartner) -> VoidResult
-			{
-				self.to_gen_borrow().get_complex_abs(destination.to_gen_mut_borrow())
-			}
-			
-			fn complex_abs_squared(self) -> VecResult<Self::RealPartner>
-			{
-				$real_partner::from_genres(self.to_gen().complex_abs_squared())
-			}
-			
-			fn complex_conj(self) -> VecResult<Self>
-			{
-				$name::from_genres(self.to_gen().complex_conj())
-			}
-			
-			fn to_real(self) -> VecResult<Self::RealPartner>
-			{
-				$real_partner::from_genres(self.to_gen().to_real())
-			}
-	
-			fn to_imag(self) -> VecResult<Self::RealPartner>
-			{
-				$real_partner::from_genres(self.to_gen().to_imag())
-			}	
-					
-			fn get_real(&self, destination: &mut Self::RealPartner) -> VoidResult
-			{
-				self.to_gen_borrow().get_real(destination.to_gen_mut_borrow())
-			}
-			
-			fn get_imag(&self, destination: &mut Self::RealPartner) -> VoidResult
-			{
-				self.to_gen_borrow().get_imag(destination.to_gen_mut_borrow())
-			}
-			
-			fn phase(self) -> VecResult<Self::RealPartner>
-			{
-				$real_partner::from_genres(self.to_gen().phase())
-			}
-			
-			fn get_phase(&self, destination: &mut Self::RealPartner) -> VoidResult
+            #[inline]
+            impl ComplexVectorOperations<$data_type> for $name<$data_type>
+            {
+                type RealPartner = $real_partner<$data_type>;
+                
+                fn complex_offset(self, offset: Complex<$data_type>) -> VecResult<Self>
+                {
+                    $name::from_genres(self.to_gen().complex_offset(offset))
+                }
+                    
+                fn complex_scale(self, factor: Complex<$data_type>) -> VecResult<Self>
+                {
+                    $name::from_genres(self.to_gen().complex_scale(factor))
+                }
+                
+                fn complex_abs(self) -> VecResult<Self::RealPartner>
+                {
+                    $real_partner::from_genres(self.to_gen().complex_abs())
+                }
+                
+                fn get_complex_abs(&self, destination: &mut Self::RealPartner) -> VoidResult
+                {
+                    self.to_gen_borrow().get_complex_abs(destination.to_gen_mut_borrow())
+                }
+                
+                fn complex_abs_squared(self) -> VecResult<Self::RealPartner>
+                {
+                    $real_partner::from_genres(self.to_gen().complex_abs_squared())
+                }
+                
+                fn complex_conj(self) -> VecResult<Self>
+                {
+                    $name::from_genres(self.to_gen().complex_conj())
+                }
+                
+                fn to_real(self) -> VecResult<Self::RealPartner>
+                {
+                    $real_partner::from_genres(self.to_gen().to_real())
+                }
+        
+                fn to_imag(self) -> VecResult<Self::RealPartner>
+                {
+                    $real_partner::from_genres(self.to_gen().to_imag())
+                }	
+                        
+                fn get_real(&self, destination: &mut Self::RealPartner) -> VoidResult
+                {
+                    self.to_gen_borrow().get_real(destination.to_gen_mut_borrow())
+                }
+                
+                fn get_imag(&self, destination: &mut Self::RealPartner) -> VoidResult
+                {
+                    self.to_gen_borrow().get_imag(destination.to_gen_mut_borrow())
+                }
+                
+                fn phase(self) -> VecResult<Self::RealPartner>
+                {
+                    $real_partner::from_genres(self.to_gen().phase())
+                }
+                
+                fn get_phase(&self, destination: &mut Self::RealPartner) -> VoidResult
                 {
                     self.to_gen_borrow().get_phase(destination.to_gen_mut_borrow())
+                }
+                
+                fn complex_dot_product(&self, factor: &Self) -> ScalarResult<Complex<$data_type>>
+                {
+                    self.to_gen_borrow().complex_dot_product(&factor.to_gen_borrow())
                 }
             }
         )*
@@ -898,6 +908,7 @@ pub use vector_types::definitions::
 		DataVector,
         VecResult,
         VoidResult,
+        ScalarResult,
         ErrorReason,
 		GenericVectorOperations,
 		RealVectorOperations,
