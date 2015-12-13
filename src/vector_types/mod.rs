@@ -1071,8 +1071,10 @@ impl<T> GenericDataVector<T>
 		{
 			let data = &mut self.data;
 			data.resize(length, T::zero());
-			let temp = &mut self.temp;
-			temp.resize(length, T::zero());
+            if self.multicore_settings.early_temp_allocation {
+                let temp = &mut self.temp;
+                temp.resize(length, T::zero());
+            }
 		}
 		
 		self.valid_len = length;

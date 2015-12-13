@@ -38,7 +38,9 @@ impl MultiCoreSettings {
         // Initialize the pool
         Chunk::init_static_pool();
         MultiCoreSettings {
-            core_limit: num_cpus::get(),
+            // Half because we assume hyper threading and that we will keep a core so busy
+            // that hyper threading isn't of any use
+            core_limit: num_cpus::get() / 2, 
             early_temp_allocation: Self::early_temp_allocation_default()
         }
     }
