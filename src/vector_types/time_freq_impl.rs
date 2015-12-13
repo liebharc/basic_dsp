@@ -23,7 +23,7 @@ macro_rules! add_time_freq_impl {
                         self.delta = rbw;
                         let mut fft = FFT::new(points, false);
                         let signal = &self.data;
-                        let spectrum = &mut self.temp;
+                        let spectrum = temp_mut!(self, signal.len());
                         let signal = Self::array_to_complex(signal);
                         let spectrum = Self::array_to_complex_mut(spectrum);
                         fft.process(&signal[0..points], &mut spectrum[0..points]);
@@ -49,7 +49,7 @@ macro_rules! add_time_freq_impl {
                         let delta = (points as $data_type)  / self.delta;
                         self.delta = delta;
                         let signal = &self.data;
-                        let spectrum = &mut self.temp;
+                        let spectrum = temp_mut!(self, signal.len());
                         let signal = Self::array_to_complex(signal);
                         let spectrum = Self::array_to_complex_mut(spectrum);
                         fft.process(&signal[0..points], &mut spectrum[0..points]);

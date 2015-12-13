@@ -89,7 +89,7 @@ macro_rules! add_complex_impl {
                         let scalar_length = data_length % $reg::len();
                         let vectorization_length = data_length - scalar_length;
                         let array = &self.data;
-                        let mut temp = &mut self.temp;
+                        let mut temp = temp_mut!(self, data_length);
                         Chunk::execute_original_to_target(Complexity::Small, &array, vectorization_length, $reg::len(), &mut temp, vectorization_length / 2, $reg::len() / 2, Self::complex_abs_simd);
                         let mut i = vectorization_length;
                         while i + 1 < data_length
@@ -132,7 +132,7 @@ macro_rules! add_complex_impl {
                         let scalar_length = data_length % $reg::len();
                         let vectorization_length = data_length - scalar_length;
                         let array = &mut self.data;
-                        let mut temp = &mut self.temp;
+                        let mut temp = temp_mut!(self, data_length);
                         Chunk::execute_original_to_target(Complexity::Small, &array, vectorization_length,  $reg::len(), &mut temp, vectorization_length / 2, $reg::len() / 2, |array, range, target| {
                             let mut i = range.start;
                             let mut j = 0;
@@ -191,7 +191,7 @@ macro_rules! add_complex_impl {
                 {
                     {
                         let len = self.len();
-                        let mut array = &mut self.temp;
+                        let mut array = temp_mut!(self, len);
                         let source = &self.data;
                         Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1, |original, range, target| {
                             let mut i = range.start;
@@ -214,7 +214,7 @@ macro_rules! add_complex_impl {
                 {
                    {
                         let len = self.len();
-                        let mut array = &mut self.temp;
+                        let mut array = temp_mut!(self, len);
                         let source = &self.data;
                         Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1, |original, range, target| {
                             let mut i = range.start + 1;
@@ -281,7 +281,7 @@ macro_rules! add_complex_impl {
                 {
                     {
                         let len = self.len();
-                        let mut array = &mut self.temp;
+                        let mut array = temp_mut!(self, len);
                         let source = &self.data;
                         Chunk::execute_original_to_target(Complexity::Small, &source, len, 2, &mut array, len / 2, 1,  Self::phase_par);
                     }

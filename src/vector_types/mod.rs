@@ -164,10 +164,16 @@ macro_rules! define_vector_struct {
             where T: RealNumber {
             fn clone(&self) -> Self {
                 let data_length = self.data.len(); 
+                let temp_length = 
+                    if self.multicore_settings.early_temp_allocation {
+                        data_length
+                    } else {
+                        0
+                    };
                 $name 
 				{ 
 				  data: self.data.clone(), 
-				  temp: vec![T::zero(); data_length],
+				  temp: vec![T::zero(); temp_length],
 				  delta: self.delta,
 				  domain: self.domain,
 				  is_complex: self.is_complex,
@@ -177,8 +183,14 @@ macro_rules! define_vector_struct {
             }
 
             fn clone_from(&mut self, source: &Self) {
+                let temp_length = 
+                    if source.multicore_settings.early_temp_allocation {
+                        self.data.len()
+                    } else {
+                        0
+                    };
                  self.data = source.data.clone();
-                 self.temp.resize(self.data.len(), T::zero());
+                 self.temp.resize(temp_length, T::zero());
                  self.domain = source.domain;
                  self.is_complex = source.is_complex;
                  self.valid_len = source.valid_len;
@@ -382,10 +394,16 @@ macro_rules! define_real_basic_struct_members {
 			pub fn from_array_no_copy(data: Vec<T>) -> Self
 			{
 				let data_length = data.len();
+                let temp_length = 
+                    if MultiCoreSettings::early_temp_allocation_default() {
+                        data_length
+                    } else {
+                        0
+                    };
 				$name 
 				{ 
 				  data: data, 
-				  temp: vec![T::zero(); data_length],
+				  temp: vec![T::zero(); temp_length],
 				  delta: T::one(),
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
@@ -404,10 +422,16 @@ macro_rules! define_real_basic_struct_members {
 			pub fn from_array_with_delta(data: &[T], delta: T) -> Self
 			{
 				let data_length = data.len();
+                let temp_length = 
+                    if MultiCoreSettings::early_temp_allocation_default() {
+                        data_length
+                    } else {
+                        0
+                    };
 				$name 
 				{ 
 				  data: data.to_vec(), 
-				  temp: vec![T::zero(); data_length],
+				  temp: vec![T::zero(); temp_length],
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
@@ -455,10 +479,16 @@ macro_rules! define_real_basic_struct_members {
 			/// Creates a real `DataVector` with `length` elements all set to the value of `constant` and sets `delta` to the given value.
 			pub fn real_from_constant_with_delta(constant: T, length: usize, delta: T) -> Self
 			{
+                let temp_length = 
+                    if MultiCoreSettings::early_temp_allocation_default() {
+                        length
+                    } else {
+                        0
+                    };
 				$name 
 				{ 
 				  data: vec![constant; length],
-				  temp: vec![T::zero(); length],
+				  temp: vec![T::zero(); temp_length],
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
@@ -591,10 +621,16 @@ macro_rules! define_complex_basic_struct_members {
 			pub fn from_interleaved_no_copy(data: Vec<T>) -> Self
 			{
 				let data_length = data.len();
+                let temp_length = 
+                    if MultiCoreSettings::early_temp_allocation_default() {
+                        data_length
+                    } else {
+                        0
+                    };
 				$name 
 				{ 
 				  data: data,
-				  temp: vec![T::zero(); data_length],
+				  temp: vec![T::zero(); temp_length],
 				  delta: T::one(),
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
@@ -613,10 +649,16 @@ macro_rules! define_complex_basic_struct_members {
 			pub fn from_interleaved_with_delta(data: &[T], delta: T) -> Self
 			{
 				let data_length = data.len();
+                let temp_length = 
+                    if MultiCoreSettings::early_temp_allocation_default() {
+                        data_length
+                    } else {
+                        0
+                    };
 				$name 
 				{ 
 				  data: data.to_vec(), 
-				  temp: vec![T::zero(); data_length],
+				  temp: vec![T::zero(); temp_length],
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
@@ -664,10 +706,16 @@ macro_rules! define_complex_basic_struct_members {
 			/// Creates a complex `DataVector` with `length` elements all set to the value of `constant` and sets `delta` to the given value.
 			pub fn complex_from_constant_with_delta(constant: T, length: usize, delta: T) -> Self
 			{
+                let temp_length = 
+                    if MultiCoreSettings::early_temp_allocation_default() {
+                        length
+                    } else {
+                        0
+                    };
 				$name 
 				{ 
 				  data: vec![constant; length],
-				  temp: vec![T::zero(); length],
+				  temp: vec![T::zero(); temp_length],
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
@@ -703,11 +751,17 @@ macro_rules! define_complex_basic_struct_members {
 				}
 				
 				let data_length = data.len();
+                let temp_length = 
+                    if MultiCoreSettings::early_temp_allocation_default() {
+                        data_length
+                    } else {
+                        0
+                    };
 				
 				$name 
 				{ 
 				  data: data, 
-				  temp: vec![T::zero(); data_length],
+				  temp: vec![T::zero(); temp_length],
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
@@ -744,11 +798,17 @@ macro_rules! define_complex_basic_struct_members {
 				}
 				
 				let data_length = data.len();
+                let temp_length = 
+                    if MultiCoreSettings::early_temp_allocation_default() {
+                        data_length
+                    } else {
+                        0
+                    };
 				
 				$name 
 				{ 
 				  data: data, 
-				  temp: vec![T::zero(); data_length],
+				  temp: vec![T::zero(); temp_length],
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
@@ -900,6 +960,18 @@ macro_rules! reject_if {
         if $condition
         {
             return Err(($message, $self_));
+        }
+    }
+}
+
+macro_rules! temp_mut {
+    ($self_: ident, $len: expr) => {
+        if $self_.temp.len() < $len {
+            $self_.temp.resize($len, 0.0);
+            &mut $self_.temp
+        }
+        else {
+            &mut $self_.temp
         }
     }
 }

@@ -329,8 +329,8 @@ macro_rules! add_general_impl {
                 {
                     {
                         let data_length = self.len();
-                        let mut target = &mut self.temp;
                         let org = &self.data;
+                        let mut target = temp_mut!(self, data_length);
                         if self.is_complex {
                             self.valid_len -= 2;
                             Chunk::execute_original_to_target(Complexity::Small, &org, data_length, 2, &mut target, data_length, 2, |original, range, target| {
@@ -378,7 +378,7 @@ macro_rules! add_general_impl {
                 {
                     {
                         let data_length = self.len();
-                        let mut target = &mut self.temp;
+                        let mut target = temp_mut!(self, data_length);
                         let org = &self.data;
                         if self.is_complex {
                             Chunk::execute_original_to_target(Complexity::Small, &org, data_length, 2, &mut target, data_length, 2, |original, range, target| {
@@ -467,6 +467,7 @@ macro_rules! add_general_impl {
                 {
                    {
                         use std::ptr;
+                        let data_length = self.len();
                         let mut len = self.points();
                         let mut start = len;
                         let is_odd = len % 2 == 1;
@@ -474,7 +475,7 @@ macro_rules! add_general_impl {
                             if is_odd {
                                 // Copy middle element
                                 let data = &self.data;;
-                                let target = &mut self.temp;
+                                let target = temp_mut!(self, data_length);
                                 target[len / 2] = data[len / 2];
                                 start = start + 1;
                             }
@@ -485,7 +486,7 @@ macro_rules! add_general_impl {
                         else {
                             if is_odd {
                                 let data = &self.data;;
-                                let target = &mut self.temp;
+                                let target = temp_mut!(self, data_length);
                                 // Copy middle element
                                 target[len - 1] = data[len - 1];
                                 target[len] = data[len];
@@ -493,17 +494,18 @@ macro_rules! add_general_impl {
                                 len = len - 1;
                             }
                         }
-                                
+                             
+                        let mut temp = temp_mut!(self, data_length);   
                         // First half
                         let data = &self.data[start] as *const $data_type;
-                        let target = &mut self.temp[0] as *mut $data_type;
+                        let target = &mut temp[0] as *mut $data_type;
                         unsafe {
                             ptr::copy(data, target, len);
                         }
                         
                         // Second half
                         let data = &self.data[0] as *const $data_type;
-                        let target = &mut self.temp[start] as *mut $data_type;
+                        let target = &mut temp[start] as *mut $data_type;
                         unsafe {
                             ptr::copy(data, target, len);
                         }
@@ -513,7 +515,7 @@ macro_rules! add_general_impl {
                 }
             }
             
-            impl GenericDataVector<$data_type> {
+            impl GenericDataVector<$data_type> {                
                 fn multiply_vector_complex(mut self, factor: &Self) -> Self
                 {
                     {
@@ -652,7 +654,7 @@ macro_rules! add_general_impl {
                         let new_len = 2 * self.len();
                         self.reallocate(new_len);
                         let data_length = new_len;
-                        let mut target = &mut self.temp;
+                        let mut target = temp_mut!(self, data_length);
                         let source = &self.data;
                         Chunk::execute_original_to_target(Complexity::Small, &source, data_length, $reg::len(), &mut target, data_length, $reg::len(), |original, range, target| {
                             let mut i = 0;
@@ -683,7 +685,7 @@ macro_rules! add_general_impl {
                         let new_len = 2 * self.len();
                         self.reallocate(new_len);
                         let data_length = new_len;
-                        let mut target = &mut self.temp;
+                        let mut target = temp_mut!(self, data_length);
                         let source = &self.data;
                         Chunk::execute_original_to_target(Complexity::Small, &source, data_length, 4, &mut target, data_length, 2,  |original, range, target| {
                             let mut i = 0;

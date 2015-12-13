@@ -25,16 +25,22 @@ pub enum Complexity {
 #[derive(Debug)]    
 pub struct MultiCoreSettings {
     #[allow(dead_code)]
-    core_limit: usize
+    pub core_limit: usize,
+    pub early_temp_allocation: bool
     // TODO: Specify and use options such as core/thread limits
 }
 
 impl MultiCoreSettings {
+    pub fn early_temp_allocation_default() -> bool {
+        true
+    }
+    
     pub fn new() -> MultiCoreSettings {
         // Initialize the pool
         Chunk::init_static_pool();
         MultiCoreSettings {
-            core_limit: num_cpus::get()
+            core_limit: num_cpus::get(),
+            early_temp_allocation: Self::early_temp_allocation_default()
         }
     }
 }
@@ -42,7 +48,8 @@ impl MultiCoreSettings {
 impl Clone for MultiCoreSettings {
     fn clone(&self) -> Self {
         MultiCoreSettings {
-            core_limit: self.core_limit
+            core_limit: self.core_limit,
+            early_temp_allocation: self.early_temp_allocation
         }
     }
 
