@@ -43,6 +43,12 @@ use vector_types::ErrorReason;
 pub fn translate_error(reason: ErrorReason) -> i32 {
     match reason {
         ErrorReason::VectorsMustHaveTheSameSize => 1,
+        ErrorReason::VectorMetaDataMustAgree => 2,
+        ErrorReason::VectorMustBeComplex => 3,
+        ErrorReason::VectorMustBeReal => 4,
+        ErrorReason::VectorMustBeInTimeDomain => 5,
+        ErrorReason::VectorMustBeInFrquencyDomain => 6,
+        ErrorReason::InvalidArgumentLength => 7
     }
 }
 

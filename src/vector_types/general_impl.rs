@@ -4,6 +4,7 @@ use super::definitions::{
     DataVectorDomain,
 	GenericVectorOperations,
     VecResult,
+    VoidResult,
     ErrorReason};
 use super::GenericDataVector;
 use num::complex::Complex;
@@ -548,6 +549,63 @@ macro_rules! add_general_impl {
                     }
                     
                     Ok(self.swap_data_temp())
+                }
+                
+                fn override_data(mut self, data: &[$data_type]) -> VecResult<Self> {
+                    {
+                        use std::ptr;
+                        self.reallocate(data.len());
+                        let target = &mut self.data[0] as *mut $data_type;
+                        let source = &data[0] as *const $data_type;
+                        unsafe {
+                            ptr::copy(source, target, data.len());
+                        }
+                    }
+                    
+                    Ok(self)
+                }
+                
+                fn split_into(&self, targets: &mut [Box<Self>]) -> VoidResult {
+                    let num_targets = targets.len();
+                    let data_length = self.len();
+                    if num_targets == 0 || data_length % num_targets != 0 {
+                        return Err(ErrorReason::InvalidArgumentLength);
+                    }
+                    
+                    for i in 0..num_targets {
+                        targets[i].reallocate(data_length / num_targets);
+                    }
+                    
+                    let data = &self.data;
+                    for i in 0..data_length {
+                        let target = &mut targets[i % num_targets];
+                        let pos = i / num_targets;
+                        target[pos] = data[i];
+                    }
+                    
+                    Ok(())
+                }
+                
+                fn merge(mut self, sources: &[Box<Self>]) -> VecResult<Self> {
+                    {
+                        let num_sources = sources.len();
+                        reject_if!(self, num_sources == 0, ErrorReason::InvalidArgumentLength);
+                        for i in 1..num_sources {
+                            reject_if!(self, sources[0].len() != sources[i].len(), ErrorReason::InvalidArgumentLength);
+                        }
+                        
+                        self.reallocate(sources[0].len() * num_sources);
+                        
+                        let data_length = self.len();
+                        let data = &mut self.data;
+                        for i in 0..data_length {
+                            let source = &sources[i % num_sources];
+                            let pos = i / num_sources;
+                            data[i] = source[pos];
+                        }
+                    }
+                    
+                    Ok(self)
                 }
             }
             

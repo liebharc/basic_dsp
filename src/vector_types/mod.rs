@@ -373,6 +373,22 @@ macro_rules! define_generic_operations_forward {
                 {
                     $name::from_genres(self.to_gen().exp_base(base)) 
                 }
+                
+                fn override_data(self, data: &[$data_type]) -> VecResult<Self> {
+                    $name::from_genres(self.to_gen().override_data(data))
+                }
+                
+                fn split_into(&self, targets: &mut [Box<Self>]) -> VoidResult {
+                    unsafe { 
+                        self.to_gen_borrow().split_into(mem::transmute(targets))
+                    }
+                }
+                
+                fn merge(self, sources: &[Box<Self>]) -> VecResult<Self> {
+                    unsafe { 
+                        $name::from_genres(self.to_gen().merge(mem::transmute(sources)))
+                    }
+                }
             }
        )*
 	}	
@@ -898,6 +914,22 @@ macro_rules! define_complex_operations_forward {
                 fn complex_statistics(&self) -> Statistics<Complex<$data_type>> {
                     self.to_gen_borrow().complex_statistics()
                 }
+                
+                fn get_real_imag(&self, real: &mut Self::RealPartner, imag: &mut Self::RealPartner) -> VoidResult {
+                    self.to_gen_borrow().get_real_imag(real.to_gen_mut_borrow(), imag.to_gen_mut_borrow())
+                }
+                
+                fn get_mag_phase(&self, mag: &mut Self::RealPartner, phase: &mut Self::RealPartner) -> VoidResult {
+                    self.to_gen_borrow().get_mag_phase(mag.to_gen_mut_borrow(), phase.to_gen_mut_borrow())
+                }
+                
+                fn set_real_imag(self, real: &mut Self::RealPartner, imag: &mut Self::RealPartner) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().set_real_imag(real.to_gen_mut_borrow(), imag.to_gen_mut_borrow()))
+                }
+                
+                fn set_mag_phase(self, mag: &mut Self::RealPartner, phase: &mut Self::RealPartner) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().set_mag_phase(mag.to_gen_mut_borrow(), phase.to_gen_mut_borrow()))
+                }
             }
         )*
         
@@ -957,9 +989,51 @@ macro_rules! define_complex_operations_forward {
 
 macro_rules! reject_if {
     ($self_: ident, $condition: expr, $message: expr) => {
-        if $condition
-        {
+        if $condition {
             return Err(($message, $self_));
+        }
+    }
+}
+
+macro_rules! assert_meta_data {
+    ($self_: ident, $other: ident) => {
+        let delta_ratio = $self_.delta / $other.delta;
+        if $self_.is_complex != $other.is_complex ||
+           $self_.domain != $other.domain ||
+           delta_ratio > 1.1 || delta_ratio < 0.9 {
+            return Err((ErrorReason::VectorMetaDataMustAgree, $self_));
+        }
+    }
+}
+
+macro_rules! assert_real {
+    ($self_: ident) => {
+        if $self_.is_complex {
+            return Err((ErrorReason::VectorMustBeReal, $self_));
+        }
+    }
+}
+
+macro_rules! assert_complex {
+    ($self_: ident) => {
+        if !$self_.is_complex {
+            return Err((ErrorReason::VectorMustBeComplex, $self_));
+        }
+    }
+}
+
+macro_rules! assert_time {
+    ($self_: ident) => {
+        if !$self_.domain != DataVectorDomain::Time {
+            return Err((ErrorReason::VectorMustBeInTimeDomain, $self_));
+        }
+    }
+}
+
+macro_rules! assert_freq {
+    ($self_: ident) => {
+        if !$self_.domain != DataVectorDomain::Frequency {
+            return Err((ErrorReason::VectorMustBeInFrquencyDomain, $self_));
         }
     }
 }

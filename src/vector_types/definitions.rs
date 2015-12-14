@@ -347,6 +347,52 @@ pub trait GenericVectorOperations<T>: DataVector<T>
 	/// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], result.data());
 	/// ```
     fn swap_halves(self) -> VecResult<Self>;
+    
+    /// Splits the vector into several smaller vectors. `self.len()` must be dividable by
+    /// `targets.len()` without a remainder and this conidition must be true too `targets.len() > 0`.
+    ///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
+	/// let merge = RealTimeVector32::from_array(&a);
+    /// let mut split = &mut 
+    ///     [Box::new(RealTimeVector32::real_empty()), 
+    ///     Box::new(RealTimeVector32::real_empty())];
+    /// merge.split_into(split).unwrap();
+    /// assert_eq!([1.0, 3.0, 5.0, 7.0, 9.0], split[0].data());
+	/// ```
+    fn split_into(&self, targets: &mut [Box<Self>]) -> VoidResult;
+    
+    /// Merges several vectors into `self`. All vectors must have the same size and
+    /// at least one vector must be provided.
+    ///
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::real_empty();
+    /// let parts = &[
+    ///     Box::new(RealTimeVector32::from_array(&[1.0, 2.0])),
+    ///     Box::new(RealTimeVector32::from_array(&[1.0, 2.0]))];
+	/// let merged = vector.merge(parts).expect("Ignoring error handling in examples");
+	/// assert_eq!([1.0, 1.0, 2.0, 2.0], merged.data());
+	/// ```
+    fn merge(self, sources: &[Box<Self>]) -> VecResult<Self>;
+    
+    /// Overrides the data in the vector with the given data. This may also change 
+    /// the vectors length (however not the allocated length).
+    ///
+    /// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0]);
+    /// let result = vector.override_data(&[5.0, 7.0]).expect("Ignoring error handling in examples");
+	/// assert_eq!(&[5.0, 7.0], result.data());
+	/// ```
+    fn override_data(self, data: &[T]) -> VecResult<Self>;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
@@ -689,6 +735,28 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
     /// }
 	/// ```  
     fn complex_statistics(&self) -> Statistics<Complex<T>>;
+    
+    /// Gets the real and imaginary parts and stores them in the given vectors. 
+    /// See [`get_phase`](trait.ComplexVectorOperations.html#tymethod.get_phase) and
+    /// [`get_complex_abs`](trait.ComplexVectorOperations.html#tymethod.get_complex_abs) for further
+    /// information.
+    fn get_real_imag(&self, real: &mut Self::RealPartner, imag: &mut Self::RealPartner) -> VoidResult;
+    
+    /// Gets the magnitude and phase and stores them in the given vectors.
+    /// See [`get_real`](trait.ComplexVectorOperations.html#tymethod.get_real) and
+    /// [`get_imag`](trait.ComplexVectorOperations.html#tymethod.get_imag) for further
+    /// information.
+    fn get_mag_phase(&self, mag: &mut Self::RealPartner, phase: &mut Self::RealPartner) -> VoidResult;
+    
+    /// Overrides the `self` vectors data with the real and imaginary data in the given vectors.
+    /// `real` and `imag` must have the same size.
+    fn set_real_imag(self, real: &mut Self::RealPartner, imag: &mut Self::RealPartner) -> VecResult<Self>;
+    
+    /// Overrides the `self` vectors data with the magnitude and phase data in the given vectors.
+    /// Note that `self` vector will immediately convert the data into a real and imaginary representation
+    /// of the complex numbers which is its default format. 
+    /// `mag` and `phase` must have the same size.
+    fn set_mag_phase(self, mag: &mut Self::RealPartner, phase: &mut Self::RealPartner) -> VecResult<Self>;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
@@ -751,7 +819,36 @@ pub trait FrequencyDomainOperations<T> : DataVector<T>
 #[derive(PartialEq)]
 #[derive(Debug)]
 pub enum ErrorReason {
+    /// The operations requires all vectors to have the same size, 
+    /// in most cases this means that the following must be true:
+    /// `self.len()` == `argument.len()`
 	VectorsMustHaveTheSameSize,
+    
+    /// The operations requires all vectors to have the same meta data
+    /// in most cases this means that the following must be true:
+    /// `self.is_complex()` == `argument.is_complex()` &&
+    /// `self.domain()` == `argument.domain()` &&
+    /// `self.delta()`== `argument.domain()`;
+    /// Consider to convert one of the vectors so that this conidition is true.
+    /// The necessary operations may include FFT/IFFT, complex/real conversion and resampling.
+    VectorMetaDataMustAgree,
+    
+    /// The operation requires the vector to be complex.
+    VectorMustBeComplex,
+    
+    /// The operation requires the vector to be real.
+    VectorMustBeReal,
+    
+    /// The operation requires the vector to be in time domain.
+    VectorMustBeInTimeDomain,
+    
+    /// The operation requires the vector to be in frequency domain.
+    VectorMustBeInFrquencyDomain,
+    
+    /// The arguments have an invalid length to perform the operation. The
+    /// operations documentation should have more information about the requirements.
+    /// Please open a defect if this isn't the case.
+    InvalidArgumentLength,
 }
 
 /// Result contains on success the vector. On failure it contains an error reason and an vector with invalid data

@@ -3,6 +3,7 @@ use super::definitions::{
 	DataVector,
     VecResult,
     VoidResult,
+    ErrorReason,
     ScalarResult,
     Statistics,
 	ComplexVectorOperations};
@@ -24,6 +25,7 @@ macro_rules! add_complex_impl {
                 fn complex_offset(mut self, offset: Complex<$data_type>)  -> VecResult<Self>
                 {
                     {
+                        assert_complex!(self);
                         let data_length = self.len();
                         let scalar_length = data_length % $reg::len();
                         let vectorization_length = data_length - scalar_length;
@@ -58,6 +60,7 @@ macro_rules! add_complex_impl {
                 fn complex_scale(mut self, factor: Complex<$data_type>) -> VecResult<Self>
                 {
                     {
+                        assert_complex!(self);
                         let data_length = self.len();
                         let scalar_length = data_length % $reg::len();
                         let vectorization_length = data_length - scalar_length;
@@ -91,6 +94,7 @@ macro_rules! add_complex_impl {
                 fn complex_abs(mut self) -> VecResult<Self>
                 {
                     {
+                        assert_complex!(self);
                         let data_length = self.len();
                         let scalar_length = data_length % $reg::len();
                         let vectorization_length = data_length - scalar_length;
@@ -116,6 +120,10 @@ macro_rules! add_complex_impl {
                 
                 fn get_complex_abs(&self, destination: &mut Self) -> VoidResult
                 {
+                    if !self.is_complex {
+                        return Err(ErrorReason::VectorMustBeComplex);
+                    }
+                    
                     let data_length = self.len();
                     destination.reallocate(data_length / 2);
                     let scalar_length = data_length % $reg::len();
@@ -142,6 +150,7 @@ macro_rules! add_complex_impl {
                 fn complex_abs_squared(mut self) -> VecResult<Self>
                 {
                     {
+                        assert_complex!(self);
                         let data_length = self.len();
                         let scalar_length = data_length % $reg::len();
                         let vectorization_length = data_length - scalar_length;
@@ -179,6 +188,7 @@ macro_rules! add_complex_impl {
                 fn complex_conj(mut self) -> VecResult<Self>
                 {
                     {
+                        assert_complex!(self);
                         let data_length = self.len();
                         let scalar_length = data_length % $reg::len();
                         let vectorization_length = data_length - scalar_length;
@@ -211,6 +221,7 @@ macro_rules! add_complex_impl {
                 fn to_real(mut self) -> VecResult<Self>
                 {
                     {
+                        assert_complex!(self);
                         let len = self.len();
                         let mut array = temp_mut!(self, len);
                         let source = &self.data;
@@ -237,6 +248,7 @@ macro_rules! add_complex_impl {
                 fn to_imag(mut self) -> VecResult<Self>
                 {
                    {
+                       assert_complex!(self);
                         let len = self.len();
                         let mut array = temp_mut!(self, len);
                         let source = &self.data;
@@ -263,6 +275,10 @@ macro_rules! add_complex_impl {
                         
                 fn get_real(&self, destination: &mut Self) -> VoidResult
                 {
+                    if !self.is_complex {
+                        return Err(ErrorReason::VectorMustBeComplex);
+                    }
+                    
                     let len = self.len();
                     destination.reallocate(len / 2);
                     destination.delta = self.delta;
@@ -289,6 +305,10 @@ macro_rules! add_complex_impl {
                 
                 fn get_imag(&self, destination: &mut Self) -> VoidResult
                 {
+                    if !self.is_complex {
+                        return Err(ErrorReason::VectorMustBeComplex);
+                    }
+                    
                     let len = self.len();
                     destination.reallocate(len / 2);
                     destination.delta = self.delta;
@@ -316,6 +336,7 @@ macro_rules! add_complex_impl {
                 fn phase(mut self) -> VecResult<Self>
                 {
                     {
+                        assert_complex!(self);
                         let len = self.len();
                         let mut array = temp_mut!(self, len);
                         let source = &self.data;
@@ -333,6 +354,10 @@ macro_rules! add_complex_impl {
                 
                 fn get_phase(&self, destination: &mut Self) -> VoidResult
                 {
+                    if !self.is_complex {
+                        return Err(ErrorReason::VectorMustBeComplex);
+                    }
+                    
                     let len = self.len();
                     destination.reallocate(len / 2);
                     destination.delta = self.delta;
@@ -349,6 +374,15 @@ macro_rules! add_complex_impl {
                 
                 fn complex_dot_product(&self, factor: &Self) -> ScalarResult<Complex<$data_type>>
                 {
+                    if !self.is_complex {
+                        return Err(ErrorReason::VectorMustBeComplex);
+                    }
+                    
+                    if !factor.is_complex ||
+                        self.domain != factor.domain {
+                        return Err(ErrorReason::VectorMetaDataMustAgree);
+                    }
+                    
                     let data_length = self.len();
                     let scalar_length = data_length % $reg::len();
                     let vectorization_length = data_length - scalar_length;
@@ -467,6 +501,75 @@ macro_rules! add_complex_impl {
                         min_index: min_index,
                         max_index: max_index,
                     }  
+                }
+                
+                fn get_real_imag(&self, real: &mut Self::RealPartner, imag: &mut Self::RealPartner) -> VoidResult {
+                    let data_length = self.len();
+                    real.reallocate(data_length / 2);
+                    imag.reallocate(data_length / 2);
+                    let data = &self.data;
+                    for i in 0..data_length {
+                        if i % 2 == 0 {
+                            real[i / 2] = data[i];
+                        } else {
+                            imag[i / 2] = data[i];
+                        }
+                    }
+                    
+                    Ok(())
+                }
+                
+                fn get_mag_phase(&self, mag: &mut Self::RealPartner, phase: &mut Self::RealPartner) -> VoidResult {
+                    let data_length = self.len();
+                    mag.reallocate(data_length / 2);
+                    phase.reallocate(data_length / 2);
+                    let data = &self.data;
+                    let mut i = 0;
+                    while i < data_length {
+                        let c = Complex::<$data_type>::from_polar(&data[i], &data[i + 1]);
+                        let (m, p) = c.to_polar();
+                        mag[i / 2] = m;
+                        phase[i / 2] = p;
+                        i += 2;
+                    }
+                    
+                    Ok(())
+                }
+                
+                fn set_real_imag(mut self, real: &mut Self::RealPartner, imag: &mut Self::RealPartner) -> VecResult<Self> {
+                    {
+                        reject_if!(self, real.len() == imag.len(), ErrorReason::InvalidArgumentLength);
+                        self.reallocate(2 * real.len());
+                        let data_length = self.len();
+                        let data = &mut self.data;
+                        for i in 0..data_length {
+                            if i % 2 == 0 {
+                                data[i] = real[i / 2];
+                            } else {
+                                data[i] = imag[i / 2];
+                            }
+                        }
+                    }
+                    
+                    Ok(self)
+                }
+                
+                fn set_mag_phase(mut self, mag: &mut Self::RealPartner, phase: &mut Self::RealPartner) -> VecResult<Self> {
+                    {
+                        reject_if!(self, mag.len() == phase.len(), ErrorReason::InvalidArgumentLength);
+                        self.reallocate(2 * mag.len());
+                        let data_length = self.len();
+                        let data = &mut self.data;
+                        let mut i = 0;
+                        while i < data_length {
+                            let c = Complex::<$data_type>::from_polar(&mag[i / 2], &phase[i / 2]);
+                            data[i] = c.re;
+                            data[i + 1] = c.im;
+                            i += 2;
+                        }
+                    }
+                    
+                    Ok(self)
                 }
             }
             

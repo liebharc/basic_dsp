@@ -279,6 +279,67 @@ impl Chunk
 		}
 	}
     
+    /// Executes the given function on the all elements of the array in parallel. Results are intended to be stored in the target arrays.
+	/*#[inline]
+	pub fn execute_source_to_targets<F, T>(
+            complexity: Complexity, 
+            settings: &MultiCoreSettings, 
+            source: &[T], source_length: usize, source_step: usize, 
+            targets: &mut [&mut [T]], target_length: usize, target_step: usize, 
+            function: F)
+		where F: Fn(&[T], &[&mut [T]]) + 'static + Sync,
+			  T : Float + Copy + Clone + Send + Sync
+	{
+		let number_of_chunks = Chunk::determine_number_of_chunks(source_length, complexity, settings);
+		if number_of_chunks > 1
+		{
+            let ref mut pool = Chunk::get_static_pool();
+			pool.for_(source_chunks.zip(chunks), |chunk|
+				{
+                    panic!("Panic")
+					// function(chunk.0, chunk.1);
+				});
+		}
+		else
+		{
+            panic!("Panic")
+			//function(source, targets);
+		}
+	}*/
+    
+    /*
+    /// Executes the given function on the all elements of the array in parallel. Results are intended to be stored in the target array and come from multiple source arrays.
+	#[inline]
+	pub fn execute_sources_to_target<F, T>(
+            complexity: Complexity, 
+            settings: &MultiCoreSettings, 
+            sources: &[&[T]], sources_length: usize, sources_step: usize, 
+            target: &mut [T], target_length: usize, target_step: usize, 
+            function: F)
+		where F: Fn(&[&[T]], &mut [T]) + 'static + Sync,
+			  T : Float + Copy + Clone + Send + Sync
+	{
+		let number_of_chunks = Chunk::determine_number_of_chunks(sources_length, complexity, settings);
+		if number_of_chunks > 1
+		{
+			let target_chunk = Chunk::partition_mut(target, target_length, target_step, number_of_chunks);
+			let mut chunks = Vec::with_capacity(sources.len());
+            for i in 0..chunks.len() {
+                chunks.push(Chunk::partition(sources[i], sources_length, sources_step, number_of_chunks));
+            }
+            
+            let ref mut pool = Chunk::get_static_pool();
+			pool.for_(target_chunk.zip(chunks), |chunk|
+				{
+                   function(&chunk.1, chunk.0);
+				});
+		}
+		else
+		{
+			function(sources, target);
+		}
+	}*/
+    
     /// Executes the given function on the all elements of the array in parallel. A result is
     /// returned for each chunk.
 	#[inline]
