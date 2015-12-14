@@ -59,6 +59,69 @@ macro_rules! define_vector_struct {
 				self.valid_len / if self.is_complex { 2 } else { 1 }
 			}
 		}
+        
+        impl<T> RededicateVector<T> for $name<T>
+            where T: RealNumber {
+            fn rededicate_as_complex_time_vector(self, delta: T) -> ComplexTimeVector<T> {
+                ComplexTimeVector {
+                    delta: delta,
+                    is_complex: true,
+                    valid_len: 0,
+                    domain: DataVectorDomain::Time,
+                    data: self.data,
+                    temp: self.temp,
+                    multicore_settings: self.multicore_settings
+                }
+            }
+            
+            fn rededicate_as_complex_freq_vector(self, delta: T) -> ComplexFreqVector<T> {
+                ComplexFreqVector {
+                    delta: delta,
+                    is_complex: true,
+                    valid_len: 0,
+                    domain: DataVectorDomain::Frequency,
+                    data: self.data,
+                    temp: self.temp,
+                    multicore_settings: self.multicore_settings
+                }
+            }
+            
+            fn rededicate_as_real_time_vector(self, delta: T) -> RealTimeVector<T> {
+                RealTimeVector {
+                    delta: delta,
+                    is_complex: false,
+                    valid_len: 0,
+                    domain: DataVectorDomain::Time,
+                    data: self.data,
+                    temp: self.temp,
+                    multicore_settings: self.multicore_settings
+                }
+            }
+            
+            fn rededicate_as_real_freq_vector(self, delta: T) -> RealFreqVector<T> {
+                RealFreqVector {
+                    delta: delta,
+                    is_complex: true,
+                    valid_len: 0,
+                    domain: DataVectorDomain::Frequency,
+                    data: self.data,
+                    temp: self.temp,
+                    multicore_settings: self.multicore_settings
+                }
+            }
+            
+            fn rededicate_as_generic_vector(self, is_complex: bool, domain: DataVectorDomain, delta: T) -> GenericDataVector<T> {
+                GenericDataVector {
+                    delta: delta,
+                    is_complex: is_complex,
+                    valid_len: 0,
+                    domain: domain,
+                    data: self.data,
+                    temp: self.temp,
+                    multicore_settings: self.multicore_settings
+                }
+            }
+        }
 		
 		impl<T> Index<usize> for $name<T>
             where T: RealNumber
@@ -1071,7 +1134,8 @@ pub use vector_types::definitions::
 		ComplexVectorOperations,
 		TimeDomainOperations,
 		FrequencyDomainOperations,		
-        Statistics
+        Statistics,
+        RededicateVector
 	};
 use num::complex::Complex;
 use RealNumber;

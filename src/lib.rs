@@ -57,7 +57,8 @@ pub use vector_types::
 		RealFreqVector64,
 		ComplexFreqVector64,
         Operation,
-        Statistics
+        Statistics,
+        RededicateVector
 	};
  use num::traits::Float;   
  

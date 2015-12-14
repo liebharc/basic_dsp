@@ -1,6 +1,13 @@
 use std::result;
 use num::complex::Complex;
 use super::super::RealNumber;
+use super::{
+    ComplexTimeVector,
+    RealTimeVector,
+    GenericDataVector,
+    RealFreqVector,
+    ComplexFreqVector  
+};
 
 /// DataVector gives access to the basic properties of all data vectors
 ///
@@ -48,6 +55,40 @@ pub enum DataVectorDomain {
 	Time,
 	/// Frequency domain, the x-axis in in [Hz]
     Frequency
+}
+
+/// This trait allows to change a vector type. The operations will
+/// convert a vector to a different type and set `self.len()` to zero.
+/// However `self.allocated_len()` will remain unchanged. The use case for this
+/// is to allow to reuse the memory of a vector for different operations.
+pub trait RededicateVector<T> : DataVector<T>
+    where T: RealNumber {
+    /// Make `self` a complex time vector
+    /// # Example
+	///
+	/// ```
+	/// use basic_dsp::{ComplexFreqVector32, ComplexVectorOperations, RededicateVector, DataVector, DataVectorDomain};
+	/// let complex = ComplexFreqVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+	/// let real = complex.phase().expect("Ignoring error handling in examples");
+    /// let complex = real.rededicate_as_complex_time_vector(2.0);
+	/// assert_eq!(true, complex.is_complex());
+    /// assert_eq!(DataVectorDomain::Time, complex.domain());
+    /// assert_eq!(0, complex.len());
+    /// assert_eq!(4, complex.allocated_len());
+	/// ```
+    fn rededicate_as_complex_time_vector(self, delta: T) -> ComplexTimeVector<T>;
+    
+    /// Make `self` a complex frequency vector
+    fn rededicate_as_complex_freq_vector(self, delta: T) -> ComplexFreqVector<T>;
+    
+    /// Make `self` a real time vector
+    fn rededicate_as_real_time_vector(self, delta: T) -> RealTimeVector<T>;
+    
+    /// Make `self` a real freq vector
+    fn rededicate_as_real_freq_vector(self, delta: T) -> RealFreqVector<T>;
+    
+    /// Make `self` a generic vector
+    fn rededicate_as_generic_vector(self, is_complex: bool, domain: DataVectorDomain, delta: T) -> GenericDataVector<T>;
 }
 
 /// Defines all operations which are valid on all `DataVectors`.
