@@ -143,78 +143,103 @@ macro_rules! add_general_impl {
 	 {	 
         $(
             impl GenericDataVector<$data_type> {
-                /// Creates a new generic data vector from the given arguments.
-                pub fn new(is_complex: bool, domain: DataVectorDomain, init_value: $data_type, length: usize, delta: $data_type) -> Self {
+                /// Same as `new` but also allows to set multicore options.
+                pub fn new_with_options(is_complex: bool, domain: DataVectorDomain, init_value: $data_type, length: usize, delta: $data_type, options: MultiCoreSettings) -> Self {
                     GenericDataVector
-                    { 
+                     {
                         data: vec![init_value; length],
                         temp: vec![0.0; length],
                         delta: delta,
                         domain: domain,
                         is_complex: is_complex,
                         valid_len: length,
-                        multicore_settings: MultiCoreSettings::new()
+                        multicore_settings: options
                     }
+                }
+                
+                /// Same as `from_array` but also allows to set multicore options.
+                pub fn from_array_with_options(is_complex: bool, domain: DataVectorDomain, data: &[$data_type], options: MultiCoreSettings) -> Self {
+                    let length = data.len();
+                    GenericDataVector
+                    { 
+                        data: data.to_vec(),
+                        temp: vec![0.0; length],
+                        delta: 1.0,
+                        domain: domain,
+                        is_complex: is_complex,
+                        valid_len: length,
+                        multicore_settings: options
+                    }
+                }
+                
+                /// Same as `from_array_no_copy` but also allows to set multicore options.
+                pub fn from_array_no_copy_with_options(is_complex: bool, domain: DataVectorDomain, data: Vec<$data_type>, options: MultiCoreSettings) -> Self {
+                    let length = data.len();
+                    GenericDataVector
+                    { 
+                        data: data,
+                        temp: vec![0.0; length],
+                        delta: 1.0,
+                        domain: domain,
+                        is_complex: is_complex,
+                        valid_len: length,
+                        multicore_settings: options
+                    }
+                }
+                
+                /// Same as `from_array_with_delta` but also allows to set multicore options.
+                pub fn from_array_with_delta_and_options(is_complex: bool, domain: DataVectorDomain, data: &[$data_type], delta: $data_type, options: MultiCoreSettings) -> Self {
+                    let length = data.len();
+                    GenericDataVector
+                    { 
+                        data: data.to_vec(),
+                        temp: vec![0.0; length],
+                        delta: delta,
+                        domain: domain,
+                        is_complex: is_complex,
+                        valid_len: length,
+                        multicore_settings: options
+                    }
+                }
+                
+                /// Same as `from_array_no_copy_with_delta` but also allows to set multicore options.
+                pub fn from_array_no_copy_with_delta_and_options(is_complex: bool, domain: DataVectorDomain, data: Vec<$data_type>, delta: $data_type, options: MultiCoreSettings) -> Self {
+                    let length = data.len();
+                    GenericDataVector
+                    { 
+                        data: data,
+                        temp: vec![0.0; length],
+                        delta: delta,
+                        domain: domain,
+                        is_complex: is_complex,
+                        valid_len: length,
+                        multicore_settings: options
+                    }
+                }
+                
+                /// Creates a new generic data vector from the given arguments.
+                pub fn new(is_complex: bool, domain: DataVectorDomain, init_value: $data_type, length: usize, delta: $data_type) -> Self {
+                    Self::new_with_options(is_complex, domain, init_value, length, delta, MultiCoreSettings::default())
                 }
                 
                 /// Creates a new generic data vector from the given arguments.
                 pub fn from_array(is_complex: bool, domain: DataVectorDomain, data: &[$data_type]) -> Self {
-                    let length = data.len();
-                    GenericDataVector
-                    { 
-                        data: data.to_vec(),
-                        temp: vec![0.0; length],
-                        delta: 1.0,
-                        domain: domain,
-                        is_complex: is_complex,
-                        valid_len: length,
-                        multicore_settings: MultiCoreSettings::new()
-                    }
+                    Self::from_array_with_options(is_complex, domain, data, MultiCoreSettings::default())
                 }
                 
                 /// Creates a new generic data vector from the given arguments.
                 pub fn from_array_no_copy(is_complex: bool, domain: DataVectorDomain, data: Vec<$data_type>) -> Self {
-                    let length = data.len();
-                    GenericDataVector
-                    { 
-                        data: data,
-                        temp: vec![0.0; length],
-                        delta: 1.0,
-                        domain: domain,
-                        is_complex: is_complex,
-                        valid_len: length,
-                        multicore_settings: MultiCoreSettings::new()
-                    }
+                    Self::from_array_no_copy_with_options(is_complex, domain, data, MultiCoreSettings::default())
                 }
                 
                 /// Creates a new generic data vector from the given arguments.
                 pub fn from_array_with_delta(is_complex: bool, domain: DataVectorDomain, data: &[$data_type], delta: $data_type) -> Self {
-                    let length = data.len();
-                    GenericDataVector
-                    { 
-                        data: data.to_vec(),
-                        temp: vec![0.0; length],
-                        delta: delta,
-                        domain: domain,
-                        is_complex: is_complex,
-                        valid_len: length,
-                        multicore_settings: MultiCoreSettings::new()
-                    }
+                    Self::from_array_with_delta_and_options(is_complex, domain, data, delta, MultiCoreSettings::default())
                 }
                 
                 /// Creates a new generic data vector from the given arguments.
                 pub fn from_array_no_copy_with_delta(is_complex: bool, domain: DataVectorDomain, data: Vec<$data_type>, delta: $data_type) -> Self {
-                    let length = data.len();
-                    GenericDataVector
-                    { 
-                        data: data,
-                        temp: vec![0.0; length],
-                        delta: delta,
-                        domain: domain,
-                        is_complex: is_complex,
-                        valid_len: length,
-                        multicore_settings: MultiCoreSettings::new()
-                    }
+                    Self::from_array_no_copy_with_delta_and_options(is_complex, domain, data, delta, MultiCoreSettings::default())
                 }
             }
             

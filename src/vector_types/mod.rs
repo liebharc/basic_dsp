@@ -465,16 +465,11 @@ macro_rules! define_real_basic_struct_members {
 		impl<T> $name<T> 
             where T: RealNumber
 		{
-			/// Creates a real `DataVector` by consuming a `Vec`. 
-			///
-			/// This operation is more memory efficient than the other options to create a vector,
-			/// however if used outside of Rust then it holds the risk that the user will access 
-			/// the data parameter after the vector has been created causing all types of issues.  
-			pub fn from_array_no_copy(data: Vec<T>) -> Self
-			{
+			/// Same as `from_array_no_copy` but also allows to set multicore options.
+            pub fn from_array_no_copy_with_options(data: Vec<T>, options: MultiCoreSettings) -> Self {
 				let data_length = data.len();
                 let temp_length = 
-                    if MultiCoreSettings::early_temp_allocation_default() {
+                    if options.early_temp_allocation {
                         data_length
                     } else {
                         0
@@ -487,22 +482,20 @@ macro_rules! define_real_basic_struct_members {
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
 				  valid_len: data_length,
-                  multicore_settings: MultiCoreSettings::new()
+                  multicore_settings: options
 				}
 			}
 		
-			/// Creates a real `DataVector` from an array or sequence. `delta` is defaulted to `1`.
-			pub fn from_array(data: &[T]) -> Self
-			{
-				$name::from_array_with_delta(data, T::one())
+			/// Same as `from_array` but also allows to set multicore options.
+            pub fn from_array_with_options(data: &[T], options: MultiCoreSettings) -> Self {
+				$name::from_array_with_delta_and_options(data, T::one(), options)
 			}
 			
-			/// Creates a real `DataVector` from an array or sequence and sets `delta` to the given value.
-			pub fn from_array_with_delta(data: &[T], delta: T) -> Self
-			{
+			/// Same as `from_array_with_delta` but also allows to set multicore options.
+            pub fn from_array_with_delta_and_options(data: &[T], delta: T, options: MultiCoreSettings) -> Self {
 				let data_length = data.len();
                 let temp_length = 
-                    if MultiCoreSettings::early_temp_allocation_default() {
+                    if options.early_temp_allocation {
                         data_length
                     } else {
                         0
@@ -515,13 +508,12 @@ macro_rules! define_real_basic_struct_members {
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
 				  valid_len: data_length,
-                  multicore_settings: MultiCoreSettings::new()
+                  multicore_settings: options
 				}
 			}
             
-            /// Creates a real and empty `DataVector` and sets `delta` to 1.0 value.
-            pub fn real_empty() -> Self
-            {
+            /// Same as `real_empty` but also allows to set multicore options.
+            pub fn real_empty_with_options(options: MultiCoreSettings) -> Self {
                 $name 
 				{ 
 				  data: vec![T::zero(); 0], 
@@ -530,13 +522,12 @@ macro_rules! define_real_basic_struct_members {
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
 				  valid_len: 0,
-                  multicore_settings: MultiCoreSettings::new()
+                  multicore_settings: options
 				}
             }
             
-            /// Creates a real and empty `DataVector` and sets `delta` to the given value.
-            pub fn real_empty_with_delta(delta: T) -> Self
-            {
+            /// Same as `real_empty_with_delta` but also allows to set multicore options.
+            pub fn real_empty_with_delta_and_options(delta: T, options: MultiCoreSettings) -> Self {
                 $name 
 				{ 
 				  data: vec![T::zero(); 0], 
@@ -545,21 +536,19 @@ macro_rules! define_real_basic_struct_members {
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
 				  valid_len: 0,
-                  multicore_settings: MultiCoreSettings::new()
+                  multicore_settings: options
 				}
             }
             
-            /// Creates a real `DataVector` with `length` elements all set to the value of `constant`. `delta` is defaulted to `1`.
-			pub fn real_from_constant(constant: T, length: usize) -> Self
-			{
-				$name::real_from_constant_with_delta(constant, length, T::one())
+            /// Same as `real_from_constant` but also allows to set multicore options.
+            pub fn real_from_constant_with_options(constant: T, length: usize, options: MultiCoreSettings) -> Self {
+				$name::real_from_constant_with_delta_and_options(constant, length, T::one(), options)
 			}
 			
-			/// Creates a real `DataVector` with `length` elements all set to the value of `constant` and sets `delta` to the given value.
-			pub fn real_from_constant_with_delta(constant: T, length: usize, delta: T) -> Self
-			{
+			/// Same as `real_from_constant_with_delta` but also allows to set multicore options.
+            pub fn real_from_constant_with_delta_and_options(constant: T, length: usize, delta: T, options: MultiCoreSettings) -> Self {
                 let temp_length = 
-                    if MultiCoreSettings::early_temp_allocation_default() {
+                    if options.early_temp_allocation {
                         length
                     } else {
                         0
@@ -572,8 +561,54 @@ macro_rules! define_real_basic_struct_members {
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
 				  valid_len: length,
-                  multicore_settings: MultiCoreSettings::new()
+                  multicore_settings: options
 				}
+			}
+            
+            /// Creates a real `DataVector` by consuming a `Vec`. 
+			///
+			/// This operation is more memory efficient than the other options to create a vector,
+			/// however if used outside of Rust then it holds the risk that the user will access 
+			/// the data parameter after the vector has been created causing all types of issues.  
+			pub fn from_array_no_copy(data: Vec<T>) -> Self
+			{
+				Self::from_array_no_copy_with_options(data, MultiCoreSettings::default())
+			}
+		
+			/// Creates a real `DataVector` from an array or sequence. `delta` is defaulted to `1`.
+			pub fn from_array(data: &[T]) -> Self
+			{
+				Self::from_array_with_delta_and_options(data, T::one(), MultiCoreSettings::default())
+			}
+			
+			/// Creates a real `DataVector` from an array or sequence and sets `delta` to the given value.
+			pub fn from_array_with_delta(data: &[T], delta: T) -> Self
+			{
+				Self::from_array_with_delta_and_options(data, delta, MultiCoreSettings::default())
+			}
+            
+            /// Creates a real and empty `DataVector` and sets `delta` to 1.0 value.
+            pub fn real_empty() -> Self
+            {
+                Self::real_empty_with_options(MultiCoreSettings::default())
+            }
+            
+            /// Creates a real and empty `DataVector` and sets `delta` to the given value.
+            pub fn real_empty_with_delta(delta: T) -> Self
+            {
+                Self::real_empty_with_delta_and_options(delta, MultiCoreSettings::default())
+            }
+            
+            /// Creates a real `DataVector` with `length` elements all set to the value of `constant`. `delta` is defaulted to `1`.
+			pub fn real_from_constant(constant: T, length: usize) -> Self
+			{
+				Self::real_from_constant_with_options(constant, length, MultiCoreSettings::default())
+			}
+			
+			/// Creates a real `DataVector` with `length` elements all set to the value of `constant` and sets `delta` to the given value.
+			pub fn real_from_constant_with_delta(constant: T, length: usize, delta: T) -> Self
+			{
+                Self::real_from_constant_with_delta_and_options(constant, length, delta, MultiCoreSettings::default())
 			}
 		}
 	 }
@@ -644,7 +679,7 @@ macro_rules! define_real_operations_forward {
                 domain: self.domain,
                 is_complex: self.is_complex,
                 valid_len: self.valid_len,
-                multicore_settings: MultiCoreSettings::new()
+                multicore_settings: MultiCoreSettings::default()
                 }
             }
             
@@ -669,7 +704,7 @@ macro_rules! define_real_operations_forward {
                 domain: other.domain,
                 is_complex: other.is_complex,
                 valid_len: other.valid_len,
-                multicore_settings: MultiCoreSettings::new()
+                multicore_settings: MultiCoreSettings::default()
                 }
             }
             
@@ -692,16 +727,11 @@ macro_rules! define_complex_basic_struct_members {
 		impl<T> $name<T>
             where T: RealNumber
 		{
-			/// Creates a complex `DataVector` by consuming a `Vec`. Data is in interleaved format: `i0, q0, i1, q1, ...`. 
-			///
-			/// This operation is more memory efficient than the other options to create a vector,
-			/// however if used outside of Rust then it holds the risk that the user will access 
-			/// the data parameter after the vector has been created causing all types of issues.  
-			pub fn from_interleaved_no_copy(data: Vec<T>) -> Self
-			{
+			/// Same as `from_interleaved_no_copy` but also allows to set multicore options.
+            pub fn from_interleaved_no_copy_with_options(data: Vec<T>, options: MultiCoreSettings) -> Self {
 				let data_length = data.len();
                 let temp_length = 
-                    if MultiCoreSettings::early_temp_allocation_default() {
+                    if options.early_temp_allocation {
                         data_length
                     } else {
                         0
@@ -714,22 +744,20 @@ macro_rules! define_complex_basic_struct_members {
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
 				  valid_len: data_length,
-                  multicore_settings: MultiCoreSettings::new()
+                  multicore_settings: options
 				}
 			}
 			
-			/// Creates a complex `DataVector` from an array or sequence. Data is in interleaved format: `i0, q0, i1, q1, ...`. `delta` is defaulted to `1`.
-			pub fn from_interleaved(data: &[T]) -> Self
-			{
-				$name::from_interleaved_with_delta(data, T::one())
+			/// Same as `from_interleaved` but also allows to set multicore options.
+            pub fn from_interleaved_with_options(data: &[T], options: MultiCoreSettings) -> Self {
+				$name::from_interleaved_with_delta_and_options(data, T::one(), options)
 			}
 			
-			/// Creates a complex `DataVector` from an array or sequence. Data is in interleaved format: `i0, q0, i1, q1, ...`. `delta` is set to the given value.
-			pub fn from_interleaved_with_delta(data: &[T], delta: T) -> Self
-			{
+			/// Same as `from_interleaved_with_delta` but also allows to set multicore options.
+            pub fn from_interleaved_with_delta_and_options(data: &[T], delta: T, options: MultiCoreSettings) -> Self {
 				let data_length = data.len();
                 let temp_length = 
-                    if MultiCoreSettings::early_temp_allocation_default() {
+                    if options.early_temp_allocation {
                         data_length
                     } else {
                         0
@@ -742,13 +770,12 @@ macro_rules! define_complex_basic_struct_members {
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
 				  valid_len: data_length,
-                  multicore_settings: MultiCoreSettings::new()
+                  multicore_settings: options
 				}
 			}
             
-            /// Creates a complex and empty `DataVector` and sets `delta` to 1.0 value.
-            pub fn complex_empty() -> Self
-            {
+            /// Same as `complex_empty` but also allows to set multicore options.
+            pub fn complex_empty_with_options(options: MultiCoreSettings) -> Self {
                 $name
 				{ 
 				  data: vec![T::zero(); 0], 
@@ -757,13 +784,12 @@ macro_rules! define_complex_basic_struct_members {
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
 				  valid_len: 0,
-                  multicore_settings: MultiCoreSettings::new()
+                  multicore_settings: options
 				}
             }
             
-            /// Creates a complex and empty `DataVector` and sets `delta` to the given value.
-            pub fn complex_empty_with_delta(delta: T) -> Self
-            {
+            /// Same as `complex_empty_with_delta` but also allows to set multicore options.
+            pub fn complex_empty_with_delta_and_options(delta: T, options: MultiCoreSettings) -> Self {
                 $name 
 				{ 
 				  data: vec![T::zero(); 0], 
@@ -772,21 +798,19 @@ macro_rules! define_complex_basic_struct_members {
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
 				  valid_len: 0,
-                  multicore_settings: MultiCoreSettings::new()
+                  multicore_settings: options
 				}
             }
             
-            /// Creates a complex `DataVector` with `length` elements all set to the value of `constant`. `delta` is defaulted to `1`.
-			pub fn complex_from_constant(constant: T, length: usize) -> Self
-			{
-				$name::complex_from_constant_with_delta(constant, length, T::one())
+            /// Same as `complex_from_constant` but also allows to set multicore options.
+            pub fn complex_from_constant_with_options(constant: T, length: usize, options: MultiCoreSettings) -> Self {
+				$name::complex_from_constant_with_delta_and_options(constant, length, T::one(), options)
 			}
 			
-			/// Creates a complex `DataVector` with `length` elements all set to the value of `constant` and sets `delta` to the given value.
-			pub fn complex_from_constant_with_delta(constant: T, length: usize, delta: T) -> Self
-			{
+			/// Same as `complex_from_constant_with_delta` but also allows to set multicore options.
+            pub fn complex_from_constant_with_delta_and_options(constant: T, length: usize, delta: T, options: MultiCoreSettings) -> Self {
                 let temp_length = 
-                    if MultiCoreSettings::early_temp_allocation_default() {
+                    if options.early_temp_allocation {
                         length
                     } else {
                         0
@@ -799,25 +823,17 @@ macro_rules! define_complex_basic_struct_members {
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
 				  valid_len: length,
-                  multicore_settings: MultiCoreSettings::new()
+                  multicore_settings: options
 				}
 			}
 			
-			/// Creates a complex  `DataVector` from an array with real and an array imaginary data. `delta` is set to 1.
-			///
-			/// Arrays must have the same length.
-			pub fn from_real_imag(real: &[T], imag: &[T])
-				-> Self
-			{
-				$name::from_real_imag_with_delta(real, imag, T::one())
+			/// Same as `from_real_imag` but also allows to set multicore options.
+            pub fn from_real_imag_with_options(real: &[T], imag: &[T], options: MultiCoreSettings) -> Self {
+				$name::from_real_imag_with_delta_and_options(real, imag, T::one(), options)
 			}
 			
-			/// Creates a complex  `DataVector` from an array with real and an array imaginary data. `delta` is set to the given value 1.
-			///
-			/// Arrays must have the same length.
-			pub fn from_real_imag_with_delta(real: &[T], imag: &[T], delta: T)
-				-> Self
-			{
+			/// Same as `from_real_imag_with_delta` but also allows to set multicore options.
+            pub fn from_real_imag_with_delta_and_options(real: &[T], imag: &[T], delta: T, options: MultiCoreSettings) -> Self {
 				if real.len() != imag.len()
 				{
 					panic!("Input lengths differ: real has {} elements and imag has {} elements", real.len(), imag.len());
@@ -831,7 +847,7 @@ macro_rules! define_complex_basic_struct_members {
 				
 				let data_length = data.len();
                 let temp_length = 
-                    if MultiCoreSettings::early_temp_allocation_default() {
+                    if options.early_temp_allocation {
                         data_length
                     } else {
                         0
@@ -845,25 +861,17 @@ macro_rules! define_complex_basic_struct_members {
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
 				  valid_len: data_length,
-                  multicore_settings: MultiCoreSettings::new()
+                  multicore_settings: options
 				}
 			}
 			
-			/// Creates a complex  `DataVector` from an array with magnitude and an array with phase data. `delta` is set to 1.
-			///
-			/// Arrays must have the same length. Phase must be in [rad].
-			pub fn from_mag_phase(magnitude: &[T], phase: &[T])
-				-> Self
-			{
-				$name::from_mag_phase_with_delta(magnitude, phase, T::one())
+			/// Same as `from_mag_phase` but also allows to set multicore options.
+            pub fn from_mag_phase_with_options(magnitude: &[T], phase: &[T], options: MultiCoreSettings) -> Self {
+				$name::from_mag_phase_with_delta_and_options(magnitude, phase, T::one(), options)
 			}
 			
-			/// Creates a complex  `DataVector` from an array with magnitude and an array with phase data. `delta` is set to the given value 1.
-			///
-			/// Arrays must have the same length. Phase must be in [rad].
-			pub fn from_mag_phase_with_delta(magnitude: &[T], phase: &[T], delta: T)
-				-> Self
-			{
+			/// Same as `from_mag_phase_with_delta` but also allows to set multicore options.
+            pub fn from_mag_phase_with_delta_and_options(magnitude: &[T], phase: &[T], delta: T, options: MultiCoreSettings) -> Self {
 				if magnitude.len() != phase.len()
 				{
 					panic!("Input lengths differ: magnitude has {} elements and phase has {} elements", magnitude.len(), phase.len());
@@ -878,7 +886,7 @@ macro_rules! define_complex_basic_struct_members {
 				
 				let data_length = data.len();
                 let temp_length = 
-                    if MultiCoreSettings::early_temp_allocation_default() {
+                    if options.early_temp_allocation {
                         data_length
                     } else {
                         0
@@ -892,8 +900,90 @@ macro_rules! define_complex_basic_struct_members {
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
 				  valid_len: data_length,
-                  multicore_settings: MultiCoreSettings::new()
+                  multicore_settings: options
 				}
+			}
+            
+            /// Creates a complex `DataVector` by consuming a `Vec`. Data is in interleaved format: `i0, q0, i1, q1, ...`. 
+			///
+			/// This operation is more memory efficient than the other options to create a vector,
+			/// however if used outside of Rust then it holds the risk that the user will access 
+			/// the data parameter after the vector has been created causing all types of issues.  
+			pub fn from_interleaved_no_copy(data: Vec<T>) -> Self
+			{
+				Self::from_interleaved_no_copy_with_options(data, MultiCoreSettings::default())
+			}
+			
+			/// Creates a complex `DataVector` from an array or sequence. Data is in interleaved format: `i0, q0, i1, q1, ...`. `delta` is defaulted to `1`.
+			pub fn from_interleaved(data: &[T]) -> Self
+			{
+				Self::from_interleaved_with_options(data, MultiCoreSettings::default())
+			}
+			
+			/// Creates a complex `DataVector` from an array or sequence. Data is in interleaved format: `i0, q0, i1, q1, ...`. `delta` is set to the given value.
+			pub fn from_interleaved_with_delta(data: &[T], delta: T) -> Self
+			{
+				Self::from_interleaved_with_delta_and_options(data, delta, MultiCoreSettings::default())
+			}
+            
+            /// Creates a complex and empty `DataVector` and sets `delta` to 1.0 value.
+            pub fn complex_empty() -> Self
+            {
+                Self::complex_empty_with_options(MultiCoreSettings::default())
+            }
+            
+            /// Creates a complex and empty `DataVector` and sets `delta` to the given value.
+            pub fn complex_empty_with_delta(delta: T) -> Self
+            {
+                Self::complex_empty_with_delta_and_options(delta, MultiCoreSettings::default())
+            }
+            
+            /// Creates a complex `DataVector` with `length` elements all set to the value of `constant`. `delta` is defaulted to `1`.
+			pub fn complex_from_constant(constant: T, length: usize) -> Self
+			{
+				Self::complex_from_constant_with_options(constant, length, MultiCoreSettings::default())
+			}
+			
+			/// Creates a complex `DataVector` with `length` elements all set to the value of `constant` and sets `delta` to the given value.
+			pub fn complex_from_constant_with_delta(constant: T, length: usize, delta: T) -> Self
+			{
+                Self::complex_from_constant_with_delta_and_options(constant, length, delta, MultiCoreSettings::default())
+			}
+			
+			/// Creates a complex  `DataVector` from an array with real and an array imaginary data. `delta` is set to 1.
+			///
+			/// Arrays must have the same length.
+			pub fn from_real_imag(real: &[T], imag: &[T])
+				-> Self
+			{
+				Self::from_real_imag_with_options(real, imag, MultiCoreSettings::default())
+			}
+			
+			/// Creates a complex  `DataVector` from an array with real and an array imaginary data. `delta` is set to the given value 1.
+			///
+			/// Arrays must have the same length.
+			pub fn from_real_imag_with_delta(real: &[T], imag: &[T], delta: T)
+				-> Self
+			{
+				Self::from_real_imag_with_delta_and_options(real, imag, delta, MultiCoreSettings::default())
+			}
+			
+			/// Creates a complex  `DataVector` from an array with magnitude and an array with phase data. `delta` is set to 1.
+			///
+			/// Arrays must have the same length. Phase must be in [rad].
+			pub fn from_mag_phase(magnitude: &[T], phase: &[T])
+				-> Self
+			{
+				Self::from_mag_phase_with_options(magnitude, phase, MultiCoreSettings::default())
+			}
+			
+			/// Creates a complex  `DataVector` from an array with magnitude and an array with phase data. `delta` is set to the given value 1.
+			///
+			/// Arrays must have the same length. Phase must be in [rad].
+			pub fn from_mag_phase_with_delta(magnitude: &[T], phase: &[T], delta: T)
+				-> Self
+			{
+				Self::from_mag_phase_with_delta_and_options(magnitude, phase, delta, MultiCoreSettings::default())
 			}
 		} 
 	 }
@@ -1010,7 +1100,7 @@ macro_rules! define_complex_operations_forward {
                 domain: self.domain,
                 is_complex: self.is_complex,
                 valid_len: self.valid_len,
-                multicore_settings: MultiCoreSettings::new()
+                multicore_settings: MultiCoreSettings::default()
                 }
             }
             
@@ -1035,7 +1125,7 @@ macro_rules! define_complex_operations_forward {
                 domain: other.domain,
                 is_complex: other.is_complex, 
                 valid_len: other.valid_len,
-                multicore_settings: MultiCoreSettings::new()
+                multicore_settings: MultiCoreSettings::default()
                 }
             }
             

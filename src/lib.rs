@@ -60,6 +60,7 @@ pub use vector_types::
         Statistics,
         RededicateVector
 	};
+ pub use multicore_support::MultiCoreSettings;
  use num::traits::Float;   
  
  pub trait RealNumber : Float + Copy + Clone + Send + Sync { }

@@ -20,28 +20,36 @@ pub enum Complexity {
     Large
 }
 
-/// Hold parameters which specifiy how multiple cores are used
+/// Holds parameters which specifiy how multiple cores are used
 /// to execute an operation.
 #[derive(Debug)]    
 pub struct MultiCoreSettings {
+    /// All operations will be limited to not create more threads than specified here
     pub core_limit: usize,
+    
+    /// Indicates whether the temp arrays of a vector should already be allocated during
+    /// construction
     pub early_temp_allocation: bool
     // TODO: Specify and use options such as core/thread limits
 }
 
 impl MultiCoreSettings {
-    pub fn early_temp_allocation_default() -> bool {
-        true
+    /// Creates multi core settings with default values
+    pub fn default() -> MultiCoreSettings {
+        // Initialize the pool
+        Chunk::init_static_pool();
+        // Half because we assume hyper threading and that we will keep a core so busy
+        // that hyper threading isn't of any use
+        Self::new(num_cpus::get() / 2, true)
     }
     
-    pub fn new() -> MultiCoreSettings {
+    /// Creates multi core settings with the given values.
+    pub fn new(core_limit: usize, early_temp_allocation: bool) -> MultiCoreSettings {
         // Initialize the pool
         Chunk::init_static_pool();
         MultiCoreSettings {
-            // Half because we assume hyper threading and that we will keep a core so busy
-            // that hyper threading isn't of any use
-            core_limit: num_cpus::get() / 2, 
-            early_temp_allocation: Self::early_temp_allocation_default()
+            core_limit: if core_limit >= 1 { core_limit } else { 1 }, 
+            early_temp_allocation: early_temp_allocation
         }
     }
 }
