@@ -577,10 +577,19 @@ macro_rules! add_general_impl {
                     }
                     
                     let data = &self.data;
-                    for i in 0..data_length {
-                        let target = &mut targets[i % num_targets];
-                        let pos = i / num_targets;
-                        target[pos] = data[i];
+                    if self.is_complex {
+                        for i in 0..(data_length / 2) {
+                            let target = &mut targets[i % num_targets];
+                            let pos = i / num_targets;
+                            target[2 * pos] = data[2 * i];
+                            target[2 * pos + 1] = data[2 * i + 1];
+                        }
+                    } else {
+                        for i in 0..data_length {
+                            let target = &mut targets[i % num_targets];
+                            let pos = i / num_targets;
+                            target[pos] = data[i];
+                        }
                     }
                     
                     Ok(())
@@ -598,10 +607,19 @@ macro_rules! add_general_impl {
                         
                         let data_length = self.len();
                         let data = &mut self.data;
-                        for i in 0..data_length {
-                            let source = &sources[i % num_sources];
-                            let pos = i / num_sources;
-                            data[i] = source[pos];
+                        if self.is_complex {
+                            for i in 0..(data_length / 2) {
+                                let source = &sources[i % num_sources];
+                                let pos = i / num_sources;
+                                data[2 * i] = source[2 * pos];
+                                data[2 * i + 1] = source[2 * pos + 1];
+                            }
+                        } else {
+                           for i in 0..data_length {
+                                let source = &sources[i % num_sources];
+                                let pos = i / num_sources;
+                                data[i] = source[pos];
+                            } 
                         }
                     }
                     
