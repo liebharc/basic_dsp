@@ -80,7 +80,7 @@ pub fn create_data(seed: usize, iteration: usize, from: usize, to: usize) -> Vec
 {
     let len_seed: &[_] = &[seed, iteration];
     let mut rng: StdRng = SeedableRng::from_seed(len_seed);
-    let len = rng.gen_range(from, to);
+    let len = if from == to { from }else { rng.gen_range(from, to) };
     create_data_with_len(seed, iteration, len)
 }
 

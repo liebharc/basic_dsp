@@ -322,4 +322,34 @@ mod slow_test {
             assert_complex_in_tolerance(result.rms, rms, 0.5);
         });
     }
+    
+    #[test]
+    fn split_merge_test32() {
+        let a = create_data(201511210, 0, 1000, 1000);
+        let vector = ComplexTimeVector32::from_interleaved(&a);
+        let mut split = 
+            [
+                Box::new(ComplexTimeVector32::complex_empty()),
+                Box::new(ComplexTimeVector32::complex_empty()),
+                Box::new(ComplexTimeVector32::complex_empty()),
+                Box::new(ComplexTimeVector32::complex_empty()),
+                Box::new(ComplexTimeVector32::complex_empty())];
+        vector.split_into(&mut split).unwrap();
+        let merge = ComplexTimeVector32::complex_empty();
+        let result = merge.merge(&split).unwrap();
+        assert_vector_eq(&a, &result.data());
+    }
+    
+    #[test]
+    fn split_test32() {
+        let a = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+        let vector = ComplexTimeVector32::from_interleaved(a);
+        let mut split = 
+            [
+                Box::new(ComplexTimeVector32::complex_empty()),
+                Box::new(ComplexTimeVector32::complex_empty())];
+        vector.split_into(&mut split).unwrap();
+        assert_vector_eq(&[1.0, 2.0, 5.0, 6.0], &split[0].data());
+        assert_vector_eq(&[3.0, 4.0, 7.0, 8.0], &split[1].data()); 
+    }
 }

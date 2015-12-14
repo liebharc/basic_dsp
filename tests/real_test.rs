@@ -342,4 +342,21 @@ mod slow_test {
             assert_eq!(result.rms, rms);
         });
     }
+    
+    #[test]
+    fn split_merge_test32() {
+        let a = create_data(201511210, 0, 1000, 1000);
+        let vector = RealTimeVector32::from_array(&a);
+        let mut split = 
+            [
+                Box::new(RealTimeVector32::real_empty()),
+                Box::new(RealTimeVector32::real_empty()),
+                Box::new(RealTimeVector32::real_empty()),
+                Box::new(RealTimeVector32::real_empty()),
+                Box::new(RealTimeVector32::real_empty())];
+        vector.split_into(&mut split).unwrap();
+        let merge = RealTimeVector32::real_empty();
+        let result = merge.merge(&split).unwrap();
+        assert_vector_eq(&a, &result.data());
+    }
 }
