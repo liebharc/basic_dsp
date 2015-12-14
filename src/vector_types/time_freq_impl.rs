@@ -1,6 +1,8 @@
 use super::definitions::{
 	DataVector,
     VecResult,
+    DataVectorDomain,
+    ErrorReason,
 	TimeDomainOperations,
 	FrequencyDomainOperations};
 use super::{
@@ -18,6 +20,8 @@ macro_rules! add_time_freq_impl {
                 type FreqPartner = GenericDataVector<$data_type>;
                 fn plain_fft(mut self) -> VecResult<Self> {
                     {
+                        assert_time!(self);
+                        assert_complex!(self);
                         let points = self.points();
                         let rbw = (points as $data_type)  / self.delta;
                         self.delta = rbw;
@@ -27,6 +31,7 @@ macro_rules! add_time_freq_impl {
                         let signal = Self::array_to_complex(signal);
                         let spectrum = Self::array_to_complex_mut(spectrum);
                         fft.process(&signal[0..points], &mut spectrum[0..points]);
+                        self.domain = DataVectorDomain::Frequency;
                     }
                     
                     Ok(self.swap_data_temp())
@@ -44,6 +49,8 @@ macro_rules! add_time_freq_impl {
                 type TimePartner = GenericDataVector<$data_type>;
                 fn plain_ifft(mut self) -> VecResult<Self::TimePartner> {
                     {
+                        assert_freq!(self);
+                        assert_complex!(self);
                         let points = self.points();
                         let mut fft = FFT::new(points, true);
                         let delta = (points as $data_type)  / self.delta;
@@ -53,6 +60,7 @@ macro_rules! add_time_freq_impl {
                         let signal = Self::array_to_complex(signal);
                         let spectrum = Self::array_to_complex_mut(spectrum);
                         fft.process(&signal[0..points], &mut spectrum[0..points]);
+                        self.domain = DataVectorDomain::Time;
                     }
                     Ok(self.swap_data_temp())
                 }

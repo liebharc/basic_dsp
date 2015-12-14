@@ -102,6 +102,7 @@ pub trait GenericVectorOperations<T>: DataVector<T>
 	fn divide_vector(self, divisor: &Self) -> VecResult<Self>;
 	
 	/// Appends zeros add the end of the vector until the vector has the size given in the points argument.
+    /// If `points` smaller than the `self.len()` then this operation won't do anything.
 	///
 	/// Note: Each point is two floating point numbers if the vector is complex.
 	/// # Example
@@ -475,7 +476,7 @@ pub trait RealVectorOperations<T> : DataVector<T>
     /// # Example
 	///
 	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations};
 	/// let vector1 = RealTimeVector32::from_array(&[9.0, 2.0, 7.0]);
 	/// let vector2 = RealTimeVector32::from_array(&[4.0, 8.0, 10.0]);
 	/// let result = vector1.real_dot_product(&vector2).expect("Ignoring error handling in examples");

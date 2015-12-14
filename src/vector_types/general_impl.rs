@@ -225,6 +225,7 @@ macro_rules! add_general_impl {
                     {
                         let len = self.len();
                         reject_if!(self, len != summand.len(), ErrorReason::VectorsMustHaveTheSameSize);
+                        assert_meta_data!(self, summand);
                         
                         let data_length = self.len();
                         let scalar_length = data_length % $reg::len();
@@ -264,6 +265,7 @@ macro_rules! add_general_impl {
                     {
                         let len = self.len();
                         reject_if!(self, len != subtrahend.len(), ErrorReason::VectorsMustHaveTheSameSize);
+                        assert_meta_data!(self, subtrahend);
                             
                         let data_length = self.len();
                         let scalar_length = data_length % $reg::len();
@@ -302,6 +304,7 @@ macro_rules! add_general_impl {
                 {
                     let len = self.len();
                     reject_if!(self, len != factor.len(), ErrorReason::VectorsMustHaveTheSameSize);
+                    assert_meta_data!(self, factor);
                     
                     if self.is_complex
                     {
@@ -317,6 +320,7 @@ macro_rules! add_general_impl {
                 {
                     let len = self.len();
                     reject_if!(self, len != divisor.len(), ErrorReason::VectorsMustHaveTheSameSize);
+                    assert_meta_data!(self, divisor);
                     
                     if self.is_complex
                     {

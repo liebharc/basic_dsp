@@ -2,6 +2,7 @@ use multicore_support::{Chunk, Complexity};
 use super::definitions::{
 	DataVector,
     VecResult,
+    ErrorReason,
     ScalarResult,
     Statistics,
     GenericVectorOperations,
@@ -23,6 +24,7 @@ macro_rules! add_real_impl {
                 fn real_offset(mut self, offset: $data_type) -> VecResult<Self>
                 {
                     {
+                        assert_real!(self);
                         let data_length = self.len();
                         let scalar_length = data_length % $reg::len();
                         let vectorization_length = data_length - scalar_length;           
@@ -51,6 +53,7 @@ macro_rules! add_real_impl {
                 fn real_scale(mut self, factor: $data_type) -> VecResult<Self>
                 {
                     {
+                        assert_real!(self);
                         let data_length = self.len();
                         let scalar_length = data_length % $reg::len();
                         let vectorization_length = data_length - scalar_length;
@@ -79,6 +82,7 @@ macro_rules! add_real_impl {
                 fn real_abs(mut self) -> VecResult<Self>
                 {
                     {
+                        assert_real!(self);
                         let data_length = self.len();
                         let scalar_length = data_length % $reg::len();
                         let vectorization_length = data_length - scalar_length;
@@ -106,6 +110,7 @@ macro_rules! add_real_impl {
                 
                 fn to_complex(self) -> VecResult<Self>
                 {
+                    assert_real!(self);
                     let result = self.zero_interleave();
                     match result {
                         Ok(mut vec) => { 
@@ -122,6 +127,7 @@ macro_rules! add_real_impl {
                 fn wrap(mut self, divisor: $data_type) -> VecResult<Self>
                 {
                     {
+                        assert_real!(self);
                         let mut array = &mut self.data;
                         let length = array.len();
                         Chunk::execute_partial_with_arguments(
@@ -141,6 +147,7 @@ macro_rules! add_real_impl {
                 fn unwrap(mut self, divisor: $data_type) -> VecResult<Self>
                 {
                     {
+                        assert_real!(self);
                         let data_length = self.len();
                         let mut data = &mut self.data;
                         let mut i = 0;
@@ -168,6 +175,10 @@ macro_rules! add_real_impl {
                 
                 fn real_dot_product(&self, factor: &Self) -> ScalarResult<$data_type>
                 {
+                    if self.is_complex {
+                        return Err(ErrorReason::VectorMustBeReal);
+                    }
+                    
                     let data_length = self.len();
                     let scalar_length = data_length % $reg::len();
                     let vectorization_length = data_length - scalar_length;

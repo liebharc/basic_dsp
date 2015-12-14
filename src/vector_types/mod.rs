@@ -997,12 +997,14 @@ macro_rules! reject_if {
 
 macro_rules! assert_meta_data {
     ($self_: ident, $other: ident) => {
-        let delta_ratio = $self_.delta / $other.delta;
-        if $self_.is_complex != $other.is_complex ||
-           $self_.domain != $other.domain ||
-           delta_ratio > 1.1 || delta_ratio < 0.9 {
-            return Err((ErrorReason::VectorMetaDataMustAgree, $self_));
-        }
+         {        
+            let delta_ratio = $self_.delta / $other.delta;
+            if $self_.is_complex != $other.is_complex ||
+                $self_.domain != $other.domain ||
+                delta_ratio > 1.1 || delta_ratio < 0.9 {
+                return Err((ErrorReason::VectorMetaDataMustAgree, $self_));
+            }
+         }
     }
 }
 
@@ -1024,7 +1026,7 @@ macro_rules! assert_complex {
 
 macro_rules! assert_time {
     ($self_: ident) => {
-        if !$self_.domain != DataVectorDomain::Time {
+        if $self_.domain != DataVectorDomain::Time {
             return Err((ErrorReason::VectorMustBeInTimeDomain, $self_));
         }
     }
@@ -1032,7 +1034,7 @@ macro_rules! assert_time {
 
 macro_rules! assert_freq {
     ($self_: ident) => {
-        if !$self_.domain != DataVectorDomain::Frequency {
+        if $self_.domain != DataVectorDomain::Frequency {
             return Err((ErrorReason::VectorMustBeInFrquencyDomain, $self_));
         }
     }
