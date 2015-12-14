@@ -301,10 +301,20 @@ macro_rules! define_generic_operations_forward {
                 {
                     $name::from_genres(self.to_gen().add_vector(&summand.to_gen_borrow()))
                 }
+                
+                fn add_smaller_vector(self, summand: &Self) -> VecResult<Self>
+                {
+                    $name::from_genres(self.to_gen().add_smaller_vector(&summand.to_gen_borrow()))
+                }
         
                 fn subtract_vector(self, subtrahend: &Self) -> VecResult<Self>
                 {
                     $name::from_genres(self.to_gen().subtract_vector(&subtrahend.to_gen_borrow()))
+                }
+                
+                fn subtract_smaller_vector(self, subtrahend: &Self) -> VecResult<Self>
+                {
+                    $name::from_genres(self.to_gen().subtract_smaller_vector(&subtrahend.to_gen_borrow()))
                 }
                 
                 fn multiply_vector(self, factor: &Self) -> VecResult<Self>
@@ -312,9 +322,19 @@ macro_rules! define_generic_operations_forward {
                     $name::from_genres(self.to_gen().multiply_vector(&factor.to_gen_borrow()))
                 }
                 
+                fn multiply_smaller_vector(self, factor: &Self) -> VecResult<Self>
+                {
+                    $name::from_genres(self.to_gen().multiply_smaller_vector(&factor.to_gen_borrow()))
+                }
+                
                 fn divide_vector(self, divisor: &Self) -> VecResult<Self>
                 {
                     $name::from_genres(self.to_gen().divide_vector(&divisor.to_gen_borrow()))
+                }
+                
+                fn divide_smaller_vector(self, divisor: &Self) -> VecResult<Self>
+                {
+                    $name::from_genres(self.to_gen().divide_smaller_vector(&divisor.to_gen_borrow()))
                 }
                 
                 fn zero_pad(self, points: usize) -> VecResult<Self>

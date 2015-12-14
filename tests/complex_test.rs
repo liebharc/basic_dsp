@@ -163,6 +163,57 @@ mod slow_test {
         });
     }
     
+    fn complex_vector_mul_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
+    {
+        let a = to_complex(a);
+        let b = to_complex(b);
+        let mut result = vec![Complex32::new(0.0, 0.0); a.len()];
+        for i in 0 .. a.len() {
+            result[i] = a[i] * b[i % b.len()];
+        }
+        
+        from_complex(&result)
+    }
+    
+    #[test]
+    fn complex_mul_smaller_vector_vector32() {
+        let a = create_data_with_len(201511171, 1, 240);
+        let b = create_data_with_len(201511172, 1, 10);
+        let expected = complex_vector_mul_mod(&a, &b);
+        let delta = create_delta(3561159, 1);
+        let vector1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+        let vector2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
+        let result = vector1.multiply_smaller_vector(&vector2).unwrap();
+        assert_vector_eq(&expected, &result.data());
+        assert_eq!(result.is_complex(), true);
+        assert_eq!(result.delta(), delta);
+    }
+    
+    fn complex_vector_div_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
+    {
+        let a = to_complex(a);
+        let b = to_complex(b);
+        let mut result = vec![Complex32::new(0.0, 0.0); a.len()];
+        for i in 0 .. a.len() {
+            result[i] = a[i] / b[i % b.len()];
+        }
+        
+        from_complex(&result)
+    }
+    
+    #[test]
+    fn complex_div_smaller_vector_vector32() {
+        let a = create_data_with_len(201511171, 1, 240);
+        let b = create_data_with_len(201511172, 1, 10);
+        let expected = complex_vector_div_mod(&a, &b);
+        let delta = create_delta(3561159, 1);
+        let vector1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+        let vector2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
+        let result = vector1.divide_smaller_vector(&vector2).unwrap();
+        assert_vector_eq(&expected, &result.data());
+        assert_eq!(result.is_complex(), true);
+        assert_eq!(result.delta(), delta);
+    }
     
     #[test]
     fn complex_dot_product32() {

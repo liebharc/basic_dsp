@@ -119,6 +119,30 @@ mod slow_test {
         });
     }
     
+    fn real_add_vector_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
+    {
+        let mut result = vec![0.0; a.len()];
+        for i in 0 .. a.len() {
+            result[i] = a[i] + b[i % b.len()];
+        }
+        
+        result
+    }
+    
+    #[test]
+    fn real_add_smaller_vector_vector32() {
+        let a = create_data_with_len(201511171, 1, 99);
+        let b = create_data_with_len(201511172, 1, 9);
+        let expected = real_add_vector_mod(&a, &b);
+        let delta = create_delta(3561159, 1);
+        let vector1 = RealTimeVector32::from_array_with_delta(&a, delta);
+        let vector2 = RealTimeVector32::from_array_with_delta(&b, delta);
+        let result = vector1.add_smaller_vector(&vector2).unwrap();
+        assert_vector_eq(&expected, &result.data());
+        assert_eq!(result.is_complex(), false);
+        assert_eq!(result.delta(), delta);
+    }
+    
     fn real_sub_vector(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
     {
         let mut result = vec![0.0; a.len()];
@@ -145,6 +169,30 @@ mod slow_test {
         });
     }
     
+    fn real_sub_vector_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
+    {
+        let mut result = vec![0.0; a.len()];
+        for i in 0 .. a.len() {
+            result[i] = a[i] - b[i % b.len()];
+        }
+        
+        result
+    }
+    
+    #[test]
+    fn real_sub_smaller_vector_vector32() {
+        let a = create_data_with_len(201511171, 1, 99);
+        let b = create_data_with_len(201511172, 1, 9);
+        let expected = real_sub_vector_mod(&a, &b);
+        let delta = create_delta(3561159, 1);
+        let vector1 = RealTimeVector32::from_array_with_delta(&a, delta);
+        let vector2 = RealTimeVector32::from_array_with_delta(&b, delta);
+        let result = vector1.subtract_smaller_vector(&vector2).unwrap();
+        assert_vector_eq(&expected, &result.data());
+        assert_eq!(result.is_complex(), false);
+        assert_eq!(result.delta(), delta);
+    }
+    
     fn real_vector_mul(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
     {
         let mut result = vec![0.0; a.len()];
@@ -169,6 +217,54 @@ mod slow_test {
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);
         });
+    }
+    
+    fn real_mul_vector_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
+    {
+        let mut result = vec![0.0; a.len()];
+        for i in 0 .. a.len() {
+            result[i] = a[i] * b[i % b.len()];
+        }
+        
+        result
+    }
+    
+    #[test]
+    fn real_mul_smaller_vector_vector32() {
+        let a = create_data_with_len(201511171, 1, 99);
+        let b = create_data_with_len(201511172, 1, 9);
+        let expected = real_mul_vector_mod(&a, &b);
+        let delta = create_delta(3561159, 1);
+        let vector1 = RealTimeVector32::from_array_with_delta(&a, delta);
+        let vector2 = RealTimeVector32::from_array_with_delta(&b, delta);
+        let result = vector1.multiply_smaller_vector(&vector2).unwrap();
+        assert_vector_eq(&expected, &result.data());
+        assert_eq!(result.is_complex(), false);
+        assert_eq!(result.delta(), delta);
+    }
+    
+    fn real_div_vector_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
+    {
+        let mut result = vec![0.0; a.len()];
+        for i in 0 .. a.len() {
+            result[i] = a[i] / b[i % b.len()];
+        }
+        
+        result
+    }
+    
+    #[test]
+    fn real_div_smaller_vector_vector32() {
+        let a = create_data_with_len(201511171, 1, 99);
+        let b = create_data_with_len(201511172, 1, 9);
+        let expected = real_div_vector_mod(&a, &b);
+        let delta = create_delta(3561159, 1);
+        let vector1 = RealTimeVector32::from_array_with_delta(&a, delta);
+        let vector2 = RealTimeVector32::from_array_with_delta(&b, delta);
+        let result = vector1.divide_smaller_vector(&vector2).unwrap();
+        assert_vector_eq(&expected, &result.data());
+        assert_eq!(result.is_complex(), false);
+        assert_eq!(result.delta(), delta);
     }
     
     #[test]

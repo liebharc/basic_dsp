@@ -105,6 +105,21 @@ pub trait GenericVectorOperations<T>: DataVector<T>
 	/// assert_eq!([11.0, 13.0], result.data());
 	/// ```
 	fn add_vector(self, summand: &Self) -> VecResult<Self>;
+    
+    /// Calculates the sum of `self + summand`. `summand` may be smaller than `self` as long
+    /// as `self.len() % summand.len() == 0`. THe result is the same as it would be if 
+    /// you would repeat `summand` until it has the same length as `self`.
+    /// It consumes self and returns the result.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector1 = RealTimeVector32::from_array(&[10.0, 11.0, 12.0, 13.0]);
+	/// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
+	/// let result = vector1.add_smaller_vector(&vector2).expect("Ignoring error handling in examples");
+	/// assert_eq!([11.0, 13.0, 13.0, 15.0], result.data());
+	/// ```
+	fn add_smaller_vector(self, summand: &Self) -> VecResult<Self>;
 	
 	/// Calculates the difference of `self - subtrahend`. It consumes self and returns the result.
 	/// # Example
@@ -117,6 +132,21 @@ pub trait GenericVectorOperations<T>: DataVector<T>
 	/// assert_eq!([-9.0, -9.0], result.data());
 	/// ```
 	fn subtract_vector(self, subtrahend: &Self) -> VecResult<Self>;
+    
+    /// Calculates the sum of `self - subtrahend`. `subtrahend` may be smaller than `self` as long
+    /// as `self.len() % subtrahend.len() == 0`. THe result is the same as it would be if 
+    /// you would repeat `subtrahend` until it has the same length as `self`.
+    /// It consumes self and returns the result.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector1 = RealTimeVector32::from_array(&[10.0, 11.0, 12.0, 13.0]);
+	/// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
+	/// let result = vector1.subtract_smaller_vector(&vector2).expect("Ignoring error handling in examples");
+	/// assert_eq!([9.0, 9.0, 11.0, 11.0], result.data());
+	/// ```
+	fn subtract_smaller_vector(self, summand: &Self) -> VecResult<Self>;
 	
 	/// Calculates the product of `self * factor`. It consumes self and returns the result.
 	/// # Example
@@ -129,6 +159,21 @@ pub trait GenericVectorOperations<T>: DataVector<T>
 	/// assert_eq!([10.0, 22.0], result.data());
 	/// ```
 	fn multiply_vector(self, factor: &Self) -> VecResult<Self>;
+    
+    /// Calculates the sum of `self - factor`. `factor` may be smaller than `self` as long
+    /// as `self.len() % factor.len() == 0`. THe result is the same as it would be if 
+    /// you would repeat `factor` until it has the same length as `self`.
+    /// It consumes self and returns the result.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector1 = RealTimeVector32::from_array(&[10.0, 11.0, 12.0, 13.0]);
+	/// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
+	/// let result = vector1.multiply_smaller_vector(&vector2).expect("Ignoring error handling in examples");
+	/// assert_eq!([10.0, 22.0, 12.0, 26.0], result.data());
+	/// ```
+	fn multiply_smaller_vector(self, factor: &Self) -> VecResult<Self>;
 	
 	/// Calculates the quotient of `self / summand`. It consumes self and returns the result.
 	/// # Example
@@ -141,6 +186,21 @@ pub trait GenericVectorOperations<T>: DataVector<T>
 	/// assert_eq!([5.0, 2.0], result.data());
 	/// ```
 	fn divide_vector(self, divisor: &Self) -> VecResult<Self>;
+    
+    /// Calculates the sum of `self - divisor`. `divisor` may be smaller than `self` as long
+    /// as `self.len() % divisor.len() == 0`. THe result is the same as it would be if 
+    /// you would repeat `divisor` until it has the same length as `self`.
+    /// It consumes self and returns the result.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+	/// let vector1 = RealTimeVector32::from_array(&[10.0, 12.0, 12.0, 14.0]);
+	/// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
+	/// let result = vector1.divide_smaller_vector(&vector2).expect("Ignoring error handling in examples");
+	/// assert_eq!([10.0, 6.0, 12.0, 7.0], result.data());
+	/// ```
+	fn divide_smaller_vector(self, divisor: &Self) -> VecResult<Self>;
 	
 	/// Appends zeros add the end of the vector until the vector has the size given in the points argument.
     /// If `points` smaller than the `self.len()` then this operation won't do anything.

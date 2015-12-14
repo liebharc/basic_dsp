@@ -8,6 +8,7 @@ pub trait Simd<T>
 {
     fn len() -> usize;
     fn load(array: &[T], idx: usize) -> Self;
+    fn load_wrap(array: &[T], idx: usize) -> Self;
     fn from_complex(value: Complex<T>) -> Self;
 	fn add_real(self, value: T) -> Self;
 	fn add_complex(self, value: Complex<T>) -> Self;
@@ -36,6 +37,14 @@ impl Simd<f32> for f32x4
     
     fn load(array: &[f32], idx: usize) -> f32x4 {
         f32x4::load(array, idx)
+    }
+    
+    fn load_wrap(array: &[f32], idx: usize) -> f32x4 {
+        let mut temp = [0.0; 4];
+        for i in 0..temp.len() {
+            temp[i] = array[(idx + i) % array.len()];
+        }
+        f32x4::load(&temp, 0)
     }
     
     fn from_complex(value: Complex<f32>) -> f32x4 {
@@ -148,6 +157,15 @@ impl Simd<f64> for f64x2
     
     fn load(array: &[f64], idx: usize) -> f64x2 {
         f64x2::load(array, idx)
+    }
+    
+    fn load_wrap(array: &[f64], idx: usize) -> f64x2 {
+        let mut temp = [0.0; 2];
+        for i in 0..temp.len() {
+            temp[i] = array[(idx + i) % array.len()];
+        }
+        
+        f64x2::load(&temp, 0)
     }
     
     fn from_complex(value: Complex<f64>) -> f64x2 {

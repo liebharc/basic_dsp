@@ -12,6 +12,7 @@ use num::traits::Float;
 use complex_extensions::ComplexExtensions;
 use simd_extensions::{Simd, Reg32, Reg64};
 use multicore_support::MultiCoreSettings;
+use std::ops::{Add, Sub, Mul, Div};
 
 macro_rules! impl_real_complex_dispatch {
     ($function_name: ident, $real_op: ident, $complex_op: ident)
@@ -137,6 +138,206 @@ macro_rules! impl_function_call_real_arg_complex {
     }
 }
 
+macro_rules! impl_binary_vector_operation {
+    ($data_type: ident, $reg: ident, $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
+        fn $method(mut self, $arg_name: &Self) -> VecResult<Self>
+        {
+            {
+                let len = self.len();
+                reject_if!(self, len != $arg_name.len(), ErrorReason::VectorsMustHaveTheSameSize);
+                assert_meta_data!(self, $arg_name);
+                
+                let data_length = self.len();
+                let scalar_length = data_length % $reg::len();
+                let vectorization_length = data_length - scalar_length;
+                let mut array = &mut self.data;
+                let other = &$arg_name.data;
+                Chunk::execute_original_to_target(
+                    Complexity::Small, &self.multicore_settings,
+                    &other, vectorization_length, $reg::len(), 
+                    &mut array, vectorization_length, $reg::len(), 
+                    |original, range, target| {
+                        let mut i = 0;
+                        let mut j = range.start;
+                        while i < target.len()
+                        { 
+                            let vector1 = $reg::load(original, j);
+                            let vector2 = $reg::load(target, i);
+                            let result = vector2.$simd_op(vector1);
+                            result.store(target, i);
+                            i += $reg::len();
+                            j += $reg::len();
+                        }
+                });
+                let mut i = vectorization_length;
+                while i < data_length
+                {
+                    array[i] = array[i].$scal_op(other[i]);
+                    i += 1;
+                }
+            }
+            
+            Ok(self)
+        }
+    }
+}
+
+macro_rules! impl_binary_complex_vector_operation {
+    ($data_type: ident, $reg: ident, $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
+        fn $method(mut self, $arg_name: &Self) -> VecResult<Self>
+        {
+            {
+                let len = self.len();
+                reject_if!(self, len != $arg_name.len(), ErrorReason::VectorsMustHaveTheSameSize);
+                assert_meta_data!(self, $arg_name);
+                
+                let data_length = self.len();
+                let scalar_length = data_length % $reg::len();
+                let vectorization_length = data_length - scalar_length;
+                let mut array = &mut self.data;
+                let other = &$arg_name.data;
+                Chunk::execute_original_to_target(
+                    Complexity::Small, &self.multicore_settings,
+                    &other, vectorization_length, $reg::len(), 
+                    &mut array, vectorization_length, $reg::len(), 
+                    |original, range, target| {
+                        let mut i = 0;
+                        let mut j = range.start;
+                        while i < target.len()
+                        { 
+                            let vector1 = $reg::load(original, j);
+                            let vector2 = $reg::load(target, i);
+                            let result = vector2.$simd_op(vector1);
+                            result.store(target, i);
+                            i += $reg::len();
+                            j += $reg::len();
+                        }
+                });
+                let mut i = vectorization_length;
+                while i < data_length
+                {
+                    let complex1 = Complex::<$data_type>::new(array[i], array[i + 1]);
+                    let complex2 = Complex::<$data_type>::new(other[i], other[i + 1]);
+                    let result = complex1.$scal_op(complex2);
+                    array[i] = result.re;
+                    array[i + 1] = result.im;
+                    i += 2;
+                }
+            }
+            
+            Ok(self)
+        }
+    }
+}
+
+macro_rules! impl_binary_smaller_vector_operation {
+    ($data_type: ident, $reg: ident, $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
+        fn $method(mut self, $arg_name: &Self) -> VecResult<Self>
+        {
+            {
+                let len = self.len();
+                reject_if!(self, len % $arg_name.len() != 0, ErrorReason::InvalidArgumentLength);
+                assert_meta_data!(self, $arg_name);
+                
+                let data_length = self.len();
+                let scalar_length = data_length % $reg::len();
+                let vectorization_length = data_length - scalar_length;
+                let mut array = &mut self.data;
+                let other = &$arg_name.data;
+                Chunk::execute_original_to_target(
+                    Complexity::Small, &self.multicore_settings,
+                    &other, vectorization_length, $reg::len(), 
+                    &mut array, vectorization_length, $reg::len(), 
+                    |original, range, target| {
+                        // This parallelization likely doesn't make sense for the use 
+                        // case which we have in mind with this implementation
+                        // so we likely have to revisit this code piece in future
+                        let mut i = 0;
+                        let mut j = range.start;
+                        while i < target.len()
+                        { 
+                            let vector1 = 
+                                if j + $reg::len() < original.len() { 
+                                    $reg::load(original, j)
+                                } else {
+                                    $reg::load_wrap(original, j)
+                                };
+                            let vector2 = $reg::load(target, i);
+                            let result = vector2.$simd_op(vector1);
+                            result.store(target, i);
+                            i += $reg::len();
+                            j = (j + $reg::len()) % original.len();
+                        }
+                });
+                let mut i = vectorization_length;
+                while i < data_length
+                {
+                    array[i] = array[i].$scal_op(other[i % $arg_name.len()]);
+                    i += 1;
+                }
+            }
+            
+            Ok(self)
+        }
+    }
+}
+
+macro_rules! impl_binary_smaller_complex_vector_operation {
+    ($data_type: ident, $reg: ident, $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
+        fn $method(mut self, $arg_name: &Self) -> VecResult<Self>
+        {
+            {
+                let len = self.len();
+                reject_if!(self, len % $arg_name.len() != 0, ErrorReason::InvalidArgumentLength);
+                assert_meta_data!(self, $arg_name);
+                
+                let data_length = self.len();
+                let scalar_length = data_length % $reg::len();
+                let vectorization_length = data_length - scalar_length;
+                let mut array = &mut self.data;
+                let other = &$arg_name.data;
+                Chunk::execute_original_to_target(
+                    Complexity::Small, &self.multicore_settings,
+                    &other, vectorization_length, $reg::len(), 
+                    &mut array, vectorization_length, $reg::len(), 
+                    |original, range, target| {
+                        // This parallelization likely doesn't make sense for the use 
+                        // case which we have in mind with this implementation
+                        // so we likely have to revisit this code piece in future
+                        let mut i = 0;
+                        let mut j = range.start;
+                        while i < target.len()
+                        { 
+                            let vector1 = 
+                                if j + $reg::len() < original.len() { 
+                                    $reg::load(original, j)
+                                } else {
+                                    $reg::load_wrap(original, j)
+                                };
+                            let vector2 = $reg::load(target, i);
+                            let result = vector2.$simd_op(vector1);
+                            result.store(target, i);
+                            i += $reg::len();
+                            j = (j + $reg::len()) % original.len();
+                        }
+                });
+                let mut i = vectorization_length;
+                while i < data_length
+                {
+                    let complex1 = Complex::<$data_type>::new(array[i], array[i + 1]);
+                    let complex2 = Complex::<$data_type>::new(other[i], other[i + 1]);
+                    let result = complex1.$scal_op(complex2);
+                    array[i] = result.re;
+                    array[i + 1] = result.im;
+                    i += 2;
+                }
+            }
+            
+            Ok(self)
+        }
+    }
+}
+
 macro_rules! add_general_impl {
     ($($data_type:ident, $reg:ident);*)
 	 =>
@@ -245,86 +446,11 @@ macro_rules! add_general_impl {
             
             #[inline]
             impl GenericVectorOperations<$data_type> for GenericDataVector<$data_type> {
-                fn add_vector(mut self, summand: &Self) -> VecResult<Self>
-                {
-                    {
-                        let len = self.len();
-                        reject_if!(self, len != summand.len(), ErrorReason::VectorsMustHaveTheSameSize);
-                        assert_meta_data!(self, summand);
-                        
-                        let data_length = self.len();
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;
-                        let mut array = &mut self.data;
-                        let other = &summand.data;
-                        Chunk::execute_original_to_target(
-                            Complexity::Small, &self.multicore_settings,
-                            &other, vectorization_length, $reg::len(), 
-                            &mut array, vectorization_length, $reg::len(), 
-                            |original, range, target| {
-                                let mut i = 0;
-                                let mut j = range.start;
-                                while i < target.len()
-                                { 
-                                    let vector1 = $reg::load(original, j);
-                                    let vector2 = $reg::load(target, i);
-                                    let result = vector1 + vector2;
-                                    result.store(target, i);
-                                    i += $reg::len();
-                                    j += $reg::len();
-                                }
-                        });
-                        let mut i = vectorization_length;
-                        while i < data_length
-                        {
-                            array[i] = array[i] + other[i];
-                            i += 1;
-                        }
-                    }
-                    
-                    Ok(self)
-                }
-                
-                fn subtract_vector(mut self, subtrahend: &Self) -> VecResult<Self>
-                {
-                    {
-                        let len = self.len();
-                        reject_if!(self, len != subtrahend.len(), ErrorReason::VectorsMustHaveTheSameSize);
-                        assert_meta_data!(self, subtrahend);
-                            
-                        let data_length = self.len();
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;
-                        let mut array = &mut self.data;
-                        let other = &subtrahend.data;
-                        Chunk::execute_original_to_target(
-                            Complexity::Small, &self.multicore_settings,
-                            &other, vectorization_length, $reg::len(), 
-                            &mut array, vectorization_length, $reg::len(), 
-                            |original, range, target| {
-                                let mut i = 0;
-                                let mut j = range.start;
-                                while i < target.len()
-                                { 
-                                    let vector1 = $reg::load(original, j);
-                                    let vector2 = $reg::load(target, i);
-                                    let result = vector2 - vector1;
-                                    result.store(target, i);
-                                    i += $reg::len();
-                                    j += $reg::len();
-                                }
-                        });
-                        let mut i = vectorization_length;
-                        while i < data_length
-                        {
-                            array[i] = array[i] - other[i];
-                            i += 1;
-                        }
-                    }
-                    
-                    Ok(self)
-                }
-                
+                impl_binary_vector_operation!($data_type, $reg, add_vector, summand, add, add);
+                impl_binary_smaller_vector_operation!($data_type, $reg, add_smaller_vector, summand, add, add);
+                impl_binary_vector_operation!($data_type, $reg, subtract_vector, summand, sub, sub);
+                impl_binary_smaller_vector_operation!($data_type, $reg, subtract_smaller_vector, summand, sub, sub);
+
                 fn multiply_vector(self, factor: &Self) -> VecResult<Self>
                 {
                     let len = self.len();
@@ -333,11 +459,27 @@ macro_rules! add_general_impl {
                     
                     if self.is_complex
                     {
-                        Ok(self.multiply_vector_complex(factor))
+                        self.multiply_vector_complex(factor)
                     }
                     else
                     {
-                        Ok(self.multiply_vector_real(factor))
+                        self.multiply_vector_real(factor)
+                    }
+                }
+                
+                fn multiply_smaller_vector(self, factor: &Self) -> VecResult<Self>
+                {
+                    let len = self.len();
+                    reject_if!(self, len % factor.len() != 0, ErrorReason::InvalidArgumentLength);
+                    assert_meta_data!(self, factor);
+                    
+                    if self.is_complex
+                    {
+                        self.multiply_smaller_vector_complex(factor)
+                    }
+                    else
+                    {
+                        self.multiply_smaller_vector_real(factor)
                     }
                 }
                 
@@ -349,11 +491,27 @@ macro_rules! add_general_impl {
                     
                     if self.is_complex
                     {
-                        Ok(self.divide_vector_complex(divisor))
+                        self.divide_vector_complex(divisor)
                     }
                     else
                     {
-                        Ok(self.divide_vector_real(divisor))
+                        self.divide_vector_real(divisor)
+                    }
+                }
+                
+                fn divide_smaller_vector(self, divisor: &Self) -> VecResult<Self>
+                {
+                    let len = self.len();
+                    reject_if!(self, len % divisor.len() != 0, ErrorReason::InvalidArgumentLength);
+                    assert_meta_data!(self, divisor);
+                    
+                    if self.is_complex
+                    {
+                        self.divide_smaller_vector_complex(divisor)
+                    }
+                    else
+                    {
+                        self.divide_smaller_vector_real(divisor)
                     }
                 }
                 
@@ -656,154 +814,15 @@ macro_rules! add_general_impl {
                 }
             }
             
-            impl GenericDataVector<$data_type> {                
-                fn multiply_vector_complex(mut self, factor: &Self) -> Self
-                {
-                    {
-                        let data_length = self.len();
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;
-                        let mut array = &mut self.data;
-                        let other = &factor.data;
-                        Chunk::execute_original_to_target(
-                            Complexity::Small, &self.multicore_settings,
-                            &other, vectorization_length, $reg::len(), 
-                            &mut array, vectorization_length, $reg::len(), 
-                            |original, range, target| {
-                                let mut i = 0;
-                                let mut j = range.start;
-                                while i < target.len()
-                                { 
-                                    let vector1 = $reg::load(original, j);
-                                    let vector2 = $reg::load(target, i);
-                                    let result = vector2.mul_complex(vector1);
-                                    result.store(target, i);
-                                    i += 4;
-                                    j += 4;
-                                }
-                        });
-                        let mut i = vectorization_length;
-                        while i < data_length
-                        {
-                            let complex1 = Complex::<$data_type>::new(array[i], array[i + 1]);
-                            let complex2 = Complex::<$data_type>::new(other[i], other[i + 1]);
-                            let result = complex1 * complex2;
-                            array[i] = result.re;
-                            array[i + 1] = result.im;
-                            i += 2;
-                        }
-                    }
-                    self
-                }
-                
-                fn multiply_vector_real(mut self, factor: &Self) -> Self
-                {
-                    {
-                        let data_length = self.len();
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;
-                        let mut array = &mut self.data;
-                        let other = &factor.data;
-                        Chunk::execute_original_to_target(
-                            Complexity::Small, &self.multicore_settings,
-                            &other, vectorization_length, $reg::len(), 
-                            &mut array, vectorization_length, $reg::len(), 
-                            |original, range, target| {
-                                let mut i = 0;
-                                let mut j = range.start;
-                                while i < target.len()
-                                { 
-                                    let vector1 = $reg::load(original, j);
-                                    let vector2 = $reg::load(target, i);
-                                    let result = vector2 * vector1;
-                                    result.store(target, i);
-                                    i += $reg::len();
-                                    j += $reg::len();
-                                }        
-                        });
-                        let mut i = vectorization_length;
-                        while i < data_length
-                        {
-                            array[i] = array[i] * other[i];
-                            i += 1;
-                        }
-                    }
-                    self
-                }
-                
-                fn divide_vector_complex(mut self, divisor: &Self) -> Self
-                {
-                    {
-                        let data_length = self.len();
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;
-                        let mut array = &mut self.data;
-                        let other = &divisor.data;
-                        Chunk::execute_original_to_target(
-                            Complexity::Small, &self.multicore_settings,
-                            &other, vectorization_length, $reg::len(), 
-                            &mut array, vectorization_length, $reg::len(),  
-                            |original, range, target| {
-                                let mut i = 0;
-                                let mut j = range.start;
-                                while i < target.len()
-                                { 
-                                    let vector1 = $reg::load(original, j);
-                                    let vector2 = $reg::load(target, i);
-                                    let result = vector2.div_complex(vector1);
-                                    result.store(target, i);
-                                    i += 4;
-                                    j += 4;
-                                }
-                        });
-                        let mut i = vectorization_length;
-                        while i < data_length
-                        {
-                            let complex1 = Complex::<$data_type>::new(array[i], array[i + 1]);
-                            let complex2 = Complex::<$data_type>::new(other[i], other[i + 1]);
-                            let result = complex1 / complex2;
-                            array[i] = result.re;
-                            array[i + 1] = result.im;
-                            i += 2;
-                        }
-                    }
-                    self
-                }
-                
-                fn divide_vector_real(mut self, divisor: &Self) -> Self
-                {
-                    {
-                        let data_length = self.len();
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;
-                        let mut array = &mut self.data;
-                        let other = &divisor.data;
-                        Chunk::execute_original_to_target(
-                            Complexity::Small, &self.multicore_settings,
-                            &other, vectorization_length, $reg::len(), 
-                            &mut array, vectorization_length, $reg::len(), 
-                            |original, range, target| {
-                                let mut i = 0;
-                                let mut j = range.start;
-                                while i < target.len()
-                                { 
-                                    let vector1 = $reg::load(original, j);
-                                    let vector2 = $reg::load(target, i);
-                                    let result = vector2 / vector1;
-                                    result.store(target, i);
-                                    i += $reg::len();
-                                    j += $reg::len();
-                                }
-                        });
-                        let mut i = vectorization_length;
-                        while i < data_length
-                        {
-                            array[i] = array[i] / other[i];
-                            i += 1;
-                        }
-                    }
-                    self
-                }
+            impl GenericDataVector<$data_type> {       
+                impl_binary_complex_vector_operation!($data_type, $reg, multiply_vector_complex, factor, mul_complex, mul);
+                impl_binary_smaller_complex_vector_operation!($data_type, $reg, multiply_smaller_vector_complex, factor, mul_complex, mul);  
+                impl_binary_vector_operation!($data_type, $reg, multiply_vector_real, factor, mul, mul);
+                impl_binary_smaller_vector_operation!($data_type, $reg, multiply_smaller_vector_real, factor, mul, mul);
+                impl_binary_complex_vector_operation!($data_type, $reg, divide_vector_complex, divisor, div_complex, div);
+                impl_binary_smaller_complex_vector_operation!($data_type, $reg, divide_smaller_vector_complex, divisor, div_complex, div);
+                impl_binary_vector_operation!($data_type, $reg, divide_vector_real, divisor, div, div);
+                impl_binary_smaller_vector_operation!($data_type, $reg, divide_smaller_vector_real, divisor, div, div);
                 
                 fn zero_interleave_complex(mut self) -> VecResult<Self>
                 {
