@@ -526,7 +526,7 @@ macro_rules! add_complex_impl {
                     let data = &self.data;
                     let mut i = 0;
                     while i < data_length {
-                        let c = Complex::<$data_type>::from_polar(&data[i], &data[i + 1]);
+                        let c = Complex::<$data_type>::new(data[i], data[i + 1]);
                         let (m, p) = c.to_polar();
                         mag[i / 2] = m;
                         phase[i / 2] = p;
@@ -536,9 +536,9 @@ macro_rules! add_complex_impl {
                     Ok(())
                 }
                 
-                fn set_real_imag(mut self, real: &mut Self::RealPartner, imag: &mut Self::RealPartner) -> VecResult<Self> {
+                fn set_real_imag(mut self, real: &Self::RealPartner, imag: &Self::RealPartner) -> VecResult<Self> {
                     {
-                        reject_if!(self, real.len() == imag.len(), ErrorReason::InvalidArgumentLength);
+                        reject_if!(self, real.len() != imag.len(), ErrorReason::InvalidArgumentLength);
                         self.reallocate(2 * real.len());
                         let data_length = self.len();
                         let data = &mut self.data;
@@ -554,9 +554,9 @@ macro_rules! add_complex_impl {
                     Ok(self)
                 }
                 
-                fn set_mag_phase(mut self, mag: &mut Self::RealPartner, phase: &mut Self::RealPartner) -> VecResult<Self> {
+                fn set_mag_phase(mut self, mag: &Self::RealPartner, phase: &Self::RealPartner) -> VecResult<Self> {
                     {
-                        reject_if!(self, mag.len() == phase.len(), ErrorReason::InvalidArgumentLength);
+                        reject_if!(self, mag.len() != phase.len(), ErrorReason::InvalidArgumentLength);
                         self.reallocate(2 * mag.len());
                         let data_length = self.len();
                         let data = &mut self.data;

@@ -750,13 +750,13 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
     
     /// Overrides the `self` vectors data with the real and imaginary data in the given vectors.
     /// `real` and `imag` must have the same size.
-    fn set_real_imag(self, real: &mut Self::RealPartner, imag: &mut Self::RealPartner) -> VecResult<Self>;
+    fn set_real_imag(self, real: &Self::RealPartner, imag: &Self::RealPartner) -> VecResult<Self>;
     
     /// Overrides the `self` vectors data with the magnitude and phase data in the given vectors.
     /// Note that `self` vector will immediately convert the data into a real and imaginary representation
     /// of the complex numbers which is its default format. 
     /// `mag` and `phase` must have the same size.
-    fn set_mag_phase(self, mag: &mut Self::RealPartner, phase: &mut Self::RealPartner) -> VecResult<Self>;
+    fn set_mag_phase(self, mag: &Self::RealPartner, phase: &Self::RealPartner) -> VecResult<Self>;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.

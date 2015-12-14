@@ -352,4 +352,42 @@ mod slow_test {
         assert_vector_eq(&[1.0, 2.0, 5.0, 6.0], &split[0].data());
         assert_vector_eq(&[3.0, 4.0, 7.0, 8.0], &split[1].data()); 
     }
+    
+    #[test]
+    fn to_real_imag_and_back32() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data_even(201511210, iteration, range.start, range.end);
+            let delta = create_delta(3561159, iteration);
+            let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let mut real = RealTimeVector32::real_empty();
+            let mut imag = RealTimeVector32::real_empty();
+            vector.get_real_imag(&mut real, &mut imag).unwrap();
+            let vector2 = ComplexTimeVector32::complex_empty();
+            let result = vector2.set_real_imag(&real, &imag).unwrap();
+            assert_vector_eq(&a, result.data());
+        });
+    }
+    
+    #[test]
+    fn to_mag_phase_and_back32() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data_even(201511210, iteration, range.start, range.end);
+            let delta = create_delta(3561159, iteration);
+            let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let mut mag = RealTimeVector32::real_empty();
+            let mut phase = RealTimeVector32::real_empty();
+            let mut mag2 = RealTimeVector32::real_empty();
+            let mut phase2 = RealTimeVector32::real_empty();;
+            vector.get_mag_phase(&mut mag, &mut phase).unwrap();
+            vector.get_complex_abs(&mut mag2).unwrap();
+            vector.get_phase(&mut phase2).unwrap();
+            
+            assert_vector_eq_with_reason(mag.data(), mag2.data(), "Magnitude differs");
+            assert_vector_eq_with_reason(phase.data(), phase2.data(), "Phase differs");
+            
+            let vector2 = ComplexTimeVector32::complex_empty();
+            let result = vector2.set_mag_phase(&mag, &phase).unwrap();
+            assert_vector_eq_with_reason_and_tolerance(&a, result.data(), 1e-4, "Merge differs");
+        });
+    }
 }

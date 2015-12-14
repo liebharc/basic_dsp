@@ -923,12 +923,12 @@ macro_rules! define_complex_operations_forward {
                     self.to_gen_borrow().get_mag_phase(mag.to_gen_mut_borrow(), phase.to_gen_mut_borrow())
                 }
                 
-                fn set_real_imag(self, real: &mut Self::RealPartner, imag: &mut Self::RealPartner) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().set_real_imag(real.to_gen_mut_borrow(), imag.to_gen_mut_borrow()))
+                fn set_real_imag(self, real: &Self::RealPartner, imag: &Self::RealPartner) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().set_real_imag(real.to_gen_borrow(), imag.to_gen_borrow()))
                 }
                 
-                fn set_mag_phase(self, mag: &mut Self::RealPartner, phase: &mut Self::RealPartner) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().set_mag_phase(mag.to_gen_mut_borrow(), phase.to_gen_mut_borrow()))
+                fn set_mag_phase(self, mag: &Self::RealPartner, phase: &Self::RealPartner) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().set_mag_phase(mag.to_gen_borrow(), phase.to_gen_borrow()))
                 }
             }
         )*
