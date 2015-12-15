@@ -682,6 +682,10 @@ macro_rules! define_real_operations_forward {
                 fn real_statistics(&self) -> Statistics<$data_type> {
                     self.to_gen_borrow().real_statistics()
                 }
+                
+                fn real_statistics_splitted(&self, len: usize) -> Vec<Statistics<$data_type>> {
+                    self.to_gen_borrow().real_statistics_splitted(len)
+                }
             }
         )*
         
@@ -1086,6 +1090,10 @@ macro_rules! define_complex_operations_forward {
                 
                 fn complex_statistics(&self) -> Statistics<Complex<$data_type>> {
                     self.to_gen_borrow().complex_statistics()
+                }
+                
+                fn complex_statistics_splitted(&self, len: usize) -> Vec<Statistics<Complex<$data_type>>> {
+                    self.to_gen_borrow().complex_statistics_splitted(len)
                 }
                 
                 fn get_real_imag(&self, real: &mut Self::RealPartner, imag: &mut Self::RealPartner) -> VoidResult {

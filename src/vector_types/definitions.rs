@@ -602,6 +602,20 @@ pub trait RealVectorOperations<T> : DataVector<T>
     /// assert_eq!(result.max_index, 4);
 	/// ```  
     fn real_statistics(&self) -> Statistics<T>;
+    
+    /// Calculates the statistics of the data contained in the vector as if the vector would
+    /// have been split into `len` pieces. `self.len` should be devisable by `len` without a remainder,
+    /// but this isn't enforced by the implementation.
+    /// # Example
+	///
+	/// ```
+	/// use basic_dsp::{RealTimeVector32, RealVectorOperations};
+	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0]);
+	/// let result = vector.real_statistics_splitted(2);
+	/// assert_eq!(result[0].sum, 4.0);
+    /// assert_eq!(result[1].sum, 6.0);
+	/// ```  
+    fn real_statistics_splitted(&self, len: usize) -> Vec<Statistics<T>>; 
 }
 
 /// Defines all operations which are valid on `DataVectors` containing complex data.
@@ -838,6 +852,25 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
 	/// ```  
     fn complex_statistics(&self) -> Statistics<Complex<T>>;
     
+    /// Calculates the statistics of the data contained in the vector as if the vector would
+    /// have been split into `len` pieces. `self.len` should be devisable by `len` without a remainder,
+    /// but this isn't enforced by the implementation.
+    /// # Example
+	///
+	/// ```
+	/// # extern crate num;
+	/// # extern crate basic_dsp;
+    /// # use num::complex::Complex32;
+	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations};
+	/// # fn main() { 
+	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+	/// let result = vector.complex_statistics_splitted(2);
+	/// assert_eq!(result[0].sum, Complex32::new(6.0, 8.0));
+    /// assert_eq!(result[1].sum, Complex32::new(10.0, 12.0));
+    /// }
+	/// ```  
+    fn complex_statistics_splitted(&self, len: usize) -> Vec<Statistics<Complex<T>>>; 
+    
     /// Gets the real and imaginary parts and stores them in the given vectors. 
     /// See [`get_phase`](trait.ComplexVectorOperations.html#tymethod.get_phase) and
     /// [`get_complex_abs`](trait.ComplexVectorOperations.html#tymethod.get_complex_abs) for further
@@ -965,6 +998,10 @@ pub type ScalarResult<T> = result::Result<T, ErrorReason>;
 
 /// Statistics about the data in a vector
 #[repr(C)]
+#[derive(Copy)]
+#[derive(Clone)]
+#[derive(PartialEq)]
+#[derive(Debug)]
 pub struct Statistics<T> {
     pub sum: T,
     pub count: usize,

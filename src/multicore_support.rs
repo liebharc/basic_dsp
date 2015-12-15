@@ -22,7 +22,8 @@ pub enum Complexity {
 
 /// Holds parameters which specifiy how multiple cores are used
 /// to execute an operation.
-#[derive(Debug)]    
+#[derive(Debug)] 
+#[repr(C)]  
 pub struct MultiCoreSettings {
     /// All operations will be limited to not create more threads than specified here
     pub core_limit: usize,
@@ -361,13 +362,12 @@ impl Chunk
     /// Executes the given function on the all elements of the array in parallel. A result is
     /// returned for each chunk.
 	#[inline]
-	pub fn get_chunked_results_with_arguments<F, T, R, S>(
+	pub fn get_chunked_results_with_arguments<F, S, T, R>(
             complexity: Complexity, 
             settings: &MultiCoreSettings, 
             a: &[T], a_len: usize, a_step: usize, 
-            arguments: S,
-            function: F) -> Vec<R>
-		where F: Fn(S, &[T], Range<usize>) -> R + 'static + Sync,
+            arguments:S, function: F) -> Vec<R>
+		where F: Fn(&[T], Range<usize>, S) -> R + 'static + Sync,
 			  T: Float + Copy + Clone + Send + Sync,
               R: Send,
               S: Sync + Copy
@@ -382,7 +382,7 @@ impl Chunk
             let stack_array = Mutex::new(result);
             pool.for_(chunks.zip(ranges), |chunk|
                 {   
-                    let r = function(arguments, chunk.0, chunk.1);
+                    let r = function(chunk.0, chunk.1, arguments);
                     stack_array.lock().unwrap().push(r);
                 });
             let mut guard = stack_array.lock().unwrap();
@@ -390,11 +390,11 @@ impl Chunk
 		}
 		else
 		{
-			let result = function(arguments, &a[0..a_len], Range { start: 0, end: a_len });
+			let result = function(&a[0..a_len], Range { start: 0, end: a_len }, arguments);
             vec![result]
 		}
 	}
-	
+    
     /// Executes the given function on the all elements of the array in parallel and passes
     /// the argument to all function calls.. Results are intended to be stored in the target array.
 	#[inline]

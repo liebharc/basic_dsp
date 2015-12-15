@@ -10,6 +10,7 @@ use super::definitions::{
 use super::GenericDataVector;    
 use simd_extensions::{Simd, Reg32, Reg64};
 use num::traits::Float;
+use std::{f32, f64};
 
 macro_rules! add_real_impl {
     ($($data_type:ident, $reg:ident);*)
@@ -257,14 +258,99 @@ macro_rules! add_real_impl {
                             }    
                     });
                     
+                    Self::merge_real_stats(&chunks)
+                }
+                
+                fn real_statistics_splitted(&self, len: usize) -> Vec<Statistics<$data_type>> {
+                    if len == 0 {
+                        return Vec::new();
+                    }
+                    
+                    let data_length = self.len();
+                    let array = &self.data;
+                    let chunks = Chunk::get_chunked_results_with_arguments (
+                        Complexity::Small, &self.multicore_settings,
+                        &array, data_length, 1, len,
+                        |array, range, len| {
+                            let mut i = 0;
+                            let mut results = Vec::with_capacity(len);
+                            while i < len {
+                                let stats = Statistics {
+                                        sum: 0.0,
+                                        count: 0,
+                                        average: 0.0, 
+                                        min: $data_type::INFINITY,
+                                        max: $data_type::NEG_INFINITY, 
+                                        rms: 0.0, // this field therefore has a different meaning inside this function
+                                        min_index: 0,
+                                        max_index: 0,
+                                    };
+                                results.push(stats);
+                                i += 1;
+                            }
+                            
+                            let mut i = 0;
+                            while i < array.len() {
+                                let stats = &mut results[i % len];
+                                stats.sum += array[i];
+                                stats.count += 1;
+                                stats.rms += array[i] * array[i];
+                                if array[i] > stats.max {
+                                    stats.max = array[i];
+                                    stats.max_index = (i + range.start) / len;
+                                }
+                                else if array[i] < stats.min {
+                                    stats.min = array[i];
+                                    stats.min_index = (i + range.start) / len;
+                                }
+                                
+                                i += 1;
+                            }
+                            
+                            results 
+                    });
+                    
+                    let mut results = Vec::with_capacity(len);
+                    for i in 0..len {
+                        let mut reordered = Vec::with_capacity(chunks.len());
+                        for j in 0..chunks.len()
+                        {
+                            reordered.push(chunks[j][i]);
+                        }
+                        
+                        let stats = Self::merge_real_stats(&reordered);
+                        results.push(stats);
+                    }
+                    
+                    results
+                }
+            }
+            
+            impl GenericDataVector<$data_type> {
+                fn merge_real_stats(stats: &[Statistics<$data_type>]) -> Statistics<$data_type> {
+                    if stats.len() == 0 {
+                        return Statistics {
+                            sum: 0.0,
+                            count: 0,
+                            average: $data_type::NAN,
+                            min: $data_type::NAN,
+                            max: $data_type::NAN,
+                            rms: $data_type::NAN,
+                            min_index: 0,
+                            max_index: 0,
+                        };
+                    }
+                    
                     let mut sum = 0.0;
-                    let mut max = chunks[0].max;
-                    let mut min = chunks[0].min;
-                    let mut max_index = chunks[0].max_index;
-                    let mut min_index = chunks[0].min_index;
+                    let mut max = stats[0].max;
+                    let mut min = stats[0].min;
+                    let mut max_index = stats[0].max_index;
+                    let mut min_index = stats[0].min_index;
                     let mut sum_squared = 0.0;
-                    for stat in chunks {
+                    let mut len = 0;
+                    for stat in stats {
                         sum += stat.sum;
+                        len += stat.count;
                         sum_squared += stat.rms; // We stored sum_squared in the field rms
                         if stat.max > max {
                             max = stat.max;
@@ -275,16 +361,17 @@ macro_rules! add_real_impl {
                             min_index = stat.min_index;
                         }
                     }
+                    
                     Statistics {
                         sum: sum,
-                        count: array.len(),
-                        average: sum / (array.len() as $data_type),
+                        count: len,
+                        average: sum / (len as $data_type),
                         min: min,
                         max: max,
-                        rms: (sum_squared / (array.len() as $data_type)).sqrt(),
+                        rms: (sum_squared / (len as $data_type)).sqrt(),
                         min_index: min_index,
                         max_index: max_index,
-                    }  
+                    }
                 }
             }
         )*
