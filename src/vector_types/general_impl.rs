@@ -15,7 +15,7 @@ use multicore_support::MultiCoreSettings;
 use std::ops::{Add, Sub, Mul, Div};
 
 macro_rules! impl_real_complex_dispatch {
-    ($function_name: ident, $real_op: ident, $complex_op: ident)
+    (fn $function_name: ident, $real_op: ident, $complex_op: ident)
     => {
         fn $function_name(self) -> VecResult<Self>
         {
@@ -30,7 +30,7 @@ macro_rules! impl_real_complex_dispatch {
 }
 
 macro_rules! impl_real_complex_arg_dispatch {
-    ($function_name: ident, $arg_type: ident, $arg: ident, $real_op: ident, $complex_op: ident)
+    (fn $function_name: ident, $arg_type: ident, $arg: ident, $real_op: ident, $complex_op: ident)
     => {
         fn $function_name(self, $arg: $arg_type) -> VecResult<Self>
         {
@@ -45,7 +45,7 @@ macro_rules! impl_real_complex_arg_dispatch {
 }
 
 macro_rules! impl_function_call_real_complex {
-    ($data_type: ident; $real_name: ident, $real_op: ident; $complex_name: ident, $complex_op: ident) => {
+    ($data_type: ident; fn $real_name: ident, $real_op: ident; fn $complex_name: ident, $complex_op: ident) => {
         fn $real_name(mut self) -> VecResult<Self>
         {
             {
@@ -92,7 +92,7 @@ macro_rules! impl_function_call_real_complex {
 }
 
 macro_rules! impl_function_call_real_arg_complex {
-    ($data_type: ident; $real_name: ident, $real_op: ident; $complex_name: ident, $complex_op: ident) => {
+    ($data_type: ident; fn $real_name: ident, $real_op: ident; fn $complex_name: ident, $complex_op: ident) => {
         fn $real_name(mut self, value: $data_type) -> VecResult<Self>
         {
             {
@@ -139,7 +139,7 @@ macro_rules! impl_function_call_real_arg_complex {
 }
 
 macro_rules! impl_binary_vector_operation {
-    ($data_type: ident, $reg: ident, $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
+    ($data_type: ident, $reg: ident, fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
         fn $method(mut self, $arg_name: &Self) -> VecResult<Self>
         {
             {
@@ -183,7 +183,7 @@ macro_rules! impl_binary_vector_operation {
 }
 
 macro_rules! impl_binary_complex_vector_operation {
-    ($data_type: ident, $reg: ident, $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
+    ($data_type: ident, $reg: ident, fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
         fn $method(mut self, $arg_name: &Self) -> VecResult<Self>
         {
             {
@@ -231,7 +231,7 @@ macro_rules! impl_binary_complex_vector_operation {
 }
 
 macro_rules! impl_binary_smaller_vector_operation {
-    ($data_type: ident, $reg: ident, $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
+    ($data_type: ident, $reg: ident, fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
         fn $method(mut self, $arg_name: &Self) -> VecResult<Self>
         {
             {
@@ -283,7 +283,7 @@ macro_rules! impl_binary_smaller_vector_operation {
 }
 
 macro_rules! impl_binary_smaller_complex_vector_operation {
-    ($data_type: ident, $reg: ident, $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
+    ($data_type: ident, $reg: ident, fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
         fn $method(mut self, $arg_name: &Self) -> VecResult<Self>
         {
             {
@@ -446,10 +446,10 @@ macro_rules! add_general_impl {
             
             #[inline]
             impl GenericVectorOperations<$data_type> for GenericDataVector<$data_type> {
-                impl_binary_vector_operation!($data_type, $reg, add_vector, summand, add, add);
-                impl_binary_smaller_vector_operation!($data_type, $reg, add_smaller_vector, summand, add, add);
-                impl_binary_vector_operation!($data_type, $reg, subtract_vector, summand, sub, sub);
-                impl_binary_smaller_vector_operation!($data_type, $reg, subtract_smaller_vector, summand, sub, sub);
+                impl_binary_vector_operation!($data_type, $reg, fn add_vector, summand, add, add);
+                impl_binary_smaller_vector_operation!($data_type, $reg, fn add_smaller_vector, summand, add, add);
+                impl_binary_vector_operation!($data_type, $reg, fn subtract_vector, summand, sub, sub);
+                impl_binary_smaller_vector_operation!($data_type, $reg, fn subtract_smaller_vector, summand, sub, sub);
 
                 fn multiply_vector(self, factor: &Self) -> VecResult<Self>
                 {
@@ -531,7 +531,7 @@ macro_rules! add_general_impl {
                     Ok(self)
                 }
                 
-                impl_real_complex_dispatch!(zero_interleave, zero_interleave_real, zero_interleave_complex);
+                impl_real_complex_dispatch!(fn zero_interleave, zero_interleave_real, zero_interleave_complex);
                 
                 fn diff(mut self) -> VecResult<Self>
                 {
@@ -666,26 +666,26 @@ macro_rules! add_general_impl {
                     Ok(self)
                 }
                 
-                impl_real_complex_dispatch!(sqrt, real_sqrt, complex_sqrt);
-                impl_real_complex_dispatch!(square, real_square, complex_square);
-                impl_real_complex_arg_dispatch!(root, $data_type, degree, real_root, complex_root);
-                impl_real_complex_arg_dispatch!(power, $data_type, exponent, real_power, complex_power);
-                impl_real_complex_dispatch!(logn, real_logn, complex_logn);
-                impl_real_complex_dispatch!(expn, real_expn, complex_expn);
-                impl_real_complex_arg_dispatch!(log_base, $data_type, base, real_log_base, complex_log_base);
-                impl_real_complex_arg_dispatch!(exp_base, $data_type, base, real_exp_base, complex_exp_base);
-                impl_real_complex_dispatch!(sin, real_sin, complex_sin);
-                impl_real_complex_dispatch!(cos, real_cos, complex_cos);
-                impl_real_complex_dispatch!(tan, real_tan, complex_tan);
-                impl_real_complex_dispatch!(asin, real_asin, complex_asin);
-                impl_real_complex_dispatch!(acos, real_acos, complex_acos);
-                impl_real_complex_dispatch!(atan, real_atan, complex_atan);
-                impl_real_complex_dispatch!(sinh, real_sinh, complex_sinh);
-                impl_real_complex_dispatch!(cosh, real_cosh, complex_cosh);
-                impl_real_complex_dispatch!(tanh, real_tanh, complex_tanh);
-                impl_real_complex_dispatch!(asinh, real_asinh, complex_asinh);
-                impl_real_complex_dispatch!(acosh, real_acosh, complex_acosh);
-                impl_real_complex_dispatch!(atanh, real_atanh, complex_atanh);
+                impl_real_complex_dispatch!(fn sqrt, real_sqrt, complex_sqrt);
+                impl_real_complex_dispatch!(fn square, real_square, complex_square);
+                impl_real_complex_arg_dispatch!(fn root, $data_type, degree, real_root, complex_root);
+                impl_real_complex_arg_dispatch!(fn power, $data_type, exponent, real_power, complex_power);
+                impl_real_complex_dispatch!(fn logn, real_logn, complex_logn);
+                impl_real_complex_dispatch!(fn expn, real_expn, complex_expn);
+                impl_real_complex_arg_dispatch!(fn log_base, $data_type, base, real_log_base, complex_log_base);
+                impl_real_complex_arg_dispatch!(fn exp_base, $data_type, base, real_exp_base, complex_exp_base);
+                impl_real_complex_dispatch!(fn sin, real_sin, complex_sin);
+                impl_real_complex_dispatch!(fn cos, real_cos, complex_cos);
+                impl_real_complex_dispatch!(fn tan, real_tan, complex_tan);
+                impl_real_complex_dispatch!(fn asin, real_asin, complex_asin);
+                impl_real_complex_dispatch!(fn acos, real_acos, complex_acos);
+                impl_real_complex_dispatch!(fn atan, real_atan, complex_atan);
+                impl_real_complex_dispatch!(fn sinh, real_sinh, complex_sinh);
+                impl_real_complex_dispatch!(fn cosh, real_cosh, complex_cosh);
+                impl_real_complex_dispatch!(fn tanh, real_tanh, complex_tanh);
+                impl_real_complex_dispatch!(fn asinh, real_asinh, complex_asinh);
+                impl_real_complex_dispatch!(fn acosh, real_acosh, complex_acosh);
+                impl_real_complex_dispatch!(fn atanh, real_atanh, complex_atanh);
                 
                 fn swap_halves(mut self) -> VecResult<Self>
                 {
@@ -815,14 +815,14 @@ macro_rules! add_general_impl {
             }
             
             impl GenericDataVector<$data_type> {       
-                impl_binary_complex_vector_operation!($data_type, $reg, multiply_vector_complex, factor, mul_complex, mul);
-                impl_binary_smaller_complex_vector_operation!($data_type, $reg, multiply_smaller_vector_complex, factor, mul_complex, mul);  
-                impl_binary_vector_operation!($data_type, $reg, multiply_vector_real, factor, mul, mul);
-                impl_binary_smaller_vector_operation!($data_type, $reg, multiply_smaller_vector_real, factor, mul, mul);
-                impl_binary_complex_vector_operation!($data_type, $reg, divide_vector_complex, divisor, div_complex, div);
-                impl_binary_smaller_complex_vector_operation!($data_type, $reg, divide_smaller_vector_complex, divisor, div_complex, div);
-                impl_binary_vector_operation!($data_type, $reg, divide_vector_real, divisor, div, div);
-                impl_binary_smaller_vector_operation!($data_type, $reg, divide_smaller_vector_real, divisor, div, div);
+                impl_binary_complex_vector_operation!($data_type, $reg, fn multiply_vector_complex, factor, mul_complex, mul);
+                impl_binary_smaller_complex_vector_operation!($data_type, $reg, fn multiply_smaller_vector_complex, factor, mul_complex, mul);  
+                impl_binary_vector_operation!($data_type, $reg, fn multiply_vector_real, factor, mul, mul);
+                impl_binary_smaller_vector_operation!($data_type, $reg, fn multiply_smaller_vector_real, factor, mul, mul);
+                impl_binary_complex_vector_operation!($data_type, $reg, fn divide_vector_complex, divisor, div_complex, div);
+                impl_binary_smaller_complex_vector_operation!($data_type, $reg, fn divide_smaller_vector_complex, divisor, div_complex, div);
+                impl_binary_vector_operation!($data_type, $reg, fn divide_vector_real, divisor, div, div);
+                impl_binary_smaller_vector_operation!($data_type, $reg, fn divide_smaller_vector_real, divisor, div, div);
                 
                 fn zero_interleave_complex(mut self) -> VecResult<Self>
                 {
@@ -1040,10 +1040,10 @@ macro_rules! add_general_impl {
                     Ok(self)
                 }
                 
-                impl_function_call_real_arg_complex!($data_type; real_power, powf; complex_power, powf);
-                impl_function_call_real_complex!($data_type; real_logn, ln; complex_logn, ln);
-                impl_function_call_real_complex!($data_type; real_expn, exp; complex_expn, expn);
-                impl_function_call_real_arg_complex!($data_type; real_log_base, log; complex_log_base, log_base);
+                impl_function_call_real_arg_complex!($data_type; fn real_power, powf; fn complex_power, powf);
+                impl_function_call_real_complex!($data_type; fn real_logn, ln; fn complex_logn, ln);
+                impl_function_call_real_complex!($data_type; fn real_expn, exp; fn complex_expn, expn);
+                impl_function_call_real_arg_complex!($data_type; fn real_log_base, log; fn complex_log_base, log_base);
                 
                 fn real_exp_base(mut self, base: $data_type) -> VecResult<Self>
                 {
@@ -1088,18 +1088,18 @@ macro_rules! add_general_impl {
                     Ok(self)
                 }
                                
-                impl_function_call_real_complex!($data_type; real_sin, sin; complex_sin, sin);
-                impl_function_call_real_complex!($data_type; real_cos, cos; complex_cos, cos);
-                impl_function_call_real_complex!($data_type; real_tan, tan; complex_tan, tan);
-                impl_function_call_real_complex!($data_type; real_asin, asin; complex_asin, asin);
-                impl_function_call_real_complex!($data_type; real_acos, acos; complex_acos, acos);
-                impl_function_call_real_complex!($data_type; real_atan, atan; complex_atan, atan);
-                impl_function_call_real_complex!($data_type; real_sinh, sinh; complex_sinh, sinh);
-                impl_function_call_real_complex!($data_type; real_cosh, cosh; complex_cosh, cosh);
-                impl_function_call_real_complex!($data_type; real_tanh, tanh; complex_tanh, tanh);
-                impl_function_call_real_complex!($data_type; real_asinh, asinh; complex_asinh, asinh);
-                impl_function_call_real_complex!($data_type; real_acosh, acosh; complex_acosh, acosh);
-                impl_function_call_real_complex!($data_type; real_atanh, atanh; complex_atanh, atanh);
+                impl_function_call_real_complex!($data_type; fn real_sin, sin; fn complex_sin, sin);
+                impl_function_call_real_complex!($data_type; fn real_cos, cos; fn complex_cos, cos);
+                impl_function_call_real_complex!($data_type; fn real_tan, tan; fn complex_tan, tan);
+                impl_function_call_real_complex!($data_type; fn real_asin, asin; fn complex_asin, asin);
+                impl_function_call_real_complex!($data_type; fn real_acos, acos; fn complex_acos, acos);
+                impl_function_call_real_complex!($data_type; fn real_atan, atan; fn complex_atan, atan);
+                impl_function_call_real_complex!($data_type; fn real_sinh, sinh; fn complex_sinh, sinh);
+                impl_function_call_real_complex!($data_type; fn real_cosh, cosh; fn complex_cosh, cosh);
+                impl_function_call_real_complex!($data_type; fn real_tanh, tanh; fn complex_tanh, tanh);
+                impl_function_call_real_complex!($data_type; fn real_asinh, asinh; fn complex_asinh, asinh);
+                impl_function_call_real_complex!($data_type; fn real_acosh, acosh; fn complex_acosh, acosh);
+                impl_function_call_real_complex!($data_type; fn real_atanh, atanh; fn complex_atanh, atanh);
             }
         )*
      }
