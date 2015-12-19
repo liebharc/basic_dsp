@@ -46,94 +46,28 @@ macro_rules! impl_real_complex_arg_dispatch {
 
 macro_rules! impl_function_call_real_complex {
     ($data_type: ident; fn $real_name: ident, $real_op: ident; fn $complex_name: ident, $complex_op: ident) => {
-        fn $real_name(mut self) -> VecResult<Self>
+        fn $real_name(self) -> VecResult<Self>
         {
-            {
-                let mut array = &mut self.data;
-                let length = array.len();
-                Chunk::execute_partial(
-                    Complexity::Medium, &self.multicore_settings,
-                    &mut array, length, 1, 
-                    |array| {
-                        let mut i = 0;
-                        while i < array.len()
-                        {
-                            array[i] = array[i].$real_op();
-                            i += 1;
-                        }
-                });
-            }
-            Ok(self)
+            self.pure_real_operation(|v, _arg| v.$real_op(), ())
         }
         
-        fn $complex_name(mut self) -> VecResult<Self>
+        fn $complex_name(self) -> VecResult<Self>
         {
-            {
-                let mut array = &mut self.data;
-                let length = array.len();
-                Chunk::execute_partial(
-                    Complexity::Medium, &self.multicore_settings,
-                    &mut array, length, 2, 
-                    |array| {
-                        let mut i = 0;
-                        while i < array.len()
-                        {
-                            let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                            let result = complex.$complex_op();
-                            array[i] = result.re;
-                            array[i + 1] = result.im;
-                            i += 2;
-                        }
-                });
-            }
-            Ok(self)
+            self.pure_complex_operation(|v, _arg| v.$complex_op(), ())
         }
     }
 }
 
 macro_rules! impl_function_call_real_arg_complex {
     ($data_type: ident; fn $real_name: ident, $real_op: ident; fn $complex_name: ident, $complex_op: ident) => {
-        fn $real_name(mut self, value: $data_type) -> VecResult<Self>
+        fn $real_name(self, value: $data_type) -> VecResult<Self>
         {
-            {
-                let mut array = &mut self.data;
-                let length = array.len();
-                Chunk::execute_partial_with_arguments(
-                    Complexity::Medium, &self.multicore_settings,
-                    &mut array, length, 1, value, 
-                    |array, value| {
-                        let mut i = 0;
-                        while i < array.len()
-                        {
-                            array[i] = array[i].$real_op(value);
-                            i += 1;
-                        }
-                });
-            }
-            Ok(self)
+            self.pure_real_operation(|v, arg| v.$real_op(arg), value)
         }
         
-        fn $complex_name(mut self, value: $data_type) -> VecResult<Self>
+        fn $complex_name(self, value: $data_type) -> VecResult<Self>
         {
-            {
-                let mut array = &mut self.data;
-                let length = array.len();
-                Chunk::execute_partial_with_arguments(
-                    Complexity::Medium, &self.multicore_settings,
-                    &mut array, length, 2, value, 
-                    |array, value| {
-                        let mut i = 0;
-                        while i < array.len()
-                        {
-                            let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                            let result = complex.$complex_op(value);
-                            array[i] = result.re;
-                            array[i + 1] = result.im;
-                            i += 2;
-                        }
-                });
-            }
-            Ok(self)
+            self.pure_complex_operation(|v, arg| v.$complex_op(arg), value)
         }
     }
 }

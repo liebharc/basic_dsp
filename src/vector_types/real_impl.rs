@@ -22,91 +22,22 @@ macro_rules! add_real_impl {
             {
                 type ComplexPartner = Self;
                 
-                fn real_offset(mut self, offset: $data_type) -> VecResult<Self>
+                fn real_offset(self, offset: $data_type) -> VecResult<Self>
                 {
-                    {
-                        assert_real!(self);
-                        let data_length = self.len();
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;           
-                        let mut array = &mut self.data;
-                        Chunk::execute_partial_with_arguments(
-                            Complexity::Small, &self.multicore_settings,
-                            &mut array, vectorization_length, $reg::len(), offset, 
-                            |array, value| {
-                                let mut i = 0;
-                                while i < array.len()
-                                { 
-                                    let vector = $reg::load(array, i);
-                                    let scaled = vector.add_real(value);
-                                    scaled.store(array, i);
-                                    i += $reg::len();
-                                }
-                        });
-                        for i in vectorization_length..data_length
-                        {
-                            array[i] = array[i] + offset;
-                        }
-                    }
-                    Ok(self)
+                    assert_real!(self);
+                    self.simd_real_operation(|x, y| x.add_real(y), |x, y| x + y, offset)
                 }
                 
-                fn real_scale(mut self, factor: $data_type) -> VecResult<Self>
+                fn real_scale(self, factor: $data_type) -> VecResult<Self>
                 {
-                    {
-                        assert_real!(self);
-                        let data_length = self.len();
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;
-                        let mut array = &mut self.data;
-                        Chunk::execute_partial_with_arguments(
-                            Complexity::Small, &self.multicore_settings,
-                            &mut array, vectorization_length, $reg::len(), factor, 
-                            |array, value| {
-                                let mut i = 0;
-                                while i < array.len()
-                                { 
-                                    let vector = $reg::load(array, i);
-                                    let scaled = vector.scale_real(value);
-                                    scaled.store(array, i);
-                                    i += $reg::len();
-                                }
-                        });
-                        for i in vectorization_length..data_length
-                        {
-                            array[i] = array[i] * factor;
-                        }
-                    }
-                    Ok(self)
+                    assert_real!(self);
+                    self.simd_real_operation(|x, y| x.scale_real(y), |x, y| x * y, factor)
                 }
                 
-                fn real_abs(mut self) -> VecResult<Self>
+                fn real_abs(self) -> VecResult<Self>
                 {
-                    {
-                        assert_real!(self);
-                        let data_length = self.len();
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;
-                        let mut array = &mut self.data;
-                        Chunk::execute_partial(
-                            Complexity::Small, &self.multicore_settings,
-                            &mut array, vectorization_length, $reg::len(), 
-                            |array| {
-                                let mut i = 0;
-                                while i < array.len()
-                                { 
-                                    let vector = $reg::load(array, i);
-                                    let abs = (vector * vector).sqrt();
-                                    abs.store(array, i);
-                                    i += $reg::len();
-                                }
-                        });
-                        for i in vectorization_length..data_length
-                        {
-                            array[i] = array[i].abs();
-                        }
-                    }
-                    Ok(self)
+                    assert_real!(self);
+                    self.simd_real_operation(|x, _arg| (x * x).sqrt(), |x, _arg| x.abs(), ())
                 }
                 
                 fn to_complex(self) -> VecResult<Self>
@@ -125,24 +56,10 @@ macro_rules! add_real_impl {
                     }
                 }
                 
-                fn wrap(mut self, divisor: $data_type) -> VecResult<Self>
+                fn wrap(self, divisor: $data_type) -> VecResult<Self>
                 {
-                    {
-                        assert_real!(self);
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial_with_arguments(
-                            Complexity::Small, &self.multicore_settings,
-                            &mut array, length, 1, divisor, 
-                            |array, value| {
-                                let mut i = 0;
-                                while i < array.len() {
-                                    array[i] = array[i] % value;
-                                    i += 1;
-                                }
-                        });
-                    }
-                    Ok(self)
+                    assert_real!(self);
+                    self.pure_real_operation(|x, y| x % y, divisor)
                 }
                 
                 fn unwrap(mut self, divisor: $data_type) -> VecResult<Self>

@@ -71,6 +71,8 @@ mod real_forward;
 mod complex_forward;
 #[macro_use]
 mod general_forward;
+#[macro_use]
+mod basic_functions;
 pub mod definitions;
 pub mod general_impl;
 pub mod real_impl;
@@ -96,10 +98,11 @@ use num::complex::Complex;
 use RealNumber;
 use multicore_support::{Chunk, Complexity, MultiCoreSettings};
 use std::mem;
-use simd_extensions::{Simd, Reg32};
+use simd_extensions::{Simd, Reg32, Reg64};
 use std::ops::{Index, IndexMut, Range, RangeTo, RangeFrom, RangeFull};
     
 define_vector_struct!(struct GenericDataVector);
+add_basic_private_impl!(f32, Reg32; f64, Reg64);
 
 define_vector_struct!(struct RealTimeVector);
 define_real_basic_struct_members!(impl RealTimeVector, DataVectorDomain::Time);

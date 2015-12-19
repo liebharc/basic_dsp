@@ -23,100 +23,23 @@ macro_rules! add_complex_impl {
             impl ComplexVectorOperations<$data_type> for GenericDataVector<$data_type>
             {
                 type RealPartner = GenericDataVector<$data_type>;
-                fn complex_offset(mut self, offset: Complex<$data_type>)  -> VecResult<Self>
+                fn complex_offset(self, offset: Complex<$data_type>)  -> VecResult<Self>
                 {
-                    {
-                        assert_complex!(self);
-                        let data_length = self.len();
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;
-                        let mut array = &mut self.data;
-                        let vector_offset = $reg::from_complex(offset);
-                        Chunk::execute_partial_with_arguments(
-                            Complexity::Small, &self.multicore_settings,
-                            &mut array, vectorization_length, $reg::len(), vector_offset, 
-                            |array, v| {
-                                let mut i = 0;
-                                while i < array.len()
-                                {
-                                    let data = $reg::load(array, i);
-                                    let result = data + v;
-                                    result.store(array, i);
-                                    i += $reg::len();
-                                }
-                        });
-                        
-                        let mut i = vectorization_length;
-                        while i < data_length
-                        {
-                            array[i] += offset.re;
-                            array[i + 1] += offset.im;
-                            i += 2;
-                        }
-                    }
-                    
-                    Ok(self)
+                    assert_complex!(self);
+                    let vector_offset = $reg::from_complex(offset);
+                    self.simd_complex_operation(|x,y| x + y, |x,y| x + Complex::<$data_type>::new(y.extract(0), y.extract(1)), vector_offset)
                 }
                 
-                fn complex_scale(mut self, factor: Complex<$data_type>) -> VecResult<Self>
+                fn complex_scale(self, factor: Complex<$data_type>) -> VecResult<Self>
                 {
-                    {
-                        assert_complex!(self);
-                        let data_length = self.len();
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;
-                        let mut array = &mut self.data;
-                        Chunk::execute_partial_with_arguments(
-                            Complexity::Small, &self.multicore_settings,
-                            &mut array, vectorization_length, $reg::len(), factor, 
-                                |array, value| {
-                                    let mut i = 0;
-                                    while i < array.len()
-                                    { 
-                                        let vector = $reg::load(array, i);
-                                        let scaled = vector.scale_complex(value);
-                                        scaled.store(array, i);
-                                        i += $reg::len();
-                                    }
-                        });
-                        let mut i = vectorization_length;
-                        while i < data_length
-                        {
-                            let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                            let result = complex * factor;
-                            array[i] = result.re;
-                            array[i + 1] = result.im;
-                            i += 2;
-                        }
-                    }
-                    Ok(self)
+                    assert_complex!(self);
+                    self.simd_complex_operation(|x,y| x.scale_complex(y), |x,y| x * y, factor)
                 }
                 
-                fn complex_abs(mut self) -> VecResult<Self>
+                fn complex_abs(self) -> VecResult<Self>
                 {
-                    {
-                        assert_complex!(self);
-                        let data_length = self.len();
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;
-                        let array = &self.data;
-                        let mut temp = temp_mut!(self, data_length);
-                        Chunk::execute_original_to_target(
-                            Complexity::Small, &self.multicore_settings,
-                            &array, vectorization_length, $reg::len(), 
-                            &mut temp, vectorization_length / 2, $reg::len() / 2, 
-                            Self::complex_abs_simd);
-                        let mut i = vectorization_length;
-                        while i + 1 < data_length
-                        {
-                            temp[i / 2] = (array[i] * array[i] + array[i + 1] * array[i + 1]).sqrt();
-                            i += 2;
-                        }
-                        self.is_complex = false;
-                        self.valid_len = self.valid_len / 2;
-                    }
-                    
-                    Ok(self.swap_data_temp())
+                    assert_complex!(self);
+                    self.simd_complex_to_real_operation(|x,_arg| x.complex_abs(), |x,_arg| x.norm(), ())
                 }
                 
                 fn get_complex_abs(&self, destination: &mut Self) -> VoidResult
@@ -148,75 +71,17 @@ macro_rules! add_complex_impl {
                     Ok(())
                 }
                 
-                fn complex_abs_squared(mut self) -> VecResult<Self>
+                fn complex_abs_squared(self) -> VecResult<Self>
                 {
-                    {
-                        assert_complex!(self);
-                        let data_length = self.len();
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;
-                        let array = &mut self.data;
-                        let mut temp = temp_mut!(self, data_length);
-                        Chunk::execute_original_to_target(
-                            Complexity::Small, &self.multicore_settings,
-                            &array, vectorization_length,  $reg::len(), 
-                            &mut temp, vectorization_length / 2, $reg::len() / 2, 
-                            |array, range, target| {
-                                let mut i = range.start;
-                                let mut j = 0;
-                                while j < target.len()
-                                { 
-                                    let vector = $reg::load(array, i);
-                                    let result = vector.complex_abs_squared();
-                                    result.store_half(target, j);
-                                    i += $reg::len();
-                                    j += $reg::len() / 2;
-                                }
-                        });
-                        let mut i = vectorization_length;
-                        while i + 1 < data_length
-                        {
-                            temp[i / 2] = array[i] * array[i] + array[i + 1] * array[i + 1];
-                            i += 2;
-                        }
-                        self.is_complex = false;
-                        self.valid_len = self.valid_len / 2;
-                    }
-                    
-                    Ok(self.swap_data_temp())
+                    assert_complex!(self);
+                    self.simd_complex_to_real_operation(|x,_arg| x.complex_abs_squared(), |x,_arg| x.re * x.re + x.im * x.im, ())
                 }
                 
-                fn complex_conj(mut self) -> VecResult<Self>
+                fn complex_conj(self) -> VecResult<Self>
                 {
-                    {
-                        assert_complex!(self);
-                        let data_length = self.len();
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;
-                        let mut array = &mut self.data;
-                        Chunk::execute_partial(
-                            Complexity::Small, &self.multicore_settings,
-                            &mut array, $reg::len(), vectorization_length, 
-                            |array| {
-                                let multiplicator = $reg::from_complex(Complex::<$data_type>::new(1.0, -1.0));
-                                let mut i = 0;
-                                while i < array.len() {
-                                    let vector = $reg::load(array, i);
-                                    let result = vector * multiplicator;
-                                    result.store(array, i);
-                                    i += $reg::len();
-                                }
-                        });
-                        
-                        let mut i = vectorization_length;
-                        while i + 2 < data_length
-                        {
-                            array[i] = -array[i];
-                            i += 2;
-                        }
-                    }
-                    
-                    Ok(self)
+                    assert_complex!(self);
+                    let multiplicator = $reg::from_complex(Complex::<$data_type>::new(1.0, -1.0));
+                    self.simd_complex_operation(|x,y| x * y, |x,_arg| x * Complex::<$data_type>::new(1.0, -1.0), multiplicator)
                 }
                 
                 fn to_real(mut self) -> VecResult<Self>

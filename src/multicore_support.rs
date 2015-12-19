@@ -239,7 +239,7 @@ impl Chunk
             complexity: Complexity, 
             settings: &MultiCoreSettings, 
             array: &mut [T], array_length: usize, step_size: usize, 
-            arguments:S, function: F)
+            arguments:S, ref function: F)
 		where F: Fn(&mut [T], S) + 'static + Sync, 
 			  T: RealNumber,
 			  S: Sync + Copy
