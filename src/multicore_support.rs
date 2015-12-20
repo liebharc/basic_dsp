@@ -202,7 +202,7 @@ impl Chunk
     /// Executes the given function on the first `array_length` elements of the given array in parallel and passes
     /// the argument to all function calls.
 	#[inline]
-	pub fn execute_partial_with_arguments<T,S,F>(
+	pub fn execute_partial<T,S,F>(
             complexity: Complexity, 
             settings: &MultiCoreSettings, 
             array: &mut [T], array_length: usize, step_size: usize, 
@@ -266,7 +266,7 @@ impl Chunk
     /// Executes the given function on the all elements of the array in parallel. A result is
     /// returned for each chunk.
 	#[inline]
-	pub fn get_chunked_results_with_arguments<F, S, T, R>(
+	pub fn get_chunked_results<F, S, T, R>(
             complexity: Complexity, 
             settings: &MultiCoreSettings, 
             a: &[T], a_len: usize, a_step: usize, 
@@ -302,7 +302,7 @@ impl Chunk
     /// Executes the given function on the all elements of the array in parallel and passes
     /// the argument to all function calls.. Results are intended to be stored in the target array.
 	#[inline]
-	pub fn execute_original_to_target_with_arguments<T,S,F>(
+	pub fn from_src_to_dest<T,S,F>(
             complexity: Complexity, 
             settings: &MultiCoreSettings, 
             original: &[T], original_length: usize, original_step: usize, 

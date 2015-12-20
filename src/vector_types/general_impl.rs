@@ -86,7 +86,7 @@ macro_rules! impl_binary_vector_operation {
                 let vectorization_length = data_length - scalar_length;
                 let mut array = &mut self.data;
                 let other = &$arg_name.data;
-                Chunk::execute_original_to_target_with_arguments(
+                Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
                     &other, vectorization_length, $reg::len(), 
                     &mut array, vectorization_length, $reg::len(), (), 
@@ -130,7 +130,7 @@ macro_rules! impl_binary_complex_vector_operation {
                 let vectorization_length = data_length - scalar_length;
                 let mut array = &mut self.data;
                 let other = &$arg_name.data;
-                Chunk::execute_original_to_target_with_arguments(
+                Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
                     &other, vectorization_length, $reg::len(), 
                     &mut array, vectorization_length, $reg::len(), (),
@@ -178,7 +178,7 @@ macro_rules! impl_binary_smaller_vector_operation {
                 let vectorization_length = data_length - scalar_length;
                 let mut array = &mut self.data;
                 let other = &$arg_name.data;
-                Chunk::execute_original_to_target_with_arguments(
+                Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
                     &other, vectorization_length, $reg::len(), 
                     &mut array, vectorization_length, $reg::len(), (),
@@ -230,7 +230,7 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
                 let vectorization_length = data_length - scalar_length;
                 let mut array = &mut self.data;
                 let other = &$arg_name.data;
-                Chunk::execute_original_to_target_with_arguments(
+                Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
                     &other, vectorization_length, $reg::len(), 
                     &mut array, vectorization_length, $reg::len(), (),
@@ -475,7 +475,7 @@ macro_rules! add_general_impl {
                         let mut target = temp_mut!(self, data_length);
                         if self.is_complex {
                             self.valid_len -= 2;
-                            Chunk::execute_original_to_target_with_arguments(
+                            Chunk::from_src_to_dest(
                                 Complexity::Small, &self.multicore_settings,
                                 &org, data_length, 2, 
                                 &mut target, data_length, 2, (),
@@ -498,7 +498,7 @@ macro_rules! add_general_impl {
                         }
                         else {
                             self.valid_len -= 1;
-                            Chunk::execute_original_to_target_with_arguments(
+                            Chunk::from_src_to_dest(
                                 Complexity::Small, &self.multicore_settings,
                                 &org, data_length, 1, 
                                 &mut target, data_length, 1, (),
@@ -531,7 +531,7 @@ macro_rules! add_general_impl {
                         let mut target = temp_mut!(self, data_length);
                         let org = &self.data;
                         if self.is_complex {
-                            Chunk::execute_original_to_target_with_arguments(
+                            Chunk::from_src_to_dest(
                                 Complexity::Small, &self.multicore_settings,
                                 &org, data_length, 2, 
                                 &mut target, data_length, 2, (),
@@ -554,7 +554,7 @@ macro_rules! add_general_impl {
                             });
                         }
                         else {
-                            Chunk::execute_original_to_target_with_arguments(
+                            Chunk::from_src_to_dest(
                                 Complexity::Small, &self.multicore_settings,
                                 &org, data_length, 1, 
                                 &mut target, data_length, 1, (),
@@ -766,7 +766,7 @@ macro_rules! add_general_impl {
                         let data_length = new_len;
                         let mut target = temp_mut!(self, data_length);
                         let source = &self.data;
-                        Chunk::execute_original_to_target_with_arguments(
+                        Chunk::from_src_to_dest(
                             Complexity::Small, &self.multicore_settings,
                             &source, data_length, $reg::len(), 
                             &mut target, data_length, $reg::len(), (),
@@ -801,7 +801,7 @@ macro_rules! add_general_impl {
                         let data_length = new_len;
                         let mut target = temp_mut!(self, data_length);
                         let source = &self.data;
-                        Chunk::execute_original_to_target_with_arguments(
+                        Chunk::from_src_to_dest(
                             Complexity::Small, &self.multicore_settings,
                             &source, data_length, 4, 
                             &mut target, data_length, 2, (),

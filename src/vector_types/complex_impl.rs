@@ -53,7 +53,7 @@ macro_rules! add_complex_impl {
                     let vectorization_length = data_length - scalar_length;
                     let array = &self.data;
                     let mut temp = &mut destination.data;
-                    Chunk::execute_original_to_target_with_arguments(
+                    Chunk::from_src_to_dest(
                         Complexity::Small, &self.multicore_settings,
                         &array, vectorization_length, $reg::len(), 
                         &mut temp, vectorization_length / 2, $reg::len() / 2, (),
@@ -191,7 +191,7 @@ macro_rules! add_complex_impl {
                 fn complex_statistics(&self) -> Statistics<Complex<$data_type>> {
                     let data_length = self.len();
                     let array = &self.data;
-                    let chunks = Chunk::get_chunked_results_with_arguments(
+                    let chunks = Chunk::get_chunked_results(
                         Complexity::Small, &self.multicore_settings,
                         &array, data_length, 2, (),
                         |array, range, _arg| {
@@ -245,7 +245,7 @@ macro_rules! add_complex_impl {
                     
                     let data_length = self.len();
                     let array = &self.data;
-                    let chunks = Chunk::get_chunked_results_with_arguments (
+                    let chunks = Chunk::get_chunked_results (
                         Complexity::Small, &self.multicore_settings,
                         &array, data_length, 1, len,
                         |array, range, len| {
@@ -387,7 +387,7 @@ macro_rules! add_complex_impl {
                     destination.is_complex = false;
                     let mut array = &mut destination.data;
                     let source = &self.data;
-                    Chunk::execute_original_to_target_with_arguments(
+                    Chunk::from_src_to_dest(
                         complexity, &self.multicore_settings,
                         &source, len, 2, 
                         &mut array, len / 2, 1, argument,

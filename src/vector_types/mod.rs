@@ -248,7 +248,7 @@ impl GenericDataVector<f32> {
 		
 		{
 			let mut array = &mut self.data;
-			Chunk::execute_partial_with_arguments(
+			Chunk::execute_partial(
                 Complexity::Large, &self.multicore_settings,
                 &mut array, vectorization_length, Reg32::len(), 
                 operations, 

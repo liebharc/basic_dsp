@@ -10,7 +10,7 @@ macro_rules! add_basic_private_impl {
                     {
                         let mut array = &mut self.data;
                         let length = array.len();
-                        Chunk::execute_partial_with_arguments(
+                        Chunk::execute_partial(
                             complexity, &self.multicore_settings,
                             &mut array, length, 1, argument,
                             move|array, argument| {
@@ -35,7 +35,7 @@ macro_rules! add_basic_private_impl {
                         let scalar_length = data_length % $reg::len();
                         let vectorization_length = data_length - scalar_length;           
                         let mut array = &mut self.data;
-                        Chunk::execute_partial_with_arguments(
+                        Chunk::execute_partial(
                             complexity, &self.multicore_settings,
                             &mut array, vectorization_length, $reg::len(), argument, 
                             move |array, argument| {
@@ -63,7 +63,7 @@ macro_rules! add_basic_private_impl {
                     {
                         let mut array = &mut self.data;
                         let length = array.len();
-                        Chunk::execute_partial_with_arguments(
+                        Chunk::execute_partial(
                             complexity, &self.multicore_settings,
                             &mut array, length, 2, argument,
                             move|array, argument| {
@@ -89,7 +89,7 @@ macro_rules! add_basic_private_impl {
                         let data_length = self.len();       
                         let mut array = &mut self.data;
                         let mut temp = temp_mut!(self, data_length);
-                        Chunk::execute_original_to_target_with_arguments(
+                        Chunk::from_src_to_dest(
                             complexity, &self.multicore_settings,
                             &mut array, data_length, 2, 
                             &mut temp, data_length / 2, 1, argument,
@@ -121,7 +121,7 @@ macro_rules! add_basic_private_impl {
                         let scalar_length = data_length % $reg::len();
                         let vectorization_length = data_length - scalar_length;           
                         let mut array = &mut self.data;
-                        Chunk::execute_partial_with_arguments(
+                        Chunk::execute_partial(
                             complexity, &self.multicore_settings,
                             &mut array, vectorization_length, $reg::len(), argument, 
                             move |array, argument| {
@@ -158,7 +158,7 @@ macro_rules! add_basic_private_impl {
                         let vectorization_length = data_length - scalar_length;           
                         let mut array = &mut self.data;
                         let mut temp = temp_mut!(self, data_length);
-                        Chunk::execute_original_to_target_with_arguments(
+                        Chunk::from_src_to_dest(
                             complexity, &self.multicore_settings,
                             &mut array, vectorization_length, $reg::len(), 
                             &mut temp, vectorization_length / 2, $reg::len() / 2, argument,

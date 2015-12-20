@@ -136,7 +136,7 @@ macro_rules! add_real_impl {
                 fn real_statistics(&self) -> Statistics<$data_type> {
                     let data_length = self.len();
                     let array = &self.data;
-                    let chunks = Chunk::get_chunked_results_with_arguments(
+                    let chunks = Chunk::get_chunked_results(
                         Complexity::Small, &self.multicore_settings,
                         &array, data_length, 1, (),
                         |array, range, _arg| {
@@ -185,7 +185,7 @@ macro_rules! add_real_impl {
                     
                     let data_length = self.len();
                     let array = &self.data;
-                    let chunks = Chunk::get_chunked_results_with_arguments (
+                    let chunks = Chunk::get_chunked_results(
                         Complexity::Small, &self.multicore_settings,
                         &array, data_length, 1, len,
                         |array, range, len| {
