@@ -73,7 +73,6 @@ static mut POOL: *mut Pool = 0 as *mut Pool;
 /// Contains logic which helps to perform an operation
 /// in parallel by dividing an array into chunks.
 pub struct Chunk;
-#[allow(dead_code)]
 impl Chunk
 {
     fn init_static_pool() {
@@ -199,38 +198,6 @@ impl Chunk
 		
 		ranges
 	}
-		
-    /// Executes the given function on the all elements of the array in parallel.
-	#[inline]
-	pub fn execute<F, T>(complexity: Complexity, settings: &MultiCoreSettings, array: &mut [T], step_size: usize, function: F)
-		where F: Fn(&mut [T]) + 'static + Sync,
-			  T : Float + Copy + Clone + Send + Sync
-	{
-		let array_length = array.len();
-		Chunk::execute_partial(complexity, settings, array, array_length, step_size, function);
-	}
-	
-    /// Executes the given function on the first `array_length` elements of the given array in parallel.
-	#[inline]
-	pub fn execute_partial<F, T>(complexity: Complexity, settings: &MultiCoreSettings, array: &mut [T], array_length: usize, step_size: usize, function: F)
-		where F: Fn(&mut [T]) + 'static + Sync,
-			  T : Float + Copy + Clone + Send + Sync
-	{
-        let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity, settings);
-		if number_of_chunks > 1
-		{
-			let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
-			let ref mut pool = Chunk::get_static_pool();
-			pool.for_(chunks, |chunk|
-				{
-					function(chunk);
-				});
-		}
-		else
-		{
-			function(&mut array[0..array_length]);
-		}
-	}
 	
     /// Executes the given function on the first `array_length` elements of the given array in parallel and passes
     /// the argument to all function calls.
@@ -257,34 +224,6 @@ impl Chunk
 		else
 		{
 			function(&mut array[0..array_length], arguments);
-		}
-	}
-	
-    /// Executes the given function on the all elements of the array in parallel. Results are intended to be stored in the target array.
-	#[inline]
-	pub fn execute_original_to_target<F, T>(
-            complexity: Complexity, 
-            settings: &MultiCoreSettings, 
-            original: &[T], original_length: usize, original_step: usize, 
-            target: &mut [T], target_length: usize, target_step: usize, 
-            function: F)
-		where F: Fn(&[T], Range<usize>, &mut [T]) + 'static + Sync,
-			  T : Float + Copy + Clone + Send + Sync
-	{
-		let number_of_chunks = Chunk::determine_number_of_chunks(original_length, complexity, settings);
-		if number_of_chunks > 1
-		{
-			let chunks = Chunk::partition_mut(target, target_length, target_step, number_of_chunks);
-			let ranges = Chunk::partition_in_ranges(original_length, original_step, chunks.len());
-			let ref mut pool = Chunk::get_static_pool();
-			pool.for_(chunks.zip(ranges), |chunk|
-				{
-					function(original, chunk.1, chunk.0);
-				});
-		}
-		else
-		{
-			function(original, Range { start: 0, end: original_length }, &mut target[0..target_length]);
 		}
 	}
     
@@ -320,41 +259,6 @@ impl Chunk
 		else
 		{
 			let result = function(a, Range { start: 0, end: a_len }, &b[0..b_len]);
-            vec![result]
-		}
-	}
-    
-    /// Executes the given function on the all elements of the array in parallel. A result is
-    /// returned for each chunk.
-	#[inline]
-	pub fn get_chunked_results<F, T, R>(
-            complexity: Complexity, 
-            settings: &MultiCoreSettings, 
-            a: &[T], a_len: usize, a_step: usize, 
-            function: F) -> Vec<R>
-		where F: Fn(&[T], Range<usize>) -> R + 'static + Sync,
-			  T: Float + Copy + Clone + Send + Sync,
-              R: Send
-	{
-		let number_of_chunks = Chunk::determine_number_of_chunks(a_len, complexity, settings);
-		if number_of_chunks > 1
-		{
-			let chunks = Chunk::partition(a, a_len, a_step, number_of_chunks);
-            let ranges = Chunk::partition_in_ranges(a_len, a_step, chunks.len());
-			let ref mut pool = Chunk::get_static_pool();
-            let result = Vec::with_capacity(chunks.len());
-            let stack_array = Mutex::new(result);
-            pool.for_(chunks.zip(ranges), |chunk|
-                {   
-                    let r = function(chunk.0, chunk.1);
-                    stack_array.lock().unwrap().push(r);
-                });
-            let mut guard = stack_array.lock().unwrap();
-            mem::replace(&mut guard, Vec::new())
-		}
-		else
-		{
-			let result = function(&a[0..a_len], Range { start: 0, end: a_len });
             vec![result]
 		}
 	}

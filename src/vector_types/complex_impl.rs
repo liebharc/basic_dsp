@@ -53,11 +53,11 @@ macro_rules! add_complex_impl {
                     let vectorization_length = data_length - scalar_length;
                     let array = &self.data;
                     let mut temp = &mut destination.data;
-                    Chunk::execute_original_to_target(
+                    Chunk::execute_original_to_target_with_arguments(
                         Complexity::Small, &self.multicore_settings,
                         &array, vectorization_length, $reg::len(), 
-                        &mut temp, vectorization_length / 2, $reg::len() / 2,
-                        move |array, range, target| {
+                        &mut temp, vectorization_length / 2, $reg::len() / 2, (),
+                        move |array, range, target, _arg| {
                             let mut i = 0;
                             let mut j = range.start;
                             while i < target.len()
@@ -191,10 +191,10 @@ macro_rules! add_complex_impl {
                 fn complex_statistics(&self) -> Statistics<Complex<$data_type>> {
                     let data_length = self.len();
                     let array = &self.data;
-                    let chunks = Chunk::get_chunked_results(
+                    let chunks = Chunk::get_chunked_results_with_arguments(
                         Complexity::Small, &self.multicore_settings,
-                        &array, data_length, 2, 
-                        |array, range| {
+                        &array, data_length, 2, (),
+                        |array, range, _arg| {
                             let mut i = 0;
                             let mut sum = Complex::<$data_type>::new(0.0, 0.0);
                             let mut sum_squared = Complex::<$data_type>::new(0.0, 0.0);

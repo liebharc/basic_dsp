@@ -145,7 +145,6 @@ define_vector_struct_type_alias!(struct ComplexFreqVector64, based_on: ComplexFr
 #[derive(Clone)]
 #[derive(PartialEq)]
 #[derive(Debug)]
-#[allow(dead_code)]
 pub enum Operation<T>
 {
 	AddReal(T),

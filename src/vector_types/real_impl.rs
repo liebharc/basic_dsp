@@ -136,10 +136,10 @@ macro_rules! add_real_impl {
                 fn real_statistics(&self) -> Statistics<$data_type> {
                     let data_length = self.len();
                     let array = &self.data;
-                    let chunks = Chunk::get_chunked_results(
+                    let chunks = Chunk::get_chunked_results_with_arguments(
                         Complexity::Small, &self.multicore_settings,
-                        &array, data_length, 1, 
-                        |array, range| {
+                        &array, data_length, 1, (),
+                        |array, range, _arg| {
                             let mut i = 0;
                             let mut sum = 0.0;
                             let mut sum_squared = 0.0;

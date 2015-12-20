@@ -86,11 +86,11 @@ macro_rules! impl_binary_vector_operation {
                 let vectorization_length = data_length - scalar_length;
                 let mut array = &mut self.data;
                 let other = &$arg_name.data;
-                Chunk::execute_original_to_target(
+                Chunk::execute_original_to_target_with_arguments(
                     Complexity::Small, &self.multicore_settings,
                     &other, vectorization_length, $reg::len(), 
-                    &mut array, vectorization_length, $reg::len(), 
-                    |original, range, target| {
+                    &mut array, vectorization_length, $reg::len(), (), 
+                    |original, range, target, _arg| {
                         let mut i = 0;
                         let mut j = range.start;
                         while i < target.len()
@@ -130,11 +130,11 @@ macro_rules! impl_binary_complex_vector_operation {
                 let vectorization_length = data_length - scalar_length;
                 let mut array = &mut self.data;
                 let other = &$arg_name.data;
-                Chunk::execute_original_to_target(
+                Chunk::execute_original_to_target_with_arguments(
                     Complexity::Small, &self.multicore_settings,
                     &other, vectorization_length, $reg::len(), 
-                    &mut array, vectorization_length, $reg::len(), 
-                    |original, range, target| {
+                    &mut array, vectorization_length, $reg::len(), (),
+                    |original, range, target, _arg| {
                         let mut i = 0;
                         let mut j = range.start;
                         while i < target.len()
@@ -178,11 +178,11 @@ macro_rules! impl_binary_smaller_vector_operation {
                 let vectorization_length = data_length - scalar_length;
                 let mut array = &mut self.data;
                 let other = &$arg_name.data;
-                Chunk::execute_original_to_target(
+                Chunk::execute_original_to_target_with_arguments(
                     Complexity::Small, &self.multicore_settings,
                     &other, vectorization_length, $reg::len(), 
-                    &mut array, vectorization_length, $reg::len(), 
-                    |original, range, target| {
+                    &mut array, vectorization_length, $reg::len(), (),
+                    |original, range, target, _arg| {
                         // This parallelization likely doesn't make sense for the use 
                         // case which we have in mind with this implementation
                         // so we likely have to revisit this code piece in future
@@ -230,11 +230,11 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
                 let vectorization_length = data_length - scalar_length;
                 let mut array = &mut self.data;
                 let other = &$arg_name.data;
-                Chunk::execute_original_to_target(
+                Chunk::execute_original_to_target_with_arguments(
                     Complexity::Small, &self.multicore_settings,
                     &other, vectorization_length, $reg::len(), 
-                    &mut array, vectorization_length, $reg::len(), 
-                    |original, range, target| {
+                    &mut array, vectorization_length, $reg::len(), (),
+                    |original, range, target, _arg| {
                         // This parallelization likely doesn't make sense for the use 
                         // case which we have in mind with this implementation
                         // so we likely have to revisit this code piece in future
@@ -475,11 +475,11 @@ macro_rules! add_general_impl {
                         let mut target = temp_mut!(self, data_length);
                         if self.is_complex {
                             self.valid_len -= 2;
-                            Chunk::execute_original_to_target(
+                            Chunk::execute_original_to_target_with_arguments(
                                 Complexity::Small, &self.multicore_settings,
                                 &org, data_length, 2, 
-                                &mut target, data_length, 2, 
-                                |original, range, target| {
+                                &mut target, data_length, 2, (),
+                                |original, range, target, _arg| {
                                     let mut i = 0;
                                     let mut j = range.start;
                                     let mut len = target.len();
@@ -498,11 +498,11 @@ macro_rules! add_general_impl {
                         }
                         else {
                             self.valid_len -= 1;
-                            Chunk::execute_original_to_target(
+                            Chunk::execute_original_to_target_with_arguments(
                                 Complexity::Small, &self.multicore_settings,
                                 &org, data_length, 1, 
-                                &mut target, data_length, 1, 
-                                |original, range, target| {
+                                &mut target, data_length, 1, (),
+                                |original, range, target, _arg| {
                                     let mut i = 0;
                                     let mut j = range.start;
                                     let mut len = target.len();
@@ -531,11 +531,11 @@ macro_rules! add_general_impl {
                         let mut target = temp_mut!(self, data_length);
                         let org = &self.data;
                         if self.is_complex {
-                            Chunk::execute_original_to_target(
+                            Chunk::execute_original_to_target_with_arguments(
                                 Complexity::Small, &self.multicore_settings,
                                 &org, data_length, 2, 
-                                &mut target, data_length, 2, 
-                                |original, range, target| {
+                                &mut target, data_length, 2, (),
+                                |original, range, target, _arg| {
                                     let mut i = 0;
                                     let mut j = range.start;
                                     if j == 0 {
@@ -554,11 +554,11 @@ macro_rules! add_general_impl {
                             });
                         }
                         else {
-                            Chunk::execute_original_to_target(
+                            Chunk::execute_original_to_target_with_arguments(
                                 Complexity::Small, &self.multicore_settings,
                                 &org, data_length, 1, 
-                                &mut target, data_length, 1, 
-                                |original, range, target| {
+                                &mut target, data_length, 1, (),
+                                |original, range, target, _arg| {
                                     let mut i = 0;
                                     let mut j = range.start;
                                     if j == 0 {
@@ -766,11 +766,11 @@ macro_rules! add_general_impl {
                         let data_length = new_len;
                         let mut target = temp_mut!(self, data_length);
                         let source = &self.data;
-                        Chunk::execute_original_to_target(
+                        Chunk::execute_original_to_target_with_arguments(
                             Complexity::Small, &self.multicore_settings,
                             &source, data_length, $reg::len(), 
-                            &mut target, data_length, $reg::len(), 
-                            |original, range, target| {
+                            &mut target, data_length, $reg::len(), (),
+                            |original, range, target, _arg| {
                                 let mut i = 0;
                                 let mut j = range.start;
                                 while i < target.len() / 2 {
@@ -801,11 +801,11 @@ macro_rules! add_general_impl {
                         let data_length = new_len;
                         let mut target = temp_mut!(self, data_length);
                         let source = &self.data;
-                        Chunk::execute_original_to_target(
+                        Chunk::execute_original_to_target_with_arguments(
                             Complexity::Small, &self.multicore_settings,
                             &source, data_length, 4, 
-                            &mut target, data_length, 2, 
-                            |original, range, target| {
+                            &mut target, data_length, 2, (),
+                            |original, range, target, _arg| {
                                 let mut i = 0;
                                 let mut j = range.start;
                                 while i < target.len() {
@@ -826,152 +826,34 @@ macro_rules! add_general_impl {
                     Ok(self.swap_data_temp())
                 }
                 
-                fn real_sqrt(mut self) -> VecResult<Self>
+                fn real_sqrt(self) -> VecResult<Self>
                 {
-                    {
-                        let data_length = self.len();
-                        let mut array = &mut self.data;
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;
-                        Chunk::execute_partial(
-                            Complexity::Small, &self.multicore_settings,
-                            &mut array, vectorization_length, $reg::len(), 
-                            |array| {
-                                let mut i = 0;
-                                while i < array.len()
-                                {
-                                    let vector = $reg::load(array, i);
-                                    let result = vector.sqrt();
-                                    result.store(array, i);
-                                    i += $reg::len();
-                                }
-                        });
-                        for i in vectorization_length..data_length
-                        {
-                            array[i] = array[i].sqrt();
-                        }
-                    }
-                    Ok(self)
+                    self.simd_real_operation(|x,_arg|x.sqrt(), |x,_arg|x.sqrt(), (), Complexity::Small)
                 }
                 
-                fn complex_sqrt(mut self) -> VecResult<Self>
+                fn complex_sqrt(self) -> VecResult<Self>
                 {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial(
-                            Complexity::Medium, &self.multicore_settings,
-                            &mut array, length, 2, 
-                            |array| {
-                                let mut i = 0;
-                                while i < array.len()
-                                {
-                                    let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                    let result = complex.sqrt();
-                                    array[i] = result.re;
-                                    array[i + 1] = result.im;
-                                    i += 2;
-                                }
-                        });
-                    }
-                    Ok(self)
+                    self.pure_complex_operation(|x,_arg|x.sqrt(), (), Complexity::Small)
                 }
                 
-                fn real_square(mut self) -> VecResult<Self>
+                fn real_square(self) -> VecResult<Self>
                 {
-                    {
-                        let data_length = self.len();
-                        let mut array = &mut self.data;
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;
-                        Chunk::execute_partial(
-                            Complexity::Small, &self.multicore_settings,
-                            &mut array, vectorization_length, $reg::len(), 
-                            |array| {
-                                let mut i = 0;
-                                while i < array.len()
-                                {
-                                    let a = $reg::load(array, i);
-                                    let result = a * a;
-                                    result.store(array, i);
-                                    i += $reg::len();
-                                }
-                        });
-                        
-                        for i in vectorization_length..data_length
-                        {
-                            array[i] = array[i] * array[i];
-                        }
-                    }
-                    Ok(self)
+                    self.simd_real_operation(|x,_arg|x * x, |x,_arg|x * x, (), Complexity::Small)
                 }
                 
-                fn complex_square(mut self) -> VecResult<Self>
+                fn complex_square(self) -> VecResult<Self>
                 {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial(
-                            Complexity::Medium, &self.multicore_settings,
-                            &mut array, length, 2, 
-                            |array| {
-                                let mut i = 0;
-                                while i < array.len()
-                                {
-                                    let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                    let result = complex * complex;
-                                    array[i] = result.re;
-                                    array[i + 1] = result.im;
-                                    i += 2;
-                                }
-                        });
-                    }
-                    Ok(self)
+                    self.pure_complex_operation(|x,_arg|x * x, (), Complexity::Small)
                 }
                 
-                fn real_root(mut self, degree: $data_type) -> VecResult<Self>
+                fn real_root(self, degree: $data_type) -> VecResult<Self>
                 {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial_with_arguments(
-                            Complexity::Medium, &self.multicore_settings,
-                            &mut array, length, 1, degree, 
-                            |array, base| {
-                                let base = 1.0 / base;
-                                let mut i = 0;
-                                while i < array.len()
-                                {
-                                    array[i] = array[i].powf(base);
-                                    i += 1;
-                                }
-                        });
-                    }
-                    Ok(self)
+                    self.pure_real_operation(|x,y|x.powf(1.0 / y), degree, Complexity::Medium)
                 }
                 
-                fn complex_root(mut self, base: $data_type) -> VecResult<Self>
+                fn complex_root(self, base: $data_type) -> VecResult<Self>
                 {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial_with_arguments(
-                            Complexity::Medium, &self.multicore_settings, 
-                            &mut array, length, 2, base, 
-                            |array, base| {
-                                let base = 1.0 / base;
-                                let mut i = 0;
-                                while i < array.len()
-                                {
-                                    let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                    let result = complex.powf(base);
-                                    array[i] = result.re;
-                                    array[i + 1] = result.im;
-                                    i += 2;
-                                }
-                        });
-                    }
-                    Ok(self)
+                    self.pure_complex_operation(|x,y|x.powf(1.0 / y), base, Complexity::Medium)
                 }
                 
                 impl_function_call_real_arg_complex!($data_type; fn real_power, powf; fn complex_power, powf);
@@ -979,47 +861,14 @@ macro_rules! add_general_impl {
                 impl_function_call_real_complex!($data_type; fn real_expn, exp; fn complex_expn, expn);
                 impl_function_call_real_arg_complex!($data_type; fn real_log_base, log; fn complex_log_base, log_base);
                 
-                fn real_exp_base(mut self, base: $data_type) -> VecResult<Self>
+                fn real_exp_base(self, base: $data_type) -> VecResult<Self>
                 {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial_with_arguments(
-                            Complexity::Medium, &self.multicore_settings,
-                            &mut array, length, 1, base, 
-                            |array, base| {
-                                let mut i = 0;
-                                while i < array.len()
-                                {
-                                    array[i] = base.powf(array[i]);
-                                    i += 1;
-                                }
-                        });
-                    }
-                    Ok(self)
+                    self.pure_real_operation(|x,y|y.powf(x), base, Complexity::Medium)
                 }
                 
-                fn complex_exp_base(mut self, base: $data_type) -> VecResult<Self>
+                fn complex_exp_base(self, base: $data_type) -> VecResult<Self>
                 {
-                    {
-                        let mut array = &mut self.data;
-                        let length = array.len();
-                        Chunk::execute_partial_with_arguments(
-                            Complexity::Medium, &self.multicore_settings,
-                            &mut array, length, 2, base, 
-                            |array, base| {
-                                let mut i = 0;
-                                while i < array.len()
-                                {
-                                    let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                    let result = complex.exp_base(base);
-                                    array[i] = result.re;
-                                    array[i + 1] = result.im;
-                                    i += 2;
-                                }
-                        });
-                    }
-                    Ok(self)
+                    self.pure_complex_operation(|x,y|x.exp_base(y), base, Complexity::Medium)
                 }
                                
                 impl_function_call_real_complex!($data_type; fn real_sin, sin; fn complex_sin, sin);

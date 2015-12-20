@@ -122,7 +122,6 @@ macro_rules! define_complex_operations_forward {
                 unsafe { mem::transmute(self) }
             }
             
-            #[allow(dead_code)]
             fn to_gen_mut_borrow(&mut self) -> &mut $gen_type<T>
             {
                 unsafe { mem::transmute(self) }
