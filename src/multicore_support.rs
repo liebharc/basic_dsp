@@ -403,7 +403,7 @@ impl Chunk
             settings: &MultiCoreSettings, 
             original: &[T], original_length: usize, original_step: usize, 
             target: &mut [T], target_length: usize, target_step: usize, 
-            arguments: S, function: F)
+            arguments: S, ref function: F)
 		where F: Fn(&[T], Range<usize>, &mut [T], S) + 'static + Sync,
 			  T : Float + Copy + Clone + Send + Sync,
 			  S: Sync + Copy

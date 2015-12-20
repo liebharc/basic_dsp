@@ -112,28 +112,7 @@ macro_rules! add_complex_impl {
                         return Err(ErrorReason::VectorMustBeComplex);
                     }
                     
-                    let len = self.len();
-                    destination.reallocate(len / 2);
-                    destination.delta = self.delta;
-                    destination.is_complex = false;
-                    let mut array = &mut destination.data;
-                    let source = &self.data;
-                    Chunk::execute_original_to_target(
-                        Complexity::Small, &self.multicore_settings,
-                        &source, len, 2, 
-                        &mut array, len / 2, 1, 
-                        |original, range, target| {
-                            let mut i = range.start;
-                            let mut j = 0;
-                            while j < target.len()
-                            { 
-                                target[j] = original[i];
-                                i += 2;
-                                j += 1;
-                            }
-                    });
-                    
-                    Ok(())
+                    self.pure_complex_into_real_target_operation(destination, |x,_arg|x.re, (), Complexity::Small)
                 }
                 
                 fn get_imag(&self, destination: &mut Self) -> VoidResult
@@ -142,28 +121,7 @@ macro_rules! add_complex_impl {
                         return Err(ErrorReason::VectorMustBeComplex);
                     }
                     
-                    let len = self.len();
-                    destination.reallocate(len / 2);
-                    destination.delta = self.delta;
-                    destination.is_complex = false;
-                    let mut array = &mut destination.data;
-                    let source = &self.data;
-                    Chunk::execute_original_to_target(
-                        Complexity::Small, &self.multicore_settings,
-                        &source, len, 2, 
-                        &mut array, len / 2, 1, 
-                        |original, range, target| {
-                            let mut i = range.start + 1;
-                            let mut j = 0;
-                            while j < target.len()
-                            { 
-                                target[j] = original[i];
-                                i += 2;
-                                j += 1;
-                            }
-                    });
-                    
-                    Ok(())
+                    self.pure_complex_into_real_target_operation(destination, |x,_arg|x.im, (), Complexity::Small)
                 }
                 
                 fn phase(self) -> VecResult<Self>
@@ -178,28 +136,7 @@ macro_rules! add_complex_impl {
                         return Err(ErrorReason::VectorMustBeComplex);
                     }
                     
-                    let len = self.len();
-                    destination.reallocate(len / 2);
-                    destination.delta = self.delta;
-                    destination.is_complex = false;
-                    let mut array = &mut destination.data;
-                    let source = &self.data;
-                    Chunk::execute_original_to_target(
-                        Complexity::Small, &self.multicore_settings,
-                        &source, len, 2, 
-                        &mut array, len / 2, 1, 
-                        |original, range, target| {
-                            let mut i = range.start;
-                            let mut j = 0;
-                            while j < target.len()
-                            { 
-                                let complex = Complex::<$data_type>::new(original[i], original[i + 1]);
-                                target[j] = complex.arg();
-                                i += 2;
-                                j += 1;
-                            }
-                        });
-                    Ok(())
+                    self.pure_complex_into_real_target_operation(destination, |x,_arg|x.arg(), (), Complexity::Small)
                 }
                 
                 fn complex_dot_product(&self, factor: &Self) -> ScalarResult<Complex<$data_type>>
@@ -441,6 +378,33 @@ macro_rules! add_complex_impl {
             }
             
             impl GenericDataVector<$data_type> {
+                fn pure_complex_into_real_target_operation<A, F>(&self, destination: &mut Self, op: F, argument: A, complexity: Complexity) -> VoidResult 
+                    where A: Sync + Copy,
+                          F: Fn(Complex<$data_type>, A) -> $data_type + 'static + Sync {
+                    let len = self.len();
+                    destination.reallocate(len / 2);
+                    destination.delta = self.delta;
+                    destination.is_complex = false;
+                    let mut array = &mut destination.data;
+                    let source = &self.data;
+                    Chunk::execute_original_to_target_with_arguments(
+                        complexity, &self.multicore_settings,
+                        &source, len, 2, 
+                        &mut array, len / 2, 1, argument,
+                        move|original, range, target, argument| {
+                            let mut i = range.start;
+                            let mut j = 0;
+                            while j < target.len()
+                            { 
+                                let complex = Complex::<$data_type>::new(original[i], original[i + 1]);
+                                target[j] = op(complex, argument);
+                                i += 2;
+                                j += 1;
+                            }
+                        });
+                    Ok(())
+                }
+                
                 fn merge_complex_stats(stats: &[Statistics<Complex<$data_type>>]) -> Statistics<Complex<$data_type>> {
                     if stats.len() == 0 {
                         return Statistics {
