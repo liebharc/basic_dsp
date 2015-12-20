@@ -239,7 +239,7 @@ impl GenericDataVector<f32> {
 		}
 		
 		let data_length = self.len();
-		let scalar_length = data_length % 4;
+		let scalar_length = data_length % Reg32::len();
 		let vectorization_length = data_length - scalar_length;
 		if scalar_length > 0
 		{
@@ -365,10 +365,10 @@ mod tests {
 	fn add_real_two_32_test()
 	{
 		// Test also that vector calls are possible
-		let data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
+		let data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
 		let result = RealTimeVector32::from_array(&data);
 		let result = result.real_offset(2.0).unwrap();
-		assert_eq!(result.data, [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]);
+		assert_eq!(result.data, [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0]);
 		assert_eq!(result.delta, 1.0);
 	}
 	

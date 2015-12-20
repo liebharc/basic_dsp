@@ -803,7 +803,7 @@ macro_rules! add_general_impl {
                         let source = &self.data;
                         Chunk::from_src_to_dest(
                             Complexity::Small, &self.multicore_settings,
-                            &source, data_length, 4, 
+                            &source, data_length, 1, 
                             &mut target, data_length, 2, (),
                             |original, range, target, _arg| {
                                 let mut i = 0;
