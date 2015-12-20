@@ -14,7 +14,6 @@ pub trait ComplexExtensions<T>
     fn exp_base(&self, value: T) -> Self;
 }
 
-#[allow(unused)]
 impl<T> ComplexExtensions<T> for Complex<T>
     where T: Float
 {   

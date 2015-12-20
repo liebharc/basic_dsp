@@ -18,7 +18,6 @@ macro_rules! define_vector_struct {
         }
         
         #[inline]
-		#[allow(unused_variables)]
 		impl<T> DataVector<T> for $name<T>
             where T: RealNumber
 		{
