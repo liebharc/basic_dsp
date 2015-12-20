@@ -1,29 +1,8 @@
 use simd::f32x4;
 use simd::x86::sse3::Sse3F32x4;
 use num::complex::Complex;
-use simd::x86::sse2::f64x2; // Using the avx f64x4 would be more attractive but isn't supported by all x86 CPUs
-
-pub trait Simd<T>
-    where T: Sized + Sync + Send
-{
-    fn len() -> usize;
-    fn load(array: &[T], idx: usize) -> Self;
-    fn load_wrap(array: &[T], idx: usize) -> Self;
-    fn from_complex(value: Complex<T>) -> Self;
-	fn add_real(self, value: T) -> Self;
-	fn add_complex(self, value: Complex<T>) -> Self;
-	fn scale_real(self, value: T) -> Self;
-	fn scale_complex(self, value: Complex<T>) -> Self;
-	fn complex_abs_squared(self) -> Self;
-	fn complex_abs(self) -> Self;
-    fn sqrt(self) -> Self;
-    fn store(self, target: &mut [T], index: usize);
-	fn store_half(self, target: &mut [T], index: usize);
-	fn mul_complex(self, value: Self) -> Self;
-	fn div_complex(self, value: Self) -> Self;
-    fn sum_real(&self) -> T;
-    fn sum_complex(&self) -> Complex<T>;
-}
+use super::Simd;
+use simd::x86::sse2::f64x2;
 
 pub type Reg32 = f32x4;
 
