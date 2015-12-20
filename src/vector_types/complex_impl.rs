@@ -11,7 +11,6 @@ use super::GenericDataVector;
 use simd_extensions::{Simd,Reg32,Reg64};
 use num::complex::Complex;
 use num::traits::Float;
-use std::ops::Range;
 use std::{f32, f64};
 
 macro_rules! add_complex_impl {
@@ -27,19 +26,19 @@ macro_rules! add_complex_impl {
                 {
                     assert_complex!(self);
                     let vector_offset = $reg::from_complex(offset);
-                    self.simd_complex_operation(|x,y| x + y, |x,y| x + Complex::<$data_type>::new(y.extract(0), y.extract(1)), vector_offset)
+                    self.simd_complex_operation(|x,y| x + y, |x,y| x + Complex::<$data_type>::new(y.extract(0), y.extract(1)), vector_offset, Complexity::Small)
                 }
                 
                 fn complex_scale(self, factor: Complex<$data_type>) -> VecResult<Self>
                 {
                     assert_complex!(self);
-                    self.simd_complex_operation(|x,y| x.scale_complex(y), |x,y| x * y, factor)
+                    self.simd_complex_operation(|x,y| x.scale_complex(y), |x,y| x * y, factor, Complexity::Small)
                 }
                 
                 fn complex_abs(self) -> VecResult<Self>
                 {
                     assert_complex!(self);
-                    self.simd_complex_to_real_operation(|x,_arg| x.complex_abs(), |x,_arg| x.norm(), ())
+                    self.simd_complex_to_real_operation(|x,_arg| x.complex_abs(), |x,_arg| x.norm(), (), Complexity::Small)
                 }
                 
                 fn get_complex_abs(&self, destination: &mut Self) -> VoidResult
@@ -57,8 +56,19 @@ macro_rules! add_complex_impl {
                     Chunk::execute_original_to_target(
                         Complexity::Small, &self.multicore_settings,
                         &array, vectorization_length, $reg::len(), 
-                        &mut temp, vectorization_length / 2, $reg::len() / 2, 
-                        Self::complex_abs_simd);
+                        &mut temp, vectorization_length / 2, $reg::len() / 2,
+                        move |array, range, target| {
+                            let mut i = 0;
+                            let mut j = range.start;
+                            while i < target.len()
+                            { 
+                                let vector = $reg::load(array, j);
+                                let result = vector.complex_abs();
+                                result.store_half(target, i);
+                                j += $reg::len();
+                                i += $reg::len() / 2;
+                            }
+                        });
                     let mut i = vectorization_length;
                     while i + 1 < data_length
                     {
@@ -74,69 +84,26 @@ macro_rules! add_complex_impl {
                 fn complex_abs_squared(self) -> VecResult<Self>
                 {
                     assert_complex!(self);
-                    self.simd_complex_to_real_operation(|x,_arg| x.complex_abs_squared(), |x,_arg| x.re * x.re + x.im * x.im, ())
+                    self.simd_complex_to_real_operation(|x,_arg| x.complex_abs_squared(), |x,_arg| x.re * x.re + x.im * x.im, (), Complexity::Small)
                 }
                 
                 fn complex_conj(self) -> VecResult<Self>
                 {
                     assert_complex!(self);
                     let multiplicator = $reg::from_complex(Complex::<$data_type>::new(1.0, -1.0));
-                    self.simd_complex_operation(|x,y| x * y, |x,_arg| x * Complex::<$data_type>::new(1.0, -1.0), multiplicator)
+                    self.simd_complex_operation(|x,y| x * y, |x,_arg| x * Complex::<$data_type>::new(1.0, -1.0), multiplicator, Complexity::Small)
                 }
                 
-                fn to_real(mut self) -> VecResult<Self>
+                fn to_real(self) -> VecResult<Self>
                 {
-                    {
-                        assert_complex!(self);
-                        let len = self.len();
-                        let mut array = temp_mut!(self, len);
-                        let source = &self.data;
-                        Chunk::execute_original_to_target(
-                            Complexity::Small, &self.multicore_settings,
-                            &source, len, 2, &mut array, len / 2, 1, 
-                            |original, range, target| {
-                                let mut i = range.start;
-                                let mut j = 0;
-                                while j < target.len()
-                                { 
-                                    target[j] = original[i];
-                                    i += 2;
-                                    j += 1;
-                                }
-                        });
-                    }
-                    
-                    self.is_complex = false;
-                    self.valid_len = self.valid_len / 2;
-                    Ok(self.swap_data_temp())
+                    assert_complex!(self);
+                    self.pure_complex_to_real_operation(|x,_arg|x.re, (), Complexity::Small)
                 }
             
-                fn to_imag(mut self) -> VecResult<Self>
+                fn to_imag(self) -> VecResult<Self>
                 {
-                   {
-                       assert_complex!(self);
-                        let len = self.len();
-                        let mut array = temp_mut!(self, len);
-                        let source = &self.data;
-                        Chunk::execute_original_to_target(
-                            Complexity::Small, &self.multicore_settings,
-                            &source, len, 2, 
-                            &mut array, len / 2, 1, 
-                            |original, range, target| {
-                                let mut i = range.start + 1;
-                                let mut j = 0;
-                                while j < target.len()
-                                { 
-                                    target[j] = original[i];
-                                    i += 2;
-                                    j += 1;
-                                }
-                        });
-                    }
-                    
-                    self.is_complex = false;
-                    self.valid_len = self.valid_len / 2;
-                    Ok(self.swap_data_temp())
+                    assert_complex!(self);
+                    self.pure_complex_to_real_operation(|x,_arg|x.im, (), Complexity::Small)
                 }	
                         
                 fn get_real(&self, destination: &mut Self) -> VoidResult
@@ -199,23 +166,10 @@ macro_rules! add_complex_impl {
                     Ok(())
                 }
                 
-                fn phase(mut self) -> VecResult<Self>
+                fn phase(self) -> VecResult<Self>
                 {
-                    {
-                        assert_complex!(self);
-                        let len = self.len();
-                        let mut array = temp_mut!(self, len);
-                        let source = &self.data;
-                        Chunk::execute_original_to_target(
-                            Complexity::Small, &self.multicore_settings,
-                            &source, len, 2, 
-                            &mut array, len / 2, 1, 
-                            Self::phase_par);
-                    }
-                    
-                    self.is_complex = false;
-                    self.valid_len = self.valid_len / 2;
-                    Ok(self.swap_data_temp())
+                    assert_complex!(self);
+                    self.pure_complex_to_real_operation(|x,_arg|x.arg(), (), Complexity::Small)
                 }
                 
                 fn get_phase(&self, destination: &mut Self) -> VoidResult
@@ -234,7 +188,17 @@ macro_rules! add_complex_impl {
                         Complexity::Small, &self.multicore_settings,
                         &source, len, 2, 
                         &mut array, len / 2, 1, 
-                        Self::phase_par);
+                        |original, range, target| {
+                            let mut i = range.start;
+                            let mut j = 0;
+                            while j < target.len()
+                            { 
+                                let complex = Complex::<$data_type>::new(original[i], original[i + 1]);
+                                target[j] = complex.arg();
+                                i += 2;
+                                j += 1;
+                            }
+                        });
                     Ok(())
                 }
                 
@@ -473,35 +437,6 @@ macro_rules! add_complex_impl {
                     }
                     
                     Ok(self)
-                }
-            }
-            
-            impl GenericDataVector<$data_type> {
-                fn complex_abs_simd(original: &[$data_type], range: Range<usize>, target: &mut [$data_type])
-                {
-                    let mut i = 0;
-                    let mut j = range.start;
-                    while i < target.len()
-                    { 
-                        let vector = $reg::load(original, j);
-                        let result = vector.complex_abs();
-                        result.store_half(target, i);
-                        j += $reg::len();
-                        i += $reg::len() / 2;
-                    }
-                }
-                
-                fn phase_par(original: &[$data_type], range: Range<usize>, target: &mut [$data_type])
-                {
-                    let mut i = range.start;
-                    let mut j = 0;
-                    while j < target.len()
-                    { 
-                        let complex = Complex::<$data_type>::new(original[i], original[i + 1]);
-                        target[j] = complex.arg();
-                        i += 2;
-                        j += 1;
-                    }
                 }
             }
             

@@ -25,19 +25,19 @@ macro_rules! add_real_impl {
                 fn real_offset(self, offset: $data_type) -> VecResult<Self>
                 {
                     assert_real!(self);
-                    self.simd_real_operation(|x, y| x.add_real(y), |x, y| x + y, offset)
+                    self.simd_real_operation(|x, y| x.add_real(y), |x, y| x + y, offset, Complexity::Small)
                 }
                 
                 fn real_scale(self, factor: $data_type) -> VecResult<Self>
                 {
                     assert_real!(self);
-                    self.simd_real_operation(|x, y| x.scale_real(y), |x, y| x * y, factor)
+                    self.simd_real_operation(|x, y| x.scale_real(y), |x, y| x * y, factor, Complexity::Small)
                 }
                 
                 fn real_abs(self) -> VecResult<Self>
                 {
                     assert_real!(self);
-                    self.simd_real_operation(|x, _arg| (x * x).sqrt(), |x, _arg| x.abs(), ())
+                    self.simd_real_operation(|x, _arg| (x * x).sqrt(), |x, _arg| x.abs(), (), Complexity::Small)
                 }
                 
                 fn to_complex(self) -> VecResult<Self>
@@ -59,7 +59,7 @@ macro_rules! add_real_impl {
                 fn wrap(self, divisor: $data_type) -> VecResult<Self>
                 {
                     assert_real!(self);
-                    self.pure_real_operation(|x, y| x % y, divisor)
+                    self.pure_real_operation(|x, y| x % y, divisor, Complexity::Small)
                 }
                 
                 fn unwrap(mut self, divisor: $data_type) -> VecResult<Self>

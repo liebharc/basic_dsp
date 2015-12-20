@@ -48,12 +48,12 @@ macro_rules! impl_function_call_real_complex {
     ($data_type: ident; fn $real_name: ident, $real_op: ident; fn $complex_name: ident, $complex_op: ident) => {
         fn $real_name(self) -> VecResult<Self>
         {
-            self.pure_real_operation(|v, _arg| v.$real_op(), ())
+            self.pure_real_operation(|v, _arg| v.$real_op(), (), Complexity::Medium)
         }
         
         fn $complex_name(self) -> VecResult<Self>
         {
-            self.pure_complex_operation(|v, _arg| v.$complex_op(), ())
+            self.pure_complex_operation(|v, _arg| v.$complex_op(), (), Complexity::Medium)
         }
     }
 }
@@ -62,12 +62,12 @@ macro_rules! impl_function_call_real_arg_complex {
     ($data_type: ident; fn $real_name: ident, $real_op: ident; fn $complex_name: ident, $complex_op: ident) => {
         fn $real_name(self, value: $data_type) -> VecResult<Self>
         {
-            self.pure_real_operation(|v, arg| v.$real_op(arg), value)
+            self.pure_real_operation(|v, arg| v.$real_op(arg), value, Complexity::Medium)
         }
         
         fn $complex_name(self, value: $data_type) -> VecResult<Self>
         {
-            self.pure_complex_operation(|v, arg| v.$complex_op(arg), value)
+            self.pure_complex_operation(|v, arg| v.$complex_op(arg), value, Complexity::Medium)
         }
     }
 }

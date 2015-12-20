@@ -4,14 +4,14 @@ macro_rules! add_basic_private_impl {
         $(
             impl GenericDataVector<$data_type> {
                 #[inline]
-                fn pure_real_operation<A, F>(mut self, op: F, argument: A) -> VecResult<Self> 
+                fn pure_real_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> VecResult<Self> 
                     where A: Sync + Copy,
                         F: Fn($data_type, A) -> $data_type + 'static + Sync {
                     {
                         let mut array = &mut self.data;
                         let length = array.len();
                         Chunk::execute_partial_with_arguments(
-                            Complexity::Medium, &self.multicore_settings,
+                            complexity, &self.multicore_settings,
                             &mut array, length, 1, argument,
                             move|array, argument| {
                                 let mut i = 0;
@@ -26,7 +26,7 @@ macro_rules! add_basic_private_impl {
                 }
                 
                 #[inline]
-                fn simd_real_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A) -> VecResult<Self> 
+                fn simd_real_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> VecResult<Self> 
                     where A: Sync + Copy,
                             F: Fn($reg, A) -> $reg + 'static + Sync,
                             G: Fn($data_type, A) -> $data_type + 'static + Sync {
@@ -36,7 +36,7 @@ macro_rules! add_basic_private_impl {
                         let vectorization_length = data_length - scalar_length;           
                         let mut array = &mut self.data;
                         Chunk::execute_partial_with_arguments(
-                            Complexity::Small, &self.multicore_settings,
+                            complexity, &self.multicore_settings,
                             &mut array, vectorization_length, $reg::len(), argument, 
                             move |array, argument| {
                                 let mut i = 0;
@@ -57,14 +57,14 @@ macro_rules! add_basic_private_impl {
                 }
                 
                 #[inline]
-                fn pure_complex_operation<A, F>(mut self, op: F, argument: A) -> VecResult<Self> 
+                fn pure_complex_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> VecResult<Self> 
                     where A: Sync + Copy,
                         F: Fn(Complex<$data_type>, A) -> Complex<$data_type> + 'static + Sync {
                     {
                         let mut array = &mut self.data;
                         let length = array.len();
                         Chunk::execute_partial_with_arguments(
-                            Complexity::Medium, &self.multicore_settings,
+                            complexity, &self.multicore_settings,
                             &mut array, length, 2, argument,
                             move|array, argument| {
                                 let mut i = 0;
@@ -82,7 +82,37 @@ macro_rules! add_basic_private_impl {
                 }
                 
                 #[inline]
-                fn simd_complex_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A) -> VecResult<Self> 
+                fn pure_complex_to_real_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> VecResult<Self> 
+                    where A: Sync + Copy,
+                        F: Fn(Complex<$data_type>, A) -> $data_type + 'static + Sync {
+                    {
+                        let data_length = self.len();       
+                        let mut array = &mut self.data;
+                        let mut temp = temp_mut!(self, data_length);
+                        Chunk::execute_original_to_target_with_arguments(
+                            complexity, &self.multicore_settings,
+                            &mut array, data_length, 2, 
+                            &mut temp, data_length / 2, 1, argument,
+                            move |array, range, target, argument| {
+                                let mut i = range.start;
+                                let mut j = 0;
+                                while j < target.len()
+                                { 
+                                    let vector = Complex::<$data_type>::new(array[i], array[i + 1]);
+                                    let result = op(vector, argument);
+                                    target[j] = result;
+                                    i += 2;
+                                    j += 1;
+                                }
+                        });
+                        self.is_complex = false;
+                        self.valid_len = data_length / 2;
+                    }
+                    Ok(self.swap_data_temp())
+                }
+                
+                #[inline]
+                fn simd_complex_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> VecResult<Self> 
                     where A: Sync + Copy,
                             F: Fn($reg, A) -> $reg + 'static + Sync,
                             G: Fn(Complex<$data_type>, A) -> Complex<$data_type> + 'static + Sync {
@@ -92,7 +122,7 @@ macro_rules! add_basic_private_impl {
                         let vectorization_length = data_length - scalar_length;           
                         let mut array = &mut self.data;
                         Chunk::execute_partial_with_arguments(
-                            Complexity::Small, &self.multicore_settings,
+                            complexity, &self.multicore_settings,
                             &mut array, vectorization_length, $reg::len(), argument, 
                             move |array, argument| {
                                 let mut i = 0;
@@ -118,10 +148,10 @@ macro_rules! add_basic_private_impl {
                 }
                 
                 #[inline]
-                fn simd_complex_to_real_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A) -> VecResult<Self> 
+                fn simd_complex_to_real_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> VecResult<Self> 
                     where A: Sync + Copy,
-                            F: Fn($reg, A) -> $reg + 'static + Sync,
-                            G: Fn(Complex<$data_type>, A) -> $data_type + 'static + Sync {
+                          F: Fn($reg, A) -> $reg + 'static + Sync,
+                          G: Fn(Complex<$data_type>, A) -> $data_type + 'static + Sync {
                     {
                         let data_length = self.len();
                         let scalar_length = data_length % $reg::len();
@@ -129,7 +159,7 @@ macro_rules! add_basic_private_impl {
                         let mut array = &mut self.data;
                         let mut temp = temp_mut!(self, data_length);
                         Chunk::execute_original_to_target_with_arguments(
-                            Complexity::Small, &self.multicore_settings,
+                            complexity, &self.multicore_settings,
                             &mut array, vectorization_length, $reg::len(), 
                             &mut temp, vectorization_length / 2, $reg::len() / 2, argument,
                             move |array, range, target, argument| {
