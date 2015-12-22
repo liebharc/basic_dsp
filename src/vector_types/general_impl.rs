@@ -272,6 +272,61 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
     }
 }
 
+macro_rules! vector_diff_par {
+    ($self_: ident, $keep_start: ident, $org: ident, $data_length: ident, $target: ident, $step: expr) => {
+        if !$keep_start {
+            $self_.valid_len -= $step;
+        }
+        Chunk::from_src_to_dest(
+            Complexity::Small, &$self_.multicore_settings,
+            &$org, $data_length, $step, 
+            &mut $target, $data_length, $step, (),
+            |original, range, target, _arg| {
+                let mut i = 0;
+                let mut j = range.start;
+                if $keep_start && j == 0 {
+                    i = $step;
+                    j = $step;
+                    for k in 0..$step {
+                        target[k] = original[k];
+                    }
+                }     
+                
+                let len = 
+                    if !$keep_start && range.end >= original.len() - 1 {
+                        target.len() - $step
+                    } else {
+                        target.len()
+                    };     
+                                
+                while i < len {
+                    target[i] = if $keep_start { original[j] - original[j - $step] } else { original[j + $step] - original[i] };
+                    i += 1;
+                    j += 1;
+                }
+        });
+    }
+}
+
+macro_rules! vector_diff {
+    ($self_: ident, $keep_start: ident) => {
+        {
+            {
+                let data_length = $self_.len();
+                let mut target = temp_mut!($self_, data_length);
+                let org = &$self_.data;
+                if $self_.is_complex {
+                    vector_diff_par!($self_, $keep_start, org, data_length, target, 2);
+                }
+                else {
+                    vector_diff_par!($self_, $keep_start, org, data_length, target, 1);
+                }
+            }
+            Ok($self_.swap_data_temp())
+        }
+    }
+}      
+
 macro_rules! add_general_impl {
     ($($data_type:ident, $reg:ident);*)
 	 =>
@@ -469,115 +524,12 @@ macro_rules! add_general_impl {
                 
                 fn diff(mut self) -> VecResult<Self>
                 {
-                    {
-                        let data_length = self.len();
-                        let org = &self.data;
-                        let mut target = temp_mut!(self, data_length);
-                        if self.is_complex {
-                            self.valid_len -= 2;
-                            Chunk::from_src_to_dest(
-                                Complexity::Small, &self.multicore_settings,
-                                &org, data_length, 2, 
-                                &mut target, data_length, 2, (),
-                                |original, range, target, _arg| {
-                                    let mut i = 0;
-                                    let mut j = range.start;
-                                    let mut len = target.len();
-                                    if range.end == original.len() - 1
-                                    {
-                                        len -= 2;
-                                    }
-                                    
-                                    while i < len
-                                    { 
-                                        target[i] = original[j + 2] - original[i];
-                                        i += 1;
-                                        j += 1;
-                                    }
-                            });
-                        }
-                        else {
-                            self.valid_len -= 1;
-                            Chunk::from_src_to_dest(
-                                Complexity::Small, &self.multicore_settings,
-                                &org, data_length, 1, 
-                                &mut target, data_length, 1, (),
-                                |original, range, target, _arg| {
-                                    let mut i = 0;
-                                    let mut j = range.start;
-                                    let mut len = target.len();
-                                    if range.end >= original.len() - 1
-                                    {
-                                        len -= 1;
-                                    }
-                                        
-                                    while i < len
-                                    { 
-                                        target[i] = original[j + 1] - original[j];
-                                        i += 1;
-                                        j += 1;
-                                    }
-                            });
-                        }
-                    }
-                    
-                    Ok(self.swap_data_temp())
+                    vector_diff!(self, false)
                 }
                 
                 fn diff_with_start(mut self) -> VecResult<Self>
                 {
-                    {
-                        let data_length = self.len();
-                        let mut target = temp_mut!(self, data_length);
-                        let org = &self.data;
-                        if self.is_complex {
-                            Chunk::from_src_to_dest(
-                                Complexity::Small, &self.multicore_settings,
-                                &org, data_length, 2, 
-                                &mut target, data_length, 2, (),
-                                |original, range, target, _arg| {
-                                    let mut i = 0;
-                                    let mut j = range.start;
-                                    if j == 0 {
-                                        i = 2;
-                                        j = 2;
-                                        target[0] = original[0];
-                                        target[1] = original[1];
-                                    }
-                                    
-                                    while i < target.len()
-                                    { 
-                                        target[i] = original[j] - original[j - 2];
-                                        i += 1;
-                                        j += 1;
-                                    }
-                            });
-                        }
-                        else {
-                            Chunk::from_src_to_dest(
-                                Complexity::Small, &self.multicore_settings,
-                                &org, data_length, 1, 
-                                &mut target, data_length, 1, (),
-                                |original, range, target, _arg| {
-                                    let mut i = 0;
-                                    let mut j = range.start;
-                                    if j == 0 {
-                                        i = 1;
-                                        j = 1;
-                                        target[0] = original[0];
-                                    }
-                                    
-                                    while i < target.len()
-                                    { 
-                                        target[i] = original[j] - original[j - 1];
-                                        i += 1;
-                                        j += 1;
-                                    }
-                            });
-                        }
-                    }
-                    
-                    Ok(self.swap_data_temp())
+                    vector_diff!(self, true)
                 }
                 
                 fn cum_sum(mut self) -> VecResult<Self>
@@ -768,8 +720,8 @@ macro_rules! add_general_impl {
                         let source = &self.data;
                         Chunk::from_src_to_dest(
                             Complexity::Small, &self.multicore_settings,
-                            &source, data_length, $reg::len(), 
-                            &mut target, data_length, $reg::len(), (),
+                            &source, data_length, 2, 
+                            &mut target, data_length, 4, (),
                             |original, range, target, _arg| {
                                 let mut i = 0;
                                 let mut j = range.start;
