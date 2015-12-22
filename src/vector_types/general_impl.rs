@@ -347,25 +347,17 @@ macro_rules! zero_interleave {
                     &source, old_len, $tuple, 
                     &mut target, new_len, $tuple * step, (),
                     move|original, range, target, _arg| {
-                        {
-                            // Zero target
-                            let len = target.len();
-                            let ptr = &mut target[0] as *mut $data_type;
-                            unsafe {
-                                ptr::write_bytes(ptr, 0, len);
-                            }
-                        }
-                        
                         let mut i = 0;
                         let mut j = range.start;
-                        let skip = (step - 1) * $tuple;
+                        let skip = step * $tuple;
                         while i < target.len() {
-                            for _ in 0..$tuple {
-                                target[i] = original[j];
-                                i += 1;
-                                j += 1;
+                            let original = &original[j] as *const $data_type;
+                            let target = &mut target[i] as *mut $data_type;
+                            unsafe {
+                                ptr::copy(original, target, $tuple);
                             }
                             
+                            j += $tuple;
                             i += skip;
                         }
                 });
