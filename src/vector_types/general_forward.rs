@@ -8,166 +8,166 @@ macro_rules! define_generic_operations_forward {
             {
                 fn add_vector(self, summand: &Self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().add_vector(&summand.to_gen_borrow()))
+                    Self::from_genres(self.to_gen().add_vector(&summand.to_gen_borrow()))
                 }
                 
                 fn add_smaller_vector(self, summand: &Self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().add_smaller_vector(&summand.to_gen_borrow()))
+                    Self::from_genres(self.to_gen().add_smaller_vector(&summand.to_gen_borrow()))
                 }
         
                 fn subtract_vector(self, subtrahend: &Self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().subtract_vector(&subtrahend.to_gen_borrow()))
+                    Self::from_genres(self.to_gen().subtract_vector(&subtrahend.to_gen_borrow()))
                 }
                 
                 fn subtract_smaller_vector(self, subtrahend: &Self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().subtract_smaller_vector(&subtrahend.to_gen_borrow()))
+                    Self::from_genres(self.to_gen().subtract_smaller_vector(&subtrahend.to_gen_borrow()))
                 }
                 
                 fn multiply_vector(self, factor: &Self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().multiply_vector(&factor.to_gen_borrow()))
+                    Self::from_genres(self.to_gen().multiply_vector(&factor.to_gen_borrow()))
                 }
                 
                 fn multiply_smaller_vector(self, factor: &Self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().multiply_smaller_vector(&factor.to_gen_borrow()))
+                    Self::from_genres(self.to_gen().multiply_smaller_vector(&factor.to_gen_borrow()))
                 }
                 
                 fn divide_vector(self, divisor: &Self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().divide_vector(&divisor.to_gen_borrow()))
+                    Self::from_genres(self.to_gen().divide_vector(&divisor.to_gen_borrow()))
                 }
                 
                 fn divide_smaller_vector(self, divisor: &Self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().divide_smaller_vector(&divisor.to_gen_borrow()))
+                    Self::from_genres(self.to_gen().divide_smaller_vector(&divisor.to_gen_borrow()))
                 }
                 
                 fn zero_pad(self, points: usize) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().zero_pad(points))
+                    Self::from_genres(self.to_gen().zero_pad(points))
                 }
                 
                 fn zero_interleave(self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().zero_interleave())
+                    Self::from_genres(self.to_gen().zero_interleave())
                 }
                 
                 fn diff(self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().diff())
+                    Self::from_genres(self.to_gen().diff())
                 }
                 
                 fn diff_with_start(self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().diff_with_start())
+                    Self::from_genres(self.to_gen().diff_with_start())
                 }
                 
                 fn cum_sum(self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().cum_sum())
+                    Self::from_genres(self.to_gen().cum_sum())
                 }
                 
                 fn sqrt(self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().sqrt()) 
+                    Self::from_genres(self.to_gen().sqrt()) 
                 }
                 
                 fn square(self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().square()) 
+                    Self::from_genres(self.to_gen().square()) 
                 }
                 
                 fn root(self, degree: $data_type) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().root(degree)) 
+                    Self::from_genres(self.to_gen().root(degree)) 
                 }
                 
                 fn power(self, exponent: $data_type) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().power(exponent)) 
+                    Self::from_genres(self.to_gen().power(exponent)) 
                 }
                 
                 fn logn(self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().logn()) 
+                    Self::from_genres(self.to_gen().logn()) 
                 }
                 
                 fn expn(self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().expn()) 
+                    Self::from_genres(self.to_gen().expn()) 
                 }
             
                 fn log_base(self, base: $data_type) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().log_base(base)) 
+                    Self::from_genres(self.to_gen().log_base(base)) 
                 }
                 
                 fn sin(self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().sin()) 
+                    Self::from_genres(self.to_gen().sin()) 
                 }
                 
                 fn cos(self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().cos()) 
+                    Self::from_genres(self.to_gen().cos()) 
                 }
     
                 fn tan(self) -> VecResult<Self> {
-                    $name::from_genres(self.to_gen().tan()) 
+                    Self::from_genres(self.to_gen().tan()) 
                 }
                 
                 fn asin(self) -> VecResult<Self> {
-                    $name::from_genres(self.to_gen().asin()) 
+                    Self::from_genres(self.to_gen().asin()) 
                 }
                
                 fn acos(self) -> VecResult<Self> {
-                    $name::from_genres(self.to_gen().acos()) 
+                    Self::from_genres(self.to_gen().acos()) 
                 }
                 
                 fn atan(self) -> VecResult<Self> {
-                    $name::from_genres(self.to_gen().atan()) 
+                    Self::from_genres(self.to_gen().atan()) 
                 }
                 
                 fn sinh(self) -> VecResult<Self> {
-                    $name::from_genres(self.to_gen().sinh()) 
+                    Self::from_genres(self.to_gen().sinh()) 
                 }
                 
                 fn cosh(self) -> VecResult<Self> {
-                    $name::from_genres(self.to_gen().cosh()) 
+                    Self::from_genres(self.to_gen().cosh()) 
                 }
                 
                 fn tanh(self) -> VecResult<Self> {
-                    $name::from_genres(self.to_gen().tanh()) 
+                    Self::from_genres(self.to_gen().tanh()) 
                 }
                 
                 fn asinh(self) -> VecResult<Self> {
-                    $name::from_genres(self.to_gen().asinh()) 
+                    Self::from_genres(self.to_gen().asinh()) 
                 }
                 
                 fn acosh(self) -> VecResult<Self> {
-                    $name::from_genres(self.to_gen().acosh()) 
+                    Self::from_genres(self.to_gen().acosh()) 
                 }
                 
                 fn atanh(self) -> VecResult<Self> {
-                    $name::from_genres(self.to_gen().atanh()) 
+                    Self::from_genres(self.to_gen().atanh()) 
                 }
                 
                 fn swap_halves(self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().swap_halves()) 
+                    Self::from_genres(self.to_gen().swap_halves()) 
                 }
                 
                 fn exp_base(self, base: $data_type) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().exp_base(base)) 
+                    Self::from_genres(self.to_gen().exp_base(base)) 
                 }
                 
                 fn override_data(self, data: &[$data_type]) -> VecResult<Self> {
-                    $name::from_genres(self.to_gen().override_data(data))
+                    Self::from_genres(self.to_gen().override_data(data))
                 }
                 
                 fn split_into(&self, targets: &mut [Box<Self>]) -> VoidResult {
@@ -178,7 +178,7 @@ macro_rules! define_generic_operations_forward {
                 
                 fn merge(self, sources: &[Box<Self>]) -> VecResult<Self> {
                     unsafe { 
-                        $name::from_genres(self.to_gen().merge(mem::transmute(sources)))
+                        Self::from_genres(self.to_gen().merge(mem::transmute(sources)))
                     }
                 }
             }

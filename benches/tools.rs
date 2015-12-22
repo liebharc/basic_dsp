@@ -34,6 +34,19 @@ fn translate_size(size: Size) -> usize {
     }
 }
 
+impl VectorBox<Vec<f32>> {
+    pub fn new(size: Size) -> VectorBox<Vec<f32>>
+    {
+        let size = translate_size(size);
+        let data = vec![0.0; size];
+        VectorBox
+        {
+            vector: Box::into_raw(Box::new(data)),
+            size: size
+        }
+    }
+}
+
 impl VectorBox<DataVector32>
 {
     pub fn with_size(is_complex: bool, size: usize) -> VectorBox<DataVector32>

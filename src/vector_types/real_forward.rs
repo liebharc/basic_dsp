@@ -10,32 +10,32 @@ macro_rules! define_real_operations_forward {
                 
                 fn real_offset(self, offset: $data_type) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().real_offset(offset))
+                    Self::from_genres(self.to_gen().real_offset(offset))
                 }
                 
                 fn real_scale(self, factor: $data_type) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().real_scale(factor))
+                    Self::from_genres(self.to_gen().real_scale(factor))
                 }
                         
                 fn real_abs(self) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().real_abs()) 
+                    Self::from_genres(self.to_gen().real_abs()) 
                 }
                             
                 fn to_complex(self) -> VecResult<Self::ComplexPartner>
                 {
-                    $complex_partner::from_genres(self.to_gen().to_complex()) 
+                    Self::ComplexPartner::from_genres(self.to_gen().to_complex()) 
                 }
                 
                 fn wrap(self, divisor: $data_type) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().wrap(divisor))
+                    Self::from_genres(self.to_gen().wrap(divisor))
                 }
                 
                 fn unwrap(self, divisor: $data_type) -> VecResult<Self>
                 {
-                    $name::from_genres(self.to_gen().unwrap(divisor))
+                    Self::from_genres(self.to_gen().unwrap(divisor))
                 }
                 
                 fn real_dot_product(&self, factor: &Self) -> ScalarResult<$data_type>
@@ -51,58 +51,39 @@ macro_rules! define_real_operations_forward {
                     self.to_gen_borrow().real_statistics_splitted(len)
                 }
             }
+            
+             #[inline]
+            impl $name<$data_type>
+            {		
+                fn to_gen(self) -> $gen_type<$data_type>
+                {
+                    unsafe { mem::transmute(self) }
+                }
+                
+                fn to_gen_borrow(&self) -> &$gen_type<$data_type>
+                {
+                    unsafe { mem::transmute(self) }
+                }
+                
+                #[allow(dead_code)]
+                fn to_gen_mut_borrow(&mut self) -> &mut $gen_type<$data_type>
+                {
+                    unsafe { mem::transmute(self) }
+                }
+                
+                fn from_gen(other: $gen_type<$data_type>) -> Self
+                {
+                    unsafe { mem::transmute(other) }
+                }
+                
+                fn from_genres(other: VecResult<$gen_type<$data_type>>) -> VecResult<$name<$data_type>>
+                {
+                    match other {
+                        Ok(v) => Ok($name::<$data_type>::from_gen(v)),
+                        Err((r, v)) => Err((r, $name::<$data_type>::from_gen(v)))
+                    }
+                }
+            }
         )*
-        
-        #[inline]
-        impl<T> $name<T>
-            where T: RealNumber
-        {		
-            fn to_gen(self) -> $gen_type<T>
-            {
-                $gen_type 
-                { 
-                data: self.data,
-                temp: self.temp,
-                delta: self.delta,
-                domain: self.domain,
-                is_complex: self.is_complex,
-                valid_len: self.valid_len,
-                multicore_settings: MultiCoreSettings::default()
-                }
-            }
-            
-            fn to_gen_borrow(&self) -> &$gen_type<T>
-            {
-                unsafe { mem::transmute(self) }
-            }
-            
-            #[allow(dead_code)]
-            fn to_gen_mut_borrow(&mut self) -> &mut $gen_type<T>
-            {
-                unsafe { mem::transmute(self) }
-            }
-            
-            fn from_gen(other: $gen_type<T>) -> Self
-            {
-                $name 
-                { 
-                data: other.data,
-                temp: other.temp,
-                delta: other.delta,
-                domain: other.domain,
-                is_complex: other.is_complex,
-                valid_len: other.valid_len,
-                multicore_settings: MultiCoreSettings::default()
-                }
-            }
-            
-            fn from_genres(other: VecResult<$gen_type<T>>) -> VecResult<$name<T>>
-            {
-                match other {
-                    Ok(v) => Ok($name::from_gen(v)),
-                    Err((r, v)) => Err((r, $name::from_gen(v)))
-                }
-            }
-        }
 	 }
 }
