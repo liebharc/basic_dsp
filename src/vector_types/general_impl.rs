@@ -327,6 +327,47 @@ macro_rules! vector_diff {
     }
 }      
 
+macro_rules! zero_interleave {
+    ($self_: ident, $step: expr, $tuple: expr) => {
+        {
+                    {
+                        let new_len = $step * $self_.len();
+                        $self_.reallocate(new_len);
+                        let data_length = new_len;
+                        let mut target = temp_mut!($self_, data_length);
+                        let source = &$self_.data;
+                        Chunk::from_src_to_dest(
+                            Complexity::Small, &$self_.multicore_settings,
+                            &source, data_length, $tuple, 
+                            &mut target, data_length, $tuple * $step, (),
+                            |original, range, target, _arg| {
+                                let mut i = 0;
+                                let mut j = range.start;
+                                while i < target.len() / $tuple {
+                                    if i % $step == 0
+                                    {
+                                        for k in 0..$tuple {
+                                          target[$tuple * i + k] = original[j + k];
+                                        }
+                                        
+                                        j += $tuple;
+                                    }
+                                    else
+                                    {
+                                        for k in 0..$tuple {
+                                          target[$tuple * i + k] =  0.0;
+                                        }
+                                    }
+                                    
+                                    i += 1;
+                                }
+                        });
+                    }
+                    Ok($self_.swap_data_temp())
+                }
+    }
+}      
+
 macro_rules! add_general_impl {
     ($($data_type:ident, $reg:ident);*)
 	 =>
@@ -712,70 +753,12 @@ macro_rules! add_general_impl {
                 
                 fn zero_interleave_complex(mut self) -> VecResult<Self>
                 {
-                    {
-                        let new_len = 2 * self.len();
-                        self.reallocate(new_len);
-                        let data_length = new_len;
-                        let mut target = temp_mut!(self, data_length);
-                        let source = &self.data;
-                        Chunk::from_src_to_dest(
-                            Complexity::Small, &self.multicore_settings,
-                            &source, data_length, 2, 
-                            &mut target, data_length, 4, (),
-                            |original, range, target, _arg| {
-                                let mut i = 0;
-                                let mut j = range.start;
-                                while i < target.len() / 2 {
-                                    if i % 2 == 0
-                                    {
-                                        target[2 * i] = original[j];
-                                        target[2 * i + 1] = original[j + 1];
-                                        j += 2;
-                                    }
-                                    else
-                                    {
-                                        target[2 * i] = 0.0;
-                                        target[2 * i + 1] = 0.0;
-                                    }
-                                    
-                                    i += 1;
-                                }
-                        });
-                    }
-                    Ok(self.swap_data_temp())
+                    zero_interleave!(self, 2, 2)
                 }
                 
                 fn zero_interleave_real(mut self) -> VecResult<Self>
                 {
-                    {
-                        let new_len = 2 * self.len();
-                        self.reallocate(new_len);
-                        let data_length = new_len;
-                        let mut target = temp_mut!(self, data_length);
-                        let source = &self.data;
-                        Chunk::from_src_to_dest(
-                            Complexity::Small, &self.multicore_settings,
-                            &source, data_length, 1, 
-                            &mut target, data_length, 2, (),
-                            |original, range, target, _arg| {
-                                let mut i = 0;
-                                let mut j = range.start;
-                                while i < target.len() {
-                                    if i % 2 == 0
-                                    {
-                                        target[i] = original[j];
-                                        j += 1;
-                                    }
-                                    else
-                                    {
-                                        target[i] = 0.0;
-                                    }
-                                    
-                                    i += 1;
-                                }
-                        });
-                    }
-                    Ok(self.swap_data_temp())
+                    zero_interleave!(self, 2, 1)
                 }
                 
                 fn real_sqrt(self) -> VecResult<Self>
