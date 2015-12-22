@@ -289,10 +289,6 @@ macro_rules! add_complex_impl {
                     });
                     
                     let mut results = Vec::with_capacity(len);
-                    print!("{}", chunks.len());
-                    print!("{}", chunks[0].len());
-                    print!("{:?}", chunks[0][0]);
-                    print!("{:?}", chunks[0][1]);
                     for i in 0..len {
                         let mut reordered = Vec::with_capacity(chunks.len());
                         for j in 0..chunks.len()
