@@ -43,7 +43,7 @@ macro_rules! add_real_impl {
                 fn to_complex(self) -> VecResult<Self>
                 {
                     assert_real!(self);
-                    let result = self.zero_interleave();
+                    let result = self.zero_interleave(2);
                     match result {
                         Ok(mut vec) => { 
                             vec.is_complex = true;

@@ -219,22 +219,25 @@ pub trait GenericVectorOperations<T>: DataVector<T>
 	/// ```
 	fn zero_pad(self, points: usize) -> VecResult<Self>;
 	
-	/// Ineterleaves zeros afeter every vector element.
+	/// Ineterleaves zeros `factor - 1`times after every vector element, so that the resulting
+    /// vector will have a length of `self.len() * factor`.
 	///
 	/// Note: Remember that each complex number consists of two floating points and interleaving 
 	/// will take that into account.
+    ///
+    /// If factor is 0 (zero) then `self` will be returned.
 	/// # Example
 	///
 	/// ```
 	/// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, GenericVectorOperations, DataVector};
 	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let result = vector.zero_interleave().expect("Ignoring error handling in examples");
+	/// let result = vector.zero_interleave(2).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 0.0, 2.0, 0.0], result.data());
 	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-	/// let result = vector.zero_interleave().expect("Ignoring error handling in examples");
+	/// let result = vector.zero_interleave(2).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], result.data());
 	/// ```
-	fn zero_interleave(self) -> VecResult<Self>;
+	fn zero_interleave(self, factor: u32) -> VecResult<Self>;
 	
 	/// Calculates the delta of each elements to its previous element. This will decrease the vector length by one point. 
 	///

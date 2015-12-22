@@ -133,8 +133,8 @@ pub extern fn zero_pad64(vector: Box<DataVector64>, points: usize) -> VectorResu
 }
 
 #[no_mangle]
-pub extern fn zero_interleave64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
-    convert_vec!(vector.zero_interleave())
+pub extern fn zero_interleave64(vector: Box<DataVector64>, factor: i32) -> VectorResult<DataVector64> {
+    convert_vec!(vector.zero_interleave(factor as u32))
 }
 
 #[no_mangle]

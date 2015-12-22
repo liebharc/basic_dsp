@@ -328,10 +328,11 @@ macro_rules! vector_diff {
 }      
 
 macro_rules! zero_interleave {
-    ($self_: ident, $step: expr, $tuple: expr) => {
+    ($self_: ident, $step: ident, $tuple: expr) => {
         {
                     {
-                        let new_len = $step * $self_.len();
+                        let step = $step as usize;
+                        let new_len = step * $self_.len();
                         $self_.reallocate(new_len);
                         let data_length = new_len;
                         let mut target = temp_mut!($self_, data_length);
@@ -339,12 +340,12 @@ macro_rules! zero_interleave {
                         Chunk::from_src_to_dest(
                             Complexity::Small, &$self_.multicore_settings,
                             &source, data_length, $tuple, 
-                            &mut target, data_length, $tuple * $step, (),
-                            |original, range, target, _arg| {
+                            &mut target, data_length, $tuple * step, (),
+                            move|original, range, target, _arg| {
                                 let mut i = 0;
                                 let mut j = range.start;
                                 while i < target.len() / $tuple {
-                                    if i % $step == 0
+                                    if i % step == 0
                                     {
                                         for k in 0..$tuple {
                                           target[$tuple * i + k] = original[j + k];
@@ -561,7 +562,13 @@ macro_rules! add_general_impl {
                     Ok(self)
                 }
                 
-                impl_real_complex_dispatch!(fn zero_interleave, zero_interleave_real, zero_interleave_complex);
+                fn zero_interleave(self, factor: u32) -> VecResult<Self> {
+                    if self.is_complex {
+                        self.zero_interleave_complex(factor)
+                    } else {
+                        self.zero_interleave_real(factor)
+                    }
+                }
                 
                 fn diff(mut self) -> VecResult<Self>
                 {
@@ -751,14 +758,14 @@ macro_rules! add_general_impl {
                 impl_binary_vector_operation!($data_type, $reg, fn divide_vector_real, divisor, div, div);
                 impl_binary_smaller_vector_operation!($data_type, $reg, fn divide_smaller_vector_real, divisor, div, div);
                 
-                fn zero_interleave_complex(mut self) -> VecResult<Self>
+                fn zero_interleave_complex(mut self, factor: u32) -> VecResult<Self>
                 {
-                    zero_interleave!(self, 2, 2)
+                    zero_interleave!(self, factor, 2)
                 }
                 
-                fn zero_interleave_real(mut self) -> VecResult<Self>
+                fn zero_interleave_real(mut self, factor: u32) -> VecResult<Self>
                 {
-                    zero_interleave!(self, 2, 1)
+                    zero_interleave!(self, factor, 1)
                 }
                 
                 fn real_sqrt(self) -> VecResult<Self>

@@ -133,8 +133,8 @@ pub extern fn zero_pad32(vector: Box<DataVector32>, points: usize) -> VectorResu
 }
 
 #[no_mangle]
-pub extern fn zero_interleave32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
-    convert_vec!(vector.zero_interleave())
+pub extern fn zero_interleave32(vector: Box<DataVector32>, factor: i32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.zero_interleave(factor as u32))
 }
 
 #[no_mangle]
