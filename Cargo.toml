@@ -3,6 +3,12 @@ name = "basic_dsp"
 version = "0.1.0"
 authors = ["Christian Liebhardt <christian.liebhardt@arcor.de>"]
 
+[profile.dev]
+codegen-units = 4
+
+[profile.test]
+codegen-units = 4
+
 [lib]
 name = "basic_dsp"
 crate-type = ["dylib", "rlib"]
