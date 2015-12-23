@@ -1,4 +1,4 @@
-#![feature(catch_panic)]
+#![feature(recover, std_panic)]
 
 extern crate basic_dsp;
 extern crate rand;

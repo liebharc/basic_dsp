@@ -2,7 +2,7 @@ use rand::*;
 use basic_dsp::DataVector;
 use std::ops::Range;
 use num::complex::Complex32;
-use std::thread;
+use std::panic;
 
 pub fn assert_vector_eq_with_reason(left: &[f32], right: &[f32], reason: &str) {
     assert_vector_eq_with_reason_and_tolerance(left, right, 1e-6, reason);
@@ -153,9 +153,12 @@ pub fn parameterized_vector_test<F>(test_code: F)
         
         let small_range = RANGE_SINGLE_CORE;
         let test_code = test_code.clone();
-        let result = thread::catch_panic(move|| {
+        let safe_iteration = panic::AssertRecoverSafe::new(iteration);
+        let small_range = panic::AssertRecoverSafe::new(small_range);
+        let test_code = panic::AssertRecoverSafe::new(test_code);
+        let result = panic::recover(move|| {
             let test_code = test_code.lock().unwrap();
-            test_code(iteration, small_range);
+            test_code(*safe_iteration, (*small_range).clone());
         });
         
         match result {
@@ -181,9 +184,12 @@ pub fn parameterized_vector_test<F>(test_code: F)
         
         let large_range = RANGE_MULTI_CORE;
         let test_code = test_code.clone();
-        let result = thread::catch_panic(move|| {
+        let safe_iteration = panic::AssertRecoverSafe::new(iteration);
+        let large_range = panic::AssertRecoverSafe::new(large_range);
+        let test_code = panic::AssertRecoverSafe::new(test_code);
+        let result = panic::recover(move|| {
             let test_code = test_code.lock().unwrap();
-            test_code(iteration, large_range);
+            test_code(*safe_iteration, (*large_range).clone());
         });
         
         match result {
