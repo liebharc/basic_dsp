@@ -174,7 +174,7 @@ macro_rules! add_real_impl {
                             }    
                     });
                     
-                    Self::merge_real_stats(&chunks)
+                    Statistics::merge(&chunks)
                 }
                 
                 fn real_statistics_splitted(&self, len: usize) -> Vec<Statistics<$data_type>> {
@@ -223,51 +223,11 @@ macro_rules! add_real_impl {
                             reordered.push(chunks[j][i]);
                         }
                         
-                        let stats = Self::merge_real_stats(&reordered);
+                        let stats = Statistics::merge(&reordered);
                         results.push(stats);
                     }
                     
                     results
-                }
-            }
-            
-            impl GenericDataVector<$data_type> {
-                fn merge_real_stats(stats: &[Statistics<$data_type>]) -> Statistics<$data_type> {
-                    if stats.len() == 0 {
-                        return Statistics::<$data_type>::invalid();
-                    }
-                    
-                    let mut sum = 0.0;
-                    let mut max = stats[0].max;
-                    let mut min = stats[0].min;
-                    let mut max_index = stats[0].max_index;
-                    let mut min_index = stats[0].min_index;
-                    let mut sum_squared = 0.0;
-                    let mut len = 0;
-                    for stat in stats {
-                        sum += stat.sum;
-                        len += stat.count;
-                        sum_squared += stat.rms; // We stored sum_squared in the field rms
-                        if stat.max > max {
-                            max = stat.max;
-                            max_index = stat.max_index;
-                        }
-                        else if stat.min > min {
-                            min = stat.min;
-                            min_index = stat.min_index;
-                        }
-                    }
-                    
-                    Statistics {
-                        sum: sum,
-                        count: len,
-                        average: sum / (len as $data_type),
-                        min: min,
-                        max: max,
-                        rms: (sum_squared / (len as $data_type)).sqrt(),
-                        min_index: min_index,
-                        max_index: max_index,
-                    }
                 }
             }
         )*

@@ -11,7 +11,7 @@ macro_rules! define_real_operations_forward {
                 {
                     Self::from_genres(self.to_gen().real_offset(offset))
                 }
-                x
+                
                 fn real_scale(self, factor: $data_type) -> VecResult<Self>
                 {
                     Self::from_genres(self.to_gen().real_scale(factor))
