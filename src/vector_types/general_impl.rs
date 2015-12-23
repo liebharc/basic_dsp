@@ -340,7 +340,16 @@ macro_rules! zero_interleave {
                 let old_len = $self_.len();
                 let new_len = step * old_len;
                 $self_.reallocate(new_len);
+                let temp_len_old = $self_.temp.len();
                 let mut target = temp_mut!($self_, new_len);
+                if temp_len_old == new_len // no reallocation
+                {
+                    // Zero target
+                    let ptr = &mut target[0] as *mut $data_type;
+                    unsafe {
+                        ptr::write_bytes(ptr, 0, new_len);
+                    }
+                }
                 let source = &$self_.data;
                 Chunk::from_src_to_dest(
                     Complexity::Small, &$self_.multicore_settings,
