@@ -342,7 +342,7 @@ macro_rules! zero_interleave {
                 $self_.reallocate(new_len);
                 let temp_len_old = $self_.temp.len();
                 let mut target = temp_mut!($self_, new_len);
-                if temp_len_old == new_len // no reallocation
+                if temp_len_old == target.len() // no reallocation
                 {
                     // Zero target
                     let ptr = &mut target[0] as *mut $data_type;

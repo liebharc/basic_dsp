@@ -8,9 +8,9 @@ use super::definitions::{
     GenericVectorOperations,
 	RealVectorOperations};
 use super::GenericDataVector;    
+use super::stats_impl::Stats;
 use simd_extensions::{Simd, Reg32, Reg64};
 use num::traits::Float;
-use std::{f32, f64};
 
 macro_rules! add_real_impl {
     ($($data_type:ident, $reg:ident);*)
@@ -189,21 +189,10 @@ macro_rules! add_real_impl {
                         Complexity::Small, &self.multicore_settings,
                         &array, data_length, 1, len,
                         |array, range, len| {
-                            let mut i = 0;
                             let mut results = Vec::with_capacity(len);
-                            while i < len {
-                                let stats = Statistics {
-                                        sum: 0.0,
-                                        count: 0,
-                                        average: 0.0, 
-                                        min: $data_type::INFINITY,
-                                        max: $data_type::NEG_INFINITY, 
-                                        rms: 0.0, // this field therefore has a different meaning inside this function
-                                        min_index: 0,
-                                        max_index: 0,
-                                    };
+                            for _ in 0..len {
+                                let stats = Statistics::<$data_type>::empty();
                                 results.push(stats);
-                                i += 1;
                             }
                             
                             let mut i = 0;
@@ -246,16 +235,7 @@ macro_rules! add_real_impl {
             impl GenericDataVector<$data_type> {
                 fn merge_real_stats(stats: &[Statistics<$data_type>]) -> Statistics<$data_type> {
                     if stats.len() == 0 {
-                        return Statistics {
-                            sum: 0.0,
-                            count: 0,
-                            average: $data_type::NAN,
-                            min: $data_type::NAN,
-                            max: $data_type::NAN,
-                            rms: $data_type::NAN,
-                            min_index: 0,
-                            max_index: 0,
-                        };
+                        return Statistics::<$data_type>::invalid();
                     }
                     
                     let mut sum = 0.0;

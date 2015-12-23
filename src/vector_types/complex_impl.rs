@@ -8,10 +8,10 @@ use super::definitions::{
     Statistics,
 	ComplexVectorOperations};
 use super::GenericDataVector;
+use super::stats_impl::Stats;
 use simd_extensions::{Simd,Reg32,Reg64};
 use num::complex::Complex;
 use num::traits::Float;
-use std::{f32, f64};
 
 macro_rules! add_complex_impl {
     ($($data_type:ident, $reg:ident);*)
@@ -249,21 +249,10 @@ macro_rules! add_complex_impl {
                         Complexity::Small, &self.multicore_settings,
                         &array, data_length, 1, len,
                         |array, range, len| {
-                            let mut i = 0;
                             let mut results = Vec::with_capacity(len);
-                            while i < len {
-                                let stats = Statistics {
-                                        sum: Complex::<$data_type>::new(0.0, 0.0),
-                                        count: 0,
-                                        average: Complex::<$data_type>::new(0.0, 0.0),
-                                        min: Complex::<$data_type>::new($data_type::INFINITY, $data_type::INFINITY),
-                                        max: Complex::<$data_type>::new(0.0, 0.0), 
-                                        rms: Complex::<$data_type>::new(0.0, 0.0), // this field therefore has a different meaning inside this function
-                                        min_index: 0,
-                                        max_index: 0,
-                                    };
+                            for _ in 0..len {
+                                let stats = Statistics::<Complex<$data_type>>::empty();
                                 results.push(stats);
-                                i += 1;
                             }
                             
                             let mut i = 0;
@@ -403,16 +392,7 @@ macro_rules! add_complex_impl {
                 
                 fn merge_complex_stats(stats: &[Statistics<Complex<$data_type>>]) -> Statistics<Complex<$data_type>> {
                     if stats.len() == 0 {
-                        return Statistics {
-                            sum: Complex::<$data_type>::new(0.0, 0.0),
-                            count: 0,
-                            average: Complex::<$data_type>::new($data_type::NAN, $data_type::NAN),
-                            min: Complex::<$data_type>::new($data_type::NAN, $data_type::NAN),
-                            max: Complex::<$data_type>::new($data_type::NAN, $data_type::NAN),
-                            rms: Complex::<$data_type>::new($data_type::NAN, $data_type::NAN),
-                            min_index: 0,
-                            max_index: 0,
-                        };
+                        return Statistics::<Complex<$data_type>>::invalid();
                     }
                     
                     let mut sum = Complex::<$data_type>::new(0.0, 0.0);
