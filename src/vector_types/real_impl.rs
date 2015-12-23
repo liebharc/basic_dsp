@@ -188,12 +188,7 @@ macro_rules! add_real_impl {
                         Complexity::Small, &self.multicore_settings,
                         &array, data_length, 1, len,
                         |array, range, len| {
-                            let mut results = Vec::with_capacity(len);
-                            for _ in 0..len {
-                                let stats = Statistics::<$data_type>::empty();
-                                results.push(stats);
-                            }
-                            
+                            let mut results = Statistics::empty_vec(len);
                             let mut i = 0;
                             while i < array.len() {
                                 let stats = &mut results[i % len];

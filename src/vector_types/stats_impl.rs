@@ -4,12 +4,13 @@ use num::Complex;
 
 pub trait Stats<T> : Sized {
     fn empty() -> Self;
+    fn empty_vec(len: usize) -> Vec<Self>;
     fn invalid() -> Self;
     fn merge(stats: &[Self]) -> Self;
     fn merge_cols(stats: &[Vec<Self>]) -> Vec<Self>;
 }
 
-macro_rules! impl_merge_stats {
+macro_rules! impl_common_stats {
     () => {
         fn merge_cols(stats: &[Vec<Self>]) -> Vec<Self> {
             let len = stats[0].len();
@@ -22,6 +23,15 @@ macro_rules! impl_merge_stats {
                 }
                 
                 let stats = Statistics::merge(&reordered);
+                results.push(stats);
+            }
+            results
+        }
+        
+        fn empty_vec(len: usize) -> Vec<Self> {
+            let mut results = Vec::with_capacity(len);
+            for _ in 0..len {
+                let stats = Statistics::empty();
                 results.push(stats);
             }
             results
@@ -99,7 +109,7 @@ macro_rules! impl_stat_trait {
                     }
                 }
                 
-                impl_merge_stats!();
+                impl_common_stats!();
             }
             
             impl Stats<Complex<$data_type>> for Statistics<Complex<$data_type>> {
@@ -171,7 +181,7 @@ macro_rules! impl_stat_trait {
                     }  
                 }
                 
-                impl_merge_stats!();
+                impl_common_stats!();
             }
          )*
      }
