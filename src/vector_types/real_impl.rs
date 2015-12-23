@@ -215,19 +215,7 @@ macro_rules! add_real_impl {
                             results 
                     });
                     
-                    let mut results = Vec::with_capacity(len);
-                    for i in 0..len {
-                        let mut reordered = Vec::with_capacity(chunks.len());
-                        for j in 0..chunks.len()
-                        {
-                            reordered.push(chunks[j][i]);
-                        }
-                        
-                        let stats = Statistics::merge(&reordered);
-                        results.push(stats);
-                    }
-                    
-                    results
+                    Statistics::merge_cols(&chunks)
                 }
             }
         )*

@@ -6,6 +6,27 @@ pub trait Stats<T> : Sized {
     fn empty() -> Self;
     fn invalid() -> Self;
     fn merge(stats: &[Self]) -> Self;
+    fn merge_cols(stats: &[Vec<Self>]) -> Vec<Self>;
+}
+
+macro_rules! impl_merge_stats {
+    () => {
+        fn merge_cols(stats: &[Vec<Self>]) -> Vec<Self> {
+            let len = stats[0].len();
+            let mut results = Vec::with_capacity(len);
+            for i in 0..results.len() {
+                let mut reordered = Vec::with_capacity(stats.len());
+                for j in 0..stats.len()
+                {
+                    reordered.push(stats[j][i]);
+                }
+                
+                let stats = Statistics::merge(&reordered);
+                results.push(stats);
+            }
+            results
+        }
+    }
 }
 
 macro_rules! impl_stat_trait {
@@ -77,6 +98,8 @@ macro_rules! impl_stat_trait {
                         max_index: max_index,
                     }
                 }
+                
+                impl_merge_stats!();
             }
             
             impl Stats<Complex<$data_type>> for Statistics<Complex<$data_type>> {
@@ -147,6 +170,8 @@ macro_rules! impl_stat_trait {
                         max_index: max_index,
                     }  
                 }
+                
+                impl_merge_stats!();
             }
          )*
      }
