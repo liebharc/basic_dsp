@@ -17,7 +17,6 @@ macro_rules! add_real_impl {
 	 =>
 	 {	 
         $(
-            #[inline]
             impl RealVectorOperations<$data_type> for GenericDataVector<$data_type>
             {
                 type ComplexPartner = Self;

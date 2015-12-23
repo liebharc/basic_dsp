@@ -3,7 +3,6 @@ macro_rules! define_real_operations_forward {
 	 =>
 	 {	 
         $(
-            #[inline]
             impl RealVectorOperations<$data_type> for $name<$data_type>
             {
                 type ComplexPartner = $complex_partner<$data_type>; 
@@ -12,7 +11,7 @@ macro_rules! define_real_operations_forward {
                 {
                     Self::from_genres(self.to_gen().real_offset(offset))
                 }
-                
+                x
                 fn real_scale(self, factor: $data_type) -> VecResult<Self>
                 {
                     Self::from_genres(self.to_gen().real_scale(factor))
@@ -52,7 +51,6 @@ macro_rules! define_real_operations_forward {
                 }
             }
             
-             #[inline]
             impl $name<$data_type>
             {		
                 fn to_gen(self) -> $gen_type<$data_type>

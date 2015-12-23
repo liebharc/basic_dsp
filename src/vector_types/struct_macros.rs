@@ -17,7 +17,6 @@ macro_rules! define_vector_struct {
             // - A view for complex data types with transmute
         }
         
-        #[inline]
 		impl<T> DataVector<T> for $name<T>
             where T: RealNumber
 		{
@@ -292,7 +291,6 @@ macro_rules! define_real_basic_struct_members {
     (impl $name:ident, DataVectorDomain::$domain:ident)
 	 =>
 	 {
-		#[inline]
 		impl<T> $name<T> 
             where T: RealNumber
 		{
@@ -449,7 +447,6 @@ macro_rules! define_complex_basic_struct_members {
     (impl $name:ident, DataVectorDomain::$domain:ident)
 	 =>
 	 {
-		#[inline]
 		impl<T> $name<T>
             where T: RealNumber
 		{

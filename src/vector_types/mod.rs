@@ -159,7 +159,6 @@ pub enum Operation<T>
 	Sqrt
 }
 
-#[inline]
 impl<T> GenericDataVector<T> 
     where T: RealNumber
 {  

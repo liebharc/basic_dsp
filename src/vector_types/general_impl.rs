@@ -482,7 +482,6 @@ macro_rules! add_general_impl {
                 }
             }
             
-            #[inline]
             impl GenericVectorOperations<$data_type> for GenericDataVector<$data_type> {
                 impl_binary_vector_operation!($data_type, $reg, fn add_vector, summand, add, add);
                 impl_binary_smaller_vector_operation!($data_type, $reg, fn add_smaller_vector, summand, add, add);

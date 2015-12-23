@@ -3,7 +3,6 @@ macro_rules! define_complex_operations_forward {
 	 =>
 	 { 
         $(
-            #[inline]
             impl ComplexVectorOperations<$data_type> for $name<$data_type>
             {
                 type RealPartner = $real_partner<$data_type>;
@@ -98,7 +97,6 @@ macro_rules! define_complex_operations_forward {
                 }
             }
             
-            #[inline]
             impl $name<$data_type>
             {
                 fn to_gen(self) -> $gen_type<$data_type>
