@@ -139,39 +139,16 @@ macro_rules! add_real_impl {
                         Complexity::Small, &self.multicore_settings,
                         &array, data_length, 1, (),
                         |array, range, _arg| {
+                            let mut stats = Statistics::empty();
                             let mut i = 0;
-                            let mut sum = 0.0;
-                            let mut sum_squared = 0.0;
-                            let mut max = array[0];
-                            let mut min = array[0];
-                            let mut max_index = 0;
-                            let mut min_index = 0;
+                            let mut j = range.start;
                             while i < array.len()
                             { 
-                                sum += array[i];
-                                sum_squared += array[i] * array[i];
-                                if array[i] > max {
-                                    max = array[i];
-                                    max_index = i + range.start;
-                                }
-                                else if array[i] < min {
-                                    min = array[i];
-                                    min_index = i + range.start;
-                                }
-                                
+                                stats.add(array[i], j);
                                 i += 1;
+                                j += 1;
                             }
-                            
-                            Statistics {
-                                sum: sum,
-                                count: array.len(),
-                                average: 0.0, 
-                                min: min,
-                                max: max, 
-                                rms: sum_squared, // this field therefore has a different meaning inside this function
-                                min_index: min_index,
-                                max_index: max_index,
-                            }    
+                            stats
                     });
                     
                     Statistics::merge(&chunks)
@@ -190,21 +167,12 @@ macro_rules! add_real_impl {
                         |array, range, len| {
                             let mut results = Statistics::empty_vec(len);
                             let mut i = 0;
+                            let mut j = range.start;
                             while i < array.len() {
                                 let stats = &mut results[i % len];
-                                stats.sum += array[i];
-                                stats.count += 1;
-                                stats.rms += array[i] * array[i];
-                                if array[i] > stats.max {
-                                    stats.max = array[i];
-                                    stats.max_index = (i + range.start) / len;
-                                }
-                                else if array[i] < stats.min {
-                                    stats.min = array[i];
-                                    stats.min_index = (i + range.start) / len;
-                                }
-                                
+                                stats.add(array[i], j / len);
                                 i += 1;
+                                j += 1;
                             }
                             
                             results 

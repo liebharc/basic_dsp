@@ -8,22 +8,27 @@ pub trait Stats<T> : Sized {
     fn invalid() -> Self;
     fn merge(stats: &[Self]) -> Self;
     fn merge_cols(stats: &[Vec<Self>]) -> Vec<Self>;
+    fn add(&mut self, elem: T, index: usize);
 }
 
 macro_rules! impl_common_stats {
     () => {
         fn merge_cols(stats: &[Vec<Self>]) -> Vec<Self> {
+            if stats.len() == 0 {
+                return Vec::new();
+            }
+            
             let len = stats[0].len();
             let mut results = Vec::with_capacity(len);
-            for i in 0..results.len() {
+            for i in 0..len {
                 let mut reordered = Vec::with_capacity(stats.len());
                 for j in 0..stats.len()
                 {
                     reordered.push(stats[j][i]);
                 }
                 
-                let stats = Statistics::merge(&reordered);
-                results.push(stats);
+                let merged = Statistics::merge(&reordered);
+                results.push(merged);
             }
             results
         }
@@ -31,8 +36,7 @@ macro_rules! impl_common_stats {
         fn empty_vec(len: usize) -> Vec<Self> {
             let mut results = Vec::with_capacity(len);
             for _ in 0..len {
-                let stats = Statistics::empty();
-                results.push(stats);
+                results.push(Statistics::empty());
             }
             results
         }
@@ -91,7 +95,7 @@ macro_rules! impl_stat_trait {
                             max = stat.max;
                             max_index = stat.max_index;
                         }
-                        else if stat.min > min {
+                        else if stat.min < min {
                             min = stat.min;
                             min_index = stat.min_index;
                         }
@@ -110,6 +114,20 @@ macro_rules! impl_stat_trait {
                 }
                 
                 impl_common_stats!();
+                
+                fn add(&mut self, elem: $data_type, index: usize) {
+                    self.sum += elem;
+                    self.count += 1;
+                    self.rms += elem * elem;
+                    if elem > self.max {
+                        self.max = elem;
+                        self.max_index = index;
+                    }
+                    if elem < self.min {
+                        self.min = elem;
+                        self.min_index = index;
+                    }
+                }
             }
             
             impl Stats<Complex<$data_type>> for Statistics<Complex<$data_type>> {
@@ -162,7 +180,7 @@ macro_rules! impl_stat_trait {
                             max_norm = max.norm();
                             max_index = stat.max_index;
                         }
-                        else if stat.min.norm() > min_norm {
+                        else if stat.min.norm() < min_norm {
                             min = stat.min;
                             min_norm = min.norm();
                             min_index = stat.min_index;
@@ -182,6 +200,20 @@ macro_rules! impl_stat_trait {
                 }
                 
                 impl_common_stats!();
+                
+                fn add(&mut self, elem: Complex<$data_type>, index: usize) {
+                    self.sum = self.sum + elem;
+                    self.count += 1;
+                    self.rms = self.rms + elem * elem;
+                    if elem.norm() > self.max.norm() {
+                        self.max = elem;
+                        self.max_index = index;
+                    }
+                    if elem.norm() < self.min.norm()  {
+                        self.min = elem;
+                        self.min_index = index;
+                    }
+                }
             }
          )*
      }

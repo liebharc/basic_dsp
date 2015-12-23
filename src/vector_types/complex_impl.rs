@@ -194,44 +194,17 @@ macro_rules! add_complex_impl {
                         Complexity::Small, &self.multicore_settings,
                         &array, data_length, 2, (),
                         |array, range, _arg| {
+                            let mut stat = Statistics::<Complex<$data_type>>::empty();
                             let mut i = 0;
-                            let mut sum = Complex::<$data_type>::new(0.0, 0.0);
-                            let mut sum_squared = Complex::<$data_type>::new(0.0, 0.0);
-                            let mut max = Complex::<$data_type>::new(array[0], array[1]);
-                            let mut min = Complex::<$data_type>::new(array[0], array[1]);
-                            let mut max_norm = max.norm();
-                            let mut min_norm = min.norm();
-                            let mut max_index = 0;
-                            let mut min_index = 0;
+                            let mut j = range.start / 2;
                             while i < array.len()
                             { 
                                 let value = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                sum = sum + value;
-                                sum_squared = sum_squared + value * value;
-                                if value.norm() > max_norm {
-                                    max = value;
-                                    max_index = (i + range.start) / 2;
-                                    max_norm = max.norm();
-                                }
-                                else if value.norm() < min_norm  {
-                                    min = value;
-                                    min_index = (i + range.start) / 2;
-                                    min_norm = min.norm();
-                                }
-                                
+                                stat.add(value, j);
                                 i += 2;
+                                j += 1;
                             }
-                            
-                            Statistics {
-                                sum: sum,
-                                count: array.len() / 2,
-                                average: Complex::<$data_type>::new(0.0, 0.0), 
-                                min: min,
-                                max: max, 
-                                rms: sum_squared, // this field therefore has a different meaning inside this function
-                                min_index: min_index,
-                                max_index: max_index,
-                            }    
+                            stat
                     });
                     
                     Statistics::merge(&chunks)
@@ -246,26 +219,18 @@ macro_rules! add_complex_impl {
                     let array = &self.data;
                     let chunks = Chunk::get_chunked_results (
                         Complexity::Small, &self.multicore_settings,
-                        &array, data_length, 1, len,
+                        &array, data_length, 2, len,
                         |array, range, len| {
                             let mut results = Statistics::<Complex<$data_type>>::empty_vec(len);
                             let mut i = 0;
+                            let mut j = range.start / 2;
                             while i < array.len()
                             { 
                                 let stat = &mut results[(i / 2) % len];
                                 let value = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                stat.sum = stat.sum + value;
-                                stat.rms = stat.rms + value * value;
-                                if value.norm() > stat.max.norm() {
-                                    stat.max = value;
-                                    stat.max_index = (i + range.start) / 2;
-                                }
-                                else if value.norm() < stat.min.norm()  {
-                                    stat.min = value;
-                                    stat.min_index = (i + range.start) / 2;
-                                }
-                                
+                                stat.add(value, j / len);
                                 i += 2;
+                                j += 1;
                             }
                             
                             results 
