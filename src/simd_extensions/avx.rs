@@ -3,6 +3,7 @@ use super::Simd;
 use simd::f32x4;
 use simd::x86::sse3::Sse3F32x4;
 use simd::x86::avx::{f32x8,f64x4,AvxF32x8,AvxF64x4};
+use std::mem;
 
 //pub type Reg32 = f32x8;
 // f32x8/avx causes a crash right now. See comment on https://github.com/huonw/simd/pull/18
@@ -12,6 +13,30 @@ pub type Reg64 = f64x4;
 
 impl Simd<f32> for f32x4
 {
+    fn array_to_regs(array: &[f32]) -> &[Self] {
+        unsafe { 
+			let len = array.len();
+            let reg_len = Self::len();
+            if len % reg_len != 0 {
+                panic!("Argument must be dividable by {}", reg_len);
+            }
+			let trans: &[Self] = mem::transmute(array);
+			&trans[0 .. len / reg_len]
+		}
+    }
+    
+    fn array_to_regs_mut(array: &mut [f32]) -> &mut [Self] {
+        unsafe { 
+			let len = array.len();
+            let reg_len = Self::len();
+            if len % reg_len != 0 {
+                panic!("Argument must be dividable by {}", reg_len);
+            }
+			let trans: &mut [Self] = mem::transmute(array);
+			&mut trans[0 .. len / reg_len]
+		}
+    }
+    
     fn len() -> usize {
         4
     }
@@ -269,6 +294,30 @@ impl Simd<f32> for f32x8
 
 impl Simd<f64> for f64x4
 {
+    fn array_to_regs(array: &[f64]) -> &[Self] {
+        unsafe { 
+			let len = array.len();
+            let reg_len = Self::len();
+            if len % reg_len != 0 {
+                panic!("Argument must be dividable by {}", reg_len);
+            }
+			let trans: &[Self] = mem::transmute(array);
+			&trans[0 .. len / reg_len]
+		}
+    }
+    
+    fn array_to_regs_mut(array: &mut [f64]) -> &mut [Self] {
+        unsafe { 
+			let len = array.len();
+            let reg_len = Self::len();
+            if len % reg_len != 0 {
+                panic!("Argument must be dividable by {}", reg_len);
+            }
+			let trans: &mut [Self] = mem::transmute(array);
+			&mut trans[0 .. len / reg_len]
+		}
+    }
+    
     fn len() -> usize {
         4
     }

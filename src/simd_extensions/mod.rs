@@ -1,8 +1,10 @@
 use num::complex::Complex;
 
-pub trait Simd<T>
+pub trait Simd<T> : Sized
     where T: Sized + Sync + Send
 {
+    fn array_to_regs(array: &[T]) -> &[Self];
+    fn array_to_regs_mut(array: &mut [T]) -> &mut [Self];
     fn len() -> usize;
     fn load(array: &[T], idx: usize) -> Self;
     fn load_wrap(array: &[T], idx: usize) -> Self;

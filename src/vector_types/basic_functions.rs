@@ -36,13 +36,9 @@ macro_rules! add_basic_private_impl {
                             complexity, &self.multicore_settings,
                             &mut array, vectorization_length, $reg::len(), argument, 
                             move |array, argument| {
-                                let mut i = 0;
-                                while i < array.len()
-                                { 
-                                    let vector = $reg::load(array, i);
-                                    let scaled = simd_op(vector, argument);
-                                    scaled.store(array, i);
-                                    i += $reg::len();
+                                let array = $reg::array_to_regs_mut(array);
+                                for reg in array {
+                                    *reg = simd_op(*reg, argument);
                                 }
                         });
                         for num in &mut array[vectorization_length..data_length]
@@ -112,13 +108,9 @@ macro_rules! add_basic_private_impl {
                             complexity, &self.multicore_settings,
                             &mut array, vectorization_length, $reg::len(), argument, 
                             move |array, argument| {
-                                let mut i = 0;
-                                while i < array.len()
-                                { 
-                                    let vector = $reg::load(array, i);
-                                    let scaled = simd_op(vector, argument);
-                                    scaled.store(array, i);
-                                    i += $reg::len();
+                                let array = $reg::array_to_regs_mut(array);
+                                for reg in array {
+                                    *reg = simd_op(*reg, argument);
                                 }
                         });
                         let array = Self::array_to_complex_mut(&mut array[vectorization_length..data_length]);
@@ -145,14 +137,11 @@ macro_rules! add_basic_private_impl {
                             &mut array, vectorization_length, $reg::len(), 
                             &mut temp, vectorization_length / 2, $reg::len() / 2, argument,
                             move |array, range, target, argument| {
-                                let mut i = range.start;
+                                let array = $reg::array_to_regs(&array[range.start..range.end]);
                                 let mut j = 0;
-                                while j < target.len()
-                                { 
-                                    let vector = $reg::load(array, i);
-                                    let result = simd_op(vector, argument);
+                                for reg in array {
+                                    let result = simd_op(*reg, argument);
                                     result.store_half(target, j);
-                                    i += $reg::len();
                                     j += $reg::len() / 2;
                                 }
                         });
@@ -165,7 +154,6 @@ macro_rules! add_basic_private_impl {
                         self.valid_len = data_length / 2;
                     }
                     Ok(self.swap_data_temp())
-
                 }
             }
         )*
