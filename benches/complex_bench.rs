@@ -43,7 +43,7 @@ mod bench {
 		b.iter(|| {
 			vector.execute_res(|v| {
                 let len = v.len(); 
-                let operand = ComplexTimeVector32::complex_from_constant(0.0, len);
+                let operand = ComplexTimeVector32::from_constant(0.0, len);
                 v.multiply_vector(&operand) 
             } )
 		});

@@ -380,13 +380,13 @@ mod slow_test {
         let vector = ComplexTimeVector32::from_interleaved(&a);
         let mut split = 
             [
-                Box::new(ComplexTimeVector32::complex_empty()),
-                Box::new(ComplexTimeVector32::complex_empty()),
-                Box::new(ComplexTimeVector32::complex_empty()),
-                Box::new(ComplexTimeVector32::complex_empty()),
-                Box::new(ComplexTimeVector32::complex_empty())];
+                Box::new(ComplexTimeVector32::empty()),
+                Box::new(ComplexTimeVector32::empty()),
+                Box::new(ComplexTimeVector32::empty()),
+                Box::new(ComplexTimeVector32::empty()),
+                Box::new(ComplexTimeVector32::empty())];
         vector.split_into(&mut split).unwrap();
-        let merge = ComplexTimeVector32::complex_empty();
+        let merge = ComplexTimeVector32::empty();
         let result = merge.merge(&split).unwrap();
         assert_vector_eq(&a, &result.data());
     }
@@ -397,8 +397,8 @@ mod slow_test {
         let vector = ComplexTimeVector32::from_interleaved(a);
         let mut split = 
             [
-                Box::new(ComplexTimeVector32::complex_empty()),
-                Box::new(ComplexTimeVector32::complex_empty())];
+                Box::new(ComplexTimeVector32::empty()),
+                Box::new(ComplexTimeVector32::empty())];
         vector.split_into(&mut split).unwrap();
         assert_vector_eq(&[1.0, 2.0, 5.0, 6.0], &split[0].data());
         assert_vector_eq(&[3.0, 4.0, 7.0, 8.0], &split[1].data()); 
@@ -413,7 +413,7 @@ mod slow_test {
             let mut real = RealTimeVector32::real_empty();
             let mut imag = RealTimeVector32::real_empty();
             vector.get_real_imag(&mut real, &mut imag).unwrap();
-            let vector2 = ComplexTimeVector32::complex_empty();
+            let vector2 = ComplexTimeVector32::empty();
             let result = vector2.set_real_imag(&real, &imag).unwrap();
             assert_vector_eq(&a, result.data());
         });
@@ -436,7 +436,7 @@ mod slow_test {
             assert_vector_eq_with_reason(mag.data(), mag2.data(), "Magnitude differs");
             assert_vector_eq_with_reason(phase.data(), phase2.data(), "Phase differs");
             
-            let vector2 = ComplexTimeVector32::complex_empty();
+            let vector2 = ComplexTimeVector32::empty();
             let result = vector2.set_mag_phase(&mag, &phase).unwrap();
             assert_vector_eq_with_reason_and_tolerance(&a, result.data(), 1e-4, "Merge differs");
         });
