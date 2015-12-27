@@ -89,12 +89,15 @@ pub use vector_types::definitions::{
         ErrorReason,
 		GenericVectorOperations,
 		RealVectorOperations,
-		ComplexVectorOperations,
-		TimeDomainOperations,
-		FrequencyDomainOperations,		
+		ComplexVectorOperations,	
         Statistics,
         RededicateVector
 	};
+pub use vector_types::time_freq_impl::{
+        TimeDomainOperations,
+		FrequencyDomainOperations,
+        EvenOdd
+    };
 use num::complex::Complex;
 use RealNumber;
 use multicore_support::{Chunk, Complexity, MultiCoreSettings};

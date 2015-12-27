@@ -897,60 +897,6 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
     fn set_mag_phase(self, mag: &Self::RealPartner, phase: &Self::RealPartner) -> VecResult<Self>;
 }
 
-/// Defines all operations which are valid on `DataVectors` containing real data.
-pub trait TimeDomainOperations<T> : DataVector<T> 
-    where T : RealNumber {
-	type FreqPartner;
-	
-	/// Performs a Fast Fourier Transformation transforming a time domain vector
-	/// into a frequency domain vector. 
-	/// 
-	/// This version of the FFT neither applies a window nor does it scale the 
-	/// vector.
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{ComplexTimeVector32, TimeDomainOperations, DataVector};
-	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254]);
-	/// let result = vector.plain_fft().expect("Ignoring error handling in examples");
-	/// let actual = result.data();
-	/// let expected = &[0.0, 0.0, 3.0, 0.0, 0.0, 0.0];
-	/// assert_eq!(actual.len(), expected.len());
-	/// for i in 0..actual.len() {
-	///		assert!((actual[i] - expected[i]).abs() < 1e-4);
-	/// }
-	/// ```
-	fn plain_fft(self) -> VecResult<Self::FreqPartner>;
-	
-	// TODO add fft method which also applies a window
-}
-
-/// Defines all operations which are valid on `DataVectors` containing complex data.
-pub trait FrequencyDomainOperations<T> : DataVector<T> 
-    where T : RealNumber {
-	type TimePartner;
-	
-	/// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
-	/// into a time domain vector.
-	/// 
-	/// This version of the IFFT neither applies a window nor does it scale the 
-	/// vector.
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{ComplexFreqVector32, FrequencyDomainOperations, DataVector};
-	/// let vector = ComplexFreqVector32::from_interleaved(&[0.0, 0.0, 1.0, 0.0, 0.0, 0.0]);
-	/// let result = vector.plain_ifft().expect("Ignoring error handling in examples");
-	/// let actual = result.data();
-	/// let expected = &[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254];
-	/// assert_eq!(actual.len(), expected.len());
-	/// for i in 0..actual.len() {
-	///		assert!((actual[i] - expected[i]).abs() < 1e-4);
-	/// }
-	/// ```
-	fn plain_ifft(self) -> VecResult<Self::TimePartner>;
-}
-
 /// Enumeration of all error reasons
 #[derive(Copy)]
 #[derive(Clone)]

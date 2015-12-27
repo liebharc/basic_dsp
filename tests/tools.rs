@@ -1,5 +1,12 @@
 use rand::*;
-use basic_dsp::DataVector;
+use basic_dsp::{
+    DataVector,
+    RealTimeVector,
+    RealFreqVector,
+    ComplexTimeVector,
+    ComplexFreqVector,
+    RealNumber,
+    DataVectorDomain};
 use std::ops::Range;
 use num::complex::Complex32;
 use std::panic;
@@ -15,7 +22,8 @@ pub fn assert_vector_eq_with_reason_and_tolerance(left: &[f32], right: &[f32], t
         errors.push(format!("{}:\n", reason));
     }
     
-    if left.len() != right.len()
+    let size_assert_failed = left.len() != right.len();
+    if size_assert_failed
     {
         errors.push(format!("Size difference {} != {}", left.len(), right.len()));
     }
@@ -40,7 +48,7 @@ pub fn assert_vector_eq_with_reason_and_tolerance(left: &[f32], right: &[f32], t
         errors.push(format!("Total number of differences: {}/{}={}%", differences, len, differences*100/len));
     }
     
-    if differences > 0
+    if differences > 0 || size_assert_failed
     {
         let all_errors = errors.join("\n");
         let header = "-----------------------".to_owned();
@@ -130,6 +138,42 @@ pub fn create_delta(seed: usize, iteration: usize)
     let seed: &[_] = &[seed, iteration];
     let mut rng: StdRng = SeedableRng::from_seed(seed);
     rng.gen_range(-10.0, 10.0)
+}
+
+pub trait AssertMetaData {
+    fn assert_meta_data(&self);
+}
+
+impl<T> AssertMetaData for RealTimeVector<T> 
+    where T: RealNumber {
+    fn assert_meta_data(&self) {
+        assert_eq!(self.is_complex(), false);
+        assert_eq!(self.domain(), DataVectorDomain::Time);
+    }
+}
+
+impl<T> AssertMetaData for RealFreqVector<T> 
+    where T: RealNumber {
+    fn assert_meta_data(&self) {
+        assert_eq!(self.is_complex(), false);
+        assert_eq!(self.domain(), DataVectorDomain::Frequency);
+    }
+}
+
+impl<T> AssertMetaData for ComplexTimeVector<T> 
+    where T: RealNumber {
+    fn assert_meta_data(&self) {
+        assert_eq!(self.is_complex(), true);
+        assert_eq!(self.domain(), DataVectorDomain::Time);
+    }
+}
+
+impl<T> AssertMetaData for ComplexFreqVector<T> 
+    where T: RealNumber {
+    fn assert_meta_data(&self) {
+        assert_eq!(self.is_complex(), true);
+        assert_eq!(self.domain(), DataVectorDomain::Frequency);
+    }
 }
 
 use std::sync::{Arc, Mutex};

@@ -711,20 +711,3 @@ macro_rules! define_complex_basic_struct_members {
 		} 
 	 }
 }
-
-pub use vector_types::definitions::
-	{
-		DataVectorDomain,
-		DataVector,
-        VecResult,
-        VoidResult,
-        ScalarResult,
-        ErrorReason,
-		GenericVectorOperations,
-		RealVectorOperations,
-		ComplexVectorOperations,
-		TimeDomainOperations,
-		FrequencyDomainOperations,		
-        Statistics,
-        RededicateVector
-	};

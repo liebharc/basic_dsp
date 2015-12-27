@@ -13,6 +13,7 @@ use complex_extensions::ComplexExtensions;
 use simd_extensions::{Simd, Reg32, Reg64};
 use multicore_support::MultiCoreSettings;
 use std::ops::{Add, Sub, Mul, Div};
+use std::ptr;
 
 macro_rules! impl_real_complex_dispatch {
     (fn $function_name: ident, $real_op: ident, $complex_op: ident)
@@ -330,7 +331,6 @@ macro_rules! vector_diff {
 macro_rules! zero_interleave {
     ($self_: ident, $data_type: ident, $step: ident, $tuple: expr) => {
         {
-            use std::ptr;
             if $step <= 1 {
                 return Ok($self_);
             }
@@ -630,7 +630,6 @@ macro_rules! add_general_impl {
                 fn swap_halves(mut self) -> VecResult<Self>
                 {
                    {
-                        use std::ptr;
                         let data_length = self.len();
                         let mut len = self.points();
                         let mut start = len;
@@ -680,7 +679,6 @@ macro_rules! add_general_impl {
                 
                 fn override_data(mut self, data: &[$data_type]) -> VecResult<Self> {
                     {
-                        use std::ptr;
                         self.reallocate(data.len());
                         let target = &mut self.data[0] as *mut $data_type;
                         let source = &data[0] as *const $data_type;
