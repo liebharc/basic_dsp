@@ -12,6 +12,7 @@ mod bench {
 	use num::complex::Complex32;
     use tools::{VectorBox, DEFAULT_DATA_SIZE, Size};
 	
+    #[inline(never)]
 	pub fn add_offset_reference(mut array: Vec<f32>, offset: f32) -> Vec<f32>
 	{
 		let mut i = 0;
@@ -27,7 +28,6 @@ mod bench {
 	#[bench]
 	fn real_offset_32s_reference(b: &mut Bencher)
 	{
-		//let mut data: Box<[f32]> = box [0.0; DEFAULT_DATA_SIZE];
         let mut vector = VectorBox::<Vec<f32>>::new(Size::Small);
 		b.iter(|| {
 			vector.execute(|v|  { add_offset_reference(v, 100.0) } )

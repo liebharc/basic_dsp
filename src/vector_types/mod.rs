@@ -193,6 +193,9 @@ impl<T> GenericDataVector<T>
 	fn array_to_complex(array: &[T]) -> &[Complex<T>] {
 		unsafe { 
 			let len = array.len();
+            if len % 2 != 0 {
+                panic!("Argument must have an even length");
+            }
 			let trans: &[Complex<T>] = mem::transmute(array);
 			&trans[0 .. len / 2]
 		}
@@ -201,6 +204,9 @@ impl<T> GenericDataVector<T>
 	fn array_to_complex_mut(array: &mut [T]) -> &mut [Complex<T>] {
 		unsafe { 
 			let len = array.len();
+            if len % 2 != 0 {
+                panic!("Argument must have an even length");
+            }
 			let trans: &mut [Complex<T>] = mem::transmute(array);
 			&mut trans[0 .. len / 2]			
 		}

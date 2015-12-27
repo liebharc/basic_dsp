@@ -14,11 +14,8 @@ macro_rules! add_basic_private_impl {
                             complexity, &self.multicore_settings,
                             &mut array, length, 1, argument,
                             move|array, argument| {
-                                let mut i = 0;
-                                while i < array.len()
-                                {
-                                    array[i] = op(array[i], argument);
-                                    i += 1;
+                                for num in array {
+                                    *num = op(*num, argument);
                                 }
                         });
                     }
@@ -48,9 +45,9 @@ macro_rules! add_basic_private_impl {
                                     i += $reg::len();
                                 }
                         });
-                        for i in vectorization_length..data_length
+                        for num in &mut array[vectorization_length..data_length]
                         {
-                            array[i] = scalar_op(array[i], argument);
+                            *num = scalar_op(*num, argument);
                         }
                     }
                     Ok(self)
@@ -67,14 +64,9 @@ macro_rules! add_basic_private_impl {
                             complexity, &self.multicore_settings,
                             &mut array, length, 2, argument,
                             move|array, argument| {
-                                let mut i = 0;
-                                while i < array.len()
-                                {
-                                    let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                    let result = op(complex, argument);
-                                    array[i] = result.re;
-                                    array[i + 1] = result.im;
-                                    i += 2;
+                                let array = Self::array_to_complex_mut(array);
+                                for num in array {
+                                    *num = op(*num, argument);
                                 }
                         });
                     }
@@ -94,15 +86,10 @@ macro_rules! add_basic_private_impl {
                             &mut array, data_length, 2, 
                             &mut temp, data_length / 2, 1, argument,
                             move |array, range, target, argument| {
-                                let mut i = range.start;
-                                let mut j = 0;
-                                while j < target.len()
-                                { 
-                                    let vector = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                    let result = op(vector, argument);
-                                    target[j] = result;
-                                    i += 2;
-                                    j += 1;
+                                let array = Self::array_to_complex(&array[range.start..range.end]);
+                                for pair in array.iter().zip(target) {
+                                    let (src, dest) = pair;
+                                    *dest = op(*src, argument);
                                 }
                         });
                         self.is_complex = false;
@@ -134,14 +121,9 @@ macro_rules! add_basic_private_impl {
                                     i += $reg::len();
                                 }
                         });
-                        let mut i = vectorization_length;
-                        while i < data_length
-                        {
-                            let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                            let result = scalar_op(complex, argument);
-                            array[i] = result.re;
-                            array[i + 1] = result.im;
-                            i += 2;
+                        let array = Self::array_to_complex_mut(&mut array[vectorization_length..data_length]);
+                        for num in array {
+                            *num = scalar_op(*num, argument);
                         }
                     }
                     Ok(self)
@@ -174,13 +156,10 @@ macro_rules! add_basic_private_impl {
                                     j += $reg::len() / 2;
                                 }
                         });
-                        let mut i = vectorization_length;
-                        while i < data_length
-                        {
-                            let complex = Complex::<$data_type>::new(array[i], array[i + 1]);
-                            let result = scalar_op(complex, argument);
-                            temp[i / 2] = result;
-                            i += 2;
+                        let array = Self::array_to_complex(&array[vectorization_length..data_length]);
+                        for pair in array.iter().zip(&mut temp[vectorization_length/2..data_length/2]) {
+                            let (src, dest) = pair;
+                            *dest = scalar_op(*src, argument);
                         }
                         self.is_complex = false;
                         self.valid_len = data_length / 2;
