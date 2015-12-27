@@ -423,7 +423,7 @@ mod tests {
 	{
 		let data = [3.0, 4.0, -3.0, 4.0, 3.0, -4.0, -3.0, -4.0];
 		let result = ComplexTimeVector32::from_interleaved(&data);
-		let result = result.complex_abs().unwrap();
+		let result = result.magnitude().unwrap();
 		let expected = [5.0, 5.0, 5.0, 5.0];
 		assert_eq!(result.data(), expected);
 		assert_eq!(result.delta, 1.0);
@@ -434,7 +434,7 @@ mod tests {
 	{
 		let data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0, 9.0, 10.0];
 		let result = ComplexTimeVector32::from_interleaved(&data);
-		let result = result.complex_abs_squared().unwrap();
+		let result = result.magnitude_squared().unwrap();
 		let expected = [5.0, 25.0, 61.0, 113.0, 181.0];
 		assert_eq!(result.data(), expected);
 		assert_eq!(result.delta, 1.0);

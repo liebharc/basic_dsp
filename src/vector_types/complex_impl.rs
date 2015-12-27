@@ -34,13 +34,13 @@ macro_rules! add_complex_impl {
                     self.simd_complex_operation(|x,y| x.scale_complex(y), |x,y| x * y, factor, Complexity::Small)
                 }
                 
-                fn complex_abs(self) -> VecResult<Self>
+                fn magnitude(self) -> VecResult<Self>
                 {
                     assert_complex!(self);
                     self.simd_complex_to_real_operation(|x,_arg| x.complex_abs(), |x,_arg| x.norm(), (), Complexity::Small)
                 }
                 
-                fn get_complex_abs(&self, destination: &mut Self) -> VoidResult
+                fn get_magnitude(&self, destination: &mut Self) -> VoidResult
                 {
                     if !self.is_complex {
                         return Err(ErrorReason::VectorMustBeComplex);
@@ -80,7 +80,7 @@ macro_rules! add_complex_impl {
                     Ok(())
                 }
                 
-                fn complex_abs_squared(self) -> VecResult<Self>
+                fn magnitude_squared(self) -> VecResult<Self>
                 {
                     assert_complex!(self);
                     self.simd_complex_to_real_operation(|x,_arg| x.complex_abs_squared(), |x,_arg| x.re * x.re + x.im * x.im, (), Complexity::Small)

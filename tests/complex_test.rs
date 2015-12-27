@@ -430,7 +430,7 @@ mod slow_test {
             let mut mag2 = RealTimeVector32::real_empty();
             let mut phase2 = RealTimeVector32::real_empty();;
             vector.get_mag_phase(&mut mag, &mut phase).unwrap();
-            vector.get_complex_abs(&mut mag2).unwrap();
+            vector.get_magnitude(&mut mag2).unwrap();
             vector.get_phase(&mut phase2).unwrap();
             
             assert_vector_eq_with_reason(mag.data(), mag2.data(), "Magnitude differs");

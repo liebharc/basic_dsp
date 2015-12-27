@@ -17,19 +17,19 @@ macro_rules! define_complex_operations_forward {
                     Self::from_genres(self.to_gen().complex_scale(factor))
                 }
                 
-                fn complex_abs(self) -> VecResult<Self::RealPartner>
+                fn magnitude(self) -> VecResult<Self::RealPartner>
                 {
-                    Self::RealPartner::from_genres(self.to_gen().complex_abs())
+                    Self::RealPartner::from_genres(self.to_gen().magnitude())
                 }
                 
-                fn get_complex_abs(&self, destination: &mut Self::RealPartner) -> VoidResult
+                fn get_magnitude(&self, destination: &mut Self::RealPartner) -> VoidResult
                 {
-                    self.to_gen_borrow().get_complex_abs(destination.to_gen_mut_borrow())
+                    self.to_gen_borrow().get_magnitude(destination.to_gen_mut_borrow())
                 }
                 
-                fn complex_abs_squared(self) -> VecResult<Self::RealPartner>
+                fn magnitude_squared(self) -> VecResult<Self::RealPartner>
                 {
-                    Self::RealPartner::from_genres(self.to_gen().complex_abs_squared())
+                    Self::RealPartner::from_genres(self.to_gen().magnitude_squared())
                 }
                 
                 fn complex_conj(self) -> VecResult<Self>

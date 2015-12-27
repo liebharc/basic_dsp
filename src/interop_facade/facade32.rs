@@ -303,17 +303,17 @@ pub extern fn complex_divide32(vector: Box<DataVector32>, real: f32, imag: f32) 
 
 #[no_mangle]
 pub extern fn complex_abs32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
-    convert_vec!(vector.complex_abs())
+    convert_vec!(vector.magnitude())
 }
 
 #[no_mangle]
 pub extern fn get_complex_abs32(vector: Box<DataVector32>, destination: &mut DataVector32) -> i32 {
-    convert_void!(vector.get_complex_abs(destination))
+    convert_void!(vector.get_magnitude(destination))
 }
 
 #[no_mangle]
 pub extern fn complex_abs_squared32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
-    convert_vec!(vector.complex_abs_squared())
+    convert_vec!(vector.magnitude_squared())
 }
 
 #[no_mangle]

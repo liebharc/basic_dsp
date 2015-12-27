@@ -668,11 +668,11 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
 	/// use num::complex::Complex32;
 	/// # fn main() { 
 	/// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
-	/// let result = vector.complex_abs().expect("Ignoring error handling in examples");
+	/// let result = vector.magnitude().expect("Ignoring error handling in examples");
 	/// assert_eq!([5.0, 5.0], result.data());
 	/// # }
 	/// ```
-	fn complex_abs(self) -> VecResult<Self::RealPartner>;
+	fn magnitude(self) -> VecResult<Self::RealPartner>;
 	
 	/// Copies the absolute value or magnitude of all vector elements into the given target vector.
 	/// # Example
@@ -684,11 +684,11 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
 	/// # fn main() { 
 	/// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
 	/// let mut result = RealTimeVector32::from_array(&[0.0]);
-	/// vector.get_complex_abs(&mut result).expect("Ignoring error handling in examples");
+	/// vector.get_magnitude(&mut result).expect("Ignoring error handling in examples");
 	/// assert_eq!([5.0, 5.0], result.data());
 	/// # }
 	/// ```
-	fn get_complex_abs(&self, destination: &mut Self::RealPartner) -> VoidResult;
+	fn get_magnitude(&self, destination: &mut Self::RealPartner) -> VoidResult;
 	
 	/// Gets the square root of the absolute value of all vector elements.
 	/// # Example
@@ -700,11 +700,11 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
 	/// use num::complex::Complex32;
 	/// # fn main() { 
 	/// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
-	/// let result = vector.complex_abs_squared().expect("Ignoring error handling in examples");
+	/// let result = vector.magnitude_squared().expect("Ignoring error handling in examples");
 	/// assert_eq!([25.0, 25.0], result.data());
 	/// # }
 	/// ```
-	fn complex_abs_squared(self) -> VecResult<Self::RealPartner>;
+	fn magnitude_squared(self) -> VecResult<Self::RealPartner>;
 	
 	/// Calculates the complex conjugate of the vector. 
 	/// # Example

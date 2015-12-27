@@ -14,6 +14,7 @@ use simd_extensions::{Simd, Reg32, Reg64};
 use multicore_support::MultiCoreSettings;
 use std::ops::{Add, Sub, Mul, Div};
 use std::ptr;
+use RealNumber;
 
 macro_rules! impl_real_complex_dispatch {
     (fn $function_name: ident, $real_op: ident, $complex_op: ident)
@@ -835,3 +836,32 @@ macro_rules! add_general_impl {
 }
 
 add_general_impl!(f32, Reg32; f64, Reg64);
+
+pub trait Scale<T> : Sized
+    where T: Sized {
+    fn scale(self, offset: T) -> VecResult<Self>;
+}
+
+pub trait Offset<T> : Sized
+    where T: Sized {
+    fn offset(self, offset: T) -> VecResult<Self>;
+}
+
+impl Scale<f32> for GenericDataVector<f32> {
+     fn scale(self, offset: f32) -> VecResult<Self> {
+         panic!("Panic")
+     }
+}
+
+impl Scale<Complex<f32>> for GenericDataVector<f32> {
+     fn scale(self, offset: Complex<f32>) -> VecResult<Self> {
+         panic!("Panic")
+     }
+}
+#[test]
+pub fn test1() {
+    let v = GenericDataVector::<f32>::new(true, DataVectorDomain::Time, 0.0, 0, 1.0);
+    let v = v.scale(3.0).unwrap();
+    let v = v.scale(Complex::<f32>::new(0.0, 2.0));
+    
+}
