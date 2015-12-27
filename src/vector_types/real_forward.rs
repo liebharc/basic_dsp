@@ -82,6 +82,18 @@ macro_rules! define_real_operations_forward {
                     }
                 }
             }
+            
+            impl Scale<$data_type> for $name<$data_type> {
+                fn scale(self, offset: $data_type) -> VecResult<Self> {
+                    self.real_scale(offset)
+                }
+            }
+            
+            impl Offset<$data_type> for $name<$data_type> {
+                fn offset(self, offset: $data_type) -> VecResult<Self> {
+                    self.real_offset(offset)
+                }
+            }
         )*
 	 }
 }

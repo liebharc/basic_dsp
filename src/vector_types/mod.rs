@@ -91,7 +91,9 @@ pub use vector_types::definitions::{
 		RealVectorOperations,
 		ComplexVectorOperations,	
         Statistics,
-        RededicateVector
+        RededicateVector,
+        Scale,
+        Offset
 	};
 pub use vector_types::time_freq_impl::{
         TimeDomainOperations,

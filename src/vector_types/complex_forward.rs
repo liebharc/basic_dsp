@@ -121,7 +121,19 @@ macro_rules! define_complex_operations_forward {
                         Err((r, v)) => Err((r, $name::<$data_type>::from_gen(v)))
                     }
                 }
-            } 
+            }
+            
+            impl Scale<Complex<$data_type>> for $name<$data_type> {
+                fn scale(self, offset: Complex<$data_type>) -> VecResult<Self> {
+                    self.complex_scale(offset)
+                }
+            }
+            
+            impl Offset<Complex<$data_type>> for $name<$data_type> {
+                fn offset(self, offset: Complex<$data_type>) -> VecResult<Self> {
+                    self.complex_offset(offset)
+                }
+            }
         )*
 	 }
 }

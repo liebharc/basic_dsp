@@ -60,7 +60,9 @@ pub use vector_types::
 		ComplexFreqVector64,
         Operation,
         Statistics,
-        RededicateVector
+        RededicateVector,
+        Scale,
+        Offset
 	};
  pub use multicore_support::MultiCoreSettings;
  use num::traits::Float;   

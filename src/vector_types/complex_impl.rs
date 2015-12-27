@@ -6,6 +6,8 @@ use super::definitions::{
     ErrorReason,
     ScalarResult,
     Statistics,
+    Scale,
+    Offset,
 	ComplexVectorOperations};
 use super::GenericDataVector;
 use super::stats_impl::Stats;
@@ -335,6 +337,18 @@ macro_rules! add_complex_impl {
                             }
                         });
                     Ok(())
+                }
+            }
+            
+            impl Scale<Complex<$data_type>> for GenericDataVector<$data_type> {
+                fn scale(self, offset: Complex<$data_type>) -> VecResult<Self> {
+                    self.complex_scale(offset)
+                }
+            }
+            
+            impl Offset<Complex<$data_type>> for GenericDataVector<$data_type> {
+                fn offset(self, offset: Complex<$data_type>) -> VecResult<Self> {
+                    self.complex_offset(offset)
                 }
             }
         )*

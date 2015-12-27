@@ -5,6 +5,8 @@ use super::definitions::{
     ErrorReason,
     ScalarResult,
     Statistics,
+    Scale,
+    Offset,
     GenericVectorOperations,
 	RealVectorOperations};
 use super::GenericDataVector;    
@@ -179,6 +181,18 @@ macro_rules! add_real_impl {
                     });
                     
                     Statistics::merge_cols(&chunks)
+                }
+            }
+            
+            impl Scale<$data_type> for GenericDataVector<$data_type> {
+                fn scale(self, offset: $data_type) -> VecResult<Self> {
+                    self.real_scale(offset)
+                }
+            }
+            
+            impl Offset<$data_type> for GenericDataVector<$data_type> {
+                fn offset(self, offset: $data_type) -> VecResult<Self> {
+                    self.real_offset(offset)
                 }
             }
         )*

@@ -91,6 +91,20 @@ pub trait RededicateVector<T> : DataVector<T>
     fn rededicate_as_generic_vector(self, is_complex: bool, domain: DataVectorDomain, delta: T) -> GenericDataVector<T>;
 }
 
+/// An operation which multiplies each vector element with a constant
+pub trait Scale<T> : Sized
+    where T: Sized {
+    /// Multiplies the vector element with a scalar.
+    fn scale(self, offset: T) -> VecResult<Self>;
+}
+
+/// An operation which adds a constant to each vector element
+pub trait Offset<T> : Sized
+    where T: Sized {
+    /// Adds a scalar to each vector element.
+    fn offset(self, offset: T) -> VecResult<Self>;
+}
+
 /// Defines all operations which are valid on all `DataVectors`.
 pub trait GenericVectorOperations<T>: DataVector<T> 
     where T : RealNumber {
