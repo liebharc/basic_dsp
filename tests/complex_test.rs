@@ -103,7 +103,7 @@ mod slow_test {
             let expected = complex_abs(&a);
             let delta = create_delta(3561159, iteration);
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
-            let result = vector.complex_abs().unwrap();
+            let result = vector.magnitude().unwrap();
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);
@@ -128,7 +128,7 @@ mod slow_test {
             let expected = complex_abs_sq(&a);
             let delta = create_delta(3561159, iteration);
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
-            let result = vector.complex_abs_squared().unwrap();
+            let result = vector.magnitude_squared().unwrap();
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);
@@ -291,7 +291,7 @@ mod slow_test {
             let complex = ComplexTimeVector32::from_mag_phase_with_delta(&abs, &phase, delta);
             let mut abs_vector = RealTimeVector32::from_array_no_copy(vec![0.0; 0]);
             let mut phase_vector = RealTimeVector32::from_array_no_copy(vec![0.0; 0]);
-            complex.get_complex_abs(&mut abs_vector).unwrap();
+            complex.get_magnitude(&mut abs_vector).unwrap();
             complex.get_phase(&mut phase_vector).unwrap();
             let phase_result = complex.phase().unwrap();
             assert_vector_eq_with_reason(&abs, &abs_vector.data(), "Failure in get_complex_abs");
