@@ -17,9 +17,9 @@ macro_rules! define_real_operations_forward {
                     Self::from_genres(self.to_gen().real_scale(factor))
                 }
                         
-                fn real_abs(self) -> VecResult<Self>
+                fn abs(self) -> VecResult<Self>
                 {
-                    Self::from_genres(self.to_gen().real_abs()) 
+                    Self::from_genres(self.to_gen().abs()) 
                 }
                             
                 fn to_complex(self) -> VecResult<Self::ComplexPartner>

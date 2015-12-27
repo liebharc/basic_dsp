@@ -33,7 +33,7 @@ macro_rules! add_real_impl {
                     self.simd_real_operation(|x, y| x.scale_real(y), |x, y| x * y, factor, Complexity::Small)
                 }
                 
-                fn real_abs(self) -> VecResult<Self>
+                fn abs(self) -> VecResult<Self>
                 {
                     assert_real!(self);
                     self.simd_real_operation(|x, _arg| (x * x).sqrt(), |x, _arg| x.abs(), (), Complexity::Small)

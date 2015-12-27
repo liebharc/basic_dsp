@@ -100,7 +100,7 @@ mod bench {
 	{
 		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
 		b.iter(|| {
-			vector.execute_res(|v|  { v.real_abs() } )
+			vector.execute_res(|v|  { v.abs() } )
 		});
     }
     

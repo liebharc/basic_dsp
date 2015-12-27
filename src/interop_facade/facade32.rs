@@ -164,7 +164,7 @@ pub extern fn real_scale32(vector: Box<DataVector32>, value: f32) -> VectorResul
 
 #[no_mangle]
 pub extern fn real_abs32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
-    convert_vec!(vector.real_abs())
+    convert_vec!(vector.abs())
 }
 
 #[no_mangle]

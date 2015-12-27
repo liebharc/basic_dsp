@@ -412,7 +412,7 @@ mod tests {
 	{
 		let data = [-1.0, 2.0, -3.0, 4.0, -5.0, -6.0, 7.0, -8.0];
 		let result = RealTimeVector32::from_array(&data);
-		let result = result.real_abs().unwrap();
+		let result = result.abs().unwrap();
 		let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
 		assert_eq!(result.data, expected);
 		assert_eq!(result.delta, 1.0);

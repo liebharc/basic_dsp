@@ -89,7 +89,7 @@ mod slow_test {
             let expected = real_abs(&a);
             let delta = create_delta(3561159, iteration);
             let vector = RealTimeVector32::from_array_with_delta(&a, delta);
-            let result = vector.real_abs().unwrap();
+            let result = vector.abs().unwrap();
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);

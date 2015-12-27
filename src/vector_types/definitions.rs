@@ -533,10 +533,10 @@ pub trait RealVectorOperations<T> : DataVector<T>
 	/// ```
 	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
 	/// let vector = RealTimeVector32::from_array(&[1.0, -2.0]);
-	/// let result = vector.real_abs().expect("Ignoring error handling in examples");
+	/// let result = vector.abs().expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0], result.data());
 	/// ```
-	fn real_abs(self) -> VecResult<Self>;
+	fn abs(self) -> VecResult<Self>;
 		
 	/// Converts the real vector into a complex vector.
 	///

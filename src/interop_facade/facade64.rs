@@ -164,7 +164,7 @@ pub extern fn real_scale64(vector: Box<DataVector64>, value: f64) -> VectorResul
 
 #[no_mangle]
 pub extern fn real_abs64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
-    convert_vec!(vector.real_abs())
+    convert_vec!(vector.abs())
 }
 
 #[no_mangle]
