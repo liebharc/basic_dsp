@@ -455,7 +455,8 @@ pub trait GenericVectorOperations<T>: DataVector<T>
     /// Calculates the principal value of the inverse hyperbolic tangent of each element in radians.
     fn atanh(self) -> VecResult<Self>;
     
-    /// This function swaps both halves of the vector.
+    /// This function swaps both halves of the vector. This operation is also called fft shift
+    /// Use it after a `plain_fft` to get a spectrum which is centered at `0 Hz`.
 	///
 	/// # Example
 	///
