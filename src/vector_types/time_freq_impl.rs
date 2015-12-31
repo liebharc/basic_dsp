@@ -303,8 +303,11 @@ mod tests {
         let vector = ComplexFreqVector32::from_interleaved(&[0.0, 0.0, 1.5, 0.0]);
         let result = vector.plain_sifft(EvenOdd::Odd).unwrap();
         let expected = &[3.0, -1.5, -1.5];
-        assert_eq!(result.data(), expected);
         assert_eq!(result.is_complex(), false);
+        let result = result.data();
+        for i in 0..result.len() {
+            assert!((result[i] - expected[i]).abs() < 1e-4);
+        }
     }
     
     #[test]
@@ -313,7 +316,10 @@ mod tests {
 		let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
         let result = vector.plain_fft().unwrap();
         let expected = &[21.0, 0.0, -3.0, 5.1961527, -2.9999998, 1.7320508, -3.0, 0.0];
-        assert_eq!(result.data(), expected);
+        let result = result.data();
+        for i in 0..result.len() {
+            assert!((result[i] - expected[i]).abs() < 1e-4);
+        }
 	}
     
     #[test]
