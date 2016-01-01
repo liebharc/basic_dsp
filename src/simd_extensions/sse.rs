@@ -155,7 +155,7 @@ impl Simd<f32> for f32x4
 
 impl Simd<f64> for f64x2
 {
-    fn array_to_regs(array: &[f32]) -> &[Self] {
+    fn array_to_regs(array: &[f64]) -> &[Self] {
         unsafe { 
 			let len = array.len();
             let reg_len = Self::len();
@@ -167,7 +167,7 @@ impl Simd<f64> for f64x2
 		}
     }
     
-    fn array_to_regs_mut(array: &mut [f32]) -> &mut [Self] {
+    fn array_to_regs_mut(array: &mut [f64]) -> &mut [Self] {
         unsafe { 
 			let len = array.len();
             let reg_len = Self::len();
