@@ -1,8 +1,10 @@
 use basic_dsp::{
+    RealNumber,
     DataVector,
     DataVector32, 
     VecResult,
-    RealTimeVector32, 
+    RealTimeVector32,
+    RealTimeVector64,
     ComplexTimeVector32,
     DataVectorDomain};
 use std::boxed::Box;
@@ -36,6 +38,19 @@ fn translate_size(size: Size) -> usize {
 
 impl VectorBox<Vec<f32>> {
     pub fn new(size: Size) -> VectorBox<Vec<f32>>
+    {
+        let size = translate_size(size);
+        let data = vec![0.0; size];
+        VectorBox
+        {
+            vector: Box::into_raw(Box::new(data)),
+            size: size
+        }
+    }
+}
+
+impl VectorBox<Vec<f64>> {
+    pub fn new(size: Size) -> VectorBox<Vec<f64>>
     {
         let size = translate_size(size);
         let data = vec![0.0; size];
@@ -88,6 +103,21 @@ impl VectorBox<RealTimeVector32>
     }
 }
 
+impl VectorBox<RealTimeVector64>
+{
+    pub fn new(size: Size) -> VectorBox<RealTimeVector64>
+    {
+        let size = translate_size(size);
+        let data = vec![0.0; size];
+        let vector = RealTimeVector64::from_array_no_copy(data);
+        VectorBox
+        {
+            vector: Box::into_raw(Box::new(vector)),
+            size: size
+        }
+    }
+}
+
 impl VectorBox<ComplexTimeVector32>
 {
     pub fn new(size: Size) -> VectorBox<ComplexTimeVector32>
@@ -122,9 +152,10 @@ impl<T> VectorBox<T>
         true
     }
     
-    pub fn execute_res<F>(&mut self, function: F) -> bool
+    pub fn execute_res<F, U>(&mut self, function: F) -> bool
         where F: Fn(T) -> VecResult<T> + 'static + Sync,
-        T: DataVector<f32> + Debug
+        T: DataVector<U> + Debug,
+        U: RealNumber
     {
         unsafe {
             let vector = Box::from_raw(self.vector);

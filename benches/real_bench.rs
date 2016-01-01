@@ -6,14 +6,28 @@ mod bench {
         DataVectorDomain,
         GenericVectorOperations,
 		RealVectorOperations,
-		DataVector32, 
+		DataVector32,
 		RealTimeVector32,
+        RealTimeVector64,
         Operation};
 	use num::complex::Complex32;
     use tools::{VectorBox, DEFAULT_DATA_SIZE, Size};
 	
     #[inline(never)]
-	pub fn add_offset_reference(mut array: Vec<f32>, offset: f32) -> Vec<f32>
+	pub fn add_offset_reference32(mut array: Vec<f32>, offset: f32) -> Vec<f32>
+	{
+		let mut i = 0;
+		while i < array.len()
+		{
+			array[i] = array[i] + offset;
+			i += 1;
+		}
+        
+        array
+	}
+    
+    #[inline(never)]
+	pub fn add_offset_reference64(mut array: Vec<f64>, offset: f64) -> Vec<f64>
 	{
 		let mut i = 0;
 		while i < array.len()
@@ -30,7 +44,16 @@ mod bench {
 	{
         let mut vector = VectorBox::<Vec<f32>>::new(Size::Small);
 		b.iter(|| {
-			vector.execute(|v|  { add_offset_reference(v, 100.0) } )
+			vector.execute(|v|  { add_offset_reference32(v, 100.0) } )
+			});
+	}
+    
+    #[bench]
+	fn real_offset_64s_reference(b: &mut Bencher)
+	{
+        let mut vector = VectorBox::<Vec<f64>>::new(Size::Small);
+		b.iter(|| {
+			vector.execute(|v|  { add_offset_reference64(v, 100.0) } )
 			});
 	}
 	
@@ -81,6 +104,15 @@ mod bench {
 	fn real_offset_32l_benchmark(b: &mut Bencher)
 	{
 		let mut vector = VectorBox::<RealTimeVector32>::new(Size::Large);
+		b.iter(|| {
+			vector.execute_res(|v|  { v.real_offset(100.0) } )
+		});
+	}
+    
+    #[bench]
+	fn real_offset_64s_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<RealTimeVector64>::new(Size::Small);
 		b.iter(|| {
 			vector.execute_res(|v|  { v.real_offset(100.0) } )
 		});
