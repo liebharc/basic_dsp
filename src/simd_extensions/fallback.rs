@@ -2,6 +2,7 @@ use simd::f32x4;
 use num::complex::Complex;
 use super::Simd;
 use simd::x86::sse2::f64x2;
+use std::mem;
 
 pub type Reg32 = f32x4;
 
