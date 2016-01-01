@@ -672,6 +672,27 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
 	/// # }
 	/// ```
 	fn complex_scale(self, factor: Complex<T>) -> VecResult<Self>;
+    
+    /// Multiplies each vector element with `exp(j*(a*idx*self.delta() + b))`
+    /// where `a` and `b` are arguments and `idx` is the index of the data points
+    /// in the vector ranging from `0 to self.points() - 1`. `j` is the imaginary number and
+    /// `exp` the exponential function.
+    ///
+    /// This method can be used to perform a frequency shift in time domain.
+    ///
+    /// # Example
+	///
+	/// ```
+    /// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+	/// let result = vector.multiply_complex_exponential(2.0, 3.0).expect("Ignoring error handling in examples");
+    /// let expected = [-1.2722325, -1.838865, 4.6866837, -1.7421241];
+    /// let result = result.data();
+    /// for i in 0..expected.len() {
+    ///     assert!((result[i] - expected[i]).abs() < 1e-4);   
+    /// }
+	/// ```
+    fn multiply_complex_exponential(mut self, a: T, b: T) -> VecResult<Self>;
 	
 	/// Gets the absolute value or magnitude of all vector elements.
 	/// # Example

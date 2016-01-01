@@ -54,8 +54,8 @@ macro_rules! add_basic_private_impl {
                     where A: Sync + Copy,
                         F: Fn(Complex<$data_type>, A) -> Complex<$data_type> + 'static + Sync {
                     {
+                        let length = self.len();
                         let mut array = &mut self.data;
-                        let length = array.len();
                         Chunk::execute_partial(
                             complexity, &self.multicore_settings,
                             &mut array, length, 2, argument,

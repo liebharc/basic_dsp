@@ -17,6 +17,10 @@ macro_rules! define_complex_operations_forward {
                     Self::from_genres(self.to_gen().complex_scale(factor))
                 }
                 
+                fn multiply_complex_exponential(self, a: $data_type, b: $data_type) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().multiply_complex_exponential(a, b))
+                }
+                
                 fn magnitude(self) -> VecResult<Self::RealPartner>
                 {
                     Self::RealPartner::from_genres(self.to_gen().magnitude())

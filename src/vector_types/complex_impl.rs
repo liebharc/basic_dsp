@@ -36,6 +36,25 @@ macro_rules! add_complex_impl {
                     self.simd_complex_operation(|x,y| x.scale_complex(y), |x,y| x * y, factor, Complexity::Small)
                 }
                 
+                fn multiply_complex_exponential(mut self, a: $data_type, b: $data_type) -> VecResult<Self>
+                {
+                    assert_complex!(self);
+                    {
+                        let a = a * self.delta();
+                        let length = self.len();
+                        let array = &mut self.data;
+                        let array = Self::array_to_complex_mut(&mut array[0..length]);
+                        let mut exponential = Complex::<$data_type>::from_polar(&1.0, &b);
+                        let increment = Complex::<$data_type>::from_polar(&1.0, &a);
+                        for complex in array {
+                            *complex = (*complex) * exponential;
+                            exponential = exponential * increment;
+                        }
+                    }
+                    
+                    Ok(self)
+                }
+                
                 fn magnitude(self) -> VecResult<Self>
                 {
                     assert_complex!(self);
