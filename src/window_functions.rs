@@ -41,8 +41,13 @@ pub struct HammingWindow<T>
 impl<T> HammingWindow<T>
     where T: RealNumber {
     /// Createa a new Hamming window
-    pub fn new(alpha: T, beta: T) -> Self {
-        HammingWindow { alpha: alpha, beta: beta }
+    pub fn new(alpha: T) -> Self {
+        HammingWindow { alpha: alpha, beta: (T::one() - alpha) }
+    }
+    
+    /// Creates the default Hamming window as defined in GNU Octave.
+    pub fn default() -> Self {
+        Self::new(T::from(0.54).unwrap())
     }
 }
 
@@ -51,10 +56,11 @@ impl<T> WindowFunction<T> for HammingWindow<T>
     fn window(&self, n: usize, length: usize) -> T {
         let one = T::one();
         let two = T::from(2.0).unwrap();
+        let four = two * two;
         let pi = one.asin();
         let n = T::from(n).unwrap();
         let length = T::from(length).unwrap();
-        self.alpha - self.beta * (two * pi * n / (length - one)).cos()
+        self.alpha - self.beta * (four * pi * n / (length - one)).cos()
     }  
 }
 
@@ -90,8 +96,8 @@ mod tests {
     #[test]
 	fn hamming_window32_test()
 	{
-        let hamming = HammingWindow::<f32>::new(0.54, 0.46);
-        let expected = [0.08000001, 0.21473089, 0.54, 0.8652692, 1.0];
+        let hamming = HammingWindow::<f32>::default();
+        let expected = [0.08, 0.54, 1.0, 0.54, 0.08];
         window_test(hamming, &expected);
 	}
 }
