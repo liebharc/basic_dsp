@@ -1,0 +1,97 @@
+//! This mod contains a definition for window functions and provides implementations for a 
+//! few standard windows. See the `WindowFunction` type for more information.
+use super::RealNumber;
+
+/// A window function for FFT windows. See https://en.wikipedia.org/wiki/Window_function
+/// for details. Window functions should document if they aren't applicable for 
+/// Inverse Fourier Transformations. 
+///
+/// The contract for window functions is as follows:
+///
+/// 1. The second argument is of the function is always `self.points()` and the possible values for the first argument ranges from `0..self.points()`.
+/// 2. A window function must be symmetric about the y-axis.
+/// 3. All real return values are allowed
+pub trait WindowFunction<T> : Sized
+    where T: RealNumber {
+    /// Calculates a point of the window function
+    fn window(&self, n: usize, length: usize) -> T;
+}
+
+/// A triangular window: https://en.wikipedia.org/wiki/Window_function#Triangular_window
+pub struct TriangularWindow;
+impl<T> WindowFunction<T> for TriangularWindow
+    where T: RealNumber {
+    fn window(&self, n: usize, length: usize) -> T {
+        let one = T::one();
+        let two = T::from(2.0).unwrap();
+        let n = T::from(n).unwrap();
+        let length = T::from(length).unwrap();
+        one - ((n - (length - one) / two) / (length / two)).abs()    
+    } 
+}
+
+/// A generalized Hamming window: https://en.wikipedia.org/wiki/Window_function#Hamming_window
+#[repr(C)]
+pub struct HammingWindow<T>
+    where T: RealNumber {
+    pub alpha: T,
+    pub beta: T
+}
+
+impl<T> HammingWindow<T>
+    where T: RealNumber {
+    /// Createa a new Hamming window
+    pub fn new(alpha: T, beta: T) -> Self {
+        HammingWindow { alpha: alpha, beta: beta }
+    }
+}
+
+impl<T> WindowFunction<T> for HammingWindow<T> 
+    where T: RealNumber {
+    fn window(&self, n: usize, length: usize) -> T {
+        let one = T::one();
+        let two = T::from(2.0).unwrap();
+        let pi = one.asin();
+        let n = T::from(n).unwrap();
+        let length = T::from(length).unwrap();
+        self.alpha - self.beta * (two * pi * n / (length - one)).cos()
+    }  
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+    use super::super::RealNumber;
+    use std::fmt::Debug;
+    
+    fn window_test<T, W>(window: W, expected: &[T]) 
+        where T: RealNumber + Debug,
+              W: WindowFunction<T> {
+        let mut result = vec![T::zero(); expected.len()];
+        for i in 0..result.len() {
+            result[i] = window.window(i, result.len());
+        }
+        
+        for i in 0..result.len() {
+            if (result[i] - expected[i]).abs() > T::from(1e-4).unwrap() {
+                panic!("assertion failed: {:?} != {:?}", result, expected);
+            }
+        }
+    }
+
+	#[test]
+	fn triangular_window32_test()
+	{
+        let window = TriangularWindow;
+        let expected = [0.2, 0.6, 1.0, 0.6, 0.2];
+        window_test(window, &expected);
+	}
+    
+    #[test]
+	fn hamming_window32_test()
+	{
+        let hamming = HammingWindow::<f32>::new(0.54, 0.46);
+        let expected = [0.08000001, 0.21473089, 0.54, 0.8652692, 1.0];
+        window_test(hamming, &expected);
+	}
+}

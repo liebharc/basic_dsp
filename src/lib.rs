@@ -29,6 +29,7 @@ mod vector_types;
 mod multicore_support;
 mod simd_extensions;
 mod complex_extensions;
+pub mod window_functions;
 pub mod interop_facade;
 pub use vector_types::
 	{
