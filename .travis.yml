@@ -17,7 +17,7 @@ script:
   travis-cargo build &&
   travis-cargo test -- --features slow_test &&
   travis-cargo bench &&
-  travis-cargo doc
+  travis-cargo doc -- --features doc
 
 after_success:
   - travis-cargo doc-upload
