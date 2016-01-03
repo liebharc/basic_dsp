@@ -7,40 +7,20 @@ use RealNumber;
 use num::traits::Zero;
 use num::complex::{Complex, Complex32,Complex64};
 
-/// The domain of a convolution.
-/// Convolutions in this library can be defined in time or frequency domain. In
-/// frequency domain the convolution is automatically transformed into a multiplication
-/// which is the analog operation to a convolution in time domain.
-#[derive(Copy)]
-#[derive(Clone)]
-#[derive(PartialEq)]
-#[derive(Debug)]
-pub enum ConvDomain {
-	/// Time domain, the x-axis is in [s]
-	Time,
-	/// Frequency domain, the x-axis in in [Hz]
-    Frequency
-}
-
-/// Meta information about the convolution.
-pub trait ConvInfo {
-    fn domain(&self) -> ConvDomain;
-}
-
 /// A convolution function in time domain and real number space
-pub trait RealTimeConvFunction<T> : ConvInfo
+pub trait RealTimeConvFunction<T>
     where T: RealNumber {
     fn calc(&self, x: T) -> T;
 }
 
 /// A convolution function in time domain and complex number space
-pub trait ComplexTimeConvFunction<T> : ConvInfo
+pub trait ComplexTimeConvFunction<T>
     where T: RealNumber {
     fn calc(&self, x: T) -> Complex<T>;
 }
 
 /// A convolution function in frequency domain and complex number space
-pub trait ComplexFrequencyConvFunction<T> : ConvInfo
+pub trait ComplexFrequencyConvFunction<T>
     where T: RealNumber {
     fn calc(&self, x: T) -> Complex<T>;
 }
@@ -50,7 +30,6 @@ pub trait ComplexFrequencyConvFunction<T> : ConvInfo
 pub struct RealTimeLinearTableLookup<T>
     where T: RealNumber {
     table: Vec<T>,
-    domain: ConvDomain,
     delta: T,
     offset: T
 }
@@ -60,7 +39,6 @@ pub struct RealTimeLinearTableLookup<T>
 pub struct ComplexTimeLinearTableLookup<T>
     where T: RealNumber {
     table: Vec<Complex<T>>,
-    domain: ConvDomain,
     delta: T,
     offset: T
 }
@@ -70,7 +48,6 @@ pub struct ComplexTimeLinearTableLookup<T>
 pub struct ComplexFrequencyLinearTableLookup<T>
     where T: RealNumber {
     table: Vec<Complex<T>>,
-    domain: ConvDomain,
     delta: T,
     offset: T
 }
@@ -79,12 +56,6 @@ macro_rules! add_linear_table_lookup_impl {
     ($($name: ident: $conv_type: ident, $($data_type: ident, $result_type:ident),*);*) => {
         $(            
             $(
-                impl ConvInfo for $name<$data_type> {               
-                    fn domain(&self) -> ConvDomain {
-                        self.domain
-                    }
-                }
-
                 impl $conv_type<$data_type> for $name<$data_type> {                
                     fn calc(&self, x: $data_type) -> $result_type {
                         let len = self.table.len();
@@ -125,9 +96,9 @@ macro_rules! add_linear_table_lookup_impl {
                 }
 
                 impl $name<$data_type> {               
-                    pub fn from_raw_parts(table: &[$result_type], domain: ConvDomain, delta: $data_type, offset: $data_type) -> Self {
+                    pub fn from_raw_parts(table: &[$result_type], delta: $data_type, offset: $data_type) -> Self {
                         let owned_table = Vec::from(table);
-                        $name { table: owned_table, domain: domain, delta: delta, offset: offset }
+                        $name { table: owned_table, delta: delta, offset: offset }
                     }
                     
                     pub fn from_conv_function(other: &$conv_type<$data_type>, delta: $data_type, offset: $data_type, len: usize) -> Self {
@@ -138,7 +109,7 @@ macro_rules! add_linear_table_lookup_impl {
                             *n = other.calc((i as $data_type) * delta);
                             i += 1;
                         }
-                        $name { table: table, domain: other.domain(), delta: delta, offset: offset }
+                        $name { table: table, delta: delta, offset: offset }
                     }
                 }
             )*
@@ -154,13 +125,6 @@ add_linear_table_lookup_impl!(
 pub struct  RaiseCosineFuncton<T>
     where T: RealNumber {
     rolloff: T        
-}
-
-impl<T> ConvInfo for RaiseCosineFuncton<T>
-    where T: RealNumber {
-    fn domain(&self) -> ConvDomain {
-        ConvDomain::Time
-    }
 }
 
 impl<T> RealTimeConvFunction<T> for RaiseCosineFuncton<T> 
