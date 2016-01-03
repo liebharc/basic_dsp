@@ -30,6 +30,7 @@ mod multicore_support;
 mod simd_extensions;
 mod complex_extensions;
 pub mod window_functions;
+pub mod conv_types;
 pub mod interop_facade;
 pub use vector_types::
 	{
@@ -68,6 +69,7 @@ pub use vector_types::
  pub use multicore_support::MultiCoreSettings;
  use num::traits::Float;   
  
+ /// A real floating pointer number intended to abstract over `f32` and `f64`.
  pub trait RealNumber : Float + Copy + Clone + Send + Sync { }
  impl<T> RealNumber for T
   where T: Float + Copy + Clone + Send + Sync {}

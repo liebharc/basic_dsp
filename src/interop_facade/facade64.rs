@@ -1,4 +1,5 @@
 // Auto generated code, change facade32.rs and run facade64_create.pl
+//! Functions for 64bit floating point number based vectors. Please refer to the other chapters of the help for documentation of the functions.
 use super::*;
 use vector_types:: {
 		DataVectorDomain,
@@ -54,8 +55,10 @@ pub extern fn is_complex64(vector: &DataVector64) -> i32 {
 }
 
 /// Returns the vector domain as integer:
-/// 0 for time domain
-/// 1 for frequency domain
+///
+/// 1. `0` for [`DataVectorDomain::Time`](../../enum.DataVectorDomain.html) 
+/// 2. `1` for [`DataVectorDomain::Frequency`](../../enum.DataVectorDomain.html)
+/// 
 /// if the function returns another value then please report a bug.
 #[no_mangle]
 pub extern fn get_domain64(vector: &DataVector64) -> i32 {
@@ -457,48 +460,63 @@ pub extern fn ifft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
     convert_vec!(vector.ifft())
 }
 
+/// `even_odd` is translated according to:
+/// 
+/// 1. `0` to [`EvenOdd::Even`](../../enum.EvenOdd.html) 
+/// 2. `1` to [`EvenOdd::Odd`](../../enum.EvenOdd.html)
 #[no_mangle]
 pub extern fn plain_sifft64(vector: Box<DataVector64>, even_odd: i32) -> VectorResult<DataVector64> {
     let even_odd = translate_to_even_odd(even_odd);
     convert_vec!(vector.plain_sifft(even_odd))
 }
 
+/// See [`plain_sifft64`](fn.plain_sifft64.html) for a description of the `even_odd` parameter.
 #[no_mangle]
 pub extern fn sifft64(vector: Box<DataVector64>, even_odd: i32) -> VectorResult<DataVector64> {
     let even_odd = translate_to_even_odd(even_odd);
     convert_vec!(vector.sifft(even_odd))
 }
 
+/// See [`plain_sifft64`](fn.plain_sifft64.html) for a description of the `even_odd` parameter.
 #[no_mangle]
 pub extern fn mirror64(vector: Box<DataVector64>, even_odd: i32) -> VectorResult<DataVector64> {
     let even_odd = translate_to_even_odd(even_odd);
     convert_vec!(vector.mirror(even_odd))
 }
 
+/// `window` argument is translated to:
+/// 
+/// 1. `0` to [`TriangularWindow`](../../window_functions/struct.TriangularWindow.html)
+/// 2. `1` to [`HammingWindow`](../../window_functions/struct.TriangularWindow.html)
 #[no_mangle]
 pub extern fn apply_window64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.apply_window(window.as_ref()))
 }
 
+/// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
 #[no_mangle]
 pub extern fn unapply_window64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.unapply_window(window.as_ref()))
 }
 
+/// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
 #[no_mangle]
 pub extern fn windowed_fft64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.windowed_fft(window.as_ref()))
 }
 
+/// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
 #[no_mangle]
 pub extern fn windowed_ifft64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.windowed_ifft(window.as_ref()))
 }
 
+/// See [`plain_sifft64`](fn.plain_sifft64.html) for a description of the `even_odd` parameter.
+/// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
 #[no_mangle]
 pub extern fn windowed_sifft64(vector: Box<DataVector64>, even_odd: i32, window: i32) -> VectorResult<DataVector64> {
     let even_odd = translate_to_even_odd(even_odd);
@@ -518,30 +536,37 @@ impl WindowFunction<f64> for ForeignWindowFunction {
     }
 }
 
+/// Creates a window from the function `window` and the void pointer `window_data`. The `window_data` pointer is passed to the `window`
+/// function at every call and can be used to store parameters.
 #[no_mangle]
 pub extern fn apply_custom_window64(vector: Box<DataVector64>, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
     let window = ForeignWindowFunction { window_function: window, window_data: window_data };
     convert_vec!(vector.apply_window(&window))
 }
 
+/// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
 pub extern fn unapply_custom_window64(vector: Box<DataVector64>, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
     let window = ForeignWindowFunction { window_function: window, window_data: window_data };
     convert_vec!(vector.unapply_window(&window))
 }
 
+/// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
 pub extern fn windowed_custom_fft64(vector: Box<DataVector64>, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
     let window = ForeignWindowFunction { window_function: window, window_data: window_data };
     convert_vec!(vector.windowed_fft(&window))
 }
 
+/// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
 pub extern fn windowed_custom_ifft64(vector: Box<DataVector64>, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
     let window = ForeignWindowFunction { window_function: window, window_data: window_data };
     convert_vec!(vector.windowed_ifft(&window))
 }
 
+/// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
+/// See [`plain_sifft64`](fn.plain_sifft64.html) for a description of the `even_odd` parameter.
 #[no_mangle]
 pub extern fn windowed_custom_sifft64(vector: Box<DataVector64>, even_odd: i32, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
     let even_odd = translate_to_even_odd(even_odd);

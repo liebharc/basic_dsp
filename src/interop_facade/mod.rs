@@ -1,5 +1,5 @@
 //! Clients using other programming languages should use the functions
-//! in this mod. Please refer to the other chapters of the help for documentation of the functions
+//! in this mod. Please refer to the other chapters of the help for documentation of the functions.
 macro_rules! convert_vec {
     ($operation: expr) => {
         {

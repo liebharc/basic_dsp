@@ -15,8 +15,11 @@ while (<FACADE32>) {
     chomp $line;
     $line =~ s/(\w+)Vector32/$1Vector64/g;
     $line =~ s/f32/f64/g;
+    $line =~ s/32bit/64bit/g;
     $line =~ s/Complex32/Complex64/g;
     $line =~ s/^pub extern fn (\w+)32/pub extern fn ${1}64/;
+    $line =~ s/fn.(\w+)32.html/fn.${1}64.html/;
+    $line =~ s/`(\w+)32`/`${1}64`/;
     print FACADE64 "$line\n";
 }
 close FACADE32;

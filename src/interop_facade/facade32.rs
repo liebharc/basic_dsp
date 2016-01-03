@@ -1,3 +1,4 @@
+//! Functions for 32bit floating point number based vectors. Please refer to the other chapters of the help for documentation of the functions.
 use super::*;
 use vector_types:: {
 		DataVectorDomain,
@@ -53,8 +54,10 @@ pub extern fn is_complex32(vector: &DataVector32) -> i32 {
 }
 
 /// Returns the vector domain as integer:
-/// 0 for time domain
-/// 1 for frequency domain
+///
+/// 1. `0` for [`DataVectorDomain::Time`](../../enum.DataVectorDomain.html) 
+/// 2. `1` for [`DataVectorDomain::Frequency`](../../enum.DataVectorDomain.html)
+/// 
 /// if the function returns another value then please report a bug.
 #[no_mangle]
 pub extern fn get_domain32(vector: &DataVector32) -> i32 {
@@ -456,48 +459,63 @@ pub extern fn ifft32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
     convert_vec!(vector.ifft())
 }
 
+/// `even_odd` is translated according to:
+/// 
+/// 1. `0` to [`EvenOdd::Even`](../../enum.EvenOdd.html) 
+/// 2. `1` to [`EvenOdd::Odd`](../../enum.EvenOdd.html)
 #[no_mangle]
 pub extern fn plain_sifft32(vector: Box<DataVector32>, even_odd: i32) -> VectorResult<DataVector32> {
     let even_odd = translate_to_even_odd(even_odd);
     convert_vec!(vector.plain_sifft(even_odd))
 }
 
+/// See [`plain_sifft32`](fn.plain_sifft32.html) for a description of the `even_odd` parameter.
 #[no_mangle]
 pub extern fn sifft32(vector: Box<DataVector32>, even_odd: i32) -> VectorResult<DataVector32> {
     let even_odd = translate_to_even_odd(even_odd);
     convert_vec!(vector.sifft(even_odd))
 }
 
+/// See [`plain_sifft32`](fn.plain_sifft32.html) for a description of the `even_odd` parameter.
 #[no_mangle]
 pub extern fn mirror32(vector: Box<DataVector32>, even_odd: i32) -> VectorResult<DataVector32> {
     let even_odd = translate_to_even_odd(even_odd);
     convert_vec!(vector.mirror(even_odd))
 }
 
+/// `window` argument is translated to:
+/// 
+/// 1. `0` to [`TriangularWindow`](../../window_functions/struct.TriangularWindow.html)
+/// 2. `1` to [`HammingWindow`](../../window_functions/struct.TriangularWindow.html)
 #[no_mangle]
 pub extern fn apply_window32(vector: Box<DataVector32>, window: i32) -> VectorResult<DataVector32> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.apply_window(window.as_ref()))
 }
 
+/// See [`apply_window32`](fn.apply_window32.html) for a description of the `window` parameter.
 #[no_mangle]
 pub extern fn unapply_window32(vector: Box<DataVector32>, window: i32) -> VectorResult<DataVector32> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.unapply_window(window.as_ref()))
 }
 
+/// See [`apply_window32`](fn.apply_window32.html) for a description of the `window` parameter.
 #[no_mangle]
 pub extern fn windowed_fft32(vector: Box<DataVector32>, window: i32) -> VectorResult<DataVector32> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.windowed_fft(window.as_ref()))
 }
 
+/// See [`apply_window32`](fn.apply_window32.html) for a description of the `window` parameter.
 #[no_mangle]
 pub extern fn windowed_ifft32(vector: Box<DataVector32>, window: i32) -> VectorResult<DataVector32> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.windowed_ifft(window.as_ref()))
 }
 
+/// See [`plain_sifft32`](fn.plain_sifft32.html) for a description of the `even_odd` parameter.
+/// See [`apply_window32`](fn.apply_window32.html) for a description of the `window` parameter.
 #[no_mangle]
 pub extern fn windowed_sifft32(vector: Box<DataVector32>, even_odd: i32, window: i32) -> VectorResult<DataVector32> {
     let even_odd = translate_to_even_odd(even_odd);
@@ -517,30 +535,37 @@ impl WindowFunction<f32> for ForeignWindowFunction {
     }
 }
 
+/// Creates a window from the function `window` and the void pointer `window_data`. The `window_data` pointer is passed to the `window`
+/// function at every call and can be used to store parameters.
 #[no_mangle]
 pub extern fn apply_custom_window32(vector: Box<DataVector32>, window: extern fn(*const c_void, usize, usize) -> f32, window_data: *const c_void) -> VectorResult<DataVector32> {
     let window = ForeignWindowFunction { window_function: window, window_data: window_data };
     convert_vec!(vector.apply_window(&window))
 }
 
+/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
 pub extern fn unapply_custom_window32(vector: Box<DataVector32>, window: extern fn(*const c_void, usize, usize) -> f32, window_data: *const c_void) -> VectorResult<DataVector32> {
     let window = ForeignWindowFunction { window_function: window, window_data: window_data };
     convert_vec!(vector.unapply_window(&window))
 }
 
+/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
 pub extern fn windowed_custom_fft32(vector: Box<DataVector32>, window: extern fn(*const c_void, usize, usize) -> f32, window_data: *const c_void) -> VectorResult<DataVector32> {
     let window = ForeignWindowFunction { window_function: window, window_data: window_data };
     convert_vec!(vector.windowed_fft(&window))
 }
 
+/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
 pub extern fn windowed_custom_ifft32(vector: Box<DataVector32>, window: extern fn(*const c_void, usize, usize) -> f32, window_data: *const c_void) -> VectorResult<DataVector32> {
     let window = ForeignWindowFunction { window_function: window, window_data: window_data };
     convert_vec!(vector.windowed_ifft(&window))
 }
 
+/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.
+/// See [`plain_sifft32`](fn.plain_sifft32.html) for a description of the `even_odd` parameter.
 #[no_mangle]
 pub extern fn windowed_custom_sifft32(vector: Box<DataVector32>, even_odd: i32, window: extern fn(*const c_void, usize, usize) -> f32, window_data: *const c_void) -> VectorResult<DataVector32> {
     let even_odd = translate_to_even_odd(even_odd);
