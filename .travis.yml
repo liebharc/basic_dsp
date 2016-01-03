@@ -16,9 +16,8 @@ script:
 - |
   cargo build &&
   cargo test --features slow_test &&
-  travis-cargo doc
-# Deactivated: cargo bench &&
-# bench runs fine on my Windows and Linux machine but panics on Travis 
+  travis-cargo doc &&
+  cargo bench
 
 after_success:
   # upload the documentation from the build with stable (automatically only actually
