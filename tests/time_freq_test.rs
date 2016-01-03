@@ -34,8 +34,8 @@ mod slow_test {
     fn window_real_vs_complex_vector64() {
         let vector = new_sinusoid_vector();
         let complex = vector.clone().to_complex().unwrap();
-        let complex_windowed = complex.apply_window(HammingWindow::default()).unwrap();
-        let real_windowed = vector.apply_window(HammingWindow::default()).unwrap();
+        let complex_windowed = complex.apply_window(&HammingWindow::default()).unwrap();
+        let real_windowed = vector.apply_window(&HammingWindow::default()).unwrap();
         assert_eq!(real_windowed.data(), complex_windowed.to_real().unwrap().data());
     }
     
@@ -62,7 +62,7 @@ mod slow_test {
     fn windowed_fft_vector64() {
         let vector = new_sinusoid_vector();
         let complex = vector.to_complex().unwrap();
-        let fft = complex.windowed_fft(HammingWindow::default()).unwrap().magnitude().unwrap();
+        let fft = complex.windowed_fft(&HammingWindow::default()).unwrap().magnitude().unwrap();
         // Expected data has been created with GNU Octave
         let expected: &[f64] = &[0.07411808515197066, 0.07422272322333621, 0.07453841468679659, 0.07506988195440296, 0.07582541343880053, 
             0.07681696328361777, 0.07806061998281554, 0.07957802869766938, 0.08139483126598358, 0.08354572044699357, 0.0860733404576818, 
@@ -91,8 +91,8 @@ mod slow_test {
     fn windowed_fft_windowed_ifft_vector64() {
         let vector = new_sinusoid_vector();
         let complex = vector.clone().to_complex().unwrap();
-        let fft = complex.windowed_fft(HammingWindow::default()).unwrap();
-        let ifft = fft.windowed_ifft(HammingWindow::default()).unwrap().to_real().unwrap();
+        let fft = complex.windowed_fft(&HammingWindow::default()).unwrap();
+        let ifft = fft.windowed_ifft(&HammingWindow::default()).unwrap().to_real().unwrap();
         assert_vector_eq(vector.data(), ifft.data());   
     }
     

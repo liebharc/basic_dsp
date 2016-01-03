@@ -41,6 +41,8 @@ pub mod facade64;
 use vector_types::{
     ErrorReason,
     EvenOdd};
+use window_functions::*;
+use RealNumber;
 
 pub fn translate_error(reason: ErrorReason) -> i32 {
     match reason {
@@ -56,6 +58,15 @@ pub fn translate_error(reason: ErrorReason) -> i32 {
 
 pub fn translate_to_even_odd(value: i32) -> EvenOdd {
     if value != 0 { EvenOdd::Odd } else { EvenOdd::Even }
+}
+
+pub fn translate_to_window_function<T>(value: i32) -> Box<WindowFunction<T>> 
+    where T: RealNumber {
+    if value == 0 {
+        Box::new(TriangularWindow)
+    } else {
+        Box::new(TriangularWindow)
+    }
 }
 
 /// Result of a vector operation. Check the ```result_code```.

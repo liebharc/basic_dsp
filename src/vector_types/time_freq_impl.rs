@@ -78,13 +78,13 @@ pub trait TimeDomainOperations<T> : DataVector<T>
     
     /// Applies a FFT window and performs a Fast Fourier Transformation transforming a time domain vector
 	/// into a frequency domain vector. 
-    fn windowed_fft<W>(self, window: W) -> VecResult<Self::FreqPartner> where W: WindowFunction<T>;
+    fn windowed_fft(self, window: &WindowFunction<T>) -> VecResult<Self::FreqPartner>;
     
     /// Applies a window to the data vector.
-    fn apply_window<W>(self, window: W) -> VecResult<Self> where W: WindowFunction<T>;
+    fn apply_window(self, window: &WindowFunction<T>) -> VecResult<Self>;
     
     /// Removes a window from the data vector.
-    fn unapply_window<W>(self, window: W) -> VecResult<Self> where W: WindowFunction<T>;
+    fn unapply_window(self, window: &WindowFunction<T>) -> VecResult<Self>;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing complex data.
@@ -170,7 +170,7 @@ pub trait FrequencyDomainOperations<T> : DataVector<T>
     
     /// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
 	/// into a time domain vector and removes the FFT window.
-    fn windowed_ifft<W>(self, window: W) -> VecResult<Self::ComplexTimePartner> where W: WindowFunction<T>;
+    fn windowed_ifft(self, window: &WindowFunction<T>) -> VecResult<Self::ComplexTimePartner>;
     
     /// Performs a Symmetric Inverse Fast Fourier Transformation (SIFFT) and removes the FFT window. 
     /// The SIFFT is performed under the assumption that `self`
@@ -181,7 +181,7 @@ pub trait FrequencyDomainOperations<T> : DataVector<T>
     /// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1` points.
     /// # Unstable
     /// Symmetric IFFTs are unstable and may only work under certain conditions.
-    fn windowed_sifft<W>(self, even_odd: EvenOdd, window: W) -> VecResult<Self::RealTimePartner> where W: WindowFunction<T>;
+    fn windowed_sifft(self, even_odd: EvenOdd, window: &WindowFunction<T>) -> VecResult<Self::RealTimePartner>;
 }
 
 macro_rules! define_time_domain_forward {
@@ -193,11 +193,11 @@ macro_rules! define_time_domain_forward {
                     Self::FreqPartner::from_genres(self.to_gen().plain_fft())
                 }
                 
-                fn apply_window<W>(self, window: W) -> VecResult<Self> where W: WindowFunction<$data_type> {
+                fn apply_window(self, window: &WindowFunction<$data_type>) -> VecResult<Self> {
                     Self::from_genres(self.to_gen().apply_window(window))
                 }
     
-                fn unapply_window<W>(self, window: W) -> VecResult<Self> where W: WindowFunction<$data_type> {
+                fn unapply_window(self, window: &WindowFunction<$data_type>) -> VecResult<Self> {
                     Self::from_genres(self.to_gen().unapply_window(window))
                 }
                 
@@ -205,7 +205,7 @@ macro_rules! define_time_domain_forward {
                     Self::FreqPartner::from_genres(self.to_gen().fft())
                 }
                 
-                fn windowed_fft<W>(self, window: W) -> VecResult<Self::FreqPartner> where W: WindowFunction<$data_type> {
+                fn windowed_fft(self, window: &WindowFunction<$data_type>) -> VecResult<Self::FreqPartner> {
                     Self::FreqPartner::from_genres(self.to_gen().windowed_fft(window))
                 }
             }
@@ -216,7 +216,7 @@ macro_rules! define_time_domain_forward {
 macro_rules! implement_window_function {
     ($($name:ident, $data_type:ident, $operation: ident);*) => {
         $( 
-            fn $name<W>(mut self, window: W) -> VecResult<Self> where W: WindowFunction<$data_type> {
+            fn $name(mut self, window: &WindowFunction<$data_type>) -> VecResult<Self> {
                     assert_time!(self);
                     if self.is_complex {
                         let len = self.len();
@@ -284,7 +284,7 @@ macro_rules! add_time_freq_impl {
                     .and_then(|v|v.swap_halves())
                 }
                 
-                fn windowed_fft<W>(self, window: W) -> VecResult<Self::FreqPartner> where W: WindowFunction<$data_type> {
+                fn windowed_fft(self, window: &WindowFunction<$data_type>) -> VecResult<Self::FreqPartner> {
                     self.apply_window(window)
                     .and_then(|v|v.plain_fft())
                     .and_then(|v|v.swap_halves())
@@ -374,7 +374,7 @@ macro_rules! add_time_freq_impl {
                     .and_then(|v| v.plain_sifft(even_odd))
                 }
                 
-                fn windowed_ifft<W>(self, window: W) -> VecResult<Self::ComplexTimePartner> where W: WindowFunction<$data_type> {
+                fn windowed_ifft(self, window: &WindowFunction<$data_type>) -> VecResult<Self::ComplexTimePartner> {
                     let points = self.points();
                     self.real_scale(1.0 / points as $data_type)
                     .and_then(|v| v.swap_halves())
@@ -382,7 +382,7 @@ macro_rules! add_time_freq_impl {
                     .and_then(|v|v.unapply_window(window))
                 }
                 
-                fn windowed_sifft<W>(self, even_odd: EvenOdd, window: W) -> VecResult<Self::RealTimePartner> where W: WindowFunction<$data_type> {
+                fn windowed_sifft(self, even_odd: EvenOdd, window: &WindowFunction<$data_type>) -> VecResult<Self::RealTimePartner> {
                     let points = self.points();
                     self.real_scale(1.0 / points as $data_type)
                     .and_then(|v| v.swap_halves())
@@ -414,11 +414,11 @@ macro_rules! add_time_freq_impl {
                     Self::RealTimePartner::from_genres(self.to_gen().sifft(even_odd))
                 }
                 
-                fn windowed_ifft<W>(self, window: W) -> VecResult<Self::ComplexTimePartner> where W: WindowFunction<$data_type> {
+                fn windowed_ifft(self, window: &WindowFunction<$data_type>) -> VecResult<Self::ComplexTimePartner> {
                     Self::ComplexTimePartner::from_genres(self.to_gen().windowed_ifft(window))
                 }
                 
-                fn windowed_sifft<W>(self, even_odd: EvenOdd, window: W) -> VecResult<Self::RealTimePartner> where W: WindowFunction<$data_type> {
+                fn windowed_sifft(self, even_odd: EvenOdd, window: &WindowFunction<$data_type>) -> VecResult<Self::RealTimePartner> {
                     Self::RealTimePartner::from_genres(self.to_gen().windowed_sifft(even_odd, window))
                 }
             }

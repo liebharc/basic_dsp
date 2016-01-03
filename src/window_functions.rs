@@ -11,7 +11,7 @@ use super::RealNumber;
 /// 1. The second argument is of the function is always `self.points()` and the possible values for the first argument ranges from `0..self.points()`.
 /// 2. A window function must be symmetric about the y-axis.
 /// 3. All real return values are allowed
-pub trait WindowFunction<T> : Sized
+pub trait WindowFunction<T>
     where T: RealNumber {
     /// Calculates a point of the window function
     fn window(&self, n: usize, length: usize) -> T;

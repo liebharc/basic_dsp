@@ -471,3 +471,35 @@ pub extern fn mirror32(vector: Box<DataVector32>, even_odd: i32) -> VectorResult
     let even_odd = translate_to_even_odd(even_odd);
     convert_vec!(vector.mirror(even_odd))
 }
+
+#[no_mangle]
+pub extern fn apply_window32(vector: Box<DataVector32>, window: i32) -> VectorResult<DataVector32> {
+    let window = translate_to_window_function(window);
+    convert_vec!(vector.apply_window(window.as_ref()))
+}
+
+#[no_mangle]
+pub extern fn unapply_window32(vector: Box<DataVector32>, window: i32) -> VectorResult<DataVector32> {
+    let window = translate_to_window_function(window);
+    convert_vec!(vector.unapply_window(window.as_ref()))
+}
+
+
+#[no_mangle]
+pub extern fn windowed_fft32(vector: Box<DataVector32>, window: i32) -> VectorResult<DataVector32> {
+    let window = translate_to_window_function(window);
+    convert_vec!(vector.windowed_fft(window.as_ref()))
+}
+
+#[no_mangle]
+pub extern fn windowed_ifft32(vector: Box<DataVector32>, window: i32) -> VectorResult<DataVector32> {
+    let window = translate_to_window_function(window);
+    convert_vec!(vector.windowed_ifft(window.as_ref()))
+}
+
+#[no_mangle]
+pub extern fn windowed_sifft32(vector: Box<DataVector32>, even_odd: i32, window: i32) -> VectorResult<DataVector32> {
+    let even_odd = translate_to_even_odd(even_odd);
+    let window = translate_to_window_function(window);
+    convert_vec!(vector.windowed_sifft(even_odd, window.as_ref()))
+}
