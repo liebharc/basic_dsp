@@ -56,11 +56,10 @@ impl<T> WindowFunction<T> for HammingWindow<T>
     fn window(&self, n: usize, length: usize) -> T {
         let one = T::one();
         let two = T::from(2.0).unwrap();
-        let four = two * two;
-        let pi = one.asin();
+        let pi = two * one.asin();
         let n = T::from(n).unwrap();
         let length = T::from(length).unwrap();
-        self.alpha - self.beta * (four * pi * n / (length - one)).cos()
+        self.alpha - self.beta * (two * pi * n / (length - one)).cos()
     }  
 }
 
