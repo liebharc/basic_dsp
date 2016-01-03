@@ -23,7 +23,7 @@ use vector_types::
 use num::complex::Complex64;
 
 #[no_mangle]
-pub fn delete_vector64(vector: Box<DataVector64>) {
+pub extern fn delete_vector64(vector: Box<DataVector64>) {
     drop(vector);
 }
  
@@ -364,4 +364,9 @@ pub extern fn plain_ifft64(vector: Box<DataVector64>) -> VectorResult<DataVector
 #[no_mangle]
 pub extern fn clone64(vector: Box<DataVector64>) -> Box<DataVector64> {
     vector.clone()
+}
+
+#[no_mangle]
+pub extern fn multiply_complex_exponential64(vector: Box<DataVector64>, a: f64, b: f64) -> VectorResult<DataVector64> {
+    convert_vec!(vector.multiply_complex_exponential(a, b))
 }

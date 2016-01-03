@@ -23,7 +23,7 @@ use vector_types::
 use num::complex::Complex32;
 
 #[no_mangle]
-pub fn delete_vector32(vector: Box<DataVector32>) {
+pub extern fn delete_vector32(vector: Box<DataVector32>) {
     drop(vector);
 }
  
@@ -364,4 +364,9 @@ pub extern fn plain_ifft32(vector: Box<DataVector32>) -> VectorResult<DataVector
 #[no_mangle]
 pub extern fn clone32(vector: Box<DataVector32>) -> Box<DataVector32> {
     vector.clone()
+}
+
+#[no_mangle]
+pub extern fn multiply_complex_exponential32(vector: Box<DataVector32>, a: f32, b: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.multiply_complex_exponential(a, b))
 }

@@ -10,12 +10,15 @@ use basic_dsp::{
 use std::ops::Range;
 use num::complex::Complex32;
 use std::panic;
+use std::fmt::{Display, Debug};
 
-pub fn assert_vector_eq_with_reason(left: &[f32], right: &[f32], reason: &str) {
-    assert_vector_eq_with_reason_and_tolerance(left, right, 1e-6, reason);
+pub fn assert_vector_eq_with_reason<T>(left: &[T], right: &[T], reason: &str) 
+    where T: RealNumber + Debug + Display {
+    assert_vector_eq_with_reason_and_tolerance(left, right, T::from(1e-6).unwrap(), reason);
 }
 
-pub fn assert_vector_eq_with_reason_and_tolerance(left: &[f32], right: &[f32], tolerance: f32, reason: &str) {
+pub fn assert_vector_eq_with_reason_and_tolerance<T>(left: &[T], right: &[T], tolerance: T, reason: &str)
+    where T: RealNumber + Debug + Display  {
     let mut errors = Vec::new();
     if reason.len() > 0
     {
@@ -57,7 +60,8 @@ pub fn assert_vector_eq_with_reason_and_tolerance(left: &[f32], right: &[f32], t
     }
 }
     
-pub fn assert_vector_eq(left: &[f32], right: &[f32]) {
+pub fn assert_vector_eq<T>(left: &[T], right: &[T]) 
+    where T: RealNumber + Debug + Display {
     assert_vector_eq_with_reason(left, right, "");
 }
 

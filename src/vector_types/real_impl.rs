@@ -31,7 +31,7 @@ macro_rules! add_real_impl {
                 
                 fn real_scale(self, factor: $data_type) -> VecResult<Self>
                 {
-                    assert_real!(self);
+                    // This operation actually also works for complex vectors so we allow that
                     self.simd_real_operation(|x, y| x.scale_real(y), |x, y| x * y, factor, Complexity::Small)
                 }
                 
