@@ -109,6 +109,12 @@ pub trait Offset<T> : Sized
 pub trait GenericVectorOperations<T>: DataVector<T> 
     where T : RealNumber {
 	/// Calculates the sum of `self + summand`. It consumes self and returns the result.
+    /// # Failures
+    /// VecResult may report the following `ErrorReason` members:
+    /// 
+    /// 1. `VectorsMustHaveTheSameSize`: `self` and `summand` must have the same size
+    /// 2. `VectorMetaDataMustAgree`: `self` and `summand` must be in the same domain and number space
+    /// 
 	/// # Example
 	///
 	/// ```
@@ -124,6 +130,12 @@ pub trait GenericVectorOperations<T>: DataVector<T>
     /// as `self.len() % summand.len() == 0`. THe result is the same as it would be if 
     /// you would repeat `summand` until it has the same length as `self`.
     /// It consumes self and returns the result.
+    /// # Failures
+    /// VecResult may report the following `ErrorReason` members:
+    /// 
+    /// 1. `InvalidArgumentLength`: `self.points()` isn't dividable by `summand.points()`
+    /// 2. `VectorMetaDataMustAgree`: `self` and `summand` must be in the same domain and number space
+    /// 
 	/// # Example
 	///
 	/// ```
@@ -136,6 +148,12 @@ pub trait GenericVectorOperations<T>: DataVector<T>
 	fn add_smaller_vector(self, summand: &Self) -> VecResult<Self>;
 	
 	/// Calculates the difference of `self - subtrahend`. It consumes self and returns the result.
+    /// # Failures
+    /// VecResult may report the following `ErrorReason` members:
+    /// 
+    /// 1. `VectorsMustHaveTheSameSize`: `self` and `subtrahend` must have the same size
+    /// 2. `VectorMetaDataMustAgree`: `self` and `subtrahend` must be in the same domain and number space
+    /// 
 	/// # Example
 	///
 	/// ```
@@ -151,6 +169,12 @@ pub trait GenericVectorOperations<T>: DataVector<T>
     /// as `self.len() % subtrahend.len() == 0`. THe result is the same as it would be if 
     /// you would repeat `subtrahend` until it has the same length as `self`.
     /// It consumes self and returns the result.
+    /// # Failures
+    /// VecResult may report the following `ErrorReason` members:
+    /// 
+    /// 1. `InvalidArgumentLength`: `self.points()` isn't dividable by `subtrahend.points()`
+    /// 2. `VectorMetaDataMustAgree`: `self` and `subtrahend` must be in the same domain and number space
+    /// 
 	/// # Example
 	///
 	/// ```
@@ -163,6 +187,12 @@ pub trait GenericVectorOperations<T>: DataVector<T>
 	fn subtract_smaller_vector(self, summand: &Self) -> VecResult<Self>;
 	
 	/// Calculates the product of `self * factor`. It consumes self and returns the result.
+    /// # Failures
+    /// VecResult may report the following `ErrorReason` members:
+    /// 
+    /// 1. `VectorsMustHaveTheSameSize`: `self` and `factor` must have the same size
+    /// 2. `VectorMetaDataMustAgree`: `self` and `factor` must be in the same domain and number space
+    /// 
 	/// # Example
 	///
 	/// ```
@@ -178,6 +208,12 @@ pub trait GenericVectorOperations<T>: DataVector<T>
     /// as `self.len() % factor.len() == 0`. THe result is the same as it would be if 
     /// you would repeat `factor` until it has the same length as `self`.
     /// It consumes self and returns the result.
+    /// # Failures
+    /// VecResult may report the following `ErrorReason` members:
+    /// 
+    /// 1. `InvalidArgumentLength`: `self.points()` isn't dividable by `factor.points()`
+    /// 2. `VectorMetaDataMustAgree`: `self` and `factor` must be in the same domain and number space
+    /// 
 	/// # Example
 	///
 	/// ```
@@ -190,6 +226,12 @@ pub trait GenericVectorOperations<T>: DataVector<T>
 	fn multiply_smaller_vector(self, factor: &Self) -> VecResult<Self>;
 	
 	/// Calculates the quotient of `self / summand`. It consumes self and returns the result.
+    /// # Failures
+    /// VecResult may report the following `ErrorReason` members:
+    /// 
+    /// 1. `VectorsMustHaveTheSameSize`: `self` and `divisor` must have the same size
+    /// 2. `VectorMetaDataMustAgree`: `self` and `divisor` must be in the same domain and number space
+    /// 
 	/// # Example
 	///
 	/// ```
@@ -205,6 +247,12 @@ pub trait GenericVectorOperations<T>: DataVector<T>
     /// as `self.len() % divisor.len() == 0`. THe result is the same as it would be if 
     /// you would repeat `divisor` until it has the same length as `self`.
     /// It consumes self and returns the result.
+    /// # Failures
+    /// VecResult may report the following `ErrorReason` members:
+    /// 
+    /// 1. `InvalidArgumentLength`: `self.points()` isn't dividable by `divisor.points()`
+    /// 2. `VectorMetaDataMustAgree`: `self` and `divisor` must be in the same domain and number space
+    /// 
 	/// # Example
 	///
 	/// ```
@@ -470,7 +518,11 @@ pub trait GenericVectorOperations<T>: DataVector<T>
     
     /// Splits the vector into several smaller vectors. `self.len()` must be dividable by
     /// `targets.len()` without a remainder and this conidition must be true too `targets.len() > 0`.
-    ///
+    /// # Failures
+    /// VecResult may report the following `ErrorReason` members:
+    /// 
+    /// 1. `InvalidArgumentLength`: `self.points()` isn't dividable by `targets.len()`
+    ///     
 	/// # Example
 	///
 	/// ```
@@ -487,7 +539,11 @@ pub trait GenericVectorOperations<T>: DataVector<T>
     
     /// Merges several vectors into `self`. All vectors must have the same size and
     /// at least one vector must be provided.
-    ///
+    /// # Failures
+    /// VecResult may report the following `ErrorReason` members:
+    /// 
+    /// 1. `InvalidArgumentLength`: if `sources.len() == 0`
+    ///    
 	/// # Example
 	///
 	/// ```
@@ -516,6 +572,8 @@ pub trait GenericVectorOperations<T>: DataVector<T>
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
+/// # Failures
+/// All operations in this trait fail with `VectorMustBeReal` if the vector isn't in the real number space.
 pub trait RealVectorOperations<T> : DataVector<T> 
     where T : RealNumber {
 	type ComplexPartner;
@@ -592,6 +650,11 @@ pub trait RealVectorOperations<T> : DataVector<T>
 	fn unwrap(self, divisor: T) -> VecResult<Self>;
     
     /// Calculates the dot product of self and factor. Self and factor remain unchanged.
+    /// # Failures
+    /// VecResult may report the following `ErrorReason` members:
+    /// 
+    /// 1. `VectorMetaDataMustAgree`: `self` and `factor` must be in the same domain and number space
+    /// 
     /// # Example
 	///
 	/// ```
@@ -637,6 +700,8 @@ pub trait RealVectorOperations<T> : DataVector<T>
 }
 
 /// Defines all operations which are valid on `DataVectors` containing complex data.
+/// # Failures
+/// All operations in this trait fail with `VectorMustBeComplex` if the vector isn't in the complex number space.
 pub trait ComplexVectorOperations<T> : DataVector<T> 
     where T : RealNumber {
 	type RealPartner;
@@ -852,6 +917,11 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
 	fn get_phase(&self, destination: &mut Self::RealPartner) -> VoidResult;
     
     /// Calculates the dot product of self and factor. Self and factor remain unchanged.
+    /// # Failures
+    /// VecResult may report the following `ErrorReason` members:
+    /// 
+    /// 1. `VectorMetaDataMustAgree`: `self` and `factor` must be in the same domain and number space
+    /// 
     /// # Example
 	///
 	/// ```

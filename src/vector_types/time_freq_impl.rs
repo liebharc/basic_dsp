@@ -31,6 +31,8 @@ pub enum EvenOdd {
 }
 
 /// Defines all operations which are valid on `DataVectors` containing real data.
+/// # Failures
+/// All operations in this trait fail with `VectorMustBeInTimeDomain` if the vector isn't in time domain.
 pub trait TimeDomainOperations<T> : DataVector<T> 
     where T : RealNumber {
 	type FreqPartner;
@@ -88,6 +90,9 @@ pub trait TimeDomainOperations<T> : DataVector<T>
 }
 
 /// Defines all operations which are valid on `DataVectors` containing complex data.
+/// # Failures
+/// All operations in this trait fail with `VectorMustBeInFrquencyDomain` or `VectorMustBeComplex` 
+/// if the vector isn't in frequency domain and complex number space.
 pub trait FrequencyDomainOperations<T> : DataVector<T> 
     where T : RealNumber {
     type RealTimePartner;
