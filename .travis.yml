@@ -28,5 +28,4 @@ deploy:
   file: target/doc/basic_dsp
   skip_cleanup: true
   on:
-    tags: true
     repo: liebharc/basic_dsp
