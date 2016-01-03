@@ -9,6 +9,7 @@ use warnings;
 
 open FACADE32, "<", "facade32.rs" or die $!;
 open FACADE64, ">", "facade64.rs.tmp" or die $!;
+print FACADE64 "// Auto generated code, change facade32.rs and run facade64_create.pl\n";
 while (<FACADE32>) {
     my $line = $_;
     chomp $line;

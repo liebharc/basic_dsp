@@ -633,7 +633,7 @@ pub trait RealVectorOperations<T> : DataVector<T>
 	/// assert_eq!(result[0].sum, 4.0);
     /// assert_eq!(result[1].sum, 6.0);
 	/// ```  
-    fn real_statistics_splitted(&self, len: usize) -> Vec<Statistics<T>>; 
+    fn real_statistics_splitted(&self, len: usize) -> Vec<Statistics<T>>;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing complex data.

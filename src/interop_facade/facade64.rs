@@ -1,26 +1,17 @@
+// Auto generated code, change facade32.rs and run facade64_create.pl
 use super::*;
-#[allow(unused_imports)]
-use vector_types::
-	{
+use vector_types:: {
 		DataVectorDomain,
 		DataVector,
-        VecResult,
-        VoidResult,
-        ErrorReason,
 		GenericVectorOperations,
 		RealVectorOperations,
 		ComplexVectorOperations,
 		TimeDomainOperations,
 		FrequencyDomainOperations,
 		DataVector64, 
-		RealTimeVector64,
-		ComplexTimeVector64, 
-		RealFreqVector64,
-		ComplexFreqVector64,
-		Operation,
-        Statistics
-	};
+        Statistics};
 use num::complex::Complex64;
+use std::slice;
 
 #[no_mangle]
 pub extern fn delete_vector64(vector: Box<DataVector64>) {
@@ -80,6 +71,11 @@ pub extern fn get_len64(vector: &DataVector64) -> usize {
 #[no_mangle]
 pub extern fn get_points64(vector: &DataVector64) -> usize {
     vector.points()
+}
+
+#[no_mangle]
+pub extern fn get_delta64(vector: &DataVector64) -> f64 {
+    vector.delta()
 }
 
 #[no_mangle]
@@ -163,7 +159,7 @@ pub extern fn real_scale64(vector: Box<DataVector64>, value: f64) -> VectorResul
 }
 
 #[no_mangle]
-pub extern fn real_abs64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn abs64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
     convert_vec!(vector.abs())
 }
 
@@ -302,17 +298,17 @@ pub extern fn complex_divide64(vector: Box<DataVector64>, real: f64, imag: f64) 
 }
 
 #[no_mangle]
-pub extern fn complex_abs64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn magnitude64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
     convert_vec!(vector.magnitude())
 }
 
 #[no_mangle]
-pub extern fn get_complex_abs64(vector: Box<DataVector64>, destination: &mut DataVector64) -> i32 {
+pub extern fn get_magnitude64(vector: Box<DataVector64>, destination: &mut DataVector64) -> i32 {
     convert_void!(vector.get_magnitude(destination))
 }
 
 #[no_mangle]
-pub extern fn complex_abs_squared64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn magnitude_squared64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
     convert_vec!(vector.magnitude_squared())
 }
 
@@ -369,4 +365,110 @@ pub extern fn clone64(vector: Box<DataVector64>) -> Box<DataVector64> {
 #[no_mangle]
 pub extern fn multiply_complex_exponential64(vector: Box<DataVector64>, a: f64, b: f64) -> VectorResult<DataVector64> {
     convert_vec!(vector.multiply_complex_exponential(a, b))
+}
+
+#[no_mangle]
+pub extern fn add_smaller_vector64(vector: Box<DataVector64>, operand: &DataVector64) -> VectorResult<DataVector64> {
+    convert_vec!(vector.add_smaller_vector(operand))
+}
+
+#[no_mangle]
+pub extern fn subtract_smaller_vector64(vector: Box<DataVector64>, operand: &DataVector64) -> VectorResult<DataVector64> {
+    convert_vec!(vector.subtract_smaller_vector(operand))
+}
+
+#[no_mangle]
+pub extern fn divide_smaller_vector64(vector: Box<DataVector64>, operand: &DataVector64) -> VectorResult<DataVector64> {
+    convert_vec!(vector.divide_smaller_vector(operand))
+}
+
+#[no_mangle]
+pub extern fn multiply_smaller_vector64(vector: Box<DataVector64>, operand: &DataVector64) -> VectorResult<DataVector64> {
+    convert_vec!(vector.multiply_smaller_vector(operand))
+}
+
+#[no_mangle]
+pub extern fn get_real_imag64(vector: Box<DataVector64>, real: &mut DataVector64, imag: &mut DataVector64) -> i32 {
+    convert_void!(vector.get_real_imag(real, imag))
+}
+
+#[no_mangle]
+pub extern fn get_mag_phase64(vector: Box<DataVector64>, mag: &mut DataVector64, phase: &mut DataVector64) -> i32 {
+    convert_void!(vector.get_mag_phase(mag, phase))
+}
+
+#[no_mangle]
+pub extern fn set_real_imag64(vector: Box<DataVector64>, real: &DataVector64, imag: &DataVector64) -> VectorResult<DataVector64> {
+    convert_vec!(vector.set_real_imag(real, imag))
+}
+
+#[no_mangle]
+pub extern fn set_mag_phase64(vector: Box<DataVector64>, mag: &DataVector64, phase: &DataVector64) -> VectorResult<DataVector64> {
+    convert_vec!(vector.set_mag_phase(mag, phase))
+}
+
+#[no_mangle]
+pub extern fn split_into64(vector: Box<DataVector64>, targets: &mut [Box<DataVector64>]) -> i32 {
+    convert_void!(vector.split_into(targets))
+}
+
+#[no_mangle]
+pub extern fn merge64(vector: Box<DataVector64>, sources: &[Box<DataVector64>]) -> VectorResult<DataVector64> {
+    convert_vec!(vector.merge(sources))
+}
+
+#[no_mangle]
+pub extern fn override_data64(vector: Box<DataVector64>, data: *const f64, len: usize) -> VectorResult<DataVector64> {
+    let data = unsafe { slice::from_raw_parts(data, len) };
+    convert_vec!(vector.override_data(data))
+}
+
+#[no_mangle]
+pub extern fn real_statistics_splitted64(vector: &DataVector64, data: *mut Statistics<f64>, len: usize) -> i32 {
+    let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
+    let stats = vector.real_statistics_splitted(data.len());
+    for i in 0..stats.len() {
+        data[i] = stats[i];
+    }
+    
+    0
+}
+
+#[no_mangle]
+pub extern fn complex_statistics_splitted64(vector: &DataVector64, data: *mut Statistics<Complex64>, len: usize) -> i32 {
+    let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
+    let stats = vector.complex_statistics_splitted(data.len());
+    for i in 0..stats.len() {
+        data[i] = stats[i];
+    }
+    
+    0
+}
+
+#[no_mangle]
+pub extern fn fft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+    convert_vec!(vector.fft())
+}
+
+#[no_mangle]
+pub extern fn ifft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+    convert_vec!(vector.ifft())
+}
+
+#[no_mangle]
+pub extern fn plain_sifft64(vector: Box<DataVector64>, even_odd: i32) -> VectorResult<DataVector64> {
+    let even_odd = translate_to_even_odd(even_odd);
+    convert_vec!(vector.plain_sifft(even_odd))
+}
+
+#[no_mangle]
+pub extern fn sifft64(vector: Box<DataVector64>, even_odd: i32) -> VectorResult<DataVector64> {
+    let even_odd = translate_to_even_odd(even_odd);
+    convert_vec!(vector.sifft(even_odd))
+}
+
+#[no_mangle]
+pub extern fn mirror64(vector: Box<DataVector64>, even_odd: i32) -> VectorResult<DataVector64> {
+    let even_odd = translate_to_even_odd(even_odd);
+    convert_vec!(vector.mirror(even_odd))
 }

@@ -1,26 +1,16 @@
 use super::*;
-#[allow(unused_imports)]
-use vector_types::
-	{
+use vector_types:: {
 		DataVectorDomain,
 		DataVector,
-        VecResult,
-        VoidResult,
-        ErrorReason,
 		GenericVectorOperations,
 		RealVectorOperations,
 		ComplexVectorOperations,
 		TimeDomainOperations,
 		FrequencyDomainOperations,
 		DataVector32, 
-		RealTimeVector32,
-		ComplexTimeVector32, 
-		RealFreqVector32,
-		ComplexFreqVector32,
-		Operation,
-        Statistics
-	};
+        Statistics};
 use num::complex::Complex32;
+use std::slice;
 
 #[no_mangle]
 pub extern fn delete_vector32(vector: Box<DataVector32>) {
@@ -80,6 +70,11 @@ pub extern fn get_len32(vector: &DataVector32) -> usize {
 #[no_mangle]
 pub extern fn get_points32(vector: &DataVector32) -> usize {
     vector.points()
+}
+
+#[no_mangle]
+pub extern fn get_delta32(vector: &DataVector32) -> f32 {
+    vector.delta()
 }
 
 #[no_mangle]
@@ -163,7 +158,7 @@ pub extern fn real_scale32(vector: Box<DataVector32>, value: f32) -> VectorResul
 }
 
 #[no_mangle]
-pub extern fn real_abs32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+pub extern fn abs32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
     convert_vec!(vector.abs())
 }
 
@@ -302,17 +297,17 @@ pub extern fn complex_divide32(vector: Box<DataVector32>, real: f32, imag: f32) 
 }
 
 #[no_mangle]
-pub extern fn complex_abs32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+pub extern fn magnitude32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
     convert_vec!(vector.magnitude())
 }
 
 #[no_mangle]
-pub extern fn get_complex_abs32(vector: Box<DataVector32>, destination: &mut DataVector32) -> i32 {
+pub extern fn get_magnitude32(vector: Box<DataVector32>, destination: &mut DataVector32) -> i32 {
     convert_void!(vector.get_magnitude(destination))
 }
 
 #[no_mangle]
-pub extern fn complex_abs_squared32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+pub extern fn magnitude_squared32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
     convert_vec!(vector.magnitude_squared())
 }
 
@@ -369,4 +364,110 @@ pub extern fn clone32(vector: Box<DataVector32>) -> Box<DataVector32> {
 #[no_mangle]
 pub extern fn multiply_complex_exponential32(vector: Box<DataVector32>, a: f32, b: f32) -> VectorResult<DataVector32> {
     convert_vec!(vector.multiply_complex_exponential(a, b))
+}
+
+#[no_mangle]
+pub extern fn add_smaller_vector32(vector: Box<DataVector32>, operand: &DataVector32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.add_smaller_vector(operand))
+}
+
+#[no_mangle]
+pub extern fn subtract_smaller_vector32(vector: Box<DataVector32>, operand: &DataVector32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.subtract_smaller_vector(operand))
+}
+
+#[no_mangle]
+pub extern fn divide_smaller_vector32(vector: Box<DataVector32>, operand: &DataVector32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.divide_smaller_vector(operand))
+}
+
+#[no_mangle]
+pub extern fn multiply_smaller_vector32(vector: Box<DataVector32>, operand: &DataVector32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.multiply_smaller_vector(operand))
+}
+
+#[no_mangle]
+pub extern fn get_real_imag32(vector: Box<DataVector32>, real: &mut DataVector32, imag: &mut DataVector32) -> i32 {
+    convert_void!(vector.get_real_imag(real, imag))
+}
+
+#[no_mangle]
+pub extern fn get_mag_phase32(vector: Box<DataVector32>, mag: &mut DataVector32, phase: &mut DataVector32) -> i32 {
+    convert_void!(vector.get_mag_phase(mag, phase))
+}
+
+#[no_mangle]
+pub extern fn set_real_imag32(vector: Box<DataVector32>, real: &DataVector32, imag: &DataVector32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.set_real_imag(real, imag))
+}
+
+#[no_mangle]
+pub extern fn set_mag_phase32(vector: Box<DataVector32>, mag: &DataVector32, phase: &DataVector32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.set_mag_phase(mag, phase))
+}
+
+#[no_mangle]
+pub extern fn split_into32(vector: Box<DataVector32>, targets: &mut [Box<DataVector32>]) -> i32 {
+    convert_void!(vector.split_into(targets))
+}
+
+#[no_mangle]
+pub extern fn merge32(vector: Box<DataVector32>, sources: &[Box<DataVector32>]) -> VectorResult<DataVector32> {
+    convert_vec!(vector.merge(sources))
+}
+
+#[no_mangle]
+pub extern fn override_data32(vector: Box<DataVector32>, data: *const f32, len: usize) -> VectorResult<DataVector32> {
+    let data = unsafe { slice::from_raw_parts(data, len) };
+    convert_vec!(vector.override_data(data))
+}
+
+#[no_mangle]
+pub extern fn real_statistics_splitted32(vector: &DataVector32, data: *mut Statistics<f32>, len: usize) -> i32 {
+    let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
+    let stats = vector.real_statistics_splitted(data.len());
+    for i in 0..stats.len() {
+        data[i] = stats[i];
+    }
+    
+    0
+}
+
+#[no_mangle]
+pub extern fn complex_statistics_splitted32(vector: &DataVector32, data: *mut Statistics<Complex32>, len: usize) -> i32 {
+    let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
+    let stats = vector.complex_statistics_splitted(data.len());
+    for i in 0..stats.len() {
+        data[i] = stats[i];
+    }
+    
+    0
+}
+
+#[no_mangle]
+pub extern fn fft32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.fft())
+}
+
+#[no_mangle]
+pub extern fn ifft32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.ifft())
+}
+
+#[no_mangle]
+pub extern fn plain_sifft32(vector: Box<DataVector32>, even_odd: i32) -> VectorResult<DataVector32> {
+    let even_odd = translate_to_even_odd(even_odd);
+    convert_vec!(vector.plain_sifft(even_odd))
+}
+
+#[no_mangle]
+pub extern fn sifft32(vector: Box<DataVector32>, even_odd: i32) -> VectorResult<DataVector32> {
+    let even_odd = translate_to_even_odd(even_odd);
+    convert_vec!(vector.sifft(even_odd))
+}
+
+#[no_mangle]
+pub extern fn mirror32(vector: Box<DataVector32>, even_odd: i32) -> VectorResult<DataVector32> {
+    let even_odd = translate_to_even_odd(even_odd);
+    convert_vec!(vector.mirror(even_odd))
 }

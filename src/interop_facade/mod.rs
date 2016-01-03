@@ -38,7 +38,9 @@ macro_rules! convert_scalar {
 
 pub mod facade32;
 pub mod facade64;
-use vector_types::ErrorReason;
+use vector_types::{
+    ErrorReason,
+    EvenOdd};
 
 pub fn translate_error(reason: ErrorReason) -> i32 {
     match reason {
@@ -50,6 +52,10 @@ pub fn translate_error(reason: ErrorReason) -> i32 {
         ErrorReason::VectorMustBeInFrquencyDomain => 6,
         ErrorReason::InvalidArgumentLength => 7
     }
+}
+
+pub fn translate_to_even_odd(value: i32) -> EvenOdd {
+    if value != 0 { EvenOdd::Odd } else { EvenOdd::Even }
 }
 
 /// Result of a vector operation. Check the ```result_code```.
