@@ -683,7 +683,7 @@ macro_rules! define_complex_basic_struct_members {
 				Self::from_real_imag_with_options(real, imag, MultiCoreSettings::default())
 			}
 			
-			/// Creates a complex  `DataVector` from an array with real and an array imaginary data. `delta` is set to the given value 1.
+			/// Creates a complex  `DataVector` from an array with real and an array imaginary data. `delta` is set to the given value.
 			///
 			/// Arrays must have the same length.
 			pub fn from_real_imag_with_delta(real: &[T], imag: &[T], delta: T)
@@ -701,7 +701,7 @@ macro_rules! define_complex_basic_struct_members {
 				Self::from_mag_phase_with_options(magnitude, phase, MultiCoreSettings::default())
 			}
 			
-			/// Creates a complex  `DataVector` from an array with magnitude and an array with phase data. `delta` is set to the given value 1.
+			/// Creates a complex  `DataVector` from an array with magnitude and an array with phase data. `delta` is set to the given value.
 			///
 			/// Arrays must have the same length. Phase must be in [rad].
 			pub fn from_mag_phase_with_delta(magnitude: &[T], phase: &[T], delta: T)
@@ -709,6 +709,26 @@ macro_rules! define_complex_basic_struct_members {
 			{
 				Self::from_mag_phase_with_delta_and_options(magnitude, phase, delta, MultiCoreSettings::default())
 			}
+            
+            /// Creates a complex `DataVector` from an array of complex numbers. `delta` is set to 1.
+            pub fn from_complex(complex: &[Complex<T>]) -> Self {
+                Self::from_complex_with_delta(complex, T::one())
+            }
+            
+            /// Creates a complex `DataVector` from an array of complex numbers. `delta` is set to the given value.
+            pub fn from_complex_with_delta(complex: &[Complex<T>], delta: T) -> Self {
+                Self::from_complex_with_delta_and_options(complex, delta, MultiCoreSettings::default())
+            }
+            /// Creates a complex `DataVector` from an array of complex numbers.
+            
+            pub fn from_complex_with_delta_and_options(complex: &[Complex<T>], delta: T, options: MultiCoreSettings) -> Self {
+                let data = unsafe { 
+                    let len = complex.len();
+                    let trans: &[T] = mem::transmute(complex);
+                    &trans[0 .. len * 2]
+                };
+                Self::from_interleaved_with_delta_and_options(data, delta, options)
+            }
 		} 
 	 }
 }

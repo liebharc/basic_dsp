@@ -23,6 +23,12 @@ macro_rules! add_complex_impl {
             impl ComplexVectorOperations<$data_type> for GenericDataVector<$data_type>
             {
                 type RealPartner = GenericDataVector<$data_type>;
+                
+                fn complex_data(&self) -> &[Complex<$data_type>] {
+                    let len = self.len();
+                    Self::array_to_complex(&self.data[0..len])
+                }
+                
                 fn complex_offset(self, offset: Complex<$data_type>)  -> VecResult<Self>
                 {
                     assert_complex!(self);

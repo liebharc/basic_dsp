@@ -6,6 +6,21 @@
 use RealNumber;
 use num::traits::Zero;
 use num::complex::{Complex, Complex32,Complex64};
+use vector_types::{
+    RealTimeVector,
+    ComplexTimeVector,
+    ComplexFreqVector
+};
+use vector_types::definitions::{
+    DataVector,
+    RealVectorOperations,
+    ComplexVectorOperations
+};
+
+use vector_types::time_freq_impl::{
+    TimeDomainOperations,
+    FrequencyDomainOperations
+};
 
 /// A convolution function in time domain and real number space
 pub trait RealTimeConvFunction<T>
@@ -95,12 +110,16 @@ macro_rules! add_linear_table_lookup_impl {
                     }
                 }
 
-                impl $name<$data_type> {               
+                impl $name<$data_type> {
+                    /// Creates a lookup table by putting the pieces together.             
                     pub fn from_raw_parts(table: &[$result_type], delta: $data_type, offset: $data_type) -> Self {
                         let owned_table = Vec::from(table);
                         $name { table: owned_table, delta: delta, offset: offset }
                     }
                     
+                    
+                    /// Creates a lookup table from another convolution function. The `delta` argument
+                    /// can be used to balance performance vs. accuracy.
                     pub fn from_conv_function(other: &$conv_type<$data_type>, delta: $data_type, offset: $data_type, len: usize) -> Self {
                         let center = (len / 2) as isize;
                         let mut table = vec![$result_type::zero(); len];
@@ -120,6 +139,82 @@ add_linear_table_lookup_impl!(
     RealTimeLinearTableLookup: RealTimeConvFunction, f32, f32, f64, f64;
     ComplexTimeLinearTableLookup: ComplexTimeConvFunction, f32, Complex32, f64, Complex64;
     ComplexFrequencyLinearTableLookup: ComplexFrequencyConvFunction, f32, Complex32, f64, Complex64);
+    
+macro_rules! add_real_time_linear_table_impl {  
+    ($($data_type: ident),*) => {  
+        $(
+            impl RealTimeLinearTableLookup<$data_type> {
+                /// Convert the lookup table into complex number space
+                pub fn to_complex(&self) -> ComplexTimeLinearTableLookup<$data_type> {
+                    let vector = RealTimeVector::from_array(&self.table);
+                    let complex = vector.to_complex().expect("to_complex shouldn't fail");
+                    let complex = complex.complex_data();
+                    let mut table = Vec::with_capacity(complex.len());
+                    for n in complex {
+                        table.push(*n);
+                    }
+                    ComplexTimeLinearTableLookup { table: table, delta: self.delta, offset: self.offset }
+                }
+            }
+        )*
+    }
+}
+add_real_time_linear_table_impl!(f32, f64);
+
+macro_rules! add_complex_time_linear_table_impl {  
+    ($($data_type: ident),*) => {  
+        $(
+            impl ComplexTimeLinearTableLookup<$data_type> {
+                /// Convert the lookup table into real number space
+                pub fn to_real(self) -> RealTimeLinearTableLookup<$data_type> {
+                    let vector = ComplexTimeVector::from_complex(&self.table);
+                    let real = vector.to_real().expect("to_complex shouldn't fail");
+                    let real = real.data();
+                    let mut table = Vec::with_capacity(real.len());
+                    for n in real {
+                        table.push(*n);
+                    }
+                    RealTimeLinearTableLookup { table: table, delta: self.delta, offset: self.offset }
+                }
+                
+                /// Convert the lookup table into frequency domain
+                pub fn fft(self) -> ComplexFrequencyLinearTableLookup<$data_type> {
+                    let vector = ComplexTimeVector::from_complex(&self.table);
+                    let freq = vector.fft().expect("vector fft shouldn't fail");
+                    let freq = freq.complex_data();
+                    let mut table = Vec::with_capacity(freq.len());
+                    for n in freq {
+                        table.push(*n);
+                    }
+                    ComplexFrequencyLinearTableLookup { table: table, delta: self.delta, offset: self.offset }
+                }
+            }
+        )*
+    }
+}
+add_complex_time_linear_table_impl!(f32, f64);
+
+macro_rules! add_complex_frequency_linear_table_impl {  
+    ($($data_type: ident),*) => {  
+        $(
+            impl ComplexFrequencyLinearTableLookup<$data_type> {
+                    
+                /// Convert the lookup table into time domain
+                pub fn ifft(self) -> ComplexTimeLinearTableLookup<$data_type> {
+                    let vector = ComplexFreqVector::from_complex(&self.table);
+                    let time = vector.ifft().expect("vector ifft shouldn't fail");
+                    let time = time.complex_data();
+                    let mut table = Vec::with_capacity(time.len());
+                    for n in time {
+                        table.push(*n);
+                    }
+                    ComplexTimeLinearTableLookup { table: table, delta: self.delta, offset: self.offset }
+                }
+            }
+        )*
+    }
+}
+add_complex_frequency_linear_table_impl!(f32, f64);
 
 /// Raised cosine function according to https://en.wikipedia.org/wiki/Raised-cosine_filter
 pub struct  RaiseCosineFuncton<T>

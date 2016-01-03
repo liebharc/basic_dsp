@@ -705,6 +705,9 @@ pub trait RealVectorOperations<T> : DataVector<T>
 pub trait ComplexVectorOperations<T> : DataVector<T> 
     where T : RealNumber {
 	type RealPartner;
+    
+    /// Gets `self.data()` as complex array.
+    fn complex_data(&self) -> &[Complex<T>];
 	
 	/// Adds a scalar to the vector.
 	/// # Example
