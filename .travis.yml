@@ -23,7 +23,7 @@ script:
 after_success:
   # upload the documentation from the build with stable (automatically only actually
   # runs on the master branch, not individual PRs)
-  - travis-cargo --only nightly doc-upload
+  - travis-cargo 
 
 env:
   global:
