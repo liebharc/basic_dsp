@@ -249,7 +249,7 @@ impl<T> RealTimeConvFunction<T> for RaiseCosineFuncton<T>
 
 impl<T> RaiseCosineFuncton<T>
     where T: RealNumber {
-    /// Creates a root rised cosine function.
+    /// Creates a root raised cosine function.
     pub fn new(rolloff: T) -> Self {
         RaiseCosineFuncton { rolloff: rolloff }
     }
