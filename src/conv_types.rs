@@ -25,18 +25,21 @@ use vector_types::time_freq_impl::{
 /// A convolution function in time domain and real number space
 pub trait RealTimeConvFunction<T>
     where T: RealNumber {
+    /// Calculates the convolution for a real data point
     fn calc(&self, x: T) -> T;
 }
 
 /// A convolution function in time domain and complex number space
 pub trait ComplexTimeConvFunction<T>
     where T: RealNumber {
+    /// Calculates the convolution for a real data point
     fn calc(&self, x: T) -> Complex<T>;
 }
 
 /// A convolution function in frequency domain and complex number space
 pub trait ComplexFrequencyConvFunction<T>
     where T: RealNumber {
+    /// Calculates the convolution for a real data point
     fn calc(&self, x: T) -> Complex<T>;
 }
 
@@ -246,6 +249,7 @@ impl<T> RealTimeConvFunction<T> for RaiseCosineFuncton<T>
 
 impl<T> RaiseCosineFuncton<T>
     where T: RealNumber {
+    /// Creates a root rised cosine function.
     pub fn new(rolloff: T) -> Self {
         RaiseCosineFuncton { rolloff: rolloff }
     }
