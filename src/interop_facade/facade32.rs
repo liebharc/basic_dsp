@@ -9,8 +9,10 @@ use vector_types:: {
 		FrequencyDomainOperations,
 		DataVector32, 
         Statistics};
+use window_functions::WindowFunction;
 use num::complex::Complex32;
 use std::slice;
+use std::os::raw::c_void;
 
 #[no_mangle]
 pub extern fn delete_vector32(vector: Box<DataVector32>) {
@@ -484,7 +486,6 @@ pub extern fn unapply_window32(vector: Box<DataVector32>, window: i32) -> Vector
     convert_vec!(vector.unapply_window(window.as_ref()))
 }
 
-
 #[no_mangle]
 pub extern fn windowed_fft32(vector: Box<DataVector32>, window: i32) -> VectorResult<DataVector32> {
     let window = translate_to_window_function(window);
@@ -502,4 +503,47 @@ pub extern fn windowed_sifft32(vector: Box<DataVector32>, even_odd: i32, window:
     let even_odd = translate_to_even_odd(even_odd);
     let window = translate_to_window_function(window);
     convert_vec!(vector.windowed_sifft(even_odd, window.as_ref()))
+}
+
+struct ForeignWindowFunction {
+    window_function: extern fn(*const c_void, usize, usize) -> f32,
+    window_data: *const c_void
+}
+
+impl WindowFunction<f32> for ForeignWindowFunction {
+    fn window(&self, idx: usize, points: usize) -> f32 {
+        let fun = self.window_function;
+        fun(self.window_data, idx, points)
+    }
+}
+
+#[no_mangle]
+pub extern fn apply_custom_window32(vector: Box<DataVector32>, window: extern fn(*const c_void, usize, usize) -> f32, window_data: *const c_void) -> VectorResult<DataVector32> {
+    let window = ForeignWindowFunction { window_function: window, window_data: window_data };
+    convert_vec!(vector.apply_window(&window))
+}
+
+#[no_mangle]
+pub extern fn unapply_custom_window32(vector: Box<DataVector32>, window: extern fn(*const c_void, usize, usize) -> f32, window_data: *const c_void) -> VectorResult<DataVector32> {
+    let window = ForeignWindowFunction { window_function: window, window_data: window_data };
+    convert_vec!(vector.unapply_window(&window))
+}
+
+#[no_mangle]
+pub extern fn windowed_custom_fft32(vector: Box<DataVector32>, window: extern fn(*const c_void, usize, usize) -> f32, window_data: *const c_void) -> VectorResult<DataVector32> {
+    let window = ForeignWindowFunction { window_function: window, window_data: window_data };
+    convert_vec!(vector.windowed_fft(&window))
+}
+
+#[no_mangle]
+pub extern fn windowed_custom_ifft32(vector: Box<DataVector32>, window: extern fn(*const c_void, usize, usize) -> f32, window_data: *const c_void) -> VectorResult<DataVector32> {
+    let window = ForeignWindowFunction { window_function: window, window_data: window_data };
+    convert_vec!(vector.windowed_ifft(&window))
+}
+
+#[no_mangle]
+pub extern fn windowed_custom_sifft32(vector: Box<DataVector32>, even_odd: i32, window: extern fn(*const c_void, usize, usize) -> f32, window_data: *const c_void) -> VectorResult<DataVector32> {
+    let even_odd = translate_to_even_odd(even_odd);
+    let window = ForeignWindowFunction { window_function: window, window_data: window_data };
+    convert_vec!(vector.windowed_sifft(even_odd, &window))
 }

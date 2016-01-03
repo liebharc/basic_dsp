@@ -10,8 +10,10 @@ use vector_types:: {
 		FrequencyDomainOperations,
 		DataVector64, 
         Statistics};
+use window_functions::WindowFunction;
 use num::complex::Complex64;
 use std::slice;
+use std::os::raw::c_void;
 
 #[no_mangle]
 pub extern fn delete_vector64(vector: Box<DataVector64>) {
@@ -471,4 +473,78 @@ pub extern fn sifft64(vector: Box<DataVector64>, even_odd: i32) -> VectorResult<
 pub extern fn mirror64(vector: Box<DataVector64>, even_odd: i32) -> VectorResult<DataVector64> {
     let even_odd = translate_to_even_odd(even_odd);
     convert_vec!(vector.mirror(even_odd))
+}
+
+#[no_mangle]
+pub extern fn apply_window64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
+    let window = translate_to_window_function(window);
+    convert_vec!(vector.apply_window(window.as_ref()))
+}
+
+#[no_mangle]
+pub extern fn unapply_window64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
+    let window = translate_to_window_function(window);
+    convert_vec!(vector.unapply_window(window.as_ref()))
+}
+
+#[no_mangle]
+pub extern fn windowed_fft64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
+    let window = translate_to_window_function(window);
+    convert_vec!(vector.windowed_fft(window.as_ref()))
+}
+
+#[no_mangle]
+pub extern fn windowed_ifft64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
+    let window = translate_to_window_function(window);
+    convert_vec!(vector.windowed_ifft(window.as_ref()))
+}
+
+#[no_mangle]
+pub extern fn windowed_sifft64(vector: Box<DataVector64>, even_odd: i32, window: i32) -> VectorResult<DataVector64> {
+    let even_odd = translate_to_even_odd(even_odd);
+    let window = translate_to_window_function(window);
+    convert_vec!(vector.windowed_sifft(even_odd, window.as_ref()))
+}
+
+struct ForeignWindowFunction {
+    window_function: extern fn(*const c_void, usize, usize) -> f64,
+    window_data: *const c_void
+}
+
+impl WindowFunction<f64> for ForeignWindowFunction {
+    fn window(&self, idx: usize, points: usize) -> f64 {
+        let fun = self.window_function;
+        fun(self.window_data, idx, points)
+    }
+}
+
+#[no_mangle]
+pub extern fn apply_custom_window64(vector: Box<DataVector64>, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
+    let window = ForeignWindowFunction { window_function: window, window_data: window_data };
+    convert_vec!(vector.apply_window(&window))
+}
+
+#[no_mangle]
+pub extern fn unapply_custom_window64(vector: Box<DataVector64>, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
+    let window = ForeignWindowFunction { window_function: window, window_data: window_data };
+    convert_vec!(vector.unapply_window(&window))
+}
+
+#[no_mangle]
+pub extern fn windowed_custom_fft64(vector: Box<DataVector64>, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
+    let window = ForeignWindowFunction { window_function: window, window_data: window_data };
+    convert_vec!(vector.windowed_fft(&window))
+}
+
+#[no_mangle]
+pub extern fn windowed_custom_ifft64(vector: Box<DataVector64>, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
+    let window = ForeignWindowFunction { window_function: window, window_data: window_data };
+    convert_vec!(vector.windowed_ifft(&window))
+}
+
+#[no_mangle]
+pub extern fn windowed_custom_sifft64(vector: Box<DataVector64>, even_odd: i32, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
+    let even_odd = translate_to_even_odd(even_odd);
+    let window = ForeignWindowFunction { window_function: window, window_data: window_data };
+    convert_vec!(vector.windowed_sifft(even_odd, &window))
 }
