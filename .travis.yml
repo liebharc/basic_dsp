@@ -14,14 +14,12 @@ before_script:
 # compile, test all, benchmark and create documentation
 script:
 - |
-  cargo build &&
-  cargo test --features slow_test &&
-  travis-cargo doc &&
-  cargo bench
+  travis-cargo build &&
+  travis-cargo test -- --features slow_test &&
+  travis-cargo bench &&
+  travis-cargo doc
 
 after_success:
-  # upload the documentation from the build with stable (automatically only actually
-  # runs on the master branch, not individual PRs)
   - travis-cargo doc-upload
 
 env:
