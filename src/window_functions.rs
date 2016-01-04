@@ -33,8 +33,8 @@ impl<T> WindowFunction<T> for TriangularWindow
 /// A generalized Hamming window: https://en.wikipedia.org/wiki/Window_function#Hamming_window
 pub struct HammingWindow<T>
     where T: RealNumber {
-    pub alpha: T,
-    pub beta: T
+    alpha: T,
+    beta: T
 }
 
 impl<T> HammingWindow<T>

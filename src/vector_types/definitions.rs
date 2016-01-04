@@ -1048,10 +1048,10 @@ pub enum ErrorReason {
 /// which still can be used in order to avoid memory allocation.
 pub type VecResult<T> = result::Result<T, (ErrorReason, T)>;
 
-/// Result or a reason in case of an error.
+/// Void/nothing in case of success or a reason in case of an error.
 pub type VoidResult = result::Result<(), ErrorReason>;
 
-/// Result or a reason in case of an error.
+/// Scalar result or a reason in case of an error.
 pub type ScalarResult<T> = result::Result<T, ErrorReason>;
 
 /// Statistics about the data in a vector

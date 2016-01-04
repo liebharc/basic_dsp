@@ -16,12 +16,20 @@ use super::time_freq_impl::{
     FrequencyDomainOperations
 };
 
+/// Provides a convolution operation for data vectors. 
+/// 
+/// In contrast to the convolution definition this library allows for convinience to define a convolution in frequency domain which will then correctly be executed as multiplication.
 pub trait Convolution<T, C> : DataVector<T> 
     where T : RealNumber {
     /// Convolves `self` with the convolution function `function`.
     /// The domain in which `function` resides defines in which domain the operation
     /// is performed. For performance reasons it is advised to pass `function` in
     /// frequency domain since this will significantly speed up the calculation in most cases.
+    /// # Failures
+    /// VecResult may report the following `ErrorReason` members:
+    /// 
+    /// 1. `VectorMustBeComplex`: if `self` is in real number space but `function` is in complex number space.
+    /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain, `function` is in time domain and the vector can't be automatically converted to frequency domain since it is in real number space.
     fn convolve(self, function: C) -> VecResult<Self>;
 }
 
@@ -37,6 +45,12 @@ macro_rules! add_conv_impl{
             impl<'a> Convolution<$data_type, &'a ComplexTimeConvFunction<$data_type>> for GenericDataVector<$data_type> {
                 fn convolve(self, function: &ComplexTimeConvFunction<$data_type>) -> VecResult<Self> {
                     assert_complex!(self);
+                    let time = 
+                        if self.domain == DataVectorDomain::Time {
+                            Ok(self)
+                        } else {
+                            self.ifft()
+                        };
                     panic!("TODO: Add convolution with complex function for complex vectors")
                 }
             }

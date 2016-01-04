@@ -79,6 +79,7 @@ pub mod real_impl;
 pub mod complex_impl;
 pub mod time_freq_impl;
 pub mod convolution_impl;
+pub mod correlation_impl;
 mod stats_impl;
 
 pub use vector_types::definitions::{
@@ -101,6 +102,8 @@ pub use vector_types::time_freq_impl::{
 		FrequencyDomainOperations,
         EvenOdd
     };
+pub use vector_types::convolution_impl::Convolution;
+pub use vector_types::correlation_impl::CrossCorrelation;
 use num::complex::Complex;
 use RealNumber;
 use multicore_support::{Chunk, Complexity, MultiCoreSettings};
