@@ -342,8 +342,8 @@ macro_rules! define_real_basic_struct_members {
 				}
 			}
             
-            /// Same as `real_empty` but also allows to set multicore options.
-            pub fn real_empty_with_options(options: MultiCoreSettings) -> Self {
+            /// Same as `empty` but also allows to set multicore options.
+            pub fn empty_with_options(options: MultiCoreSettings) -> Self {
                 $name 
 				{ 
 				  data: vec![T::zero(); 0], 
@@ -356,8 +356,8 @@ macro_rules! define_real_basic_struct_members {
 				}
             }
             
-            /// Same as `real_empty_with_delta` but also allows to set multicore options.
-            pub fn real_empty_with_delta_and_options(delta: T, options: MultiCoreSettings) -> Self {
+            /// Same as `empty_with_delta` but also allows to set multicore options.
+            pub fn empty_with_delta_and_options(delta: T, options: MultiCoreSettings) -> Self {
                 $name 
 				{ 
 				  data: vec![T::zero(); 0], 
@@ -370,13 +370,13 @@ macro_rules! define_real_basic_struct_members {
 				}
             }
             
-            /// Same as `real_from_constant` but also allows to set multicore options.
-            pub fn real_from_constant_with_options(constant: T, length: usize, options: MultiCoreSettings) -> Self {
-				$name::real_from_constant_with_delta_and_options(constant, length, T::one(), options)
+            /// Same as `from_constant` but also allows to set multicore options.
+            pub fn from_constant_with_options(constant: T, length: usize, options: MultiCoreSettings) -> Self {
+				$name::from_constant_with_delta_and_options(constant, length, T::one(), options)
 			}
 			
-			/// Same as `real_from_constant_with_delta` but also allows to set multicore options.
-            pub fn real_from_constant_with_delta_and_options(constant: T, length: usize, delta: T, options: MultiCoreSettings) -> Self {
+			/// Same as `from_constant_with_delta` but also allows to set multicore options.
+            pub fn from_constant_with_delta_and_options(constant: T, length: usize, delta: T, options: MultiCoreSettings) -> Self {
                 let temp_length = 
                     if options.early_temp_allocation {
                         length
@@ -418,27 +418,27 @@ macro_rules! define_real_basic_struct_members {
 			}
             
             /// Creates a real and empty `DataVector` and sets `delta` to 1.0 value.
-            pub fn real_empty() -> Self
+            pub fn empty() -> Self
             {
-                Self::real_empty_with_options(MultiCoreSettings::default())
+                Self::empty_with_options(MultiCoreSettings::default())
             }
             
             /// Creates a real and empty `DataVector` and sets `delta` to the given value.
-            pub fn real_empty_with_delta(delta: T) -> Self
+            pub fn empty_with_delta(delta: T) -> Self
             {
-                Self::real_empty_with_delta_and_options(delta, MultiCoreSettings::default())
+                Self::empty_with_delta_and_options(delta, MultiCoreSettings::default())
             }
             
             /// Creates a real `DataVector` with `length` elements all set to the value of `constant`. `delta` is defaulted to `1`.
-			pub fn real_from_constant(constant: T, length: usize) -> Self
+			pub fn from_constant(constant: T, length: usize) -> Self
 			{
-				Self::real_from_constant_with_options(constant, length, MultiCoreSettings::default())
+				Self::from_constant_with_options(constant, length, MultiCoreSettings::default())
 			}
 			
 			/// Creates a real `DataVector` with `length` elements all set to the value of `constant` and sets `delta` to the given value.
-			pub fn real_from_constant_with_delta(constant: T, length: usize, delta: T) -> Self
+			pub fn from_constant_with_delta(constant: T, length: usize, delta: T) -> Self
 			{
-                Self::real_from_constant_with_delta_and_options(constant, length, delta, MultiCoreSettings::default())
+                Self::from_constant_with_delta_and_options(constant, length, delta, MultiCoreSettings::default())
 			}
 		}
 	 }

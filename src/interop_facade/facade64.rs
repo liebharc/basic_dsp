@@ -573,3 +573,5 @@ pub extern fn windowed_custom_sifft64(vector: Box<DataVector64>, even_odd: i32, 
     let window = ForeignWindowFunction { window_function: window, window_data: window_data };
     convert_vec!(vector.windowed_sifft(even_odd, &window))
 }
+
+// pub extern fn complex_data32 isn't implemented to avoid to rely to much on the struct layout of Complex<T>

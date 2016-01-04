@@ -44,8 +44,8 @@ sub parse_facade {
     while (<FACADE32>) {
         my $line = $_;
         chomp $line;
-        if ($line =~ /^pub extern fn (\w+)32/) {
-           push @methods, $1; 
+        if ($line =~ /^(\/\/)?\s*pub extern fn (\w+)32/) {
+           push @methods, $2; 
         }
     }
     close FACADE32;
@@ -54,6 +54,8 @@ sub parse_facade {
 
 my @definitions = parse_definition("../vector_types/definitions.rs", "GenericVectorOperations", "RealVectorOperations", "ComplexVectorOperations");
 push @definitions, parse_definition("../vector_types/time_freq_impl.rs", "TimeDomainOperations", "FrequencyDomainOperations");
+push @definitions, parse_definition("../vector_types/correlation_impl.rs", "CrossCorrelation");
+push @definitions, parse_definition("../vector_types/convolution_impl.rs", "Convolution");
 my @impl = parse_facade();
 my $found = 0;
 my $missing = 0;

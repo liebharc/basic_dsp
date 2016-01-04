@@ -78,6 +78,7 @@ pub mod general_impl;
 pub mod real_impl;
 pub mod complex_impl;
 pub mod time_freq_impl;
+pub mod convolution_impl;
 mod stats_impl;
 
 pub use vector_types::definitions::{
