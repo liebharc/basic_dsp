@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `PROCESSENTRY32W` struct in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, PROCESSENTRY32W">
+
+    <title>winapi::tlhelp32::PROCESSENTRY32W - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a>::<wbr><a href='index.html'>tlhelp32</a></p><script>window.sidebarCurrent = {name: 'PROCESSENTRY32W', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>winapi</a>::<wbr><a href='index.html'>tlhelp32</a>::<wbr><a class='struct' href=''>PROCESSENTRY32W</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-85234' class='srclink' href='../../src/winapi/tlhelp32.rs.html#39-50' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct PROCESSENTRY32W {
+    pub dwSize: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub cntUsage: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub th32ProcessID: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub th32DefaultHeapID: <a class='type' href='../../winapi/basetsd/type.ULONG_PTR.html' title='winapi::basetsd::ULONG_PTR'>ULONG_PTR</a>,
+    pub th32ModuleID: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub cntThreads: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub th32ParentProcessID: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub pcPriClassBase: <a class='type' href='../../winapi/winnt/type.LONG.html' title='winapi::winnt::LONG'>LONG</a>,
+    pub dwFlags: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub szExeFile: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a class='type' href='../../winapi/winnt/type.WCHAR.html' title='winapi::winnt::WCHAR'>WCHAR</a>; ::MAX_PATH]</a>,
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.dwSize'><code>dwSize</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.cntUsage'><code>cntUsage</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.th32ProcessID'><code>th32ProcessID</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.th32DefaultHeapID'><code>th32DefaultHeapID</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.th32ModuleID'><code>th32ModuleID</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.cntThreads'><code>cntThreads</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.th32ParentProcessID'><code>th32ParentProcessID</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.pcPriClassBase'><code>pcPriClassBase</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.dwFlags'><code>dwFlags</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.szExeFile'><code>szExeFile</code></td><td></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../winapi/tlhelp32/struct.PROCESSENTRY32W.html' title='winapi::tlhelp32::PROCESSENTRY32W'>PROCESSENTRY32W</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../winapi/tlhelp32/struct.PROCESSENTRY32W.html' title='winapi::tlhelp32::PROCESSENTRY32W'>PROCESSENTRY32W</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../../winapi/tlhelp32/struct.PROCESSENTRY32W.html' title='winapi::tlhelp32::PROCESSENTRY32W'>PROCESSENTRY32W</a></code></h3><div class='impl-items'></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

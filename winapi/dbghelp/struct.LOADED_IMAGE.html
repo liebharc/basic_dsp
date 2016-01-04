@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `LOADED_IMAGE` struct in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, LOADED_IMAGE">
+
+    <title>winapi::dbghelp::LOADED_IMAGE - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a>::<wbr><a href='index.html'>dbghelp</a></p><script>window.sidebarCurrent = {name: 'LOADED_IMAGE', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>winapi</a>::<wbr><a href='index.html'>dbghelp</a>::<wbr><a class='struct' href=''>LOADED_IMAGE</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-38898' class='srclink' href='../../src/winapi/dbghelp.rs.html#5-23' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct LOADED_IMAGE {
+    pub ModuleName: <a class='type' href='../../winapi/winnt/type.PSTR.html' title='winapi::winnt::PSTR'>PSTR</a>,
+    pub hFile: <a class='type' href='../../winapi/winnt/type.HANDLE.html' title='winapi::winnt::HANDLE'>HANDLE</a>,
+    pub MappedAddress: <a class='type' href='../../winapi/minwindef/type.PUCHAR.html' title='winapi::minwindef::PUCHAR'>PUCHAR</a>,
+    pub FileHeader: <a class='type' href='../../winapi/winnt/type.PIMAGE_NT_HEADERS64.html' title='winapi::winnt::PIMAGE_NT_HEADERS64'>PIMAGE_NT_HEADERS64</a>,
+    pub LastRvaSection: <a class='type' href='../../winapi/winnt/type.PIMAGE_SECTION_HEADER.html' title='winapi::winnt::PIMAGE_SECTION_HEADER'>PIMAGE_SECTION_HEADER</a>,
+    pub NumberOfSections: <a class='type' href='../../winapi/minwindef/type.ULONG.html' title='winapi::minwindef::ULONG'>ULONG</a>,
+    pub Sections: <a class='type' href='../../winapi/winnt/type.PIMAGE_SECTION_HEADER.html' title='winapi::winnt::PIMAGE_SECTION_HEADER'>PIMAGE_SECTION_HEADER</a>,
+    pub Characteristics: <a class='type' href='../../winapi/minwindef/type.ULONG.html' title='winapi::minwindef::ULONG'>ULONG</a>,
+    pub fSystemImage: <a class='type' href='../../winapi/winnt/type.BOOLEAN.html' title='winapi::winnt::BOOLEAN'>BOOLEAN</a>,
+    pub fDOSImage: <a class='type' href='../../winapi/winnt/type.BOOLEAN.html' title='winapi::winnt::BOOLEAN'>BOOLEAN</a>,
+    pub fReadOnly: <a class='type' href='../../winapi/winnt/type.BOOLEAN.html' title='winapi::winnt::BOOLEAN'>BOOLEAN</a>,
+    pub Version: <a class='type' href='../../winapi/minwindef/type.UCHAR.html' title='winapi::minwindef::UCHAR'>UCHAR</a>,
+    pub Links: <a class='struct' href='../../winapi/winnt/struct.LIST_ENTRY.html' title='winapi::winnt::LIST_ENTRY'>LIST_ENTRY</a>,
+    pub SizeOfImage: <a class='type' href='../../winapi/minwindef/type.ULONG.html' title='winapi::minwindef::ULONG'>ULONG</a>,
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.ModuleName'><code>ModuleName</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.hFile'><code>hFile</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.MappedAddress'><code>MappedAddress</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.FileHeader'><code>FileHeader</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.LastRvaSection'><code>LastRvaSection</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.NumberOfSections'><code>NumberOfSections</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Sections'><code>Sections</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Characteristics'><code>Characteristics</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.fSystemImage'><code>fSystemImage</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.fDOSImage'><code>fDOSImage</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.fReadOnly'><code>fReadOnly</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Version'><code>Version</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Links'><code>Links</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SizeOfImage'><code>SizeOfImage</code></td><td></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../winapi/dbghelp/struct.LOADED_IMAGE.html' title='winapi::dbghelp::LOADED_IMAGE'>LOADED_IMAGE</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../../winapi/dbghelp/struct.LOADED_IMAGE.html' title='winapi::dbghelp::LOADED_IMAGE'>LOADED_IMAGE</a></code></h3><div class='impl-items'></div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../winapi/dbghelp/struct.LOADED_IMAGE.html' title='winapi::dbghelp::LOADED_IMAGE'>LOADED_IMAGE</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../winapi/dbghelp/struct.LOADED_IMAGE.html' title='winapi::dbghelp::LOADED_IMAGE'>LOADED_IMAGE</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

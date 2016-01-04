@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `facade64` mod in crate `basic_dsp`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, facade64">
+
+    <title>basic_dsp::interop_facade::facade64 - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../../index.html'>basic_dsp</a>::<wbr><a href='../index.html'>interop_facade</a></p><script>window.sidebarCurrent = {name: 'facade64', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../../index.html'>basic_dsp</a>::<wbr><a href='../index.html'>interop_facade</a>::<wbr><a class='mod' href=''>facade64</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-7479' class='srclink' href='../../../src/basic_dsp/interop_facade/facade64.rs.html#2-575' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Functions for 64bit floating point number based vectors. Please refer to the other chapters of the help for documentation of the functions.</p>
+</div><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.abs64.html'
+                               title='basic_dsp::interop_facade::facade64::abs64'>abs64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.acos64.html'
+                               title='basic_dsp::interop_facade::facade64::acos64'>acos64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.acosh64.html'
+                               title='basic_dsp::interop_facade::facade64::acosh64'>acosh64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.add_smaller_vector64.html'
+                               title='basic_dsp::interop_facade::facade64::add_smaller_vector64'>add_smaller_vector64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.add_vector64.html'
+                               title='basic_dsp::interop_facade::facade64::add_vector64'>add_vector64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.apply_custom_window64.html'
+                               title='basic_dsp::interop_facade::facade64::apply_custom_window64'>apply_custom_window64</a></td>
+                        <td class='docblock short'>
+                             <p>Creates a window from the function <code>window</code> and the void pointer <code>window_data</code>. The <code>window_data</code> pointer is passed to the <code>window</code>
+function at every call and can be used to store parameters.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.apply_window64.html'
+                               title='basic_dsp::interop_facade::facade64::apply_window64'>apply_window64</a></td>
+                        <td class='docblock short'>
+                             <p><code>window</code> argument is translated to:</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.asin64.html'
+                               title='basic_dsp::interop_facade::facade64::asin64'>asin64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.asinh64.html'
+                               title='basic_dsp::interop_facade::facade64::asinh64'>asinh64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.atan64.html'
+                               title='basic_dsp::interop_facade::facade64::atan64'>atan64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.atanh64.html'
+                               title='basic_dsp::interop_facade::facade64::atanh64'>atanh64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clone64.html'
+                               title='basic_dsp::interop_facade::facade64::clone64'>clone64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.complex_conj64.html'
+                               title='basic_dsp::interop_facade::facade64::complex_conj64'>complex_conj64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.complex_divide64.html'
+                               title='basic_dsp::interop_facade::facade64::complex_divide64'>complex_divide64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.complex_dot_product64.html'
+                               title='basic_dsp::interop_facade::facade64::complex_dot_product64'>complex_dot_product64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.complex_offset64.html'
+                               title='basic_dsp::interop_facade::facade64::complex_offset64'>complex_offset64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.complex_scale64.html'
+                               title='basic_dsp::interop_facade::facade64::complex_scale64'>complex_scale64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.complex_statistics64.html'
+                               title='basic_dsp::interop_facade::facade64::complex_statistics64'>complex_statistics64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.complex_statistics_splitted64.html'
+                               title='basic_dsp::interop_facade::facade64::complex_statistics_splitted64'>complex_statistics_splitted64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.cos64.html'
+                               title='basic_dsp::interop_facade::facade64::cos64'>cos64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.cosh64.html'
+                               title='basic_dsp::interop_facade::facade64::cosh64'>cosh64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.cum_sum64.html'
+                               title='basic_dsp::interop_facade::facade64::cum_sum64'>cum_sum64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.delete_vector64.html'
+                               title='basic_dsp::interop_facade::facade64::delete_vector64'>delete_vector64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.diff64.html'
+                               title='basic_dsp::interop_facade::facade64::diff64'>diff64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.diff_with_start64.html'
+                               title='basic_dsp::interop_facade::facade64::diff_with_start64'>diff_with_start64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.divide_smaller_vector64.html'
+                               title='basic_dsp::interop_facade::facade64::divide_smaller_vector64'>divide_smaller_vector64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.divide_vector64.html'
+                               title='basic_dsp::interop_facade::facade64::divide_vector64'>divide_vector64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.exp_base64.html'
+                               title='basic_dsp::interop_facade::facade64::exp_base64'>exp_base64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.expn64.html'
+                               title='basic_dsp::interop_facade::facade64::expn64'>expn64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.fft64.html'
+                               title='basic_dsp::interop_facade::facade64::fft64'>fft64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_allocated_len64.html'
+                               title='basic_dsp::interop_facade::facade64::get_allocated_len64'>get_allocated_len64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_delta64.html'
+                               title='basic_dsp::interop_facade::facade64::get_delta64'>get_delta64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_domain64.html'
+                               title='basic_dsp::interop_facade::facade64::get_domain64'>get_domain64</a></td>
+                        <td class='docblock short'>
+                             <p>Returns the vector domain as integer:</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_imag64.html'
+                               title='basic_dsp::interop_facade::facade64::get_imag64'>get_imag64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_len64.html'
+                               title='basic_dsp::interop_facade::facade64::get_len64'>get_len64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_mag_phase64.html'
+                               title='basic_dsp::interop_facade::facade64::get_mag_phase64'>get_mag_phase64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_magnitude64.html'
+                               title='basic_dsp::interop_facade::facade64::get_magnitude64'>get_magnitude64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_phase64.html'
+                               title='basic_dsp::interop_facade::facade64::get_phase64'>get_phase64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_points64.html'
+                               title='basic_dsp::interop_facade::facade64::get_points64'>get_points64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_real64.html'
+                               title='basic_dsp::interop_facade::facade64::get_real64'>get_real64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_real_imag64.html'
+                               title='basic_dsp::interop_facade::facade64::get_real_imag64'>get_real_imag64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_value64.html'
+                               title='basic_dsp::interop_facade::facade64::get_value64'>get_value64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.ifft64.html'
+                               title='basic_dsp::interop_facade::facade64::ifft64'>ifft64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.is_complex64.html'
+                               title='basic_dsp::interop_facade::facade64::is_complex64'>is_complex64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.log_base64.html'
+                               title='basic_dsp::interop_facade::facade64::log_base64'>log_base64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.logn64.html'
+                               title='basic_dsp::interop_facade::facade64::logn64'>logn64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.magnitude64.html'
+                               title='basic_dsp::interop_facade::facade64::magnitude64'>magnitude64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.magnitude_squared64.html'
+                               title='basic_dsp::interop_facade::facade64::magnitude_squared64'>magnitude_squared64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.merge64.html'
+                               title='basic_dsp::interop_facade::facade64::merge64'>merge64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.mirror64.html'
+                               title='basic_dsp::interop_facade::facade64::mirror64'>mirror64</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.plain_sifft64.html"><code>plain_sifft64</code></a> for a description of the <code>even_odd</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.multiply_complex_exponential64.html'
+                               title='basic_dsp::interop_facade::facade64::multiply_complex_exponential64'>multiply_complex_exponential64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.multiply_smaller_vector64.html'
+                               title='basic_dsp::interop_facade::facade64::multiply_smaller_vector64'>multiply_smaller_vector64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.multiply_vector64.html'
+                               title='basic_dsp::interop_facade::facade64::multiply_vector64'>multiply_vector64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.new64.html'
+                               title='basic_dsp::interop_facade::facade64::new64'>new64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.override_data64.html'
+                               title='basic_dsp::interop_facade::facade64::override_data64'>override_data64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.phase64.html'
+                               title='basic_dsp::interop_facade::facade64::phase64'>phase64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.plain_fft64.html'
+                               title='basic_dsp::interop_facade::facade64::plain_fft64'>plain_fft64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.plain_ifft64.html'
+                               title='basic_dsp::interop_facade::facade64::plain_ifft64'>plain_ifft64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.plain_sifft64.html'
+                               title='basic_dsp::interop_facade::facade64::plain_sifft64'>plain_sifft64</a></td>
+                        <td class='docblock short'>
+                             <p><code>even_odd</code> is translated according to:</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.power64.html'
+                               title='basic_dsp::interop_facade::facade64::power64'>power64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.real_dot_product64.html'
+                               title='basic_dsp::interop_facade::facade64::real_dot_product64'>real_dot_product64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.real_offset64.html'
+                               title='basic_dsp::interop_facade::facade64::real_offset64'>real_offset64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.real_scale64.html'
+                               title='basic_dsp::interop_facade::facade64::real_scale64'>real_scale64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.real_statistics64.html'
+                               title='basic_dsp::interop_facade::facade64::real_statistics64'>real_statistics64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.real_statistics_splitted64.html'
+                               title='basic_dsp::interop_facade::facade64::real_statistics_splitted64'>real_statistics_splitted64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.root64.html'
+                               title='basic_dsp::interop_facade::facade64::root64'>root64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_mag_phase64.html'
+                               title='basic_dsp::interop_facade::facade64::set_mag_phase64'>set_mag_phase64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_real_imag64.html'
+                               title='basic_dsp::interop_facade::facade64::set_real_imag64'>set_real_imag64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_value64.html'
+                               title='basic_dsp::interop_facade::facade64::set_value64'>set_value64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.sifft64.html'
+                               title='basic_dsp::interop_facade::facade64::sifft64'>sifft64</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.plain_sifft64.html"><code>plain_sifft64</code></a> for a description of the <code>even_odd</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.sin64.html'
+                               title='basic_dsp::interop_facade::facade64::sin64'>sin64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.sinh64.html'
+                               title='basic_dsp::interop_facade::facade64::sinh64'>sinh64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.split_into64.html'
+                               title='basic_dsp::interop_facade::facade64::split_into64'>split_into64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.sqrt64.html'
+                               title='basic_dsp::interop_facade::facade64::sqrt64'>sqrt64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.square64.html'
+                               title='basic_dsp::interop_facade::facade64::square64'>square64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.subtract_smaller_vector64.html'
+                               title='basic_dsp::interop_facade::facade64::subtract_smaller_vector64'>subtract_smaller_vector64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.subtract_vector64.html'
+                               title='basic_dsp::interop_facade::facade64::subtract_vector64'>subtract_vector64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.swap_halves64.html'
+                               title='basic_dsp::interop_facade::facade64::swap_halves64'>swap_halves64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.tan64.html'
+                               title='basic_dsp::interop_facade::facade64::tan64'>tan64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.tanh64.html'
+                               title='basic_dsp::interop_facade::facade64::tanh64'>tanh64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.to_complex64.html'
+                               title='basic_dsp::interop_facade::facade64::to_complex64'>to_complex64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.to_imag64.html'
+                               title='basic_dsp::interop_facade::facade64::to_imag64'>to_imag64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.to_real64.html'
+                               title='basic_dsp::interop_facade::facade64::to_real64'>to_real64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.unapply_custom_window64.html'
+                               title='basic_dsp::interop_facade::facade64::unapply_custom_window64'>unapply_custom_window64</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.apply_custom_window64.html"><code>apply_custom_window64</code></a> for a description of the <code>window</code> and <code>window_data</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.unapply_window64.html'
+                               title='basic_dsp::interop_facade::facade64::unapply_window64'>unapply_window64</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.apply_window64.html"><code>apply_window64</code></a> for a description of the <code>window</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.unwrap64.html'
+                               title='basic_dsp::interop_facade::facade64::unwrap64'>unwrap64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.windowed_custom_fft64.html'
+                               title='basic_dsp::interop_facade::facade64::windowed_custom_fft64'>windowed_custom_fft64</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.apply_custom_window64.html"><code>apply_custom_window64</code></a> for a description of the <code>window</code> and <code>window_data</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.windowed_custom_ifft64.html'
+                               title='basic_dsp::interop_facade::facade64::windowed_custom_ifft64'>windowed_custom_ifft64</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.apply_custom_window64.html"><code>apply_custom_window64</code></a> for a description of the <code>window</code> and <code>window_data</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.windowed_custom_sifft64.html'
+                               title='basic_dsp::interop_facade::facade64::windowed_custom_sifft64'>windowed_custom_sifft64</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.apply_custom_window64.html"><code>apply_custom_window64</code></a> for a description of the <code>window</code> and <code>window_data</code> parameter.
+See <a href="fn.plain_sifft64.html"><code>plain_sifft64</code></a> for a description of the <code>even_odd</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.windowed_fft64.html'
+                               title='basic_dsp::interop_facade::facade64::windowed_fft64'>windowed_fft64</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.apply_window64.html"><code>apply_window64</code></a> for a description of the <code>window</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.windowed_ifft64.html'
+                               title='basic_dsp::interop_facade::facade64::windowed_ifft64'>windowed_ifft64</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.apply_window64.html"><code>apply_window64</code></a> for a description of the <code>window</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.windowed_sifft64.html'
+                               title='basic_dsp::interop_facade::facade64::windowed_sifft64'>windowed_sifft64</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.plain_sifft64.html"><code>plain_sifft64</code></a> for a description of the <code>even_odd</code> parameter.
+See <a href="fn.apply_window64.html"><code>apply_window64</code></a> for a description of the <code>window</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.wrap64.html'
+                               title='basic_dsp::interop_facade::facade64::wrap64'>wrap64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.zero_interleave64.html'
+                               title='basic_dsp::interop_facade::facade64::zero_interleave64'>zero_interleave64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.zero_pad64.html'
+                               title='basic_dsp::interop_facade::facade64::zero_pad64'>zero_pad64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "basic_dsp";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    
+    <script defer src="../../../search-index.js"></script>
+</body>
+</html>

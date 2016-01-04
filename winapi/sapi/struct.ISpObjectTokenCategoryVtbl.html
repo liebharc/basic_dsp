@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `ISpObjectTokenCategoryVtbl` struct in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, ISpObjectTokenCategoryVtbl">
+
+    <title>winapi::sapi::ISpObjectTokenCategoryVtbl - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a>::<wbr><a href='index.html'>sapi</a></p><script>window.sidebarCurrent = {name: 'ISpObjectTokenCategoryVtbl', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>winapi</a>::<wbr><a href='index.html'>sapi</a>::<wbr><a class='struct' href=''>ISpObjectTokenCategoryVtbl</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-67976' class='srclink' href='../../src/winapi/macros.rs.html#112-118' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct ISpObjectTokenCategoryVtbl {
+    pub parent: <a class='struct' href='../../winapi/sapi/struct.ISpDataKeyVtbl.html' title='winapi::sapi::ISpDataKeyVtbl'>ISpDataKeyVtbl</a>,
+    pub SetId: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpObjectTokenCategory.html' title='winapi::sapi::ISpObjectTokenCategory'>ISpObjectTokenCategory</a></a>, pszCategoryId: <a class='type' href='../../winapi/winnt/type.LPCWSTR.html' title='winapi::winnt::LPCWSTR'>LPCWSTR</a>, fCreateIfNotExist: <a class='type' href='../../winapi/minwindef/type.BOOL.html' title='winapi::minwindef::BOOL'>BOOL</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetId: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpObjectTokenCategory.html' title='winapi::sapi::ISpObjectTokenCategory'>ISpObjectTokenCategory</a></a>, ppszCoMemCategoryId: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/winnt/type.LPWSTR.html' title='winapi::winnt::LPWSTR'>LPWSTR</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetDataKey: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpObjectTokenCategory.html' title='winapi::sapi::ISpObjectTokenCategory'>ISpObjectTokenCategory</a></a>, spdkl: <a class='struct' href='../../winapi/sapi/struct.SPDATAKEYLOCATION.html' title='winapi::sapi::SPDATAKEYLOCATION'>SPDATAKEYLOCATION</a>, pppDataKey: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpDataKey.html' title='winapi::sapi::ISpDataKey'>ISpDataKey</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub EnumTokens: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpObjectTokenCategory.html' title='winapi::sapi::ISpObjectTokenCategory'>ISpObjectTokenCategory</a></a>, pzsReqAttribs: <a class='type' href='../../winapi/winnt/type.LPCWSTR.html' title='winapi::winnt::LPCWSTR'>LPCWSTR</a>, pszOptAttribs: <a class='type' href='../../winapi/winnt/type.LPCWSTR.html' title='winapi::winnt::LPCWSTR'>LPCWSTR</a>, ppEnum: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.IEnumSpObjectTokens.html' title='winapi::sapi::IEnumSpObjectTokens'>IEnumSpObjectTokens</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub SetDefaultTokenId: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpObjectTokenCategory.html' title='winapi::sapi::ISpObjectTokenCategory'>ISpObjectTokenCategory</a></a>, pszTokenId: <a class='type' href='../../winapi/winnt/type.LPCWSTR.html' title='winapi::winnt::LPCWSTR'>LPCWSTR</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetDefaultTokenId: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpObjectTokenCategory.html' title='winapi::sapi::ISpObjectTokenCategory'>ISpObjectTokenCategory</a></a>, ppszCoMemTokenId: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/winnt/type.LPWSTR.html' title='winapi::winnt::LPWSTR'>LPWSTR</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.parent'><code>parent</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SetId'><code>SetId</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetId'><code>GetId</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetDataKey'><code>GetDataKey</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.EnumTokens'><code>EnumTokens</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SetDefaultTokenId'><code>SetDefaultTokenId</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetDefaultTokenId'><code>GetDefaultTokenId</code></td><td></td></tr></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

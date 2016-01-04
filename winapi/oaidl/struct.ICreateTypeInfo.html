@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `ICreateTypeInfo` struct in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, ICreateTypeInfo">
+
+    <title>winapi::oaidl::ICreateTypeInfo - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a>::<wbr><a href='index.html'>oaidl</a></p><script>window.sidebarCurrent = {name: 'ICreateTypeInfo', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>winapi</a>::<wbr><a href='index.html'>oaidl</a>::<wbr><a class='struct' href=''>ICreateTypeInfo</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-63919' class='srclink' href='../../src/winapi/macros.rs.html#120-122' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct ICreateTypeInfo {
+    pub lpVtbl: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/oaidl/struct.ICreateTypeInfoVtbl.html' title='winapi::oaidl::ICreateTypeInfoVtbl'>ICreateTypeInfoVtbl</a></a>,
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.lpVtbl'><code>lpVtbl</code></td><td></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../winapi/oaidl/struct.ICreateTypeInfo.html' title='winapi::oaidl::ICreateTypeInfo'>ICreateTypeInfo</a></code></h3><div class='impl-items'><h4 id='method.SetGuid' class='method'><code>unsafe fn <a href='#method.SetGuid' class='fnname'>SetGuid</a>(&amp;mut self, guid: <a class='type' href='../../winapi/guiddef/type.REFGUID.html' title='winapi::guiddef::REFGUID'>REFGUID</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.SetTypeFlags' class='method'><code>unsafe fn <a href='#method.SetTypeFlags' class='fnname'>SetTypeFlags</a>(&amp;mut self, uTypeFlags: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.SetDocString' class='method'><code>unsafe fn <a href='#method.SetDocString' class='fnname'>SetDocString</a>(&amp;mut self, pStrDoc: <a class='type' href='../../winapi/wtypesbase/type.LPOLESTR.html' title='winapi::wtypesbase::LPOLESTR'>LPOLESTR</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.SetHelpContext' class='method'><code>unsafe fn <a href='#method.SetHelpContext' class='fnname'>SetHelpContext</a>(&amp;mut self, dwHelpContext: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.SetVersion' class='method'><code>unsafe fn <a href='#method.SetVersion' class='fnname'>SetVersion</a>(&amp;mut self, wMajorVerNum: <a class='type' href='../../winapi/minwindef/type.WORD.html' title='winapi::minwindef::WORD'>WORD</a>, wMinorVerNum: <a class='type' href='../../winapi/minwindef/type.WORD.html' title='winapi::minwindef::WORD'>WORD</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.AddRefTypeInfo' class='method'><code>unsafe fn <a href='#method.AddRefTypeInfo' class='fnname'>AddRefTypeInfo</a>(&amp;mut self, pTInfo: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.AddFuncDesc' class='method'><code>unsafe fn <a href='#method.AddFuncDesc' class='fnname'>AddFuncDesc</a>(&amp;mut self, index: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, pFuncDesc: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.FUNCDESC.html' title='winapi::oaidl::FUNCDESC'>FUNCDESC</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.SetImplTypeFlags' class='method'><code>unsafe fn <a href='#method.SetImplTypeFlags' class='fnname'>SetImplTypeFlags</a>(&amp;mut self, index: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, implTypeFlags: <a class='type' href='../../winapi/minwindef/type.INT.html' title='winapi::minwindef::INT'>INT</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.SetAlignment' class='method'><code>unsafe fn <a href='#method.SetAlignment' class='fnname'>SetAlignment</a>(&amp;mut self, cbAlignment: <a class='type' href='../../winapi/minwindef/type.WORD.html' title='winapi::minwindef::WORD'>WORD</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.SetSchema' class='method'><code>unsafe fn <a href='#method.SetSchema' class='fnname'>SetSchema</a>(&amp;mut self, pStrSchema: <a class='type' href='../../winapi/wtypesbase/type.LPOLESTR.html' title='winapi::wtypesbase::LPOLESTR'>LPOLESTR</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.AddVarDesc' class='method'><code>unsafe fn <a href='#method.AddVarDesc' class='fnname'>AddVarDesc</a>(&amp;mut self, index: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, pVarDesc: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.VARDESC.html' title='winapi::oaidl::VARDESC'>VARDESC</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.SetFuncAndParamNames' class='method'><code>unsafe fn <a href='#method.SetFuncAndParamNames' class='fnname'>SetFuncAndParamNames</a>(&amp;mut self, index: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, rgszNames: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/wtypesbase/type.LPOLESTR.html' title='winapi::wtypesbase::LPOLESTR'>LPOLESTR</a></a>, cNames: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.SetVarName' class='method'><code>unsafe fn <a href='#method.SetVarName' class='fnname'>SetVarName</a>(&amp;mut self, index: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, szName: <a class='type' href='../../winapi/wtypesbase/type.LPOLESTR.html' title='winapi::wtypesbase::LPOLESTR'>LPOLESTR</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.SetTypeDescAlias' class='method'><code>unsafe fn <a href='#method.SetTypeDescAlias' class='fnname'>SetTypeDescAlias</a>(&amp;mut self, pTDescAlias: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.TYPEDESC.html' title='winapi::oaidl::TYPEDESC'>TYPEDESC</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.DefineFuncAsDllEntry' class='method'><code>unsafe fn <a href='#method.DefineFuncAsDllEntry' class='fnname'>DefineFuncAsDllEntry</a>(&amp;mut self, index: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, szDllName: <a class='type' href='../../winapi/wtypesbase/type.LPOLESTR.html' title='winapi::wtypesbase::LPOLESTR'>LPOLESTR</a>, szProcName: <a class='type' href='../../winapi/wtypesbase/type.LPOLESTR.html' title='winapi::wtypesbase::LPOLESTR'>LPOLESTR</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.SetFuncDocString' class='method'><code>unsafe fn <a href='#method.SetFuncDocString' class='fnname'>SetFuncDocString</a>(&amp;mut self, index: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, szDocString: <a class='type' href='../../winapi/wtypesbase/type.LPOLESTR.html' title='winapi::wtypesbase::LPOLESTR'>LPOLESTR</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.SetVarDocString' class='method'><code>unsafe fn <a href='#method.SetVarDocString' class='fnname'>SetVarDocString</a>(&amp;mut self, index: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, szDocString: <a class='type' href='../../winapi/wtypesbase/type.LPOLESTR.html' title='winapi::wtypesbase::LPOLESTR'>LPOLESTR</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.SetFuncHelpContext' class='method'><code>unsafe fn <a href='#method.SetFuncHelpContext' class='fnname'>SetFuncHelpContext</a>(&amp;mut self, index: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, dwHelpContext: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.SetVarHelpContext' class='method'><code>unsafe fn <a href='#method.SetVarHelpContext' class='fnname'>SetVarHelpContext</a>(&amp;mut self, index: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, dwHelpContext: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.SetMops' class='method'><code>unsafe fn <a href='#method.SetMops' class='fnname'>SetMops</a>(&amp;mut self, index: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, bstrMops: <a class='type' href='../../winapi/wtypes/type.BSTR.html' title='winapi::wtypes::BSTR'>BSTR</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.SetTypeIdldesc' class='method'><code>unsafe fn <a href='#method.SetTypeIdldesc' class='fnname'>SetTypeIdldesc</a>(&amp;mut self, pIdlDesc: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.IDLDESC.html' title='winapi::oaidl::IDLDESC'>IDLDESC</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.LayOut' class='method'><code>unsafe fn <a href='#method.LayOut' class='fnname'>LayOut</a>(&amp;mut self) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+</div><h2 id='deref-methods'>Methods from <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Deref.html' title='core::ops::Deref'>Deref</a>&lt;Target=<a class='struct' href='../../winapi/unknwnbase/struct.IUnknown.html' title='winapi::unknwnbase::IUnknown'>IUnknown</a>&gt;</h2><div class='impl-items'><h4 id='method.QueryInterface' class='method'><code>unsafe fn <a href='#method.QueryInterface' class='fnname'>QueryInterface</a>(&amp;mut self, riid: <a class='type' href='../../winapi/guiddef/type.REFIID.html' title='winapi::guiddef::REFIID'>REFIID</a>, ppvObject: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../../winapi/enum.c_void.html' title='winapi::c_void'>c_void</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.AddRef' class='method'><code>unsafe fn <a href='#method.AddRef' class='fnname'>AddRef</a>(&amp;mut self) -&gt; <a class='type' href='../../winapi/minwindef/type.ULONG.html' title='winapi::minwindef::ULONG'>ULONG</a></code></h4>
+<h4 id='method.Release' class='method'><code>unsafe fn <a href='#method.Release' class='fnname'>Release</a>(&amp;mut self) -&gt; <a class='type' href='../../winapi/minwindef/type.ULONG.html' title='winapi::minwindef::ULONG'>ULONG</a></code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Deref.html' title='core::ops::Deref'>Deref</a> for <a class='struct' href='../../winapi/oaidl/struct.ICreateTypeInfo.html' title='winapi::oaidl::ICreateTypeInfo'>ICreateTypeInfo</a></code></h3><div class='impl-items'><h4 id='assoc_type.Target' class='type'><code>type Target = <a class='struct' href='../../winapi/unknwnbase/struct.IUnknown.html' title='winapi::unknwnbase::IUnknown'>IUnknown</a></code></h4>
+<h4 id='method.deref' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Deref.html#method.deref' class='fnname'>deref</a>(&amp;self) -&gt; &amp;<a class='struct' href='../../winapi/unknwnbase/struct.IUnknown.html' title='winapi::unknwnbase::IUnknown'>IUnknown</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.DerefMut.html' title='core::ops::DerefMut'>DerefMut</a> for <a class='struct' href='../../winapi/oaidl/struct.ICreateTypeInfo.html' title='winapi::oaidl::ICreateTypeInfo'>ICreateTypeInfo</a></code></h3><div class='impl-items'><h4 id='method.deref_mut' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.DerefMut.html#method.deref_mut' class='fnname'>deref_mut</a>(&amp;mut self) -&gt; &amp;mut <a class='struct' href='../../winapi/unknwnbase/struct.IUnknown.html' title='winapi::unknwnbase::IUnknown'>IUnknown</a></code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../winapi/oaidl/struct.ICreateTypeInfo.html' title='winapi::oaidl::ICreateTypeInfo'>ICreateTypeInfo</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

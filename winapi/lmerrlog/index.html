@@ -1,0 +1,2082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `lmerrlog` mod in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, lmerrlog">
+
+    <title>winapi::lmerrlog - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a></p><script>window.sidebarCurrent = {name: 'lmerrlog', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>winapi</a>::<wbr><a class='mod' href=''>lmerrlog</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-53277' class='srclink' href='../../src/winapi/lmerrlog.rs.html#3-263' title='goto source code'>[src]</a></span></h1>
+<h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.ERROR_LOG.html'
+                               title='winapi::lmerrlog::ERROR_LOG'>ERROR_LOG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.HLOG.html'
+                               title='winapi::lmerrlog::HLOG'>HLOG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERRLOG2_BASE.html'
+                               title='winapi::lmerrlog::ERRLOG2_BASE'>ERRLOG2_BASE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERRLOG_BASE.html'
+                               title='winapi::lmerrlog::ERRLOG_BASE'>ERRLOG_BASE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.LOGFLAGS_BACKWARD.html'
+                               title='winapi::lmerrlog::LOGFLAGS_BACKWARD'>LOGFLAGS_BACKWARD</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.LOGFLAGS_FORWARD.html'
+                               title='winapi::lmerrlog::LOGFLAGS_FORWARD'>LOGFLAGS_FORWARD</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.LOGFLAGS_SEEK.html'
+                               title='winapi::lmerrlog::LOGFLAGS_SEEK'>LOGFLAGS_SEEK</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_AT_Exec_Err.html'
+                               title='winapi::lmerrlog::NELOG_AT_Exec_Err'>NELOG_AT_Exec_Err</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_AT_cannot_read.html'
+                               title='winapi::lmerrlog::NELOG_AT_cannot_read'>NELOG_AT_cannot_read</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_AT_cannot_write.html'
+                               title='winapi::lmerrlog::NELOG_AT_cannot_write'>NELOG_AT_cannot_write</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_AT_sched_err.html'
+                               title='winapi::lmerrlog::NELOG_AT_sched_err'>NELOG_AT_sched_err</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_AT_schedule_file_created.html'
+                               title='winapi::lmerrlog::NELOG_AT_schedule_file_created'>NELOG_AT_schedule_file_created</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Access_File_Bad.html'
+                               title='winapi::lmerrlog::NELOG_Access_File_Bad'>NELOG_Access_File_Bad</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Build_Name.html'
+                               title='winapi::lmerrlog::NELOG_Build_Name'>NELOG_Build_Name</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Cant_Make_Msg_File.html'
+                               title='winapi::lmerrlog::NELOG_Cant_Make_Msg_File'>NELOG_Cant_Make_Msg_File</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_DiskFT.html'
+                               title='winapi::lmerrlog::NELOG_DiskFT'>NELOG_DiskFT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_DriverNotLoaded.html'
+                               title='winapi::lmerrlog::NELOG_DriverNotLoaded'>NELOG_DriverNotLoaded</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Entries_Lost.html'
+                               title='winapi::lmerrlog::NELOG_Entries_Lost'>NELOG_Entries_Lost</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Error_in_DLL.html'
+                               title='winapi::lmerrlog::NELOG_Error_in_DLL'>NELOG_Error_in_DLL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Exec_Netservr_NoMem.html'
+                               title='winapi::lmerrlog::NELOG_Exec_Netservr_NoMem'>NELOG_Exec_Netservr_NoMem</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_FT_ErrLog_Too_Large.html'
+                               title='winapi::lmerrlog::NELOG_FT_ErrLog_Too_Large'>NELOG_FT_ErrLog_Too_Large</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_FT_Update_In_Progress.html'
+                               title='winapi::lmerrlog::NELOG_FT_Update_In_Progress'>NELOG_FT_Update_In_Progress</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_FailedToGetComputerName.html'
+                               title='winapi::lmerrlog::NELOG_FailedToGetComputerName'>NELOG_FailedToGetComputerName</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_FailedToRegisterSC.html'
+                               title='winapi::lmerrlog::NELOG_FailedToRegisterSC'>NELOG_FailedToRegisterSC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_FailedToSetServiceStatus.html'
+                               title='winapi::lmerrlog::NELOG_FailedToSetServiceStatus'>NELOG_FailedToSetServiceStatus</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_File_Changed.html'
+                               title='winapi::lmerrlog::NELOG_File_Changed'>NELOG_File_Changed</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Files_Dont_Fit.html'
+                               title='winapi::lmerrlog::NELOG_Files_Dont_Fit'>NELOG_Files_Dont_Fit</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_HardErr_From_Server.html'
+                               title='winapi::lmerrlog::NELOG_HardErr_From_Server'>NELOG_HardErr_From_Server</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_HotFix.html'
+                               title='winapi::lmerrlog::NELOG_HotFix'>NELOG_HotFix</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Init_Chardev_Err.html'
+                               title='winapi::lmerrlog::NELOG_Init_Chardev_Err'>NELOG_Init_Chardev_Err</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Init_Exec_Fail.html'
+                               title='winapi::lmerrlog::NELOG_Init_Exec_Fail'>NELOG_Init_Exec_Fail</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Init_OpenCreate_Err.html'
+                               title='winapi::lmerrlog::NELOG_Init_OpenCreate_Err'>NELOG_Init_OpenCreate_Err</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Init_Seg_Overflow.html'
+                               title='winapi::lmerrlog::NELOG_Init_Seg_Overflow'>NELOG_Init_Seg_Overflow</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Internal_Error.html'
+                               title='winapi::lmerrlog::NELOG_Internal_Error'>NELOG_Internal_Error</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Invalid_Config_File.html'
+                               title='winapi::lmerrlog::NELOG_Invalid_Config_File'>NELOG_Invalid_Config_File</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Invalid_Config_Line.html'
+                               title='winapi::lmerrlog::NELOG_Invalid_Config_Line'>NELOG_Invalid_Config_Line</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Ioctl_Error.html'
+                               title='winapi::lmerrlog::NELOG_Ioctl_Error'>NELOG_Ioctl_Error</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Joined_Domain.html'
+                               title='winapi::lmerrlog::NELOG_Joined_Domain'>NELOG_Joined_Domain</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Joined_Workgroup.html'
+                               title='winapi::lmerrlog::NELOG_Joined_Workgroup'>NELOG_Joined_Workgroup</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Lazy_Write_Err.html'
+                               title='winapi::lmerrlog::NELOG_Lazy_Write_Err'>NELOG_Lazy_Write_Err</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_LocalSecFail1.html'
+                               title='winapi::lmerrlog::NELOG_LocalSecFail1'>NELOG_LocalSecFail1</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_LocalSecFail2.html'
+                               title='winapi::lmerrlog::NELOG_LocalSecFail2'>NELOG_LocalSecFail2</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_LocalSecFail3.html'
+                               title='winapi::lmerrlog::NELOG_LocalSecFail3'>NELOG_LocalSecFail3</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_LocalSecGeneralFail.html'
+                               title='winapi::lmerrlog::NELOG_LocalSecGeneralFail'>NELOG_LocalSecGeneralFail</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Mail_Slt_Err.html'
+                               title='winapi::lmerrlog::NELOG_Mail_Slt_Err'>NELOG_Mail_Slt_Err</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Mailslot_err.html'
+                               title='winapi::lmerrlog::NELOG_Mailslot_err'>NELOG_Mailslot_err</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Message_Send.html'
+                               title='winapi::lmerrlog::NELOG_Message_Send'>NELOG_Message_Send</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Missing_Parameter.html'
+                               title='winapi::lmerrlog::NELOG_Missing_Parameter'>NELOG_Missing_Parameter</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Msg_Log_Err.html'
+                               title='winapi::lmerrlog::NELOG_Msg_Log_Err'>NELOG_Msg_Log_Err</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Msg_Sem_Shutdown.html'
+                               title='winapi::lmerrlog::NELOG_Msg_Sem_Shutdown'>NELOG_Msg_Sem_Shutdown</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Msg_Shutdown.html'
+                               title='winapi::lmerrlog::NELOG_Msg_Shutdown'>NELOG_Msg_Shutdown</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Msg_Unexpected_SMB_Type.html'
+                               title='winapi::lmerrlog::NELOG_Msg_Unexpected_SMB_Type'>NELOG_Msg_Unexpected_SMB_Type</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Name_Expansion.html'
+                               title='winapi::lmerrlog::NELOG_Name_Expansion'>NELOG_Name_Expansion</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Ncb_Error.html'
+                               title='winapi::lmerrlog::NELOG_Ncb_Error'>NELOG_Ncb_Error</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Ncb_TooManyErr.html'
+                               title='winapi::lmerrlog::NELOG_Ncb_TooManyErr'>NELOG_Ncb_TooManyErr</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetBios.html'
+                               title='winapi::lmerrlog::NELOG_NetBios'>NELOG_NetBios</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetLogonFailedToInitializeAuthzRm.html'
+                               title='winapi::lmerrlog::NELOG_NetLogonFailedToInitializeAuthzRm'>NELOG_NetLogonFailedToInitializeAuthzRm</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetLogonFailedToInitializeRPCSD.html'
+                               title='winapi::lmerrlog::NELOG_NetLogonFailedToInitializeRPCSD'>NELOG_NetLogonFailedToInitializeRPCSD</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetWkSta_Internal_Error.html'
+                               title='winapi::lmerrlog::NELOG_NetWkSta_Internal_Error'>NELOG_NetWkSta_Internal_Error</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetWkSta_NCB_Err.html'
+                               title='winapi::lmerrlog::NELOG_NetWkSta_NCB_Err'>NELOG_NetWkSta_NCB_Err</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetWkSta_No_Resource.html'
+                               title='winapi::lmerrlog::NELOG_NetWkSta_No_Resource'>NELOG_NetWkSta_No_Resource</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetWkSta_Reset_Err.html'
+                               title='winapi::lmerrlog::NELOG_NetWkSta_Reset_Err'>NELOG_NetWkSta_Reset_Err</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetWkSta_SMB_Err.html'
+                               title='winapi::lmerrlog::NELOG_NetWkSta_SMB_Err'>NELOG_NetWkSta_SMB_Err</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetWkSta_Stuck_VC_Err.html'
+                               title='winapi::lmerrlog::NELOG_NetWkSta_Stuck_VC_Err'>NELOG_NetWkSta_Stuck_VC_Err</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetWkSta_Too_Many.html'
+                               title='winapi::lmerrlog::NELOG_NetWkSta_Too_Many'>NELOG_NetWkSta_Too_Many</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetWkSta_VC_Err.html'
+                               title='winapi::lmerrlog::NELOG_NetWkSta_VC_Err'>NELOG_NetWkSta_VC_Err</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetWkSta_Write_Behind_Err.html'
+                               title='winapi::lmerrlog::NELOG_NetWkSta_Write_Behind_Err'>NELOG_NetWkSta_Write_Behind_Err</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Net_Not_Started.html'
+                               title='winapi::lmerrlog::NELOG_Net_Not_Started'>NELOG_Net_Not_Started</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonAddNameFailure.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonAddNameFailure'>NELOG_NetlogonAddNameFailure</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonAuthDCFail.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonAuthDCFail'>NELOG_NetlogonAuthDCFail</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonAuthDomainDowngraded.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonAuthDomainDowngraded'>NELOG_NetlogonAuthDomainDowngraded</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonAuthNoDomainController.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonAuthNoDomainController'>NELOG_NetlogonAuthNoDomainController</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonAuthNoTrustLsaSecret.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonAuthNoTrustLsaSecret'>NELOG_NetlogonAuthNoTrustLsaSecret</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonAuthNoTrustSamAccount.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonAuthNoTrustSamAccount'>NELOG_NetlogonAuthNoTrustSamAccount</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonAuthNoUplevelDomainController.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonAuthNoUplevelDomainController'>NELOG_NetlogonAuthNoUplevelDomainController</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonBadSiteName.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonBadSiteName'>NELOG_NetlogonBadSiteName</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonBadSubnetName.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonBadSubnetName'>NELOG_NetlogonBadSubnetName</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonBrowserDriver.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonBrowserDriver'>NELOG_NetlogonBrowserDriver</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonChangeLogCorrupt.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonChangeLogCorrupt'>NELOG_NetlogonChangeLogCorrupt</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonDcOldSiteCovered.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonDcOldSiteCovered'>NELOG_NetlogonDcOldSiteCovered</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonDcSiteCovered.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonDcSiteCovered'>NELOG_NetlogonDcSiteCovered</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonDcSiteNotCovered.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonDcSiteNotCovered'>NELOG_NetlogonDcSiteNotCovered</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonDcSiteNotCoveredAuto.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonDcSiteNotCoveredAuto'>NELOG_NetlogonDcSiteNotCoveredAuto</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonDnsDeregAborted.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonDnsDeregAborted'>NELOG_NetlogonDnsDeregAborted</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonDownLevelLogoffFailed.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonDownLevelLogoffFailed'>NELOG_NetlogonDownLevelLogoffFailed</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonDownLevelLogonFailed.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonDownLevelLogonFailed'>NELOG_NetlogonDownLevelLogonFailed</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonDuplicateMachineAccounts.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonDuplicateMachineAccounts'>NELOG_NetlogonDuplicateMachineAccounts</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonDynamicDnsDeregisterFailure.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonDynamicDnsDeregisterFailure'>NELOG_NetlogonDynamicDnsDeregisterFailure</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonDynamicDnsFailure.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonDynamicDnsFailure'>NELOG_NetlogonDynamicDnsFailure</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonDynamicDnsRegisterFailure.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonDynamicDnsRegisterFailure'>NELOG_NetlogonDynamicDnsRegisterFailure</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonDynamicDnsServerFailure.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonDynamicDnsServerFailure'>NELOG_NetlogonDynamicDnsServerFailure</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedAccountDelta.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedAccountDelta'>NELOG_NetlogonFailedAccountDelta</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedDnsHostNameUpdate.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedDnsHostNameUpdate'>NELOG_NetlogonFailedDnsHostNameUpdate</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedDomainDelta.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedDomainDelta'>NELOG_NetlogonFailedDomainDelta</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedFileCreate.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedFileCreate'>NELOG_NetlogonFailedFileCreate</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedGlobalGroupDelta.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedGlobalGroupDelta'>NELOG_NetlogonFailedGlobalGroupDelta</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedLocalGroupDelta.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedLocalGroupDelta'>NELOG_NetlogonFailedLocalGroupDelta</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedPolicyDelta.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedPolicyDelta'>NELOG_NetlogonFailedPolicyDelta</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedPrimary.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedPrimary'>NELOG_NetlogonFailedPrimary</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedSecretDelta.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedSecretDelta'>NELOG_NetlogonFailedSecretDelta</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedSpnUpdate.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedSpnUpdate'>NELOG_NetlogonFailedSpnUpdate</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedToAddAuthzRpcInterface.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedToAddAuthzRpcInterface'>NELOG_NetlogonFailedToAddAuthzRpcInterface</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedToAddRpcInterface.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedToAddRpcInterface'>NELOG_NetlogonFailedToAddRpcInterface</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedToCreateShare.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedToCreateShare'>NELOG_NetlogonFailedToCreateShare</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedToReadMailslot.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedToReadMailslot'>NELOG_NetlogonFailedToReadMailslot</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedToRegisterSC.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedToRegisterSC'>NELOG_NetlogonFailedToRegisterSC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedToUpdateTrustList.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedToUpdateTrustList'>NELOG_NetlogonFailedToUpdateTrustList</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedTrustedDomainDelta.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedTrustedDomainDelta'>NELOG_NetlogonFailedTrustedDomainDelta</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFailedUserDelta.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFailedUserDelta'>NELOG_NetlogonFailedUserDelta</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFullSyncCallFailed.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFullSyncCallFailed'>NELOG_NetlogonFullSyncCallFailed</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFullSyncCallSuccess.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFullSyncCallSuccess'>NELOG_NetlogonFullSyncCallSuccess</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFullSyncFailed.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFullSyncFailed'>NELOG_NetlogonFullSyncFailed</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonFullSyncSuccess.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonFullSyncSuccess'>NELOG_NetlogonFullSyncSuccess</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonGcOldSiteCovered.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonGcOldSiteCovered'>NELOG_NetlogonGcOldSiteCovered</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonGcSiteCovered.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonGcSiteCovered'>NELOG_NetlogonGcSiteCovered</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonGcSiteNotCovered.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonGcSiteNotCovered'>NELOG_NetlogonGcSiteNotCovered</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonGcSiteNotCoveredAuto.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonGcSiteNotCoveredAuto'>NELOG_NetlogonGcSiteNotCoveredAuto</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonGetSubnetToSite.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonGetSubnetToSite'>NELOG_NetlogonGetSubnetToSite</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonInvalidDwordParameterValue.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonInvalidDwordParameterValue'>NELOG_NetlogonInvalidDwordParameterValue</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonInvalidGenericParameterValue.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonInvalidGenericParameterValue'>NELOG_NetlogonInvalidGenericParameterValue</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonLanmanBdcsNotAllowed.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonLanmanBdcsNotAllowed'>NELOG_NetlogonLanmanBdcsNotAllowed</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonMachinePasswdSetSucceeded.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonMachinePasswdSetSucceeded'>NELOG_NetlogonMachinePasswdSetSucceeded</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonMsaPasswdSetSucceeded.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonMsaPasswdSetSucceeded'>NELOG_NetlogonMsaPasswdSetSucceeded</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonNTLogoffFailed.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonNTLogoffFailed'>NELOG_NetlogonNTLogoffFailed</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonNTLogonFailed.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonNTLogonFailed'>NELOG_NetlogonNTLogonFailed</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonNdncOldSiteCovered.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonNdncOldSiteCovered'>NELOG_NetlogonNdncOldSiteCovered</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonNdncSiteCovered.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonNdncSiteCovered'>NELOG_NetlogonNdncSiteCovered</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonNdncSiteNotCovered.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonNdncSiteNotCovered'>NELOG_NetlogonNdncSiteNotCovered</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonNdncSiteNotCoveredAuto.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonNdncSiteNotCoveredAuto'>NELOG_NetlogonNdncSiteNotCoveredAuto</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonNoAddressToSiteMapping.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonNoAddressToSiteMapping'>NELOG_NetlogonNoAddressToSiteMapping</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonNoDynamicDns.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonNoDynamicDns'>NELOG_NetlogonNoDynamicDns</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonNoDynamicDnsManual.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonNoDynamicDnsManual'>NELOG_NetlogonNoDynamicDnsManual</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonNoSiteForClient.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonNoSiteForClient'>NELOG_NetlogonNoSiteForClient</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonNoSiteForClients.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonNoSiteForClients'>NELOG_NetlogonNoSiteForClients</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonPartialSiteMappingForClients.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonPartialSiteMappingForClients'>NELOG_NetlogonPartialSiteMappingForClients</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonPartialSyncCallFailed.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonPartialSyncCallFailed'>NELOG_NetlogonPartialSyncCallFailed</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonPartialSyncCallSuccess.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonPartialSyncCallSuccess'>NELOG_NetlogonPartialSyncCallSuccess</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonPartialSyncFailed.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonPartialSyncFailed'>NELOG_NetlogonPartialSyncFailed</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonPartialSyncSuccess.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonPartialSyncSuccess'>NELOG_NetlogonPartialSyncSuccess</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonPasswdSetFailed.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonPasswdSetFailed'>NELOG_NetlogonPasswdSetFailed</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonRejectedRemoteDynamicDnsDeregister.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonRejectedRemoteDynamicDnsDeregister'>NELOG_NetlogonRejectedRemoteDynamicDnsDeregister</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonRejectedRemoteDynamicDnsRegister.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonRejectedRemoteDynamicDnsRegister'>NELOG_NetlogonRejectedRemoteDynamicDnsRegister</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonRemoteDynamicDnsDeregisterFailure.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonRemoteDynamicDnsDeregisterFailure'>NELOG_NetlogonRemoteDynamicDnsDeregisterFailure</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonRemoteDynamicDnsRegisterFailure.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonRemoteDynamicDnsRegisterFailure'>NELOG_NetlogonRemoteDynamicDnsRegisterFailure</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonRemoteDynamicDnsUpdateRequestFailure.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonRemoteDynamicDnsUpdateRequestFailure'>NELOG_NetlogonRemoteDynamicDnsUpdateRequestFailure</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonRequireSignOrSealError.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonRequireSignOrSealError'>NELOG_NetlogonRequireSignOrSealError</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonRpcCallCancelled.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonRpcCallCancelled'>NELOG_NetlogonRpcCallCancelled</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonRpcPortRequestFailure.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonRpcPortRequestFailure'>NELOG_NetlogonRpcPortRequestFailure</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonSSIInitError.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonSSIInitError'>NELOG_NetlogonSSIInitError</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonServerAuthFailed.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonServerAuthFailed'>NELOG_NetlogonServerAuthFailed</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonServerAuthFailedNoAccount.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonServerAuthFailedNoAccount'>NELOG_NetlogonServerAuthFailedNoAccount</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonServerAuthNoTrustSamAccount.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonServerAuthNoTrustSamAccount'>NELOG_NetlogonServerAuthNoTrustSamAccount</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonSessionTypeWrong.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonSessionTypeWrong'>NELOG_NetlogonSessionTypeWrong</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonSpnCrackNamesFailure.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonSpnCrackNamesFailure'>NELOG_NetlogonSpnCrackNamesFailure</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonSpnMultipleSamAccountNames.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonSpnMultipleSamAccountNames'>NELOG_NetlogonSpnMultipleSamAccountNames</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonSyncError.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonSyncError'>NELOG_NetlogonSyncError</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonSystemError.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonSystemError'>NELOG_NetlogonSystemError</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonTooManyGlobalGroups.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonTooManyGlobalGroups'>NELOG_NetlogonTooManyGlobalGroups</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonTrackingError.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonTrackingError'>NELOG_NetlogonTrackingError</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonUserValidationReqInitialTimeOut.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonUserValidationReqInitialTimeOut'>NELOG_NetlogonUserValidationReqInitialTimeOut</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonUserValidationReqRecurringTimeOut.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonUserValidationReqRecurringTimeOut'>NELOG_NetlogonUserValidationReqRecurringTimeOut</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonUserValidationReqWaitInitialWarning.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonUserValidationReqWaitInitialWarning'>NELOG_NetlogonUserValidationReqWaitInitialWarning</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NetlogonUserValidationReqWaitRecurringWarning.html'
+                               title='winapi::lmerrlog::NELOG_NetlogonUserValidationReqWaitRecurringWarning'>NELOG_NetlogonUserValidationReqWaitRecurringWarning</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_NoTranportLoaded.html'
+                               title='winapi::lmerrlog::NELOG_NoTranportLoaded'>NELOG_NoTranportLoaded</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_OEM_Code.html'
+                               title='winapi::lmerrlog::NELOG_OEM_Code'>NELOG_OEM_Code</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_ReleaseMem_Alert.html'
+                               title='winapi::lmerrlog::NELOG_ReleaseMem_Alert'>NELOG_ReleaseMem_Alert</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Remote_API.html'
+                               title='winapi::lmerrlog::NELOG_Remote_API'>NELOG_Remote_API</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_ReplAccessDenied.html'
+                               title='winapi::lmerrlog::NELOG_ReplAccessDenied'>NELOG_ReplAccessDenied</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_ReplBadExport.html'
+                               title='winapi::lmerrlog::NELOG_ReplBadExport'>NELOG_ReplBadExport</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_ReplBadImport.html'
+                               title='winapi::lmerrlog::NELOG_ReplBadImport'>NELOG_ReplBadImport</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_ReplBadMsg.html'
+                               title='winapi::lmerrlog::NELOG_ReplBadMsg'>NELOG_ReplBadMsg</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_ReplCannotMasterDir.html'
+                               title='winapi::lmerrlog::NELOG_ReplCannotMasterDir'>NELOG_ReplCannotMasterDir</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_ReplLogonFailed.html'
+                               title='winapi::lmerrlog::NELOG_ReplLogonFailed'>NELOG_ReplLogonFailed</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_ReplLostMaster.html'
+                               title='winapi::lmerrlog::NELOG_ReplLostMaster'>NELOG_ReplLostMaster</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_ReplMaxFiles.html'
+                               title='winapi::lmerrlog::NELOG_ReplMaxFiles'>NELOG_ReplMaxFiles</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_ReplMaxTreeDepth.html'
+                               title='winapi::lmerrlog::NELOG_ReplMaxTreeDepth'>NELOG_ReplMaxTreeDepth</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_ReplNetErr.html'
+                               title='winapi::lmerrlog::NELOG_ReplNetErr'>NELOG_ReplNetErr</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_ReplSignalFileErr.html'
+                               title='winapi::lmerrlog::NELOG_ReplSignalFileErr'>NELOG_ReplSignalFileErr</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_ReplSysErr.html'
+                               title='winapi::lmerrlog::NELOG_ReplSysErr'>NELOG_ReplSysErr</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_ReplUpdateError.html'
+                               title='winapi::lmerrlog::NELOG_ReplUpdateError'>NELOG_ReplUpdateError</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_ReplUserCurDir.html'
+                               title='winapi::lmerrlog::NELOG_ReplUserCurDir'>NELOG_ReplUserCurDir</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_ReplUserLoged.html'
+                               title='winapi::lmerrlog::NELOG_ReplUserLoged'>NELOG_ReplUserLoged</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Resource_Shortage.html'
+                               title='winapi::lmerrlog::NELOG_Resource_Shortage'>NELOG_Resource_Shortage</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplAdapterResource.html'
+                               title='winapi::lmerrlog::NELOG_RplAdapterResource'>NELOG_RplAdapterResource</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplBackupDatabase.html'
+                               title='winapi::lmerrlog::NELOG_RplBackupDatabase'>NELOG_RplBackupDatabase</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplCheckConfigs.html'
+                               title='winapi::lmerrlog::NELOG_RplCheckConfigs'>NELOG_RplCheckConfigs</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplCheckSecurity.html'
+                               title='winapi::lmerrlog::NELOG_RplCheckSecurity'>NELOG_RplCheckSecurity</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplCreateProfiles.html'
+                               title='winapi::lmerrlog::NELOG_RplCreateProfiles'>NELOG_RplCreateProfiles</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplFileCopy.html'
+                               title='winapi::lmerrlog::NELOG_RplFileCopy'>NELOG_RplFileCopy</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplFileDelete.html'
+                               title='winapi::lmerrlog::NELOG_RplFileDelete'>NELOG_RplFileDelete</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplFilePerms.html'
+                               title='winapi::lmerrlog::NELOG_RplFilePerms'>NELOG_RplFilePerms</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplInitDatabase.html'
+                               title='winapi::lmerrlog::NELOG_RplInitDatabase'>NELOG_RplInitDatabase</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplInitRestoredDatabase.html'
+                               title='winapi::lmerrlog::NELOG_RplInitRestoredDatabase'>NELOG_RplInitRestoredDatabase</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplMessages.html'
+                               title='winapi::lmerrlog::NELOG_RplMessages'>NELOG_RplMessages</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplRegistry.html'
+                               title='winapi::lmerrlog::NELOG_RplRegistry'>NELOG_RplRegistry</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplReplaceRPLDISK.html'
+                               title='winapi::lmerrlog::NELOG_RplReplaceRPLDISK'>NELOG_RplReplaceRPLDISK</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplRestoreDatabaseFailure.html'
+                               title='winapi::lmerrlog::NELOG_RplRestoreDatabaseFailure'>NELOG_RplRestoreDatabaseFailure</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplRestoreDatabaseSuccess.html'
+                               title='winapi::lmerrlog::NELOG_RplRestoreDatabaseSuccess'>NELOG_RplRestoreDatabaseSuccess</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplSystem.html'
+                               title='winapi::lmerrlog::NELOG_RplSystem'>NELOG_RplSystem</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplUpgradeDBTo40.html'
+                               title='winapi::lmerrlog::NELOG_RplUpgradeDBTo40'>NELOG_RplUpgradeDBTo40</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplWkstaBbcFile.html'
+                               title='winapi::lmerrlog::NELOG_RplWkstaBbcFile'>NELOG_RplWkstaBbcFile</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplWkstaFileChecksum.html'
+                               title='winapi::lmerrlog::NELOG_RplWkstaFileChecksum'>NELOG_RplWkstaFileChecksum</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplWkstaFileLineCount.html'
+                               title='winapi::lmerrlog::NELOG_RplWkstaFileLineCount'>NELOG_RplWkstaFileLineCount</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplWkstaFileOpen.html'
+                               title='winapi::lmerrlog::NELOG_RplWkstaFileOpen'>NELOG_RplWkstaFileOpen</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplWkstaFileRead.html'
+                               title='winapi::lmerrlog::NELOG_RplWkstaFileRead'>NELOG_RplWkstaFileRead</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplWkstaFileSize.html'
+                               title='winapi::lmerrlog::NELOG_RplWkstaFileSize'>NELOG_RplWkstaFileSize</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplWkstaInternal.html'
+                               title='winapi::lmerrlog::NELOG_RplWkstaInternal'>NELOG_RplWkstaInternal</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplWkstaMemory.html'
+                               title='winapi::lmerrlog::NELOG_RplWkstaMemory'>NELOG_RplWkstaMemory</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplWkstaNetwork.html'
+                               title='winapi::lmerrlog::NELOG_RplWkstaNetwork'>NELOG_RplWkstaNetwork</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplWkstaTimeout.html'
+                               title='winapi::lmerrlog::NELOG_RplWkstaTimeout'>NELOG_RplWkstaTimeout</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplWkstaWrongVersion.html'
+                               title='winapi::lmerrlog::NELOG_RplWkstaWrongVersion'>NELOG_RplWkstaWrongVersion</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_RplXnsBoot.html'
+                               title='winapi::lmerrlog::NELOG_RplXnsBoot'>NELOG_RplXnsBoot</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_SMB_Illegal.html'
+                               title='winapi::lmerrlog::NELOG_SMB_Illegal'>NELOG_SMB_Illegal</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Server_Lock_Failure.html'
+                               title='winapi::lmerrlog::NELOG_Server_Lock_Failure'>NELOG_Server_Lock_Failure</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Service_Fail.html'
+                               title='winapi::lmerrlog::NELOG_Service_Fail'>NELOG_Service_Fail</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Srv_Close_Failure.html'
+                               title='winapi::lmerrlog::NELOG_Srv_Close_Failure'>NELOG_Srv_Close_Failure</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Srv_No_Mem_Grow.html'
+                               title='winapi::lmerrlog::NELOG_Srv_No_Mem_Grow'>NELOG_Srv_No_Mem_Grow</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Srv_Thread_Failure.html'
+                               title='winapi::lmerrlog::NELOG_Srv_Thread_Failure'>NELOG_Srv_Thread_Failure</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Srvnet_NB_Open.html'
+                               title='winapi::lmerrlog::NELOG_Srvnet_NB_Open'>NELOG_Srvnet_NB_Open</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Srvnet_Not_Started.html'
+                               title='winapi::lmerrlog::NELOG_Srvnet_Not_Started'>NELOG_Srvnet_Not_Started</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_System_Error.html'
+                               title='winapi::lmerrlog::NELOG_System_Error'>NELOG_System_Error</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_System_Semaphore.html'
+                               title='winapi::lmerrlog::NELOG_System_Semaphore'>NELOG_System_Semaphore</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_UPS_CannotOpenDriver.html'
+                               title='winapi::lmerrlog::NELOG_UPS_CannotOpenDriver'>NELOG_UPS_CannotOpenDriver</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_UPS_CmdFileConfig.html'
+                               title='winapi::lmerrlog::NELOG_UPS_CmdFileConfig'>NELOG_UPS_CmdFileConfig</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_UPS_CmdFileError.html'
+                               title='winapi::lmerrlog::NELOG_UPS_CmdFileError'>NELOG_UPS_CmdFileError</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_UPS_CmdFileExec.html'
+                               title='winapi::lmerrlog::NELOG_UPS_CmdFileExec'>NELOG_UPS_CmdFileExec</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_UPS_PowerBack.html'
+                               title='winapi::lmerrlog::NELOG_UPS_PowerBack'>NELOG_UPS_PowerBack</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_UPS_PowerOut.html'
+                               title='winapi::lmerrlog::NELOG_UPS_PowerOut'>NELOG_UPS_PowerOut</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_UPS_Shutdown.html'
+                               title='winapi::lmerrlog::NELOG_UPS_Shutdown'>NELOG_UPS_Shutdown</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Unable_To_Lock_Segment.html'
+                               title='winapi::lmerrlog::NELOG_Unable_To_Lock_Segment'>NELOG_Unable_To_Lock_Segment</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Unable_To_Unlock_Segment.html'
+                               title='winapi::lmerrlog::NELOG_Unable_To_Unlock_Segment'>NELOG_Unable_To_Unlock_Segment</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Uninstall_Service.html'
+                               title='winapi::lmerrlog::NELOG_Uninstall_Service'>NELOG_Uninstall_Service</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_VIO_POPUP_ERR.html'
+                               title='winapi::lmerrlog::NELOG_VIO_POPUP_ERR'>NELOG_VIO_POPUP_ERR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Wksta_Bad_Mailslot_SMB.html'
+                               title='winapi::lmerrlog::NELOG_Wksta_Bad_Mailslot_SMB'>NELOG_Wksta_Bad_Mailslot_SMB</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Wksta_BiosThreadFailure.html'
+                               title='winapi::lmerrlog::NELOG_Wksta_BiosThreadFailure'>NELOG_Wksta_BiosThreadFailure</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Wksta_Compname.html'
+                               title='winapi::lmerrlog::NELOG_Wksta_Compname'>NELOG_Wksta_Compname</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Wksta_HostTab_Full.html'
+                               title='winapi::lmerrlog::NELOG_Wksta_HostTab_Full'>NELOG_Wksta_HostTab_Full</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Wksta_Infoseg.html'
+                               title='winapi::lmerrlog::NELOG_Wksta_Infoseg'>NELOG_Wksta_Infoseg</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Wksta_IniSeg.html'
+                               title='winapi::lmerrlog::NELOG_Wksta_IniSeg'>NELOG_Wksta_IniSeg</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Wksta_SSIRelogon.html'
+                               title='winapi::lmerrlog::NELOG_Wksta_SSIRelogon'>NELOG_Wksta_SSIRelogon</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Wksta_UASInit.html'
+                               title='winapi::lmerrlog::NELOG_Wksta_UASInit'>NELOG_Wksta_UASInit</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NELOG_Wrong_DLL_Version.html'
+                               title='winapi::lmerrlog::NELOG_Wrong_DLL_Version'>NELOG_Wrong_DLL_Version</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.LPERROR_LOG.html'
+                               title='winapi::lmerrlog::LPERROR_LOG'>LPERROR_LOG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.LPHLOG.html'
+                               title='winapi::lmerrlog::LPHLOG'>LPHLOG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PERROR_LOG.html'
+                               title='winapi::lmerrlog::PERROR_LOG'>PERROR_LOG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PHLOG.html'
+                               title='winapi::lmerrlog::PHLOG'>PHLOG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

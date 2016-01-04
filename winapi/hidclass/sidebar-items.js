@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["HID_COLLECTION_INFORMATION",""]],"type":[["PHIDP_PREPARSED_DATA",""],["PHID_COLLECTION_INFORMATION",""]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["BLOB",""],["BYTE_SIZEDARR",""],["DWORD_SIZEDARR",""],["FLAGGED_WORD_BLOB",""],["HYPER_SIZEDARR",""],["WORD_SIZEDARR",""]],"type":[["DOUBLE",""],["LPBLOB",""],["LPCOLESTR",""],["LPOLESTR",""],["OLECHAR",""],["PSCODE",""],["SCODE",""]]});

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-88ac128001ac3a9a\winapi-0.2.5\src\winnls.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
+
+    <title>winnls.rs.html -- source</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content source"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+</pre><pre class='rust '>
+<span class='comment'>// Copyright © 2015, Peter Atashian</span>
+<span class='comment'>// Licensed under the MIT License &lt;LICENSE.md&gt;</span>
+<span class='doccomment'>//! Procedure declarations, constant definitions, and macros for the NLS component.</span>
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CP_ACP</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>0</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CP_OEMCP</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>1</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CP_MACCP</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>2</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CP_THREAD_ACP</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>3</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CP_SYMBOL</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>42</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CP_UTF7</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>65000</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CP_UTF8</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>65001</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>MAX_LEADBYTES</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>12</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>MAX_DEFAULTCHAR</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>2</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LGRPID</span> <span class='op'>=</span> ::<span class='ident'>DWORD</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LCTYPE</span> <span class='op'>=</span> ::<span class='ident'>DWORD</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>CALTYPE</span> <span class='op'>=</span> ::<span class='ident'>DWORD</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>CALID</span> <span class='op'>=</span> ::<span class='ident'>DWORD</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>GEOID</span> <span class='op'>=</span> ::<span class='ident'>LONG</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>GEOTYPE</span> <span class='op'>=</span> ::<span class='ident'>DWORD</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>GEOCLASS</span> <span class='op'>=</span> ::<span class='ident'>DWORD</span>;
+<span class='macro'>STRUCT</span><span class='macro'>!</span>{<span class='kw'>struct</span> <span class='ident'>NLSVERSIONINFO</span> {
+    <span class='ident'>dwNLSVersionInfoSize</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>dwNLSVersion</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>dwDefinedVersion</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>dwEffectiveId</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>guidCustomVersion</span>: ::<span class='ident'>GUID</span>,
+}}
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LPNLSVERSIONINFO</span> <span class='op'>=</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>NLSVERSIONINFO</span>;
+<span class='macro'>STRUCT</span><span class='macro'>!</span>{<span class='kw'>struct</span> <span class='ident'>NLSVERSIONINFOEX</span> {
+    <span class='ident'>dwNLSVersionInfoSize</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>dwNLSVersion</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>dwDefinedVersion</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>dwEffectiveId</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>guidCustomVersion</span>: ::<span class='ident'>GUID</span>,
+}}
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LPNLSVERSIONINFOEX</span> <span class='op'>=</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>NLSVERSIONINFOEX</span>;
+<span class='macro'>ENUM</span><span class='macro'>!</span>{<span class='kw'>enum</span> <span class='ident'>NORM_FORM</span> {
+    <span class='ident'>NormalizationOther</span> <span class='op'>=</span> <span class='number'>0</span>,
+    <span class='ident'>NormalizationC</span> <span class='op'>=</span> <span class='number'>0x1</span>,
+    <span class='ident'>NormalizationD</span> <span class='op'>=</span> <span class='number'>0x2</span>,
+    <span class='ident'>NormalizationKC</span> <span class='op'>=</span> <span class='number'>0x5</span>,
+    <span class='ident'>NormalizationKD</span> <span class='op'>=</span> <span class='number'>0x6</span>,
+}}
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LANGUAGEGROUP_ENUMPROCA</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(
+    ::<span class='ident'>LGRPID</span>, ::<span class='ident'>LPSTR</span>, ::<span class='ident'>LPSTR</span>, ::<span class='ident'>DWORD</span>, ::<span class='ident'>LONG_PTR</span>,
+) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LANGGROUPLOCALE_ENUMPROCA</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(
+    ::<span class='ident'>LGRPID</span>, ::<span class='ident'>LCID</span>, ::<span class='ident'>LPSTR</span>, ::<span class='ident'>LONG_PTR</span>,
+) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>UILANGUAGE_ENUMPROCA</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(::<span class='ident'>LPSTR</span>, ::<span class='ident'>LONG_PTR</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>CODEPAGE_ENUMPROCA</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(::<span class='ident'>LPSTR</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>DATEFMT_ENUMPROCA</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(::<span class='ident'>LPSTR</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>DATEFMT_ENUMPROCEXA</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(::<span class='ident'>LPSTR</span>, ::<span class='ident'>CALID</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>TIMEFMT_ENUMPROCA</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(::<span class='ident'>LPSTR</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>CALINFO_ENUMPROCA</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(::<span class='ident'>LPSTR</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>CALINFO_ENUMPROCEXA</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(::<span class='ident'>LPSTR</span>, ::<span class='ident'>CALID</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LOCALE_ENUMPROCA</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(::<span class='ident'>LPSTR</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LOCALE_ENUMPROCW</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(::<span class='ident'>LPWSTR</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LANGUAGEGROUP_ENUMPROCW</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(
+    ::<span class='ident'>LGRPID</span>, ::<span class='ident'>LPWSTR</span>, ::<span class='ident'>LPWSTR</span>, ::<span class='ident'>DWORD</span>, ::<span class='ident'>LONG_PTR</span>,
+) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LANGGROUPLOCALE_ENUMPROCW</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(
+    ::<span class='ident'>LGRPID</span>, ::<span class='ident'>LCID</span>, ::<span class='ident'>LPWSTR</span>, ::<span class='ident'>LONG_PTR</span>,
+) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>UILANGUAGE_ENUMPROCW</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(::<span class='ident'>LPWSTR</span>, ::<span class='ident'>LONG_PTR</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>CODEPAGE_ENUMPROCW</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(::<span class='ident'>LPWSTR</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>DATEFMT_ENUMPROCW</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(::<span class='ident'>LPWSTR</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>DATEFMT_ENUMPROCEXW</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(::<span class='ident'>LPWSTR</span>, ::<span class='ident'>CALID</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>TIMEFMT_ENUMPROCW</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(::<span class='ident'>LPWSTR</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>CALINFO_ENUMPROCW</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(::<span class='ident'>LPWSTR</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>CALINFO_ENUMPROCEXW</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(::<span class='ident'>LPWSTR</span>, ::<span class='ident'>CALID</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>GEO_ENUMPROC</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(<span class='ident'>GEOID</span>) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='macro'>STRUCT</span><span class='macro'>!</span>{<span class='kw'>struct</span> <span class='ident'>CPINFO</span> {
+    <span class='ident'>MaxCharSize</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>DefaultChar</span>: [::<span class='ident'>BYTE</span>; <span class='ident'>MAX_DEFAULTCHAR</span>],
+    <span class='ident'>LeadByte</span>: [::<span class='ident'>BYTE</span>; <span class='ident'>MAX_LEADBYTES</span>],
+}}
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LPCPINFO</span> <span class='op'>=</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>CPINFO</span>;
+<span class='attribute'>#[<span class='ident'>repr</span>(<span class='ident'>C</span>)]</span> <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>CPINFOEXA</span> {
+    <span class='kw'>pub</span> <span class='ident'>MaxCharSize</span>: ::<span class='ident'>UINT</span>,
+    <span class='kw'>pub</span> <span class='ident'>DefaultChar</span>: [::<span class='ident'>BYTE</span>; <span class='ident'>MAX_DEFAULTCHAR</span>],
+    <span class='kw'>pub</span> <span class='ident'>LeadByte</span>: [::<span class='ident'>BYTE</span>; <span class='ident'>MAX_LEADBYTES</span>],
+    <span class='kw'>pub</span> <span class='ident'>UnicodeDefaultChar</span>: ::<span class='ident'>WCHAR</span>,
+    <span class='kw'>pub</span> <span class='ident'>CodePage</span>: ::<span class='ident'>UINT</span>,
+    <span class='kw'>pub</span> <span class='ident'>CodePageName</span>: [::<span class='ident'>CHAR</span>; ::<span class='ident'>MAX_PATH</span>],
+}
+<span class='kw'>impl</span> <span class='ident'>Clone</span> <span class='kw'>for</span> <span class='ident'>CPINFOEXA</span> { <span class='kw'>fn</span> <span class='ident'>clone</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>CPINFOEXA</span>{ <span class='op'>*</span><span class='self'>self</span> } }
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LPCPINFOEXA</span> <span class='op'>=</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>CPINFOEXA</span>;
+<span class='attribute'>#[<span class='ident'>repr</span>(<span class='ident'>C</span>)]</span> <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>CPINFOEXW</span> {
+    <span class='kw'>pub</span> <span class='ident'>MaxCharSize</span>: ::<span class='ident'>UINT</span>,
+    <span class='kw'>pub</span> <span class='ident'>DefaultChar</span>: [::<span class='ident'>BYTE</span>; <span class='ident'>MAX_DEFAULTCHAR</span>],
+    <span class='kw'>pub</span> <span class='ident'>LeadByte</span>: [::<span class='ident'>BYTE</span>; <span class='ident'>MAX_LEADBYTES</span>],
+    <span class='kw'>pub</span> <span class='ident'>UnicodeDefaultChar</span>: ::<span class='ident'>WCHAR</span>,
+    <span class='kw'>pub</span> <span class='ident'>CodePage</span>: ::<span class='ident'>UINT</span>,
+    <span class='kw'>pub</span> <span class='ident'>CodePageName</span>: [::<span class='ident'>WCHAR</span>; ::<span class='ident'>MAX_PATH</span>],
+}
+<span class='kw'>impl</span> <span class='ident'>Clone</span> <span class='kw'>for</span> <span class='ident'>CPINFOEXW</span> { <span class='kw'>fn</span> <span class='ident'>clone</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>CPINFOEXW</span>{ <span class='op'>*</span><span class='self'>self</span> } }
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LPCPINFOEXW</span> <span class='op'>=</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>CPINFOEXW</span>;
+<span class='macro'>STRUCT</span><span class='macro'>!</span>{<span class='kw'>struct</span> <span class='ident'>NUMBERFMTA</span> {
+    <span class='ident'>NumDigits</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>LeadingZero</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>Grouping</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>lpDecimalSep</span>: ::<span class='ident'>LPSTR</span>,
+    <span class='ident'>lpThousandSep</span>: ::<span class='ident'>LPSTR</span>,
+    <span class='ident'>NegativeOrder</span>: ::<span class='ident'>UINT</span>,
+}}
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LPNUMBERFMTA</span> <span class='op'>=</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>NUMBERFMTA</span>;
+<span class='macro'>STRUCT</span><span class='macro'>!</span>{<span class='kw'>struct</span> <span class='ident'>NUMBERFMTW</span> {
+    <span class='ident'>NumDigits</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>LeadingZero</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>Grouping</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>lpDecimalSep</span>: ::<span class='ident'>LPWSTR</span>,
+    <span class='ident'>lpThousandSep</span>: ::<span class='ident'>LPWSTR</span>,
+    <span class='ident'>NegativeOrder</span>: ::<span class='ident'>UINT</span>,
+}}
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LPNUMBERFMTW</span> <span class='op'>=</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>NUMBERFMTW</span>;
+<span class='macro'>STRUCT</span><span class='macro'>!</span>{<span class='kw'>struct</span> <span class='ident'>CURRENCYFMTA</span> {
+    <span class='ident'>NumDigits</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>LeadingZero</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>Grouping</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>lpDecimalSep</span>: ::<span class='ident'>LPSTR</span>,
+    <span class='ident'>lpThousandSep</span>: ::<span class='ident'>LPSTR</span>,
+    <span class='ident'>NegativeOrder</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>PositiveOrder</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>lpCurrencySymbol</span>: ::<span class='ident'>LPSTR</span>,
+}}
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LPCURRENCYFMTA</span> <span class='op'>=</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>CURRENCYFMTA</span>;
+<span class='macro'>STRUCT</span><span class='macro'>!</span>{<span class='kw'>struct</span> <span class='ident'>CURRENCYFMTW</span> {
+    <span class='ident'>NumDigits</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>LeadingZero</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>Grouping</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>lpDecimalSep</span>: ::<span class='ident'>LPWSTR</span>,
+    <span class='ident'>lpThousandSep</span>: ::<span class='ident'>LPWSTR</span>,
+    <span class='ident'>NegativeOrder</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>PositiveOrder</span>: ::<span class='ident'>UINT</span>,
+    <span class='ident'>lpCurrencySymbol</span>: ::<span class='ident'>LPWSTR</span>,
+}}
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LPCURRENCYFMTW</span> <span class='op'>=</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>CURRENCYFMTW</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>NLS_FUNCTION</span> <span class='op'>=</span> ::<span class='ident'>DWORD</span>;
+<span class='macro'>STRUCT</span><span class='macro'>!</span>{<span class='kw'>struct</span> <span class='ident'>FILEMUIINFO</span> {
+    <span class='ident'>dwSize</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>dwVersion</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>dwFileType</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>pChecksum</span>: [::<span class='ident'>BYTE</span>; <span class='number'>16</span>],
+    <span class='ident'>pServiceChecksum</span>: [::<span class='ident'>BYTE</span>; <span class='number'>16</span>],
+    <span class='ident'>dwLanguageNameOffset</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>dwTypeIDMainSize</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>dwTypeIDMainOffset</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>dwTypeNameMainOffset</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>dwTypeIDMUISize</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>dwTypeIDMUIOffset</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>dwTypeNameMUIOffset</span>: ::<span class='ident'>DWORD</span>,
+    <span class='ident'>abBuffer</span>: [::<span class='ident'>BYTE</span>; <span class='number'>8</span>],
+}}
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>PFILEMUIINFO</span> <span class='op'>=</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>FILEMUIINFO</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>CALINFO_ENUMPROCEXEX</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(
+    ::<span class='ident'>LPWSTR</span>, ::<span class='ident'>CALID</span>, ::<span class='ident'>LPWSTR</span>, ::<span class='ident'>LPARAM</span>,
+) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>DATEFMT_ENUMPROCEXEX</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(
+    ::<span class='ident'>LPWSTR</span>, ::<span class='ident'>CALID</span>, ::<span class='ident'>LPARAM</span>,
+) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>TIMEFMT_ENUMPROCEX</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(
+    ::<span class='ident'>LPWSTR</span>, ::<span class='ident'>LPARAM</span>,
+) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LOCALE_ENUMPROCEX</span> <span class='op'>=</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw'>unsafe</span> <span class='kw'>extern</span> <span class='string'>&quot;system&quot;</span> <span class='kw'>fn</span>(
+    ::<span class='ident'>LPWSTR</span>, ::<span class='ident'>DWORD</span>, ::<span class='ident'>LPARAM</span>,
+) <span class='op'>-&gt;</span> ::<span class='ident'>BOOL</span><span class='op'>&gt;</span>;
+</pre>
+</section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

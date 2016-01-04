@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `dsgetdc` mod in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, dsgetdc">
+
+    <title>winapi::dsgetdc - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a></p><script>window.sidebarCurrent = {name: 'dsgetdc', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>winapi</a>::<wbr><a class='mod' href=''>dsgetdc</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-39666' class='srclink' href='../../src/winapi/dsgetdc.rs.html#3-113' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>This file contains structures, function prototypes, and definitions for the DsGetDcName API.</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DOMAIN_CONTROLLER_INFOA.html'
+                               title='winapi::dsgetdc::DOMAIN_CONTROLLER_INFOA'>DOMAIN_CONTROLLER_INFOA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DOMAIN_CONTROLLER_INFOW.html'
+                               title='winapi::dsgetdc::DOMAIN_CONTROLLER_INFOW'>DOMAIN_CONTROLLER_INFOW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DS_DOMAIN_TRUSTSA.html'
+                               title='winapi::dsgetdc::DS_DOMAIN_TRUSTSA'>DS_DOMAIN_TRUSTSA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DS_DOMAIN_TRUSTSW.html'
+                               title='winapi::dsgetdc::DS_DOMAIN_TRUSTSW'>DS_DOMAIN_TRUSTSW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DSGETDC_VALID_FLAGS.html'
+                               title='winapi::dsgetdc::DSGETDC_VALID_FLAGS'>DSGETDC_VALID_FLAGS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_AVOID_SELF.html'
+                               title='winapi::dsgetdc::DS_AVOID_SELF'>DS_AVOID_SELF</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_BACKGROUND_ONLY.html'
+                               title='winapi::dsgetdc::DS_BACKGROUND_ONLY'>DS_BACKGROUND_ONLY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_CLOSEST_FLAG.html'
+                               title='winapi::dsgetdc::DS_CLOSEST_FLAG'>DS_CLOSEST_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DIRECTORY_SERVICE_6_REQUIRED.html'
+                               title='winapi::dsgetdc::DS_DIRECTORY_SERVICE_6_REQUIRED'>DS_DIRECTORY_SERVICE_6_REQUIRED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DIRECTORY_SERVICE_8_REQUIRED.html'
+                               title='winapi::dsgetdc::DS_DIRECTORY_SERVICE_8_REQUIRED'>DS_DIRECTORY_SERVICE_8_REQUIRED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DIRECTORY_SERVICE_9_REQUIRED.html'
+                               title='winapi::dsgetdc::DS_DIRECTORY_SERVICE_9_REQUIRED'>DS_DIRECTORY_SERVICE_9_REQUIRED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DIRECTORY_SERVICE_PREFERRED.html'
+                               title='winapi::dsgetdc::DS_DIRECTORY_SERVICE_PREFERRED'>DS_DIRECTORY_SERVICE_PREFERRED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DIRECTORY_SERVICE_REQUIRED.html'
+                               title='winapi::dsgetdc::DS_DIRECTORY_SERVICE_REQUIRED'>DS_DIRECTORY_SERVICE_REQUIRED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DNS_CONTROLLER_FLAG.html'
+                               title='winapi::dsgetdc::DS_DNS_CONTROLLER_FLAG'>DS_DNS_CONTROLLER_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DNS_DOMAIN_FLAG.html'
+                               title='winapi::dsgetdc::DS_DNS_DOMAIN_FLAG'>DS_DNS_DOMAIN_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DNS_FOREST_FLAG.html'
+                               title='winapi::dsgetdc::DS_DNS_FOREST_FLAG'>DS_DNS_FOREST_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DOMAIN_DIRECT_INBOUND.html'
+                               title='winapi::dsgetdc::DS_DOMAIN_DIRECT_INBOUND'>DS_DOMAIN_DIRECT_INBOUND</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DOMAIN_DIRECT_OUTBOUND.html'
+                               title='winapi::dsgetdc::DS_DOMAIN_DIRECT_OUTBOUND'>DS_DOMAIN_DIRECT_OUTBOUND</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DOMAIN_IN_FOREST.html'
+                               title='winapi::dsgetdc::DS_DOMAIN_IN_FOREST'>DS_DOMAIN_IN_FOREST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DOMAIN_NATIVE_MODE.html'
+                               title='winapi::dsgetdc::DS_DOMAIN_NATIVE_MODE'>DS_DOMAIN_NATIVE_MODE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DOMAIN_PRIMARY.html'
+                               title='winapi::dsgetdc::DS_DOMAIN_PRIMARY'>DS_DOMAIN_PRIMARY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DOMAIN_TREE_ROOT.html'
+                               title='winapi::dsgetdc::DS_DOMAIN_TREE_ROOT'>DS_DOMAIN_TREE_ROOT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DOMAIN_VALID_FLAGS.html'
+                               title='winapi::dsgetdc::DS_DOMAIN_VALID_FLAGS'>DS_DOMAIN_VALID_FLAGS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DS_8_FLAG.html'
+                               title='winapi::dsgetdc::DS_DS_8_FLAG'>DS_DS_8_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DS_9_FLAG.html'
+                               title='winapi::dsgetdc::DS_DS_9_FLAG'>DS_DS_9_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_DS_FLAG.html'
+                               title='winapi::dsgetdc::DS_DS_FLAG'>DS_DS_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_FORCE_REDISCOVERY.html'
+                               title='winapi::dsgetdc::DS_FORCE_REDISCOVERY'>DS_FORCE_REDISCOVERY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_FULL_SECRET_DOMAIN_6_FLAG.html'
+                               title='winapi::dsgetdc::DS_FULL_SECRET_DOMAIN_6_FLAG'>DS_FULL_SECRET_DOMAIN_6_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_GC_FLAG.html'
+                               title='winapi::dsgetdc::DS_GC_FLAG'>DS_GC_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_GC_SERVER_REQUIRED.html'
+                               title='winapi::dsgetdc::DS_GC_SERVER_REQUIRED'>DS_GC_SERVER_REQUIRED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_GOOD_TIMESERV_FLAG.html'
+                               title='winapi::dsgetdc::DS_GOOD_TIMESERV_FLAG'>DS_GOOD_TIMESERV_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_GOOD_TIMESERV_PREFERRED.html'
+                               title='winapi::dsgetdc::DS_GOOD_TIMESERV_PREFERRED'>DS_GOOD_TIMESERV_PREFERRED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_INET_ADDRESS.html'
+                               title='winapi::dsgetdc::DS_INET_ADDRESS'>DS_INET_ADDRESS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_IP_REQUIRED.html'
+                               title='winapi::dsgetdc::DS_IP_REQUIRED'>DS_IP_REQUIRED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_IS_DNS_NAME.html'
+                               title='winapi::dsgetdc::DS_IS_DNS_NAME'>DS_IS_DNS_NAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_IS_FLAT_NAME.html'
+                               title='winapi::dsgetdc::DS_IS_FLAT_NAME'>DS_IS_FLAT_NAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_KDC_FLAG.html'
+                               title='winapi::dsgetdc::DS_KDC_FLAG'>DS_KDC_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_KDC_REQUIRED.html'
+                               title='winapi::dsgetdc::DS_KDC_REQUIRED'>DS_KDC_REQUIRED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_LDAP_FLAG.html'
+                               title='winapi::dsgetdc::DS_LDAP_FLAG'>DS_LDAP_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_NDNC_FLAG.html'
+                               title='winapi::dsgetdc::DS_NDNC_FLAG'>DS_NDNC_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_NETBIOS_ADDRESS.html'
+                               title='winapi::dsgetdc::DS_NETBIOS_ADDRESS'>DS_NETBIOS_ADDRESS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_NOTIFY_AFTER_SITE_RECORDS.html'
+                               title='winapi::dsgetdc::DS_NOTIFY_AFTER_SITE_RECORDS'>DS_NOTIFY_AFTER_SITE_RECORDS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_ONLY_DO_SITE_NAME.html'
+                               title='winapi::dsgetdc::DS_ONLY_DO_SITE_NAME'>DS_ONLY_DO_SITE_NAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_ONLY_LDAP_NEEDED.html'
+                               title='winapi::dsgetdc::DS_ONLY_LDAP_NEEDED'>DS_ONLY_LDAP_NEEDED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_OPEN_VALID_FLAGS.html'
+                               title='winapi::dsgetdc::DS_OPEN_VALID_FLAGS'>DS_OPEN_VALID_FLAGS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_OPEN_VALID_OPTION_FLAGS.html'
+                               title='winapi::dsgetdc::DS_OPEN_VALID_OPTION_FLAGS'>DS_OPEN_VALID_OPTION_FLAGS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_PDC_FLAG.html'
+                               title='winapi::dsgetdc::DS_PDC_FLAG'>DS_PDC_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_PDC_REQUIRED.html'
+                               title='winapi::dsgetdc::DS_PDC_REQUIRED'>DS_PDC_REQUIRED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_PING_FLAGS.html'
+                               title='winapi::dsgetdc::DS_PING_FLAGS'>DS_PING_FLAGS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_RETURN_DNS_NAME.html'
+                               title='winapi::dsgetdc::DS_RETURN_DNS_NAME'>DS_RETURN_DNS_NAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_RETURN_FLAT_NAME.html'
+                               title='winapi::dsgetdc::DS_RETURN_FLAT_NAME'>DS_RETURN_FLAT_NAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_SELECT_SECRET_DOMAIN_6_FLAG.html'
+                               title='winapi::dsgetdc::DS_SELECT_SECRET_DOMAIN_6_FLAG'>DS_SELECT_SECRET_DOMAIN_6_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_TIMESERV_FLAG.html'
+                               title='winapi::dsgetdc::DS_TIMESERV_FLAG'>DS_TIMESERV_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_TIMESERV_REQUIRED.html'
+                               title='winapi::dsgetdc::DS_TIMESERV_REQUIRED'>DS_TIMESERV_REQUIRED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_TRY_NEXTCLOSEST_SITE.html'
+                               title='winapi::dsgetdc::DS_TRY_NEXTCLOSEST_SITE'>DS_TRY_NEXTCLOSEST_SITE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_WEB_SERVICE_REQUIRED.html'
+                               title='winapi::dsgetdc::DS_WEB_SERVICE_REQUIRED'>DS_WEB_SERVICE_REQUIRED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_WRITABLE_FLAG.html'
+                               title='winapi::dsgetdc::DS_WRITABLE_FLAG'>DS_WRITABLE_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_WRITABLE_REQUIRED.html'
+                               title='winapi::dsgetdc::DS_WRITABLE_REQUIRED'>DS_WRITABLE_REQUIRED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DS_WS_FLAG.html'
+                               title='winapi::dsgetdc::DS_WS_FLAG'>DS_WS_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PDOMAIN_CONTROLLER_INFOA.html'
+                               title='winapi::dsgetdc::PDOMAIN_CONTROLLER_INFOA'>PDOMAIN_CONTROLLER_INFOA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PDOMAIN_CONTROLLER_INFOW.html'
+                               title='winapi::dsgetdc::PDOMAIN_CONTROLLER_INFOW'>PDOMAIN_CONTROLLER_INFOW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PDS_DOMAIN_TRUSTSA.html'
+                               title='winapi::dsgetdc::PDS_DOMAIN_TRUSTSA'>PDS_DOMAIN_TRUSTSA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PDS_DOMAIN_TRUSTSW.html'
+                               title='winapi::dsgetdc::PDS_DOMAIN_TRUSTSW'>PDS_DOMAIN_TRUSTSW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

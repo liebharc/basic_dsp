@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `IDirect3DDevice9ExVtbl` struct in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, IDirect3DDevice9ExVtbl">
+
+    <title>winapi::d3d9::IDirect3DDevice9ExVtbl - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a>::<wbr><a href='index.html'>d3d9</a></p><script>window.sidebarCurrent = {name: 'IDirect3DDevice9ExVtbl', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>winapi</a>::<wbr><a href='index.html'>d3d9</a>::<wbr><a class='struct' href=''>IDirect3DDevice9ExVtbl</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-15168' class='srclink' href='../../src/winapi/macros.rs.html#112-118' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct IDirect3DDevice9ExVtbl {
+    pub parent: <a class='struct' href='../../winapi/d3d9/struct.IDirect3DDevice9Vtbl.html' title='winapi::d3d9::IDirect3DDevice9Vtbl'>IDirect3DDevice9Vtbl</a>,
+    pub SetConvolutionMonoKernel: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DDevice9Ex.html' title='winapi::d3d9::IDirect3DDevice9Ex'>IDirect3DDevice9Ex</a></a>, width: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, height: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, rows: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/minwindef/type.FLOAT.html' title='winapi::minwindef::FLOAT'>FLOAT</a></a>, columns: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/minwindef/type.FLOAT.html' title='winapi::minwindef::FLOAT'>FLOAT</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub ComposeRects: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DDevice9Ex.html' title='winapi::d3d9::IDirect3DDevice9Ex'>IDirect3DDevice9Ex</a></a>, pSrc: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DSurface9.html' title='winapi::d3d9::IDirect3DSurface9'>IDirect3DSurface9</a></a>, pDst: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DSurface9.html' title='winapi::d3d9::IDirect3DSurface9'>IDirect3DSurface9</a></a>, pSrcRectDescs: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DVertexBuffer9.html' title='winapi::d3d9::IDirect3DVertexBuffer9'>IDirect3DVertexBuffer9</a></a>, NumRects: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, pDstRectDescs: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DVertexBuffer9.html' title='winapi::d3d9::IDirect3DVertexBuffer9'>IDirect3DVertexBuffer9</a></a>, Operation: <a class='struct' href='../../winapi/d3d9types/struct.D3DCOMPOSERECTSOP.html' title='winapi::d3d9types::D3DCOMPOSERECTSOP'>D3DCOMPOSERECTSOP</a>, Xoffset: <a class='type' href='../../winapi/minwindef/type.INT.html' title='winapi::minwindef::INT'>INT</a>, Yoffset: <a class='type' href='../../winapi/minwindef/type.INT.html' title='winapi::minwindef::INT'>INT</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub PresentEx: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DDevice9Ex.html' title='winapi::d3d9::IDirect3DDevice9Ex'>IDirect3DDevice9Ex</a></a>, pSourceRect: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/windef/struct.RECT.html' title='winapi::windef::RECT'>RECT</a></a>, pDestRect: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/windef/struct.RECT.html' title='winapi::windef::RECT'>RECT</a></a>, hDestWindowOverride: <a class='type' href='../../winapi/windef/type.HWND.html' title='winapi::windef::HWND'>HWND</a>, pDirtyRegion: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/wingdi/struct.RGNDATA.html' title='winapi::wingdi::RGNDATA'>RGNDATA</a></a>, dwFlags: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetGPUThreadPriority: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DDevice9Ex.html' title='winapi::d3d9::IDirect3DDevice9Ex'>IDirect3DDevice9Ex</a></a>, pPriority: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/minwindef/type.INT.html' title='winapi::minwindef::INT'>INT</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub SetGPUThreadPriority: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DDevice9Ex.html' title='winapi::d3d9::IDirect3DDevice9Ex'>IDirect3DDevice9Ex</a></a>, Priority: <a class='type' href='../../winapi/minwindef/type.INT.html' title='winapi::minwindef::INT'>INT</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub WaitForVBlank: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DDevice9Ex.html' title='winapi::d3d9::IDirect3DDevice9Ex'>IDirect3DDevice9Ex</a></a>, iSwapChain: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub CheckResourceResidency: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DDevice9Ex.html' title='winapi::d3d9::IDirect3DDevice9Ex'>IDirect3DDevice9Ex</a></a>, pResourceArray: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DResource9.html' title='winapi::d3d9::IDirect3DResource9'>IDirect3DResource9</a></a></a>, NumResources: <a class='type' href='../../winapi/basetsd/type.UINT32.html' title='winapi::basetsd::UINT32'>UINT32</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub SetMaximumFrameLatency: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DDevice9Ex.html' title='winapi::d3d9::IDirect3DDevice9Ex'>IDirect3DDevice9Ex</a></a>, MaxLatency: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetMaximumFrameLatency: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DDevice9Ex.html' title='winapi::d3d9::IDirect3DDevice9Ex'>IDirect3DDevice9Ex</a></a>, pMaxLatency: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub CheckDeviceState: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DDevice9Ex.html' title='winapi::d3d9::IDirect3DDevice9Ex'>IDirect3DDevice9Ex</a></a>, hDestinationWindow: <a class='type' href='../../winapi/windef/type.HWND.html' title='winapi::windef::HWND'>HWND</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub CreateRenderTargetEx: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DDevice9Ex.html' title='winapi::d3d9::IDirect3DDevice9Ex'>IDirect3DDevice9Ex</a></a>, Width: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, Height: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, Format: <a class='struct' href='../../winapi/d3d9types/struct.D3DFORMAT.html' title='winapi::d3d9types::D3DFORMAT'>D3DFORMAT</a>, MultiSample: <a class='struct' href='../../winapi/d3d9types/struct.D3DMULTISAMPLE_TYPE.html' title='winapi::d3d9types::D3DMULTISAMPLE_TYPE'>D3DMULTISAMPLE_TYPE</a>, MultisampleQuality: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>, Lockable: <a class='type' href='../../winapi/minwindef/type.BOOL.html' title='winapi::minwindef::BOOL'>BOOL</a>, ppSurface: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DSurface9.html' title='winapi::d3d9::IDirect3DSurface9'>IDirect3DSurface9</a></a></a>, pSharedHandle: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/winnt/type.HANDLE.html' title='winapi::winnt::HANDLE'>HANDLE</a></a>, Usage: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub CreateOffscreenPlainSurfaceEx: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DDevice9Ex.html' title='winapi::d3d9::IDirect3DDevice9Ex'>IDirect3DDevice9Ex</a></a>, Width: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, Height: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, Format: <a class='struct' href='../../winapi/d3d9types/struct.D3DFORMAT.html' title='winapi::d3d9types::D3DFORMAT'>D3DFORMAT</a>, Pool: <a class='struct' href='../../winapi/d3d9types/struct.D3DPOOL.html' title='winapi::d3d9types::D3DPOOL'>D3DPOOL</a>, ppSurface: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DSurface9.html' title='winapi::d3d9::IDirect3DSurface9'>IDirect3DSurface9</a></a></a>, pSharedHandle: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/winnt/type.HANDLE.html' title='winapi::winnt::HANDLE'>HANDLE</a></a>, Usage: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub CreateDepthStencilSurfaceEx: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DDevice9Ex.html' title='winapi::d3d9::IDirect3DDevice9Ex'>IDirect3DDevice9Ex</a></a>, Width: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, Height: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, Format: <a class='struct' href='../../winapi/d3d9types/struct.D3DFORMAT.html' title='winapi::d3d9types::D3DFORMAT'>D3DFORMAT</a>, MultiSample: <a class='struct' href='../../winapi/d3d9types/struct.D3DMULTISAMPLE_TYPE.html' title='winapi::d3d9types::D3DMULTISAMPLE_TYPE'>D3DMULTISAMPLE_TYPE</a>, MultisampleQuality: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>, Discard: <a class='type' href='../../winapi/minwindef/type.BOOL.html' title='winapi::minwindef::BOOL'>BOOL</a>, ppSurface: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DSurface9.html' title='winapi::d3d9::IDirect3DSurface9'>IDirect3DSurface9</a></a></a>, pSharedHandle: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/winnt/type.HANDLE.html' title='winapi::winnt::HANDLE'>HANDLE</a></a>, Usage: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub ResetEx: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DDevice9Ex.html' title='winapi::d3d9::IDirect3DDevice9Ex'>IDirect3DDevice9Ex</a></a>, pPresentationParameters: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9types/struct.D3DPRESENT_PARAMETERS.html' title='winapi::d3d9types::D3DPRESENT_PARAMETERS'>D3DPRESENT_PARAMETERS</a></a>, pFullscreenDisplayMode: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9types/struct.D3DDISPLAYMODEEX.html' title='winapi::d3d9types::D3DDISPLAYMODEEX'>D3DDISPLAYMODEEX</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetDisplayModeEx: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9/struct.IDirect3DDevice9Ex.html' title='winapi::d3d9::IDirect3DDevice9Ex'>IDirect3DDevice9Ex</a></a>, iSwapChain: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, pMode: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9types/struct.D3DDISPLAYMODEEX.html' title='winapi::d3d9types::D3DDISPLAYMODEEX'>D3DDISPLAYMODEEX</a></a>, pRotation: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d3d9types/struct.D3DDISPLAYROTATION.html' title='winapi::d3d9types::D3DDISPLAYROTATION'>D3DDISPLAYROTATION</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.parent'><code>parent</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SetConvolutionMonoKernel'><code>SetConvolutionMonoKernel</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ComposeRects'><code>ComposeRects</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.PresentEx'><code>PresentEx</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetGPUThreadPriority'><code>GetGPUThreadPriority</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SetGPUThreadPriority'><code>SetGPUThreadPriority</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.WaitForVBlank'><code>WaitForVBlank</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.CheckResourceResidency'><code>CheckResourceResidency</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SetMaximumFrameLatency'><code>SetMaximumFrameLatency</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetMaximumFrameLatency'><code>GetMaximumFrameLatency</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.CheckDeviceState'><code>CheckDeviceState</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.CreateRenderTargetEx'><code>CreateRenderTargetEx</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.CreateOffscreenPlainSurfaceEx'><code>CreateOffscreenPlainSurfaceEx</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.CreateDepthStencilSurfaceEx'><code>CreateDepthStencilSurfaceEx</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ResetEx'><code>ResetEx</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetDisplayModeEx'><code>GetDisplayModeEx</code></td><td></td></tr></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

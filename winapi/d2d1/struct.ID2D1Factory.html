@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `ID2D1Factory` struct in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, ID2D1Factory">
+
+    <title>winapi::d2d1::ID2D1Factory - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a>::<wbr><a href='index.html'>d2d1</a></p><script>window.sidebarCurrent = {name: 'ID2D1Factory', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>winapi</a>::<wbr><a href='index.html'>d2d1</a>::<wbr><a class='struct' href=''>ID2D1Factory</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-12793' class='srclink' href='../../src/winapi/macros.rs.html#120-122' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct ID2D1Factory {
+    pub lpVtbl: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/d2d1/struct.ID2D1FactoryVtbl.html' title='winapi::d2d1::ID2D1FactoryVtbl'>ID2D1FactoryVtbl</a></a>,
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.lpVtbl'><code>lpVtbl</code></td><td></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../winapi/d2d1/struct.ID2D1Factory.html' title='winapi::d2d1::ID2D1Factory'>ID2D1Factory</a></code></h3><div class='impl-items'><h4 id='method.ReloadSystemMetrics' class='method'><code>unsafe fn <a href='#method.ReloadSystemMetrics' class='fnname'>ReloadSystemMetrics</a>(&amp;mut self) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.GetDesktopDpi' class='method'><code>unsafe fn <a href='#method.GetDesktopDpi' class='fnname'>GetDesktopDpi</a>(&amp;mut self, dpiX: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/minwindef/type.FLOAT.html' title='winapi::minwindef::FLOAT'>FLOAT</a></a>, dpiY: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/minwindef/type.FLOAT.html' title='winapi::minwindef::FLOAT'>FLOAT</a></a>)</code></h4>
+<h4 id='method.CreateRectangleGeometry' class='method'><code>unsafe fn <a href='#method.CreateRectangleGeometry' class='fnname'>CreateRectangleGeometry</a>(&amp;mut self, rectangle: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='type' href='../../winapi/d2d1/type.D2D1_RECT_F.html' title='winapi::d2d1::D2D1_RECT_F'>D2D1_RECT_F</a></a>, rectangleGeometry: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d2d1/struct.ID2D1RectangleGeometry.html' title='winapi::d2d1::ID2D1RectangleGeometry'>ID2D1RectangleGeometry</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.CreateRoundedRectangleGeometry' class='method'><code>unsafe fn <a href='#method.CreateRoundedRectangleGeometry' class='fnname'>CreateRoundedRectangleGeometry</a>(&amp;mut self, roundedRectangle: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/d2d1/struct.D2D1_ROUNDED_RECT.html' title='winapi::d2d1::D2D1_ROUNDED_RECT'>D2D1_ROUNDED_RECT</a></a>, roundedRectangleGeometry: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d2d1/struct.ID2D1RoundedRectangleGeometry.html' title='winapi::d2d1::ID2D1RoundedRectangleGeometry'>ID2D1RoundedRectangleGeometry</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.CreateEllipseGeometry' class='method'><code>unsafe fn <a href='#method.CreateEllipseGeometry' class='fnname'>CreateEllipseGeometry</a>(&amp;mut self, ellipse: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/d2d1/struct.D2D1_ELLIPSE.html' title='winapi::d2d1::D2D1_ELLIPSE'>D2D1_ELLIPSE</a></a>, ellipseGeometry: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d2d1/struct.ID2D1EllipseGeometry.html' title='winapi::d2d1::ID2D1EllipseGeometry'>ID2D1EllipseGeometry</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.CreateGeometryGroup' class='method'><code>unsafe fn <a href='#method.CreateGeometryGroup' class='fnname'>CreateGeometryGroup</a>(&amp;mut self, fillMode: <a class='struct' href='../../winapi/d2d1/struct.D2D1_FILL_MODE.html' title='winapi::d2d1::D2D1_FILL_MODE'>D2D1_FILL_MODE</a>, geometries: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d2d1/struct.ID2D1Geometry.html' title='winapi::d2d1::ID2D1Geometry'>ID2D1Geometry</a></a></a>, geometriesCount: <a class='type' href='../../winapi/basetsd/type.UINT32.html' title='winapi::basetsd::UINT32'>UINT32</a>, geometryGroup: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d2d1/struct.ID2D1GeometryGroup.html' title='winapi::d2d1::ID2D1GeometryGroup'>ID2D1GeometryGroup</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.CreateTransformedGeometry' class='method'><code>unsafe fn <a href='#method.CreateTransformedGeometry' class='fnname'>CreateTransformedGeometry</a>(&amp;mut self, sourceGeometry: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d2d1/struct.ID2D1Geometry.html' title='winapi::d2d1::ID2D1Geometry'>ID2D1Geometry</a></a>, transform: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='type' href='../../winapi/d2d1/type.D2D1_MATRIX_3X2_F.html' title='winapi::d2d1::D2D1_MATRIX_3X2_F'>D2D1_MATRIX_3X2_F</a></a>, transformedGeometry: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d2d1/struct.ID2D1TransformedGeometry.html' title='winapi::d2d1::ID2D1TransformedGeometry'>ID2D1TransformedGeometry</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.CreatePathGeometry' class='method'><code>unsafe fn <a href='#method.CreatePathGeometry' class='fnname'>CreatePathGeometry</a>(&amp;mut self, pathGeometry: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d2d1/struct.ID2D1PathGeometry.html' title='winapi::d2d1::ID2D1PathGeometry'>ID2D1PathGeometry</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.CreateStrokeStyle' class='method'><code>unsafe fn <a href='#method.CreateStrokeStyle' class='fnname'>CreateStrokeStyle</a>(&amp;mut self, strokeStyleProperties: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/d2d1/struct.D2D1_STROKE_STYLE_PROPERTIES.html' title='winapi::d2d1::D2D1_STROKE_STYLE_PROPERTIES'>D2D1_STROKE_STYLE_PROPERTIES</a></a>, dashes: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='type' href='../../winapi/minwindef/type.FLOAT.html' title='winapi::minwindef::FLOAT'>FLOAT</a></a>, dashesCount: <a class='type' href='../../winapi/basetsd/type.UINT32.html' title='winapi::basetsd::UINT32'>UINT32</a>, strokeStyle: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d2d1/struct.ID2D1StrokeStyle.html' title='winapi::d2d1::ID2D1StrokeStyle'>ID2D1StrokeStyle</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.CreateDrawingStateBlock' class='method'><code>unsafe fn <a href='#method.CreateDrawingStateBlock' class='fnname'>CreateDrawingStateBlock</a>(&amp;mut self, drawingStateDescription: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/d2d1/struct.D2D1_DRAWING_STATE_DESCRIPTION.html' title='winapi::d2d1::D2D1_DRAWING_STATE_DESCRIPTION'>D2D1_DRAWING_STATE_DESCRIPTION</a></a>, textRenderingParams: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/dwrite/struct.IDWriteRenderingParams.html' title='winapi::dwrite::IDWriteRenderingParams'>IDWriteRenderingParams</a></a>, drawingStateBlock: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d2d1/struct.ID2D1DrawingStateBlock.html' title='winapi::d2d1::ID2D1DrawingStateBlock'>ID2D1DrawingStateBlock</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.CreateWicBitmapRenderTarget' class='method'><code>unsafe fn <a href='#method.CreateWicBitmapRenderTarget' class='fnname'>CreateWicBitmapRenderTarget</a>(&amp;mut self, target: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/windowscodecs/struct.IWICBitmap.html' title='winapi::windowscodecs::IWICBitmap'>IWICBitmap</a></a>, renderTargetProperties: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/d2d1/struct.D2D1_RENDER_TARGET_PROPERTIES.html' title='winapi::d2d1::D2D1_RENDER_TARGET_PROPERTIES'>D2D1_RENDER_TARGET_PROPERTIES</a></a>, renderTarget: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d2d1/struct.ID2D1RenderTarget.html' title='winapi::d2d1::ID2D1RenderTarget'>ID2D1RenderTarget</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.CreateHwndRenderTarget' class='method'><code>unsafe fn <a href='#method.CreateHwndRenderTarget' class='fnname'>CreateHwndRenderTarget</a>(&amp;mut self, renderTargetProperties: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/d2d1/struct.D2D1_RENDER_TARGET_PROPERTIES.html' title='winapi::d2d1::D2D1_RENDER_TARGET_PROPERTIES'>D2D1_RENDER_TARGET_PROPERTIES</a></a>, hwndRenderTargetProperties: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/d2d1/struct.D2D1_HWND_RENDER_TARGET_PROPERTIES.html' title='winapi::d2d1::D2D1_HWND_RENDER_TARGET_PROPERTIES'>D2D1_HWND_RENDER_TARGET_PROPERTIES</a></a>, hwndRenderTarget: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d2d1/struct.ID2D1HwndRenderTarget.html' title='winapi::d2d1::ID2D1HwndRenderTarget'>ID2D1HwndRenderTarget</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.CreateDxgiSurfaceRenderTarget' class='method'><code>unsafe fn <a href='#method.CreateDxgiSurfaceRenderTarget' class='fnname'>CreateDxgiSurfaceRenderTarget</a>(&amp;mut self, dxgiSurface: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/dxgi/struct.IDXGISurface.html' title='winapi::dxgi::IDXGISurface'>IDXGISurface</a></a>, renderTargetProperties: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/d2d1/struct.D2D1_RENDER_TARGET_PROPERTIES.html' title='winapi::d2d1::D2D1_RENDER_TARGET_PROPERTIES'>D2D1_RENDER_TARGET_PROPERTIES</a></a>, renderTarget: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d2d1/struct.ID2D1RenderTarget.html' title='winapi::d2d1::ID2D1RenderTarget'>ID2D1RenderTarget</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.CreateDCRenderTarget' class='method'><code>unsafe fn <a href='#method.CreateDCRenderTarget' class='fnname'>CreateDCRenderTarget</a>(&amp;mut self, renderTargetProperties: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/d2d1/struct.D2D1_RENDER_TARGET_PROPERTIES.html' title='winapi::d2d1::D2D1_RENDER_TARGET_PROPERTIES'>D2D1_RENDER_TARGET_PROPERTIES</a></a>, dcRenderTarget: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/d2d1/struct.ID2D1DCRenderTarget.html' title='winapi::d2d1::ID2D1DCRenderTarget'>ID2D1DCRenderTarget</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+</div><h2 id='deref-methods'>Methods from <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Deref.html' title='core::ops::Deref'>Deref</a>&lt;Target=<a class='struct' href='../../winapi/unknwnbase/struct.IUnknown.html' title='winapi::unknwnbase::IUnknown'>IUnknown</a>&gt;</h2><div class='impl-items'><h4 id='method.QueryInterface' class='method'><code>unsafe fn <a href='#method.QueryInterface' class='fnname'>QueryInterface</a>(&amp;mut self, riid: <a class='type' href='../../winapi/guiddef/type.REFIID.html' title='winapi::guiddef::REFIID'>REFIID</a>, ppvObject: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../../winapi/enum.c_void.html' title='winapi::c_void'>c_void</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a></code></h4>
+<h4 id='method.AddRef' class='method'><code>unsafe fn <a href='#method.AddRef' class='fnname'>AddRef</a>(&amp;mut self) -&gt; <a class='type' href='../../winapi/minwindef/type.ULONG.html' title='winapi::minwindef::ULONG'>ULONG</a></code></h4>
+<h4 id='method.Release' class='method'><code>unsafe fn <a href='#method.Release' class='fnname'>Release</a>(&amp;mut self) -&gt; <a class='type' href='../../winapi/minwindef/type.ULONG.html' title='winapi::minwindef::ULONG'>ULONG</a></code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Deref.html' title='core::ops::Deref'>Deref</a> for <a class='struct' href='../../winapi/d2d1/struct.ID2D1Factory.html' title='winapi::d2d1::ID2D1Factory'>ID2D1Factory</a></code></h3><div class='impl-items'><h4 id='assoc_type.Target' class='type'><code>type Target = <a class='struct' href='../../winapi/unknwnbase/struct.IUnknown.html' title='winapi::unknwnbase::IUnknown'>IUnknown</a></code></h4>
+<h4 id='method.deref' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Deref.html#method.deref' class='fnname'>deref</a>(&amp;self) -&gt; &amp;<a class='struct' href='../../winapi/unknwnbase/struct.IUnknown.html' title='winapi::unknwnbase::IUnknown'>IUnknown</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.DerefMut.html' title='core::ops::DerefMut'>DerefMut</a> for <a class='struct' href='../../winapi/d2d1/struct.ID2D1Factory.html' title='winapi::d2d1::ID2D1Factory'>ID2D1Factory</a></code></h3><div class='impl-items'><h4 id='method.deref_mut' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.DerefMut.html#method.deref_mut' class='fnname'>deref_mut</a>(&amp;mut self) -&gt; &amp;mut <a class='struct' href='../../winapi/unknwnbase/struct.IUnknown.html' title='winapi::unknwnbase::IUnknown'>IUnknown</a></code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../winapi/d2d1/struct.ID2D1Factory.html' title='winapi::d2d1::ID2D1Factory'>ID2D1Factory</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

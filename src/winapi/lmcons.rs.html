@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-88ac128001ac3a9a\winapi-0.2.5\src\lmcons.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
+
+    <title>lmcons.rs.html -- source</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content source"><pre class="line-numbers"><span id="1"> 1</span>
+<span id="2"> 2</span>
+<span id="3"> 3</span>
+<span id="4"> 4</span>
+<span id="5"> 5</span>
+<span id="6"> 6</span>
+<span id="7"> 7</span>
+<span id="8"> 8</span>
+<span id="9"> 9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+</pre><pre class='rust '>
+<span class='comment'>// Copyright © 2015, Peter Atashian</span>
+<span class='comment'>// Licensed under the MIT License &lt;LICENSE.md&gt;</span>
+<span class='doccomment'>//! This file contains constants used throughout the LAN Manager API header files.</span>
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CNLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>15</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LM20_CNLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>15</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>DNLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='ident'>CNLEN</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LM20_DNLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='ident'>LM20_CNLEN</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>UNCLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='ident'>CNLEN</span> <span class='op'>+</span> <span class='number'>2</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LM20_UNCLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='ident'>LM20_CNLEN</span> <span class='op'>+</span> <span class='number'>2</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NNLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>80</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LM20_NNLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>12</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>RMLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='ident'>UNCLEN</span> <span class='op'>+</span> <span class='number'>1</span> <span class='op'>+</span> <span class='ident'>NNLEN</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LM20_RMLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='ident'>LM20_UNCLEN</span> <span class='op'>+</span> <span class='number'>1</span> <span class='op'>+</span> <span class='ident'>LM20_NNLEN</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SNLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>80</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LM20_SNLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>15</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>STXTLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>256</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LM20_STXTLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>63</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PATHLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>256</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LM20_PATHLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>256</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>DEVLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>80</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LM20_DEVLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>8</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EVLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>16</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>UNLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>256</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LM20_UNLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>20</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>GNLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='ident'>UNLEN</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LM20_GNLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='ident'>LM20_UNLEN</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PWLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>256</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LM20_PWLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>14</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SHPWLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>8</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CLTYPE_LEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>12</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>MAXCOMMENTSZ</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>256</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LM20_MAXCOMMENTSZ</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>48</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>QNLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='ident'>NNLEN</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LM20_QNLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='ident'>LM20_NNLEN</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ALERTSZ</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>128</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>MAXDEVENTRIES</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>4</span> <span class='op'>*</span> <span class='number'>8</span>; <span class='comment'>// FIXME: sizeof(int) instead of 4</span>
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>NETBIOS_NAME_LEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>16</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>MAX_PREFERRED_LENGTH</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='op'>-</span><span class='number'>1i32</span> <span class='kw'>as</span> ::<span class='ident'>DWORD</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CRYPT_KEY_LEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>7</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>CRYPT_TXT_LEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>8</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ENCRYPTED_PWLEN</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>16</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SESSION_PWLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>24</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>SESSION_CRYPT_KLEN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>21</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PARM_ERROR_UNKNOWN</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='op'>-</span><span class='number'>1i32</span> <span class='kw'>as</span> ::<span class='ident'>DWORD</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PARM_ERROR_NONE</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>0</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PARMNUM_BASE_INFOLEVEL</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>1000</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LMSTR</span> <span class='op'>=</span> ::<span class='ident'>LPWSTR</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LMCSTR</span> <span class='op'>=</span> ::<span class='ident'>LPCWSTR</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>NET_API_STATUS</span> <span class='op'>=</span> ::<span class='ident'>DWORD</span>;
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>API_RET_TYPE</span> <span class='op'>=</span> <span class='ident'>NET_API_STATUS</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PLATFORM_ID_DOS</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>300</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PLATFORM_ID_OS2</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>400</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PLATFORM_ID_NT</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>500</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PLATFORM_ID_OSF</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>600</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>PLATFORM_ID_VMS</span>: ::<span class='ident'>DWORD</span> <span class='op'>=</span> <span class='number'>700</span>;
+</pre>
+</section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

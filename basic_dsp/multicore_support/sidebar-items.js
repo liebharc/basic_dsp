@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["MultiCoreSettings","Holds parameters which specifiy how multiple cores are used to execute an operation."]]});

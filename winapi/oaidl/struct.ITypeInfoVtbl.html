@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `ITypeInfoVtbl` struct in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, ITypeInfoVtbl">
+
+    <title>winapi::oaidl::ITypeInfoVtbl - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a>::<wbr><a href='index.html'>oaidl</a></p><script>window.sidebarCurrent = {name: 'ITypeInfoVtbl', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>winapi</a>::<wbr><a href='index.html'>oaidl</a>::<wbr><a class='struct' href=''>ITypeInfoVtbl</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-64146' class='srclink' href='../../src/winapi/macros.rs.html#112-118' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct ITypeInfoVtbl {
+    pub parent: <a class='struct' href='../../winapi/unknwnbase/struct.IUnknownVtbl.html' title='winapi::unknwnbase::IUnknownVtbl'>IUnknownVtbl</a>,
+    pub GetTypeAttr: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, ppTypeAttr: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.TYPEATTR.html' title='winapi::oaidl::TYPEATTR'>TYPEATTR</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetTypeComp: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, ppTComp: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeComp.html' title='winapi::oaidl::ITypeComp'>ITypeComp</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetFuncDesc: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, index: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, ppFunDesc: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.FUNCDESC.html' title='winapi::oaidl::FUNCDESC'>FUNCDESC</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetVarDesc: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, index: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, pPVarDesc: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.VARDESC.html' title='winapi::oaidl::VARDESC'>VARDESC</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetNames: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, memid: <a class='type' href='../../winapi/oaidl/type.MEMBERID.html' title='winapi::oaidl::MEMBERID'>MEMBERID</a>, rgBstrNames: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/wtypes/type.BSTR.html' title='winapi::wtypes::BSTR'>BSTR</a></a>, cMaxNames: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, pcNames: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetRefTypeOfImplType: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, index: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, pRefType: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/oaidl/type.HREFTYPE.html' title='winapi::oaidl::HREFTYPE'>HREFTYPE</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetImplTypeFlags: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, index: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, pImplTypeFlags: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/minwindef/type.INT.html' title='winapi::minwindef::INT'>INT</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetIDsOfNames: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, rgszNames: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/wtypesbase/type.LPOLESTR.html' title='winapi::wtypesbase::LPOLESTR'>LPOLESTR</a></a>, cNames: <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a>, pMemId: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/oaidl/type.MEMBERID.html' title='winapi::oaidl::MEMBERID'>MEMBERID</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub Invoke: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, pvInstance: <a class='type' href='../../winapi/winnt/type.PVOID.html' title='winapi::winnt::PVOID'>PVOID</a>, memid: <a class='type' href='../../winapi/oaidl/type.MEMBERID.html' title='winapi::oaidl::MEMBERID'>MEMBERID</a>, wFlags: <a class='type' href='../../winapi/minwindef/type.WORD.html' title='winapi::minwindef::WORD'>WORD</a>, pDispParams: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.DISPPARAMS.html' title='winapi::oaidl::DISPPARAMS'>DISPPARAMS</a></a>, pVarResult: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.VARIANT.html' title='winapi::oaidl::VARIANT'>VARIANT</a></a>, pExcepInfo: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.EXCEPINFO.html' title='winapi::oaidl::EXCEPINFO'>EXCEPINFO</a></a>, puArgErr: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetDocumentation: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, memid: <a class='type' href='../../winapi/oaidl/type.MEMBERID.html' title='winapi::oaidl::MEMBERID'>MEMBERID</a>, pBstrName: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/wtypes/type.BSTR.html' title='winapi::wtypes::BSTR'>BSTR</a></a>, pBstrDocString: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/wtypes/type.BSTR.html' title='winapi::wtypes::BSTR'>BSTR</a></a>, pdwHelpContext: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a></a>, pBstrHelpFile: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/wtypes/type.BSTR.html' title='winapi::wtypes::BSTR'>BSTR</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetDllEntry: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, memid: <a class='type' href='../../winapi/oaidl/type.MEMBERID.html' title='winapi::oaidl::MEMBERID'>MEMBERID</a>, invKind: <a class='struct' href='../../winapi/oaidl/struct.INVOKEKIND.html' title='winapi::oaidl::INVOKEKIND'>INVOKEKIND</a>, pBstrDllName: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/wtypes/type.BSTR.html' title='winapi::wtypes::BSTR'>BSTR</a></a>, pBstrName: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/wtypes/type.BSTR.html' title='winapi::wtypes::BSTR'>BSTR</a></a>, pwOrdinal: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/minwindef/type.WORD.html' title='winapi::minwindef::WORD'>WORD</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetRefTypeInfo: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, hRefType: <a class='type' href='../../winapi/oaidl/type.HREFTYPE.html' title='winapi::oaidl::HREFTYPE'>HREFTYPE</a>, ppTInfo: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub AddressOfMember: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, memid: <a class='type' href='../../winapi/oaidl/type.MEMBERID.html' title='winapi::oaidl::MEMBERID'>MEMBERID</a>, invKind: <a class='struct' href='../../winapi/oaidl/struct.INVOKEKIND.html' title='winapi::oaidl::INVOKEKIND'>INVOKEKIND</a>, ppv: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/winnt/type.PVOID.html' title='winapi::winnt::PVOID'>PVOID</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub CreateInstance: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, pUnkOuter: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/unknwnbase/struct.IUnknown.html' title='winapi::unknwnbase::IUnknown'>IUnknown</a></a>, riid: <a class='type' href='../../winapi/guiddef/type.REFIID.html' title='winapi::guiddef::REFIID'>REFIID</a>, ppvObj: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/winnt/type.PVOID.html' title='winapi::winnt::PVOID'>PVOID</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetMops: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, memid: <a class='type' href='../../winapi/oaidl/type.MEMBERID.html' title='winapi::oaidl::MEMBERID'>MEMBERID</a>, pBstrMops: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/wtypes/type.BSTR.html' title='winapi::wtypes::BSTR'>BSTR</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetContainingTypeLib: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, ppTLib: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeLib.html' title='winapi::oaidl::ITypeLib'>ITypeLib</a></a></a>, pIndex: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/minwindef/type.UINT.html' title='winapi::minwindef::UINT'>UINT</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub ReleaseTypeAttr: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, pTypeAttr: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.TYPEATTR.html' title='winapi::oaidl::TYPEATTR'>TYPEATTR</a></a>),
+    pub ReleaseFuncDesc: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, pFuncDesc: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.FUNCDESC.html' title='winapi::oaidl::FUNCDESC'>FUNCDESC</a></a>),
+    pub ReleaseVarDesc: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.ITypeInfo.html' title='winapi::oaidl::ITypeInfo'>ITypeInfo</a></a>, pVarDesc: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/oaidl/struct.VARDESC.html' title='winapi::oaidl::VARDESC'>VARDESC</a></a>),
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.parent'><code>parent</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetTypeAttr'><code>GetTypeAttr</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetTypeComp'><code>GetTypeComp</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetFuncDesc'><code>GetFuncDesc</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetVarDesc'><code>GetVarDesc</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetNames'><code>GetNames</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetRefTypeOfImplType'><code>GetRefTypeOfImplType</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetImplTypeFlags'><code>GetImplTypeFlags</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetIDsOfNames'><code>GetIDsOfNames</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Invoke'><code>Invoke</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetDocumentation'><code>GetDocumentation</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetDllEntry'><code>GetDllEntry</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetRefTypeInfo'><code>GetRefTypeInfo</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.AddressOfMember'><code>AddressOfMember</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.CreateInstance'><code>CreateInstance</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetMops'><code>GetMops</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetContainingTypeLib'><code>GetContainingTypeLib</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ReleaseTypeAttr'><code>ReleaseTypeAttr</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ReleaseFuncDesc'><code>ReleaseFuncDesc</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ReleaseVarDesc'><code>ReleaseVarDesc</code></td><td></td></tr></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

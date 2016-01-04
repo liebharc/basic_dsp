@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `CONFLICT_DETAILS_W` struct in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, CONFLICT_DETAILS_W">
+
+    <title>winapi::cfgmgr32::CONFLICT_DETAILS_W - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a>::<wbr><a href='index.html'>cfgmgr32</a></p><script>window.sidebarCurrent = {name: 'CONFLICT_DETAILS_W', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>winapi</a>::<wbr><a href='index.html'>cfgmgr32</a>::<wbr><a class='struct' href=''>CONFLICT_DETAILS_W</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-1500' class='srclink' href='../../src/winapi/cfgmgr32.rs.html#57-64' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct CONFLICT_DETAILS_W {
+    pub CD_ulSize: <a class='type' href='../../winapi/minwindef/type.ULONG.html' title='winapi::minwindef::ULONG'>ULONG</a>,
+    pub CD_ulMask: <a class='type' href='../../winapi/minwindef/type.ULONG.html' title='winapi::minwindef::ULONG'>ULONG</a>,
+    pub CD_dnDevInst: <a class='type' href='../../winapi/cfgmgr32/type.DEVINST.html' title='winapi::cfgmgr32::DEVINST'>DEVINST</a>,
+    pub CD_rdResDes: <a class='type' href='../../winapi/cfgmgr32/type.RES_DES.html' title='winapi::cfgmgr32::RES_DES'>RES_DES</a>,
+    pub CD_ulFlags: <a class='type' href='../../winapi/minwindef/type.ULONG.html' title='winapi::minwindef::ULONG'>ULONG</a>,
+    pub CD_szDescription: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a class='type' href='../../winapi/winnt/type.WCHAR.html' title='winapi::winnt::WCHAR'>WCHAR</a>; ::MAX_PATH]</a>,
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.CD_ulSize'><code>CD_ulSize</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.CD_ulMask'><code>CD_ulMask</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.CD_dnDevInst'><code>CD_dnDevInst</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.CD_rdResDes'><code>CD_rdResDes</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.CD_ulFlags'><code>CD_ulFlags</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.CD_szDescription'><code>CD_szDescription</code></td><td></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../winapi/cfgmgr32/struct.CONFLICT_DETAILS_W.html' title='winapi::cfgmgr32::CONFLICT_DETAILS_W'>CONFLICT_DETAILS_W</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../winapi/cfgmgr32/struct.CONFLICT_DETAILS_W.html' title='winapi::cfgmgr32::CONFLICT_DETAILS_W'>CONFLICT_DETAILS_W</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../../winapi/cfgmgr32/struct.CONFLICT_DETAILS_W.html' title='winapi::cfgmgr32::CONFLICT_DETAILS_W'>CONFLICT_DETAILS_W</a></code></h3><div class='impl-items'></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

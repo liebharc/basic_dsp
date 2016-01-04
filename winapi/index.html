@@ -1,0 +1,1974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `winapi` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, winapi">
+
+    <title>winapi - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'winapi', ty: 'mod', relpath: '../'};</script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>winapi</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-0' class='srclink' href='../src/winapi/lib.rs.html#3-420' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Types and constants for WinAPI bindings.</p>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+<table><tr><td><code>pub use <a class='mod' href='../winapi/audioclient/index.html' title='winapi::audioclient'>audioclient</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/audiosessiontypes/index.html' title='winapi::audiosessiontypes'>audiosessiontypes</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/basetsd/index.html' title='winapi::basetsd'>basetsd</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/bcrypt/index.html' title='winapi::bcrypt'>bcrypt</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/cfg/index.html' title='winapi::cfg'>cfg</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/cfgmgr32/index.html' title='winapi::cfgmgr32'>cfgmgr32</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/commctrl/index.html' title='winapi::commctrl'>commctrl</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/commdlg/index.html' title='winapi::commdlg'>commdlg</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/corsym/index.html' title='winapi::corsym'>corsym</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/d2d1/index.html' title='winapi::d2d1'>d2d1</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/d2dbasetypes/index.html' title='winapi::d2dbasetypes'>d2dbasetypes</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/d3d9/index.html' title='winapi::d3d9'>d3d9</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/d3d9caps/index.html' title='winapi::d3d9caps'>d3d9caps</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/d3d9types/index.html' title='winapi::d3d9types'>d3d9types</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/d3d11/index.html' title='winapi::d3d11'>d3d11</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/d3d12/index.html' title='winapi::d3d12'>d3d12</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/d3d12sdklayers/index.html' title='winapi::d3d12sdklayers'>d3d12sdklayers</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/d3dcommon/index.html' title='winapi::d3dcommon'>d3dcommon</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/dbghelp/index.html' title='winapi::dbghelp'>dbghelp</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/dcommon/index.html' title='winapi::dcommon'>dcommon</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/devpropdef/index.html' title='winapi::devpropdef'>devpropdef</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/docobj/index.html' title='winapi::docobj'>docobj</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/dpapi/index.html' title='winapi::dpapi'>dpapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/dsgetdc/index.html' title='winapi::dsgetdc'>dsgetdc</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/dsound/index.html' title='winapi::dsound'>dsound</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/dsrole/index.html' title='winapi::dsrole'>dsrole</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/dwmapi/index.html' title='winapi::dwmapi'>dwmapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/dwrite/index.html' title='winapi::dwrite'>dwrite</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/dxgi/index.html' title='winapi::dxgi'>dxgi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/dxgi1_2/index.html' title='winapi::dxgi1_2'>dxgi1_2</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/dxgi1_3/index.html' title='winapi::dxgi1_3'>dxgi1_3</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/dxgi1_4/index.html' title='winapi::dxgi1_4'>dxgi1_4</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/dxgiformat/index.html' title='winapi::dxgiformat'>dxgiformat</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/dxgitype/index.html' title='winapi::dxgitype'>dxgitype</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/errhandlingapi/index.html' title='winapi::errhandlingapi'>errhandlingapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/excpt/index.html' title='winapi::excpt'>excpt</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/fileapi/index.html' title='winapi::fileapi'>fileapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/gl/index.html' title='winapi::gl'>gl</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/guiddef/index.html' title='winapi::guiddef'>guiddef</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/heapapi/index.html' title='winapi::heapapi'>heapapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/hidclass/index.html' title='winapi::hidclass'>hidclass</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/hidpi/index.html' title='winapi::hidpi'>hidpi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/hidsdi/index.html' title='winapi::hidsdi'>hidsdi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/hidusage/index.html' title='winapi::hidusage'>hidusage</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/hstring/index.html' title='winapi::hstring'>hstring</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/http/index.html' title='winapi::http'>http</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/imm/index.html' title='winapi::imm'>imm</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/inaddr/index.html' title='winapi::inaddr'>inaddr</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/inspectable/index.html' title='winapi::inspectable'>inspectable</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/ksmedia/index.html' title='winapi::ksmedia'>ksmedia</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/libloaderapi/index.html' title='winapi::libloaderapi'>libloaderapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/lmaccess/index.html' title='winapi::lmaccess'>lmaccess</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/lmcons/index.html' title='winapi::lmcons'>lmcons</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/lmdfs/index.html' title='winapi::lmdfs'>lmdfs</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/lmerrlog/index.html' title='winapi::lmerrlog'>lmerrlog</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/lmjoin/index.html' title='winapi::lmjoin'>lmjoin</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/lsalookup/index.html' title='winapi::lsalookup'>lsalookup</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/memoryapi/index.html' title='winapi::memoryapi'>memoryapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/minwinbase/index.html' title='winapi::minwinbase'>minwinbase</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/minwindef/index.html' title='winapi::minwindef'>minwindef</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/mmdeviceapi/index.html' title='winapi::mmdeviceapi'>mmdeviceapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/mmreg/index.html' title='winapi::mmreg'>mmreg</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/mmsystem/index.html' title='winapi::mmsystem'>mmsystem</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/mscat/index.html' title='winapi::mscat'>mscat</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/mssip/index.html' title='winapi::mssip'>mssip</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/nb30/index.html' title='winapi::nb30'>nb30</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/ncrypt/index.html' title='winapi::ncrypt'>ncrypt</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/ntdef/index.html' title='winapi::ntdef'>ntdef</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/ntsecapi/index.html' title='winapi::ntsecapi'>ntsecapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/ntstatus/index.html' title='winapi::ntstatus'>ntstatus</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/oaidl/index.html' title='winapi::oaidl'>oaidl</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/objbase/index.html' title='winapi::objbase'>objbase</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/objidl/index.html' title='winapi::objidl'>objidl</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/objidlbase/index.html' title='winapi::objidlbase'>objidlbase</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/olectl/index.html' title='winapi::olectl'>olectl</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/processsnapshot/index.html' title='winapi::processsnapshot'>processsnapshot</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/processthreadsapi/index.html' title='winapi::processthreadsapi'>processthreadsapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/propsys/index.html' title='winapi::propsys'>propsys</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/prsht/index.html' title='winapi::prsht'>prsht</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/psapi/index.html' title='winapi::psapi'>psapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/qos/index.html' title='winapi::qos'>qos</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/reason/index.html' title='winapi::reason'>reason</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/rpc/index.html' title='winapi::rpc'>rpc</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/rpcdce/index.html' title='winapi::rpcdce'>rpcdce</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/sapi/index.html' title='winapi::sapi'>sapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/schannel/index.html' title='winapi::schannel'>schannel</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/servprov/index.html' title='winapi::servprov'>servprov</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/setupapi/index.html' title='winapi::setupapi'>setupapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/shellapi/index.html' title='winapi::shellapi'>shellapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/shellscalingapi/index.html' title='winapi::shellscalingapi'>shellscalingapi</a>::*;</code></td></tr><tr><td><code>pub use shlguid::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/shlobj/index.html' title='winapi::shlobj'>shlobj</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/shobjidl/index.html' title='winapi::shobjidl'>shobjidl</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/shtypes/index.html' title='winapi::shtypes'>shtypes</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/spapidef/index.html' title='winapi::spapidef'>spapidef</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/sspi/index.html' title='winapi::sspi'>sspi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/subauth/index.html' title='winapi::subauth'>subauth</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/synchapi/index.html' title='winapi::synchapi'>synchapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/sysinfoapi/index.html' title='winapi::sysinfoapi'>sysinfoapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/threadpoolapi/index.html' title='winapi::threadpoolapi'>threadpoolapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/timezoneapi/index.html' title='winapi::timezoneapi'>timezoneapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/tlhelp32/index.html' title='winapi::tlhelp32'>tlhelp32</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/unknwnbase/index.html' title='winapi::unknwnbase'>unknwnbase</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/urlhist/index.html' title='winapi::urlhist'>urlhist</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/urlmon/index.html' title='winapi::urlmon'>urlmon</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/usp10/index.html' title='winapi::usp10'>usp10</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/vadefs/index.html' title='winapi::vadefs'>vadefs</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/vsbackup/index.html' title='winapi::vsbackup'>vsbackup</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/vss/index.html' title='winapi::vss'>vss</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/vsserror/index.html' title='winapi::vsserror'>vsserror</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/vswriter/index.html' title='winapi::vswriter'>vswriter</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/werapi/index.html' title='winapi::werapi'>werapi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/winbase/index.html' title='winapi::winbase'>winbase</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/wincon/index.html' title='winapi::wincon'>wincon</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/wincred/index.html' title='winapi::wincred'>wincred</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/wincrypt/index.html' title='winapi::wincrypt'>wincrypt</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/windowsx/index.html' title='winapi::windowsx'>windowsx</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/windef/index.html' title='winapi::windef'>windef</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/windowscodecs/index.html' title='winapi::windowscodecs'>windowscodecs</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/winerror/index.html' title='winapi::winerror'>winerror</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/winevt/index.html' title='winapi::winevt'>winevt</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/wingdi/index.html' title='winapi::wingdi'>wingdi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/winhttp/index.html' title='winapi::winhttp'>winhttp</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/winioctl/index.html' title='winapi::winioctl'>winioctl</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/winnetwk/index.html' title='winapi::winnetwk'>winnetwk</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/winnls/index.html' title='winapi::winnls'>winnls</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/winnt/index.html' title='winapi::winnt'>winnt</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/winscard/index.html' title='winapi::winscard'>winscard</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/winsmcrd/index.html' title='winapi::winsmcrd'>winsmcrd</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/winsock2/index.html' title='winapi::winsock2'>winsock2</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/winspool/index.html' title='winapi::winspool'>winspool</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/winsvc/index.html' title='winapi::winsvc'>winsvc</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/winuser/index.html' title='winapi::winuser'>winuser</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/ws2def/index.html' title='winapi::ws2def'>ws2def</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/ws2ipdef/index.html' title='winapi::ws2ipdef'>ws2ipdef</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/ws2spi/index.html' title='winapi::ws2spi'>ws2spi</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/ws2tcpip/index.html' title='winapi::ws2tcpip'>ws2tcpip</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/wtypes/index.html' title='winapi::wtypes'>wtypes</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/wtypesbase/index.html' title='winapi::wtypesbase'>wtypesbase</a>::*;</code></td></tr><tr><td><code>pub use <a class='mod' href='../winapi/xinput/index.html' title='winapi::xinput'>xinput</a>::*;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='audioclient/index.html'
+                               title='winapi::audioclient'>audioclient</a></td>
+                        <td class='docblock short'>
+                             <p>this ALWAYS GENERATED file contains the definitions for the interfaces</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='audiosessiontypes/index.html'
+                               title='winapi::audiosessiontypes'>audiosessiontypes</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='basetsd/index.html'
+                               title='winapi::basetsd'>basetsd</a></td>
+                        <td class='docblock short'>
+                             <p>Type definitions for the basic sized types.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='bcrypt/index.html'
+                               title='winapi::bcrypt'>bcrypt</a></td>
+                        <td class='docblock short'>
+                             <p>Cryptographic Primitive API Prototypes and Definitions</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='cfg/index.html'
+                               title='winapi::cfg'>cfg</a></td>
+                        <td class='docblock short'>
+                             <p>common Configuration Manager definitions for both user mode and kernel mode code</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='cfgmgr32/index.html'
+                               title='winapi::cfgmgr32'>cfgmgr32</a></td>
+                        <td class='docblock short'>
+                             <p>user APIs for the Configuration Manager</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='commctrl/index.html'
+                               title='winapi::commctrl'>commctrl</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='commdlg/index.html'
+                               title='winapi::commdlg'>commdlg</a></td>
+                        <td class='docblock short'>
+                             <p>32-Bit Common Dialog APIs</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='corsym/index.html'
+                               title='winapi::corsym'>corsym</a></td>
+                        <td class='docblock short'>
+                             <p>Common Language Runtime Debugging Symbol Reader/Writer/Binder Interfaces</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='d2d1/index.html'
+                               title='winapi::d2d1'>d2d1</a></td>
+                        <td class='docblock short'>
+                             <p>Mappings for the contents of d2d1.h</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='d2dbasetypes/index.html'
+                               title='winapi::d2dbasetypes'>d2dbasetypes</a></td>
+                        <td class='docblock short'>
+                             <p>Mappings for the contents of d2dbasetypes.h</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='d3d11/index.html'
+                               title='winapi::d3d11'>d3d11</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='d3d12/index.html'
+                               title='winapi::d3d12'>d3d12</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='d3d12sdklayers/index.html'
+                               title='winapi::d3d12sdklayers'>d3d12sdklayers</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='d3d9/index.html'
+                               title='winapi::d3d9'>d3d9</a></td>
+                        <td class='docblock short'>
+                             <p>Direct3D include file</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='d3d9caps/index.html'
+                               title='winapi::d3d9caps'>d3d9caps</a></td>
+                        <td class='docblock short'>
+                             <p>Direct3D capabilities include file</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='d3d9types/index.html'
+                               title='winapi::d3d9types'>d3d9types</a></td>
+                        <td class='docblock short'>
+                             <p>Direct3D capabilities include file</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='d3dcommon/index.html'
+                               title='winapi::d3dcommon'>d3dcommon</a></td>
+                        <td class='docblock short'>
+                             <p>Mappings for the contents of d3dcommon.h</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='dbghelp/index.html'
+                               title='winapi::dbghelp'>dbghelp</a></td>
+                        <td class='docblock short'>
+                             <p>DbgHelp include file</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='dcommon/index.html'
+                               title='winapi::dcommon'>dcommon</a></td>
+                        <td class='docblock short'>
+                             <p>Mappings for the contents of dcommon.h</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='devpropdef/index.html'
+                               title='winapi::devpropdef'>devpropdef</a></td>
+                        <td class='docblock short'>
+                             <p>Defines property types and keys for the Plug and Play Device Property API</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='docobj/index.html'
+                               title='winapi::docobj'>docobj</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='dpapi/index.html'
+                               title='winapi::dpapi'>dpapi</a></td>
+                        <td class='docblock short'>
+                             <p>Data Protection API Prototypes and Definitions</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='dsgetdc/index.html'
+                               title='winapi::dsgetdc'>dsgetdc</a></td>
+                        <td class='docblock short'>
+                             <p>This file contains structures, function prototypes, and definitions for the DsGetDcName API.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='dsound/index.html'
+                               title='winapi::dsound'>dsound</a></td>
+                        <td class='docblock short'>
+                             <p>DSound procedure declarations, constant definitions and macros</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='dsrole/index.html'
+                               title='winapi::dsrole'>dsrole</a></td>
+                        <td class='docblock short'>
+                             <p>Contains public interfaces to query the network roles of workstations, servers, and DCs</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='dwmapi/index.html'
+                               title='winapi::dwmapi'>dwmapi</a></td>
+                        <td class='docblock short'>
+                             <p>Procedure declarations, constant definitions, and macros for the NLS component.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='dwrite/index.html'
+                               title='winapi::dwrite'>dwrite</a></td>
+                        <td class='docblock short'>
+                             <p>DirectX Typography Services public API definitions.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='dxgi/index.html'
+                               title='winapi::dxgi'>dxgi</a></td>
+                        <td class='docblock short'>
+                             <p>Mappings for the contents of dxgi.h</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='dxgi1_2/index.html'
+                               title='winapi::dxgi1_2'>dxgi1_2</a></td>
+                        <td class='docblock short'>
+                             <p>Mappings for the contents of dxgi1_2.h</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='dxgi1_3/index.html'
+                               title='winapi::dxgi1_3'>dxgi1_3</a></td>
+                        <td class='docblock short'>
+                             <p>Mappings for the contents of dxgi1_3.h</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='dxgi1_4/index.html'
+                               title='winapi::dxgi1_4'>dxgi1_4</a></td>
+                        <td class='docblock short'>
+                             <p>Mappings for the contents of dxgi1_4.h</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='dxgiformat/index.html'
+                               title='winapi::dxgiformat'>dxgiformat</a></td>
+                        <td class='docblock short'>
+                             <p>Mappings for the contents of dxgiformat.h</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='dxgitype/index.html'
+                               title='winapi::dxgitype'>dxgitype</a></td>
+                        <td class='docblock short'>
+                             <p>Mappings for the contents of dxgitype.h</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='errhandlingapi/index.html'
+                               title='winapi::errhandlingapi'>errhandlingapi</a></td>
+                        <td class='docblock short'>
+                             <p>ApiSet Contract for api-ms-win-core-errorhandling-l1</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='excpt/index.html'
+                               title='winapi::excpt'>excpt</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='fileapi/index.html'
+                               title='winapi::fileapi'>fileapi</a></td>
+                        <td class='docblock short'>
+                             <p>ApiSet Contract for api-ms-win-core-file-l1</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='gl/index.html'
+                               title='winapi::gl'>gl</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='guiddef/index.html'
+                               title='winapi::guiddef'>guiddef</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='heapapi/index.html'
+                               title='winapi::heapapi'>heapapi</a></td>
+                        <td class='docblock short'>
+                             <p>ApiSet Contract for api-ms-win-core-heap-l1</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='hidclass/index.html'
+                               title='winapi::hidclass'>hidclass</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='hidpi/index.html'
+                               title='winapi::hidpi'>hidpi</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='hidsdi/index.html'
+                               title='winapi::hidsdi'>hidsdi</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='hidusage/index.html'
+                               title='winapi::hidusage'>hidusage</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='hstring/index.html'
+                               title='winapi::hstring'>hstring</a></td>
+                        <td class='docblock short'>
+                             <p>This interface definition contains typedefs for Windows Runtime data types.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='http/index.html'
+                               title='winapi::http'>http</a></td>
+                        <td class='docblock short'>
+                             <p>HTTP API specification</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='imm/index.html'
+                               title='winapi::imm'>imm</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='inaddr/index.html'
+                               title='winapi::inaddr'>inaddr</a></td>
+                        <td class='docblock short'>
+                             <p>IPv4 Internet address</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='inspectable/index.html'
+                               title='winapi::inspectable'>inspectable</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='ksmedia/index.html'
+                               title='winapi::ksmedia'>ksmedia</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='libloaderapi/index.html'
+                               title='winapi::libloaderapi'>libloaderapi</a></td>
+                        <td class='docblock short'>
+                             <p>ApiSet Contract for api-ms-win-core-libraryloader-l1</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='lmaccess/index.html'
+                               title='winapi::lmaccess'>lmaccess</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='lmcons/index.html'
+                               title='winapi::lmcons'>lmcons</a></td>
+                        <td class='docblock short'>
+                             <p>This file contains constants used throughout the LAN Manager API header files.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='lmdfs/index.html'
+                               title='winapi::lmdfs'>lmdfs</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='lmerrlog/index.html'
+                               title='winapi::lmerrlog'>lmerrlog</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='lmjoin/index.html'
+                               title='winapi::lmjoin'>lmjoin</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='lsalookup/index.html'
+                               title='winapi::lsalookup'>lsalookup</a></td>
+                        <td class='docblock short'>
+                             <p>LSA Policy Lookup API</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='memoryapi/index.html'
+                               title='winapi::memoryapi'>memoryapi</a></td>
+                        <td class='docblock short'>
+                             <p>ApiSet Contract for api-ms-win-core-memory-l1-1-0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='minwinbase/index.html'
+                               title='winapi::minwinbase'>minwinbase</a></td>
+                        <td class='docblock short'>
+                             <p>This module defines the 32-Bit Windows Base APIs</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='minwindef/index.html'
+                               title='winapi::minwindef'>minwindef</a></td>
+                        <td class='docblock short'>
+                             <p>Basic Windows Type Definitions for minwin partition</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='mmdeviceapi/index.html'
+                               title='winapi::mmdeviceapi'>mmdeviceapi</a></td>
+                        <td class='docblock short'>
+                             <p>this ALWAYS GENERATED file contains the definitions for the interfaces</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='mmreg/index.html'
+                               title='winapi::mmreg'>mmreg</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='mmsystem/index.html'
+                               title='winapi::mmsystem'>mmsystem</a></td>
+                        <td class='docblock short'>
+                             <p>MM procedure declarations, constant definitions and macros</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='mscat/index.html'
+                               title='winapi::mscat'>mscat</a></td>
+                        <td class='docblock short'>
+                             <p>Microsoft Internet Security Catalog API Prototypes and Definitions</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='mssip/index.html'
+                               title='winapi::mssip'>mssip</a></td>
+                        <td class='docblock short'>
+                             <p>Microsoft SIP Provider Prototypes and Definitions</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='nb30/index.html'
+                               title='winapi::nb30'>nb30</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='ncrypt/index.html'
+                               title='winapi::ncrypt'>ncrypt</a></td>
+                        <td class='docblock short'>
+                             <p>Cryptographic API Prototypes and Definitions</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='ntdef/index.html'
+                               title='winapi::ntdef'>ntdef</a></td>
+                        <td class='docblock short'>
+                             <p>Type definitions for the basic types.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='ntsecapi/index.html'
+                               title='winapi::ntsecapi'>ntsecapi</a></td>
+                        <td class='docblock short'>
+                             <p>This module defines the Local Security Authority APIs.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='ntstatus/index.html'
+                               title='winapi::ntstatus'>ntstatus</a></td>
+                        <td class='docblock short'>
+                             <p>Constant definitions for the NTSTATUS values.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='oaidl/index.html'
+                               title='winapi::oaidl'>oaidl</a></td>
+                        <td class='docblock short'>
+                             <p>Mappings for the contents of OAIdl.h</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='objbase/index.html'
+                               title='winapi::objbase'>objbase</a></td>
+                        <td class='docblock short'>
+                             <p>Component object model defintions</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='objidl/index.html'
+                               title='winapi::objidl'>objidl</a></td>
+                        <td class='docblock short'>
+                             <p>this ALWAYS GENERATED file contains the definitions for the interfaces</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='objidlbase/index.html'
+                               title='winapi::objidlbase'>objidlbase</a></td>
+                        <td class='docblock short'>
+                             <p>this ALWAYS GENERATED file contains the definitions for the interfaces</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='olectl/index.html'
+                               title='winapi::olectl'>olectl</a></td>
+                        <td class='docblock short'>
+                             <p>OLE Control interfaces</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='processsnapshot/index.html'
+                               title='winapi::processsnapshot'>processsnapshot</a></td>
+                        <td class='docblock short'>
+                             <p>Defines the process snapshot API</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='processthreadsapi/index.html'
+                               title='winapi::processthreadsapi'>processthreadsapi</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='propsys/index.html'
+                               title='winapi::propsys'>propsys</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='prsht/index.html'
+                               title='winapi::prsht'>prsht</a></td>
+                        <td class='docblock short'>
+                             <p>Interface for the Windows Property Sheet Pages</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='psapi/index.html'
+                               title='winapi::psapi'>psapi</a></td>
+                        <td class='docblock short'>
+                             <p>API Prototypes and Definitions for PSAPI.DLL</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='qos/index.html'
+                               title='winapi::qos'>qos</a></td>
+                        <td class='docblock short'>
+                             <p>QoS definitions for NDIS components.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='reason/index.html'
+                               title='winapi::reason'>reason</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='rpc/index.html'
+                               title='winapi::rpc'>rpc</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='rpcdce/index.html'
+                               title='winapi::rpcdce'>rpcdce</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='sapi/index.html'
+                               title='winapi::sapi'>sapi</a></td>
+                        <td class='docblock short'>
+                             <p>Mappings for the contents of sapi.h</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='schannel/index.html'
+                               title='winapi::schannel'>schannel</a></td>
+                        <td class='docblock short'>
+                             <p>Public Definitions for SCHANNEL Security Provider</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='servprov/index.html'
+                               title='winapi::servprov'>servprov</a></td>
+                        <td class='docblock short'>
+                             <p>Mappings for the contents of servprov.h</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='setupapi/index.html'
+                               title='winapi::setupapi'>setupapi</a></td>
+                        <td class='docblock short'>
+                             <p>Windows NT Setup and Device Installer services</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='shellapi/index.html'
+                               title='winapi::shellapi'>shellapi</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='shellscalingapi/index.html'
+                               title='winapi::shellscalingapi'>shellscalingapi</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='shlobj/index.html'
+                               title='winapi::shlobj'>shlobj</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='shobjidl/index.html'
+                               title='winapi::shobjidl'>shobjidl</a></td>
+                        <td class='docblock short'>
+                             <p>this ALWAYS GENERATED file contains the definitions for the interfaces</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='shtypes/index.html'
+                               title='winapi::shtypes'>shtypes</a></td>
+                        <td class='docblock short'>
+                             <p>this ALWAYS GENERATED file contains the definitions for the interfaces</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='spapidef/index.html'
+                               title='winapi::spapidef'>spapidef</a></td>
+                        <td class='docblock short'>
+                             <p>Windows NT Setup and Device Installer services</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='sspi/index.html'
+                               title='winapi::sspi'>sspi</a></td>
+                        <td class='docblock short'>
+                             <p>Security Support Provider Interface Prototypes and structure definitions</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='subauth/index.html'
+                               title='winapi::subauth'>subauth</a></td>
+                        <td class='docblock short'>
+                             <p>Types and macros for Subauthentication Packages.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='synchapi/index.html'
+                               title='winapi::synchapi'>synchapi</a></td>
+                        <td class='docblock short'>
+                             <p>ApiSet Contract for api-ms-win-core-synch-l1</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='sysinfoapi/index.html'
+                               title='winapi::sysinfoapi'>sysinfoapi</a></td>
+                        <td class='docblock short'>
+                             <p>ApiSet Contract for api-ms-win-core-sysinfo-l1.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='threadpoolapi/index.html'
+                               title='winapi::threadpoolapi'>threadpoolapi</a></td>
+                        <td class='docblock short'>
+                             <p>ApiSet Contract for api-ms-win-core-threadpool-l1.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='timezoneapi/index.html'
+                               title='winapi::timezoneapi'>timezoneapi</a></td>
+                        <td class='docblock short'>
+                             <p>ApiSet Contract for api-ms-win-core-timezone-l1</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='tlhelp32/index.html'
+                               title='winapi::tlhelp32'>tlhelp32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='unknwnbase/index.html'
+                               title='winapi::unknwnbase'>unknwnbase</a></td>
+                        <td class='docblock short'>
+                             <p>this ALWAYS GENERATED file contains the definitions for the interfaces</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='urlhist/index.html'
+                               title='winapi::urlhist'>urlhist</a></td>
+                        <td class='docblock short'>
+                             <p>Url History Interfaces</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='urlmon/index.html'
+                               title='winapi::urlmon'>urlmon</a></td>
+                        <td class='docblock short'>
+                             <p>Mappings for the contents of Urlmon.h</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='usp10/index.html'
+                               title='winapi::usp10'>usp10</a></td>
+                        <td class='docblock short'>
+                             <p>Uniscribe structure declarations and constant definitions</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='vadefs/index.html'
+                               title='winapi::vadefs'>vadefs</a></td>
+                        <td class='docblock short'>
+                             <p>Definitions of macro helpers used by <stdarg.h>.  This is the topmost header in the CRT header
+lattice, and is always the first CRT header to be included, explicitly or implicitly.
+Therefore, this header also has several definitions that are used throughout the CRT.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='vsbackup/index.html'
+                               title='winapi::vsbackup'>vsbackup</a></td>
+                        <td class='docblock short'>
+                             <p>VSS backup interfaces</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='vss/index.html'
+                               title='winapi::vss'>vss</a></td>
+                        <td class='docblock short'>
+                             <p>VSS header file</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='vsserror/index.html'
+                               title='winapi::vsserror'>vsserror</a></td>
+                        <td class='docblock short'>
+                             <p>VSS Error header file</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='vswriter/index.html'
+                               title='winapi::vswriter'>vswriter</a></td>
+                        <td class='docblock short'>
+                             <p>VSS Writer header file</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='werapi/index.html'
+                               title='winapi::werapi'>werapi</a></td>
+                        <td class='docblock short'>
+                             <p>Function prototypes for Windows Error Reporting (WER)</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='winbase/index.html'
+                               title='winapi::winbase'>winbase</a></td>
+                        <td class='docblock short'>
+                             <p>This module defines the 32-Bit Windows Base APIs</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='wincon/index.html'
+                               title='winapi::wincon'>wincon</a></td>
+                        <td class='docblock short'>
+                             <p>This module contains the public data structures, data types, and procedures exported by the NT
+console subsystem.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='wincred/index.html'
+                               title='winapi::wincred'>wincred</a></td>
+                        <td class='docblock short'>
+                             <p>Authentication API Prototypes and Definitions</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='wincrypt/index.html'
+                               title='winapi::wincrypt'>wincrypt</a></td>
+                        <td class='docblock short'>
+                             <p>Cryptographic API Prototypes and Definitions</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='windef/index.html'
+                               title='winapi::windef'>windef</a></td>
+                        <td class='docblock short'>
+                             <p>Basic Windows Type Definitions</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='windowscodecs/index.html'
+                               title='winapi::windowscodecs'>windowscodecs</a></td>
+                        <td class='docblock short'>
+                             <p>Mappings for the contents of wincodec.h</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='windowsx/index.html'
+                               title='winapi::windowsx'>windowsx</a></td>
+                        <td class='docblock short'>
+                             <p>Macro APIs, window message crackers, and control APIs</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='winerror/index.html'
+                               title='winapi::winerror'>winerror</a></td>
+                        <td class='docblock short'>
+                             <p>error code definitions for the Win32 API functions</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='winevt/index.html'
+                               title='winapi::winevt'>winevt</a></td>
+                        <td class='docblock short'>
+                             <p>Windows Events API</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='wingdi/index.html'
+                               title='winapi::wingdi'>wingdi</a></td>
+                        <td class='docblock short'>
+                             <p>GDI procedure declarations, constant definitions and macros</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='winhttp/index.html'
+                               title='winapi::winhttp'>winhttp</a></td>
+                        <td class='docblock short'>
+                             <p>Windows HTTP Services API constant definitions and macros</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='winioctl/index.html'
+                               title='winapi::winioctl'>winioctl</a></td>
+                        <td class='docblock short'>
+                             <p>This module defines the 32-Bit Windows Device I/O control codes.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='winnetwk/index.html'
+                               title='winapi::winnetwk'>winnetwk</a></td>
+                        <td class='docblock short'>
+                             <p>Standard WINNET Header File for WIN32</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='winnls/index.html'
+                               title='winapi::winnls'>winnls</a></td>
+                        <td class='docblock short'>
+                             <p>Procedure declarations, constant definitions, and macros for the NLS component.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='winnt/index.html'
+                               title='winapi::winnt'>winnt</a></td>
+                        <td class='docblock short'>
+                             <p>This module defines the 32-Bit Windows types and constants that are defined by NT, but exposed
+through the Win32 API.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='winscard/index.html'
+                               title='winapi::winscard'>winscard</a></td>
+                        <td class='docblock short'>
+                             <p>Data Protection API Prototypes and Definitions</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='winsmcrd/index.html'
+                               title='winapi::winsmcrd'>winsmcrd</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='winsock2/index.html'
+                               title='winapi::winsock2'>winsock2</a></td>
+                        <td class='docblock short'>
+                             <p>definitions to be used with the WinSock 2 DLL and WinSock 2 applications.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='winspool/index.html'
+                               title='winapi::winspool'>winspool</a></td>
+                        <td class='docblock short'>
+                             <p>Winspool header file</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='winsvc/index.html'
+                               title='winapi::winsvc'>winsvc</a></td>
+                        <td class='docblock short'>
+                             <p>Header file for the Service Control Manager</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='winuser/index.html'
+                               title='winapi::winuser'>winuser</a></td>
+                        <td class='docblock short'>
+                             <p>USER procedure declarations, constant definitions and macros</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='ws2def/index.html'
+                               title='winapi::ws2def'>ws2def</a></td>
+                        <td class='docblock short'>
+                             <p>This file contains the core definitions for the Winsock2 specification that can be used by
+both user-mode and kernel mode modules.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='ws2ipdef/index.html'
+                               title='winapi::ws2ipdef'>ws2ipdef</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='ws2spi/index.html'
+                               title='winapi::ws2spi'>ws2spi</a></td>
+                        <td class='docblock short'>
+                             <p>Definitions to be used with the WinSock service provider</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='ws2tcpip/index.html'
+                               title='winapi::ws2tcpip'>ws2tcpip</a></td>
+                        <td class='docblock short'>
+                             <p>WinSock2 Extension for TCP/IP protocols</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='wtypes/index.html'
+                               title='winapi::wtypes'>wtypes</a></td>
+                        <td class='docblock short'>
+                             <p>Mappings for the contents of wstypes.h</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='wtypesbase/index.html'
+                               title='winapi::wtypesbase'>wtypesbase</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='xinput/index.html'
+                               title='winapi::xinput'>xinput</a></td>
+                        <td class='docblock short'>
+                             <p>XInput procedure declarations, constant definitions and macros</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.PROPVARIANT.html'
+                               title='winapi::PROPVARIANT'>PROPVARIANT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.ServerInformation.html'
+                               title='winapi::ServerInformation'>ServerInformation</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.VALENTA.html'
+                               title='winapi::VALENTA'>VALENTA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.VALENTW.html'
+                               title='winapi::VALENTW'>VALENTW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.c_void.html'
+                               title='winapi::c_void'>c_void</a></td>
+                        <td class='docblock short'>
+                             <p>Type used to construct void pointers for use with C.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CLSCTX_ALL.html'
+                               title='winapi::CLSCTX_ALL'>CLSCTX_ALL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CLSCTX_INPROC_HANDLER.html'
+                               title='winapi::CLSCTX_INPROC_HANDLER'>CLSCTX_INPROC_HANDLER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CLSCTX_INPROC_SERVER.html'
+                               title='winapi::CLSCTX_INPROC_SERVER'>CLSCTX_INPROC_SERVER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CLSCTX_LOCAL_SERVER.html'
+                               title='winapi::CLSCTX_LOCAL_SERVER'>CLSCTX_LOCAL_SERVER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CLSCTX_REMOTE_SERVER.html'
+                               title='winapi::CLSCTX_REMOTE_SERVER'>CLSCTX_REMOTE_SERVER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CLSCTX_SERVER.html'
+                               title='winapi::CLSCTX_SERVER'>CLSCTX_SERVER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HKEY_CLASSES_ROOT.html'
+                               title='winapi::HKEY_CLASSES_ROOT'>HKEY_CLASSES_ROOT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HKEY_CURRENT_CONFIG.html'
+                               title='winapi::HKEY_CURRENT_CONFIG'>HKEY_CURRENT_CONFIG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HKEY_CURRENT_USER.html'
+                               title='winapi::HKEY_CURRENT_USER'>HKEY_CURRENT_USER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HKEY_CURRENT_USER_LOCAL_SETTINGS.html'
+                               title='winapi::HKEY_CURRENT_USER_LOCAL_SETTINGS'>HKEY_CURRENT_USER_LOCAL_SETTINGS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HKEY_DYN_DATA.html'
+                               title='winapi::HKEY_DYN_DATA'>HKEY_DYN_DATA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HKEY_LOCAL_MACHINE.html'
+                               title='winapi::HKEY_LOCAL_MACHINE'>HKEY_LOCAL_MACHINE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HKEY_PERFORMANCE_DATA.html'
+                               title='winapi::HKEY_PERFORMANCE_DATA'>HKEY_PERFORMANCE_DATA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HKEY_PERFORMANCE_NLSTEXT.html'
+                               title='winapi::HKEY_PERFORMANCE_NLSTEXT'>HKEY_PERFORMANCE_NLSTEXT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HKEY_PERFORMANCE_TEXT.html'
+                               title='winapi::HKEY_PERFORMANCE_TEXT'>HKEY_PERFORMANCE_TEXT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HKEY_USERS.html'
+                               title='winapi::HKEY_USERS'>HKEY_USERS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.REG_MUI_STRING_TRUNCATE.html'
+                               title='winapi::REG_MUI_STRING_TRUNCATE'>REG_MUI_STRING_TRUNCATE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.RRF_NOEXPAND.html'
+                               title='winapi::RRF_NOEXPAND'>RRF_NOEXPAND</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.RRF_RT_ANY.html'
+                               title='winapi::RRF_RT_ANY'>RRF_RT_ANY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.RRF_RT_DWORD.html'
+                               title='winapi::RRF_RT_DWORD'>RRF_RT_DWORD</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.RRF_RT_QWORD.html'
+                               title='winapi::RRF_RT_QWORD'>RRF_RT_QWORD</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.RRF_RT_REG_BINARY.html'
+                               title='winapi::RRF_RT_REG_BINARY'>RRF_RT_REG_BINARY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.RRF_RT_REG_DWORD.html'
+                               title='winapi::RRF_RT_REG_DWORD'>RRF_RT_REG_DWORD</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.RRF_RT_REG_EXPAND_SZ.html'
+                               title='winapi::RRF_RT_REG_EXPAND_SZ'>RRF_RT_REG_EXPAND_SZ</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.RRF_RT_REG_MULTI_SZ.html'
+                               title='winapi::RRF_RT_REG_MULTI_SZ'>RRF_RT_REG_MULTI_SZ</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.RRF_RT_REG_NONE.html'
+                               title='winapi::RRF_RT_REG_NONE'>RRF_RT_REG_NONE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.RRF_RT_REG_QWORD.html'
+                               title='winapi::RRF_RT_REG_QWORD'>RRF_RT_REG_QWORD</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.RRF_RT_REG_SZ.html'
+                               title='winapi::RRF_RT_REG_SZ'>RRF_RT_REG_SZ</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.RRF_ZEROONFAILURE.html'
+                               title='winapi::RRF_ZEROONFAILURE'>RRF_ZEROONFAILURE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.SND_ALIAS.html'
+                               title='winapi::SND_ALIAS'>SND_ALIAS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.SND_ALIAS_ID.html'
+                               title='winapi::SND_ALIAS_ID'>SND_ALIAS_ID</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.SND_APPLICATION.html'
+                               title='winapi::SND_APPLICATION'>SND_APPLICATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.SND_ASYNC.html'
+                               title='winapi::SND_ASYNC'>SND_ASYNC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.SND_FILENAME.html'
+                               title='winapi::SND_FILENAME'>SND_FILENAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.SND_LOOP.html'
+                               title='winapi::SND_LOOP'>SND_LOOP</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.SND_MEMORY.html'
+                               title='winapi::SND_MEMORY'>SND_MEMORY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.SND_NODEFAULT.html'
+                               title='winapi::SND_NODEFAULT'>SND_NODEFAULT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.SND_NOSTOP.html'
+                               title='winapi::SND_NOSTOP'>SND_NOSTOP</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.SND_NOWAIT.html'
+                               title='winapi::SND_NOWAIT'>SND_NOWAIT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.SND_PURGE.html'
+                               title='winapi::SND_PURGE'>SND_PURGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.SND_RESOURCE.html'
+                               title='winapi::SND_RESOURCE'>SND_RESOURCE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.SND_RING.html'
+                               title='winapi::SND_RING'>SND_RING</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.SND_SENTRY.html'
+                               title='winapi::SND_SENTRY'>SND_SENTRY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.SND_SYNC.html'
+                               title='winapi::SND_SYNC'>SND_SYNC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.SND_SYSTEM.html'
+                               title='winapi::SND_SYSTEM'>SND_SYSTEM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.CO_MTA_USAGE_COOKIE.html'
+                               title='winapi::CO_MTA_USAGE_COOKIE'>CO_MTA_USAGE_COOKIE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PServerInformation.html'
+                               title='winapi::PServerInformation'>PServerInformation</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PVALENTA.html'
+                               title='winapi::PVALENTA'>PVALENTA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PVALENTW.html'
+                               title='winapi::PVALENTW'>PVALENTW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.REFERENCE_TIME.html'
+                               title='winapi::REFERENCE_TIME'>REFERENCE_TIME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.REGSAM.html'
+                               title='winapi::REGSAM'>REGSAM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.__int16.html'
+                               title='winapi::__int16'>__int16</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.__int32.html'
+                               title='winapi::__int32'>__int32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.__int64.html'
+                               title='winapi::__int64'>__int64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.__int8.html'
+                               title='winapi::__int8'>__int8</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.__uint16.html'
+                               title='winapi::__uint16'>__uint16</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.__uint32.html'
+                               title='winapi::__uint32'>__uint32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.__uint64.html'
+                               title='winapi::__uint64'>__uint64</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.__uint8.html'
+                               title='winapi::__uint8'>__uint8</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.c_char.html'
+                               title='winapi::c_char'>c_char</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.c_double.html'
+                               title='winapi::c_double'>c_double</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.c_float.html'
+                               title='winapi::c_float'>c_float</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.c_int.html'
+                               title='winapi::c_int'>c_int</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.c_long.html'
+                               title='winapi::c_long'>c_long</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.c_longlong.html'
+                               title='winapi::c_longlong'>c_longlong</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.c_schar.html'
+                               title='winapi::c_schar'>c_schar</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.c_short.html'
+                               title='winapi::c_short'>c_short</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.c_uchar.html'
+                               title='winapi::c_uchar'>c_uchar</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.c_uint.html'
+                               title='winapi::c_uint'>c_uint</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.c_ulong.html'
+                               title='winapi::c_ulong'>c_ulong</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.c_ulonglong.html'
+                               title='winapi::c_ulonglong'>c_ulonglong</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.c_ushort.html'
+                               title='winapi::c_ushort'>c_ushort</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.size_t.html'
+                               title='winapi::size_t'>size_t</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.wchar_t.html'
+                               title='winapi::wchar_t'>wchar_t</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='impls' class='section-header'><a href="#impls">Implementations</a></h2>
+<table></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

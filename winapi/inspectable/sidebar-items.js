@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["BaseTrust",""],["FullTrust",""],["PartialTrust",""]],"struct":[["IInspectable",""],["IInspectableVtbl",""],["TrustLevel",""]],"type":[["LPINSPECTABLE",""]]});

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `TP_CALLBACK_ENVIRON_V3` struct in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, TP_CALLBACK_ENVIRON_V3">
+
+    <title>winapi::winnt::TP_CALLBACK_ENVIRON_V3 - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a>::<wbr><a href='index.html'>winnt</a></p><script>window.sidebarCurrent = {name: 'TP_CALLBACK_ENVIRON_V3', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>winapi</a>::<wbr><a href='index.html'>winnt</a>::<wbr><a class='struct' href=''>TP_CALLBACK_ENVIRON_V3</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-109946' class='srclink' href='../../src/winapi/winnt.rs.html#2002-2013' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct TP_CALLBACK_ENVIRON_V3 {
+    pub Version: <a class='type' href='../../winapi/winnt/type.TP_VERSION.html' title='winapi::winnt::TP_VERSION'>TP_VERSION</a>,
+    pub Pool: <a class='type' href='../../winapi/winnt/type.PTP_POOL.html' title='winapi::winnt::PTP_POOL'>PTP_POOL</a>,
+    pub CleanupGroup: <a class='type' href='../../winapi/winnt/type.PTP_CLEANUP_GROUP.html' title='winapi::winnt::PTP_CLEANUP_GROUP'>PTP_CLEANUP_GROUP</a>,
+    pub CleanupGroupCancelCallback: <a class='type' href='../../winapi/winnt/type.PTP_CLEANUP_GROUP_CANCEL_CALLBACK.html' title='winapi::winnt::PTP_CLEANUP_GROUP_CANCEL_CALLBACK'>PTP_CLEANUP_GROUP_CANCEL_CALLBACK</a>,
+    pub RaceDll: <a class='type' href='../../winapi/winnt/type.PVOID.html' title='winapi::winnt::PVOID'>PVOID</a>,
+    pub ActivationContext: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/winnt/struct.ACTIVATION_CONTEXT.html' title='winapi::winnt::ACTIVATION_CONTEXT'>ACTIVATION_CONTEXT</a></a>,
+    pub FinalizationCallback: <a class='type' href='../../winapi/winnt/type.PTP_SIMPLE_CALLBACK.html' title='winapi::winnt::PTP_SIMPLE_CALLBACK'>PTP_SIMPLE_CALLBACK</a>,
+    pub u: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub CallbackPriority: <a class='struct' href='../../winapi/winnt/struct.TP_CALLBACK_PRIORITY.html' title='winapi::winnt::TP_CALLBACK_PRIORITY'>TP_CALLBACK_PRIORITY</a>,
+    pub Size: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.Version'><code>Version</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Pool'><code>Pool</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.CleanupGroup'><code>CleanupGroup</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.CleanupGroupCancelCallback'><code>CleanupGroupCancelCallback</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.RaceDll'><code>RaceDll</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ActivationContext'><code>ActivationContext</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.FinalizationCallback'><code>FinalizationCallback</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.u'><code>u</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.CallbackPriority'><code>CallbackPriority</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Size'><code>Size</code></td><td></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../winapi/winnt/struct.TP_CALLBACK_ENVIRON_V3.html' title='winapi::winnt::TP_CALLBACK_ENVIRON_V3'>TP_CALLBACK_ENVIRON_V3</a></code></h3><div class='impl-items'><h4 id='method.Flags' class='method'><code>unsafe fn <a href='#method.Flags' class='fnname'>Flags</a>(&amp;self) -&gt; &amp;<a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a></code></h4>
+<h4 id='method.Flags_mut' class='method'><code>unsafe fn <a href='#method.Flags_mut' class='fnname'>Flags_mut</a>(&amp;mut self) -&gt; &amp;mut <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='struct' href='../../winapi/winnt/struct.TP_CALLBACK_ENVIRON_V3.html' title='winapi::winnt::TP_CALLBACK_ENVIRON_V3'>TP_CALLBACK_ENVIRON_V3</a></code></h3><div class='impl-items'><h4 id='method.s' class='method'><code>unsafe fn <a href='#method.s' class='fnname'>s</a>(&amp;self) -&gt; &amp;<a class='struct' href='../../winapi/winnt/struct.TP_CALLBACK_ENVIRON_V3_s.html' title='winapi::winnt::TP_CALLBACK_ENVIRON_V3_s'>TP_CALLBACK_ENVIRON_V3_s</a></code></h4>
+<h4 id='method.s_mut' class='method'><code>unsafe fn <a href='#method.s_mut' class='fnname'>s_mut</a>(&amp;mut self) -&gt; &amp;mut <a class='struct' href='../../winapi/winnt/struct.TP_CALLBACK_ENVIRON_V3_s.html' title='winapi::winnt::TP_CALLBACK_ENVIRON_V3_s'>TP_CALLBACK_ENVIRON_V3_s</a></code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../winapi/winnt/struct.TP_CALLBACK_ENVIRON_V3.html' title='winapi::winnt::TP_CALLBACK_ENVIRON_V3'>TP_CALLBACK_ENVIRON_V3</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../winapi/winnt/struct.TP_CALLBACK_ENVIRON_V3.html' title='winapi::winnt::TP_CALLBACK_ENVIRON_V3'>TP_CALLBACK_ENVIRON_V3</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../../winapi/winnt/struct.TP_CALLBACK_ENVIRON_V3.html' title='winapi::winnt::TP_CALLBACK_ENVIRON_V3'>TP_CALLBACK_ENVIRON_V3</a></code></h3><div class='impl-items'></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

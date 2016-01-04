@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["Convolution","Provides a convolution operation for data vectors."]]});

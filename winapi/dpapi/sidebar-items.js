@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["szFORCE_KEY_PROTECTION",""]],"struct":[["CRYPTPROTECT_PROMPTSTRUCT",""]],"type":[["PCRYPTPROTECT_PROMPTSTRUCT",""]]});

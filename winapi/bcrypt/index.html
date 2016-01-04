@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `bcrypt` mod in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, bcrypt">
+
+    <title>winapi::bcrypt - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a></p><script>window.sidebarCurrent = {name: 'bcrypt', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>winapi</a>::<wbr><a class='mod' href=''>bcrypt</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-413' class='srclink' href='../../src/winapi/bcrypt.rs.html#3-356' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Cryptographic Primitive API Prototypes and Definitions</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_ALGORITHM_IDENTIFIER.html'
+                               title='winapi::bcrypt::BCRYPT_ALGORITHM_IDENTIFIER'>BCRYPT_ALGORITHM_IDENTIFIER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO.html'
+                               title='winapi::bcrypt::BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO'>BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_DH_KEY_BLOB.html'
+                               title='winapi::bcrypt::BCRYPT_DH_KEY_BLOB'>BCRYPT_DH_KEY_BLOB</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_DH_PARAMETER_HEADER.html'
+                               title='winapi::bcrypt::BCRYPT_DH_PARAMETER_HEADER'>BCRYPT_DH_PARAMETER_HEADER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_DSA_KEY_BLOB.html'
+                               title='winapi::bcrypt::BCRYPT_DSA_KEY_BLOB'>BCRYPT_DSA_KEY_BLOB</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_DSA_KEY_BLOB_V2.html'
+                               title='winapi::bcrypt::BCRYPT_DSA_KEY_BLOB_V2'>BCRYPT_DSA_KEY_BLOB_V2</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_DSA_PARAMETER_HEADER.html'
+                               title='winapi::bcrypt::BCRYPT_DSA_PARAMETER_HEADER'>BCRYPT_DSA_PARAMETER_HEADER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_DSA_PARAMETER_HEADER_V2.html'
+                               title='winapi::bcrypt::BCRYPT_DSA_PARAMETER_HEADER_V2'>BCRYPT_DSA_PARAMETER_HEADER_V2</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_ECCKEY_BLOB.html'
+                               title='winapi::bcrypt::BCRYPT_ECCKEY_BLOB'>BCRYPT_ECCKEY_BLOB</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_HASH_OPERATION_TYPE.html'
+                               title='winapi::bcrypt::BCRYPT_HASH_OPERATION_TYPE'>BCRYPT_HASH_OPERATION_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_INTERFACE_VERSION.html'
+                               title='winapi::bcrypt::BCRYPT_INTERFACE_VERSION'>BCRYPT_INTERFACE_VERSION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_KEY_BLOB.html'
+                               title='winapi::bcrypt::BCRYPT_KEY_BLOB'>BCRYPT_KEY_BLOB</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_KEY_DATA_BLOB_HEADER.html'
+                               title='winapi::bcrypt::BCRYPT_KEY_DATA_BLOB_HEADER'>BCRYPT_KEY_DATA_BLOB_HEADER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_KEY_LENGTHS_STRUCT.html'
+                               title='winapi::bcrypt::BCRYPT_KEY_LENGTHS_STRUCT'>BCRYPT_KEY_LENGTHS_STRUCT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_MULTI_HASH_OPERATION.html'
+                               title='winapi::bcrypt::BCRYPT_MULTI_HASH_OPERATION'>BCRYPT_MULTI_HASH_OPERATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_MULTI_OBJECT_LENGTH_STRUCT.html'
+                               title='winapi::bcrypt::BCRYPT_MULTI_OBJECT_LENGTH_STRUCT'>BCRYPT_MULTI_OBJECT_LENGTH_STRUCT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_MULTI_OPERATION_TYPE.html'
+                               title='winapi::bcrypt::BCRYPT_MULTI_OPERATION_TYPE'>BCRYPT_MULTI_OPERATION_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_OAEP_PADDING_INFO.html'
+                               title='winapi::bcrypt::BCRYPT_OAEP_PADDING_INFO'>BCRYPT_OAEP_PADDING_INFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_OID.html'
+                               title='winapi::bcrypt::BCRYPT_OID'>BCRYPT_OID</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_OID_LIST.html'
+                               title='winapi::bcrypt::BCRYPT_OID_LIST'>BCRYPT_OID_LIST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_PKCS1_PADDING_INFO.html'
+                               title='winapi::bcrypt::BCRYPT_PKCS1_PADDING_INFO'>BCRYPT_PKCS1_PADDING_INFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_PROVIDER_NAME.html'
+                               title='winapi::bcrypt::BCRYPT_PROVIDER_NAME'>BCRYPT_PROVIDER_NAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_PSS_PADDING_INFO.html'
+                               title='winapi::bcrypt::BCRYPT_PSS_PADDING_INFO'>BCRYPT_PSS_PADDING_INFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCRYPT_RSAKEY_BLOB.html'
+                               title='winapi::bcrypt::BCRYPT_RSAKEY_BLOB'>BCRYPT_RSAKEY_BLOB</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCryptBuffer.html'
+                               title='winapi::bcrypt::BCryptBuffer'>BCryptBuffer</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BCryptBufferDesc.html'
+                               title='winapi::bcrypt::BCryptBufferDesc'>BCryptBufferDesc</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CRYPT_CONTEXTS.html'
+                               title='winapi::bcrypt::CRYPT_CONTEXTS'>CRYPT_CONTEXTS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CRYPT_CONTEXT_CONFIG.html'
+                               title='winapi::bcrypt::CRYPT_CONTEXT_CONFIG'>CRYPT_CONTEXT_CONFIG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CRYPT_CONTEXT_FUNCTIONS.html'
+                               title='winapi::bcrypt::CRYPT_CONTEXT_FUNCTIONS'>CRYPT_CONTEXT_FUNCTIONS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CRYPT_CONTEXT_FUNCTION_CONFIG.html'
+                               title='winapi::bcrypt::CRYPT_CONTEXT_FUNCTION_CONFIG'>CRYPT_CONTEXT_FUNCTION_CONFIG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CRYPT_CONTEXT_FUNCTION_PROVIDERS.html'
+                               title='winapi::bcrypt::CRYPT_CONTEXT_FUNCTION_PROVIDERS'>CRYPT_CONTEXT_FUNCTION_PROVIDERS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CRYPT_IMAGE_REF.html'
+                               title='winapi::bcrypt::CRYPT_IMAGE_REF'>CRYPT_IMAGE_REF</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CRYPT_IMAGE_REG.html'
+                               title='winapi::bcrypt::CRYPT_IMAGE_REG'>CRYPT_IMAGE_REG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CRYPT_INTERFACE_REG.html'
+                               title='winapi::bcrypt::CRYPT_INTERFACE_REG'>CRYPT_INTERFACE_REG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CRYPT_PROPERTY_REF.html'
+                               title='winapi::bcrypt::CRYPT_PROPERTY_REF'>CRYPT_PROPERTY_REF</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CRYPT_PROVIDERS.html'
+                               title='winapi::bcrypt::CRYPT_PROVIDERS'>CRYPT_PROVIDERS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CRYPT_PROVIDER_REF.html'
+                               title='winapi::bcrypt::CRYPT_PROVIDER_REF'>CRYPT_PROVIDER_REF</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CRYPT_PROVIDER_REFS.html'
+                               title='winapi::bcrypt::CRYPT_PROVIDER_REFS'>CRYPT_PROVIDER_REFS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CRYPT_PROVIDER_REG.html'
+                               title='winapi::bcrypt::CRYPT_PROVIDER_REG'>CRYPT_PROVIDER_REG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DSAFIPSVERSION_ENUM.html'
+                               title='winapi::bcrypt::DSAFIPSVERSION_ENUM'>DSAFIPSVERSION_ENUM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.HASHALGORITHM_ENUM.html'
+                               title='winapi::bcrypt::HASHALGORITHM_ENUM'>HASHALGORITHM_ENUM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPTBUFFER_VERSION.html'
+                               title='winapi::bcrypt::BCRYPTBUFFER_VERSION'>BCRYPTBUFFER_VERSION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_ALG_HANDLE_HMAC_FLAG.html'
+                               title='winapi::bcrypt::BCRYPT_ALG_HANDLE_HMAC_FLAG'>BCRYPT_ALG_HANDLE_HMAC_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_ASYMMETRIC_ENCRYPTION_INTERFACE.html'
+                               title='winapi::bcrypt::BCRYPT_ASYMMETRIC_ENCRYPTION_INTERFACE'>BCRYPT_ASYMMETRIC_ENCRYPTION_INTERFACE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_ASYMMETRIC_ENCRYPTION_INTERFACE_VERSION_1.html'
+                               title='winapi::bcrypt::BCRYPT_ASYMMETRIC_ENCRYPTION_INTERFACE_VERSION_1'>BCRYPT_ASYMMETRIC_ENCRYPTION_INTERFACE_VERSION_1</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_ASYMMETRIC_ENCRYPTION_OPERATION.html'
+                               title='winapi::bcrypt::BCRYPT_ASYMMETRIC_ENCRYPTION_OPERATION'>BCRYPT_ASYMMETRIC_ENCRYPTION_OPERATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO_VERSION.html'
+                               title='winapi::bcrypt::BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO_VERSION'>BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO_VERSION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_AUTH_MODE_CHAIN_CALLS_FLAG.html'
+                               title='winapi::bcrypt::BCRYPT_AUTH_MODE_CHAIN_CALLS_FLAG'>BCRYPT_AUTH_MODE_CHAIN_CALLS_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_AUTH_MODE_IN_PROGRESS_FLAG.html'
+                               title='winapi::bcrypt::BCRYPT_AUTH_MODE_IN_PROGRESS_FLAG'>BCRYPT_AUTH_MODE_IN_PROGRESS_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_BLOCK_PADDING.html'
+                               title='winapi::bcrypt::BCRYPT_BLOCK_PADDING'>BCRYPT_BLOCK_PADDING</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_BUFFERS_LOCKED_FLAG.html'
+                               title='winapi::bcrypt::BCRYPT_BUFFERS_LOCKED_FLAG'>BCRYPT_BUFFERS_LOCKED_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_CAPI_AES_FLAG.html'
+                               title='winapi::bcrypt::BCRYPT_CAPI_AES_FLAG'>BCRYPT_CAPI_AES_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_CIPHER_INTERFACE.html'
+                               title='winapi::bcrypt::BCRYPT_CIPHER_INTERFACE'>BCRYPT_CIPHER_INTERFACE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_CIPHER_INTERFACE_VERSION_1.html'
+                               title='winapi::bcrypt::BCRYPT_CIPHER_INTERFACE_VERSION_1'>BCRYPT_CIPHER_INTERFACE_VERSION_1</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_CIPHER_OPERATION.html'
+                               title='winapi::bcrypt::BCRYPT_CIPHER_OPERATION'>BCRYPT_CIPHER_OPERATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_DH_PARAMETERS_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_DH_PARAMETERS_MAGIC'>BCRYPT_DH_PARAMETERS_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_DH_PRIVATE_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_DH_PRIVATE_MAGIC'>BCRYPT_DH_PRIVATE_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_DH_PUBLIC_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_DH_PUBLIC_MAGIC'>BCRYPT_DH_PUBLIC_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_DSA_PARAMETERS_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_DSA_PARAMETERS_MAGIC'>BCRYPT_DSA_PARAMETERS_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_DSA_PARAMETERS_MAGIC_V2.html'
+                               title='winapi::bcrypt::BCRYPT_DSA_PARAMETERS_MAGIC_V2'>BCRYPT_DSA_PARAMETERS_MAGIC_V2</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_DSA_PRIVATE_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_DSA_PRIVATE_MAGIC'>BCRYPT_DSA_PRIVATE_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_DSA_PRIVATE_MAGIC_V2.html'
+                               title='winapi::bcrypt::BCRYPT_DSA_PRIVATE_MAGIC_V2'>BCRYPT_DSA_PRIVATE_MAGIC_V2</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_DSA_PUBLIC_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_DSA_PUBLIC_MAGIC'>BCRYPT_DSA_PUBLIC_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_DSA_PUBLIC_MAGIC_V2.html'
+                               title='winapi::bcrypt::BCRYPT_DSA_PUBLIC_MAGIC_V2'>BCRYPT_DSA_PUBLIC_MAGIC_V2</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_ECDH_PRIVATE_P256_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_ECDH_PRIVATE_P256_MAGIC'>BCRYPT_ECDH_PRIVATE_P256_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_ECDH_PRIVATE_P384_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_ECDH_PRIVATE_P384_MAGIC'>BCRYPT_ECDH_PRIVATE_P384_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_ECDH_PRIVATE_P521_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_ECDH_PRIVATE_P521_MAGIC'>BCRYPT_ECDH_PRIVATE_P521_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_ECDH_PUBLIC_P256_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_ECDH_PUBLIC_P256_MAGIC'>BCRYPT_ECDH_PUBLIC_P256_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_ECDH_PUBLIC_P384_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_ECDH_PUBLIC_P384_MAGIC'>BCRYPT_ECDH_PUBLIC_P384_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_ECDH_PUBLIC_P521_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_ECDH_PUBLIC_P521_MAGIC'>BCRYPT_ECDH_PUBLIC_P521_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_ECDSA_PRIVATE_P256_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_ECDSA_PRIVATE_P256_MAGIC'>BCRYPT_ECDSA_PRIVATE_P256_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_ECDSA_PRIVATE_P384_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_ECDSA_PRIVATE_P384_MAGIC'>BCRYPT_ECDSA_PRIVATE_P384_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_ECDSA_PRIVATE_P521_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_ECDSA_PRIVATE_P521_MAGIC'>BCRYPT_ECDSA_PRIVATE_P521_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_ECDSA_PUBLIC_P256_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_ECDSA_PUBLIC_P256_MAGIC'>BCRYPT_ECDSA_PUBLIC_P256_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_ECDSA_PUBLIC_P384_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_ECDSA_PUBLIC_P384_MAGIC'>BCRYPT_ECDSA_PUBLIC_P384_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_ECDSA_PUBLIC_P521_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_ECDSA_PUBLIC_P521_MAGIC'>BCRYPT_ECDSA_PUBLIC_P521_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_EXTENDED_KEYSIZE.html'
+                               title='winapi::bcrypt::BCRYPT_EXTENDED_KEYSIZE'>BCRYPT_EXTENDED_KEYSIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_HASH_INTERFACE.html'
+                               title='winapi::bcrypt::BCRYPT_HASH_INTERFACE'>BCRYPT_HASH_INTERFACE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_HASH_INTERFACE_MAJORVERSION_2.html'
+                               title='winapi::bcrypt::BCRYPT_HASH_INTERFACE_MAJORVERSION_2'>BCRYPT_HASH_INTERFACE_MAJORVERSION_2</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_HASH_INTERFACE_VERSION_1.html'
+                               title='winapi::bcrypt::BCRYPT_HASH_INTERFACE_VERSION_1'>BCRYPT_HASH_INTERFACE_VERSION_1</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_HASH_INTERFACE_VERSION_2.html'
+                               title='winapi::bcrypt::BCRYPT_HASH_INTERFACE_VERSION_2'>BCRYPT_HASH_INTERFACE_VERSION_2</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_HASH_OPERATION.html'
+                               title='winapi::bcrypt::BCRYPT_HASH_OPERATION'>BCRYPT_HASH_OPERATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_HASH_OPERATION_FINISH_HASH.html'
+                               title='winapi::bcrypt::BCRYPT_HASH_OPERATION_FINISH_HASH'>BCRYPT_HASH_OPERATION_FINISH_HASH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_HASH_OPERATION_HASH_DATA.html'
+                               title='winapi::bcrypt::BCRYPT_HASH_OPERATION_HASH_DATA'>BCRYPT_HASH_OPERATION_HASH_DATA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_HASH_REUSABLE_FLAG.html'
+                               title='winapi::bcrypt::BCRYPT_HASH_REUSABLE_FLAG'>BCRYPT_HASH_REUSABLE_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_KEY_DATA_BLOB_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_KEY_DATA_BLOB_MAGIC'>BCRYPT_KEY_DATA_BLOB_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_KEY_DATA_BLOB_VERSION1.html'
+                               title='winapi::bcrypt::BCRYPT_KEY_DATA_BLOB_VERSION1'>BCRYPT_KEY_DATA_BLOB_VERSION1</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_KEY_DERIVATION_INTERFACE.html'
+                               title='winapi::bcrypt::BCRYPT_KEY_DERIVATION_INTERFACE'>BCRYPT_KEY_DERIVATION_INTERFACE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_KEY_DERIVATION_OPERATION.html'
+                               title='winapi::bcrypt::BCRYPT_KEY_DERIVATION_OPERATION'>BCRYPT_KEY_DERIVATION_OPERATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_OPERATION_TYPE_HASH.html'
+                               title='winapi::bcrypt::BCRYPT_OPERATION_TYPE_HASH'>BCRYPT_OPERATION_TYPE_HASH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_PAD_NONE.html'
+                               title='winapi::bcrypt::BCRYPT_PAD_NONE'>BCRYPT_PAD_NONE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_PAD_OAEP.html'
+                               title='winapi::bcrypt::BCRYPT_PAD_OAEP'>BCRYPT_PAD_OAEP</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_PAD_PKCS1.html'
+                               title='winapi::bcrypt::BCRYPT_PAD_PKCS1'>BCRYPT_PAD_PKCS1</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_PAD_PKCS1_OPTIONAL_HASH_OID.html'
+                               title='winapi::bcrypt::BCRYPT_PAD_PKCS1_OPTIONAL_HASH_OID'>BCRYPT_PAD_PKCS1_OPTIONAL_HASH_OID</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_PAD_PSS.html'
+                               title='winapi::bcrypt::BCRYPT_PAD_PSS'>BCRYPT_PAD_PSS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_PRIVATE_KEY_FLAG.html'
+                               title='winapi::bcrypt::BCRYPT_PRIVATE_KEY_FLAG'>BCRYPT_PRIVATE_KEY_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_PROV_DISPATCH.html'
+                               title='winapi::bcrypt::BCRYPT_PROV_DISPATCH'>BCRYPT_PROV_DISPATCH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_PUBLIC_KEY_FLAG.html'
+                               title='winapi::bcrypt::BCRYPT_PUBLIC_KEY_FLAG'>BCRYPT_PUBLIC_KEY_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_RNG_INTERFACE.html'
+                               title='winapi::bcrypt::BCRYPT_RNG_INTERFACE'>BCRYPT_RNG_INTERFACE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_RNG_INTERFACE_VERSION_1.html'
+                               title='winapi::bcrypt::BCRYPT_RNG_INTERFACE_VERSION_1'>BCRYPT_RNG_INTERFACE_VERSION_1</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_RNG_OPERATION.html'
+                               title='winapi::bcrypt::BCRYPT_RNG_OPERATION'>BCRYPT_RNG_OPERATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_RNG_USE_ENTROPY_IN_BUFFER.html'
+                               title='winapi::bcrypt::BCRYPT_RNG_USE_ENTROPY_IN_BUFFER'>BCRYPT_RNG_USE_ENTROPY_IN_BUFFER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_RSAFULLPRIVATE_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_RSAFULLPRIVATE_MAGIC'>BCRYPT_RSAFULLPRIVATE_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_RSAPRIVATE_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_RSAPRIVATE_MAGIC'>BCRYPT_RSAPRIVATE_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_RSAPUBLIC_MAGIC.html'
+                               title='winapi::bcrypt::BCRYPT_RSAPUBLIC_MAGIC'>BCRYPT_RSAPUBLIC_MAGIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_SECRET_AGREEMENT_INTERFACE.html'
+                               title='winapi::bcrypt::BCRYPT_SECRET_AGREEMENT_INTERFACE'>BCRYPT_SECRET_AGREEMENT_INTERFACE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_SECRET_AGREEMENT_INTERFACE_VERSION_1.html'
+                               title='winapi::bcrypt::BCRYPT_SECRET_AGREEMENT_INTERFACE_VERSION_1'>BCRYPT_SECRET_AGREEMENT_INTERFACE_VERSION_1</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_SECRET_AGREEMENT_OPERATION.html'
+                               title='winapi::bcrypt::BCRYPT_SECRET_AGREEMENT_OPERATION'>BCRYPT_SECRET_AGREEMENT_OPERATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_SIGNATURE_INTERFACE.html'
+                               title='winapi::bcrypt::BCRYPT_SIGNATURE_INTERFACE'>BCRYPT_SIGNATURE_INTERFACE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_SIGNATURE_INTERFACE_VERSION_1.html'
+                               title='winapi::bcrypt::BCRYPT_SIGNATURE_INTERFACE_VERSION_1'>BCRYPT_SIGNATURE_INTERFACE_VERSION_1</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_SIGNATURE_OPERATION.html'
+                               title='winapi::bcrypt::BCRYPT_SIGNATURE_OPERATION'>BCRYPT_SIGNATURE_OPERATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BCRYPT_USE_SYSTEM_PREFERRED_RNG.html'
+                               title='winapi::bcrypt::BCRYPT_USE_SYSTEM_PREFERRED_RNG'>BCRYPT_USE_SYSTEM_PREFERRED_RNG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRYPT_ALL_FUNCTIONS.html'
+                               title='winapi::bcrypt::CRYPT_ALL_FUNCTIONS'>CRYPT_ALL_FUNCTIONS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRYPT_ALL_PROVIDERS.html'
+                               title='winapi::bcrypt::CRYPT_ALL_PROVIDERS'>CRYPT_ALL_PROVIDERS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRYPT_ANY.html'
+                               title='winapi::bcrypt::CRYPT_ANY'>CRYPT_ANY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRYPT_DOMAIN.html'
+                               title='winapi::bcrypt::CRYPT_DOMAIN'>CRYPT_DOMAIN</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRYPT_EXCLUSIVE.html'
+                               title='winapi::bcrypt::CRYPT_EXCLUSIVE'>CRYPT_EXCLUSIVE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRYPT_KM.html'
+                               title='winapi::bcrypt::CRYPT_KM'>CRYPT_KM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRYPT_LOCAL.html'
+                               title='winapi::bcrypt::CRYPT_LOCAL'>CRYPT_LOCAL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRYPT_MIN_DEPENDENCIES.html'
+                               title='winapi::bcrypt::CRYPT_MIN_DEPENDENCIES'>CRYPT_MIN_DEPENDENCIES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRYPT_MM.html'
+                               title='winapi::bcrypt::CRYPT_MM'>CRYPT_MM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRYPT_OVERRIDE.html'
+                               title='winapi::bcrypt::CRYPT_OVERRIDE'>CRYPT_OVERRIDE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRYPT_OVERWRITE.html'
+                               title='winapi::bcrypt::CRYPT_OVERWRITE'>CRYPT_OVERWRITE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRYPT_PRIORITY_BOTTOM.html'
+                               title='winapi::bcrypt::CRYPT_PRIORITY_BOTTOM'>CRYPT_PRIORITY_BOTTOM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRYPT_PRIORITY_TOP.html'
+                               title='winapi::bcrypt::CRYPT_PRIORITY_TOP'>CRYPT_PRIORITY_TOP</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRYPT_PROCESS_ISOLATE.html'
+                               title='winapi::bcrypt::CRYPT_PROCESS_ISOLATE'>CRYPT_PROCESS_ISOLATE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRYPT_UM.html'
+                               title='winapi::bcrypt::CRYPT_UM'>CRYPT_UM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DSA_FIPS186_2.html'
+                               title='winapi::bcrypt::DSA_FIPS186_2'>DSA_FIPS186_2</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DSA_FIPS186_3.html'
+                               title='winapi::bcrypt::DSA_FIPS186_3'>DSA_FIPS186_3</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DSA_HASH_ALGORITHM_SHA1.html'
+                               title='winapi::bcrypt::DSA_HASH_ALGORITHM_SHA1'>DSA_HASH_ALGORITHM_SHA1</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DSA_HASH_ALGORITHM_SHA256.html'
+                               title='winapi::bcrypt::DSA_HASH_ALGORITHM_SHA256'>DSA_HASH_ALGORITHM_SHA256</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.DSA_HASH_ALGORITHM_SHA512.html'
+                               title='winapi::bcrypt::DSA_HASH_ALGORITHM_SHA512'>DSA_HASH_ALGORITHM_SHA512</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_ALGORITHMID.html'
+                               title='winapi::bcrypt::KDF_ALGORITHMID'>KDF_ALGORITHMID</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_CONTEXT.html'
+                               title='winapi::bcrypt::KDF_CONTEXT'>KDF_CONTEXT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_GENERIC_PARAMETER.html'
+                               title='winapi::bcrypt::KDF_GENERIC_PARAMETER'>KDF_GENERIC_PARAMETER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_HASH_ALGORITHM.html'
+                               title='winapi::bcrypt::KDF_HASH_ALGORITHM'>KDF_HASH_ALGORITHM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_HMAC_KEY.html'
+                               title='winapi::bcrypt::KDF_HMAC_KEY'>KDF_HMAC_KEY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_ITERATION_COUNT.html'
+                               title='winapi::bcrypt::KDF_ITERATION_COUNT'>KDF_ITERATION_COUNT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_KEYBITLENGTH.html'
+                               title='winapi::bcrypt::KDF_KEYBITLENGTH'>KDF_KEYBITLENGTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_LABEL.html'
+                               title='winapi::bcrypt::KDF_LABEL'>KDF_LABEL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_PARTYUINFO.html'
+                               title='winapi::bcrypt::KDF_PARTYUINFO'>KDF_PARTYUINFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_PARTYVINFO.html'
+                               title='winapi::bcrypt::KDF_PARTYVINFO'>KDF_PARTYVINFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_SALT.html'
+                               title='winapi::bcrypt::KDF_SALT'>KDF_SALT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_SECRET_APPEND.html'
+                               title='winapi::bcrypt::KDF_SECRET_APPEND'>KDF_SECRET_APPEND</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_SECRET_HANDLE.html'
+                               title='winapi::bcrypt::KDF_SECRET_HANDLE'>KDF_SECRET_HANDLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_SECRET_PREPEND.html'
+                               title='winapi::bcrypt::KDF_SECRET_PREPEND'>KDF_SECRET_PREPEND</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_SUPPPRIVINFO.html'
+                               title='winapi::bcrypt::KDF_SUPPPRIVINFO'>KDF_SUPPPRIVINFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_SUPPPUBINFO.html'
+                               title='winapi::bcrypt::KDF_SUPPPUBINFO'>KDF_SUPPPUBINFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_TLS_PRF_LABEL.html'
+                               title='winapi::bcrypt::KDF_TLS_PRF_LABEL'>KDF_TLS_PRF_LABEL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_TLS_PRF_PROTOCOL.html'
+                               title='winapi::bcrypt::KDF_TLS_PRF_PROTOCOL'>KDF_TLS_PRF_PROTOCOL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_TLS_PRF_SEED.html'
+                               title='winapi::bcrypt::KDF_TLS_PRF_SEED'>KDF_TLS_PRF_SEED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.KDF_USE_SECRET_AS_HMAC_KEY_FLAG.html'
+                               title='winapi::bcrypt::KDF_USE_SECRET_AS_HMAC_KEY_FLAG'>KDF_USE_SECRET_AS_HMAC_KEY_FLAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.BCRYPT_ALG_HANDLE.html'
+                               title='winapi::bcrypt::BCRYPT_ALG_HANDLE'>BCRYPT_ALG_HANDLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.BCRYPT_AUTH_TAG_LENGTHS_STRUCT.html'
+                               title='winapi::bcrypt::BCRYPT_AUTH_TAG_LENGTHS_STRUCT'>BCRYPT_AUTH_TAG_LENGTHS_STRUCT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.BCRYPT_HANDLE.html'
+                               title='winapi::bcrypt::BCRYPT_HANDLE'>BCRYPT_HANDLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.BCRYPT_HASH_HANDLE.html'
+                               title='winapi::bcrypt::BCRYPT_HASH_HANDLE'>BCRYPT_HASH_HANDLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.BCRYPT_KEY_HANDLE.html'
+                               title='winapi::bcrypt::BCRYPT_KEY_HANDLE'>BCRYPT_KEY_HANDLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.BCRYPT_SECRET_HANDLE.html'
+                               title='winapi::bcrypt::BCRYPT_SECRET_HANDLE'>BCRYPT_SECRET_HANDLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PBCRYPT_AUTHENTICATED_CIPHER_MODE_INFO.html'
+                               title='winapi::bcrypt::PBCRYPT_AUTHENTICATED_CIPHER_MODE_INFO'>PBCRYPT_AUTHENTICATED_CIPHER_MODE_INFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PBCRYPT_DH_KEY_BLOB.html'
+                               title='winapi::bcrypt::PBCRYPT_DH_KEY_BLOB'>PBCRYPT_DH_KEY_BLOB</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PBCRYPT_DSA_KEY_BLOB.html'
+                               title='winapi::bcrypt::PBCRYPT_DSA_KEY_BLOB'>PBCRYPT_DSA_KEY_BLOB</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PBCRYPT_DSA_KEY_BLOB_V2.html'
+                               title='winapi::bcrypt::PBCRYPT_DSA_KEY_BLOB_V2'>PBCRYPT_DSA_KEY_BLOB_V2</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PBCRYPT_ECCKEY_BLOB.html'
+                               title='winapi::bcrypt::PBCRYPT_ECCKEY_BLOB'>PBCRYPT_ECCKEY_BLOB</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PBCRYPT_INTERFACE_VERSION.html'
+                               title='winapi::bcrypt::PBCRYPT_INTERFACE_VERSION'>PBCRYPT_INTERFACE_VERSION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PBCRYPT_KEY_DATA_BLOB_HEADER.html'
+                               title='winapi::bcrypt::PBCRYPT_KEY_DATA_BLOB_HEADER'>PBCRYPT_KEY_DATA_BLOB_HEADER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PBCryptBuffer.html'
+                               title='winapi::bcrypt::PBCryptBuffer'>PBCryptBuffer</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PBCryptBufferDesc.html'
+                               title='winapi::bcrypt::PBCryptBufferDesc'>PBCryptBufferDesc</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCRYPT_CONTEXTS.html'
+                               title='winapi::bcrypt::PCRYPT_CONTEXTS'>PCRYPT_CONTEXTS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCRYPT_CONTEXT_CONFIG.html'
+                               title='winapi::bcrypt::PCRYPT_CONTEXT_CONFIG'>PCRYPT_CONTEXT_CONFIG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCRYPT_CONTEXT_FUNCTIONS.html'
+                               title='winapi::bcrypt::PCRYPT_CONTEXT_FUNCTIONS'>PCRYPT_CONTEXT_FUNCTIONS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCRYPT_CONTEXT_FUNCTION_CONFIG.html'
+                               title='winapi::bcrypt::PCRYPT_CONTEXT_FUNCTION_CONFIG'>PCRYPT_CONTEXT_FUNCTION_CONFIG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCRYPT_CONTEXT_FUNCTION_PROVIDERS.html'
+                               title='winapi::bcrypt::PCRYPT_CONTEXT_FUNCTION_PROVIDERS'>PCRYPT_CONTEXT_FUNCTION_PROVIDERS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCRYPT_IMAGE_REF.html'
+                               title='winapi::bcrypt::PCRYPT_IMAGE_REF'>PCRYPT_IMAGE_REF</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCRYPT_IMAGE_REG.html'
+                               title='winapi::bcrypt::PCRYPT_IMAGE_REG'>PCRYPT_IMAGE_REG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCRYPT_INTERFACE_REG.html'
+                               title='winapi::bcrypt::PCRYPT_INTERFACE_REG'>PCRYPT_INTERFACE_REG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCRYPT_PROPERTY_REF.html'
+                               title='winapi::bcrypt::PCRYPT_PROPERTY_REF'>PCRYPT_PROPERTY_REF</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCRYPT_PROVIDERS.html'
+                               title='winapi::bcrypt::PCRYPT_PROVIDERS'>PCRYPT_PROVIDERS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCRYPT_PROVIDER_REF.html'
+                               title='winapi::bcrypt::PCRYPT_PROVIDER_REF'>PCRYPT_PROVIDER_REF</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCRYPT_PROVIDER_REFS.html'
+                               title='winapi::bcrypt::PCRYPT_PROVIDER_REFS'>PCRYPT_PROVIDER_REFS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCRYPT_PROVIDER_REG.html'
+                               title='winapi::bcrypt::PCRYPT_PROVIDER_REG'>PCRYPT_PROVIDER_REG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

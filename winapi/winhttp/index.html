@@ -1,0 +1,3083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `winhttp` mod in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, winhttp">
+
+    <title>winapi::winhttp - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a></p><script>window.sidebarCurrent = {name: 'winhttp', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>winapi</a>::<wbr><a class='mod' href=''>winhttp</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-104902' class='srclink' href='../../src/winapi/winhttp.rs.html#3-441' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Windows HTTP Services API constant definitions and macros</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.URL_COMPONENTS.html'
+                               title='winapi::winhttp::URL_COMPONENTS'>URL_COMPONENTS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.WINHTTP_ASYNC_RESULT.html'
+                               title='winapi::winhttp::WINHTTP_ASYNC_RESULT'>WINHTTP_ASYNC_RESULT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.WINHTTP_AUTOPROXY_OPTIONS.html'
+                               title='winapi::winhttp::WINHTTP_AUTOPROXY_OPTIONS'>WINHTTP_AUTOPROXY_OPTIONS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.WINHTTP_CURRENT_USER_IE_PROXY_CONFIG.html'
+                               title='winapi::winhttp::WINHTTP_CURRENT_USER_IE_PROXY_CONFIG'>WINHTTP_CURRENT_USER_IE_PROXY_CONFIG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.WINHTTP_PROXY_INFO.html'
+                               title='winapi::winhttp::WINHTTP_PROXY_INFO'>WINHTTP_PROXY_INFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.WINHTTP_PROXY_RESULT.html'
+                               title='winapi::winhttp::WINHTTP_PROXY_RESULT'>WINHTTP_PROXY_RESULT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.WINHTTP_PROXY_RESULT_ENTRY.html'
+                               title='winapi::winhttp::WINHTTP_PROXY_RESULT_ENTRY'>WINHTTP_PROXY_RESULT_ENTRY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.WINHTTP_WEB_SOCKET_BUFFER_TYPE.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_BUFFER_TYPE'>WINHTTP_WEB_SOCKET_BUFFER_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.WINHTTP_WEB_SOCKET_CLOSE_STATUS.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_CLOSE_STATUS'>WINHTTP_WEB_SOCKET_CLOSE_STATUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.WINHTTP_WEB_SOCKET_OPERATION.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_OPERATION'>WINHTTP_WEB_SOCKET_OPERATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_AUTODETECTION_FAILED.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_AUTODETECTION_FAILED'>ERROR_WINHTTP_AUTODETECTION_FAILED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_AUTO_PROXY_SERVICE_ERROR.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_AUTO_PROXY_SERVICE_ERROR'>ERROR_WINHTTP_AUTO_PROXY_SERVICE_ERROR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_BAD_AUTO_PROXY_SCRIPT.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_BAD_AUTO_PROXY_SCRIPT'>ERROR_WINHTTP_BAD_AUTO_PROXY_SCRIPT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_CANNOT_CALL_AFTER_OPEN.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_CANNOT_CALL_AFTER_OPEN'>ERROR_WINHTTP_CANNOT_CALL_AFTER_OPEN</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_CANNOT_CALL_AFTER_SEND.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_CANNOT_CALL_AFTER_SEND'>ERROR_WINHTTP_CANNOT_CALL_AFTER_SEND</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_CANNOT_CALL_BEFORE_OPEN.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_CANNOT_CALL_BEFORE_OPEN'>ERROR_WINHTTP_CANNOT_CALL_BEFORE_OPEN</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_CANNOT_CALL_BEFORE_SEND.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_CANNOT_CALL_BEFORE_SEND'>ERROR_WINHTTP_CANNOT_CALL_BEFORE_SEND</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_CANNOT_CONNECT.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_CANNOT_CONNECT'>ERROR_WINHTTP_CANNOT_CONNECT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_CHUNKED_ENCODING_HEADER_SIZE_OVERFLOW.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_CHUNKED_ENCODING_HEADER_SIZE_OVERFLOW'>ERROR_WINHTTP_CHUNKED_ENCODING_HEADER_SIZE_OVERFLOW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_CLIENT_AUTH_CERT_NEEDED.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_CLIENT_AUTH_CERT_NEEDED'>ERROR_WINHTTP_CLIENT_AUTH_CERT_NEEDED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_CLIENT_CERT_NO_ACCESS_PRIVATE_KEY.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_CLIENT_CERT_NO_ACCESS_PRIVATE_KEY'>ERROR_WINHTTP_CLIENT_CERT_NO_ACCESS_PRIVATE_KEY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_CLIENT_CERT_NO_PRIVATE_KEY.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_CLIENT_CERT_NO_PRIVATE_KEY'>ERROR_WINHTTP_CLIENT_CERT_NO_PRIVATE_KEY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_CONNECTION_ERROR.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_CONNECTION_ERROR'>ERROR_WINHTTP_CONNECTION_ERROR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_HEADER_ALREADY_EXISTS.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_HEADER_ALREADY_EXISTS'>ERROR_WINHTTP_HEADER_ALREADY_EXISTS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_HEADER_COUNT_EXCEEDED.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_HEADER_COUNT_EXCEEDED'>ERROR_WINHTTP_HEADER_COUNT_EXCEEDED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_HEADER_NOT_FOUND.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_HEADER_NOT_FOUND'>ERROR_WINHTTP_HEADER_NOT_FOUND</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_HEADER_SIZE_OVERFLOW.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_HEADER_SIZE_OVERFLOW'>ERROR_WINHTTP_HEADER_SIZE_OVERFLOW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_INCORRECT_HANDLE_STATE.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_INCORRECT_HANDLE_STATE'>ERROR_WINHTTP_INCORRECT_HANDLE_STATE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_INCORRECT_HANDLE_TYPE.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_INCORRECT_HANDLE_TYPE'>ERROR_WINHTTP_INCORRECT_HANDLE_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_INTERNAL_ERROR.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_INTERNAL_ERROR'>ERROR_WINHTTP_INTERNAL_ERROR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_INVALID_HEADER.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_INVALID_HEADER'>ERROR_WINHTTP_INVALID_HEADER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_INVALID_OPTION.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_INVALID_OPTION'>ERROR_WINHTTP_INVALID_OPTION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_INVALID_QUERY_REQUEST.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_INVALID_QUERY_REQUEST'>ERROR_WINHTTP_INVALID_QUERY_REQUEST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_INVALID_SERVER_RESPONSE.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_INVALID_SERVER_RESPONSE'>ERROR_WINHTTP_INVALID_SERVER_RESPONSE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_INVALID_URL.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_INVALID_URL'>ERROR_WINHTTP_INVALID_URL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_LOGIN_FAILURE.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_LOGIN_FAILURE'>ERROR_WINHTTP_LOGIN_FAILURE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_NAME_NOT_RESOLVED.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_NAME_NOT_RESOLVED'>ERROR_WINHTTP_NAME_NOT_RESOLVED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_NOT_INITIALIZED.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_NOT_INITIALIZED'>ERROR_WINHTTP_NOT_INITIALIZED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_OPERATION_CANCELLED.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_OPERATION_CANCELLED'>ERROR_WINHTTP_OPERATION_CANCELLED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_OPTION_NOT_SETTABLE.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_OPTION_NOT_SETTABLE'>ERROR_WINHTTP_OPTION_NOT_SETTABLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_OUT_OF_HANDLES.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_OUT_OF_HANDLES'>ERROR_WINHTTP_OUT_OF_HANDLES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_REDIRECT_FAILED.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_REDIRECT_FAILED'>ERROR_WINHTTP_REDIRECT_FAILED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_RESEND_REQUEST.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_RESEND_REQUEST'>ERROR_WINHTTP_RESEND_REQUEST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_RESPONSE_DRAIN_OVERFLOW.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_RESPONSE_DRAIN_OVERFLOW'>ERROR_WINHTTP_RESPONSE_DRAIN_OVERFLOW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_SCRIPT_EXECUTION_ERROR.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_SCRIPT_EXECUTION_ERROR'>ERROR_WINHTTP_SCRIPT_EXECUTION_ERROR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_SECURE_CERT_CN_INVALID.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_SECURE_CERT_CN_INVALID'>ERROR_WINHTTP_SECURE_CERT_CN_INVALID</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_SECURE_CERT_DATE_INVALID.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_SECURE_CERT_DATE_INVALID'>ERROR_WINHTTP_SECURE_CERT_DATE_INVALID</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_SECURE_CERT_REVOKED.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_SECURE_CERT_REVOKED'>ERROR_WINHTTP_SECURE_CERT_REVOKED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_SECURE_CERT_REV_FAILED.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_SECURE_CERT_REV_FAILED'>ERROR_WINHTTP_SECURE_CERT_REV_FAILED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_SECURE_CERT_WRONG_USAGE.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_SECURE_CERT_WRONG_USAGE'>ERROR_WINHTTP_SECURE_CERT_WRONG_USAGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_SECURE_CHANNEL_ERROR.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_SECURE_CHANNEL_ERROR'>ERROR_WINHTTP_SECURE_CHANNEL_ERROR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_SECURE_FAILURE.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_SECURE_FAILURE'>ERROR_WINHTTP_SECURE_FAILURE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_SECURE_INVALID_CA.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_SECURE_INVALID_CA'>ERROR_WINHTTP_SECURE_INVALID_CA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_SECURE_INVALID_CERT.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_SECURE_INVALID_CERT'>ERROR_WINHTTP_SECURE_INVALID_CERT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_SHUTDOWN.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_SHUTDOWN'>ERROR_WINHTTP_SHUTDOWN</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_TIMEOUT.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_TIMEOUT'>ERROR_WINHTTP_TIMEOUT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_UNABLE_TO_DOWNLOAD_SCRIPT.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_UNABLE_TO_DOWNLOAD_SCRIPT'>ERROR_WINHTTP_UNABLE_TO_DOWNLOAD_SCRIPT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_UNHANDLED_SCRIPT_TYPE.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_UNHANDLED_SCRIPT_TYPE'>ERROR_WINHTTP_UNHANDLED_SCRIPT_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.ERROR_WINHTTP_UNRECOGNIZED_SCHEME.html'
+                               title='winapi::winhttp::ERROR_WINHTTP_UNRECOGNIZED_SCHEME'>ERROR_WINHTTP_UNRECOGNIZED_SCHEME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_ACCEPTED.html'
+                               title='winapi::winhttp::HTTP_STATUS_ACCEPTED'>HTTP_STATUS_ACCEPTED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_AMBIGUOUS.html'
+                               title='winapi::winhttp::HTTP_STATUS_AMBIGUOUS'>HTTP_STATUS_AMBIGUOUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_BAD_GATEWAY.html'
+                               title='winapi::winhttp::HTTP_STATUS_BAD_GATEWAY'>HTTP_STATUS_BAD_GATEWAY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_BAD_METHOD.html'
+                               title='winapi::winhttp::HTTP_STATUS_BAD_METHOD'>HTTP_STATUS_BAD_METHOD</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_BAD_REQUEST.html'
+                               title='winapi::winhttp::HTTP_STATUS_BAD_REQUEST'>HTTP_STATUS_BAD_REQUEST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_CONFLICT.html'
+                               title='winapi::winhttp::HTTP_STATUS_CONFLICT'>HTTP_STATUS_CONFLICT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_CONTINUE.html'
+                               title='winapi::winhttp::HTTP_STATUS_CONTINUE'>HTTP_STATUS_CONTINUE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_CREATED.html'
+                               title='winapi::winhttp::HTTP_STATUS_CREATED'>HTTP_STATUS_CREATED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_DENIED.html'
+                               title='winapi::winhttp::HTTP_STATUS_DENIED'>HTTP_STATUS_DENIED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_FIRST.html'
+                               title='winapi::winhttp::HTTP_STATUS_FIRST'>HTTP_STATUS_FIRST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_FORBIDDEN.html'
+                               title='winapi::winhttp::HTTP_STATUS_FORBIDDEN'>HTTP_STATUS_FORBIDDEN</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_GATEWAY_TIMEOUT.html'
+                               title='winapi::winhttp::HTTP_STATUS_GATEWAY_TIMEOUT'>HTTP_STATUS_GATEWAY_TIMEOUT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_GONE.html'
+                               title='winapi::winhttp::HTTP_STATUS_GONE'>HTTP_STATUS_GONE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_LAST.html'
+                               title='winapi::winhttp::HTTP_STATUS_LAST'>HTTP_STATUS_LAST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_LENGTH_REQUIRED.html'
+                               title='winapi::winhttp::HTTP_STATUS_LENGTH_REQUIRED'>HTTP_STATUS_LENGTH_REQUIRED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_MOVED.html'
+                               title='winapi::winhttp::HTTP_STATUS_MOVED'>HTTP_STATUS_MOVED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_NONE_ACCEPTABLE.html'
+                               title='winapi::winhttp::HTTP_STATUS_NONE_ACCEPTABLE'>HTTP_STATUS_NONE_ACCEPTABLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_NOT_FOUND.html'
+                               title='winapi::winhttp::HTTP_STATUS_NOT_FOUND'>HTTP_STATUS_NOT_FOUND</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_NOT_MODIFIED.html'
+                               title='winapi::winhttp::HTTP_STATUS_NOT_MODIFIED'>HTTP_STATUS_NOT_MODIFIED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_NOT_SUPPORTED.html'
+                               title='winapi::winhttp::HTTP_STATUS_NOT_SUPPORTED'>HTTP_STATUS_NOT_SUPPORTED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_NO_CONTENT.html'
+                               title='winapi::winhttp::HTTP_STATUS_NO_CONTENT'>HTTP_STATUS_NO_CONTENT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_OK.html'
+                               title='winapi::winhttp::HTTP_STATUS_OK'>HTTP_STATUS_OK</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_PARTIAL.html'
+                               title='winapi::winhttp::HTTP_STATUS_PARTIAL'>HTTP_STATUS_PARTIAL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_PARTIAL_CONTENT.html'
+                               title='winapi::winhttp::HTTP_STATUS_PARTIAL_CONTENT'>HTTP_STATUS_PARTIAL_CONTENT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_PAYMENT_REQ.html'
+                               title='winapi::winhttp::HTTP_STATUS_PAYMENT_REQ'>HTTP_STATUS_PAYMENT_REQ</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_PRECOND_FAILED.html'
+                               title='winapi::winhttp::HTTP_STATUS_PRECOND_FAILED'>HTTP_STATUS_PRECOND_FAILED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_PROXY_AUTH_REQ.html'
+                               title='winapi::winhttp::HTTP_STATUS_PROXY_AUTH_REQ'>HTTP_STATUS_PROXY_AUTH_REQ</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_REDIRECT.html'
+                               title='winapi::winhttp::HTTP_STATUS_REDIRECT'>HTTP_STATUS_REDIRECT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_REDIRECT_KEEP_VERB.html'
+                               title='winapi::winhttp::HTTP_STATUS_REDIRECT_KEEP_VERB'>HTTP_STATUS_REDIRECT_KEEP_VERB</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_REDIRECT_METHOD.html'
+                               title='winapi::winhttp::HTTP_STATUS_REDIRECT_METHOD'>HTTP_STATUS_REDIRECT_METHOD</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_REQUEST_TIMEOUT.html'
+                               title='winapi::winhttp::HTTP_STATUS_REQUEST_TIMEOUT'>HTTP_STATUS_REQUEST_TIMEOUT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_REQUEST_TOO_LARGE.html'
+                               title='winapi::winhttp::HTTP_STATUS_REQUEST_TOO_LARGE'>HTTP_STATUS_REQUEST_TOO_LARGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_RESET_CONTENT.html'
+                               title='winapi::winhttp::HTTP_STATUS_RESET_CONTENT'>HTTP_STATUS_RESET_CONTENT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_RETRY_WITH.html'
+                               title='winapi::winhttp::HTTP_STATUS_RETRY_WITH'>HTTP_STATUS_RETRY_WITH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_SERVER_ERROR.html'
+                               title='winapi::winhttp::HTTP_STATUS_SERVER_ERROR'>HTTP_STATUS_SERVER_ERROR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_SERVICE_UNAVAIL.html'
+                               title='winapi::winhttp::HTTP_STATUS_SERVICE_UNAVAIL'>HTTP_STATUS_SERVICE_UNAVAIL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_SWITCH_PROTOCOLS.html'
+                               title='winapi::winhttp::HTTP_STATUS_SWITCH_PROTOCOLS'>HTTP_STATUS_SWITCH_PROTOCOLS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_UNSUPPORTED_MEDIA.html'
+                               title='winapi::winhttp::HTTP_STATUS_UNSUPPORTED_MEDIA'>HTTP_STATUS_UNSUPPORTED_MEDIA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_URI_TOO_LONG.html'
+                               title='winapi::winhttp::HTTP_STATUS_URI_TOO_LONG'>HTTP_STATUS_URI_TOO_LONG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_USE_PROXY.html'
+                               title='winapi::winhttp::HTTP_STATUS_USE_PROXY'>HTTP_STATUS_USE_PROXY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_VERSION_NOT_SUP.html'
+                               title='winapi::winhttp::HTTP_STATUS_VERSION_NOT_SUP'>HTTP_STATUS_VERSION_NOT_SUP</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.HTTP_STATUS_WEBDAV_MULTI_STATUS.html'
+                               title='winapi::winhttp::HTTP_STATUS_WEBDAV_MULTI_STATUS'>HTTP_STATUS_WEBDAV_MULTI_STATUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.INTERNET_DEFAULT_HTTPS_PORT.html'
+                               title='winapi::winhttp::INTERNET_DEFAULT_HTTPS_PORT'>INTERNET_DEFAULT_HTTPS_PORT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.INTERNET_DEFAULT_HTTP_PORT.html'
+                               title='winapi::winhttp::INTERNET_DEFAULT_HTTP_PORT'>INTERNET_DEFAULT_HTTP_PORT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.INTERNET_DEFAULT_PORT.html'
+                               title='winapi::winhttp::INTERNET_DEFAULT_PORT'>INTERNET_DEFAULT_PORT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.INTERNET_SCHEME_FTP.html'
+                               title='winapi::winhttp::INTERNET_SCHEME_FTP'>INTERNET_SCHEME_FTP</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.INTERNET_SCHEME_HTTP.html'
+                               title='winapi::winhttp::INTERNET_SCHEME_HTTP'>INTERNET_SCHEME_HTTP</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.INTERNET_SCHEME_HTTPS.html'
+                               title='winapi::winhttp::INTERNET_SCHEME_HTTPS'>INTERNET_SCHEME_HTTPS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.INTERNET_SCHEME_SOCKS.html'
+                               title='winapi::winhttp::INTERNET_SCHEME_SOCKS'>INTERNET_SCHEME_SOCKS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY.html'
+                               title='winapi::winhttp::WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY'>WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_ACCESS_TYPE_DEFAULT_PROXY.html'
+                               title='winapi::winhttp::WINHTTP_ACCESS_TYPE_DEFAULT_PROXY'>WINHTTP_ACCESS_TYPE_DEFAULT_PROXY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_ACCESS_TYPE_NAMED_PROXY.html'
+                               title='winapi::winhttp::WINHTTP_ACCESS_TYPE_NAMED_PROXY'>WINHTTP_ACCESS_TYPE_NAMED_PROXY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_ACCESS_TYPE_NO_PROXY.html'
+                               title='winapi::winhttp::WINHTTP_ACCESS_TYPE_NO_PROXY'>WINHTTP_ACCESS_TYPE_NO_PROXY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_AUTOPROXY_AUTO_DETECT.html'
+                               title='winapi::winhttp::WINHTTP_AUTOPROXY_AUTO_DETECT'>WINHTTP_AUTOPROXY_AUTO_DETECT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_AUTOPROXY_CONFIG_URL.html'
+                               title='winapi::winhttp::WINHTTP_AUTOPROXY_CONFIG_URL'>WINHTTP_AUTOPROXY_CONFIG_URL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_AUTOPROXY_HOST_KEEPCASE.html'
+                               title='winapi::winhttp::WINHTTP_AUTOPROXY_HOST_KEEPCASE'>WINHTTP_AUTOPROXY_HOST_KEEPCASE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_AUTOPROXY_HOST_LOWERCASE.html'
+                               title='winapi::winhttp::WINHTTP_AUTOPROXY_HOST_LOWERCASE'>WINHTTP_AUTOPROXY_HOST_LOWERCASE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_AUTOPROXY_NO_CACHE_CLIENT.html'
+                               title='winapi::winhttp::WINHTTP_AUTOPROXY_NO_CACHE_CLIENT'>WINHTTP_AUTOPROXY_NO_CACHE_CLIENT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_AUTOPROXY_NO_CACHE_SVC.html'
+                               title='winapi::winhttp::WINHTTP_AUTOPROXY_NO_CACHE_SVC'>WINHTTP_AUTOPROXY_NO_CACHE_SVC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_AUTOPROXY_NO_DIRECTACCESS.html'
+                               title='winapi::winhttp::WINHTTP_AUTOPROXY_NO_DIRECTACCESS'>WINHTTP_AUTOPROXY_NO_DIRECTACCESS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_AUTOPROXY_RUN_INPROCESS.html'
+                               title='winapi::winhttp::WINHTTP_AUTOPROXY_RUN_INPROCESS'>WINHTTP_AUTOPROXY_RUN_INPROCESS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_AUTOPROXY_RUN_OUTPROCESS_ONLY.html'
+                               title='winapi::winhttp::WINHTTP_AUTOPROXY_RUN_OUTPROCESS_ONLY'>WINHTTP_AUTOPROXY_RUN_OUTPROCESS_ONLY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_AUTOPROXY_SORT_RESULTS.html'
+                               title='winapi::winhttp::WINHTTP_AUTOPROXY_SORT_RESULTS'>WINHTTP_AUTOPROXY_SORT_RESULTS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_AUTO_DETECT_TYPE_DHCP.html'
+                               title='winapi::winhttp::WINHTTP_AUTO_DETECT_TYPE_DHCP'>WINHTTP_AUTO_DETECT_TYPE_DHCP</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_AUTO_DETECT_TYPE_DNS_A.html'
+                               title='winapi::winhttp::WINHTTP_AUTO_DETECT_TYPE_DNS_A'>WINHTTP_AUTO_DETECT_TYPE_DNS_A</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_ALL_COMPLETIONS.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_ALL_COMPLETIONS'>WINHTTP_CALLBACK_FLAG_ALL_COMPLETIONS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS'>WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_CLOSE_CONNECTION.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_CLOSE_CONNECTION'>WINHTTP_CALLBACK_FLAG_CLOSE_CONNECTION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_CONNECT_TO_SERVER.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_CONNECT_TO_SERVER'>WINHTTP_CALLBACK_FLAG_CONNECT_TO_SERVER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_DATA_AVAILABLE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_DATA_AVAILABLE'>WINHTTP_CALLBACK_FLAG_DATA_AVAILABLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_DETECTING_PROXY.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_DETECTING_PROXY'>WINHTTP_CALLBACK_FLAG_DETECTING_PROXY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_GETPROXYFORURL_COMPLETE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_GETPROXYFORURL_COMPLETE'>WINHTTP_CALLBACK_FLAG_GETPROXYFORURL_COMPLETE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_HANDLES.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_HANDLES'>WINHTTP_CALLBACK_FLAG_HANDLES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_HEADERS_AVAILABLE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_HEADERS_AVAILABLE'>WINHTTP_CALLBACK_FLAG_HEADERS_AVAILABLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_INTERMEDIATE_RESPONSE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_INTERMEDIATE_RESPONSE'>WINHTTP_CALLBACK_FLAG_INTERMEDIATE_RESPONSE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_READ_COMPLETE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_READ_COMPLETE'>WINHTTP_CALLBACK_FLAG_READ_COMPLETE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_RECEIVE_RESPONSE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_RECEIVE_RESPONSE'>WINHTTP_CALLBACK_FLAG_RECEIVE_RESPONSE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_REDIRECT.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_REDIRECT'>WINHTTP_CALLBACK_FLAG_REDIRECT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_REQUEST_ERROR.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_REQUEST_ERROR'>WINHTTP_CALLBACK_FLAG_REQUEST_ERROR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_RESOLVE_NAME.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_RESOLVE_NAME'>WINHTTP_CALLBACK_FLAG_RESOLVE_NAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_SECURE_FAILURE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_SECURE_FAILURE'>WINHTTP_CALLBACK_FLAG_SECURE_FAILURE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_SENDREQUEST_COMPLETE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_SENDREQUEST_COMPLETE'>WINHTTP_CALLBACK_FLAG_SENDREQUEST_COMPLETE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_SEND_REQUEST.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_SEND_REQUEST'>WINHTTP_CALLBACK_FLAG_SEND_REQUEST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_FLAG_WRITE_COMPLETE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_FLAG_WRITE_COMPLETE'>WINHTTP_CALLBACK_FLAG_WRITE_COMPLETE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_CLOSE_COMPLETE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_CLOSE_COMPLETE'>WINHTTP_CALLBACK_STATUS_CLOSE_COMPLETE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_CLOSING_CONNECTION.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_CLOSING_CONNECTION'>WINHTTP_CALLBACK_STATUS_CLOSING_CONNECTION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_CONNECTED_TO_SERVER.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_CONNECTED_TO_SERVER'>WINHTTP_CALLBACK_STATUS_CONNECTED_TO_SERVER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_CONNECTING_TO_SERVER.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_CONNECTING_TO_SERVER'>WINHTTP_CALLBACK_STATUS_CONNECTING_TO_SERVER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_CONNECTION_CLOSED.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_CONNECTION_CLOSED'>WINHTTP_CALLBACK_STATUS_CONNECTION_CLOSED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_DATA_AVAILABLE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_DATA_AVAILABLE'>WINHTTP_CALLBACK_STATUS_DATA_AVAILABLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_DETECTING_PROXY.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_DETECTING_PROXY'>WINHTTP_CALLBACK_STATUS_DETECTING_PROXY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_GETPROXYFORURL_COMPLETE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_GETPROXYFORURL_COMPLETE'>WINHTTP_CALLBACK_STATUS_GETPROXYFORURL_COMPLETE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_HANDLE_CLOSING.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_HANDLE_CLOSING'>WINHTTP_CALLBACK_STATUS_HANDLE_CLOSING</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_HANDLE_CREATED.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_HANDLE_CREATED'>WINHTTP_CALLBACK_STATUS_HANDLE_CREATED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE'>WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_INTERMEDIATE_RESPONSE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_INTERMEDIATE_RESPONSE'>WINHTTP_CALLBACK_STATUS_INTERMEDIATE_RESPONSE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_NAME_RESOLVED.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_NAME_RESOLVED'>WINHTTP_CALLBACK_STATUS_NAME_RESOLVED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_READ_COMPLETE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_READ_COMPLETE'>WINHTTP_CALLBACK_STATUS_READ_COMPLETE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_RECEIVING_RESPONSE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_RECEIVING_RESPONSE'>WINHTTP_CALLBACK_STATUS_RECEIVING_RESPONSE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_REDIRECT.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_REDIRECT'>WINHTTP_CALLBACK_STATUS_REDIRECT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_REQUEST_ERROR.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_REQUEST_ERROR'>WINHTTP_CALLBACK_STATUS_REQUEST_ERROR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_REQUEST_SENT.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_REQUEST_SENT'>WINHTTP_CALLBACK_STATUS_REQUEST_SENT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_RESOLVING_NAME.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_RESOLVING_NAME'>WINHTTP_CALLBACK_STATUS_RESOLVING_NAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_RESPONSE_RECEIVED.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_RESPONSE_RECEIVED'>WINHTTP_CALLBACK_STATUS_RESPONSE_RECEIVED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_SECURE_FAILURE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_SECURE_FAILURE'>WINHTTP_CALLBACK_STATUS_SECURE_FAILURE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_SENDING_REQUEST.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_SENDING_REQUEST'>WINHTTP_CALLBACK_STATUS_SENDING_REQUEST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE'>WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_SHUTDOWN_COMPLETE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_SHUTDOWN_COMPLETE'>WINHTTP_CALLBACK_STATUS_SHUTDOWN_COMPLETE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_CALLBACK_STATUS_WRITE_COMPLETE.html'
+                               title='winapi::winhttp::WINHTTP_CALLBACK_STATUS_WRITE_COMPLETE'>WINHTTP_CALLBACK_STATUS_WRITE_COMPLETE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_ERROR_BASE.html'
+                               title='winapi::winhttp::WINHTTP_ERROR_BASE'>WINHTTP_ERROR_BASE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_ERROR_LAST.html'
+                               title='winapi::winhttp::WINHTTP_ERROR_LAST'>WINHTTP_ERROR_LAST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_FIRST_OPTION.html'
+                               title='winapi::winhttp::WINHTTP_FIRST_OPTION'>WINHTTP_FIRST_OPTION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_FLAG_ASYNC.html'
+                               title='winapi::winhttp::WINHTTP_FLAG_ASYNC'>WINHTTP_FLAG_ASYNC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_FLAG_BYPASS_PROXY_CACHE.html'
+                               title='winapi::winhttp::WINHTTP_FLAG_BYPASS_PROXY_CACHE'>WINHTTP_FLAG_BYPASS_PROXY_CACHE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_FLAG_ESCAPE_DISABLE.html'
+                               title='winapi::winhttp::WINHTTP_FLAG_ESCAPE_DISABLE'>WINHTTP_FLAG_ESCAPE_DISABLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_FLAG_ESCAPE_DISABLE_QUERY.html'
+                               title='winapi::winhttp::WINHTTP_FLAG_ESCAPE_DISABLE_QUERY'>WINHTTP_FLAG_ESCAPE_DISABLE_QUERY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_FLAG_ESCAPE_PERCENT.html'
+                               title='winapi::winhttp::WINHTTP_FLAG_ESCAPE_PERCENT'>WINHTTP_FLAG_ESCAPE_PERCENT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_FLAG_NULL_CODEPAGE.html'
+                               title='winapi::winhttp::WINHTTP_FLAG_NULL_CODEPAGE'>WINHTTP_FLAG_NULL_CODEPAGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_FLAG_REFRESH.html'
+                               title='winapi::winhttp::WINHTTP_FLAG_REFRESH'>WINHTTP_FLAG_REFRESH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_FLAG_SECURE.html'
+                               title='winapi::winhttp::WINHTTP_FLAG_SECURE'>WINHTTP_FLAG_SECURE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_LAST_OPTION.html'
+                               title='winapi::winhttp::WINHTTP_LAST_OPTION'>WINHTTP_LAST_OPTION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_ASSURED_NON_BLOCKING_CALLBACKS.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_ASSURED_NON_BLOCKING_CALLBACKS'>WINHTTP_OPTION_ASSURED_NON_BLOCKING_CALLBACKS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_AUTOLOGON_POLICY.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_AUTOLOGON_POLICY'>WINHTTP_OPTION_AUTOLOGON_POLICY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_CALLBACK.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_CALLBACK'>WINHTTP_OPTION_CALLBACK</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_CLIENT_CERT_CONTEXT.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_CLIENT_CERT_CONTEXT'>WINHTTP_OPTION_CLIENT_CERT_CONTEXT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_CLIENT_CERT_ISSUER_LIST.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_CLIENT_CERT_ISSUER_LIST'>WINHTTP_OPTION_CLIENT_CERT_ISSUER_LIST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_CODEPAGE.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_CODEPAGE'>WINHTTP_OPTION_CODEPAGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_CONFIGURE_PASSPORT_AUTH.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_CONFIGURE_PASSPORT_AUTH'>WINHTTP_OPTION_CONFIGURE_PASSPORT_AUTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_CONNECTION_INFO.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_CONNECTION_INFO'>WINHTTP_OPTION_CONNECTION_INFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_CONNECT_RETRIES.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_CONNECT_RETRIES'>WINHTTP_OPTION_CONNECT_RETRIES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_CONNECT_TIMEOUT.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_CONNECT_TIMEOUT'>WINHTTP_OPTION_CONNECT_TIMEOUT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_CONTEXT_VALUE.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_CONTEXT_VALUE'>WINHTTP_OPTION_CONTEXT_VALUE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_DECOMPRESSION.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_DECOMPRESSION'>WINHTTP_OPTION_DECOMPRESSION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_DISABLE_FEATURE.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_DISABLE_FEATURE'>WINHTTP_OPTION_DISABLE_FEATURE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_ENABLETRACING.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_ENABLETRACING'>WINHTTP_OPTION_ENABLETRACING</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_ENABLE_FEATURE.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_ENABLE_FEATURE'>WINHTTP_OPTION_ENABLE_FEATURE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_EXTENDED_ERROR.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_EXTENDED_ERROR'>WINHTTP_OPTION_EXTENDED_ERROR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_GLOBAL_PROXY_CREDS.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_GLOBAL_PROXY_CREDS'>WINHTTP_OPTION_GLOBAL_PROXY_CREDS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_GLOBAL_SERVER_CREDS.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_GLOBAL_SERVER_CREDS'>WINHTTP_OPTION_GLOBAL_SERVER_CREDS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_HANDLE_TYPE.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_HANDLE_TYPE'>WINHTTP_OPTION_HANDLE_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_HTTP_VERSION.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_HTTP_VERSION'>WINHTTP_OPTION_HTTP_VERSION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_IS_PROXY_CONNECT_RESPONSE.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_IS_PROXY_CONNECT_RESPONSE'>WINHTTP_OPTION_IS_PROXY_CONNECT_RESPONSE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_MAX_CONNS_PER_1_0_SERVER.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_MAX_CONNS_PER_1_0_SERVER'>WINHTTP_OPTION_MAX_CONNS_PER_1_0_SERVER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_MAX_CONNS_PER_SERVER.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_MAX_CONNS_PER_SERVER'>WINHTTP_OPTION_MAX_CONNS_PER_SERVER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_MAX_HTTP_AUTOMATIC_REDIRECTS.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_MAX_HTTP_AUTOMATIC_REDIRECTS'>WINHTTP_OPTION_MAX_HTTP_AUTOMATIC_REDIRECTS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_MAX_HTTP_STATUS_CONTINUE.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_MAX_HTTP_STATUS_CONTINUE'>WINHTTP_OPTION_MAX_HTTP_STATUS_CONTINUE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_MAX_RESPONSE_DRAIN_SIZE.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_MAX_RESPONSE_DRAIN_SIZE'>WINHTTP_OPTION_MAX_RESPONSE_DRAIN_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_MAX_RESPONSE_HEADER_SIZE.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_MAX_RESPONSE_HEADER_SIZE'>WINHTTP_OPTION_MAX_RESPONSE_HEADER_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_PARENT_HANDLE.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_PARENT_HANDLE'>WINHTTP_OPTION_PARENT_HANDLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_PASSPORT_COBRANDING_TEXT.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_PASSPORT_COBRANDING_TEXT'>WINHTTP_OPTION_PASSPORT_COBRANDING_TEXT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_PASSPORT_COBRANDING_URL.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_PASSPORT_COBRANDING_URL'>WINHTTP_OPTION_PASSPORT_COBRANDING_URL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_PASSPORT_RETURN_URL.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_PASSPORT_RETURN_URL'>WINHTTP_OPTION_PASSPORT_RETURN_URL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_PASSPORT_SIGN_OUT.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_PASSPORT_SIGN_OUT'>WINHTTP_OPTION_PASSPORT_SIGN_OUT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_PASSWORD.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_PASSWORD'>WINHTTP_OPTION_PASSWORD</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_PROXY.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_PROXY'>WINHTTP_OPTION_PROXY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_PROXY_PASSWORD.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_PROXY_PASSWORD'>WINHTTP_OPTION_PROXY_PASSWORD</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_PROXY_RESULT_ENTRY.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_PROXY_RESULT_ENTRY'>WINHTTP_OPTION_PROXY_RESULT_ENTRY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_PROXY_SPN_USED.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_PROXY_SPN_USED'>WINHTTP_OPTION_PROXY_SPN_USED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_PROXY_USERNAME.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_PROXY_USERNAME'>WINHTTP_OPTION_PROXY_USERNAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_READ_BUFFER_SIZE.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_READ_BUFFER_SIZE'>WINHTTP_OPTION_READ_BUFFER_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_RECEIVE_PROXY_CONNECT_RESPONSE.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_RECEIVE_PROXY_CONNECT_RESPONSE'>WINHTTP_OPTION_RECEIVE_PROXY_CONNECT_RESPONSE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_RECEIVE_RESPONSE_TIMEOUT.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_RECEIVE_RESPONSE_TIMEOUT'>WINHTTP_OPTION_RECEIVE_RESPONSE_TIMEOUT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_RECEIVE_TIMEOUT.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_RECEIVE_TIMEOUT'>WINHTTP_OPTION_RECEIVE_TIMEOUT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_REDIRECT_POLICY.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_REDIRECT_POLICY'>WINHTTP_OPTION_REDIRECT_POLICY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_REJECT_USERPWD_IN_URL.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_REJECT_USERPWD_IN_URL'>WINHTTP_OPTION_REJECT_USERPWD_IN_URL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_REQUEST_PRIORITY.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_REQUEST_PRIORITY'>WINHTTP_OPTION_REQUEST_PRIORITY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_RESOLVE_TIMEOUT.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_RESOLVE_TIMEOUT'>WINHTTP_OPTION_RESOLVE_TIMEOUT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_SECURE_PROTOCOLS.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_SECURE_PROTOCOLS'>WINHTTP_OPTION_SECURE_PROTOCOLS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_SECURITY_CERTIFICATE_STRUCT.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_SECURITY_CERTIFICATE_STRUCT'>WINHTTP_OPTION_SECURITY_CERTIFICATE_STRUCT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_SECURITY_FLAGS.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_SECURITY_FLAGS'>WINHTTP_OPTION_SECURITY_FLAGS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_SECURITY_KEY_BITNESS.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_SECURITY_KEY_BITNESS'>WINHTTP_OPTION_SECURITY_KEY_BITNESS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_SEND_TIMEOUT.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_SEND_TIMEOUT'>WINHTTP_OPTION_SEND_TIMEOUT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_SERVER_CBT.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_SERVER_CBT'>WINHTTP_OPTION_SERVER_CBT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_SERVER_CERT_CONTEXT.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_SERVER_CERT_CONTEXT'>WINHTTP_OPTION_SERVER_CERT_CONTEXT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_SERVER_SPN_USED.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_SERVER_SPN_USED'>WINHTTP_OPTION_SERVER_SPN_USED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_SPN.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_SPN'>WINHTTP_OPTION_SPN</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_UNLOAD_NOTIFY_EVENT.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_UNLOAD_NOTIFY_EVENT'>WINHTTP_OPTION_UNLOAD_NOTIFY_EVENT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_UNSAFE_HEADER_PARSING.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_UNSAFE_HEADER_PARSING'>WINHTTP_OPTION_UNSAFE_HEADER_PARSING</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_UPGRADE_TO_WEB_SOCKET.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_UPGRADE_TO_WEB_SOCKET'>WINHTTP_OPTION_UPGRADE_TO_WEB_SOCKET</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_URL.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_URL'>WINHTTP_OPTION_URL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_USERNAME.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_USERNAME'>WINHTTP_OPTION_USERNAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_USER_AGENT.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_USER_AGENT'>WINHTTP_OPTION_USER_AGENT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_USE_GLOBAL_SERVER_CREDENTIALS.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_USE_GLOBAL_SERVER_CREDENTIALS'>WINHTTP_OPTION_USE_GLOBAL_SERVER_CREDENTIALS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_WEB_SOCKET_CLOSE_TIMEOUT.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_WEB_SOCKET_CLOSE_TIMEOUT'>WINHTTP_OPTION_WEB_SOCKET_CLOSE_TIMEOUT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_WEB_SOCKET_KEEPALIVE_INTERVAL.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_WEB_SOCKET_KEEPALIVE_INTERVAL'>WINHTTP_OPTION_WEB_SOCKET_KEEPALIVE_INTERVAL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_WEB_SOCKET_RECEIVE_BUFFER_SIZE.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_WEB_SOCKET_RECEIVE_BUFFER_SIZE'>WINHTTP_OPTION_WEB_SOCKET_RECEIVE_BUFFER_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_WEB_SOCKET_SEND_BUFFER_SIZE.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_WEB_SOCKET_SEND_BUFFER_SIZE'>WINHTTP_OPTION_WEB_SOCKET_SEND_BUFFER_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_WORKER_THREAD_COUNT.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_WORKER_THREAD_COUNT'>WINHTTP_OPTION_WORKER_THREAD_COUNT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_OPTION_WRITE_BUFFER_SIZE.html'
+                               title='winapi::winhttp::WINHTTP_OPTION_WRITE_BUFFER_SIZE'>WINHTTP_OPTION_WRITE_BUFFER_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_ACCEPT.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_ACCEPT'>WINHTTP_QUERY_ACCEPT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_ACCEPT_CHARSET.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_ACCEPT_CHARSET'>WINHTTP_QUERY_ACCEPT_CHARSET</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_ACCEPT_ENCODING.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_ACCEPT_ENCODING'>WINHTTP_QUERY_ACCEPT_ENCODING</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_ACCEPT_LANGUAGE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_ACCEPT_LANGUAGE'>WINHTTP_QUERY_ACCEPT_LANGUAGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_ACCEPT_RANGES.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_ACCEPT_RANGES'>WINHTTP_QUERY_ACCEPT_RANGES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_AGE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_AGE'>WINHTTP_QUERY_AGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_ALLOW.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_ALLOW'>WINHTTP_QUERY_ALLOW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_AUTHENTICATION_INFO.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_AUTHENTICATION_INFO'>WINHTTP_QUERY_AUTHENTICATION_INFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_AUTHORIZATION.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_AUTHORIZATION'>WINHTTP_QUERY_AUTHORIZATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_CACHE_CONTROL.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_CACHE_CONTROL'>WINHTTP_QUERY_CACHE_CONTROL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_CONNECTION.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_CONNECTION'>WINHTTP_QUERY_CONNECTION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_CONTENT_BASE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_CONTENT_BASE'>WINHTTP_QUERY_CONTENT_BASE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_CONTENT_DESCRIPTION.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_CONTENT_DESCRIPTION'>WINHTTP_QUERY_CONTENT_DESCRIPTION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_CONTENT_DISPOSITION.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_CONTENT_DISPOSITION'>WINHTTP_QUERY_CONTENT_DISPOSITION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_CONTENT_ENCODING.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_CONTENT_ENCODING'>WINHTTP_QUERY_CONTENT_ENCODING</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_CONTENT_ID.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_CONTENT_ID'>WINHTTP_QUERY_CONTENT_ID</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_CONTENT_LANGUAGE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_CONTENT_LANGUAGE'>WINHTTP_QUERY_CONTENT_LANGUAGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_CONTENT_LENGTH.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_CONTENT_LENGTH'>WINHTTP_QUERY_CONTENT_LENGTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_CONTENT_LOCATION.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_CONTENT_LOCATION'>WINHTTP_QUERY_CONTENT_LOCATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_CONTENT_MD5.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_CONTENT_MD5'>WINHTTP_QUERY_CONTENT_MD5</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_CONTENT_RANGE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_CONTENT_RANGE'>WINHTTP_QUERY_CONTENT_RANGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_CONTENT_TRANSFER_ENCODING.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_CONTENT_TRANSFER_ENCODING'>WINHTTP_QUERY_CONTENT_TRANSFER_ENCODING</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_CONTENT_TYPE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_CONTENT_TYPE'>WINHTTP_QUERY_CONTENT_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_COOKIE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_COOKIE'>WINHTTP_QUERY_COOKIE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_COST.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_COST'>WINHTTP_QUERY_COST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_CUSTOM.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_CUSTOM'>WINHTTP_QUERY_CUSTOM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_DATE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_DATE'>WINHTTP_QUERY_DATE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_DERIVED_FROM.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_DERIVED_FROM'>WINHTTP_QUERY_DERIVED_FROM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_ETAG.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_ETAG'>WINHTTP_QUERY_ETAG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_EXPECT.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_EXPECT'>WINHTTP_QUERY_EXPECT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_EXPIRES.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_EXPIRES'>WINHTTP_QUERY_EXPIRES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_FLAG_NUMBER.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_FLAG_NUMBER'>WINHTTP_QUERY_FLAG_NUMBER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_FLAG_REQUEST_HEADERS.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_FLAG_REQUEST_HEADERS'>WINHTTP_QUERY_FLAG_REQUEST_HEADERS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_FLAG_SYSTEMTIME.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_FLAG_SYSTEMTIME'>WINHTTP_QUERY_FLAG_SYSTEMTIME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_FORWARDED.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_FORWARDED'>WINHTTP_QUERY_FORWARDED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_FROM.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_FROM'>WINHTTP_QUERY_FROM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_HOST.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_HOST'>WINHTTP_QUERY_HOST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_IF_MATCH.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_IF_MATCH'>WINHTTP_QUERY_IF_MATCH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_IF_MODIFIED_SINCE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_IF_MODIFIED_SINCE'>WINHTTP_QUERY_IF_MODIFIED_SINCE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_IF_NONE_MATCH.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_IF_NONE_MATCH'>WINHTTP_QUERY_IF_NONE_MATCH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_IF_RANGE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_IF_RANGE'>WINHTTP_QUERY_IF_RANGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_IF_UNMODIFIED_SINCE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_IF_UNMODIFIED_SINCE'>WINHTTP_QUERY_IF_UNMODIFIED_SINCE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_LAST_MODIFIED.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_LAST_MODIFIED'>WINHTTP_QUERY_LAST_MODIFIED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_LINK.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_LINK'>WINHTTP_QUERY_LINK</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_LOCATION.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_LOCATION'>WINHTTP_QUERY_LOCATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_MAX.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_MAX'>WINHTTP_QUERY_MAX</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_MAX_FORWARDS.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_MAX_FORWARDS'>WINHTTP_QUERY_MAX_FORWARDS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_MESSAGE_ID.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_MESSAGE_ID'>WINHTTP_QUERY_MESSAGE_ID</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_MIME_VERSION.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_MIME_VERSION'>WINHTTP_QUERY_MIME_VERSION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_ORIG_URI.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_ORIG_URI'>WINHTTP_QUERY_ORIG_URI</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_PASSPORT_CONFIG.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_PASSPORT_CONFIG'>WINHTTP_QUERY_PASSPORT_CONFIG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_PASSPORT_URLS.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_PASSPORT_URLS'>WINHTTP_QUERY_PASSPORT_URLS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_PRAGMA.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_PRAGMA'>WINHTTP_QUERY_PRAGMA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_PROXY_AUTHENTICATE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_PROXY_AUTHENTICATE'>WINHTTP_QUERY_PROXY_AUTHENTICATE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_PROXY_AUTHORIZATION.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_PROXY_AUTHORIZATION'>WINHTTP_QUERY_PROXY_AUTHORIZATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_PROXY_CONNECTION.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_PROXY_CONNECTION'>WINHTTP_QUERY_PROXY_CONNECTION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_PROXY_SUPPORT.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_PROXY_SUPPORT'>WINHTTP_QUERY_PROXY_SUPPORT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_PUBLIC.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_PUBLIC'>WINHTTP_QUERY_PUBLIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_RANGE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_RANGE'>WINHTTP_QUERY_RANGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_RAW_HEADERS.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_RAW_HEADERS'>WINHTTP_QUERY_RAW_HEADERS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_RAW_HEADERS_CRLF.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_RAW_HEADERS_CRLF'>WINHTTP_QUERY_RAW_HEADERS_CRLF</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_REFERER.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_REFERER'>WINHTTP_QUERY_REFERER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_REFRESH.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_REFRESH'>WINHTTP_QUERY_REFRESH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_REQUEST_METHOD.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_REQUEST_METHOD'>WINHTTP_QUERY_REQUEST_METHOD</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_RETRY_AFTER.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_RETRY_AFTER'>WINHTTP_QUERY_RETRY_AFTER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_SERVER.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_SERVER'>WINHTTP_QUERY_SERVER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_SET_COOKIE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_SET_COOKIE'>WINHTTP_QUERY_SET_COOKIE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_STATUS_CODE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_STATUS_CODE'>WINHTTP_QUERY_STATUS_CODE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_STATUS_TEXT.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_STATUS_TEXT'>WINHTTP_QUERY_STATUS_TEXT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_TITLE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_TITLE'>WINHTTP_QUERY_TITLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_TRANSFER_ENCODING.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_TRANSFER_ENCODING'>WINHTTP_QUERY_TRANSFER_ENCODING</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_UNLESS_MODIFIED_SINCE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_UNLESS_MODIFIED_SINCE'>WINHTTP_QUERY_UNLESS_MODIFIED_SINCE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_UPGRADE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_UPGRADE'>WINHTTP_QUERY_UPGRADE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_URI.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_URI'>WINHTTP_QUERY_URI</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_USER_AGENT.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_USER_AGENT'>WINHTTP_QUERY_USER_AGENT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_VARY.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_VARY'>WINHTTP_QUERY_VARY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_VERSION.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_VERSION'>WINHTTP_QUERY_VERSION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_VIA.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_VIA'>WINHTTP_QUERY_VIA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_WARNING.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_WARNING'>WINHTTP_QUERY_WARNING</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_QUERY_WWW_AUTHENTICATE.html'
+                               title='winapi::winhttp::WINHTTP_QUERY_WWW_AUTHENTICATE'>WINHTTP_QUERY_WWW_AUTHENTICATE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_RESET_ALL.html'
+                               title='winapi::winhttp::WINHTTP_RESET_ALL'>WINHTTP_RESET_ALL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_RESET_NOTIFY_NETWORK_CHANGED.html'
+                               title='winapi::winhttp::WINHTTP_RESET_NOTIFY_NETWORK_CHANGED'>WINHTTP_RESET_NOTIFY_NETWORK_CHANGED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_RESET_OUT_OF_PROC.html'
+                               title='winapi::winhttp::WINHTTP_RESET_OUT_OF_PROC'>WINHTTP_RESET_OUT_OF_PROC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_RESET_SCRIPT_CACHE.html'
+                               title='winapi::winhttp::WINHTTP_RESET_SCRIPT_CACHE'>WINHTTP_RESET_SCRIPT_CACHE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_RESET_STATE.html'
+                               title='winapi::winhttp::WINHTTP_RESET_STATE'>WINHTTP_RESET_STATE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_RESET_SWPAD_ALL.html'
+                               title='winapi::winhttp::WINHTTP_RESET_SWPAD_ALL'>WINHTTP_RESET_SWPAD_ALL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_RESET_SWPAD_CURRENT_NETWORK.html'
+                               title='winapi::winhttp::WINHTTP_RESET_SWPAD_CURRENT_NETWORK'>WINHTTP_RESET_SWPAD_CURRENT_NETWORK</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_ABORTED_CLOSE_STATUS.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_ABORTED_CLOSE_STATUS'>WINHTTP_WEB_SOCKET_ABORTED_CLOSE_STATUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_BINARY_FRAGMENT_BUFFER_TYPE.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_BINARY_FRAGMENT_BUFFER_TYPE'>WINHTTP_WEB_SOCKET_BINARY_FRAGMENT_BUFFER_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_BINARY_MESSAGE_BUFFER_TYPE.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_BINARY_MESSAGE_BUFFER_TYPE'>WINHTTP_WEB_SOCKET_BINARY_MESSAGE_BUFFER_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_CLOSE_BUFFER_TYPE.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_CLOSE_BUFFER_TYPE'>WINHTTP_WEB_SOCKET_CLOSE_BUFFER_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_CLOSE_OPERATION.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_CLOSE_OPERATION'>WINHTTP_WEB_SOCKET_CLOSE_OPERATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_EMPTY_CLOSE_STATUS.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_EMPTY_CLOSE_STATUS'>WINHTTP_WEB_SOCKET_EMPTY_CLOSE_STATUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_ENDPOINT_TERMINATED_CLOSE_STATUS.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_ENDPOINT_TERMINATED_CLOSE_STATUS'>WINHTTP_WEB_SOCKET_ENDPOINT_TERMINATED_CLOSE_STATUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_INVALID_DATA_TYPE_CLOSE_STATUS.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_INVALID_DATA_TYPE_CLOSE_STATUS'>WINHTTP_WEB_SOCKET_INVALID_DATA_TYPE_CLOSE_STATUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_INVALID_PAYLOAD_CLOSE_STATUS.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_INVALID_PAYLOAD_CLOSE_STATUS'>WINHTTP_WEB_SOCKET_INVALID_PAYLOAD_CLOSE_STATUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_MESSAGE_TOO_BIG_CLOSE_STATUS.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_MESSAGE_TOO_BIG_CLOSE_STATUS'>WINHTTP_WEB_SOCKET_MESSAGE_TOO_BIG_CLOSE_STATUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_POLICY_VIOLATION_CLOSE_STATUS.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_POLICY_VIOLATION_CLOSE_STATUS'>WINHTTP_WEB_SOCKET_POLICY_VIOLATION_CLOSE_STATUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_PROTOCOL_ERROR_CLOSE_STATUS.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_PROTOCOL_ERROR_CLOSE_STATUS'>WINHTTP_WEB_SOCKET_PROTOCOL_ERROR_CLOSE_STATUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_RECEIVE_OPERATION.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_RECEIVE_OPERATION'>WINHTTP_WEB_SOCKET_RECEIVE_OPERATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_SECURE_HANDSHAKE_ERROR_CLOSE_STATUS.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_SECURE_HANDSHAKE_ERROR_CLOSE_STATUS'>WINHTTP_WEB_SOCKET_SECURE_HANDSHAKE_ERROR_CLOSE_STATUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_SEND_OPERATION.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_SEND_OPERATION'>WINHTTP_WEB_SOCKET_SEND_OPERATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_SERVER_ERROR_CLOSE_STATUS.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_SERVER_ERROR_CLOSE_STATUS'>WINHTTP_WEB_SOCKET_SERVER_ERROR_CLOSE_STATUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_SHUTDOWN_OPERATION.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_SHUTDOWN_OPERATION'>WINHTTP_WEB_SOCKET_SHUTDOWN_OPERATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_SUCCESS_CLOSE_STATUS.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_SUCCESS_CLOSE_STATUS'>WINHTTP_WEB_SOCKET_SUCCESS_CLOSE_STATUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_UNSUPPORTED_EXTENSIONS_CLOSE_STATUS.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_UNSUPPORTED_EXTENSIONS_CLOSE_STATUS'>WINHTTP_WEB_SOCKET_UNSUPPORTED_EXTENSIONS_CLOSE_STATUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_UTF8_FRAGMENT_BUFFER_TYPE.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_UTF8_FRAGMENT_BUFFER_TYPE'>WINHTTP_WEB_SOCKET_UTF8_FRAGMENT_BUFFER_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.WINHTTP_WEB_SOCKET_UTF8_MESSAGE_BUFFER_TYPE.html'
+                               title='winapi::winhttp::WINHTTP_WEB_SOCKET_UTF8_MESSAGE_BUFFER_TYPE'>WINHTTP_WEB_SOCKET_UTF8_MESSAGE_BUFFER_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.HINTERNET.html'
+                               title='winapi::winhttp::HINTERNET'>HINTERNET</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.INTERNET_PORT.html'
+                               title='winapi::winhttp::INTERNET_PORT'>INTERNET_PORT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.INTERNET_SCHEME.html'
+                               title='winapi::winhttp::INTERNET_SCHEME'>INTERNET_SCHEME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.LPHINTERNET.html'
+                               title='winapi::winhttp::LPHINTERNET'>LPHINTERNET</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.LPINTERNET_PORT.html'
+                               title='winapi::winhttp::LPINTERNET_PORT'>LPINTERNET_PORT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.LPINTERNET_SCHEME.html'
+                               title='winapi::winhttp::LPINTERNET_SCHEME'>LPINTERNET_SCHEME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.LPURL_COMPONENTS.html'
+                               title='winapi::winhttp::LPURL_COMPONENTS'>LPURL_COMPONENTS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.LPURL_COMPONENTSW.html'
+                               title='winapi::winhttp::LPURL_COMPONENTSW'>LPURL_COMPONENTSW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.LPWINHTTP_ASYNC_RESULT.html'
+                               title='winapi::winhttp::LPWINHTTP_ASYNC_RESULT'>LPWINHTTP_ASYNC_RESULT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.LPWINHTTP_PROXY_INFO.html'
+                               title='winapi::winhttp::LPWINHTTP_PROXY_INFO'>LPWINHTTP_PROXY_INFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.LPWINHTTP_PROXY_INFOW.html'
+                               title='winapi::winhttp::LPWINHTTP_PROXY_INFOW'>LPWINHTTP_PROXY_INFOW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.LPWINHTTP_STATUS_CALLBACK.html'
+                               title='winapi::winhttp::LPWINHTTP_STATUS_CALLBACK'>LPWINHTTP_STATUS_CALLBACK</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.URL_COMPONENTSW.html'
+                               title='winapi::winhttp::URL_COMPONENTSW'>URL_COMPONENTSW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.WINHTTP_PROXY_INFOW.html'
+                               title='winapi::winhttp::WINHTTP_PROXY_INFOW'>WINHTTP_PROXY_INFOW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.WINHTTP_STATUS_CALLBACK.html'
+                               title='winapi::winhttp::WINHTTP_STATUS_CALLBACK'>WINHTTP_STATUS_CALLBACK</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `ISpRecoContextVtbl` struct in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, ISpRecoContextVtbl">
+
+    <title>winapi::sapi::ISpRecoContextVtbl - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a>::<wbr><a href='index.html'>sapi</a></p><script>window.sidebarCurrent = {name: 'ISpRecoContextVtbl', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>winapi</a>::<wbr><a href='index.html'>sapi</a>::<wbr><a class='struct' href=''>ISpRecoContextVtbl</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-72305' class='srclink' href='../../src/winapi/macros.rs.html#112-118' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct ISpRecoContextVtbl {
+    pub parent: <a class='struct' href='../../winapi/sapi/struct.ISpEventSourceVtbl.html' title='winapi::sapi::ISpEventSourceVtbl'>ISpEventSourceVtbl</a>,
+    pub GetRecognizer: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, ppRecognizer: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecognizer.html' title='winapi::sapi::ISpRecognizer'>ISpRecognizer</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub CreateGrammer: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, ullGrammarId: <a class='type' href='../../winapi/winnt/type.ULONGLONG.html' title='winapi::winnt::ULONGLONG'>ULONGLONG</a>, ppGrammar: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoGrammar.html' title='winapi::sapi::ISpRecoGrammar'>ISpRecoGrammar</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetStatus: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, pState: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.SPRECOCONTEXTSTATUS.html' title='winapi::sapi::SPRECOCONTEXTSTATUS'>SPRECOCONTEXTSTATUS</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetMaxAlternates: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, pcAlternates: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/minwindef/type.ULONG.html' title='winapi::minwindef::ULONG'>ULONG</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub SetMaxAlternates: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, cAlternates: <a class='type' href='../../winapi/minwindef/type.ULONG.html' title='winapi::minwindef::ULONG'>ULONG</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub SetAudioOptions: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, Options: <a class='struct' href='../../winapi/sapi/struct.SPAUDIOOPTIONS.html' title='winapi::sapi::SPAUDIOOPTIONS'>SPAUDIOOPTIONS</a>, pAudioFormatId: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/guiddef/struct.GUID.html' title='winapi::guiddef::GUID'>GUID</a></a>, pWaveFormatEx: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/mmreg/struct.WAVEFORMATEX.html' title='winapi::mmreg::WAVEFORMATEX'>WAVEFORMATEX</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetAudioOptions: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, pOptions: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.SPAUDIOOPTIONS.html' title='winapi::sapi::SPAUDIOOPTIONS'>SPAUDIOOPTIONS</a></a>, pAudioFormatId: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/guiddef/struct.GUID.html' title='winapi::guiddef::GUID'>GUID</a></a>, ppCoMemWFEX: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/mmreg/struct.WAVEFORMATEX.html' title='winapi::mmreg::WAVEFORMATEX'>WAVEFORMATEX</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub DeserializeResult: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, pSerializedResult: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='struct' href='../../winapi/sapi/struct.SPSERIALIZEDRESULT.html' title='winapi::sapi::SPSERIALIZEDRESULT'>SPSERIALIZEDRESULT</a></a>, ppResult: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoResult.html' title='winapi::sapi::ISpRecoResult'>ISpRecoResult</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub Bookmark: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, Options: <a class='struct' href='../../winapi/sapi/struct.SPBOOKMARKOPTIONS.html' title='winapi::sapi::SPBOOKMARKOPTIONS'>SPBOOKMARKOPTIONS</a>, ullStreamPosition: <a class='type' href='../../winapi/winnt/type.ULONGLONG.html' title='winapi::winnt::ULONGLONG'>ULONGLONG</a>, lparamEvent: <a class='type' href='../../winapi/minwindef/type.LPARAM.html' title='winapi::minwindef::LPARAM'>LPARAM</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub SetAdaptionData: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, pAdaptionData: <a class='type' href='../../winapi/winnt/type.LPCWSTR.html' title='winapi::winnt::LPCWSTR'>LPCWSTR</a>, cch: <a class='type' href='../../winapi/minwindef/type.ULONG.html' title='winapi::minwindef::ULONG'>ULONG</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub Pause: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, dwReserved: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub Resume: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, dwReserved: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub SetVoice: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, pVoice: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpVoice.html' title='winapi::sapi::ISpVoice'>ISpVoice</a></a>, fAllowFormatChanges: <a class='type' href='../../winapi/minwindef/type.BOOL.html' title='winapi::minwindef::BOOL'>BOOL</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetVoice: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, ppVoice: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpVoice.html' title='winapi::sapi::ISpVoice'>ISpVoice</a></a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub SetVoicePurgeEvent: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, ullEventIntereset: <a class='type' href='../../winapi/winnt/type.ULONGLONG.html' title='winapi::winnt::ULONGLONG'>ULONGLONG</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetVoicePurgeEvent: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, pullEventIntereset: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='type' href='../../winapi/winnt/type.ULONGLONG.html' title='winapi::winnt::ULONGLONG'>ULONGLONG</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub SetContextState: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, eContextState: <a class='struct' href='../../winapi/sapi/struct.SPCONTEXTSTATE.html' title='winapi::sapi::SPCONTEXTSTATE'>SPCONTEXTSTATE</a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+    pub GetContextState: unsafe  extern "system" fn(This: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.ISpRecoContext.html' title='winapi::sapi::ISpRecoContext'>ISpRecoContext</a></a>, peContextState: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/sapi/struct.SPCONTEXTSTATE.html' title='winapi::sapi::SPCONTEXTSTATE'>SPCONTEXTSTATE</a></a>) -&gt; <a class='type' href='../../winapi/winerror/type.HRESULT.html' title='winapi::winerror::HRESULT'>HRESULT</a>,
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.parent'><code>parent</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetRecognizer'><code>GetRecognizer</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.CreateGrammer'><code>CreateGrammer</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetStatus'><code>GetStatus</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetMaxAlternates'><code>GetMaxAlternates</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SetMaxAlternates'><code>SetMaxAlternates</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SetAudioOptions'><code>SetAudioOptions</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetAudioOptions'><code>GetAudioOptions</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.DeserializeResult'><code>DeserializeResult</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Bookmark'><code>Bookmark</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SetAdaptionData'><code>SetAdaptionData</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Pause'><code>Pause</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Resume'><code>Resume</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SetVoice'><code>SetVoice</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetVoice'><code>GetVoice</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SetVoicePurgeEvent'><code>SetVoicePurgeEvent</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetVoicePurgeEvent'><code>GetVoicePurgeEvent</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SetContextState'><code>SetContextState</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.GetContextState'><code>GetContextState</code></td><td></td></tr></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

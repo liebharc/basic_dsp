@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `facade32` mod in crate `basic_dsp`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, facade32">
+
+    <title>basic_dsp::interop_facade::facade32 - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../../index.html'>basic_dsp</a>::<wbr><a href='../index.html'>interop_facade</a></p><script>window.sidebarCurrent = {name: 'facade32', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../../index.html'>basic_dsp</a>::<wbr><a href='../index.html'>interop_facade</a>::<wbr><a class='mod' href=''>facade32</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-6847' class='srclink' href='../../../src/basic_dsp/interop_facade/facade32.rs.html#1-574' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Functions for 32bit floating point number based vectors. Please refer to the other chapters of the help for documentation of the functions.</p>
+</div><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.abs32.html'
+                               title='basic_dsp::interop_facade::facade32::abs32'>abs32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.acos32.html'
+                               title='basic_dsp::interop_facade::facade32::acos32'>acos32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.acosh32.html'
+                               title='basic_dsp::interop_facade::facade32::acosh32'>acosh32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.add_smaller_vector32.html'
+                               title='basic_dsp::interop_facade::facade32::add_smaller_vector32'>add_smaller_vector32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.add_vector32.html'
+                               title='basic_dsp::interop_facade::facade32::add_vector32'>add_vector32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.apply_custom_window32.html'
+                               title='basic_dsp::interop_facade::facade32::apply_custom_window32'>apply_custom_window32</a></td>
+                        <td class='docblock short'>
+                             <p>Creates a window from the function <code>window</code> and the void pointer <code>window_data</code>. The <code>window_data</code> pointer is passed to the <code>window</code>
+function at every call and can be used to store parameters.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.apply_window32.html'
+                               title='basic_dsp::interop_facade::facade32::apply_window32'>apply_window32</a></td>
+                        <td class='docblock short'>
+                             <p><code>window</code> argument is translated to:</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.asin32.html'
+                               title='basic_dsp::interop_facade::facade32::asin32'>asin32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.asinh32.html'
+                               title='basic_dsp::interop_facade::facade32::asinh32'>asinh32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.atan32.html'
+                               title='basic_dsp::interop_facade::facade32::atan32'>atan32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.atanh32.html'
+                               title='basic_dsp::interop_facade::facade32::atanh32'>atanh32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clone32.html'
+                               title='basic_dsp::interop_facade::facade32::clone32'>clone32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.complex_conj32.html'
+                               title='basic_dsp::interop_facade::facade32::complex_conj32'>complex_conj32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.complex_divide32.html'
+                               title='basic_dsp::interop_facade::facade32::complex_divide32'>complex_divide32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.complex_dot_product32.html'
+                               title='basic_dsp::interop_facade::facade32::complex_dot_product32'>complex_dot_product32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.complex_offset32.html'
+                               title='basic_dsp::interop_facade::facade32::complex_offset32'>complex_offset32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.complex_scale32.html'
+                               title='basic_dsp::interop_facade::facade32::complex_scale32'>complex_scale32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.complex_statistics32.html'
+                               title='basic_dsp::interop_facade::facade32::complex_statistics32'>complex_statistics32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.complex_statistics_splitted32.html'
+                               title='basic_dsp::interop_facade::facade32::complex_statistics_splitted32'>complex_statistics_splitted32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.cos32.html'
+                               title='basic_dsp::interop_facade::facade32::cos32'>cos32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.cosh32.html'
+                               title='basic_dsp::interop_facade::facade32::cosh32'>cosh32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.cum_sum32.html'
+                               title='basic_dsp::interop_facade::facade32::cum_sum32'>cum_sum32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.delete_vector32.html'
+                               title='basic_dsp::interop_facade::facade32::delete_vector32'>delete_vector32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.diff32.html'
+                               title='basic_dsp::interop_facade::facade32::diff32'>diff32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.diff_with_start32.html'
+                               title='basic_dsp::interop_facade::facade32::diff_with_start32'>diff_with_start32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.divide_smaller_vector32.html'
+                               title='basic_dsp::interop_facade::facade32::divide_smaller_vector32'>divide_smaller_vector32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.divide_vector32.html'
+                               title='basic_dsp::interop_facade::facade32::divide_vector32'>divide_vector32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.exp_base32.html'
+                               title='basic_dsp::interop_facade::facade32::exp_base32'>exp_base32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.expn32.html'
+                               title='basic_dsp::interop_facade::facade32::expn32'>expn32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.fft32.html'
+                               title='basic_dsp::interop_facade::facade32::fft32'>fft32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_allocated_len32.html'
+                               title='basic_dsp::interop_facade::facade32::get_allocated_len32'>get_allocated_len32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_delta32.html'
+                               title='basic_dsp::interop_facade::facade32::get_delta32'>get_delta32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_domain32.html'
+                               title='basic_dsp::interop_facade::facade32::get_domain32'>get_domain32</a></td>
+                        <td class='docblock short'>
+                             <p>Returns the vector domain as integer:</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_imag32.html'
+                               title='basic_dsp::interop_facade::facade32::get_imag32'>get_imag32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_len32.html'
+                               title='basic_dsp::interop_facade::facade32::get_len32'>get_len32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_mag_phase32.html'
+                               title='basic_dsp::interop_facade::facade32::get_mag_phase32'>get_mag_phase32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_magnitude32.html'
+                               title='basic_dsp::interop_facade::facade32::get_magnitude32'>get_magnitude32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_phase32.html'
+                               title='basic_dsp::interop_facade::facade32::get_phase32'>get_phase32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_points32.html'
+                               title='basic_dsp::interop_facade::facade32::get_points32'>get_points32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_real32.html'
+                               title='basic_dsp::interop_facade::facade32::get_real32'>get_real32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_real_imag32.html'
+                               title='basic_dsp::interop_facade::facade32::get_real_imag32'>get_real_imag32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.get_value32.html'
+                               title='basic_dsp::interop_facade::facade32::get_value32'>get_value32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.ifft32.html'
+                               title='basic_dsp::interop_facade::facade32::ifft32'>ifft32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.is_complex32.html'
+                               title='basic_dsp::interop_facade::facade32::is_complex32'>is_complex32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.log_base32.html'
+                               title='basic_dsp::interop_facade::facade32::log_base32'>log_base32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.logn32.html'
+                               title='basic_dsp::interop_facade::facade32::logn32'>logn32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.magnitude32.html'
+                               title='basic_dsp::interop_facade::facade32::magnitude32'>magnitude32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.magnitude_squared32.html'
+                               title='basic_dsp::interop_facade::facade32::magnitude_squared32'>magnitude_squared32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.merge32.html'
+                               title='basic_dsp::interop_facade::facade32::merge32'>merge32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.mirror32.html'
+                               title='basic_dsp::interop_facade::facade32::mirror32'>mirror32</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.plain_sifft32.html"><code>plain_sifft32</code></a> for a description of the <code>even_odd</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.multiply_complex_exponential32.html'
+                               title='basic_dsp::interop_facade::facade32::multiply_complex_exponential32'>multiply_complex_exponential32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.multiply_smaller_vector32.html'
+                               title='basic_dsp::interop_facade::facade32::multiply_smaller_vector32'>multiply_smaller_vector32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.multiply_vector32.html'
+                               title='basic_dsp::interop_facade::facade32::multiply_vector32'>multiply_vector32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.new32.html'
+                               title='basic_dsp::interop_facade::facade32::new32'>new32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.override_data32.html'
+                               title='basic_dsp::interop_facade::facade32::override_data32'>override_data32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.phase32.html'
+                               title='basic_dsp::interop_facade::facade32::phase32'>phase32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.plain_fft32.html'
+                               title='basic_dsp::interop_facade::facade32::plain_fft32'>plain_fft32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.plain_ifft32.html'
+                               title='basic_dsp::interop_facade::facade32::plain_ifft32'>plain_ifft32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.plain_sifft32.html'
+                               title='basic_dsp::interop_facade::facade32::plain_sifft32'>plain_sifft32</a></td>
+                        <td class='docblock short'>
+                             <p><code>even_odd</code> is translated according to:</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.power32.html'
+                               title='basic_dsp::interop_facade::facade32::power32'>power32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.real_dot_product32.html'
+                               title='basic_dsp::interop_facade::facade32::real_dot_product32'>real_dot_product32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.real_offset32.html'
+                               title='basic_dsp::interop_facade::facade32::real_offset32'>real_offset32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.real_scale32.html'
+                               title='basic_dsp::interop_facade::facade32::real_scale32'>real_scale32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.real_statistics32.html'
+                               title='basic_dsp::interop_facade::facade32::real_statistics32'>real_statistics32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.real_statistics_splitted32.html'
+                               title='basic_dsp::interop_facade::facade32::real_statistics_splitted32'>real_statistics_splitted32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.root32.html'
+                               title='basic_dsp::interop_facade::facade32::root32'>root32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_mag_phase32.html'
+                               title='basic_dsp::interop_facade::facade32::set_mag_phase32'>set_mag_phase32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_real_imag32.html'
+                               title='basic_dsp::interop_facade::facade32::set_real_imag32'>set_real_imag32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_value32.html'
+                               title='basic_dsp::interop_facade::facade32::set_value32'>set_value32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.sifft32.html'
+                               title='basic_dsp::interop_facade::facade32::sifft32'>sifft32</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.plain_sifft32.html"><code>plain_sifft32</code></a> for a description of the <code>even_odd</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.sin32.html'
+                               title='basic_dsp::interop_facade::facade32::sin32'>sin32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.sinh32.html'
+                               title='basic_dsp::interop_facade::facade32::sinh32'>sinh32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.split_into32.html'
+                               title='basic_dsp::interop_facade::facade32::split_into32'>split_into32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.sqrt32.html'
+                               title='basic_dsp::interop_facade::facade32::sqrt32'>sqrt32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.square32.html'
+                               title='basic_dsp::interop_facade::facade32::square32'>square32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.subtract_smaller_vector32.html'
+                               title='basic_dsp::interop_facade::facade32::subtract_smaller_vector32'>subtract_smaller_vector32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.subtract_vector32.html'
+                               title='basic_dsp::interop_facade::facade32::subtract_vector32'>subtract_vector32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.swap_halves32.html'
+                               title='basic_dsp::interop_facade::facade32::swap_halves32'>swap_halves32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.tan32.html'
+                               title='basic_dsp::interop_facade::facade32::tan32'>tan32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.tanh32.html'
+                               title='basic_dsp::interop_facade::facade32::tanh32'>tanh32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.to_complex32.html'
+                               title='basic_dsp::interop_facade::facade32::to_complex32'>to_complex32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.to_imag32.html'
+                               title='basic_dsp::interop_facade::facade32::to_imag32'>to_imag32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.to_real32.html'
+                               title='basic_dsp::interop_facade::facade32::to_real32'>to_real32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.unapply_custom_window32.html'
+                               title='basic_dsp::interop_facade::facade32::unapply_custom_window32'>unapply_custom_window32</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.apply_custom_window32.html"><code>apply_custom_window32</code></a> for a description of the <code>window</code> and <code>window_data</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.unapply_window32.html'
+                               title='basic_dsp::interop_facade::facade32::unapply_window32'>unapply_window32</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.apply_window32.html"><code>apply_window32</code></a> for a description of the <code>window</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.unwrap32.html'
+                               title='basic_dsp::interop_facade::facade32::unwrap32'>unwrap32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.windowed_custom_fft32.html'
+                               title='basic_dsp::interop_facade::facade32::windowed_custom_fft32'>windowed_custom_fft32</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.apply_custom_window32.html"><code>apply_custom_window32</code></a> for a description of the <code>window</code> and <code>window_data</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.windowed_custom_ifft32.html'
+                               title='basic_dsp::interop_facade::facade32::windowed_custom_ifft32'>windowed_custom_ifft32</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.apply_custom_window32.html"><code>apply_custom_window32</code></a> for a description of the <code>window</code> and <code>window_data</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.windowed_custom_sifft32.html'
+                               title='basic_dsp::interop_facade::facade32::windowed_custom_sifft32'>windowed_custom_sifft32</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.apply_custom_window32.html"><code>apply_custom_window32</code></a> for a description of the <code>window</code> and <code>window_data</code> parameter.
+See <a href="fn.plain_sifft32.html"><code>plain_sifft32</code></a> for a description of the <code>even_odd</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.windowed_fft32.html'
+                               title='basic_dsp::interop_facade::facade32::windowed_fft32'>windowed_fft32</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.apply_window32.html"><code>apply_window32</code></a> for a description of the <code>window</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.windowed_ifft32.html'
+                               title='basic_dsp::interop_facade::facade32::windowed_ifft32'>windowed_ifft32</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.apply_window32.html"><code>apply_window32</code></a> for a description of the <code>window</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.windowed_sifft32.html'
+                               title='basic_dsp::interop_facade::facade32::windowed_sifft32'>windowed_sifft32</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.plain_sifft32.html"><code>plain_sifft32</code></a> for a description of the <code>even_odd</code> parameter.
+See <a href="fn.apply_window32.html"><code>apply_window32</code></a> for a description of the <code>window</code> parameter.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.wrap32.html'
+                               title='basic_dsp::interop_facade::facade32::wrap32'>wrap32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.zero_interleave32.html'
+                               title='basic_dsp::interop_facade::facade32::zero_interleave32'>zero_interleave32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.zero_pad32.html'
+                               title='basic_dsp::interop_facade::facade32::zero_pad32'>zero_pad32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "basic_dsp";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    
+    <script defer src="../../../search-index.js"></script>
+</body>
+</html>

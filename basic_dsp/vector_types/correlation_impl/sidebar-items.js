@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["CrossCorrelation","Cross-correlation of data vectors. See also https://en.wikipedia.org/wiki/Cross-correlation"]]});

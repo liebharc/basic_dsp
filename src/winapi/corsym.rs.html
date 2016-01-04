@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-88ac128001ac3a9a\winapi-0.2.5\src\corsym.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
+
+    <title>corsym.rs.html -- source</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content source"><pre class="line-numbers"><span id="1"> 1</span>
+<span id="2"> 2</span>
+<span id="3"> 3</span>
+<span id="4"> 4</span>
+<span id="5"> 5</span>
+<span id="6"> 6</span>
+<span id="7"> 7</span>
+<span id="8"> 8</span>
+<span id="9"> 9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+</pre><pre class='rust '>
+<span class='comment'>// Copyright © 2015, Peter Atashian</span>
+<span class='comment'>// Licensed under the MIT License &lt;LICENSE.md&gt;</span>
+<span class='doccomment'>//! Common Language Runtime Debugging Symbol Reader/Writer/Binder Interfaces</span>
+<span class='macro'>DEFINE_GUID</span><span class='macro'>!</span>(<span class='ident'>CorSym_LanguageType_C</span>, <span class='number'>0x63a08714</span>, <span class='number'>0xfc37</span>, <span class='number'>0x11d2</span>,
+    <span class='number'>0x90</span>, <span class='number'>0x4c</span>, <span class='number'>0x0</span>, <span class='number'>0xc0</span>, <span class='number'>0x4f</span>, <span class='number'>0xa3</span>, <span class='number'>0x02</span>, <span class='number'>0xa1</span>);
+<span class='macro'>DEFINE_GUID</span><span class='macro'>!</span>(<span class='ident'>CorSym_LanguageType_CPlusPlus</span>, <span class='number'>0x3a12d0b7</span>, <span class='number'>0xc26c</span>, <span class='number'>0x11d0</span>,
+    <span class='number'>0xb4</span>, <span class='number'>0x42</span>, <span class='number'>0x0</span>, <span class='number'>0xa0</span>, <span class='number'>0x24</span>, <span class='number'>0x4a</span>, <span class='number'>0x1d</span>, <span class='number'>0xd2</span>);
+<span class='macro'>DEFINE_GUID</span><span class='macro'>!</span>(<span class='ident'>CorSym_LanguageType_CSharp</span>, <span class='number'>0x3f5162f8</span>, <span class='number'>0x07c6</span>, <span class='number'>0x11d3</span>,
+    <span class='number'>0x90</span>, <span class='number'>0x53</span>, <span class='number'>0x0</span>, <span class='number'>0xc0</span>, <span class='number'>0x4f</span>, <span class='number'>0xa3</span>, <span class='number'>0x02</span>, <span class='number'>0xa1</span>);
+<span class='macro'>DEFINE_GUID</span><span class='macro'>!</span>(<span class='ident'>CorSym_LanguageType_Basic</span>, <span class='number'>0x3a12d0b8</span>, <span class='number'>0xc26c</span>, <span class='number'>0x11d0</span>,
+    <span class='number'>0xb4</span>, <span class='number'>0x42</span>, <span class='number'>0x0</span>, <span class='number'>0xa0</span>, <span class='number'>0x24</span>, <span class='number'>0x4a</span>, <span class='number'>0x1d</span>, <span class='number'>0xd2</span>);
+<span class='macro'>DEFINE_GUID</span><span class='macro'>!</span>(<span class='ident'>CorSym_LanguageType_Java</span>, <span class='number'>0x3a12d0b4</span>, <span class='number'>0xc26c</span>, <span class='number'>0x11d0</span>,
+    <span class='number'>0xb4</span>, <span class='number'>0x42</span>, <span class='number'>0x0</span>, <span class='number'>0xa0</span>, <span class='number'>0x24</span>, <span class='number'>0x4a</span>, <span class='number'>0x1d</span>, <span class='number'>0xd2</span>);
+<span class='macro'>DEFINE_GUID</span><span class='macro'>!</span>(<span class='ident'>CorSym_LanguageType_Cobol</span>, <span class='number'>0xaf046cd1</span>, <span class='number'>0xd0e1</span>, <span class='number'>0x11d2</span>,
+    <span class='number'>0x97</span>, <span class='number'>0x7c</span>, <span class='number'>0x0</span>, <span class='number'>0xa0</span>, <span class='number'>0xc9</span>, <span class='number'>0xb4</span>, <span class='number'>0xd5</span>, <span class='number'>0xc</span>);
+<span class='macro'>DEFINE_GUID</span><span class='macro'>!</span>(<span class='ident'>CorSym_LanguageType_Pascal</span>, <span class='number'>0xaf046cd2</span>, <span class='number'>0xd0e1</span>, <span class='number'>0x11d2</span>,
+    <span class='number'>0x97</span>, <span class='number'>0x7c</span>, <span class='number'>0x0</span>, <span class='number'>0xa0</span>, <span class='number'>0xc9</span>, <span class='number'>0xb4</span>, <span class='number'>0xd5</span>, <span class='number'>0xc</span>);
+<span class='macro'>DEFINE_GUID</span><span class='macro'>!</span>(<span class='ident'>CorSym_LanguageType_ILAssembly</span>, <span class='number'>0xaf046cd3</span>, <span class='number'>0xd0e1</span>, <span class='number'>0x11d2</span>,
+    <span class='number'>0x97</span>, <span class='number'>0x7c</span>, <span class='number'>0x0</span>, <span class='number'>0xa0</span>, <span class='number'>0xc9</span>, <span class='number'>0xb4</span>, <span class='number'>0xd5</span>, <span class='number'>0xc</span>);
+<span class='macro'>DEFINE_GUID</span><span class='macro'>!</span>(<span class='ident'>CorSym_LanguageType_JScript</span>, <span class='number'>0x3a12d0b6</span>, <span class='number'>0xc26c</span>, <span class='number'>0x11d0</span>,
+    <span class='number'>0xb4</span>, <span class='number'>0x42</span>, <span class='number'>0x00</span>, <span class='number'>0xa0</span>, <span class='number'>0x24</span>, <span class='number'>0x4a</span>, <span class='number'>0x1d</span>, <span class='number'>0xd2</span>);
+<span class='macro'>DEFINE_GUID</span><span class='macro'>!</span>(<span class='ident'>CorSym_LanguageType_SMC</span>, <span class='number'>0xd9b9f7b</span>, <span class='number'>0x6611</span>, <span class='number'>0x11d3</span>,
+    <span class='number'>0xbd</span>, <span class='number'>0x2a</span>, <span class='number'>0x0</span>, <span class='number'>0x0</span>, <span class='number'>0xf8</span>, <span class='number'>0x8</span>, <span class='number'>0x49</span>, <span class='number'>0xbd</span>);
+<span class='macro'>DEFINE_GUID</span><span class='macro'>!</span>(<span class='ident'>CorSym_LanguageType_MCPlusPlus</span>, <span class='number'>0x4b35fde8</span>, <span class='number'>0x07c6</span>, <span class='number'>0x11d3</span>,
+    <span class='number'>0x90</span>, <span class='number'>0x53</span>, <span class='number'>0x0</span>, <span class='number'>0xc0</span>, <span class='number'>0x4f</span>, <span class='number'>0xa3</span>, <span class='number'>0x02</span>, <span class='number'>0xa1</span>);
+<span class='macro'>DEFINE_GUID</span><span class='macro'>!</span>(<span class='ident'>CorSym_LanguageVendor_Microsoft</span>, <span class='number'>0x994b45c4</span>, <span class='number'>0xe6e9</span>, <span class='number'>0x11d2</span>,
+    <span class='number'>0x90</span>, <span class='number'>0x3f</span>, <span class='number'>0x00</span>, <span class='number'>0xc0</span>, <span class='number'>0x4f</span>, <span class='number'>0xa3</span>, <span class='number'>0x02</span>, <span class='number'>0xa1</span>);
+<span class='macro'>DEFINE_GUID</span><span class='macro'>!</span>(<span class='ident'>CorSym_DocumentType_Text</span>, <span class='number'>0x5a869d0b</span>, <span class='number'>0x6611</span>, <span class='number'>0x11d3</span>,
+    <span class='number'>0xbd</span>, <span class='number'>0x2a</span>, <span class='number'>0x0</span>, <span class='number'>0x0</span>, <span class='number'>0xf8</span>, <span class='number'>0x8</span>, <span class='number'>0x49</span>, <span class='number'>0xbd</span>);
+<span class='macro'>DEFINE_GUID</span><span class='macro'>!</span>(<span class='ident'>CorSym_DocumentType_MC</span>, <span class='number'>0xeb40cb65</span>, <span class='number'>0x3c1f</span>, <span class='number'>0x4352</span>,
+    <span class='number'>0x9d</span>, <span class='number'>0x7b</span>, <span class='number'>0xba</span>, <span class='number'>0xf</span>, <span class='number'>0xc4</span>, <span class='number'>0x7a</span>, <span class='number'>0x9d</span>, <span class='number'>0x77</span>);
+<span class='macro'>DEFINE_GUID</span><span class='macro'>!</span>(<span class='ident'>CorSym_SourceHash_MD5</span>,  <span class='number'>0x406ea660</span>, <span class='number'>0x64cf</span>, <span class='number'>0x4c82</span>,
+    <span class='number'>0xb6</span>, <span class='number'>0xf0</span>, <span class='number'>0x42</span>, <span class='number'>0xd4</span>, <span class='number'>0x81</span>, <span class='number'>0x72</span>, <span class='number'>0xa7</span>, <span class='number'>0x99</span>);
+<span class='macro'>DEFINE_GUID</span><span class='macro'>!</span>(<span class='ident'>CorSym_SourceHash_SHA1</span>, <span class='number'>0xff1816ec</span>, <span class='number'>0xaa5e</span>, <span class='number'>0x4d10</span>,
+    <span class='number'>0x87</span>, <span class='number'>0xf7</span>, <span class='number'>0x6f</span>, <span class='number'>0x49</span>, <span class='number'>0x63</span>, <span class='number'>0x83</span>, <span class='number'>0x34</span>, <span class='number'>0x60</span>);
+<span class='macro'>ENUM</span><span class='macro'>!</span>{<span class='kw'>enum</span> <span class='ident'>CorSymAddrKind</span> {
+    <span class='ident'>ADDR_IL_OFFSET</span> <span class='op'>=</span> <span class='number'>1</span>,
+    <span class='ident'>ADDR_NATIVE_RVA</span> <span class='op'>=</span> <span class='number'>2</span>,
+    <span class='ident'>ADDR_NATIVE_REGISTER</span> <span class='op'>=</span> <span class='number'>3</span>,
+    <span class='ident'>ADDR_NATIVE_REGREL</span> <span class='op'>=</span> <span class='number'>4</span>,
+    <span class='ident'>ADDR_NATIVE_OFFSET</span> <span class='op'>=</span> <span class='number'>5</span>,
+    <span class='ident'>ADDR_NATIVE_REGREG</span> <span class='op'>=</span> <span class='number'>6</span>,
+    <span class='ident'>ADDR_NATIVE_REGSTK</span> <span class='op'>=</span> <span class='number'>7</span>,
+    <span class='ident'>ADDR_NATIVE_STKREG</span> <span class='op'>=</span> <span class='number'>8</span>,
+    <span class='ident'>ADDR_BITFIELD</span> <span class='op'>=</span> <span class='number'>9</span>,
+    <span class='ident'>ADDR_NATIVE_ISECTOFFSET</span> <span class='op'>=</span> <span class='number'>10</span>,
+}}
+<span class='macro'>FLAGS</span><span class='macro'>!</span>{<span class='kw'>enum</span> <span class='ident'>CorSymVarFlag</span> {
+    <span class='ident'>VAR_IS_COMP_GEN</span> <span class='op'>=</span> <span class='number'>1</span>,
+}}
+<span class='macro'>RIDL</span><span class='macro'>!</span>(
+<span class='ident'>interface</span> <span class='ident'>ISymUnmanagedBinder</span>(<span class='ident'>ISymUnmanagedBinderVtbl</span>): <span class='ident'>IUnknown</span>(<span class='ident'>IUnknownVtbl</span>) {
+    <span class='kw'>fn</span> <span class='ident'>GetReaderForFile</span>(
+        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>importer</span>: <span class='op'>*</span><span class='kw-2'>mut</span> ::<span class='ident'>IUnknown</span>, <span class='ident'>fileName</span>: <span class='op'>*</span><span class='kw'>const</span> ::<span class='ident'>WCHAR</span>, <span class='ident'>searchPath</span>: <span class='op'>*</span><span class='kw'>const</span> ::<span class='ident'>WCHAR</span>,
+        <span class='ident'>pRetVal</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>ISymUnmanagedReader</span>
+    ) <span class='op'>-&gt;</span> ::<span class='ident'>HRESULT</span>,
+    <span class='kw'>fn</span> <span class='ident'>GetReaderFromStream</span>(
+        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>importer</span>: <span class='op'>*</span><span class='kw-2'>mut</span> ::<span class='ident'>IUnknown</span>, <span class='ident'>pstream</span>: <span class='op'>*</span><span class='kw-2'>mut</span> ::<span class='ident'>IStream</span>,
+        <span class='ident'>pRetVal</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>ISymUnmanagedReader</span>
+    ) <span class='op'>-&gt;</span> ::<span class='ident'>HRESULT</span>
+}
+);
+<span class='macro'>FLAGS</span><span class='macro'>!</span>{<span class='kw'>enum</span> <span class='ident'>CorSymSearchPolicyAttributes</span> {
+    <span class='ident'>AllowRegistryAccess</span> <span class='op'>=</span> <span class='number'>0x1</span>,
+    <span class='ident'>AllowSymbolServerAccess</span> <span class='op'>=</span> <span class='number'>0x2</span>,
+    <span class='ident'>AllowOriginalPathAccess</span> <span class='op'>=</span> <span class='number'>0x4</span>,
+    <span class='ident'>AllowReferencePathAccess</span> <span class='op'>=</span> <span class='number'>0x8</span>,
+}}
+<span class='macro'>RIDL</span><span class='macro'>!</span>(
+<span class='ident'>interface</span> <span class='ident'>ISymUnmanagedBinder2</span>(<span class='ident'>ISymUnmanagedBinder2Vtbl</span>):
+    <span class='ident'>ISymUnmanagedBinder</span>(<span class='ident'>ISymUnmanagedBinderVtbl</span>) {
+    <span class='kw'>fn</span> <span class='ident'>GetReaderForFile2</span>(
+        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>importer</span>: <span class='op'>*</span><span class='kw-2'>mut</span> ::<span class='ident'>IUnknown</span>, <span class='ident'>fileName</span>: <span class='op'>*</span><span class='kw'>const</span> ::<span class='ident'>WCHAR</span>, <span class='ident'>searchPath</span>: <span class='op'>*</span><span class='kw'>const</span> ::<span class='ident'>WCHAR</span>,
+        <span class='ident'>searchPolicy</span>: ::<span class='ident'>ULONG32</span>, <span class='ident'>pRetVal</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>ISymUnmanagedReader</span>
+    ) <span class='op'>-&gt;</span> ::<span class='ident'>HRESULT</span>
+}
+);
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ISymUnmanagedReader</span>;
+</pre>
+</section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

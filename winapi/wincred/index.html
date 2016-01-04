@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `wincred` mod in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, wincred">
+
+    <title>winapi::wincred - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a></p><script>window.sidebarCurrent = {name: 'wincred', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>winapi</a>::<wbr><a class='mod' href=''>wincred</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-90781' class='srclink' href='../../src/winapi/wincred.rs.html#3-209' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Authentication API Prototypes and Definitions</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BINARY_BLOB_CREDENTIAL_INFO.html'
+                               title='winapi::wincred::BINARY_BLOB_CREDENTIAL_INFO'>BINARY_BLOB_CREDENTIAL_INFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CERT_CREDENTIAL_INFO.html'
+                               title='winapi::wincred::CERT_CREDENTIAL_INFO'>CERT_CREDENTIAL_INFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CREDENTIALA.html'
+                               title='winapi::wincred::CREDENTIALA'>CREDENTIALA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CREDENTIALW.html'
+                               title='winapi::wincred::CREDENTIALW'>CREDENTIALW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CREDENTIAL_ATTRIBUTEA.html'
+                               title='winapi::wincred::CREDENTIAL_ATTRIBUTEA'>CREDENTIAL_ATTRIBUTEA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CREDENTIAL_ATTRIBUTEW.html'
+                               title='winapi::wincred::CREDENTIAL_ATTRIBUTEW'>CREDENTIAL_ATTRIBUTEW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CREDENTIAL_TARGET_INFORMATIONA.html'
+                               title='winapi::wincred::CREDENTIAL_TARGET_INFORMATIONA'>CREDENTIAL_TARGET_INFORMATIONA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CREDENTIAL_TARGET_INFORMATIONW.html'
+                               title='winapi::wincred::CREDENTIAL_TARGET_INFORMATIONW'>CREDENTIAL_TARGET_INFORMATIONW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CREDUI_INFOA.html'
+                               title='winapi::wincred::CREDUI_INFOA'>CREDUI_INFOA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CREDUI_INFOW.html'
+                               title='winapi::wincred::CREDUI_INFOW'>CREDUI_INFOW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CRED_MARSHAL_TYPE.html'
+                               title='winapi::wincred::CRED_MARSHAL_TYPE'>CRED_MARSHAL_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.CRED_PROTECTION_TYPE.html'
+                               title='winapi::wincred::CRED_PROTECTION_TYPE'>CRED_PROTECTION_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.USERNAME_TARGET_CREDENTIAL_INFO.html'
+                               title='winapi::wincred::USERNAME_TARGET_CREDENTIAL_INFO'>USERNAME_TARGET_CREDENTIAL_INFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.BinaryBlobCredential.html'
+                               title='winapi::wincred::BinaryBlobCredential'>BinaryBlobCredential</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CERT_HASH_LENGTH.html'
+                               title='winapi::wincred::CERT_HASH_LENGTH'>CERT_HASH_LENGTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUIWIN_AUTHPACKAGE_ONLY.html'
+                               title='winapi::wincred::CREDUIWIN_AUTHPACKAGE_ONLY'>CREDUIWIN_AUTHPACKAGE_ONLY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUIWIN_CHECKBOX.html'
+                               title='winapi::wincred::CREDUIWIN_CHECKBOX'>CREDUIWIN_CHECKBOX</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUIWIN_ENUMERATE_ADMINS.html'
+                               title='winapi::wincred::CREDUIWIN_ENUMERATE_ADMINS'>CREDUIWIN_ENUMERATE_ADMINS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUIWIN_ENUMERATE_CURRENT_USER.html'
+                               title='winapi::wincred::CREDUIWIN_ENUMERATE_CURRENT_USER'>CREDUIWIN_ENUMERATE_CURRENT_USER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUIWIN_GENERIC.html'
+                               title='winapi::wincred::CREDUIWIN_GENERIC'>CREDUIWIN_GENERIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUIWIN_IN_CRED_ONLY.html'
+                               title='winapi::wincred::CREDUIWIN_IN_CRED_ONLY'>CREDUIWIN_IN_CRED_ONLY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUIWIN_PACK_32_WOW.html'
+                               title='winapi::wincred::CREDUIWIN_PACK_32_WOW'>CREDUIWIN_PACK_32_WOW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUIWIN_PREPROMPTING.html'
+                               title='winapi::wincred::CREDUIWIN_PREPROMPTING'>CREDUIWIN_PREPROMPTING</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUIWIN_SECURE_PROMPT.html'
+                               title='winapi::wincred::CREDUIWIN_SECURE_PROMPT'>CREDUIWIN_SECURE_PROMPT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUIWIN_VALID_FLAGS.html'
+                               title='winapi::wincred::CREDUIWIN_VALID_FLAGS'>CREDUIWIN_VALID_FLAGS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_ALWAYS_SHOW_UI.html'
+                               title='winapi::wincred::CREDUI_FLAGS_ALWAYS_SHOW_UI'>CREDUI_FLAGS_ALWAYS_SHOW_UI</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_COMPLETE_USERNAME.html'
+                               title='winapi::wincred::CREDUI_FLAGS_COMPLETE_USERNAME'>CREDUI_FLAGS_COMPLETE_USERNAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_DO_NOT_PERSIST.html'
+                               title='winapi::wincred::CREDUI_FLAGS_DO_NOT_PERSIST'>CREDUI_FLAGS_DO_NOT_PERSIST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_EXCLUDE_CERTIFICATES.html'
+                               title='winapi::wincred::CREDUI_FLAGS_EXCLUDE_CERTIFICATES'>CREDUI_FLAGS_EXCLUDE_CERTIFICATES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_EXPECT_CONFIRMATION.html'
+                               title='winapi::wincred::CREDUI_FLAGS_EXPECT_CONFIRMATION'>CREDUI_FLAGS_EXPECT_CONFIRMATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_GENERIC_CREDENTIALS.html'
+                               title='winapi::wincred::CREDUI_FLAGS_GENERIC_CREDENTIALS'>CREDUI_FLAGS_GENERIC_CREDENTIALS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_INCORRECT_PASSWORD.html'
+                               title='winapi::wincred::CREDUI_FLAGS_INCORRECT_PASSWORD'>CREDUI_FLAGS_INCORRECT_PASSWORD</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_KEEP_USERNAME.html'
+                               title='winapi::wincred::CREDUI_FLAGS_KEEP_USERNAME'>CREDUI_FLAGS_KEEP_USERNAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_PASSWORD_ONLY_OK.html'
+                               title='winapi::wincred::CREDUI_FLAGS_PASSWORD_ONLY_OK'>CREDUI_FLAGS_PASSWORD_ONLY_OK</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_PERSIST.html'
+                               title='winapi::wincred::CREDUI_FLAGS_PERSIST'>CREDUI_FLAGS_PERSIST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_PROMPT_VALID.html'
+                               title='winapi::wincred::CREDUI_FLAGS_PROMPT_VALID'>CREDUI_FLAGS_PROMPT_VALID</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_REQUEST_ADMINISTRATOR.html'
+                               title='winapi::wincred::CREDUI_FLAGS_REQUEST_ADMINISTRATOR'>CREDUI_FLAGS_REQUEST_ADMINISTRATOR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_REQUIRE_CERTIFICATE.html'
+                               title='winapi::wincred::CREDUI_FLAGS_REQUIRE_CERTIFICATE'>CREDUI_FLAGS_REQUIRE_CERTIFICATE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_REQUIRE_SMARTCARD.html'
+                               title='winapi::wincred::CREDUI_FLAGS_REQUIRE_SMARTCARD'>CREDUI_FLAGS_REQUIRE_SMARTCARD</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_SERVER_CREDENTIAL.html'
+                               title='winapi::wincred::CREDUI_FLAGS_SERVER_CREDENTIAL'>CREDUI_FLAGS_SERVER_CREDENTIAL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_SHOW_SAVE_CHECK_BOX.html'
+                               title='winapi::wincred::CREDUI_FLAGS_SHOW_SAVE_CHECK_BOX'>CREDUI_FLAGS_SHOW_SAVE_CHECK_BOX</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_USERNAME_TARGET_CREDENTIALS.html'
+                               title='winapi::wincred::CREDUI_FLAGS_USERNAME_TARGET_CREDENTIALS'>CREDUI_FLAGS_USERNAME_TARGET_CREDENTIALS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_FLAGS_VALIDATE_USERNAME.html'
+                               title='winapi::wincred::CREDUI_FLAGS_VALIDATE_USERNAME'>CREDUI_FLAGS_VALIDATE_USERNAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_MAX_CAPTION_LENGTH.html'
+                               title='winapi::wincred::CREDUI_MAX_CAPTION_LENGTH'>CREDUI_MAX_CAPTION_LENGTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_MAX_DOMAIN_TARGET_LENGTH.html'
+                               title='winapi::wincred::CREDUI_MAX_DOMAIN_TARGET_LENGTH'>CREDUI_MAX_DOMAIN_TARGET_LENGTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_MAX_GENERIC_TARGET_LENGTH.html'
+                               title='winapi::wincred::CREDUI_MAX_GENERIC_TARGET_LENGTH'>CREDUI_MAX_GENERIC_TARGET_LENGTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_MAX_MESSAGE_LENGTH.html'
+                               title='winapi::wincred::CREDUI_MAX_MESSAGE_LENGTH'>CREDUI_MAX_MESSAGE_LENGTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_MAX_PASSWORD_LENGTH.html'
+                               title='winapi::wincred::CREDUI_MAX_PASSWORD_LENGTH'>CREDUI_MAX_PASSWORD_LENGTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CREDUI_MAX_USERNAME_LENGTH.html'
+                               title='winapi::wincred::CREDUI_MAX_USERNAME_LENGTH'>CREDUI_MAX_USERNAME_LENGTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_ALLOW_NAME_RESOLUTION.html'
+                               title='winapi::wincred::CRED_ALLOW_NAME_RESOLUTION'>CRED_ALLOW_NAME_RESOLUTION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_CACHE_TARGET_INFORMATION.html'
+                               title='winapi::wincred::CRED_CACHE_TARGET_INFORMATION'>CRED_CACHE_TARGET_INFORMATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_ENUMERATE_ALL_CREDENTIALS.html'
+                               title='winapi::wincred::CRED_ENUMERATE_ALL_CREDENTIALS'>CRED_ENUMERATE_ALL_CREDENTIALS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_FLAGS_OWF_CRED_BLOB.html'
+                               title='winapi::wincred::CRED_FLAGS_OWF_CRED_BLOB'>CRED_FLAGS_OWF_CRED_BLOB</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_FLAGS_PASSWORD_FOR_CERT.html'
+                               title='winapi::wincred::CRED_FLAGS_PASSWORD_FOR_CERT'>CRED_FLAGS_PASSWORD_FOR_CERT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_FLAGS_PROMPT_NOW.html'
+                               title='winapi::wincred::CRED_FLAGS_PROMPT_NOW'>CRED_FLAGS_PROMPT_NOW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_FLAGS_REQUIRE_CONFIRMATION.html'
+                               title='winapi::wincred::CRED_FLAGS_REQUIRE_CONFIRMATION'>CRED_FLAGS_REQUIRE_CONFIRMATION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_FLAGS_USERNAME_TARGET.html'
+                               title='winapi::wincred::CRED_FLAGS_USERNAME_TARGET'>CRED_FLAGS_USERNAME_TARGET</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_FLAGS_VALID_FLAGS.html'
+                               title='winapi::wincred::CRED_FLAGS_VALID_FLAGS'>CRED_FLAGS_VALID_FLAGS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_FLAGS_VALID_INPUT_FLAGS.html'
+                               title='winapi::wincred::CRED_FLAGS_VALID_INPUT_FLAGS'>CRED_FLAGS_VALID_INPUT_FLAGS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_FLAGS_WILDCARD_MATCH.html'
+                               title='winapi::wincred::CRED_FLAGS_WILDCARD_MATCH'>CRED_FLAGS_WILDCARD_MATCH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_LOGON_TYPES_MASK.html'
+                               title='winapi::wincred::CRED_LOGON_TYPES_MASK'>CRED_LOGON_TYPES_MASK</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_MAX_ATTRIBUTES.html'
+                               title='winapi::wincred::CRED_MAX_ATTRIBUTES'>CRED_MAX_ATTRIBUTES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_MAX_CREDENTIAL_BLOB_SIZE.html'
+                               title='winapi::wincred::CRED_MAX_CREDENTIAL_BLOB_SIZE'>CRED_MAX_CREDENTIAL_BLOB_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_MAX_DOMAIN_TARGET_NAME_LENGTH.html'
+                               title='winapi::wincred::CRED_MAX_DOMAIN_TARGET_NAME_LENGTH'>CRED_MAX_DOMAIN_TARGET_NAME_LENGTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_MAX_GENERIC_TARGET_NAME_LENGTH.html'
+                               title='winapi::wincred::CRED_MAX_GENERIC_TARGET_NAME_LENGTH'>CRED_MAX_GENERIC_TARGET_NAME_LENGTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_MAX_STRING_LENGTH.html'
+                               title='winapi::wincred::CRED_MAX_STRING_LENGTH'>CRED_MAX_STRING_LENGTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_MAX_TARGETNAME_ATTRIBUTE_LENGTH.html'
+                               title='winapi::wincred::CRED_MAX_TARGETNAME_ATTRIBUTE_LENGTH'>CRED_MAX_TARGETNAME_ATTRIBUTE_LENGTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_MAX_TARGETNAME_NAMESPACE_LENGTH.html'
+                               title='winapi::wincred::CRED_MAX_TARGETNAME_NAMESPACE_LENGTH'>CRED_MAX_TARGETNAME_NAMESPACE_LENGTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_MAX_USERNAME_LENGTH.html'
+                               title='winapi::wincred::CRED_MAX_USERNAME_LENGTH'>CRED_MAX_USERNAME_LENGTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_MAX_VALUE_SIZE.html'
+                               title='winapi::wincred::CRED_MAX_VALUE_SIZE'>CRED_MAX_VALUE_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_PACK_GENERIC_CREDENTIALS.html'
+                               title='winapi::wincred::CRED_PACK_GENERIC_CREDENTIALS'>CRED_PACK_GENERIC_CREDENTIALS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_PACK_ID_PROVIDER_CREDENTIALS.html'
+                               title='winapi::wincred::CRED_PACK_ID_PROVIDER_CREDENTIALS'>CRED_PACK_ID_PROVIDER_CREDENTIALS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_PACK_PROTECTED_CREDENTIALS.html'
+                               title='winapi::wincred::CRED_PACK_PROTECTED_CREDENTIALS'>CRED_PACK_PROTECTED_CREDENTIALS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_PACK_WOW_BUFFER.html'
+                               title='winapi::wincred::CRED_PACK_WOW_BUFFER'>CRED_PACK_WOW_BUFFER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_PERSIST_ENTERPRISE.html'
+                               title='winapi::wincred::CRED_PERSIST_ENTERPRISE'>CRED_PERSIST_ENTERPRISE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_PERSIST_LOCAL_MACHINE.html'
+                               title='winapi::wincred::CRED_PERSIST_LOCAL_MACHINE'>CRED_PERSIST_LOCAL_MACHINE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_PERSIST_NONE.html'
+                               title='winapi::wincred::CRED_PERSIST_NONE'>CRED_PERSIST_NONE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_PERSIST_SESSION.html'
+                               title='winapi::wincred::CRED_PERSIST_SESSION'>CRED_PERSIST_SESSION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_PRESERVE_CREDENTIAL_BLOB.html'
+                               title='winapi::wincred::CRED_PRESERVE_CREDENTIAL_BLOB'>CRED_PRESERVE_CREDENTIAL_BLOB</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_TI_CREATE_EXPLICIT_CRED.html'
+                               title='winapi::wincred::CRED_TI_CREATE_EXPLICIT_CRED'>CRED_TI_CREATE_EXPLICIT_CRED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_TI_DOMAIN_FORMAT_UNKNOWN.html'
+                               title='winapi::wincred::CRED_TI_DOMAIN_FORMAT_UNKNOWN'>CRED_TI_DOMAIN_FORMAT_UNKNOWN</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_TI_ONLY_PASSWORD_REQUIRED.html'
+                               title='winapi::wincred::CRED_TI_ONLY_PASSWORD_REQUIRED'>CRED_TI_ONLY_PASSWORD_REQUIRED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_TI_SERVER_FORMAT_UNKNOWN.html'
+                               title='winapi::wincred::CRED_TI_SERVER_FORMAT_UNKNOWN'>CRED_TI_SERVER_FORMAT_UNKNOWN</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_TI_USERNAME_TARGET.html'
+                               title='winapi::wincred::CRED_TI_USERNAME_TARGET'>CRED_TI_USERNAME_TARGET</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_TI_VALID_FLAGS.html'
+                               title='winapi::wincred::CRED_TI_VALID_FLAGS'>CRED_TI_VALID_FLAGS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_TI_WORKGROUP_MEMBER.html'
+                               title='winapi::wincred::CRED_TI_WORKGROUP_MEMBER'>CRED_TI_WORKGROUP_MEMBER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_TYPE_DOMAIN_CERTIFICATE.html'
+                               title='winapi::wincred::CRED_TYPE_DOMAIN_CERTIFICATE'>CRED_TYPE_DOMAIN_CERTIFICATE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_TYPE_DOMAIN_EXTENDED.html'
+                               title='winapi::wincred::CRED_TYPE_DOMAIN_EXTENDED'>CRED_TYPE_DOMAIN_EXTENDED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_TYPE_DOMAIN_PASSWORD.html'
+                               title='winapi::wincred::CRED_TYPE_DOMAIN_PASSWORD'>CRED_TYPE_DOMAIN_PASSWORD</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_TYPE_DOMAIN_VISIBLE_PASSWORD.html'
+                               title='winapi::wincred::CRED_TYPE_DOMAIN_VISIBLE_PASSWORD'>CRED_TYPE_DOMAIN_VISIBLE_PASSWORD</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_TYPE_GENERIC.html'
+                               title='winapi::wincred::CRED_TYPE_GENERIC'>CRED_TYPE_GENERIC</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_TYPE_GENERIC_CERTIFICATE.html'
+                               title='winapi::wincred::CRED_TYPE_GENERIC_CERTIFICATE'>CRED_TYPE_GENERIC_CERTIFICATE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_TYPE_MAXIMUM.html'
+                               title='winapi::wincred::CRED_TYPE_MAXIMUM'>CRED_TYPE_MAXIMUM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CRED_TYPE_MAXIMUM_EX.html'
+                               title='winapi::wincred::CRED_TYPE_MAXIMUM_EX'>CRED_TYPE_MAXIMUM_EX</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CertCredential.html'
+                               title='winapi::wincred::CertCredential'>CertCredential</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CredTrustedProtection.html'
+                               title='winapi::wincred::CredTrustedProtection'>CredTrustedProtection</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CredUnprotected.html'
+                               title='winapi::wincred::CredUnprotected'>CredUnprotected</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.CredUserProtection.html'
+                               title='winapi::wincred::CredUserProtection'>CredUserProtection</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NERR_BASE.html'
+                               title='winapi::wincred::NERR_BASE'>NERR_BASE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.NERR_PasswordExpired.html'
+                               title='winapi::wincred::NERR_PasswordExpired'>NERR_PasswordExpired</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.UsernameForPackedCredentials.html'
+                               title='winapi::wincred::UsernameForPackedCredentials'>UsernameForPackedCredentials</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='constant' href='constant.UsernameTargetCredential.html'
+                               title='winapi::wincred::UsernameTargetCredential'>UsernameTargetCredential</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PBINARY_BLOB_CREDENTIAL_INFO.html'
+                               title='winapi::wincred::PBINARY_BLOB_CREDENTIAL_INFO'>PBINARY_BLOB_CREDENTIAL_INFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCERT_CREDENTIAL_INFO.html'
+                               title='winapi::wincred::PCERT_CREDENTIAL_INFO'>PCERT_CREDENTIAL_INFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCREDENTIALA.html'
+                               title='winapi::wincred::PCREDENTIALA'>PCREDENTIALA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCREDENTIALW.html'
+                               title='winapi::wincred::PCREDENTIALW'>PCREDENTIALW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCREDENTIAL_ATTRIBUTEA.html'
+                               title='winapi::wincred::PCREDENTIAL_ATTRIBUTEA'>PCREDENTIAL_ATTRIBUTEA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCREDENTIAL_ATTRIBUTEW.html'
+                               title='winapi::wincred::PCREDENTIAL_ATTRIBUTEW'>PCREDENTIAL_ATTRIBUTEW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCREDENTIAL_TARGET_INFORMATIONA.html'
+                               title='winapi::wincred::PCREDENTIAL_TARGET_INFORMATIONA'>PCREDENTIAL_TARGET_INFORMATIONA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCREDENTIAL_TARGET_INFORMATIONW.html'
+                               title='winapi::wincred::PCREDENTIAL_TARGET_INFORMATIONW'>PCREDENTIAL_TARGET_INFORMATIONW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCREDUI_INFOA.html'
+                               title='winapi::wincred::PCREDUI_INFOA'>PCREDUI_INFOA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCREDUI_INFOW.html'
+                               title='winapi::wincred::PCREDUI_INFOW'>PCREDUI_INFOW</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCRED_MARSHAL_TYPE.html'
+                               title='winapi::wincred::PCRED_MARSHAL_TYPE'>PCRED_MARSHAL_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PCRED_PROTECTION_TYPE.html'
+                               title='winapi::wincred::PCRED_PROTECTION_TYPE'>PCRED_PROTECTION_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.PUSERNAME_TARGET_CREDENTIAL_INFO.html'
+                               title='winapi::wincred::PUSERNAME_TARGET_CREDENTIAL_INFO'>PUSERNAME_TARGET_CREDENTIAL_INFO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

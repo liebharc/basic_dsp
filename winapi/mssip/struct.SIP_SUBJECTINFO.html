@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `SIP_SUBJECTINFO` struct in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, SIP_SUBJECTINFO">
+
+    <title>winapi::mssip::SIP_SUBJECTINFO - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a>::<wbr><a href='index.html'>mssip</a></p><script>window.sidebarCurrent = {name: 'SIP_SUBJECTINFO', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>winapi</a>::<wbr><a href='index.html'>mssip</a>::<wbr><a class='struct' href=''>SIP_SUBJECTINFO</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-55781' class='srclink' href='../../src/winapi/macros.rs.html#236-238' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct SIP_SUBJECTINFO {
+    pub cbSize: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub pgSubjectType: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/guiddef/struct.GUID.html' title='winapi::guiddef::GUID'>GUID</a></a>,
+    pub hFile: <a class='type' href='../../winapi/winnt/type.HANDLE.html' title='winapi::winnt::HANDLE'>HANDLE</a>,
+    pub pwsFileName: <a class='type' href='../../winapi/winnt/type.LPCWSTR.html' title='winapi::winnt::LPCWSTR'>LPCWSTR</a>,
+    pub pwsDisplayName: <a class='type' href='../../winapi/winnt/type.LPCWSTR.html' title='winapi::winnt::LPCWSTR'>LPCWSTR</a>,
+    pub dwReserved1: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub dwIntVersion: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub hProv: <a class='type' href='../../winapi/wincrypt/type.HCRYPTPROV.html' title='winapi::wincrypt::HCRYPTPROV'>HCRYPTPROV</a>,
+    pub DigestAlgorithm: <a class='struct' href='../../winapi/wincrypt/struct.CRYPT_ALGORITHM_IDENTIFIER.html' title='winapi::wincrypt::CRYPT_ALGORITHM_IDENTIFIER'>CRYPT_ALGORITHM_IDENTIFIER</a>,
+    pub dwFlags: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub dwEncodingType: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub dwReserved2: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub fdwCAPISettings: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub fdwSecuritySettings: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub dwIndex: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub dwUnionChoice: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub psFlat: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/mssip/struct.MS_ADDINFO_FLAT.html' title='winapi::mssip::MS_ADDINFO_FLAT'>MS_ADDINFO_FLAT</a></a>,
+    pub pClientData: <a class='type' href='../../winapi/minwindef/type.LPVOID.html' title='winapi::minwindef::LPVOID'>LPVOID</a>,
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.cbSize'><code>cbSize</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.pgSubjectType'><code>pgSubjectType</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.hFile'><code>hFile</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.pwsFileName'><code>pwsFileName</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.pwsDisplayName'><code>pwsDisplayName</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.dwReserved1'><code>dwReserved1</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.dwIntVersion'><code>dwIntVersion</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.hProv'><code>hProv</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.DigestAlgorithm'><code>DigestAlgorithm</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.dwFlags'><code>dwFlags</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.dwEncodingType'><code>dwEncodingType</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.dwReserved2'><code>dwReserved2</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.fdwCAPISettings'><code>fdwCAPISettings</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.fdwSecuritySettings'><code>fdwSecuritySettings</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.dwIndex'><code>dwIndex</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.dwUnionChoice'><code>dwUnionChoice</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.psFlat'><code>psFlat</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.pClientData'><code>pClientData</code></td><td></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../winapi/mssip/struct.SIP_SUBJECTINFO.html' title='winapi::mssip::SIP_SUBJECTINFO'>SIP_SUBJECTINFO</a></code></h3><div class='impl-items'><h4 id='method.psCatMember' class='method'><code>unsafe fn <a href='#method.psCatMember' class='fnname'>psCatMember</a>(&amp;self) -&gt; &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/mssip/struct.MS_ADDINFO_CATALOGMEMBER.html' title='winapi::mssip::MS_ADDINFO_CATALOGMEMBER'>MS_ADDINFO_CATALOGMEMBER</a></a></code></h4>
+<h4 id='method.psCatMember_mut' class='method'><code>unsafe fn <a href='#method.psCatMember_mut' class='fnname'>psCatMember_mut</a>(&amp;mut self) -&gt; &amp;mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/mssip/struct.MS_ADDINFO_CATALOGMEMBER.html' title='winapi::mssip::MS_ADDINFO_CATALOGMEMBER'>MS_ADDINFO_CATALOGMEMBER</a></a></code></h4>
+</div><h3 class='impl'><code>impl <a class='struct' href='../../winapi/mssip/struct.SIP_SUBJECTINFO.html' title='winapi::mssip::SIP_SUBJECTINFO'>SIP_SUBJECTINFO</a></code></h3><div class='impl-items'><h4 id='method.psBlob' class='method'><code>unsafe fn <a href='#method.psBlob' class='fnname'>psBlob</a>(&amp;self) -&gt; &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/mssip/struct.MS_ADDINFO_BLOB.html' title='winapi::mssip::MS_ADDINFO_BLOB'>MS_ADDINFO_BLOB</a></a></code></h4>
+<h4 id='method.psBlob_mut' class='method'><code>unsafe fn <a href='#method.psBlob_mut' class='fnname'>psBlob_mut</a>(&amp;mut self) -&gt; &amp;mut <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='struct' href='../../winapi/mssip/struct.MS_ADDINFO_BLOB.html' title='winapi::mssip::MS_ADDINFO_BLOB'>MS_ADDINFO_BLOB</a></a></code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../../winapi/mssip/struct.SIP_SUBJECTINFO.html' title='winapi::mssip::SIP_SUBJECTINFO'>SIP_SUBJECTINFO</a></code></h3><div class='impl-items'></div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../winapi/mssip/struct.SIP_SUBJECTINFO.html' title='winapi::mssip::SIP_SUBJECTINFO'>SIP_SUBJECTINFO</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../winapi/mssip/struct.SIP_SUBJECTINFO.html' title='winapi::mssip::SIP_SUBJECTINFO'>SIP_SUBJECTINFO</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../winapi/mssip/struct.SIP_SUBJECTINFO.html' title='winapi::mssip::SIP_SUBJECTINFO'>SIP_SUBJECTINFO</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

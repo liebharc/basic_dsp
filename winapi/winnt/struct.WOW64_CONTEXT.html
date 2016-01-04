@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `WOW64_CONTEXT` struct in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, WOW64_CONTEXT">
+
+    <title>winapi::winnt::WOW64_CONTEXT - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a>::<wbr><a href='index.html'>winnt</a></p><script>window.sidebarCurrent = {name: 'WOW64_CONTEXT', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>winapi</a>::<wbr><a href='index.html'>winnt</a>::<wbr><a class='struct' href=''>WOW64_CONTEXT</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-110888' class='srclink' href='../../src/winapi/winnt.rs.html#2332-2360' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct WOW64_CONTEXT {
+    pub ContextFlags: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Dr0: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Dr1: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Dr2: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Dr3: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Dr4: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Dr5: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Dr6: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Dr7: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub FloatSave: <a class='struct' href='../../winapi/winnt/struct.WOW64_FLOATING_SAVE_AREA.html' title='winapi::winnt::WOW64_FLOATING_SAVE_AREA'>WOW64_FLOATING_SAVE_AREA</a>,
+    pub SegGs: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub SegFs: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub SegEs: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub SegDs: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Edi: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Esi: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Ebx: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Edx: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Ecx: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Eax: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Ebp: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Eip: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub SegCs: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub EFlags: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub Esp: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub SegSs: <a class='type' href='../../winapi/minwindef/type.DWORD.html' title='winapi::minwindef::DWORD'>DWORD</a>,
+    pub ExtendedRegisters: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a class='type' href='../../winapi/minwindef/type.BYTE.html' title='winapi::minwindef::BYTE'>BYTE</a>; WOW64_MAXIMUM_SUPPORTED_EXTENSION]</a>,
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.ContextFlags'><code>ContextFlags</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Dr0'><code>Dr0</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Dr1'><code>Dr1</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Dr2'><code>Dr2</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Dr3'><code>Dr3</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Dr4'><code>Dr4</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Dr5'><code>Dr5</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Dr6'><code>Dr6</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Dr7'><code>Dr7</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.FloatSave'><code>FloatSave</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SegGs'><code>SegGs</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SegFs'><code>SegFs</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SegEs'><code>SegEs</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SegDs'><code>SegDs</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Edi'><code>Edi</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Esi'><code>Esi</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Ebx'><code>Ebx</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Edx'><code>Edx</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Ecx'><code>Ecx</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Eax'><code>Eax</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Ebp'><code>Ebp</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Eip'><code>Eip</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SegCs'><code>SegCs</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.EFlags'><code>EFlags</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.Esp'><code>Esp</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.SegSs'><code>SegSs</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ExtendedRegisters'><code>ExtendedRegisters</code></td><td></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../winapi/winnt/struct.WOW64_CONTEXT.html' title='winapi::winnt::WOW64_CONTEXT'>WOW64_CONTEXT</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../winapi/winnt/struct.WOW64_CONTEXT.html' title='winapi::winnt::WOW64_CONTEXT'>WOW64_CONTEXT</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../../winapi/winnt/struct.WOW64_CONTEXT.html' title='winapi::winnt::WOW64_CONTEXT'>WOW64_CONTEXT</a></code></h3><div class='impl-items'></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

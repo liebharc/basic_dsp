@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `NCB` struct in crate `winapi`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, NCB">
+
+    <title>winapi::nb30::NCB - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>winapi</a>::<wbr><a href='index.html'>nb30</a></p><script>window.sidebarCurrent = {name: 'NCB', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>winapi</a>::<wbr><a href='index.html'>nb30</a>::<wbr><a class='struct' href=''>NCB</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-56009' class='srclink' href='../../src/winapi/nb30.rs.html#8-27' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct NCB {
+    pub ncb_command: <a class='type' href='../../winapi/minwindef/type.UCHAR.html' title='winapi::minwindef::UCHAR'>UCHAR</a>,
+    pub ncb_retcode: <a class='type' href='../../winapi/minwindef/type.UCHAR.html' title='winapi::minwindef::UCHAR'>UCHAR</a>,
+    pub ncb_lsn: <a class='type' href='../../winapi/minwindef/type.UCHAR.html' title='winapi::minwindef::UCHAR'>UCHAR</a>,
+    pub ncb_num: <a class='type' href='../../winapi/minwindef/type.UCHAR.html' title='winapi::minwindef::UCHAR'>UCHAR</a>,
+    pub ncb_buffer: <a class='type' href='../../winapi/minwindef/type.PUCHAR.html' title='winapi::minwindef::PUCHAR'>PUCHAR</a>,
+    pub ncb_length: <a class='type' href='../../winapi/minwindef/type.WORD.html' title='winapi::minwindef::WORD'>WORD</a>,
+    pub ncb_callname: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a class='type' href='../../winapi/minwindef/type.UCHAR.html' title='winapi::minwindef::UCHAR'>UCHAR</a>; NCBNAMSZ]</a>,
+    pub ncb_name: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a class='type' href='../../winapi/minwindef/type.UCHAR.html' title='winapi::minwindef::UCHAR'>UCHAR</a>; NCBNAMSZ]</a>,
+    pub ncb_rto: <a class='type' href='../../winapi/minwindef/type.UCHAR.html' title='winapi::minwindef::UCHAR'>UCHAR</a>,
+    pub ncb_sto: <a class='type' href='../../winapi/minwindef/type.UCHAR.html' title='winapi::minwindef::UCHAR'>UCHAR</a>,
+    pub ncb_post: <a class='type' href='../../winapi/nb30/type.PFPOST.html' title='winapi::nb30::PFPOST'>PFPOST</a>,
+    pub ncb_lana_num: <a class='type' href='../../winapi/minwindef/type.UCHAR.html' title='winapi::minwindef::UCHAR'>UCHAR</a>,
+    pub ncb_cmd_cplt: <a class='type' href='../../winapi/minwindef/type.UCHAR.html' title='winapi::minwindef::UCHAR'>UCHAR</a>,
+    pub ncb_reserve: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a class='type' href='../../winapi/minwindef/type.UCHAR.html' title='winapi::minwindef::UCHAR'>UCHAR</a>; 18]</a>,
+    pub ncb_event: <a class='type' href='../../winapi/winnt/type.HANDLE.html' title='winapi::winnt::HANDLE'>HANDLE</a>,
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                                  <td id='structfield.ncb_command'><code>ncb_command</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ncb_retcode'><code>ncb_retcode</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ncb_lsn'><code>ncb_lsn</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ncb_num'><code>ncb_num</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ncb_buffer'><code>ncb_buffer</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ncb_length'><code>ncb_length</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ncb_callname'><code>ncb_callname</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ncb_name'><code>ncb_name</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ncb_rto'><code>ncb_rto</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ncb_sto'><code>ncb_sto</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ncb_post'><code>ncb_post</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ncb_lana_num'><code>ncb_lana_num</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ncb_cmd_cplt'><code>ncb_cmd_cplt</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ncb_reserve'><code>ncb_reserve</code></td><td></td></tr><tr class='stab '>
+                                  <td id='structfield.ncb_event'><code>ncb_event</code></td><td></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../winapi/nb30/struct.NCB.html' title='winapi::nb30::NCB'>NCB</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../winapi/nb30/struct.NCB.html' title='winapi::nb30::NCB'>NCB</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../../winapi/nb30/struct.NCB.html' title='winapi::nb30::NCB'>NCB</a></code></h3><div class='impl-items'></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "winapi";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

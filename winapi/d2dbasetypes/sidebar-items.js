@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["D2D_MATRIX_3X2_F",""],["D2D_MATRIX_4X3_F",""],["D2D_MATRIX_4X4_F",""],["D2D_MATRIX_5X4_F",""],["D2D_POINT_2F",""],["D2D_POINT_2U",""],["D2D_RECT_F",""],["D2D_RECT_U",""],["D2D_SIZE_F",""],["D2D_SIZE_U",""],["D2D_VECTOR_2F",""],["D2D_VECTOR_3F",""],["D2D_VECTOR_4F",""]],"type":[["D2D_COLOR_F",""],["D2D_POINT_2L",""],["D2D_RECT_L",""]]});
