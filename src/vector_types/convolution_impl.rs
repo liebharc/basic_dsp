@@ -216,6 +216,7 @@ mod tests {
     use conv_types::*;
     use RealNumber;
     use std::fmt::Debug; 
+    use num::complex::Complex32;
     
     fn assert_eq_tol<T>(left: &[T], right: &[T], tol: T) 
         where T: RealNumber + Debug {
@@ -240,7 +241,7 @@ mod tests {
    
     #[test]
 	fn convolve_complex_time_and_time32() {
-        let vector = ComplexTimeVector32::from_constant(1.0, 10);
+        let vector = ComplexTimeVector32::from_constant(Complex32::new(1.0, 0.0), 10);
         let rc = RaiseCosineFuncton::new(0.35);
         let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.4, 0.0, 10);
         let complex = real.to_complex();
@@ -250,7 +251,7 @@ mod tests {
     
     #[test]
 	fn convolve_complex_time_and_freq32() {
-        let vector = ComplexTimeVector32::from_constant(1.0, 10);
+        let vector = ComplexTimeVector32::from_constant(Complex32::new(1.0, 0.0), 10);
         let rc = RaiseCosineFuncton::new(0.35);
         let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.4, 0.0, 10);
         let freq = real.to_complex().fft();
@@ -260,7 +261,7 @@ mod tests {
     
     #[test]
 	fn convolve_complex_freq_and_time32() {
-        let vector = ComplexFreqVector32::from_constant(1.0, 10);
+        let vector = ComplexFreqVector32::from_constant(Complex32::new(1.0, 0.0), 10);
         let rc = RaiseCosineFuncton::new(0.35);
         let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.4, 0.0, 10);
         let complex = real.to_complex();
@@ -270,7 +271,7 @@ mod tests {
     
     #[test]
 	fn convolve_complex_freq_and_freq32() {
-        let vector = ComplexFreqVector32::from_constant(1.0, 10);
+        let vector = ComplexFreqVector32::from_constant(Complex32::new(1.0, 0.0), 10);
         let rc = RaiseCosineFuncton::new(0.35);
         let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.4, 0.0, 10);
         let freq = real.to_complex().fft();

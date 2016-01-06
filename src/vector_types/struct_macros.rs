@@ -527,21 +527,27 @@ macro_rules! define_complex_basic_struct_members {
             }
             
             /// Same as `complex_from_constant` but also allows to set multicore options.
-            pub fn from_constant_with_options(constant: T, length: usize, options: MultiCoreSettings) -> Self {
+            pub fn from_constant_with_options(constant: Complex<T>, length: usize, options: MultiCoreSettings) -> Self {
 				$name::from_constant_with_delta_and_options(constant, length, T::one(), options)
 			}
 			
 			/// Same as `complex_from_constant_with_delta` but also allows to set multicore options.
-            pub fn from_constant_with_delta_and_options(constant: T, length: usize, delta: T, options: MultiCoreSettings) -> Self {
+            pub fn from_constant_with_delta_and_options(constant: Complex<T>, length: usize, delta: T, options: MultiCoreSettings) -> Self {
                 let temp_length = 
                     if options.early_temp_allocation {
                         length
                     } else {
                         0
                     };
+                let data = unsafe {
+                    let complex = vec![constant; length];
+                    let mut trans: Vec<T> = mem::transmute(complex);
+                    trans.set_len(2 * length);
+                    trans
+                };
 				$name 
 				{ 
-				  data: vec![constant; length],
+				  data: data,
 				  temp: vec![T::zero(); temp_length],
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
@@ -663,13 +669,13 @@ macro_rules! define_complex_basic_struct_members {
             }
             
             /// Creates a complex `DataVector` with `length` elements all set to the value of `constant`. `delta` is defaulted to `1`.
-			pub fn from_constant(constant: T, length: usize) -> Self
+			pub fn from_constant(constant: Complex<T>, length: usize) -> Self
 			{
 				Self::from_constant_with_options(constant, length, MultiCoreSettings::default())
 			}
 			
 			/// Creates a complex `DataVector` with `length` elements all set to the value of `constant` and sets `delta` to the given value.
-			pub fn from_constant_with_delta(constant: T, length: usize, delta: T) -> Self
+			pub fn from_constant_with_delta(constant: Complex<T>, length: usize, delta: T) -> Self
 			{
                 Self::from_constant_with_delta_and_options(constant, length, delta, MultiCoreSettings::default())
 			}
