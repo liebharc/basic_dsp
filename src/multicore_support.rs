@@ -164,7 +164,7 @@ impl Chunk
     /// and so it will happen that some elements at the end of the array are not part of any chunk. 
 	#[inline]
 	fn partition_mut<T>(array: &mut [T], array_length: usize, step_size: usize, number_of_chunks: usize) -> ChunksMut<T>
-		where T : Float + Copy + Clone + Send
+		where T : Copy + Clone + Send
 	{
 		let chunk_size = Chunk::calc_chunk_size(array_length, step_size, number_of_chunks);
 		array[0 .. array_length].chunks_mut(chunk_size)
@@ -224,6 +224,35 @@ impl Chunk
 		else
 		{
 			function(&mut array[0..array_length], arguments);
+		}
+	}
+    
+    /// Executes the given function on the all elements of the array and also tells the function on which range/chunk
+    /// it operates on.
+	#[inline]
+	pub fn execute_with_range<T,S,F>(
+            complexity: Complexity, 
+            settings: &MultiCoreSettings, 
+            array: &mut [T], array_length: usize, step_size: usize, 
+            arguments: S, ref function: F)
+		where F: Fn(&mut [T], Range<usize>, S) + 'static + Sync,
+			  T : Copy + Clone + Send + Sync,
+			  S: Sync + Copy
+	{
+		let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity, settings);
+		if number_of_chunks > 1
+		{
+			let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
+			let ranges = Chunk::partition_in_ranges(array_length, step_size, chunks.len());
+			let ref mut pool = Chunk::get_static_pool();
+			pool.for_(chunks.zip(ranges), |chunk|
+				{
+					function(chunk.0, chunk.1, arguments);
+				});
+		}
+		else
+		{
+			function(&mut array[0..array_length], Range { start: 0, end: array_length }, arguments);
 		}
 	}
     

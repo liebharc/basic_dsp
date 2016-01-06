@@ -14,6 +14,7 @@ use window_functions::WindowFunction;
 use num::complex::Complex32;
 use std::slice;
 use std::os::raw::c_void;
+use std::mem;
 
 #[no_mangle]
 pub extern fn delete_vector32(vector: Box<DataVector32>) {
@@ -525,13 +526,15 @@ pub extern fn windowed_sifft32(vector: Box<DataVector32>, even_odd: i32, window:
 
 struct ForeignWindowFunction {
     window_function: extern fn(*const c_void, usize, usize) -> f32,
-    window_data: *const c_void
+    // Actual data type is a const* c_void, but Rust doesn't allow that becaues it's usafe so we store
+    // it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.
+    window_data: usize 
 }
 
 impl WindowFunction<f32> for ForeignWindowFunction {
     fn window(&self, idx: usize, points: usize) -> f32 {
         let fun = self.window_function;
-        fun(self.window_data, idx, points)
+        unsafe { fun(mem::transmute(self.window_data), idx, points) }
     }
 }
 
@@ -539,38 +542,48 @@ impl WindowFunction<f32> for ForeignWindowFunction {
 /// function at every call and can be used to store parameters.
 #[no_mangle]
 pub extern fn apply_custom_window32(vector: Box<DataVector32>, window: extern fn(*const c_void, usize, usize) -> f32, window_data: *const c_void) -> VectorResult<DataVector32> {
-    let window = ForeignWindowFunction { window_function: window, window_data: window_data };
-    convert_vec!(vector.apply_window(&window))
+    unsafe {
+        let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data) };
+        convert_vec!(vector.apply_window(&window))
+    }
 }
 
 /// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
 pub extern fn unapply_custom_window32(vector: Box<DataVector32>, window: extern fn(*const c_void, usize, usize) -> f32, window_data: *const c_void) -> VectorResult<DataVector32> {
-    let window = ForeignWindowFunction { window_function: window, window_data: window_data };
-    convert_vec!(vector.unapply_window(&window))
+    unsafe {
+        let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data) };
+        convert_vec!(vector.unapply_window(&window))
+    }
 }
 
 /// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
 pub extern fn windowed_custom_fft32(vector: Box<DataVector32>, window: extern fn(*const c_void, usize, usize) -> f32, window_data: *const c_void) -> VectorResult<DataVector32> {
-    let window = ForeignWindowFunction { window_function: window, window_data: window_data };
-    convert_vec!(vector.windowed_fft(&window))
+    unsafe {
+        let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data) };
+        convert_vec!(vector.windowed_fft(&window))
+    }
 }
 
 /// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
 pub extern fn windowed_custom_ifft32(vector: Box<DataVector32>, window: extern fn(*const c_void, usize, usize) -> f32, window_data: *const c_void) -> VectorResult<DataVector32> {
-    let window = ForeignWindowFunction { window_function: window, window_data: window_data };
-    convert_vec!(vector.windowed_ifft(&window))
+    unsafe {
+        let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data) };
+        convert_vec!(vector.windowed_ifft(&window))
+    }
 }
 
 /// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.
 /// See [`plain_sifft32`](fn.plain_sifft32.html) for a description of the `even_odd` parameter.
 #[no_mangle]
 pub extern fn windowed_custom_sifft32(vector: Box<DataVector32>, even_odd: i32, window: extern fn(*const c_void, usize, usize) -> f32, window_data: *const c_void) -> VectorResult<DataVector32> {
-    let even_odd = translate_to_even_odd(even_odd);
-    let window = ForeignWindowFunction { window_function: window, window_data: window_data };
-    convert_vec!(vector.windowed_sifft(even_odd, &window))
+    unsafe {
+        let even_odd = translate_to_even_odd(even_odd);
+        let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data) };
+        convert_vec!(vector.windowed_sifft(even_odd, &window))
+    }
 }
 
 // pub extern fn complex_data32 isn't implemented to avoid to rely to much on the struct layout of Complex<T>

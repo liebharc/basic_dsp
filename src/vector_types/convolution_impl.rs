@@ -5,16 +5,18 @@ use super::definitions::{
     DataVectorDomain};
 use conv_types::*;
 use RealNumber;
+use num::traits::Zero;
+use std::ops::Mul;
 use super::{
     GenericDataVector,
     RealTimeVector,
-    RealFreqVector,
     ComplexFreqVector,
     ComplexTimeVector};
 use super::time_freq_impl::{
     TimeDomainOperations,
     FrequencyDomainOperations
 };
+use multicore_support::{Chunk, Complexity};
 
 /// Provides a convolution operation for data vectors. 
 /// 
@@ -25,6 +27,9 @@ pub trait Convolution<T, C> : DataVector<T>
     /// The domain in which `function` resides defines in which domain the operation
     /// is performed. For performance reasons it is advised to pass `function` in
     /// frequency domain since this will significantly speed up the calculation in most cases.
+    /// # Assumptions
+    /// In frequency domain the operation assumes that the vector contains a full spectrum centered at 0 Hz. If half a spectrum
+    /// or a fft shifted spectrum is provided the operation will come back with invalid results.
     /// # Failures
     /// VecResult may report the following `ErrorReason` members:
     /// 
@@ -37,34 +42,112 @@ macro_rules! add_conv_impl{
     ($($data_type:ident),*) => {
         $(
             impl<'a> Convolution<$data_type, &'a RealTimeConvFunction<$data_type>> for GenericDataVector<$data_type> {
-                fn convolve(self, function: &RealTimeConvFunction<$data_type>) -> VecResult<Self> {
-                    panic!("TODO: Add convolution with real function for both real and complex vectors")
+                fn convolve(mut self, function: &RealTimeConvFunction<$data_type>) -> VecResult<Self> {
+                    if self.domain() == DataVectorDomain::Time {
+                        assert_freq!(self);
+                    }
+                    {
+                        self.convolve_priv(
+                                |data|data,
+                                |temp|temp,
+                                |x|function.calc(x)
+                            );
+                    }
+                    Ok(self)
                 }
             }
 
             impl<'a> Convolution<$data_type, &'a ComplexTimeConvFunction<$data_type>> for GenericDataVector<$data_type> {
                 fn convolve(self, function: &ComplexTimeConvFunction<$data_type>) -> VecResult<Self> {
                     assert_complex!(self);
-                    let time = 
-                        if self.domain == DataVectorDomain::Time {
-                            Ok(self)
+                    let was_time = self.domain == DataVectorDomain::Time;
+                    let mut time = 
+                        if was_time {
+                            self
                         } else {
-                            self.ifft()
+                            try! { self.ifft() }
                         };
-                    panic!("TODO: Add convolution with complex function for complex vectors")
+                    {
+                        time.convolve_priv(
+                            |data|Self::array_to_complex(data),
+                            |temp|Self::array_to_complex_mut(temp),
+                            |x|function.calc(x)
+                        );
+                    }
+                    
+                    if was_time {
+                        Ok(time)
+                    } else {
+                        time.fft()
+                    }
+                }
+            }
+            
+            impl GenericDataVector<$data_type> {
+                fn convolve_priv<T,C,CMut,F>(
+                    &mut self, 
+                    convert: C,
+                    convert_mut: CMut,
+                    fun: F)
+                        where 
+                            C: Fn(&[$data_type]) -> &[T],
+                            CMut: Fn(&mut [$data_type]) -> &mut [T],
+                            F: Fn($data_type)->T,
+                            T: Zero + Mul<Output=T> + Copy
+                {
+                    let len = self.len();
+                    let delta = self.delta();
+                    let complex = convert(&self.data[0..len]);
+                    let dest = convert_mut(&mut self.temp[0..len]);
+                    let conv_len = 11; // TODO make configurable
+                    let mut i = 0;
+                    for num in dest {
+                        let start = if i > conv_len { i - conv_len } else { 0 };
+                        let end = if i + conv_len < len { i + conv_len } else { len };
+                        let mut sum = T::zero();
+                        let mut j = 0.0;
+                        for c in &complex[start..end] {
+                            sum = (*c) * fun(j * delta);
+                            j += 1.0;
+                        }
+                        (*num) = sum;
+                        i += 1;
+                    }
                 }
             }
 
             impl<'a> Convolution<$data_type, &'a ComplexFrequencyConvFunction<$data_type>> for GenericDataVector<$data_type> {
                 fn convolve(self, function: &ComplexFrequencyConvFunction<$data_type>) -> VecResult<Self> {
                     assert_complex!(self);
-                    let freq = 
-                        if self.domain == DataVectorDomain::Time {
-                            self.fft()
+                    let was_time = self.domain == DataVectorDomain::Time;
+                    let mut freq = 
+                        if was_time {
+                            try!{ self.fft() }
                         } else {
-                            Ok(self)
+                            self
                         };
-                   panic!("TODO: Add multiplication with complex function for complex vectors")
+                    {
+                        let len = freq.len();
+                        let points = freq.points();
+                        let delta = freq.delta();
+                        let complex = Self::array_to_complex_mut(&mut freq.data[0..len]);
+                        Chunk::execute_with_range(
+                            Complexity::Medium, &freq.multicore_settings,
+                            complex, points, 1, function,
+                            move |array, range, function| {
+                                let mut j = -((points + range.start) as $data_type) / 2.0;
+                                for num in array {
+                                    (*num) = (*num) * function.calc(j * delta);
+                                    j += 1.0;
+                                }
+                            });
+                    }
+                    
+                    if was_time {
+                        freq.ifft()
+                    } else {
+                        Ok(freq)
+                    }
                 }
             }
         )*
@@ -128,8 +211,21 @@ mod tests {
         ComplexTimeVector32,
         ComplexFreqVector32,
         RealTimeVector32,
+        FrequencyDomainOperations,
         DataVector};
     use conv_types::*;
+    use RealNumber;
+    use std::fmt::Debug; 
+    
+    fn assert_eq_tol<T>(left: &[T], right: &[T], tol: T) 
+        where T: RealNumber + Debug {
+        assert_eq!(left.len(), right.len());
+        for i in 0..left.len() {
+            if (left[i] - right[i]).abs() > tol {
+                panic!("assertion failed: {:?} != {:?}", left, right);
+            }
+        }
+    }
 
 	#[test]
 	fn convolve_real_and_time32() {
@@ -179,6 +275,10 @@ mod tests {
         let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.4, 0.0, 10);
         let freq = real.to_complex().fft();
         let result = vector.convolve(&freq as &ComplexFrequencyConvFunction<f32>).unwrap();
-        assert_eq!(result.data(), &[0.0; 10])
+        let result = result.ifft().unwrap();
+        let expected = 
+            [-0.63574266, -0.63574266, 0.14328241, -0.2502644, -0.7839512, 
+            -0.14717892, -0.14717895, -0.78395116, -0.2502644, 0.14328243];
+        assert_eq_tol(result.data(), &expected, 1e-4);
     }
 }

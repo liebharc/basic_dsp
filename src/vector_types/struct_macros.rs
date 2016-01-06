@@ -722,10 +722,11 @@ macro_rules! define_complex_basic_struct_members {
             /// Creates a complex `DataVector` from an array of complex numbers.
             
             pub fn from_complex_with_delta_and_options(complex: &[Complex<T>], delta: T, options: MultiCoreSettings) -> Self {
-                let data = unsafe { 
+                use std::slice;
+                let data = unsafe {
                     let len = complex.len();
                     let trans: &[T] = mem::transmute(complex);
-                    &trans[0 .. len * 2]
+                    slice::from_raw_parts(&trans[0] as *const T, len * 2)
                 };
                 Self::from_interleaved_with_delta_and_options(data, delta, options)
             }

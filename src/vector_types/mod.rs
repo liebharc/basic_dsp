@@ -379,7 +379,7 @@ mod tests {
 	#[test]
 	fn add_real_two_32_test()
 	{
-		// Test also that vector calls are possible
+		// Test also that vectors may be passed to from_array
 		let data = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
 		let result = RealTimeVector32::from_array(&data);
 		let result = result.real_offset(2.0).unwrap();

@@ -16,6 +16,7 @@ use RealNumber;
 use std::ptr;
 use std::ops::{Mul, Div};
 use window_functions::WindowFunction;
+use multicore_support::{Chunk, Complexity};
 
 /// Argument for some operations to determine if the result should have an even 
 /// or odd number of points.
@@ -227,19 +228,29 @@ macro_rules! implement_window_function {
                         let len = self.len();
                         let points = self.points();
                         let complex = Self::array_to_complex_mut(&mut self.data[0..len]);
-                        let mut i = 0;
-                        for num in complex {
-                            (*num) = (*num).$operation(window.window(i, points));
-                            i += 1;
-                        }
+                        Chunk::execute_with_range(
+                            Complexity::Medium, &self.multicore_settings,
+                            complex, points, 1, window,
+                            move |array, range, window| {
+                                let mut i = range.start;
+                                for num in array {
+                                    (*num) = (*num).$operation(window.window(i, points));
+                                    i += 1;
+                                }
+                            });
                     } else {
                         let len = self.len();
                         let data = &mut self.data[0..len];
-                        let mut i = 0;
-                        for num in data {
-                            (*num) = (*num).$operation(window.window(i, len));
-                            i += 1;
-                        }
+                        Chunk::execute_with_range(
+                            Complexity::Medium, &self.multicore_settings,
+                            data, len, 1, window,
+                            move |array, range, window| {
+                                let mut i = range.start;
+                                for num in array {
+                                    (*num) = (*num).$operation(window.window(i, len));
+                                    i += 1;
+                                }
+                            });
                     }
                     
                     Ok(self)

@@ -23,21 +23,21 @@ use vector_types::time_freq_impl::{
 };
 
 /// A convolution function in time domain and real number space
-pub trait RealTimeConvFunction<T>
+pub trait RealTimeConvFunction<T> : Sync
     where T: RealNumber {
     /// Calculates the convolution for a real data point
     fn calc(&self, x: T) -> T;
 }
 
 /// A convolution function in time domain and complex number space
-pub trait ComplexTimeConvFunction<T>
+pub trait ComplexTimeConvFunction<T> : Sync
     where T: RealNumber {
     /// Calculates the convolution for a real data point
     fn calc(&self, x: T) -> Complex<T>;
 }
 
 /// A convolution function in frequency domain and complex number space
-pub trait ComplexFrequencyConvFunction<T>
+pub trait ComplexFrequencyConvFunction<T> : Sync
     where T: RealNumber {
     /// Calculates the convolution for a real data point
     fn calc(&self, x: T) -> Complex<T>;
@@ -260,6 +260,8 @@ mod tests {
 	use super::*;
     use super::super::RealNumber;
     use std::fmt::Debug;
+    use num::complex::Complex;
+    use num::traits::Zero;
     
     fn conv_test<T, C>(conv: C, expected: &[T], step: T, tolerance: T) 
         where T: RealNumber + Debug,
@@ -277,21 +279,38 @@ mod tests {
             }
         }
     }
+    
+    fn complex_conv_test<T, C>(conv: C, expected: &[T], step: T, tolerance: T) 
+        where T: RealNumber + Debug,
+              C: ComplexTimeConvFunction<T> {
+        let mut result = vec![Complex::<T>::zero(); expected.len()];
+        let mut j = -(expected.len() as isize / 2);
+        for i in 0..result.len() {
+            result[i] = conv.calc(T::from(j).unwrap() * step);
+            j += 1;
+        }
+        
+        for i in 0..result.len() {
+            if (result[i].norm() - expected[i]).abs() > tolerance {
+                panic!("assertion failed: {:?} != {:?}", result, expected);
+            }
+        }
+    }
 
 	#[test]
-	fn raised_cosine32_test()
+	fn raised_cosine_test()
 	{
-        let window = RaiseCosineFuncton::new(0.35);
+        let rc = RaiseCosineFuncton::new(0.35);
         let expected = 
             [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 
              1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
-        conv_test(window, &expected, 0.2, 1e-4);
+        conv_test(rc, &expected, 0.2, 1e-4);
 	}
     
     #[test]
-    fn lookup_table32_test() {
-        let window = RaiseCosineFuncton::new(0.35);
-        let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&window, 0.2, 0.0, 10);
+    fn lookup_table_test() {
+        let rc = RaiseCosineFuncton::new(0.35);
+        let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.2, 0.0, 10);
         let expected = 
             [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 
              1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
@@ -299,12 +318,23 @@ mod tests {
     }
     
     #[test]
-    fn linear_interpolation_lookup_table32_test() {
-        let window = RaiseCosineFuncton::new(0.35);
-        let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&window, 0.4, 0.0, 10);
+    fn linear_interpolation_lookup_table_test() {
+        let rc = RaiseCosineFuncton::new(0.35);
+        let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.4, 0.0, 10);
         let expected = 
             [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 
              1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
         conv_test(table, &expected, 0.2, 0.1);
+    }
+    
+    #[test]
+    fn to_complex_test() {
+        let rc = RaiseCosineFuncton::new(0.35);
+        let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.4, 0.0, 10);
+        let complex = table.to_complex();
+        let expected = 
+            [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 
+             1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
+        complex_conv_test(complex, &expected, 0.2, 0.1);
     }
 }
