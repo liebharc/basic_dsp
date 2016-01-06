@@ -48,8 +48,7 @@ pub trait ComplexFrequencyConvFunction<T> : Sync
 pub struct RealTimeLinearTableLookup<T>
     where T: RealNumber {
     table: Vec<T>,
-    delta: T,
-    offset: T
+    delta: T
 }
 
 /// Allows to create a lookup table with linear interpolation between table points.
@@ -57,8 +56,7 @@ pub struct RealTimeLinearTableLookup<T>
 pub struct ComplexTimeLinearTableLookup<T>
     where T: RealNumber {
     table: Vec<Complex<T>>,
-    delta: T,
-    offset: T
+    delta: T
 }
 
 /// Allows to create a lookup table with linear interpolation between table points.
@@ -66,8 +64,7 @@ pub struct ComplexTimeLinearTableLookup<T>
 pub struct ComplexFrequencyLinearTableLookup<T>
     where T: RealNumber {
     table: Vec<Complex<T>>,
-    delta: T,
-    offset: T
+    delta: T
 }
 
 macro_rules! add_linear_table_lookup_impl {
@@ -79,7 +76,7 @@ macro_rules! add_linear_table_lookup_impl {
                         let len = self.table.len();
                         let center = len / 2;
                         let center_float = center as $data_type;
-                        let x = x / self.delta - self.offset + center_float;
+                        let x = x / self.delta + center_float;
                         let round_float = x.round();
                         let round = round_float as usize;
                         if round >= len {
@@ -115,15 +112,15 @@ macro_rules! add_linear_table_lookup_impl {
 
                 impl $name<$data_type> {
                     /// Creates a lookup table by putting the pieces together.             
-                    pub fn from_raw_parts(table: &[$result_type], delta: $data_type, offset: $data_type) -> Self {
+                    pub fn from_raw_parts(table: &[$result_type], delta: $data_type) -> Self {
                         let owned_table = Vec::from(table);
-                        $name { table: owned_table, delta: delta, offset: offset }
+                        $name { table: owned_table, delta: delta }
                     }
                     
                     
                     /// Creates a lookup table from another convolution function. The `delta` argument
                     /// can be used to balance performance vs. accuracy.
-                    pub fn from_conv_function(other: &$conv_type<$data_type>, delta: $data_type, offset: $data_type, len: usize) -> Self {
+                    pub fn from_conv_function(other: &$conv_type<$data_type>, delta: $data_type, len: usize) -> Self {
                         let center = (len / 2) as isize;
                         let mut table = vec![$result_type::zero(); len];
                         let mut i = -center;
@@ -131,7 +128,7 @@ macro_rules! add_linear_table_lookup_impl {
                             *n = other.calc((i as $data_type) * delta);
                             i += 1;
                         }
-                        $name { table: table, delta: delta, offset: offset }
+                        $name { table: table, delta: delta }
                     }
                 }
             )*
@@ -156,7 +153,7 @@ macro_rules! add_real_time_linear_table_impl {
                     for n in complex {
                         table.push(*n);
                     }
-                    ComplexTimeLinearTableLookup { table: table, delta: self.delta, offset: self.offset }
+                    ComplexTimeLinearTableLookup { table: table, delta: self.delta }
                 }
             }
         )*
@@ -177,7 +174,7 @@ macro_rules! add_complex_time_linear_table_impl {
                     for n in real {
                         table.push(*n);
                     }
-                    RealTimeLinearTableLookup { table: table, delta: self.delta, offset: self.offset }
+                    RealTimeLinearTableLookup { table: table, delta: self.delta }
                 }
                 
                 /// Convert the lookup table into frequency domain
@@ -189,7 +186,7 @@ macro_rules! add_complex_time_linear_table_impl {
                     for n in freq {
                         table.push(*n);
                     }
-                    ComplexFrequencyLinearTableLookup { table: table, delta: self.delta, offset: self.offset }
+                    ComplexFrequencyLinearTableLookup { table: table, delta: self.delta }
                 }
             }
         )*
@@ -211,7 +208,7 @@ macro_rules! add_complex_frequency_linear_table_impl {
                     for n in time {
                         table.push(*n);
                     }
-                    ComplexTimeLinearTableLookup { table: table, delta: self.delta, offset: self.offset }
+                    ComplexTimeLinearTableLookup { table: table, delta: self.delta }
                 }
             }
         )*
@@ -310,7 +307,7 @@ mod tests {
     #[test]
     fn lookup_table_test() {
         let rc = RaiseCosineFuncton::new(0.35);
-        let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.2, 0.0, 10);
+        let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.2, 10);
         let expected = 
             [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 
              1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
@@ -320,7 +317,7 @@ mod tests {
     #[test]
     fn linear_interpolation_lookup_table_test() {
         let rc = RaiseCosineFuncton::new(0.35);
-        let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.4, 0.0, 10);
+        let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.4, 10);
         let expected = 
             [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 
              1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
@@ -330,7 +327,7 @@ mod tests {
     #[test]
     fn to_complex_test() {
         let rc = RaiseCosineFuncton::new(0.35);
-        let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.4, 0.0, 10);
+        let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.4, 10);
         let complex = table.to_complex();
         let expected = 
             [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 

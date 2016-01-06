@@ -243,7 +243,7 @@ mod tests {
 	fn convolve_complex_time_and_time32() {
         let vector = ComplexTimeVector32::from_constant(Complex32::new(1.0, 0.0), 10);
         let rc = RaiseCosineFuncton::new(0.35);
-        let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.4, 0.0, 10);
+        let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.4, 10);
         let complex = real.to_complex();
         let result = vector.convolve(&complex as &ComplexTimeConvFunction<f32>).unwrap();
         assert_eq!(result.data(), &[0.0; 10])
@@ -253,7 +253,7 @@ mod tests {
 	fn convolve_complex_time_and_freq32() {
         let vector = ComplexTimeVector32::from_constant(Complex32::new(1.0, 0.0), 10);
         let rc = RaiseCosineFuncton::new(0.35);
-        let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.4, 0.0, 10);
+        let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.4, 10);
         let freq = real.to_complex().fft();
         let result = vector.convolve(&freq as &ComplexFrequencyConvFunction<f32>).unwrap();
         assert_eq!(result.data(), &[0.0; 10])
@@ -263,7 +263,7 @@ mod tests {
 	fn convolve_complex_freq_and_time32() {
         let vector = ComplexFreqVector32::from_constant(Complex32::new(1.0, 0.0), 10);
         let rc = RaiseCosineFuncton::new(0.35);
-        let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.4, 0.0, 10);
+        let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.4, 10);
         let complex = real.to_complex();
         let result = vector.convolve(&complex as &ComplexTimeConvFunction<f32>).unwrap();
         assert_eq!(result.data(), &[0.0; 10])
@@ -273,7 +273,7 @@ mod tests {
 	fn convolve_complex_freq_and_freq32() {
         let vector = ComplexFreqVector32::from_constant(Complex32::new(1.0, 0.0), 10);
         let rc = RaiseCosineFuncton::new(0.35);
-        let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.4, 0.0, 10);
+        let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.4, 10);
         let freq = real.to_complex().fft();
         let result = vector.convolve(&freq as &ComplexFrequencyConvFunction<f32>).unwrap();
         let result = result.ifft().unwrap();
