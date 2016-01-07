@@ -100,6 +100,8 @@ pub use vector_types::definitions::{
 pub use vector_types::time_freq_impl::{
         TimeDomainOperations,
 		FrequencyDomainOperations,
+        SymmetricFrequencyDomainOperations,
+        SymmetricTimeDomainOperations,
         EvenOdd
     };
 pub use vector_types::convolution_impl::Convolution;
@@ -363,6 +365,15 @@ mod tests {
 		assert_eq!(vector.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
 		assert_eq!(vector.delta(), 1.0);
 		assert_eq!(vector.domain(), DataVectorDomain::Time);
+	}
+    
+    #[test]
+	fn construct_complex_time_vector_32_test()
+	{
+		let array = [Complex32::new(1.0, 2.0), Complex32::new(3.0, 4.0), Complex32::new(5.0, 6.0), Complex32::new(7.0, 8.0)];
+		let vector = ComplexTimeVector32::from_complex(&array);
+		assert_eq!(vector.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+		assert_eq!(vector.complex_data(), &array);
 	}
 	
 	#[test]

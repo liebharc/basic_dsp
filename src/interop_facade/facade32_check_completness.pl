@@ -53,7 +53,7 @@ sub parse_facade {
 }
 
 my @definitions = parse_definition("../vector_types/definitions.rs", "GenericVectorOperations", "RealVectorOperations", "ComplexVectorOperations");
-push @definitions, parse_definition("../vector_types/time_freq_impl.rs", "TimeDomainOperations", "FrequencyDomainOperations");
+push @definitions, parse_definition("../vector_types/time_freq_impl.rs", "TimeDomainOperations", "FrequencyDomainOperations", "SymmetricFrequencyDomainOperations", "SymmetricTimeDomainOperations");
 push @definitions, parse_definition("../vector_types/correlation_impl.rs", "CrossCorrelation");
 push @definitions, parse_definition("../vector_types/convolution_impl.rs", "Convolution");
 my @impl = parse_facade();

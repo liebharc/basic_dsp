@@ -8,6 +8,7 @@ use num::traits::Zero;
 use num::complex::{Complex, Complex32,Complex64};
 use vector_types::{
     RealTimeVector,
+    RealFreqVector,
     ComplexTimeVector,
     ComplexFreqVector
 };
@@ -19,53 +20,97 @@ use vector_types::definitions::{
 
 use vector_types::time_freq_impl::{
     TimeDomainOperations,
-    FrequencyDomainOperations
+    SymmetricTimeDomainOperations,
+    FrequencyDomainOperations,
+    SymmetricFrequencyDomainOperations,
+    EvenOdd
 };
 
-/// A convolution function in time domain and real number space
-pub trait RealTimeConvFunction<T> : Sync
-    where T: RealNumber {
-    /// Calculates the convolution for a real data point
-    fn calc(&self, x: T) -> T;
+macro_rules! define_real_conv_trait {
+    ($($name: ident, $domain_comment:ident);*) => {  
+        $(
+            /// A convolution function in $domain_comment domain and real number space
+            pub trait $name<T> : Sync
+                where T: RealNumber {
+                /// Calculates the convolution for a data point
+                fn calc(&self, x: T) -> T;
+            }
+        )*
+    }
 }
+define_real_conv_trait!(RealTimeConvFunction, time; RealFrequencyConvFunction, frequency);
 
-/// A convolution function in time domain and complex number space
-pub trait ComplexTimeConvFunction<T> : Sync
-    where T: RealNumber {
-    /// Calculates the convolution for a real data point
-    fn calc(&self, x: T) -> Complex<T>;
+macro_rules! define_complex_conv_trait {
+    ($($name: ident, $domain_comment:ident);*) => {  
+        $(
+            /// A convolution function in $domain_comment domain and complex number space
+            pub trait $name<T> : Sync
+                where T: RealNumber {
+                /// Calculates the convolution for a data point
+                fn calc(&self, x: T) -> Complex<T>;
+            }
+        )*
+    }
 }
+define_complex_conv_trait!(ComplexTimeConvFunction, time; ComplexFrequencyConvFunction, frequency);
 
-/// A convolution function in frequency domain and complex number space
-pub trait ComplexFrequencyConvFunction<T> : Sync
-    where T: RealNumber {
-    /// Calculates the convolution for a real data point
-    fn calc(&self, x: T) -> Complex<T>;
-}
+macro_rules! define_real_lookup_table {
+    ($($name: ident);*) => {
+        $(
+            /// Allows to create a lookup table with linear interpolation between table points.
+            /// This usually speeds up a convolution and sacrifies accuracy.
+            pub struct $name<T>
+                where T: RealNumber {
+                table: Vec<T>,
+                delta: T
+            }
+            
+            impl<T> $name<T>
+                where T: RealNumber {
+                
+                /// Allows to inspect the generated lookup table    
+                pub fn table(&self) -> &[T] {
+                    &self.table
+                }
+                
+                /// Gets the delta value which determines the resolution
+                pub fn delta(&self) -> T {
+                    self.delta
+                }
+            }
+        )*
+    }
+}  
+define_real_lookup_table!(RealTimeLinearTableLookup; RealFrequencyLinearTableLookup);
 
-/// Allows to create a lookup table with linear interpolation between table points.
-/// This usually speeds up a convolution and sacrifies accuracy.
-pub struct RealTimeLinearTableLookup<T>
-    where T: RealNumber {
-    table: Vec<T>,
-    delta: T
-}
-
-/// Allows to create a lookup table with linear interpolation between table points.
-/// This usually speeds up a convolution and sacrifies accuracy.
-pub struct ComplexTimeLinearTableLookup<T>
-    where T: RealNumber {
-    table: Vec<Complex<T>>,
-    delta: T
-}
-
-/// Allows to create a lookup table with linear interpolation between table points.
-/// This usually speeds up a convolution and sacrifies accuracy.
-pub struct ComplexFrequencyLinearTableLookup<T>
-    where T: RealNumber {
-    table: Vec<Complex<T>>,
-    delta: T
-}
+macro_rules! define_complex_lookup_table {
+    ($($name: ident);*) => {
+        $(
+            /// Allows to create a lookup table with linear interpolation between table points.
+            /// This usually speeds up a convolution and sacrifies accuracy.
+            pub struct $name<T>
+                where T: RealNumber {
+                table: Vec<Complex<T>>,
+                delta: T
+            }
+            
+            impl<T> $name<T>
+                where T: RealNumber {
+                    
+                /// Allows to inspect the generated lookup table
+                pub fn table(&self) -> &[Complex<T>] {
+                    &self.table
+                }
+                
+                /// Gets the delta value which determines the resolution
+                pub fn delta(&self) -> T {
+                    self.delta
+                }
+            }
+        )*
+    }
+}  
+define_complex_lookup_table!(ComplexTimeLinearTableLookup; ComplexFrequencyLinearTableLookup);
 
 macro_rules! add_linear_table_lookup_impl {
     ($($name: ident: $conv_type: ident, $($data_type: ident, $result_type:ident),*);*) => {
@@ -137,56 +182,75 @@ macro_rules! add_linear_table_lookup_impl {
 }
 add_linear_table_lookup_impl!(
     RealTimeLinearTableLookup: RealTimeConvFunction, f32, f32, f64, f64;
+    RealFrequencyLinearTableLookup: RealFrequencyConvFunction, f32, f32, f64, f64;
     ComplexTimeLinearTableLookup: ComplexTimeConvFunction, f32, Complex32, f64, Complex64;
     ComplexFrequencyLinearTableLookup: ComplexFrequencyConvFunction, f32, Complex32, f64, Complex64);
     
-macro_rules! add_real_time_linear_table_impl {  
-    ($($data_type: ident),*) => {  
+macro_rules! add_real_linear_table_impl {  
+    ($($name: ident, $complex: ident, $($data_type: ident),*);*) => {  
         $(
-            impl RealTimeLinearTableLookup<$data_type> {
-                /// Convert the lookup table into complex number space
-                pub fn to_complex(&self) -> ComplexTimeLinearTableLookup<$data_type> {
-                    let vector = RealTimeVector::from_array(&self.table);
-                    let complex = vector.to_complex().expect("to_complex shouldn't fail");
-                    let complex = complex.complex_data();
-                    let mut table = Vec::with_capacity(complex.len());
-                    for n in complex {
-                        table.push(*n);
+            $(
+                impl $name<$data_type> {
+                    /// Convert the lookup table into complex number space
+                    pub fn to_complex(&self) -> $complex<$data_type> {
+                        let vector = RealTimeVector::from_array(&self.table);
+                        let complex = vector.to_complex().expect("to_complex shouldn't fail");
+                        let complex = complex.complex_data();
+                        let mut table = Vec::with_capacity(complex.len());
+                        for n in complex {
+                            table.push(*n);
+                        }
+                        $complex { table: table, delta: self.delta }
                     }
-                    ComplexTimeLinearTableLookup { table: table, delta: self.delta }
                 }
-            }
+            )*
         )*
     }
 }
-add_real_time_linear_table_impl!(f32, f64);
+add_real_linear_table_impl!(
+    RealTimeLinearTableLookup, ComplexTimeLinearTableLookup, f32, f64;
+    RealFrequencyLinearTableLookup, ComplexFrequencyLinearTableLookup, f32, f64);
+    
+macro_rules! add_complex_linear_table_impl {  
+    ($($name: ident, $real: ident, $($data_type: ident),*);*) => {  
+        $(
+            $(
+                impl $name<$data_type> {
+                    /// Convert the lookup table into real number space
+                    pub fn to_real(self) -> $real<$data_type> {
+                        let vector = ComplexTimeVector::from_complex(&self.table);
+                        let real = vector.to_real().expect("to_complex shouldn't fail");
+                        let real = real.data();
+                        let mut table = Vec::with_capacity(real.len());
+                        for n in real {
+                            table.push(*n);
+                        }
+                        $real { table: table, delta: self.delta }
+                    }
+                }
+            )*
+        )*
+    }
+}
+add_complex_linear_table_impl!(
+    ComplexTimeLinearTableLookup, RealTimeLinearTableLookup, f32, f64;
+    ComplexFrequencyLinearTableLookup, RealFrequencyLinearTableLookup, f32, f64);
 
 macro_rules! add_complex_time_linear_table_impl {  
     ($($data_type: ident),*) => {  
         $(
             impl ComplexTimeLinearTableLookup<$data_type> {
-                /// Convert the lookup table into real number space
-                pub fn to_real(self) -> RealTimeLinearTableLookup<$data_type> {
-                    let vector = ComplexTimeVector::from_complex(&self.table);
-                    let real = vector.to_real().expect("to_complex shouldn't fail");
-                    let real = real.data();
-                    let mut table = Vec::with_capacity(real.len());
-                    for n in real {
-                        table.push(*n);
-                    }
-                    RealTimeLinearTableLookup { table: table, delta: self.delta }
-                }
-                
                 /// Convert the lookup table into frequency domain
                 pub fn fft(self) -> ComplexFrequencyLinearTableLookup<$data_type> {
-                    let vector = ComplexTimeVector::from_complex(&self.table);
+                    let vector = ComplexTimeVector::from_complex_with_delta(&self.table, self.delta);
                     let freq = vector.fft().expect("vector fft shouldn't fail");
+                    let delta = freq.delta();
                     let freq = freq.complex_data();
                     let mut table = Vec::with_capacity(freq.len());
                     for n in freq {
                         table.push(*n);
                     }
-                    ComplexFrequencyLinearTableLookup { table: table, delta: self.delta }
+                    ComplexFrequencyLinearTableLookup { table: table, delta: delta }
                 }
             }
         )*
@@ -194,27 +258,73 @@ macro_rules! add_complex_time_linear_table_impl {
 }
 add_complex_time_linear_table_impl!(f32, f64);
 
+macro_rules! add_real_time_linear_table_impl {  
+    ($($data_type: ident),*) => {  
+        $(
+            impl RealTimeLinearTableLookup<$data_type> {
+                /// Convert the lookup table into frequency domain
+                pub fn fft(self) -> RealFrequencyLinearTableLookup<$data_type> {
+                    let vector = RealTimeVector::from_array_with_delta(&self.table, self.delta);
+                    let freq = vector.sfft().expect("vector fft shouldn't fail");
+                    let freq = freq.abs().expect("vector abs shouldn't fail");
+                    let delta = freq.delta();
+                    let freq = freq.data();
+                    let mut table = Vec::with_capacity(freq.len());
+                    for n in freq {
+                        table.push(*n);
+                    }
+                    RealFrequencyLinearTableLookup { table: table, delta: delta }
+                }
+            }
+        )*
+    }
+}
+add_real_time_linear_table_impl!(f32, f64);
+
+
 macro_rules! add_complex_frequency_linear_table_impl {  
     ($($data_type: ident),*) => {  
         $(
-            impl ComplexFrequencyLinearTableLookup<$data_type> {
-                    
+            impl ComplexFrequencyLinearTableLookup<$data_type> { 
                 /// Convert the lookup table into time domain
                 pub fn ifft(self) -> ComplexTimeLinearTableLookup<$data_type> {
-                    let vector = ComplexFreqVector::from_complex(&self.table);
+                    let vector = ComplexFreqVector::from_complex_with_delta(&self.table, self.delta);
                     let time = vector.ifft().expect("vector ifft shouldn't fail");
+                    let delta = time.delta();
                     let time = time.complex_data();
                     let mut table = Vec::with_capacity(time.len());
                     for n in time {
                         table.push(*n);
                     }
-                    ComplexTimeLinearTableLookup { table: table, delta: self.delta }
+                    ComplexTimeLinearTableLookup { table: table, delta: delta }
                 }
             }
         )*
     }
 }
 add_complex_frequency_linear_table_impl!(f32, f64);
+
+macro_rules! add_real_frequency_linear_table_impl {  
+    ($($data_type: ident),*) => {  
+        $(
+            impl RealFrequencyLinearTableLookup<$data_type> {  
+                /// Convert the lookup table into time domain
+                pub fn ifft(self) -> RealTimeLinearTableLookup<$data_type> {
+                    let vector = RealFreqVector::from_array_with_delta(&self.table, self.delta);
+                    let time = vector.sifft(EvenOdd::Even).expect("vector ifft shouldn't fail");
+                    let delta = time.delta();
+                    let time = time.data();
+                    let mut table = Vec::with_capacity(time.len());
+                    for n in time {
+                        table.push(*n);
+                    }
+                    RealTimeLinearTableLookup { table: table, delta: delta }
+                }
+            }
+        )*
+    }
+}
+add_real_frequency_linear_table_impl!(f32, f64);
 
 /// Raised cosine function according to https://en.wikipedia.org/wiki/Raised-cosine_filter
 pub struct  RaiseCosineFuncton<T>
@@ -241,6 +351,27 @@ impl<T> RealTimeConvFunction<T> for RaiseCosineFuncton<T>
         let pi_x = pi * x;
         let arg = two * self.rolloff * x;
         return pi_x.sin() * (pi_x * self.rolloff).cos() / pi_x / (one - (arg * arg))
+    }
+}
+
+impl<T> RealFrequencyConvFunction<T> for RaiseCosineFuncton<T> 
+    where T: RealNumber {
+    fn calc(&self, x: T) -> T {
+        // assume x_delta = 1.0
+        let one = T::one();
+        let two = T::from(2.0).unwrap();
+        let pi = two * one.asin();
+        if x.abs() <= (one - self.rolloff) / two {
+            return one;
+        }
+        
+        if ((one - self.rolloff) / two < x.abs()) &&
+           (x.abs() <= ((one + self.rolloff) / two))
+        {
+            return one / two * (one + (pi / self.rolloff * (x.abs() - (one - self.rolloff) / two)).cos());
+        }
+        
+        return T::zero();
     }
 }
 
@@ -293,6 +424,23 @@ mod tests {
             }
         }
     }
+    
+    fn real_freq_conv_test<T, C>(conv: C, expected: &[T], step: T, tolerance: T) 
+        where T: RealNumber + Debug,
+              C: RealFrequencyConvFunction<T> {
+        let mut result = vec![T::zero(); expected.len()];
+        let mut j = -(expected.len() as isize / 2);
+        for i in 0..result.len() {
+            result[i] = conv.calc(T::from(j).unwrap() * step);
+            j += 1;
+        }
+        
+        for i in 0..result.len() {
+            if (result[i] - expected[i]).abs() > tolerance {
+                panic!("assertion failed: {:?} != {:?}", result, expected);
+            }
+        }
+    }
 
 	#[test]
 	fn raised_cosine_test()
@@ -333,5 +481,25 @@ mod tests {
             [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 
              1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
         complex_conv_test(complex, &expected, 0.2, 0.1);
+    }
+    
+    #[test]
+    fn fft_test() {
+        let rc = RaiseCosineFuncton::new(0.5);
+        let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.2, 10);
+        let freq = table.fft();
+        assert_eq!(freq.delta(), 2.0);
+        let expected = 
+            [0.07900352319614079, 0.08749370954332725, 0.12166581135534402, 0.23233061579797468, 2.3388328084131933, 
+             5.639648393642837, 2.3388327935696127, 0.23233061791545664, 0.12166581347282598, 0.08749369469974688];
+        real_freq_conv_test(freq, &expected, 2.0, 0.1);
+    }
+    
+    #[test]
+    fn freq_test() {
+        let rc = RaiseCosineFuncton::new(0.5);
+        let expected = 
+            [0.0, 0.0, 0.20610737385376332, 0.7938926261462365, 1.0, 1.0, 1.0, 0.7938926261462365, 0.20610737385376332, 0.0];
+        real_freq_conv_test(rc, &expected, 0.2, 0.1);
     }
 }

@@ -9,6 +9,7 @@ use vector_types:: {
 		ComplexVectorOperations,
 		TimeDomainOperations,
 		FrequencyDomainOperations,
+        SymmetricFrequencyDomainOperations,
 		DataVector64, 
         Statistics};
 use window_functions::WindowFunction;

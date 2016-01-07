@@ -8,6 +8,7 @@ use vector_types:: {
 		ComplexVectorOperations,
 		TimeDomainOperations,
 		FrequencyDomainOperations,
+        SymmetricFrequencyDomainOperations,
 		DataVector32, 
         Statistics};
 use window_functions::WindowFunction;

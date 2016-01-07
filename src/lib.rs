@@ -45,6 +45,8 @@ pub use vector_types::
 		ComplexVectorOperations,
 		TimeDomainOperations,
 		FrequencyDomainOperations,
+        SymmetricFrequencyDomainOperations,
+        SymmetricTimeDomainOperations,
         GenericDataVector,
         ComplexFreqVector,
         ComplexTimeVector,
