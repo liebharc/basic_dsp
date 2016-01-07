@@ -256,7 +256,6 @@ add_conv_forw!(f32, f64);
 mod tests {
 	use super::*;
     use super::super::{
-        ComplexTimeVector32,
         ComplexFreqVector32,
         RealTimeVector32,
         DataVector};
