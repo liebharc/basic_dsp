@@ -7,6 +7,7 @@ use conv_types::*;
 use RealNumber;
 use num::traits::Zero;
 use std::ops::Mul;
+use std::fmt::Display;
 use super::{
     GenericDataVector,
     RealTimeVector,
@@ -42,18 +43,12 @@ macro_rules! add_conv_impl{
     ($($data_type:ident),*) => {
         $(
             impl<'a> Convolution<$data_type, &'a RealTimeConvFunction<$data_type>> for GenericDataVector<$data_type> {
-                fn convolve(mut self, function: &RealTimeConvFunction<$data_type>) -> VecResult<Self> {
-                    if self.domain() == DataVectorDomain::Time {
-                        assert_freq!(self);
-                    }
-                    {
-                        self.convolve_priv(
-                                |data|data,
-                                |temp|temp,
-                                |x|function.calc(x)
-                            );
-                    }
-                    Ok(self)
+                fn convolve(self, function: &RealTimeConvFunction<$data_type>) -> VecResult<Self> {
+                    Ok(self.convolve_priv(
+                            |data|data,
+                            |temp|temp,
+                            |x|function.calc(x)
+                        ))
                 }
             }
 
@@ -61,63 +56,104 @@ macro_rules! add_conv_impl{
                 fn convolve(self, function: &ComplexTimeConvFunction<$data_type>) -> VecResult<Self> {
                     assert_complex!(self);
                     let was_time = self.domain == DataVectorDomain::Time;
-                    let mut time = 
+                    let time = 
                         if was_time {
                             self
                         } else {
                             try! { self.ifft() }
                         };
-                    {
-                        time.convolve_priv(
+                    
+                    
+                    let result = time.convolve_priv(
                             |data|Self::array_to_complex(data),
                             |temp|Self::array_to_complex_mut(temp),
                             |x|function.calc(x)
                         );
-                    }
                     
                     if was_time {
-                        Ok(time)
+                        Ok(result)
                     } else {
-                        time.fft()
+                        result.fft()
                     }
                 }
             }
             
             impl GenericDataVector<$data_type> {
                 fn convolve_priv<T,C,CMut,F>(
-                    &mut self, 
+                    mut self, 
                     convert: C,
                     convert_mut: CMut,
-                    fun: F)
+                    fun: F) -> Self
                         where 
                             C: Fn(&[$data_type]) -> &[T],
                             CMut: Fn(&mut [$data_type]) -> &mut [T],
                             F: Fn($data_type)->T,
-                            T: Zero + Mul<Output=T> + Copy
+                            T: Zero + Mul<Output=T> + Copy + Display
                 {
-                    let len = self.len();
-                    let delta = self.delta();
-                    let complex = convert(&self.data[0..len]);
-                    let dest = convert_mut(&mut self.temp[0..len]);
-                    let conv_len = 11; // TODO make configurable
-                    let mut i = 0;
-                    for num in dest {
-                        let start = if i > conv_len { i - conv_len } else { 0 };
-                        let end = if i + conv_len < len { i + conv_len } else { len };
-                        let mut sum = T::zero();
-                        let mut j = 0.0;
-                        for c in &complex[start..end] {
-                            sum = (*c) * fun(j * delta);
-                            j += 1.0;
+                    {
+                        let len = self.len();
+                        let delta = self.delta();
+                        let complex = convert(&self.data[0..len]);
+                        let dest = convert_mut(&mut self.temp[0..len]);
+                        let conv_len = 11; // TODO make configurable
+                        let mut i = 0;
+                        for num in dest {
+                            let start = if i > conv_len { i - conv_len } else { 0 };
+                            let end = if i + conv_len < len { i + conv_len } else { len };
+                            let mut sum = T::zero();
+                            let center = i as $data_type;
+                            let mut j = start as $data_type - center;
+                            for c in &complex[start..end] {
+                                let temp =  (*c) * fun(j * delta);
+                                print!("i={}, j={} => {}\n", i, j, temp);
+                                sum = sum + (*c) * fun(j * delta);
+                                j += 1.0;
+                            }
+                            (*num) = sum;
+                            i += 1;
                         }
-                        (*num) = sum;
-                        i += 1;
                     }
+                    self.swap_data_temp()
                 }
             }
 
             impl<'a> Convolution<$data_type, &'a ComplexFrequencyConvFunction<$data_type>> for GenericDataVector<$data_type> {
                 fn convolve(self, function: &ComplexFrequencyConvFunction<$data_type>) -> VecResult<Self> {
+                    assert_complex!(self);
+                    let was_time = self.domain == DataVectorDomain::Time;
+                    let mut freq = 
+                        if was_time {
+                            try!{ self.fft() }
+                        } else {
+                            self
+                        };
+                    {
+                        let len = freq.len();
+                        let points = freq.points();
+                        let complex = Self::array_to_complex_mut(&mut freq.data[0..len]);
+                        Chunk::execute_with_range(
+                            Complexity::Medium, &freq.multicore_settings,
+                            complex, points, 1, function,
+                            move |array, range, function| {
+                                let max = points as $data_type / 2.0; 
+                                let mut j = -((points + range.start) as $data_type) / 2.0;
+                                for num in array {
+                                    (*num) = (*num) * function.calc(j / max);
+                                    j += 1.0;
+                                }
+                            });
+                    }
+                    
+                    if was_time {
+                        freq.ifft()
+                    } else {
+                        Ok(freq)
+                    }
+                }
+            }
+            
+            impl<'a> Convolution<$data_type, &'a RealFrequencyConvFunction<$data_type>> for GenericDataVector<$data_type> {
+                fn convolve(self, function: &RealFrequencyConvFunction<$data_type>) -> VecResult<Self> {
                     assert_complex!(self);
                     let was_time = self.domain == DataVectorDomain::Time;
                     let mut freq = 
@@ -199,11 +235,23 @@ macro_rules! add_conv_forw{
                     Self::from_genres(self.to_gen().convolve(function))
                 }
             }
+            
+            impl<'a> Convolution<$data_type, &'a RealFrequencyConvFunction<$data_type>> for ComplexTimeVector<$data_type> {
+                fn convolve(self, function: &RealFrequencyConvFunction<$data_type>) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().convolve(function))
+                }
+            }
+            
+            impl<'a> Convolution<$data_type, &'a RealFrequencyConvFunction<$data_type>> for ComplexFreqVector<$data_type> {
+                fn convolve(self, function: &RealFrequencyConvFunction<$data_type>) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().convolve(function))
+                }
+            }
         )*
     }
 }
 add_conv_forw!(f32, f64);
-/*
+
 #[cfg(test)]
 mod tests {
 	use super::*;
@@ -226,7 +274,7 @@ mod tests {
             }
         }
     }
-    
+    /*
 	#[test]
 	fn convolve_real_and_time32() {
         let result = {
@@ -266,18 +314,26 @@ mod tests {
         let complex = real.to_complex();
         let result = vector.convolve(&complex as &ComplexTimeConvFunction<f32>).unwrap();
         assert_eq!(result.data(), &[0.0; 10])
+    }*/
+    
+    #[test]
+	fn convolve_real_freq_and_freq32() {
+        let vector = ComplexFreqVector32::from_constant(Complex32::new(1.0, 1.0), 10);
+        let rc: RaisedCosineFuncton<f32> = RaisedCosineFuncton::new(1.0);
+        let result = vector.convolve(&rc as &RealFrequencyConvFunction<f32>).unwrap();
+        let expected = 
+            [0.0, 0.0, 0.3454914, 0.3454914, 0.9045085, 0.9045085, 0.9045085, 0.9045085, 0.3454914, 0.3454914];
+        assert_eq_tol(result.data(), &expected, 1e-4);
     }
     
     #[test]
-	fn convolve_complex_freq_and_freq32() {
-        let vector = ComplexFreqVector32::from_interleaved_with_delta(&[1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0], 0.2);
-        let rc = RaiseCosineFuncton::new(0.35);
-        let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.2, 10);
-        let freq = real.to_complex().fft();
-        let result = vector.convolve(&freq as &ComplexFrequencyConvFunction<f32>).unwrap();
+	fn convolve_real_time_and_time32() {
+        let vector = RealTimeVector32::from_array_with_delta(&[0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0], 0.2);
+        let rc: RaisedCosineFuncton<f32> = RaisedCosineFuncton::new(0.35);
+        let result = vector.convolve(&rc as &RealTimeConvFunction<f32>).unwrap();
         let expected = 
-            [-0.63574266, -0.63574266, 0.14328241, -0.2502644, -0.7839512, 
-            -0.14717892, -0.14717895, -0.78395116, -0.2502644, 0.14328243];
+            [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 
+             1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
         assert_eq_tol(result.data(), &expected, 1e-4);
     }
-}*/
+}
