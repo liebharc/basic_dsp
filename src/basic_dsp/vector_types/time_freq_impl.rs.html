@@ -562,6 +562,131 @@
 <span id="519">519</span>
 <span id="520">520</span>
 <span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>definitions</span>::{
 	<span class='ident'>DataVector</span>,
@@ -574,6 +699,7 @@
 <span class='kw'>use</span> <span class='ident'>super</span>::{
     <span class='ident'>GenericDataVector</span>,
     <span class='ident'>RealTimeVector</span>,
+    <span class='ident'>RealFreqVector</span>,
     <span class='ident'>ComplexFreqVector</span>,
     <span class='ident'>ComplexTimeVector</span>};
 <span class='kw'>use</span> <span class='ident'>rustfft</span>::<span class='ident'>FFT</span>;
@@ -581,6 +707,7 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ptr</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::{<span class='ident'>Mul</span>, <span class='ident'>Div</span>};
 <span class='kw'>use</span> <span class='ident'>window_functions</span>::<span class='ident'>WindowFunction</span>;
+<span class='kw'>use</span> <span class='ident'>multicore_support</span>::{<span class='ident'>Chunk</span>, <span class='ident'>Complexity</span>};
 
 <span class='doccomment'>/// Argument for some operations to determine if the result should have an even </span>
 <span class='doccomment'>/// or odd number of points.</span>
@@ -595,9 +722,11 @@
     <span class='ident'>Odd</span>
 }
 
-<span class='doccomment'>/// Defines all operations which are valid on `DataVectors` containing real data.</span>
+<span class='doccomment'>/// Defines all operations which are valid on `DataVectors` containing time domain data.</span>
 <span class='doccomment'>/// # Failures</span>
 <span class='doccomment'>/// All operations in this trait fail with `VectorMustBeInTimeDomain` if the vector isn&#39;t in time domain.</span>
+<span class='doccomment'>/// # Unstable</span>
+<span class='doccomment'>/// A lot of details about FFTs and IFFTs aren&#39;t working out yet. Changes and updates are expected.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>TimeDomainOperations</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> : <span class='ident'>DataVector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> 
     <span class='kw'>where</span> <span class='ident'>T</span> : <span class='ident'>RealNumber</span> {
 	<span class='kw'>type</span> <span class='ident'>FreqPartner</span>;
@@ -654,13 +783,66 @@
     <span class='kw'>fn</span> <span class='ident'>unapply_window</span>(<span class='self'>self</span>, <span class='ident'>window</span>: <span class='kw-2'>&amp;</span><span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>;
 }
 
-<span class='doccomment'>/// Defines all operations which are valid on `DataVectors` containing complex data.</span>
+<span class='doccomment'>/// Defines all operations which are valid on `DataVectors` containing real time domain data.</span>
+<span class='doccomment'>/// # Failures</span>
+<span class='doccomment'>/// All operations in this trait fail with `VectorMustBeInTimeDomain` if the vector isn&#39;t in time domain.</span>
+<span class='doccomment'>/// # Unstable</span>
+<span class='doccomment'>/// A lot of details about FFTs and IFFTs aren&#39;t working out yet. Changes and updates are expected.</span>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>SymmetricTimeDomainOperations</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> : <span class='ident'>DataVector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> 
+    <span class='kw'>where</span> <span class='ident'>T</span> : <span class='ident'>RealNumber</span> {
+	<span class='kw'>type</span> <span class='ident'>FreqPartner</span>;
+    
+    <span class='doccomment'>/// Performs a Symmetric Fast Fourier Transformation under the assumption that `self`</span>
+    <span class='doccomment'>/// is symmetric around the center. This assumption</span>
+    <span class='doccomment'>/// isn&#39;t verified and no error is raised if the vector isn&#39;t symmetric.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// This version of the IFFT neither applies a window nor does it scale the </span>
+    <span class='doccomment'>/// vector.</span>
+    <span class='doccomment'>/// # Failures</span>
+    <span class='doccomment'>/// VecResult may report the following `ErrorReason` members:</span>
+    <span class='doccomment'>/// </span>
+    <span class='doccomment'>/// 1. `VectorMustBeReal`: if `self` is in complex number space.</span>
+    <span class='doccomment'>/// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.</span>
+    <span class='doccomment'>/// </span>
+    <span class='doccomment'>/// # Unstable</span>
+    <span class='doccomment'>/// Symmetric IFFTs are unstable and may only work under certain conditions.</span>
+    <span class='kw'>fn</span> <span class='ident'>plain_sfft</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span>;
+    
+    <span class='doccomment'>/// Performs a Symmetric Fast Fourier Transformation under the assumption that `self`</span>
+    <span class='doccomment'>/// is symmetric around the center. This assumption</span>
+    <span class='doccomment'>/// isn&#39;t verified and no error is raised if the vector isn&#39;t symmetric.</span>
+    <span class='doccomment'>/// # Failures</span>
+    <span class='doccomment'>/// VecResult may report the following `ErrorReason` members:</span>
+    <span class='doccomment'>/// </span>
+    <span class='doccomment'>/// 1. `VectorMustBeReal`: if `self` is in complex number space.</span>
+    <span class='doccomment'>/// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.</span>
+    <span class='doccomment'>/// </span>
+    <span class='doccomment'>/// # Unstable</span>
+    <span class='doccomment'>/// Symmetric IFFTs are unstable and may only work under certain conditions.</span>
+    <span class='kw'>fn</span> <span class='ident'>sfft</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span>;
+    
+    <span class='doccomment'>/// Performs a Symmetric Fast Fourier Transformation under the assumption that `self`</span>
+    <span class='doccomment'>/// is symmetric around the center. This assumption</span>
+    <span class='doccomment'>/// isn&#39;t verified and no error is raised if the vector isn&#39;t symmetric.</span>
+    <span class='doccomment'>/// # Failures</span>
+    <span class='doccomment'>/// VecResult may report the following `ErrorReason` members:</span>
+    <span class='doccomment'>/// </span>
+    <span class='doccomment'>/// 1. `VectorMustBeReal`: if `self` is in complex number space.</span>
+    <span class='doccomment'>/// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.</span>
+    <span class='doccomment'>/// </span>
+    <span class='doccomment'>/// # Unstable</span>
+    <span class='doccomment'>/// Symmetric IFFTs are unstable and may only work under certain conditions.</span>
+    <span class='kw'>fn</span> <span class='ident'>windowed_sfft</span>(<span class='self'>self</span>, <span class='ident'>window</span>: <span class='kw-2'>&amp;</span><span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span>;
+}
+
+<span class='doccomment'>/// Defines all operations which are valid on `DataVectors` containing frequency domain data.</span>
 <span class='doccomment'>/// # Failures</span>
 <span class='doccomment'>/// All operations in this trait fail with `VectorMustBeInFrquencyDomain` or `VectorMustBeComplex` </span>
 <span class='doccomment'>/// if the vector isn&#39;t in frequency domain and complex number space.</span>
+<span class='doccomment'>/// # Unstable</span>
+<span class='doccomment'>/// A lot of details about FFTs and IFFTs aren&#39;t working out yet. Changes and updates are expected.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>FrequencyDomainOperations</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> : <span class='ident'>DataVector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> 
     <span class='kw'>where</span> <span class='ident'>T</span> : <span class='ident'>RealNumber</span> {
-    <span class='kw'>type</span> <span class='ident'>RealTimePartner</span>;
     <span class='kw'>type</span> <span class='ident'>ComplexTimePartner</span>;
 	
 	<span class='doccomment'>/// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector</span>
@@ -682,20 +864,7 @@
 	<span class='doccomment'>/// }</span>
 	<span class='doccomment'>/// ```</span>
 	<span class='kw'>fn</span> <span class='ident'>plain_ifft</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>ComplexTimePartner</span><span class='op'>&gt;</span>;
-    
-    <span class='doccomment'>/// Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that `self`</span>
-    <span class='doccomment'>/// contains half of a symmetric spectrum starting from 0 Hz. This assumption</span>
-    <span class='doccomment'>/// isn&#39;t verified and no error is raised if the spectrum isn&#39;t symmetric. The reason</span>
-    <span class='doccomment'>/// for this is that there is no robust verification possible.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1` points.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// This version of the IFFT neither applies a window nor does it scale the </span>
-	<span class='doccomment'>/// vector.</span>
-    <span class='doccomment'>/// # Unstable</span>
-    <span class='doccomment'>/// Symmetric IFFTs are unstable and may only work under certain conditions.</span>
-    <span class='kw'>fn</span> <span class='ident'>plain_sifft</span>(<span class='self'>self</span>, <span class='ident'>even_odd</span>: <span class='ident'>EvenOdd</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span><span class='op'>&gt;</span>;
-    
+        
     <span class='doccomment'>/// This function mirrors the spectrum vector to transform a symmetric spectrum</span>
     <span class='doccomment'>/// into a full spectrum with the DC element at index 0 (no fft shift/swap halves).</span>
 	<span class='doccomment'>///</span>
@@ -728,6 +897,33 @@
 	<span class='doccomment'>/// ```</span>
     <span class='kw'>fn</span> <span class='ident'>ifft</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>ComplexTimePartner</span><span class='op'>&gt;</span>;
     
+    <span class='doccomment'>/// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector</span>
+	<span class='doccomment'>/// into a time domain vector and removes the FFT window.</span>
+    <span class='kw'>fn</span> <span class='ident'>windowed_ifft</span>(<span class='self'>self</span>, <span class='ident'>window</span>: <span class='kw-2'>&amp;</span><span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>ComplexTimePartner</span><span class='op'>&gt;</span>;
+}
+
+<span class='doccomment'>/// Defines all operations which are valid on `DataVectors` containing frequency domain data.</span>
+<span class='doccomment'>/// # Failures</span>
+<span class='doccomment'>/// All operations in this trait fail with `VectorMustBeInFrquencyDomain`</span>
+<span class='doccomment'>/// if the vector isn&#39;t in frequency domain.</span>
+<span class='doccomment'>/// # Unstable</span>
+<span class='doccomment'>/// A lot of details about FFTs and IFFTs aren&#39;t working out yet. Changes and updates are expected.</span>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>SymmetricFrequencyDomainOperations</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> : <span class='ident'>DataVector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> 
+    <span class='kw'>where</span> <span class='ident'>T</span> : <span class='ident'>RealNumber</span> {
+    <span class='kw'>type</span> <span class='ident'>RealTimePartner</span>;
+    <span class='doccomment'>/// Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that `self`</span>
+    <span class='doccomment'>/// contains half of a symmetric spectrum starting from 0 Hz. This assumption</span>
+    <span class='doccomment'>/// isn&#39;t verified and no error is raised if the spectrum isn&#39;t symmetric. The reason</span>
+    <span class='doccomment'>/// for this is that there is no robust verification possible.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1` points.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// This version of the IFFT neither applies a window nor does it scale the </span>
+	<span class='doccomment'>/// vector.</span>
+    <span class='doccomment'>/// # Unstable</span>
+    <span class='doccomment'>/// Symmetric IFFTs are unstable and may only work under certain conditions.</span>
+    <span class='kw'>fn</span> <span class='ident'>plain_sifft</span>(<span class='self'>self</span>, <span class='ident'>even_odd</span>: <span class='ident'>EvenOdd</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span><span class='op'>&gt;</span>;
+    
     <span class='doccomment'>/// Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that `self`</span>
     <span class='doccomment'>/// contains half of a symmetric spectrum starting from 0 Hz. This assumption</span>
     <span class='doccomment'>/// isn&#39;t verified and no error is raised if the spectrum isn&#39;t symmetric. The reason</span>
@@ -737,10 +933,6 @@
     <span class='doccomment'>/// # Unstable</span>
     <span class='doccomment'>/// Symmetric IFFTs are unstable and may only work under certain conditions.</span>
     <span class='kw'>fn</span> <span class='ident'>sifft</span>(<span class='self'>self</span>, <span class='ident'>even_odd</span>: <span class='ident'>EvenOdd</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span><span class='op'>&gt;</span>;
-    
-    <span class='doccomment'>/// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector</span>
-	<span class='doccomment'>/// into a time domain vector and removes the FFT window.</span>
-    <span class='kw'>fn</span> <span class='ident'>windowed_ifft</span>(<span class='self'>self</span>, <span class='ident'>window</span>: <span class='kw-2'>&amp;</span><span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>ComplexTimePartner</span><span class='op'>&gt;</span>;
     
     <span class='doccomment'>/// Performs a Symmetric Inverse Fast Fourier Transformation (SIFFT) and removes the FFT window. </span>
     <span class='doccomment'>/// The SIFFT is performed under the assumption that `self`</span>
@@ -783,6 +975,27 @@
     }
 }
 
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>define_symmetric_freq_domain_forward</span> {
+    ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>:<span class='ident'>ident</span>);<span class='op'>*</span>) <span class='op'>=&gt;</span> {
+        $( 
+            <span class='kw'>impl</span> <span class='ident'>SymmetricFrequencyDomainOperations</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> {
+                <span class='kw'>type</span> <span class='ident'>RealTimePartner</span> <span class='op'>=</span> <span class='ident'>RealTimeVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>;
+                <span class='kw'>fn</span> <span class='ident'>plain_sifft</span>(<span class='self'>self</span>, <span class='ident'>even_odd</span>: <span class='ident'>EvenOdd</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span><span class='op'>&gt;</span> {
+                    <span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>plain_sifft</span>(<span class='ident'>even_odd</span>))
+                }
+                
+                <span class='kw'>fn</span> <span class='ident'>sifft</span>(<span class='self'>self</span>, <span class='ident'>even_odd</span>: <span class='ident'>EvenOdd</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span><span class='op'>&gt;</span> {
+                    <span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>sifft</span>(<span class='ident'>even_odd</span>))
+                }
+                
+                <span class='kw'>fn</span> <span class='ident'>windowed_sifft</span>(<span class='self'>self</span>, <span class='ident'>even_odd</span>: <span class='ident'>EvenOdd</span>, <span class='ident'>window</span>: <span class='kw-2'>&amp;</span><span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span><span class='op'>&gt;</span> {
+                    <span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>windowed_sifft</span>(<span class='ident'>even_odd</span>, <span class='ident'>window</span>))
+                }
+            }
+        )<span class='op'>*</span>
+    }
+}
+
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>implement_window_function</span> {
     ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>operation</span>: <span class='ident'>ident</span>);<span class='op'>*</span>) <span class='op'>=&gt;</span> {
         $( 
@@ -792,19 +1005,29 @@
                         <span class='kw'>let</span> <span class='ident'>len</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>len</span>();
                         <span class='kw'>let</span> <span class='ident'>points</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>points</span>();
                         <span class='kw'>let</span> <span class='ident'>complex</span> <span class='op'>=</span> <span class='ident'>Self</span>::<span class='ident'>array_to_complex_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>[<span class='number'>0</span>..<span class='ident'>len</span>]);
-                        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='number'>0</span>;
-                        <span class='kw'>for</span> <span class='ident'>num</span> <span class='kw'>in</span> <span class='ident'>complex</span> {
-                            (<span class='op'>*</span><span class='ident'>num</span>) <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>num</span>).<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>operation</span>(<span class='ident'>window</span>.<span class='ident'>window</span>(<span class='ident'>i</span>, <span class='ident'>points</span>));
-                            <span class='ident'>i</span> <span class='op'>+=</span> <span class='number'>1</span>;
-                        }
+                        <span class='ident'>Chunk</span>::<span class='ident'>execute_with_range</span>(
+                            <span class='ident'>Complexity</span>::<span class='ident'>Medium</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>multicore_settings</span>,
+                            <span class='ident'>complex</span>, <span class='ident'>points</span>, <span class='number'>1</span>, <span class='ident'>window</span>,
+                            <span class='kw'>move</span> <span class='op'>|</span><span class='ident'>array</span>, <span class='ident'>range</span>, <span class='ident'>window</span><span class='op'>|</span> {
+                                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='ident'>range</span>.<span class='ident'>start</span>;
+                                <span class='kw'>for</span> <span class='ident'>num</span> <span class='kw'>in</span> <span class='ident'>array</span> {
+                                    (<span class='op'>*</span><span class='ident'>num</span>) <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>num</span>).<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>operation</span>(<span class='ident'>window</span>.<span class='ident'>window</span>(<span class='ident'>i</span>, <span class='ident'>points</span>));
+                                    <span class='ident'>i</span> <span class='op'>+=</span> <span class='number'>1</span>;
+                                }
+                            });
                     } <span class='kw'>else</span> {
                         <span class='kw'>let</span> <span class='ident'>len</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>len</span>();
                         <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>[<span class='number'>0</span>..<span class='ident'>len</span>];
-                        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='number'>0</span>;
-                        <span class='kw'>for</span> <span class='ident'>num</span> <span class='kw'>in</span> <span class='ident'>data</span> {
-                            (<span class='op'>*</span><span class='ident'>num</span>) <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>num</span>).<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>operation</span>(<span class='ident'>window</span>.<span class='ident'>window</span>(<span class='ident'>i</span>, <span class='ident'>len</span>));
-                            <span class='ident'>i</span> <span class='op'>+=</span> <span class='number'>1</span>;
-                        }
+                        <span class='ident'>Chunk</span>::<span class='ident'>execute_with_range</span>(
+                            <span class='ident'>Complexity</span>::<span class='ident'>Medium</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>multicore_settings</span>,
+                            <span class='ident'>data</span>, <span class='ident'>len</span>, <span class='number'>1</span>, <span class='ident'>window</span>,
+                            <span class='kw'>move</span> <span class='op'>|</span><span class='ident'>array</span>, <span class='ident'>range</span>, <span class='ident'>window</span><span class='op'>|</span> {
+                                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='ident'>range</span>.<span class='ident'>start</span>;
+                                <span class='kw'>for</span> <span class='ident'>num</span> <span class='kw'>in</span> <span class='ident'>array</span> {
+                                    (<span class='op'>*</span><span class='ident'>num</span>) <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>num</span>).<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>operation</span>(<span class='ident'>window</span>.<span class='ident'>window</span>(<span class='ident'>i</span>, <span class='ident'>len</span>));
+                                    <span class='ident'>i</span> <span class='op'>+=</span> <span class='number'>1</span>;
+                                }
+                            });
                     }
                     
                     <span class='prelude-val'>Ok</span>(<span class='self'>self</span>)
@@ -825,7 +1048,7 @@
                     <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is_complex</span> {
                         {
                             <span class='kw'>let</span> <span class='ident'>points</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>points</span>();
-                            <span class='kw'>let</span> <span class='ident'>rbw</span> <span class='op'>=</span> (<span class='ident'>points</span> <span class='kw'>as</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>)  <span class='op'>/</span> <span class='self'>self</span>.<span class='ident'>delta</span>;
+                            <span class='kw'>let</span> <span class='ident'>rbw</span> <span class='op'>=</span> (<span class='ident'>points</span> <span class='kw'>as</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>)  <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>delta</span>;
                             <span class='self'>self</span>.<span class='ident'>delta</span> <span class='op'>=</span> <span class='ident'>rbw</span>;
                             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fft</span> <span class='op'>=</span> <span class='ident'>FFT</span>::<span class='ident'>new</span>(<span class='ident'>points</span>, <span class='boolval'>false</span>);
                             <span class='kw'>let</span> <span class='ident'>signal</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>;
@@ -861,11 +1084,46 @@
                 }
             }
             
+            <span class='kw'>impl</span> <span class='ident'>SymmetricTimeDomainOperations</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>GenericDataVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> {
+                <span class='kw'>type</span> <span class='ident'>FreqPartner</span> <span class='op'>=</span> <span class='ident'>GenericDataVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>;
+                <span class='kw'>fn</span> <span class='ident'>plain_sfft</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>GenericDataVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;&gt;</span> {
+                    <span class='self'>self</span>.<span class='ident'>to_complex</span>()
+                    .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>plain_fft</span>())
+                    .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>to_real</span>())
+                }
+                
+                <span class='kw'>fn</span> <span class='ident'>sfft</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>GenericDataVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;&gt;</span> {
+                    <span class='self'>self</span>.<span class='ident'>to_complex</span>()
+                    .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>fft</span>())
+                    .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>to_real</span>())
+                }
+                
+                <span class='kw'>fn</span> <span class='ident'>windowed_sfft</span>(<span class='self'>self</span>, <span class='ident'>window</span>: <span class='kw-2'>&amp;</span><span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>GenericDataVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;&gt;</span> {
+                    <span class='self'>self</span>.<span class='ident'>to_complex</span>()
+                    .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>windowed_fft</span>(<span class='ident'>window</span>))
+                    .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>to_real</span>())
+                }
+            }
+            
             <span class='macro'>define_time_domain_forward</span><span class='macro'>!</span>(<span class='ident'>ComplexTimeVector</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>; <span class='ident'>RealTimeVector</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>);
+            
+            <span class='kw'>impl</span> <span class='ident'>SymmetricTimeDomainOperations</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>RealTimeVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> {
+                <span class='kw'>type</span> <span class='ident'>FreqPartner</span> <span class='op'>=</span> <span class='ident'>RealFreqVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>;
+                <span class='kw'>fn</span> <span class='ident'>plain_sfft</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span> {
+                    <span class='ident'>Self</span>::<span class='ident'>FreqPartner</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>plain_sfft</span>())
+                }
+                
+                <span class='kw'>fn</span> <span class='ident'>sfft</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span> {
+                    <span class='ident'>Self</span>::<span class='ident'>FreqPartner</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>sfft</span>())
+                }
+                
+                <span class='kw'>fn</span> <span class='ident'>windowed_sfft</span>(<span class='self'>self</span>, <span class='ident'>window</span>: <span class='kw-2'>&amp;</span><span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span> {
+                    <span class='ident'>Self</span>::<span class='ident'>FreqPartner</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>windowed_sfft</span>(<span class='ident'>window</span>))
+                }
+            }
             
             <span class='kw'>impl</span> <span class='ident'>FrequencyDomainOperations</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>GenericDataVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> {
                 <span class='kw'>type</span> <span class='ident'>ComplexTimePartner</span> <span class='op'>=</span> <span class='ident'>GenericDataVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>;
-                <span class='kw'>type</span> <span class='ident'>RealTimePartner</span> <span class='op'>=</span> <span class='ident'>GenericDataVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>;
                 <span class='kw'>fn</span> <span class='ident'>plain_ifft</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>GenericDataVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;&gt;</span> {
                      {
                         <span class='macro'>assert_complex</span><span class='macro'>!</span>(<span class='self'>self</span>);
@@ -882,14 +1140,6 @@
                         <span class='self'>self</span>.<span class='ident'>domain</span> <span class='op'>=</span> <span class='ident'>DataVectorDomain</span>::<span class='ident'>Time</span>;
                     }
                     <span class='prelude-val'>Ok</span>(<span class='self'>self</span>.<span class='ident'>swap_data_temp</span>())
-                }
-                
-                <span class='kw'>fn</span> <span class='ident'>plain_sifft</span>(<span class='self'>self</span>, <span class='ident'>even_odd</span>: <span class='ident'>EvenOdd</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>GenericDataVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;&gt;</span> {
-                    <span class='macro'>assert_complex</span><span class='macro'>!</span>(<span class='self'>self</span>);
-                    <span class='macro'>assert_freq</span><span class='macro'>!</span>(<span class='self'>self</span>);
-                    <span class='self'>self</span>.<span class='ident'>mirror</span>(<span class='ident'>even_odd</span>)
-                        .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>plain_ifft</span>())
-                        .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>to_real</span>())
                 }
                 
                 <span class='kw'>fn</span> <span class='ident'>mirror</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>even_odd</span>: <span class='ident'>EvenOdd</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span> {
@@ -937,13 +1187,6 @@
                     .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span> <span class='ident'>v</span>.<span class='ident'>plain_ifft</span>())
                 }
                 
-                <span class='kw'>fn</span> <span class='ident'>sifft</span>(<span class='self'>self</span>, <span class='ident'>even_odd</span>: <span class='ident'>EvenOdd</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span><span class='op'>&gt;</span> {
-                    <span class='kw'>let</span> <span class='ident'>points</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>points</span>();
-                    <span class='self'>self</span>.<span class='ident'>real_scale</span>(<span class='number'>1.0</span> <span class='op'>/</span> <span class='ident'>points</span> <span class='kw'>as</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>)
-                    .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span> <span class='ident'>v</span>.<span class='ident'>swap_halves</span>())
-                    .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span> <span class='ident'>v</span>.<span class='ident'>plain_sifft</span>(<span class='ident'>even_odd</span>))
-                }
-                
                 <span class='kw'>fn</span> <span class='ident'>windowed_ifft</span>(<span class='self'>self</span>, <span class='ident'>window</span>: <span class='kw-2'>&amp;</span><span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>ComplexTimePartner</span><span class='op'>&gt;</span> {
                     <span class='kw'>let</span> <span class='ident'>points</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>points</span>();
                     <span class='self'>self</span>.<span class='ident'>real_scale</span>(<span class='number'>1.0</span> <span class='op'>/</span> <span class='ident'>points</span> <span class='kw'>as</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>)
@@ -951,7 +1194,25 @@
                     .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span> <span class='ident'>v</span>.<span class='ident'>plain_ifft</span>())
                     .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>unapply_window</span>(<span class='ident'>window</span>))
                 }
+            }
+            
+            <span class='kw'>impl</span> <span class='ident'>SymmetricFrequencyDomainOperations</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>GenericDataVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> {
+                <span class='kw'>type</span> <span class='ident'>RealTimePartner</span> <span class='op'>=</span> <span class='ident'>GenericDataVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>;
                 
+                <span class='kw'>fn</span> <span class='ident'>plain_sifft</span>(<span class='self'>self</span>, <span class='ident'>even_odd</span>: <span class='ident'>EvenOdd</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>GenericDataVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;&gt;</span> {
+                    <span class='macro'>assert_complex</span><span class='macro'>!</span>(<span class='self'>self</span>);
+                    <span class='macro'>assert_freq</span><span class='macro'>!</span>(<span class='self'>self</span>);
+                    <span class='self'>self</span>.<span class='ident'>mirror</span>(<span class='ident'>even_odd</span>)
+                        .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>plain_ifft</span>())
+                        .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>to_real</span>())
+                }
+                
+                <span class='kw'>fn</span> <span class='ident'>sifft</span>(<span class='self'>self</span>, <span class='ident'>even_odd</span>: <span class='ident'>EvenOdd</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span><span class='op'>&gt;</span> {
+                    <span class='kw'>let</span> <span class='ident'>points</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>points</span>();
+                    <span class='self'>self</span>.<span class='ident'>real_scale</span>(<span class='number'>1.0</span> <span class='op'>/</span> <span class='ident'>points</span> <span class='kw'>as</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>)
+                    .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span> <span class='ident'>v</span>.<span class='ident'>swap_halves</span>())
+                    .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span> <span class='ident'>v</span>.<span class='ident'>plain_sifft</span>(<span class='ident'>even_odd</span>))
+                }
                 <span class='kw'>fn</span> <span class='ident'>windowed_sifft</span>(<span class='self'>self</span>, <span class='ident'>even_odd</span>: <span class='ident'>EvenOdd</span>, <span class='ident'>window</span>: <span class='kw-2'>&amp;</span><span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span><span class='op'>&gt;</span> {
                     <span class='kw'>let</span> <span class='ident'>points</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>points</span>();
                     <span class='self'>self</span>.<span class='ident'>real_scale</span>(<span class='number'>1.0</span> <span class='op'>/</span> <span class='ident'>points</span> <span class='kw'>as</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>)
@@ -963,15 +1224,10 @@
             
             <span class='kw'>impl</span> <span class='ident'>FrequencyDomainOperations</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>ComplexFreqVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> {
                 <span class='kw'>type</span> <span class='ident'>ComplexTimePartner</span> <span class='op'>=</span> <span class='ident'>ComplexTimeVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>;
-                <span class='kw'>type</span> <span class='ident'>RealTimePartner</span> <span class='op'>=</span> <span class='ident'>RealTimeVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>;
                 <span class='kw'>fn</span> <span class='ident'>plain_ifft</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>ComplexTimeVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;&gt;</span> {
                     <span class='ident'>Self</span>::<span class='ident'>ComplexTimePartner</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>plain_ifft</span>())
                 }
-                
-                <span class='kw'>fn</span> <span class='ident'>plain_sifft</span>(<span class='self'>self</span>, <span class='ident'>even_odd</span>: <span class='ident'>EvenOdd</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>RealTimeVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;&gt;</span> {
-                    <span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>plain_sifft</span>(<span class='ident'>even_odd</span>))
-                }
-                
+                                
                 <span class='kw'>fn</span> <span class='ident'>mirror</span>(<span class='self'>self</span>, <span class='ident'>even_odd</span>: <span class='ident'>EvenOdd</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>ComplexFreqVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;&gt;</span> {
                     <span class='ident'>Self</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>mirror</span>(<span class='ident'>even_odd</span>))
                 }
@@ -980,18 +1236,12 @@
                     <span class='ident'>Self</span>::<span class='ident'>ComplexTimePartner</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>ifft</span>())
                 }
                 
-                <span class='kw'>fn</span> <span class='ident'>sifft</span>(<span class='self'>self</span>, <span class='ident'>even_odd</span>: <span class='ident'>EvenOdd</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span><span class='op'>&gt;</span> {
-                    <span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>sifft</span>(<span class='ident'>even_odd</span>))
-                }
-                
                 <span class='kw'>fn</span> <span class='ident'>windowed_ifft</span>(<span class='self'>self</span>, <span class='ident'>window</span>: <span class='kw-2'>&amp;</span><span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>ComplexTimePartner</span><span class='op'>&gt;</span> {
                     <span class='ident'>Self</span>::<span class='ident'>ComplexTimePartner</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>windowed_ifft</span>(<span class='ident'>window</span>))
                 }
-                
-                <span class='kw'>fn</span> <span class='ident'>windowed_sifft</span>(<span class='self'>self</span>, <span class='ident'>even_odd</span>: <span class='ident'>EvenOdd</span>, <span class='ident'>window</span>: <span class='kw-2'>&amp;</span><span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span><span class='op'>&gt;</span> {
-                    <span class='ident'>Self</span>::<span class='ident'>RealTimePartner</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>windowed_sifft</span>(<span class='ident'>even_odd</span>, <span class='ident'>window</span>))
-                }
             }
+            
+            <span class='macro'>define_symmetric_freq_domain_forward</span><span class='macro'>!</span>(<span class='ident'>ComplexFreqVector</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>; <span class='ident'>RealFreqVector</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>);
         )<span class='op'>*</span>
      }
 }

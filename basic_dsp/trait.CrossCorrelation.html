@@ -46,20 +46,36 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-3213' class='srclink' href='../src/basic_dsp/vector_types/correlation_impl.rs.html#7-13' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-3691' class='srclink' href='../src/basic_dsp/vector_types/correlation_impl.rs.html#24-28' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait CrossCorrelation&lt;T&gt;: <a class='trait' href='../basic_dsp/trait.DataVector.html' title='basic_dsp::DataVector'>DataVector</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
     fn <a href='#tymethod.correlate' class='fnname'>correlate</a>(self, other: &amp;Self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;;
 }</pre><div class='docblock'><p>Cross-correlation of data vectors. See also <a href="https://en.wikipedia.org/wiki/Cross-correlation">https://en.wikipedia.org/wiki/Cross-correlation</a></p>
+
+<h1 id='unstable' class='section-header'><a href='#unstable'>Unstable</a></h1>
+<p>This functionality has been recently added in order to find out if the definitions are consistent.
+However the actual implementation is lacking tests.</p>
+
+<h1 id='failures' class='section-header'><a href='#failures'>Failures</a></h1>
+<p>VecResult may report the following <code>ErrorReason</code> members:</p>
+
+<ol>
+<li><code>VectorMustBeComplex</code>: if <code>self</code> is in real number space.</li>
+<li><code>VectorMetaDataMustAgree</code>: in case <code>self</code> and <code>function</code> are not in the same number space and same domain.</li>
+</ol>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.correlate' class='method stab '><code>fn <a href='#tymethod.correlate' class='fnname'>correlate</a>(self, other: &amp;Self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Calculates the correlation between <code>self</code> and <code>other</code>. Correlation is internally always
-done in frequency domain, however the result is stored in the same domain as <code>self</code> was
-before the operation was performed.</p>
+        <h3 id='tymethod.correlate' class='method stab '><code>fn <a href='#tymethod.correlate' class='fnname'>correlate</a>(self, other: &amp;Self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Calculates the correlation between <code>self</code> and <code>other</code>.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    </ul><script type="text/javascript" async
+    <li><code>impl <a class='trait' href='../basic_dsp/trait.CrossCorrelation.html' title='basic_dsp::CrossCorrelation'>CrossCorrelation</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../basic_dsp/struct.GenericDataVector.html' title='basic_dsp::GenericDataVector'>GenericDataVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></li>
+<li><code>impl <a class='trait' href='../basic_dsp/trait.CrossCorrelation.html' title='basic_dsp::CrossCorrelation'>CrossCorrelation</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../basic_dsp/struct.GenericDataVector.html' title='basic_dsp::GenericDataVector'>GenericDataVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
+<li><code>impl <a class='trait' href='../basic_dsp/trait.CrossCorrelation.html' title='basic_dsp::CrossCorrelation'>CrossCorrelation</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../basic_dsp/struct.ComplexTimeVector.html' title='basic_dsp::ComplexTimeVector'>ComplexTimeVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></li>
+<li><code>impl <a class='trait' href='../basic_dsp/trait.CrossCorrelation.html' title='basic_dsp::CrossCorrelation'>CrossCorrelation</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../basic_dsp/struct.ComplexTimeVector.html' title='basic_dsp::ComplexTimeVector'>ComplexTimeVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
+<li><code>impl <a class='trait' href='../basic_dsp/trait.CrossCorrelation.html' title='basic_dsp::CrossCorrelation'>CrossCorrelation</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../basic_dsp/struct.ComplexFreqVector.html' title='basic_dsp::ComplexFreqVector'>ComplexFreqVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></li>
+<li><code>impl <a class='trait' href='../basic_dsp/trait.CrossCorrelation.html' title='basic_dsp::CrossCorrelation'>CrossCorrelation</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../basic_dsp/struct.ComplexFreqVector.html' title='basic_dsp::ComplexFreqVector'>ComplexFreqVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
+</ul><script type="text/javascript" async
                               src="../implementors/basic_dsp/trait.CrossCorrelation.js">
                       </script></section>
     <section id='search' class="content hidden"></section>

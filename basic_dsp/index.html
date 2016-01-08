@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/basic_dsp/lib.rs.html#1-77' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/basic_dsp/lib.rs.html#1-80' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Basic digital signal processing (DSP) operations</p>
 
 <p>The basic building blocks are 1xN (one times N) or Nx1 real or compelex vectors where N is typically at least in the order
@@ -240,6 +240,13 @@ Warning: Highly unstable and not even fully implemented right now.</p>
                         <td class='docblock short'>
                              <p>Cross-correlation of data vectors. See also <a href="https://en.wikipedia.org/wiki/Cross-correlation">https://en.wikipedia.org/wiki/Cross-correlation</a></p>
 
+<h1 id='unstable' class='section-header'><a href='#unstable'>Unstable</a></h1>
+<p>This functionality has been recently added in order to find out if the definitions are consistent.
+However the actual implementation is lacking tests.</p>
+
+<h1 id='failures-1' class='section-header'><a href='#failures-1'>Failures</a></h1>
+<p>VecResult may report the following <code>ErrorReason</code> members:</p>
+
                         </td>
                     </tr>
                 
@@ -256,11 +263,14 @@ Warning: Highly unstable and not even fully implemented right now.</p>
                         <td><a class='trait' href='trait.FrequencyDomainOperations.html'
                                title='basic_dsp::FrequencyDomainOperations'>FrequencyDomainOperations</a></td>
                         <td class='docblock short'>
-                             <p>Defines all operations which are valid on <code>DataVectors</code> containing complex data.</p>
+                             <p>Defines all operations which are valid on <code>DataVectors</code> containing frequency domain data.</p>
 
-<h1 id='failures-1' class='section-header'><a href='#failures-1'>Failures</a></h1>
+<h1 id='failures-2' class='section-header'><a href='#failures-2'>Failures</a></h1>
 <p>All operations in this trait fail with <code>VectorMustBeInFrquencyDomain</code> or <code>VectorMustBeComplex</code> 
 if the vector isn&#39;t in frequency domain and complex number space.</p>
+
+<h1 id='unstable-1' class='section-header'><a href='#unstable-1'>Unstable</a></h1>
+<p>A lot of details about FFTs and IFFTs aren&#39;t working out yet. Changes and updates are expected.</p>
 
                         </td>
                     </tr>
@@ -270,6 +280,19 @@ if the vector isn&#39;t in frequency domain and complex number space.</p>
                                title='basic_dsp::GenericVectorOperations'>GenericVectorOperations</a></td>
                         <td class='docblock short'>
                              <p>Defines all operations which are valid on all <code>DataVectors</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.Interpolation.html'
+                               title='basic_dsp::Interpolation'>Interpolation</a></td>
+                        <td class='docblock short'>
+                             <p>Provides a interpolation operation for data vectors.</p>
+
+<h1 id='unstable-2' class='section-header'><a href='#unstable-2'>Unstable</a></h1>
+<p>This functionality has been recently added in order to find out if the definitions are consistent.
+However the actual implementation is lacking tests.</p>
 
                         </td>
                     </tr>
@@ -298,7 +321,7 @@ if the vector isn&#39;t in frequency domain and complex number space.</p>
                         <td class='docblock short'>
                              <p>Defines all operations which are valid on <code>DataVectors</code> containing real data.</p>
 
-<h1 id='failures-2' class='section-header'><a href='#failures-2'>Failures</a></h1>
+<h1 id='failures-3' class='section-header'><a href='#failures-3'>Failures</a></h1>
 <p>All operations in this trait fail with <code>VectorMustBeReal</code> if the vector isn&#39;t in the real number space.</p>
 
                         </td>
@@ -326,13 +349,47 @@ is to allow to reuse the memory of a vector for different operations.</p>
                     </tr>
                 
                     <tr class=' module-item'>
+                        <td><a class='trait' href='trait.SymmetricFrequencyDomainOperations.html'
+                               title='basic_dsp::SymmetricFrequencyDomainOperations'>SymmetricFrequencyDomainOperations</a></td>
+                        <td class='docblock short'>
+                             <p>Defines all operations which are valid on <code>DataVectors</code> containing frequency domain data.</p>
+
+<h1 id='failures-4' class='section-header'><a href='#failures-4'>Failures</a></h1>
+<p>All operations in this trait fail with <code>VectorMustBeInFrquencyDomain</code>
+if the vector isn&#39;t in frequency domain.</p>
+
+<h1 id='unstable-3' class='section-header'><a href='#unstable-3'>Unstable</a></h1>
+<p>A lot of details about FFTs and IFFTs aren&#39;t working out yet. Changes and updates are expected.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.SymmetricTimeDomainOperations.html'
+                               title='basic_dsp::SymmetricTimeDomainOperations'>SymmetricTimeDomainOperations</a></td>
+                        <td class='docblock short'>
+                             <p>Defines all operations which are valid on <code>DataVectors</code> containing real time domain data.</p>
+
+<h1 id='failures-5' class='section-header'><a href='#failures-5'>Failures</a></h1>
+<p>All operations in this trait fail with <code>VectorMustBeInTimeDomain</code> if the vector isn&#39;t in time domain.</p>
+
+<h1 id='unstable-4' class='section-header'><a href='#unstable-4'>Unstable</a></h1>
+<p>A lot of details about FFTs and IFFTs aren&#39;t working out yet. Changes and updates are expected.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
                         <td><a class='trait' href='trait.TimeDomainOperations.html'
                                title='basic_dsp::TimeDomainOperations'>TimeDomainOperations</a></td>
                         <td class='docblock short'>
-                             <p>Defines all operations which are valid on <code>DataVectors</code> containing real data.</p>
+                             <p>Defines all operations which are valid on <code>DataVectors</code> containing time domain data.</p>
 
-<h1 id='failures-3' class='section-header'><a href='#failures-3'>Failures</a></h1>
+<h1 id='failures-6' class='section-header'><a href='#failures-6'>Failures</a></h1>
 <p>All operations in this trait fail with <code>VectorMustBeInTimeDomain</code> if the vector isn&#39;t in time domain.</p>
+
+<h1 id='unstable-5' class='section-header'><a href='#unstable-5'>Unstable</a></h1>
+<p>A lot of details about FFTs and IFFTs aren&#39;t working out yet. Changes and updates are expected.</p>
 
                         </td>
                     </tr>

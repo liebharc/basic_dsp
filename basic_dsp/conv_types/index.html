@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-6494' class='srclink' href='../../src/basic_dsp/conv_types.rs.html#1-310' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-7152' class='srclink' href='../../src/basic_dsp/conv_types.rs.html#1-505' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Types around a convolution, see also <a href="https://en.wikipedia.org/wiki/Convolution">https://en.wikipedia.org/wiki/Convolution</a>.</p>
 
 <p>Convolutions in this library can be defined in time or frequency domain. In
@@ -75,10 +75,20 @@ This usually speeds up a convolution and sacrifies accuracy.</p>
                     </tr>
                 
                     <tr class=' module-item'>
-                        <td><a class='struct' href='struct.RaiseCosineFuncton.html'
-                               title='basic_dsp::conv_types::RaiseCosineFuncton'>RaiseCosineFuncton</a></td>
+                        <td><a class='struct' href='struct.RaisedCosineFuncton.html'
+                               title='basic_dsp::conv_types::RaisedCosineFuncton'>RaisedCosineFuncton</a></td>
                         <td class='docblock short'>
                              <p>Raised cosine function according to <a href="https://en.wikipedia.org/wiki/Raised-cosine_filter">https://en.wikipedia.org/wiki/Raised-cosine_filter</a></p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.RealFrequencyLinearTableLookup.html'
+                               title='basic_dsp::conv_types::RealFrequencyLinearTableLookup'>RealFrequencyLinearTableLookup</a></td>
+                        <td class='docblock short'>
+                             <p>Allows to create a lookup table with linear interpolation between table points.
+This usually speeds up a convolution and sacrifies accuracy.</p>
 
                         </td>
                     </tr>
@@ -98,7 +108,7 @@ This usually speeds up a convolution and sacrifies accuracy.</p>
                         <td><a class='trait' href='trait.ComplexFrequencyConvFunction.html'
                                title='basic_dsp::conv_types::ComplexFrequencyConvFunction'>ComplexFrequencyConvFunction</a></td>
                         <td class='docblock short'>
-                             <p>A convolution function in frequency domain and complex number space</p>
+                             <p>A convolution function in $domain_comment domain and complex number space</p>
 
                         </td>
                     </tr>
@@ -107,7 +117,16 @@ This usually speeds up a convolution and sacrifies accuracy.</p>
                         <td><a class='trait' href='trait.ComplexTimeConvFunction.html'
                                title='basic_dsp::conv_types::ComplexTimeConvFunction'>ComplexTimeConvFunction</a></td>
                         <td class='docblock short'>
-                             <p>A convolution function in time domain and complex number space</p>
+                             <p>A convolution function in $domain_comment domain and complex number space</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.RealFrequencyConvFunction.html'
+                               title='basic_dsp::conv_types::RealFrequencyConvFunction'>RealFrequencyConvFunction</a></td>
+                        <td class='docblock short'>
+                             <p>A convolution function in $domain_comment domain and real number space</p>
 
                         </td>
                     </tr>
@@ -116,7 +135,7 @@ This usually speeds up a convolution and sacrifies accuracy.</p>
                         <td><a class='trait' href='trait.RealTimeConvFunction.html'
                                title='basic_dsp::conv_types::RealTimeConvFunction'>RealTimeConvFunction</a></td>
                         <td class='docblock short'>
-                             <p>A convolution function in time domain and real number space</p>
+                             <p>A convolution function in $domain_comment domain and real number space</p>
 
                         </td>
                     </tr>

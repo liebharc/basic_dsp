@@ -595,6 +595,19 @@
 <span id="552">552</span>
 <span id="553">553</span>
 <span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
 </pre><pre class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>reject_if</span> {
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>self_</span>: <span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>condition</span>: <span class='ident'>expr</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>message</span>: <span class='ident'>expr</span>) <span class='op'>=&gt;</span> {
@@ -678,6 +691,7 @@
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>time_freq_impl</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>convolution_impl</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>correlation_impl</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>interpolation_impl</span>;
 <span class='kw'>mod</span> <span class='ident'>stats_impl</span>;
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>vector_types</span>::<span class='ident'>definitions</span>::{
@@ -698,10 +712,13 @@
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>vector_types</span>::<span class='ident'>time_freq_impl</span>::{
         <span class='ident'>TimeDomainOperations</span>,
 		<span class='ident'>FrequencyDomainOperations</span>,
+        <span class='ident'>SymmetricFrequencyDomainOperations</span>,
+        <span class='ident'>SymmetricTimeDomainOperations</span>,
         <span class='ident'>EvenOdd</span>
     };
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>vector_types</span>::<span class='ident'>convolution_impl</span>::<span class='ident'>Convolution</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>vector_types</span>::<span class='ident'>correlation_impl</span>::<span class='ident'>CrossCorrelation</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>vector_types</span>::<span class='ident'>interpolation_impl</span>::<span class='ident'>Interpolation</span>;
 <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>complex</span>::<span class='ident'>Complex</span>;
 <span class='kw'>use</span> <span class='ident'>RealNumber</span>;
 <span class='kw'>use</span> <span class='ident'>multicore_support</span>::{<span class='ident'>Chunk</span>, <span class='ident'>Complexity</span>, <span class='ident'>MultiCoreSettings</span>};
@@ -962,6 +979,15 @@
 		<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>delta</span>(), <span class='number'>1.0</span>);
 		<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>domain</span>(), <span class='ident'>DataVectorDomain</span>::<span class='ident'>Time</span>);
 	}
+    
+    <span class='attribute'>#[<span class='ident'>test</span>]</span>
+	<span class='kw'>fn</span> <span class='ident'>construct_complex_time_vector_32_test</span>()
+	{
+		<span class='kw'>let</span> <span class='ident'>array</span> <span class='op'>=</span> [<span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>), <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>3.0</span>, <span class='number'>4.0</span>), <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>5.0</span>, <span class='number'>6.0</span>), <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>7.0</span>, <span class='number'>8.0</span>)];
+		<span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='ident'>ComplexTimeVector32</span>::<span class='ident'>from_complex</span>(<span class='kw-2'>&amp;</span><span class='ident'>array</span>);
+		<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>data</span>, [<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>, <span class='number'>5.0</span>, <span class='number'>6.0</span>, <span class='number'>7.0</span>, <span class='number'>8.0</span>]);
+		<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>complex_data</span>(), <span class='kw-2'>&amp;</span><span class='ident'>array</span>);
+	}
 	
 	<span class='attribute'>#[<span class='ident'>test</span>]</span>
 	<span class='kw'>fn</span> <span class='ident'>add_real_one_32_test</span>()
@@ -977,7 +1003,7 @@
 	<span class='attribute'>#[<span class='ident'>test</span>]</span>
 	<span class='kw'>fn</span> <span class='ident'>add_real_two_32_test</span>()
 	{
-		<span class='comment'>// Test also that vector calls are possible</span>
+		<span class='comment'>// Test also that vectors may be passed to from_array</span>
 		<span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>, <span class='number'>5.0</span>, <span class='number'>6.0</span>, <span class='number'>7.0</span>, <span class='number'>8.0</span>, <span class='number'>9.0</span>, <span class='number'>10.0</span>);
 		<span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>RealTimeVector32</span>::<span class='ident'>from_array</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>);
 		<span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>result</span>.<span class='ident'>real_offset</span>(<span class='number'>2.0</span>).<span class='ident'>unwrap</span>();

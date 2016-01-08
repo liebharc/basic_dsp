@@ -118,6 +118,9 @@
 <span id="75">75</span>
 <span id="76">76</span>
 <span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>box_syntax</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>cfg_target_feature</span>)]</span>
@@ -166,6 +169,8 @@
 		<span class='ident'>ComplexVectorOperations</span>,
 		<span class='ident'>TimeDomainOperations</span>,
 		<span class='ident'>FrequencyDomainOperations</span>,
+        <span class='ident'>SymmetricFrequencyDomainOperations</span>,
+        <span class='ident'>SymmetricTimeDomainOperations</span>,
         <span class='ident'>GenericDataVector</span>,
         <span class='ident'>ComplexFreqVector</span>,
         <span class='ident'>ComplexTimeVector</span>,
@@ -187,7 +192,8 @@
         <span class='ident'>Scale</span>,
         <span class='ident'>Offset</span>,
         <span class='ident'>Convolution</span>,
-        <span class='ident'>CrossCorrelation</span>
+        <span class='ident'>CrossCorrelation</span>,
+        <span class='ident'>Interpolation</span>
 	};
  <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>multicore_support</span>::<span class='ident'>MultiCoreSettings</span>;
  <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>traits</span>::<span class='ident'>Float</span>;   

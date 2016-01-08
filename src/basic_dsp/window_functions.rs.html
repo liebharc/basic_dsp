@@ -156,7 +156,7 @@
 <span class='doccomment'>/// 1. The second argument is of the function is always `self.points()` and the possible values for the first argument ranges from `0..self.points()`.</span>
 <span class='doccomment'>/// 2. A window function must be symmetric about the y-axis.</span>
 <span class='doccomment'>/// 3. All real return values are allowed</span>
-<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> : <span class='ident'>Sync</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
     <span class='doccomment'>/// Calculates a point of the window function</span>
     <span class='kw'>fn</span> <span class='ident'>window</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>n</span>: <span class='ident'>usize</span>, <span class='ident'>length</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span>;

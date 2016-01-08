@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["Interpolation","Provides a interpolation operation for data vectors. # Unstable This functionality has been recently added in order to find out if the definitions are consistent. However the actual implementation is lacking tests."]]});

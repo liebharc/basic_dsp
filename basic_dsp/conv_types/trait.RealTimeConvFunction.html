@@ -46,20 +46,20 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-6502' class='srclink' href='../../src/basic_dsp/conv_types.rs.html#26-30' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait RealTimeConvFunction&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
+        </span><a id='src-7160' class='srclink' href='../../src/basic_dsp/conv_types.rs.html#33-37' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait RealTimeConvFunction&lt;T&gt;: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
     fn <a href='#tymethod.calc' class='fnname'>calc</a>(&amp;self, x: T) -&gt; T;
-}</pre><div class='docblock'><p>A convolution function in time domain and real number space</p>
+}</pre><div class='docblock'><p>A convolution function in $domain_comment domain and real number space</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.calc' class='method stab '><code>fn <a href='#tymethod.calc' class='fnname'>calc</a>(&amp;self, x: T) -&gt; T</code></h3><div class='docblock'><p>Calculates the convolution for a real data point</p>
+        <h3 id='tymethod.calc' class='method stab '><code>fn <a href='#tymethod.calc' class='fnname'>calc</a>(&amp;self, x: T) -&gt; T</code></h3><div class='docblock'><p>Calculates the convolution for a data point</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
     <li><code>impl <a class='trait' href='../../basic_dsp/conv_types/trait.RealTimeConvFunction.html' title='basic_dsp::conv_types::RealTimeConvFunction'>RealTimeConvFunction</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.RealTimeLinearTableLookup.html' title='basic_dsp::conv_types::RealTimeLinearTableLookup'>RealTimeLinearTableLookup</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></li>
 <li><code>impl <a class='trait' href='../../basic_dsp/conv_types/trait.RealTimeConvFunction.html' title='basic_dsp::conv_types::RealTimeConvFunction'>RealTimeConvFunction</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.RealTimeLinearTableLookup.html' title='basic_dsp::conv_types::RealTimeLinearTableLookup'>RealTimeLinearTableLookup</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
-<li><code>impl&lt;T&gt; <a class='trait' href='../../basic_dsp/conv_types/trait.RealTimeConvFunction.html' title='basic_dsp::conv_types::RealTimeConvFunction'>RealTimeConvFunction</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.RaiseCosineFuncton.html' title='basic_dsp::conv_types::RaiseCosineFuncton'>RaiseCosineFuncton</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
+<li><code>impl&lt;T&gt; <a class='trait' href='../../basic_dsp/conv_types/trait.RealTimeConvFunction.html' title='basic_dsp::conv_types::RealTimeConvFunction'>RealTimeConvFunction</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.RaisedCosineFuncton.html' title='basic_dsp::conv_types::RaisedCosineFuncton'>RaisedCosineFuncton</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
 </ul><script type="text/javascript" async
                               src="../../implementors/basic_dsp/conv_types/trait.RealTimeConvFunction.js">
                       </script></section>
