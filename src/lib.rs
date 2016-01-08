@@ -68,7 +68,8 @@ pub use vector_types::
         Scale,
         Offset,
         Convolution,
-        CrossCorrelation
+        CrossCorrelation,
+        Interpolation
 	};
  pub use multicore_support::MultiCoreSettings;
  use num::traits::Float;   

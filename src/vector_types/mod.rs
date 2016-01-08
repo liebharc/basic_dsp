@@ -80,6 +80,7 @@ pub mod complex_impl;
 pub mod time_freq_impl;
 pub mod convolution_impl;
 pub mod correlation_impl;
+pub mod interpolation_impl;
 mod stats_impl;
 
 pub use vector_types::definitions::{
@@ -106,6 +107,7 @@ pub use vector_types::time_freq_impl::{
     };
 pub use vector_types::convolution_impl::Convolution;
 pub use vector_types::correlation_impl::CrossCorrelation;
+pub use vector_types::interpolation_impl::Interpolation;
 use num::complex::Complex;
 use RealNumber;
 use multicore_support::{Chunk, Complexity, MultiCoreSettings};

@@ -56,6 +56,7 @@ my @definitions = parse_definition("../vector_types/definitions.rs", "GenericVec
 push @definitions, parse_definition("../vector_types/time_freq_impl.rs", "TimeDomainOperations", "FrequencyDomainOperations", "SymmetricFrequencyDomainOperations", "SymmetricTimeDomainOperations");
 push @definitions, parse_definition("../vector_types/correlation_impl.rs", "CrossCorrelation");
 push @definitions, parse_definition("../vector_types/convolution_impl.rs", "Convolution");
+push @definitions, parse_definition("../vector_types/interpolation_impl.rs", "Interpolation");
 my @impl = parse_facade();
 my $found = 0;
 my $missing = 0;
