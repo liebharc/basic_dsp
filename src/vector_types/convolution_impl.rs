@@ -37,15 +37,17 @@ pub trait Convolution<T, C> : DataVector<T>
     /// 
     /// 1. `VectorMustBeComplex`: if `self` is in real number space but `function` is in complex number space.
     /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain, `function` is in time domain and the vector can't be automatically converted to frequency domain since it is in real number space.
-    fn convolve(self, function: C) -> VecResult<Self>;
+    fn convolve(self, function: C, ratio: T, len: usize) -> VecResult<Self>;
 }
 
 macro_rules! add_conv_impl{
     ($($data_type:ident),*) => {
         $(
             impl<'a> Convolution<$data_type, &'a RealTimeConvFunction<$data_type>> for GenericDataVector<$data_type> {
-                fn convolve(self, function: &RealTimeConvFunction<$data_type>) -> VecResult<Self> {
-                    Ok(self.convolve_priv(
+                fn convolve(self, function: &RealTimeConvFunction<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
+                    Ok(self.convolve_function_priv(
+                            ratio,
+                            len,
                             |data|data,
                             |temp|temp,
                             |x|function.calc(x)
@@ -54,7 +56,7 @@ macro_rules! add_conv_impl{
             }
 
             impl<'a> Convolution<$data_type, &'a ComplexTimeConvFunction<$data_type>> for GenericDataVector<$data_type> {
-                fn convolve(self, function: &ComplexTimeConvFunction<$data_type>) -> VecResult<Self> {
+                fn convolve(self, function: &ComplexTimeConvFunction<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
                     assert_complex!(self);
                     let was_time = self.domain == DataVectorDomain::Time;
                     let time = 
@@ -65,7 +67,9 @@ macro_rules! add_conv_impl{
                         };
                     
                     
-                    let result = time.convolve_priv(
+                    let result = time.convolve_function_priv(
+                            ratio,
+                            len,
                             |data|Self::array_to_complex(data),
                             |temp|Self::array_to_complex_mut(temp),
                             |x|function.calc(x)
@@ -80,8 +84,10 @@ macro_rules! add_conv_impl{
             }
             
             impl GenericDataVector<$data_type> {
-                fn convolve_priv<T,C,CMut,F>(
+                fn convolve_function_priv<T,C,CMut,F>(
                     mut self, 
+                    ratio: $data_type,
+                    conv_len: usize,
                     convert: C,
                     convert_mut: CMut,
                     fun: F) -> Self
@@ -93,10 +99,8 @@ macro_rules! add_conv_impl{
                 {
                     {
                         let len = self.len();
-                        let delta = self.delta();
                         let complex = convert(&self.data[0..len]);
                         let dest = convert_mut(&mut self.temp[0..len]);
-                        let conv_len = 11; // TODO make configurable
                         let mut i = 0;
                         for num in dest {
                             let start = if i > conv_len { i - conv_len } else { 0 };
@@ -105,9 +109,7 @@ macro_rules! add_conv_impl{
                             let center = i as $data_type;
                             let mut j = start as $data_type - center;
                             for c in &complex[start..end] {
-                                let temp =  (*c) * fun(j * delta);
-                                print!("i={}, j={} => {}\n", i, j, temp);
-                                sum = sum + (*c) * fun(j * delta);
+                                sum = sum + (*c) * fun(j * ratio);
                                 j += 1.0;
                             }
                             (*num) = sum;
@@ -119,7 +121,7 @@ macro_rules! add_conv_impl{
             }
 
             impl<'a> Convolution<$data_type, &'a ComplexFrequencyConvFunction<$data_type>> for GenericDataVector<$data_type> {
-                fn convolve(self, function: &ComplexFrequencyConvFunction<$data_type>) -> VecResult<Self> {
+                fn convolve(self, function: &ComplexFrequencyConvFunction<$data_type>, _ratio: $data_type, _len: usize) -> VecResult<Self> {
                     assert_complex!(self);
                     let was_time = self.domain == DataVectorDomain::Time;
                     let freq = 
@@ -143,23 +145,32 @@ macro_rules! add_conv_impl{
             }
             
             impl<'a> Convolution<$data_type, &'a RealFrequencyConvFunction<$data_type>> for GenericDataVector<$data_type> {
-                fn convolve(self, function: &RealFrequencyConvFunction<$data_type>) -> VecResult<Self> {
-                    assert_complex!(self);
-                    let was_time = self.domain == DataVectorDomain::Time;
-                    let freq = 
+                fn convolve(self, function: &RealFrequencyConvFunction<$data_type>, _ratio: $data_type, _len: usize) -> VecResult<Self> {
+                    if self.is_complex {
+                        let was_time = self.domain == DataVectorDomain::Time;
+                        let freq = 
+                            if was_time {
+                                try!{ self.fft() }
+                            } else {
+                                self
+                            };
+                        let result = freq.multiply_function_priv(
+                                        |array|Self::array_to_complex_mut(array),
+                                        function,
+                                        |f,x|Complex::<$data_type>::new(f.calc(x), 0.0));
+                        
                         if was_time {
-                            try!{ self.fft() }
+                            result.ifft()
                         } else {
-                            self
-                        };
-                    let result = freq.multiply_function_priv(
-                                    |array|Self::array_to_complex_mut(array),
-                                    function,
-                                    |f,x|Complex::<$data_type>::new(f.calc(x), 0.0));
-                    
-                    if was_time {
-                        result.ifft()
-                    } else {
+                            Ok(result)
+                        }
+                    }
+                    else {
+                        assert_freq!(self);
+                        let result = self.multiply_function_priv(
+                                        |array|array,
+                                        function,
+                                        |f,x|f.calc(x));
                         Ok(result)
                     }
                 }
@@ -205,56 +216,56 @@ macro_rules! add_conv_forw{
     ($($data_type:ident),*) => {
         $(
             impl<'a> Convolution<$data_type, &'a RealTimeConvFunction<$data_type>> for RealTimeVector<$data_type> {
-                fn convolve(self, function: &RealTimeConvFunction<$data_type>) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().convolve(function))
+                fn convolve(self, function: &RealTimeConvFunction<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().convolve(function, ratio, len))
                 }
             }
             
             impl<'a> Convolution<$data_type, &'a RealTimeConvFunction<$data_type>> for ComplexTimeVector<$data_type> {
-                fn convolve(self, function: &RealTimeConvFunction<$data_type>) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().convolve(function))
+                fn convolve(self, function: &RealTimeConvFunction<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().convolve(function, ratio, len))
                 }
             }
             
             impl<'a> Convolution<$data_type, &'a RealTimeConvFunction<$data_type>> for ComplexFreqVector<$data_type> {
-                fn convolve(self, function: &RealTimeConvFunction<$data_type>) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().convolve(function))
+                fn convolve(self, function: &RealTimeConvFunction<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().convolve(function, ratio, len))
                 }
             }
 
             impl<'a> Convolution<$data_type, &'a ComplexTimeConvFunction<$data_type>> for ComplexTimeVector<$data_type> {
-                fn convolve(self, function: &ComplexTimeConvFunction<$data_type>) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().convolve(function))
+                fn convolve(self, function: &ComplexTimeConvFunction<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().convolve(function, ratio, len))
                 }
             }
 
             impl<'a> Convolution<$data_type, &'a ComplexFrequencyConvFunction<$data_type>> for ComplexTimeVector<$data_type> {
-                fn convolve(self, function: &ComplexFrequencyConvFunction<$data_type>) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().convolve(function))
+                fn convolve(self, function: &ComplexFrequencyConvFunction<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().convolve(function, ratio, len))
                 }
             }
 
             impl<'a> Convolution<$data_type, &'a ComplexTimeConvFunction<$data_type>> for ComplexFreqVector<$data_type> {
-                fn convolve(self, function: &ComplexTimeConvFunction<$data_type>) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().convolve(function))
+                fn convolve(self, function: &ComplexTimeConvFunction<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().convolve(function, ratio, len))
                 }
             }
 
             impl<'a> Convolution<$data_type, &'a ComplexFrequencyConvFunction<$data_type>> for ComplexFreqVector<$data_type> {
-                fn convolve(self, function: &ComplexFrequencyConvFunction<$data_type>) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().convolve(function))
+                fn convolve(self, function: &ComplexFrequencyConvFunction<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().convolve(function, ratio, len))
                 }
             }
             
             impl<'a> Convolution<$data_type, &'a RealFrequencyConvFunction<$data_type>> for ComplexTimeVector<$data_type> {
-                fn convolve(self, function: &RealFrequencyConvFunction<$data_type>) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().convolve(function))
+                fn convolve(self, function: &RealFrequencyConvFunction<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().convolve(function, ratio, len))
                 }
             }
             
             impl<'a> Convolution<$data_type, &'a RealFrequencyConvFunction<$data_type>> for ComplexFreqVector<$data_type> {
-                fn convolve(self, function: &RealFrequencyConvFunction<$data_type>) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().convolve(function))
+                fn convolve(self, function: &RealFrequencyConvFunction<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().convolve(function, ratio, len))
                 }
             }
         )*
@@ -329,7 +340,7 @@ mod tests {
 	fn convolve_real_freq_and_freq32() {
         let vector = ComplexFreqVector32::from_constant(Complex32::new(1.0, 1.0), 10);
         let rc: RaisedCosineFuncton<f32> = RaisedCosineFuncton::new(1.0);
-        let result = vector.convolve(&rc as &RealFrequencyConvFunction<f32>).unwrap();
+        let result = vector.convolve(&rc as &RealFrequencyConvFunction<f32>, 1.0, 10).unwrap();
         let expected = 
             [0.0, 0.0, 0.3454914, 0.3454914, 0.9045085, 0.9045085, 0.9045085, 0.9045085, 0.3454914, 0.3454914];
         assert_eq_tol(result.data(), &expected, 1e-4);
@@ -337,9 +348,9 @@ mod tests {
     
     #[test]
 	fn convolve_real_time_and_time32() {
-        let vector = RealTimeVector32::from_array_with_delta(&[0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0], 0.2);
+        let vector = RealTimeVector32::from_array(&[0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]);
         let rc: RaisedCosineFuncton<f32> = RaisedCosineFuncton::new(0.35);
-        let result = vector.convolve(&rc as &RealTimeConvFunction<f32>).unwrap();
+        let result = vector.convolve(&rc as &RealTimeConvFunction<f32>, 0.2, 10).unwrap();
         let expected = 
             [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 
              1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
