@@ -35,6 +35,8 @@ pub enum EvenOdd {
 /// Defines all operations which are valid on `DataVectors` containing time domain data.
 /// # Failures
 /// All operations in this trait fail with `VectorMustBeInTimeDomain` if the vector isn't in time domain.
+/// # Unstable
+/// A lot of details about FFTs and IFFTs aren't working out yet. Changes and updates are expected.
 pub trait TimeDomainOperations<T> : DataVector<T> 
     where T : RealNumber {
 	type FreqPartner;
@@ -94,6 +96,8 @@ pub trait TimeDomainOperations<T> : DataVector<T>
 /// Defines all operations which are valid on `DataVectors` containing real time domain data.
 /// # Failures
 /// All operations in this trait fail with `VectorMustBeInTimeDomain` if the vector isn't in time domain.
+/// # Unstable
+/// A lot of details about FFTs and IFFTs aren't working out yet. Changes and updates are expected.
 pub trait SymmetricTimeDomainOperations<T> : DataVector<T> 
     where T : RealNumber {
 	type FreqPartner;
@@ -145,6 +149,8 @@ pub trait SymmetricTimeDomainOperations<T> : DataVector<T>
 /// # Failures
 /// All operations in this trait fail with `VectorMustBeInFrquencyDomain` or `VectorMustBeComplex` 
 /// if the vector isn't in frequency domain and complex number space.
+/// # Unstable
+/// A lot of details about FFTs and IFFTs aren't working out yet. Changes and updates are expected.
 pub trait FrequencyDomainOperations<T> : DataVector<T> 
     where T : RealNumber {
     type ComplexTimePartner;
@@ -210,6 +216,8 @@ pub trait FrequencyDomainOperations<T> : DataVector<T>
 /// # Failures
 /// All operations in this trait fail with `VectorMustBeInFrquencyDomain`
 /// if the vector isn't in frequency domain.
+/// # Unstable
+/// A lot of details about FFTs and IFFTs aren't working out yet. Changes and updates are expected.
 pub trait SymmetricFrequencyDomainOperations<T> : DataVector<T> 
     where T : RealNumber {
     type RealTimePartner;
