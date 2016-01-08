@@ -8,6 +8,7 @@ use RealNumber;
 use num::traits::Zero;
 use std::ops::Mul;
 use std::fmt::Display;
+use num::complex::Complex;
 use super::{
     GenericDataVector,
     RealTimeVector,
@@ -121,33 +122,22 @@ macro_rules! add_conv_impl{
                 fn convolve(self, function: &ComplexFrequencyConvFunction<$data_type>) -> VecResult<Self> {
                     assert_complex!(self);
                     let was_time = self.domain == DataVectorDomain::Time;
-                    let mut freq = 
+                    let freq = 
                         if was_time {
                             try!{ self.fft() }
                         } else {
                             self
                         };
-                    {
-                        let len = freq.len();
-                        let points = freq.points();
-                        let complex = Self::array_to_complex_mut(&mut freq.data[0..len]);
-                        Chunk::execute_with_range(
-                            Complexity::Medium, &freq.multicore_settings,
-                            complex, points, 1, function,
-                            move |array, range, function| {
-                                let max = points as $data_type / 2.0; 
-                                let mut j = -((points + range.start) as $data_type) / 2.0;
-                                for num in array {
-                                    (*num) = (*num) * function.calc(j / max);
-                                    j += 1.0;
-                                }
-                            });
-                    }
-                    
+                        
+                    let result = freq.multiply_function_priv(
+                                    |array|Self::array_to_complex_mut(array),
+                                    function,
+                                    |f,x|f.calc(x));
+                                    
                     if was_time {
-                        freq.ifft()
+                        result.ifft()
                     } else {
-                        Ok(freq)
+                        Ok(result)
                     }
                 }
             }
@@ -156,34 +146,54 @@ macro_rules! add_conv_impl{
                 fn convolve(self, function: &RealFrequencyConvFunction<$data_type>) -> VecResult<Self> {
                     assert_complex!(self);
                     let was_time = self.domain == DataVectorDomain::Time;
-                    let mut freq = 
+                    let freq = 
                         if was_time {
                             try!{ self.fft() }
                         } else {
                             self
                         };
+                    let result = freq.multiply_function_priv(
+                                    |array|Self::array_to_complex_mut(array),
+                                    function,
+                                    |f,x|Complex::<$data_type>::new(f.calc(x), 0.0));
+                    
+                    if was_time {
+                        result.ifft()
+                    } else {
+                        Ok(result)
+                    }
+                }
+            }
+            
+            impl GenericDataVector<$data_type> {
+                fn multiply_function_priv<T,CMut,FA, F>(
+                    mut self, 
+                    convert_mut: CMut,
+                    function_arg: FA, 
+                    fun: F) -> Self
+                        where 
+                            CMut: Fn(&mut [$data_type]) -> &mut [T],
+                            FA: Copy + Sync,
+                            F: Fn(FA, $data_type)->T + 'static + Sync,
+                            T: Zero + Mul<Output=T> + Copy + Display + Send + Sync
+                {
                     {
-                        let len = freq.len();
-                        let points = freq.points();
-                        let complex = Self::array_to_complex_mut(&mut freq.data[0..len]);
+                        let len = self.len();
+                        let points = self.points();
+                        let complex = convert_mut(&mut self.data[0..len]);
                         Chunk::execute_with_range(
-                            Complexity::Medium, &freq.multicore_settings,
-                            complex, points, 1, function,
-                            move |array, range, function| {
+                            Complexity::Medium, &self.multicore_settings,
+                            complex, points, 1, function_arg,
+                            move |array, range, arg| {
                                 let max = points as $data_type / 2.0; 
                                 let mut j = -((points + range.start) as $data_type) / 2.0;
                                 for num in array {
-                                    (*num) = (*num) * function.calc(j / max);
+                                    (*num) = (*num) * fun(arg, j / max);
                                     j += 1.0;
                                 }
                             });
                     }
-                    
-                    if was_time {
-                        freq.ifft()
-                    } else {
-                        Ok(freq)
-                    }
+                    self
                 }
             }
         )*
