@@ -10,6 +10,7 @@ use std::ops::Mul;
 use std::fmt::Display;
 use num::complex::Complex;
 use super::{
+    GenericVectorOperations,
     GenericDataVector,
     RealTimeVector,
     ComplexFreqVector,
@@ -37,6 +38,7 @@ pub trait Convolution<T, C> : DataVector<T>
     /// 
     /// 1. `VectorMustBeComplex`: if `self` is in real number space but `function` is in complex number space.
     /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain, `function` is in time domain and the vector can't be automatically converted to frequency domain since it is in real number space.
+    /// 3. `VectorMetaDataMustAgree`: in case `self` and `function` are both vectors but not in the same number space and same domain.
     fn convolve(self, function: C, ratio: T, len: usize) -> VecResult<Self>;
 }
 
@@ -207,6 +209,62 @@ macro_rules! add_conv_impl{
                     self
                 }
             }
+            
+            impl<'a> Convolution<$data_type, &'a GenericDataVector<$data_type>> for GenericDataVector<$data_type> {
+                fn convolve(mut self, vector: &GenericDataVector<$data_type>, _ratio: $data_type, conv_len: usize) -> VecResult<Self> {
+                    assert_meta_data!(self, vector);
+                    reject_if!(self, self.points() != vector.points(), ErrorReason::VectorMetaDataMustAgree);
+                    if self.domain == DataVectorDomain::Frequency {
+                        self.multiply_vector(vector)
+                    } else {
+                        if self.is_complex {
+                            {
+                                let len = self.len();
+                                let other = Self::array_to_complex(&vector.data[0..len]);
+                                let complex = Self::array_to_complex(&self.data[0..len]);
+                                let dest = Self::array_to_complex_mut(&mut self.temp[0..len]);
+                                let mut i = 0;
+                                for num in dest {
+                                    let start = if i > conv_len { i - conv_len } else { 0 };
+                                    let end = if i + conv_len < len { i + conv_len } else { len };
+                                    let mut sum = Complex::<$data_type>::zero();
+                                    let center = i;
+                                    let mut j = start - center;
+                                    for c in &complex[start..end] {
+                                        sum = sum + (*c) * other[j];
+                                        j += 1;
+                                    }
+                                    (*num) = sum;
+                                    i += 1;
+                                }
+                            }
+                            Ok(self)
+                        } else {
+                            {
+                                let len = self.len();
+                                let other = &vector.data[0..len];
+                                let data = &self.data[0..len];
+                                let dest = &mut self.temp[0..len];
+                                let mut i = 0;
+                                for num in dest {
+                                    let start = if i > conv_len { i - conv_len } else { 0 };
+                                    let end = if i + conv_len < len { i + conv_len } else { len };
+                                    let mut sum = 0.0;
+                                    let center = i;
+                                    let mut j = start - center;
+                                    for c in &data[start..end] {
+                                        sum = sum + (*c) * other[j];
+                                        j += 1;
+                                    }
+                                    (*num) = sum;
+                                    i += 1;
+                                }
+                            }
+                            Ok(self)
+                        }
+                    }
+                }
+            }
         )*
     }
 }
@@ -294,47 +352,6 @@ mod tests {
             }
         }
     }
-    /*
-	#[test]
-	fn convolve_real_and_time32() {
-        let result = {
-            let vector = RealTimeVector32::from_constant(1.0, 10);
-            let conv = RaiseCosineFuncton::new(0.35);
-            vector.convolve(&conv).unwrap()
-        };
-        
-        assert_eq!(result.data(), &[0.0; 10])
-    }
-   
-    #[test]
-	fn convolve_complex_time_and_time32() {
-        let vector = ComplexTimeVector32::from_constant(Complex32::new(1.0, 0.0), 10);
-        let rc = RaiseCosineFuncton::new(0.35);
-        let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.4, 10);
-        let complex = real.to_complex();
-        let result = vector.convolve(&complex as &ComplexTimeConvFunction<f32>).unwrap();
-        assert_eq!(result.data(), &[0.0; 10])
-    }
-    
-    #[test]
-	fn convolve_complex_time_and_freq32() {
-        let vector = ComplexTimeVector32::from_constant(Complex32::new(1.0, 0.0), 10);
-        let rc = RaiseCosineFuncton::new(0.35);
-        let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.4, 10);
-        let freq = real.to_complex().fft();
-        let result = vector.convolve(&freq as &ComplexFrequencyConvFunction<f32>).unwrap();
-        assert_eq!(result.data(), &[0.0; 10])
-    }
-    
-    #[test]
-	fn convolve_complex_freq_and_time32() {
-        let vector = ComplexFreqVector32::from_constant(Complex32::new(1.0, 0.0), 10);
-        let rc = RaiseCosineFuncton::new(0.35);
-        let real = RealTimeLinearTableLookup::<f32>::from_conv_function(&rc, 0.4, 10);
-        let complex = real.to_complex();
-        let result = vector.convolve(&complex as &ComplexTimeConvFunction<f32>).unwrap();
-        assert_eq!(result.data(), &[0.0; 10])
-    }*/
     
     #[test]
 	fn convolve_real_freq_and_freq32() {
