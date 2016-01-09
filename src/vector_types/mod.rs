@@ -111,6 +111,7 @@ use num::complex::Complex;
 use RealNumber;
 use multicore_support::{Chunk, Complexity, MultiCoreSettings};
 use std::mem;
+use std::ptr;
 use simd_extensions::{Simd, Reg32, Reg64};
 use std::ops::{Index, IndexMut, Range, RangeTo, RangeFrom, RangeFull};
     

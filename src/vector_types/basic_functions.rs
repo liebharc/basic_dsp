@@ -155,6 +155,44 @@ macro_rules! add_basic_private_impl {
                     }
                     Ok(self.swap_data_temp())
                 }
+                
+                #[inline]
+                fn swap_halves_priv(mut self, forward: bool) -> VecResult<Self>
+                {
+                   {
+                        let data_length = self.len();
+                        let points = self.points();
+                        let complex = self.is_complex;
+                        let elems_per_point = if complex { 2 } else { 1 };  
+                        let mut temp = temp_mut!(self, data_length);  
+                         
+                        // First half
+                        let len = 
+                            if forward {
+                                points / 2 * elems_per_point 
+                            }
+                            else {
+                                data_length - points / 2 * elems_per_point 
+                            };
+                        let start = data_length - len; 
+                        let data = &self.data[start] as *const $data_type;
+                        let target = &mut temp[0] as *mut $data_type;
+                        unsafe {
+                            ptr::copy(data, target, len);
+                        }
+                        
+                        // Second half
+                        let data = &self.data[0] as *const $data_type;
+                        let start = len; 
+                        let len = data_length - len;
+                        let target = &mut temp[start] as *mut $data_type;
+                        unsafe {
+                            ptr::copy(data, target, len);
+                        }
+                    }
+                    
+                    Ok(self.swap_data_temp())
+                }
             }
         )*
     }

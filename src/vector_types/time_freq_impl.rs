@@ -3,7 +3,6 @@ use super::definitions::{
     VecResult,
     DataVectorDomain,
     ErrorReason,
-    GenericVectorOperations,
     ComplexVectorOperations,
     RealVectorOperations};
 use super::{
@@ -189,6 +188,12 @@ pub trait FrequencyDomainOperations<T> : DataVector<T>
     /// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
 	/// into a time domain vector and removes the FFT window.
     fn windowed_ifft(self, window: &WindowFunction<T>) -> VecResult<Self::ComplexTimePartner>;
+    
+    /// Swaps vector halves after a Fourier Transformation.
+    fn fft_shift(self) -> VecResult<Self>;
+    
+    /// Swaps vector halves before an Inverse Fourier Transformation.
+    fn ifft_shift(self) -> VecResult<Self>;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing frequency domain data and
@@ -332,13 +337,13 @@ macro_rules! add_time_freq_impl {
                 
                 fn fft(self) -> VecResult<Self::FreqPartner> {
                     self.plain_fft()
-                    .and_then(|v|v.swap_halves())
+                    .and_then(|v|v.fft_shift())
                 }
                 
                 fn windowed_fft(self, window: &WindowFunction<$data_type>) -> VecResult<Self::FreqPartner> {
                     self.apply_window(window)
                     .and_then(|v|v.plain_fft())
-                    .and_then(|v|v.swap_halves())
+                    .and_then(|v|v.fft_shift())
                 }
             }
             
@@ -454,16 +459,24 @@ macro_rules! add_time_freq_impl {
                     
                     let points = self.points();
                     self.real_scale(1.0 / points as $data_type)
-                    .and_then(|v| v.swap_halves())
+                    .and_then(|v| v.ifft_shift())
                     .and_then(|v| v.plain_ifft())
                 }
                 
                 fn windowed_ifft(self, window: &WindowFunction<$data_type>) -> VecResult<Self::ComplexTimePartner> {
                     let points = self.points();
                     self.real_scale(1.0 / points as $data_type)
-                    .and_then(|v| v.swap_halves())
+                    .and_then(|v| v.ifft_shift())
                     .and_then(|v| v.plain_ifft())
                     .and_then(|v|v.unapply_window(window))
+                }
+                
+                fn fft_shift(self) -> VecResult<Self> {
+                    self.swap_halves_priv(true)
+                }
+                
+                fn ifft_shift(self) -> VecResult<Self> {
+                    self.swap_halves_priv(false)
                 }
             }
             
@@ -482,13 +495,13 @@ macro_rules! add_time_freq_impl {
                 fn sifft(self) -> VecResult<Self::RealTimePartner> {
                     let points = self.points();
                     self.real_scale(1.0 / points as $data_type)
-                    .and_then(|v| v.swap_halves())
+                    .and_then(|v| v.ifft_shift())
                     .and_then(|v| v.plain_sifft())
                 }
                 fn windowed_sifft(self, window: &WindowFunction<$data_type>) -> VecResult<Self::RealTimePartner> {
                     let points = self.points();
                     self.real_scale(1.0 / points as $data_type)
-                    .and_then(|v| v.swap_halves())
+                    .and_then(|v| v.ifft_shift())
                     .and_then(|v| v.plain_sifft())
                     .and_then(|v|v.unapply_window(window))
                 }
@@ -510,6 +523,14 @@ macro_rules! add_time_freq_impl {
                 
                 fn windowed_ifft(self, window: &WindowFunction<$data_type>) -> VecResult<Self::ComplexTimePartner> {
                     Self::ComplexTimePartner::from_genres(self.to_gen().windowed_ifft(window))
+                }
+                
+                fn fft_shift(self) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().fft_shift())
+                }
+                
+                fn ifft_shift(self) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().ifft_shift())
                 }
             }
             
@@ -599,7 +620,7 @@ mod tests {
     }
     
     #[test]
-	fn sfft_test2()
+	fn sfft_test()
 	{
 		let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]);
         let result = vector.sfft().unwrap();
@@ -608,5 +629,23 @@ mod tests {
         for i in 0..result.len() {
             assert!((result[i] - expected[i]).abs() < 1e-4);
         }
+	}
+    
+    #[test]
+	fn ifft_shift_test()
+	{
+		let mut a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
+		let c = ComplexFreqVector32::from_interleaved(&mut a);
+        let r = c.ifft_shift().unwrap();
+		assert_eq!(r.data(), &[3.0, 4.0, 5.0, 6.0, 1.0, 2.0]);
+	}
+    
+    #[test]
+	fn fft_shift_test()
+	{
+		let mut a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
+		let c = ComplexFreqVector32::from_interleaved(&mut a);
+        let r = c.fft_shift().unwrap();
+		assert_eq!(r.data(), &[5.0, 6.0, 1.0, 2.0, 3.0, 4.0]);
 	}
 }

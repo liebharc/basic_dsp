@@ -627,35 +627,9 @@ macro_rules! add_general_impl {
                 impl_real_complex_dispatch!(fn acosh, real_acosh, complex_acosh);
                 impl_real_complex_dispatch!(fn atanh, real_atanh, complex_atanh);
                 
-                fn swap_halves(mut self) -> VecResult<Self>
+                fn swap_halves(self) -> VecResult<Self>
                 {
-                   {
-                        let data_length = self.len();
-                        let points = self.points();
-                        let complex = self.is_complex;
-                        let elems_per_point = if complex { 2 } else { 1 };  
-                        let mut temp = temp_mut!(self, data_length);  
-                         
-                        // First half
-                        let len = points / 2 * elems_per_point;
-                        let start = data_length - len; 
-                        let data = &self.data[start] as *const $data_type;
-                        let target = &mut temp[0] as *mut $data_type;
-                        unsafe {
-                            ptr::copy(data, target, len);
-                        }
-                        
-                        // Second half
-                        let data = &self.data[0] as *const $data_type;
-                        let start = len; 
-                        let len = data_length - len;
-                        let target = &mut temp[start] as *mut $data_type;
-                        unsafe {
-                            ptr::copy(data, target, len);
-                        }
-                    }
-                    
-                    Ok(self.swap_data_temp())
+                   self.swap_halves_priv(true)
                 }
                 
                 fn override_data(mut self, data: &[$data_type]) -> VecResult<Self> {
