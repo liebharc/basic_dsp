@@ -346,7 +346,7 @@ mod tests {
     #[test]
 	fn convolve_real_freq_and_freq32() {
         let vector = ComplexFreqVector32::from_constant(Complex32::new(1.0, 1.0), 5);
-        let rc: RaisedCosineFuncton<f32> = RaisedCosineFuncton::new(1.0);
+        let rc: RaisedCosineFunction<f32> = RaisedCosineFunction::new(1.0);
         let result = vector.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 2.0).unwrap();
         let expected = 
             [0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 0.0, 0.0];
@@ -356,7 +356,7 @@ mod tests {
     #[test]
 	fn convolve_real_time_and_time32() {
         let vector = RealTimeVector32::from_array(&[0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]);
-        let rc: RaisedCosineFuncton<f32> = RaisedCosineFuncton::new(0.35);
+        let rc: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
         let result = vector.convolve(&rc as &RealImpulseResponse<f32>, 0.2, 10).unwrap();
         let expected = 
             [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 

@@ -303,12 +303,12 @@ macro_rules! add_complex_frequency_linear_table_impl {
 add_complex_frequency_linear_table_impl!(f32, f64);
 
 /// Raised cosine function according to https://en.wikipedia.org/wiki/Raised-cosine_filter
-pub struct RaisedCosineFuncton<T>
+pub struct RaisedCosineFunction<T>
     where T: RealNumber {
     rolloff: T        
 }
 
-impl<T> RealImpulseResponse<T> for RaisedCosineFuncton<T> 
+impl<T> RealImpulseResponse<T> for RaisedCosineFunction<T> 
     where T: RealNumber {
     fn calc(&self, x: T) -> T {
         if x == T::zero() {
@@ -330,7 +330,7 @@ impl<T> RealImpulseResponse<T> for RaisedCosineFuncton<T>
     }
 }
 
-impl<T> RealFrequencyResponse<T> for RaisedCosineFuncton<T> 
+impl<T> RealFrequencyResponse<T> for RaisedCosineFunction<T> 
     where T: RealNumber {
     fn calc(&self, x: T) -> T {
         // assume x_delta = 1.0
@@ -351,11 +351,11 @@ impl<T> RealFrequencyResponse<T> for RaisedCosineFuncton<T>
     }
 }
 
-impl<T> RaisedCosineFuncton<T>
+impl<T> RaisedCosineFunction<T>
     where T: RealNumber {
     /// Creates a raised cosine function.
     pub fn new(rolloff: T) -> Self {
-        RaisedCosineFuncton { rolloff: rolloff }
+        RaisedCosineFunction { rolloff: rolloff }
     }
 }
 
@@ -462,7 +462,7 @@ mod tests {
 	#[test]
 	fn raised_cosine_test()
 	{
-        let rc = RaisedCosineFuncton::new(0.35);
+        let rc = RaisedCosineFunction::new(0.35);
         let expected = 
             [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 
              1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
@@ -487,7 +487,7 @@ mod tests {
     
     #[test]
     fn lookup_table_test() {
-        let rc = RaisedCosineFuncton::new(0.35);
+        let rc = RaisedCosineFunction::new(0.35);
         let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.2, 5);
         let expected = 
             [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 
@@ -497,7 +497,7 @@ mod tests {
     
     #[test]
     fn linear_interpolation_lookup_table_test() {
-        let rc = RaisedCosineFuncton::new(0.35);
+        let rc = RaisedCosineFunction::new(0.35);
         let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.4, 5);
         let expected = 
             [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 
@@ -507,7 +507,7 @@ mod tests {
     
     #[test]
     fn to_complex_test() {
-        let rc = RaisedCosineFuncton::new(0.35);
+        let rc = RaisedCosineFunction::new(0.35);
         let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.4, 5);
         let complex = table.to_complex();
         let expected = 
@@ -518,7 +518,7 @@ mod tests {
     
     #[test]
     fn fft_test() {
-        let rc = RaisedCosineFuncton::new(0.5);
+        let rc = RaisedCosineFunction::new(0.5);
         let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.2, 5);
         let freq = table.fft();
         assert_eq!(freq.delta(), 2.2);
@@ -529,7 +529,7 @@ mod tests {
     
     #[test]
     fn freq_test() {
-        let rc = RaisedCosineFuncton::new(0.5);
+        let rc = RaisedCosineFunction::new(0.5);
         let expected = 
             [0.0, 0.0, 0.20610737385376332, 0.7938926261462365, 1.0, 1.0, 1.0, 0.7938926261462365, 0.20610737385376332, 0.0];
         real_freq_conv_test(rc, &expected, 0.4, 0.1);
