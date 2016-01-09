@@ -39,7 +39,6 @@ pub use vector_types::
         VecResult,
         VoidResult,
         ErrorReason,
-        EvenOdd,
 		GenericVectorOperations,
 		RealVectorOperations,
 		ComplexVectorOperations,

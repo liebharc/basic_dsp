@@ -1042,6 +1042,18 @@ pub enum ErrorReason {
     /// operations documentation should have more information about the requirements.
     /// Please open a defect if this isn't the case.
     InvalidArgumentLength,
+    
+    /// The operations is only valid if the data vector contains half of a symmetric spectrum.
+    /// The symmetry definition follows soon however more important is that the element at 0 Hz
+    /// which happens to be the first vector element must be real. This is actually violated 
+    /// if this error message appears and the rest of the definition is only listed here for
+    /// completness.
+    /// The required symmetry is that for every point `vector[x].conj() == vector[-x]`(pseudocode)
+    /// where `x` is the x-axis position relativ to 0Hz and `conj` is the complex conjungate.
+    VectorMustBeConjSymmetric,
+    
+    /// `self.points()` must be an odd number.
+    VectorMustHaveAnOddLength,
 }
 
 /// Result contains on success the vector. On failure it contains an error reason and an vector with invalid data

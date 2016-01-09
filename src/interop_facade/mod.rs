@@ -39,8 +39,7 @@ macro_rules! convert_scalar {
 pub mod facade32;
 pub mod facade64;
 use vector_types::{
-    ErrorReason,
-    EvenOdd};
+    ErrorReason};
 use window_functions::*;
 use RealNumber;
 
@@ -52,12 +51,10 @@ pub fn translate_error(reason: ErrorReason) -> i32 {
         ErrorReason::VectorMustBeReal => 4,
         ErrorReason::VectorMustBeInTimeDomain => 5,
         ErrorReason::VectorMustBeInFrquencyDomain => 6,
-        ErrorReason::InvalidArgumentLength => 7
+        ErrorReason::InvalidArgumentLength => 7,
+        ErrorReason::VectorMustBeConjSymmetric => 8,
+        ErrorReason::VectorMustHaveAnOddLength => 9,
     }
-}
-
-pub fn translate_to_even_odd(value: i32) -> EvenOdd {
-    if value != 0 { EvenOdd::Odd } else { EvenOdd::Even }
 }
 
 pub fn translate_to_window_function<T>(value: i32) -> Box<WindowFunction<T>> 

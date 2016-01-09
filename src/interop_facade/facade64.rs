@@ -462,28 +462,19 @@ pub extern fn ifft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
     convert_vec!(vector.ifft())
 }
 
-/// `even_odd` is translated according to:
-/// 
-/// 1. `0` to [`EvenOdd::Even`](../../enum.EvenOdd.html) 
-/// 2. `1` to [`EvenOdd::Odd`](../../enum.EvenOdd.html)
 #[no_mangle]
-pub extern fn plain_sifft64(vector: Box<DataVector64>, even_odd: i32) -> VectorResult<DataVector64> {
-    let even_odd = translate_to_even_odd(even_odd);
-    convert_vec!(vector.plain_sifft(even_odd))
+pub extern fn plain_sifft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+    convert_vec!(vector.plain_sifft())
 }
 
-/// See [`plain_sifft64`](fn.plain_sifft64.html) for a description of the `even_odd` parameter.
 #[no_mangle]
-pub extern fn sifft64(vector: Box<DataVector64>, even_odd: i32) -> VectorResult<DataVector64> {
-    let even_odd = translate_to_even_odd(even_odd);
-    convert_vec!(vector.sifft(even_odd))
+pub extern fn sifft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+    convert_vec!(vector.sifft())
 }
 
-/// See [`plain_sifft64`](fn.plain_sifft64.html) for a description of the `even_odd` parameter.
 #[no_mangle]
-pub extern fn mirror64(vector: Box<DataVector64>, even_odd: i32) -> VectorResult<DataVector64> {
-    let even_odd = translate_to_even_odd(even_odd);
-    convert_vec!(vector.mirror(even_odd))
+pub extern fn mirror64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+    convert_vec!(vector.mirror())
 }
 
 /// `window` argument is translated to:
@@ -517,13 +508,11 @@ pub extern fn windowed_ifft64(vector: Box<DataVector64>, window: i32) -> VectorR
     convert_vec!(vector.windowed_ifft(window.as_ref()))
 }
 
-/// See [`plain_sifft64`](fn.plain_sifft64.html) for a description of the `even_odd` parameter.
 /// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
 #[no_mangle]
-pub extern fn windowed_sifft64(vector: Box<DataVector64>, even_odd: i32, window: i32) -> VectorResult<DataVector64> {
-    let even_odd = translate_to_even_odd(even_odd);
+pub extern fn windowed_sifft64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
     let window = translate_to_window_function(window);
-    convert_vec!(vector.windowed_sifft(even_odd, window.as_ref()))
+    convert_vec!(vector.windowed_sifft(window.as_ref()))
 }
 
 struct ForeignWindowFunction {
@@ -578,13 +567,11 @@ pub extern fn windowed_custom_ifft64(vector: Box<DataVector64>, window: extern f
 }
 
 /// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
-/// See [`plain_sifft64`](fn.plain_sifft64.html) for a description of the `even_odd` parameter.
 #[no_mangle]
-pub extern fn windowed_custom_sifft64(vector: Box<DataVector64>, even_odd: i32, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
+pub extern fn windowed_custom_sifft64(vector: Box<DataVector64>, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
     unsafe {
-        let even_odd = translate_to_even_odd(even_odd);
         let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data) };
-        convert_vec!(vector.windowed_sifft(even_odd, &window))
+        convert_vec!(vector.windowed_sifft(&window))
     }
 }
 

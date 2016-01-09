@@ -102,8 +102,7 @@ pub use vector_types::time_freq_impl::{
         TimeDomainOperations,
 		FrequencyDomainOperations,
         SymmetricFrequencyDomainOperations,
-        SymmetricTimeDomainOperations,
-        EvenOdd
+        SymmetricTimeDomainOperations
     };
 pub use vector_types::convolution_impl::Convolution;
 pub use vector_types::correlation_impl::CrossCorrelation;
@@ -544,7 +543,7 @@ mod tests {
 		let mut a = [1.0, 2.0, 3.0, 4.0, 5.0];
 		let c = RealTimeVector32::from_array(&mut a);
         let r = c.swap_halves().unwrap();
-		assert_eq!(r.data(), &[4.0, 5.0, 3.0, 1.0, 2.0]);
+		assert_eq!(r.data(), &[4.0, 5.0, 1.0, 2.0, 3.0]);
 	}
     
     #[test]
@@ -562,6 +561,6 @@ mod tests {
 		let mut a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
 		let c = ComplexTimeVector32::from_interleaved(&mut a);
         let r = c.swap_halves().unwrap();
-		assert_eq!(r.data(), &[7.0, 8.0, 9.0, 10.0, 5.0, 6.0, 1.0, 2.0, 3.0, 4.0]);
+		assert_eq!(r.data(), &[7.0, 8.0, 9.0, 10.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
 	}
 }

@@ -631,35 +631,14 @@ macro_rules! add_general_impl {
                 {
                    {
                         let data_length = self.len();
-                        let mut len = self.points();
-                        let mut start = len;
-                        let is_odd = len % 2 == 1;
-                        if !self.is_complex {
-                            if is_odd {
-                                // Copy middle element
-                                let data = &self.data;;
-                                let target = temp_mut!(self, data_length);
-                                target[len / 2] = data[len / 2];
-                                start = start + 1;
-                            }
-                            
-                            len = len / 2;
-                            start = start / 2;
-                        }
-                        else {
-                            if is_odd {
-                                let data = &self.data;;
-                                let target = temp_mut!(self, data_length);
-                                // Copy middle element
-                                target[len - 1] = data[len - 1];
-                                target[len] = data[len];
-                                start = start + 1;
-                                len = len - 1;
-                            }
-                        }
-                             
-                        let mut temp = temp_mut!(self, data_length);   
+                        let points = self.points();
+                        let complex = self.is_complex;
+                        let elems_per_point = if complex { 2 } else { 1 };  
+                        let mut temp = temp_mut!(self, data_length);  
+                         
                         // First half
+                        let len = points / 2 * elems_per_point;
+                        let start = data_length - len; 
                         let data = &self.data[start] as *const $data_type;
                         let target = &mut temp[0] as *mut $data_type;
                         unsafe {
@@ -668,6 +647,8 @@ macro_rules! add_general_impl {
                         
                         // Second half
                         let data = &self.data[0] as *const $data_type;
+                        let start = len; 
+                        let len = data_length - len;
                         let target = &mut temp[start] as *mut $data_type;
                         unsafe {
                             ptr::copy(data, target, len);
