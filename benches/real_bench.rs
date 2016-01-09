@@ -242,7 +242,7 @@ mod bench {
 		b.iter(|| {
 			vector.execute_res(|v| {
                 let len = v.len(); 
-                let operand = RealTimeVector32::real_from_constant(0.0, len);
+                let operand = RealTimeVector32::from_constant(0.0, len);
                 v.multiply_vector(&operand) 
             } )
 		});
