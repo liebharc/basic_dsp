@@ -410,8 +410,8 @@ mod slow_test {
             let a = create_data_even(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
-            let mut real = RealTimeVector32::real_empty();
-            let mut imag = RealTimeVector32::real_empty();
+            let mut real = RealTimeVector32::empty();
+            let mut imag = RealTimeVector32::empty();
             vector.get_real_imag(&mut real, &mut imag).unwrap();
             let vector2 = ComplexTimeVector32::empty();
             let result = vector2.set_real_imag(&real, &imag).unwrap();
@@ -425,10 +425,10 @@ mod slow_test {
             let a = create_data_even(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
-            let mut mag = RealTimeVector32::real_empty();
-            let mut phase = RealTimeVector32::real_empty();
-            let mut mag2 = RealTimeVector32::real_empty();
-            let mut phase2 = RealTimeVector32::real_empty();;
+            let mut mag = RealTimeVector32::empty();
+            let mut phase = RealTimeVector32::empty();
+            let mut mag2 = RealTimeVector32::empty();
+            let mut phase2 = RealTimeVector32::empty();;
             vector.get_mag_phase(&mut mag, &mut phase).unwrap();
             vector.get_magnitude(&mut mag2).unwrap();
             vector.get_phase(&mut phase2).unwrap();

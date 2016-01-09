@@ -5,8 +5,9 @@ mod slow_test {
         DataVector,
         RealTimeVector32,
         TimeDomainOperations,
-        EvenOdd,
+        SymmetricTimeDomainOperations,
         FrequencyDomainOperations,
+        SymmetricFrequencyDomainOperations,
         GenericVectorOperations,
         RealVectorOperations};
     use tools::*;
@@ -448,33 +449,33 @@ mod slow_test {
         let vector = RealTimeVector32::from_array(&a);
         let mut split = 
             [
-                Box::new(RealTimeVector32::real_empty()),
-                Box::new(RealTimeVector32::real_empty()),
-                Box::new(RealTimeVector32::real_empty()),
-                Box::new(RealTimeVector32::real_empty()),
-                Box::new(RealTimeVector32::real_empty())];
+                Box::new(RealTimeVector32::empty()),
+                Box::new(RealTimeVector32::empty()),
+                Box::new(RealTimeVector32::empty()),
+                Box::new(RealTimeVector32::empty()),
+                Box::new(RealTimeVector32::empty())];
         vector.split_into(&mut split).unwrap();
-        let merge = RealTimeVector32::real_empty();
+        let merge = RealTimeVector32::empty();
         let result = merge.merge(&split).unwrap();
         assert_vector_eq(&a, &result.data());
     }
     
     #[test]
     fn real_fft_test32() {
-        let data = create_data(201511210, 0, 1000, 1000);
+        let data = create_data(201511210, 0, 1001, 1001);
         let time = RealTimeVector32::from_array(&data);
         time.assert_meta_data();
-        let real_fft = time.clone().plain_fft().unwrap();
-        real_fft.assert_meta_data();
+        let sym_fft = time.clone().plain_sfft().unwrap();
+        sym_fft.assert_meta_data();
         let complex_time = time.clone().to_complex().unwrap();
         complex_time.assert_meta_data();
         let complex_freq = complex_time.plain_fft().unwrap();
         complex_freq.assert_meta_data();
-        let real_mirror = real_fft.clone().mirror(EvenOdd::Even).unwrap();
+        let real_mirror = sym_fft.clone().mirror().unwrap();
         real_mirror.assert_meta_data();
         assert_vector_eq_with_reason_and_tolerance(&complex_freq.data(), &real_mirror.data(), 1e-3, "Different FFT paths must equal");
-        let real_ifft = real_fft.plain_sifft(EvenOdd::Even).unwrap()
-                                .real_scale(1.0 / 1000.0).unwrap();
+        let real_ifft = sym_fft.plain_sifft().unwrap()
+                                .real_scale(1.0 / 1001.0).unwrap();
         assert_vector_eq_with_reason_and_tolerance(&time.data(), &real_ifft.data(), 1e-3, "Ifft must give back the original result");
     }
 }

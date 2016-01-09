@@ -26,7 +26,6 @@ mod slow_test {
             let result= freq.plain_ifft().unwrap();
             assert_vector_eq_with_reason_and_tolerance(&a, &result.data(), 1e-4, "IFFT must invert FFT");
             assert_eq!(result.is_complex(), true);
-            assert!((result.delta() - delta) < 1e-4);
         }
     }
     
@@ -120,7 +119,6 @@ mod slow_test {
             let result= freq.ifft().unwrap();
             assert_vector_eq_with_reason_and_tolerance(&a, &result.data(), 1e-4, "IFFT must invert FFT");
             assert_eq!(result.is_complex(), true);
-            assert!((result.delta() - delta) < 1e-4);
         }
     }
 }

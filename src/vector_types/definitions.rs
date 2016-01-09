@@ -530,8 +530,8 @@ pub trait GenericVectorOperations<T>: DataVector<T>
     /// let a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
 	/// let merge = RealTimeVector32::from_array(&a);
     /// let mut split = &mut 
-    ///     [Box::new(RealTimeVector32::real_empty()), 
-    ///     Box::new(RealTimeVector32::real_empty())];
+    ///     [Box::new(RealTimeVector32::empty()), 
+    ///     Box::new(RealTimeVector32::empty())];
     /// merge.split_into(split).unwrap();
     /// assert_eq!([1.0, 3.0, 5.0, 7.0, 9.0], split[0].data());
 	/// ```
@@ -548,7 +548,7 @@ pub trait GenericVectorOperations<T>: DataVector<T>
 	///
 	/// ```
 	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::real_empty();
+	/// let vector = RealTimeVector32::empty();
     /// let parts = &[
     ///     Box::new(RealTimeVector32::from_array(&[1.0, 2.0])),
     ///     Box::new(RealTimeVector32::from_array(&[1.0, 2.0]))];

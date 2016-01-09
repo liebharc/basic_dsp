@@ -56,7 +56,7 @@ pub trait TimeDomainOperations<T> : DataVector<T>
 	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254]);
 	/// let result = vector.fft().expect("Ignoring error handling in examples");
 	/// let actual = result.data();
-	/// let expected = &[0.0, 0.0, 3.0, 0.0, 0.0, 0.0];
+	/// let expected = &[0.0, 0.0, 0.0, 0.0, 3.0, 0.0];
 	/// assert_eq!(actual.len(), expected.len());
 	/// for i in 0..actual.len() {
 	///		assert!((actual[i] - expected[i]).abs() < 1e-4);
@@ -175,7 +175,7 @@ pub trait FrequencyDomainOperations<T> : DataVector<T>
 	///
 	/// ```
 	/// use basic_dsp::{ComplexFreqVector32, FrequencyDomainOperations, DataVector};
-	/// let vector = ComplexFreqVector32::from_interleaved(&[0.0, 0.0, 3.0, 0.0, 0.0, 0.0]);
+	/// let vector = ComplexFreqVector32::from_interleaved(&[0.0, 0.0, 0.0, 0.0, 3.0, 0.0]);
 	/// let result = vector.ifft().expect("Ignoring error handling in examples");
 	/// let actual = result.data();
 	/// let expected = &[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254];
