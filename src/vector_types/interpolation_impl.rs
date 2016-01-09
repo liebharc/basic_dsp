@@ -2,7 +2,7 @@ use super::definitions::{
     DataVector,
     VecResult};
 use RealNumber;
-use conv_types::RealTimeConvFunction;
+use conv_types::RealImpulseResponse;
 use super::{
     GenericDataVector,
     RealTimeVector,
@@ -17,14 +17,14 @@ use super::{
 pub trait Interpolation<T> : DataVector<T> 
     where T : RealNumber {
     /// Interpolates `self` with the convolution function `function`.
-    fn interpolate(self, function: &RealTimeConvFunction<T>, interpolation_factor: T, delay: T, len: usize) -> VecResult<Self>;
+    fn interpolate(self, function: &RealImpulseResponse<T>, interpolation_factor: T, delay: T, len: usize) -> VecResult<Self>;
 }
 
 macro_rules! define_interpolation_impl {
     ($($data_type:ident);*) => {
         $( 
             impl Interpolation<$data_type> for GenericDataVector<$data_type> {
-                fn interpolate(mut self, function: &RealTimeConvFunction<$data_type>, interpolation_factor: $data_type, delay: $data_type, conv_len: usize) -> VecResult<Self> {
+                fn interpolate(mut self, function: &RealImpulseResponse<$data_type>, interpolation_factor: $data_type, delay: $data_type, conv_len: usize) -> VecResult<Self> {
                     {
                         let len = self.len();
                         let new_len = (len as $data_type * interpolation_factor) as usize;
@@ -58,7 +58,7 @@ macro_rules! define_interpolation_forward {
     ($($name:ident, $data_type:ident);*) => {
         $( 
             impl Interpolation<$data_type> for $name<$data_type> {
-                fn interpolate(self, function: &RealTimeConvFunction<$data_type>, interpolation_factor: $data_type, delay: $data_type, len: usize) -> VecResult<Self> {
+                fn interpolate(self, function: &RealImpulseResponse<$data_type>, interpolation_factor: $data_type, delay: $data_type, len: usize) -> VecResult<Self> {
                     Self::from_genres(self.to_gen().interpolate(function, interpolation_factor, delay, len))
                 }
             }

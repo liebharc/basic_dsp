@@ -34,7 +34,7 @@ macro_rules! define_real_conv_trait {
         )*
     }
 }
-define_real_conv_trait!(RealTimeConvFunction, time; RealFrequencyConvFunction, frequency);
+define_real_conv_trait!(RealImpulseResponse, time; RealFrequencyResponse, frequency);
 
 macro_rules! define_complex_conv_trait {
     ($($name: ident, $domain_comment:ident);*) => {  
@@ -48,7 +48,7 @@ macro_rules! define_complex_conv_trait {
         )*
     }
 }
-define_complex_conv_trait!(ComplexTimeConvFunction, time; ComplexFrequencyConvFunction, frequency);
+define_complex_conv_trait!(ComplexImpulseResponse, time; ComplexFrequencyResponse, frequency);
 
 macro_rules! define_real_lookup_table {
     ($($name: ident);*) => {
@@ -178,10 +178,10 @@ macro_rules! add_linear_table_lookup_impl {
     }
 }
 add_linear_table_lookup_impl!(
-    RealTimeLinearTableLookup: RealTimeConvFunction, f32, f32, f64, f64;
-    RealFrequencyLinearTableLookup: RealFrequencyConvFunction, f32, f32, f64, f64;
-    ComplexTimeLinearTableLookup: ComplexTimeConvFunction, f32, Complex32, f64, Complex64;
-    ComplexFrequencyLinearTableLookup: ComplexFrequencyConvFunction, f32, Complex32, f64, Complex64);
+    RealTimeLinearTableLookup: RealImpulseResponse, f32, f32, f64, f64;
+    RealFrequencyLinearTableLookup: RealFrequencyResponse, f32, f32, f64, f64;
+    ComplexTimeLinearTableLookup: ComplexImpulseResponse, f32, Complex32, f64, Complex64;
+    ComplexFrequencyLinearTableLookup: ComplexFrequencyResponse, f32, Complex32, f64, Complex64);
     
 macro_rules! add_real_linear_table_impl {  
     ($($name: ident, $complex: ident, $($data_type: ident),*);*) => {  
@@ -307,7 +307,7 @@ pub struct  RaisedCosineFuncton<T>
     rolloff: T        
 }
 
-impl<T> RealTimeConvFunction<T> for RaisedCosineFuncton<T> 
+impl<T> RealImpulseResponse<T> for RaisedCosineFuncton<T> 
     where T: RealNumber {
     fn calc(&self, x: T) -> T {
         if x == T::zero() {
@@ -329,7 +329,7 @@ impl<T> RealTimeConvFunction<T> for RaisedCosineFuncton<T>
     }
 }
 
-impl<T> RealFrequencyConvFunction<T> for RaisedCosineFuncton<T> 
+impl<T> RealFrequencyResponse<T> for RaisedCosineFuncton<T> 
     where T: RealNumber {
     fn calc(&self, x: T) -> T {
         // assume x_delta = 1.0
@@ -368,7 +368,7 @@ mod tests {
     
     fn conv_test<T, C>(conv: C, expected: &[T], step: T, tolerance: T) 
         where T: RealNumber + Debug,
-              C: RealTimeConvFunction<T> {
+              C: RealImpulseResponse<T> {
         let mut result = vec![T::zero(); expected.len()];
         let mut j = -(expected.len() as isize / 2);
         for i in 0..result.len() {
@@ -385,7 +385,7 @@ mod tests {
     
     fn complex_conv_test<T, C>(conv: C, expected: &[T], step: T, tolerance: T) 
         where T: RealNumber + Debug,
-              C: ComplexTimeConvFunction<T> {
+              C: ComplexImpulseResponse<T> {
         let mut result = vec![Complex::<T>::zero(); expected.len()];
         let mut j = -(expected.len() as isize / 2);
         for i in 0..result.len() {
@@ -402,7 +402,7 @@ mod tests {
     
     fn real_freq_conv_test<T, C>(conv: C, expected: &[T], step: T, tolerance: T) 
         where T: RealNumber + Debug,
-              C: RealFrequencyConvFunction<T> {
+              C: RealFrequencyResponse<T> {
         let mut result = vec![T::zero(); expected.len()];
         let mut j = -(expected.len() as isize / 2);
         for i in 0..result.len() {
