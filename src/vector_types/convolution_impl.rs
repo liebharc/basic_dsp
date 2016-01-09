@@ -182,7 +182,7 @@ macro_rules! add_conv_impl{
                             CMut: Fn(&mut [$data_type]) -> &mut [T],
                             FA: Copy + Sync,
                             F: Fn(FA, $data_type)->T + 'static + Sync,
-                            T: Zero + Mul<Output=T> + Copy + Display + Send + Sync
+                            T: Zero + Mul<Output=T> + Copy + Display + Send + Sync + From<$data_type>
                 {
                     {
                         let len = self.len();
@@ -192,10 +192,12 @@ macro_rules! add_conv_impl{
                             Complexity::Medium, &self.multicore_settings,
                             complex, points, 1, function_arg,
                             move |array, range, arg| {
-                                let max = points as $data_type / 2.0; 
-                                let mut j = -((points + range.start) as $data_type) / 2.0;
+                                let scale = T::from(ratio);
+                                let offset = if points % 2 != 0 { 1 } else { 0 };
+                                let max = (points - offset) as $data_type / 2.0; 
+                                let mut j = -((points - offset + range.start) as $data_type) / 2.0;
                                 for num in array {
-                                    (*num) = (*num) * fun(arg, j / max * ratio);
+                                    (*num) = (*num) * scale * fun(arg, j / max * ratio);
                                     j += 1.0;
                                 }
                             });
@@ -345,9 +347,9 @@ mod tests {
 	fn convolve_real_freq_and_freq32() {
         let vector = ComplexFreqVector32::from_constant(Complex32::new(1.0, 1.0), 5);
         let rc: RaisedCosineFuncton<f32> = RaisedCosineFuncton::new(1.0);
-        let result = vector.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 1.0).unwrap();
+        let result = vector.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 2.0).unwrap();
         let expected = 
-            [0.0, 0.0, 0.3454914, 0.3454914, 0.9045085, 0.9045085, 0.9045085, 0.9045085, 0.3454914, 0.3454914];
+            [0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 0.0, 0.0];
         assert_eq_tol(result.data(), &expected, 1e-4);
     }
     
@@ -375,7 +377,7 @@ mod tests {
              1.0, 0.63661975, 0.000000027827534, 0.21220659, 0.000000027827534, 0.12732396];
         assert_eq_tol(result.data(), &expected, 1e-4);
     }
-    /*
+    
     #[test]
     fn compare_conv_freq_mul() {
         let len = 11;
@@ -383,14 +385,14 @@ mod tests {
         time[len] = 1.0;
         let freq = time.clone().fft().unwrap();
         let sinc: SincFunction<f32> = SincFunction::new();
-        let ratio = 0.5;
-        let freq_res = freq.multiply_frequency_response(&sinc as &RealFrequencyResponse<f32>, 0.5).unwrap();
+        let ratio = 0.5;    
+        let freq_res = freq.multiply_frequency_response(&sinc as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
         let time_res = time.convolve(&sinc as &RealImpulseResponse<f32>, 0.5, len).unwrap();
         let ifreq_res = freq_res.ifft().unwrap();
         let time_res = time_res.magnitude().unwrap();
         let ifreq_res = ifreq_res.magnitude().unwrap();
         assert_eq!(ifreq_res.is_complex(), time_res.is_complex());
         assert_eq!(ifreq_res.domain(), time_res.domain());
-        assert_eq!(&ifreq_res.data(), &time_res.data());
-    }*/
+        assert_eq_tol(time_res.data(), ifreq_res.data(), 0.2);
+    }
 }

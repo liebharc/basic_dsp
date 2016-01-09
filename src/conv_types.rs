@@ -337,14 +337,14 @@ impl<T> RealFrequencyResponse<T> for RaisedCosineFuncton<T>
         let one = T::one();
         let two = T::from(2.0).unwrap();
         let pi = two * one.asin();
-        if x.abs() <= (one - self.rolloff) / two {
+        if x.abs() <= (one - self.rolloff) {
             return one;
         }
         
-        if ((one - self.rolloff) / two < x.abs()) &&
-           (x.abs() <= ((one + self.rolloff) / two))
+        if ((one - self.rolloff) < x.abs()) &&
+           (x.abs() <= (one + self.rolloff))
         {
-            return one / two * (one + (pi / self.rolloff * (x.abs() - (one - self.rolloff) / two)).cos());
+            return one / two * (one + (pi / self.rolloff * (x.abs() - (one - self.rolloff)) / two).cos());
         }
         
         return T::zero();
@@ -384,8 +384,7 @@ impl<T> RealFrequencyResponse<T> for SincFunction<T>
     where T: RealNumber {
     fn calc(&self, x: T) -> T {
         let one = T::one();
-        let two = T::from(2.0).unwrap();
-        if x.abs() <= one / two {
+        if x.abs() <= one {
             return one;
         }
         
@@ -482,7 +481,7 @@ mod tests {
     #[test]
     fn sinc_freq_test() {
         let rc = SincFunction::<f32>::new();
-        let expected = [0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0];
+        let expected = [0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0];
         real_freq_conv_test(rc, &expected, 0.5, 1e-4);
     }    
     
@@ -533,6 +532,6 @@ mod tests {
         let rc = RaisedCosineFuncton::new(0.5);
         let expected = 
             [0.0, 0.0, 0.20610737385376332, 0.7938926261462365, 1.0, 1.0, 1.0, 0.7938926261462365, 0.20610737385376332, 0.0];
-        real_freq_conv_test(rc, &expected, 0.2, 0.1);
+        real_freq_conv_test(rc, &expected, 0.4, 0.1);
     }
 }
