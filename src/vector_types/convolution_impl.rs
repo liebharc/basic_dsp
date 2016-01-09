@@ -10,36 +10,54 @@ use std::ops::Mul;
 use std::fmt::Display;
 use num::complex::Complex;
 use super::{
-    GenericVectorOperations,
     GenericDataVector,
+    RealFreqVector,
     RealTimeVector,
     ComplexFreqVector,
     ComplexTimeVector};
-use super::time_freq_impl::{
-    TimeDomainOperations,
-    FrequencyDomainOperations
-};
 use multicore_support::{Chunk, Complexity};
 
 /// Provides a convolution operation for data vectors. 
-/// 
-/// In contrast to the convolution definition this library allows for convinience to define a convolution in frequency domain which will then correctly be executed as multiplication.
 pub trait Convolution<T, C> : DataVector<T> 
     where T : RealNumber {
-    /// Convolves `self` with the convolution function `function`.
-    /// The domain in which `function` resides defines in which domain the operation
-    /// is performed. For performance reasons it is advised to pass `function` in
-    /// frequency domain since this will significantly speed up the calculation in most cases.
+    /// Convolves `self` with the convolution function `impulse_response`. For performance it's recommended 
+    /// to use `FrequencyMultiplication` instead of this operation.
+    /// # Failures
+    /// VecResult may report the following `ErrorReason` members:
+    /// 
+    /// 1. `VectorMustBeComplex`: if `self` is in real number space but `impulse_response` is in complex number space.
+    /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
+    fn convolve(self, impulse_response: C, ratio: T, len: usize) -> VecResult<Self>;
+}
+
+/// Provides a convolution operation for data vectors with data vectors.
+pub trait VectorConvolution<T> : DataVector<T> 
+    where T : RealNumber {
+    /// Convolves `self` with the convolution function `impulse_response`. For performance it's recommended 
+    /// to use multiply both vectors in frequency domain instead of this operation.
+    /// # Failures
+    /// VecResult may report the following `ErrorReason` members:
+    /// 
+    /// 1. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
+    /// 2. `VectorMetaDataMustAgree`: in case `self` and `impulse_response` are not in the same number space and same domain.
+    fn convolve_vector(self, impulse_response: &Self, len: usize) -> VecResult<Self>;
+}
+
+/// Provides a frequency response multiplication operation for data vectors.
+pub trait FrequencyMultiplication<T, C> : DataVector<T> 
+    where T : RealNumber {
+    /// Mutiplies `self` with the frequency response function `frequency_response`.
+    /// 
+    /// In order to multiply a vector with another vector in frequency response use `multiply_vector`.
     /// # Assumptions
-    /// In frequency domain the operation assumes that the vector contains a full spectrum centered at 0 Hz. If half a spectrum
+    /// The operation assumes that the vector contains a full spectrum centered at 0 Hz. If half a spectrum
     /// or a fft shifted spectrum is provided the operation will come back with invalid results.
     /// # Failures
     /// VecResult may report the following `ErrorReason` members:
     /// 
-    /// 1. `VectorMustBeComplex`: if `self` is in real number space but `function` is in complex number space.
-    /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain, `function` is in time domain and the vector can't be automatically converted to frequency domain since it is in real number space.
-    /// 3. `VectorMetaDataMustAgree`: in case `self` and `function` are both vectors but not in the same number space and same domain.
-    fn convolve(self, function: C, ratio: T, len: usize) -> VecResult<Self>;
+    /// 1. `VectorMustBeComplex`: if `self` is in real number space but `frequency_response` is in complex number space.
+    /// 2. `VectorMustBeInFreqDomain`: if `self` is in time domain.
+    fn multiply_frequency_response(self, frequency_response: C, ratio: T) -> VecResult<Self>;
 }
 
 macro_rules! add_conv_impl{
@@ -47,41 +65,38 @@ macro_rules! add_conv_impl{
         $(
             impl<'a> Convolution<$data_type, &'a RealImpulseResponse<$data_type>> for GenericDataVector<$data_type> {
                 fn convolve(self, function: &RealImpulseResponse<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
-                    Ok(self.convolve_function_priv(
+                    assert_time!(self);
+                    if self.domain == DataVectorDomain::Time {
+                        Ok(self.convolve_function_priv(
+                                ratio,
+                                len,
+                                |data|data,
+                                |temp|temp,
+                                |x|function.calc(x)
+                            ))
+                    } else {
+                        Ok(self.convolve_function_priv(
                             ratio,
                             len,
-                            |data|data,
-                            |temp|temp,
-                            |x|function.calc(x)
+                            |data|Self::array_to_complex(data),
+                            |temp|Self::array_to_complex_mut(temp),
+                            |x|Complex::<$data_type>::new(function.calc(x), 0.0)
                         ))
+                    }
                 }
             }
 
             impl<'a> Convolution<$data_type, &'a ComplexImpulseResponse<$data_type>> for GenericDataVector<$data_type> {
                 fn convolve(self, function: &ComplexImpulseResponse<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
                     assert_complex!(self);
-                    let was_time = self.domain == DataVectorDomain::Time;
-                    let time = 
-                        if was_time {
-                            self
-                        } else {
-                            try! { self.ifft() }
-                        };
-                    
-                    
-                    let result = time.convolve_function_priv(
+                    assert_time!(self);
+                    Ok(self.convolve_function_priv(
                             ratio,
                             len,
                             |data|Self::array_to_complex(data),
                             |temp|Self::array_to_complex_mut(temp),
                             |x|function.calc(x)
-                        );
-                    
-                    if was_time {
-                        Ok(result)
-                    } else {
-                        result.fft()
-                    }
+                        ))
                 }
             }
             
@@ -122,58 +137,34 @@ macro_rules! add_conv_impl{
                 }
             }
 
-            impl<'a> Convolution<$data_type, &'a ComplexFrequencyResponse<$data_type>> for GenericDataVector<$data_type> {
-                fn convolve(self, function: &ComplexFrequencyResponse<$data_type>, _ratio: $data_type, _len: usize) -> VecResult<Self> {
+            impl<'a> FrequencyMultiplication<$data_type, &'a ComplexFrequencyResponse<$data_type>> for GenericDataVector<$data_type> {
+                fn multiply_frequency_response(self, function: &ComplexFrequencyResponse<$data_type>, ratio: $data_type) -> VecResult<Self> {
                     assert_complex!(self);
-                    let was_time = self.domain == DataVectorDomain::Time;
-                    let freq = 
-                        if was_time {
-                            try!{ self.fft() }
-                        } else {
-                            self
-                        };
-                        
-                    let result = freq.multiply_function_priv(
+                    assert_freq!(self);
+                    Ok(self.multiply_function_priv(
+                                    ratio,
                                     |array|Self::array_to_complex_mut(array),
                                     function,
-                                    |f,x|f.calc(x));
-                                    
-                    if was_time {
-                        result.ifft()
-                    } else {
-                        Ok(result)
-                    }
+                                    |f,x|f.calc(x)))
                 }
             }
             
-            impl<'a> Convolution<$data_type, &'a RealFrequencyResponse<$data_type>> for GenericDataVector<$data_type> {
-                fn convolve(self, function: &RealFrequencyResponse<$data_type>, _ratio: $data_type, _len: usize) -> VecResult<Self> {
+            impl<'a> FrequencyMultiplication<$data_type, &'a RealFrequencyResponse<$data_type>> for GenericDataVector<$data_type> {
+                fn multiply_frequency_response(self, function: &RealFrequencyResponse<$data_type>, ratio: $data_type) -> VecResult<Self> {
+                    assert_freq!(self);
                     if self.is_complex {
-                        let was_time = self.domain == DataVectorDomain::Time;
-                        let freq = 
-                            if was_time {
-                                try!{ self.fft() }
-                            } else {
-                                self
-                            };
-                        let result = freq.multiply_function_priv(
+                        Ok(self.multiply_function_priv(
+                                        ratio,
                                         |array|Self::array_to_complex_mut(array),
                                         function,
-                                        |f,x|Complex::<$data_type>::new(f.calc(x), 0.0));
-                        
-                        if was_time {
-                            result.ifft()
-                        } else {
-                            Ok(result)
-                        }
+                                        |f,x|Complex::<$data_type>::new(f.calc(x), 0.0)))
                     }
                     else {
-                        assert_freq!(self);
-                        let result = self.multiply_function_priv(
+                        Ok(self.multiply_function_priv(
+                                        ratio,
                                         |array|array,
                                         function,
-                                        |f,x|f.calc(x));
-                        Ok(result)
+                                        |f,x|f.calc(x)))
                     }
                 }
             }
@@ -181,6 +172,7 @@ macro_rules! add_conv_impl{
             impl GenericDataVector<$data_type> {
                 fn multiply_function_priv<T,CMut,FA, F>(
                     mut self, 
+                    ratio: $data_type,
                     convert_mut: CMut,
                     function_arg: FA, 
                     fun: F) -> Self
@@ -201,7 +193,7 @@ macro_rules! add_conv_impl{
                                 let max = points as $data_type / 2.0; 
                                 let mut j = -((points + range.start) as $data_type) / 2.0;
                                 for num in array {
-                                    (*num) = (*num) * fun(arg, j / max);
+                                    (*num) = (*num) * fun(arg, j / max * ratio);
                                     j += 1.0;
                                 }
                             });
@@ -210,58 +202,55 @@ macro_rules! add_conv_impl{
                 }
             }
             
-            impl<'a> Convolution<$data_type, &'a GenericDataVector<$data_type>> for GenericDataVector<$data_type> {
-                fn convolve(mut self, vector: &GenericDataVector<$data_type>, _ratio: $data_type, conv_len: usize) -> VecResult<Self> {
+            impl VectorConvolution<$data_type> for GenericDataVector<$data_type> {
+                fn convolve_vector(mut self, vector: &Self, conv_len: usize) -> VecResult<Self> {
                     assert_meta_data!(self, vector);
+                    assert_time!(self);
                     reject_if!(self, self.points() != vector.points(), ErrorReason::VectorMetaDataMustAgree);
-                    if self.domain == DataVectorDomain::Frequency {
-                        self.multiply_vector(vector)
-                    } else {
-                        if self.is_complex {
-                            {
-                                let len = self.len();
-                                let other = Self::array_to_complex(&vector.data[0..len]);
-                                let complex = Self::array_to_complex(&self.data[0..len]);
-                                let dest = Self::array_to_complex_mut(&mut self.temp[0..len]);
-                                let mut i = 0;
-                                for num in dest {
-                                    let start = if i > conv_len { i - conv_len } else { 0 };
-                                    let end = if i + conv_len < len { i + conv_len } else { len };
-                                    let mut sum = Complex::<$data_type>::zero();
-                                    let center = i;
-                                    let mut j = start - center;
-                                    for c in &complex[start..end] {
-                                        sum = sum + (*c) * other[j];
-                                        j += 1;
-                                    }
-                                    (*num) = sum;
-                                    i += 1;
+                    if self.is_complex {
+                        {
+                            let len = self.len();
+                            let other = Self::array_to_complex(&vector.data[0..len]);
+                            let complex = Self::array_to_complex(&self.data[0..len]);
+                            let dest = Self::array_to_complex_mut(&mut self.temp[0..len]);
+                            let mut i = 0;
+                            for num in dest {
+                                let start = if i > conv_len { i - conv_len } else { 0 };
+                                let end = if i + conv_len < len { i + conv_len } else { len };
+                                let mut sum = Complex::<$data_type>::zero();
+                                let center = i;
+                                let mut j = start - center;
+                                for c in &complex[start..end] {
+                                    sum = sum + (*c) * other[j];
+                                    j += 1;
                                 }
+                                (*num) = sum;
+                                i += 1;
                             }
-                            Ok(self)
-                        } else {
-                            {
-                                let len = self.len();
-                                let other = &vector.data[0..len];
-                                let data = &self.data[0..len];
-                                let dest = &mut self.temp[0..len];
-                                let mut i = 0;
-                                for num in dest {
-                                    let start = if i > conv_len { i - conv_len } else { 0 };
-                                    let end = if i + conv_len < len { i + conv_len } else { len };
-                                    let mut sum = 0.0;
-                                    let center = i;
-                                    let mut j = start - center;
-                                    for c in &data[start..end] {
-                                        sum = sum + (*c) * other[j];
-                                        j += 1;
-                                    }
-                                    (*num) = sum;
-                                    i += 1;
-                                }
-                            }
-                            Ok(self)
                         }
+                        Ok(self)
+                    } else {
+                        {
+                            let len = self.len();
+                            let other = &vector.data[0..len];
+                            let data = &self.data[0..len];
+                            let dest = &mut self.temp[0..len];
+                            let mut i = 0;
+                            for num in dest {
+                                let start = if i > conv_len { i - conv_len } else { 0 };
+                                let end = if i + conv_len < len { i + conv_len } else { len };
+                                let mut sum = 0.0;
+                                let center = i;
+                                let mut j = start - center;
+                                for c in &data[start..end] {
+                                    sum = sum + (*c) * other[j];
+                                    j += 1;
+                                }
+                                (*num) = sum;
+                                i += 1;
+                            }
+                        }
+                        Ok(self)
                     }
                 }
             }
@@ -284,12 +273,6 @@ macro_rules! add_conv_forw{
                     Self::from_genres(self.to_gen().convolve(function, ratio, len))
                 }
             }
-            
-            impl<'a> Convolution<$data_type, &'a RealImpulseResponse<$data_type>> for ComplexFreqVector<$data_type> {
-                fn convolve(self, function: &RealImpulseResponse<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().convolve(function, ratio, len))
-                }
-            }
 
             impl<'a> Convolution<$data_type, &'a ComplexImpulseResponse<$data_type>> for ComplexTimeVector<$data_type> {
                 fn convolve(self, function: &ComplexImpulseResponse<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
@@ -297,39 +280,46 @@ macro_rules! add_conv_forw{
                 }
             }
 
-            impl<'a> Convolution<$data_type, &'a ComplexFrequencyResponse<$data_type>> for ComplexTimeVector<$data_type> {
-                fn convolve(self, function: &ComplexFrequencyResponse<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().convolve(function, ratio, len))
-                }
-            }
-
-            impl<'a> Convolution<$data_type, &'a ComplexImpulseResponse<$data_type>> for ComplexFreqVector<$data_type> {
-                fn convolve(self, function: &ComplexImpulseResponse<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().convolve(function, ratio, len))
-                }
-            }
-
-            impl<'a> Convolution<$data_type, &'a ComplexFrequencyResponse<$data_type>> for ComplexFreqVector<$data_type> {
-                fn convolve(self, function: &ComplexFrequencyResponse<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().convolve(function, ratio, len))
+            impl<'a> FrequencyMultiplication<$data_type, &'a ComplexFrequencyResponse<$data_type>> for ComplexFreqVector<$data_type> {
+                fn multiply_frequency_response(self, function: &ComplexFrequencyResponse<$data_type>, ratio: $data_type) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().multiply_frequency_response(function, ratio))
                 }
             }
             
-            impl<'a> Convolution<$data_type, &'a RealFrequencyResponse<$data_type>> for ComplexTimeVector<$data_type> {
-                fn convolve(self, function: &RealFrequencyResponse<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().convolve(function, ratio, len))
+            impl<'a> FrequencyMultiplication<$data_type, &'a RealFrequencyResponse<$data_type>> for RealFreqVector<$data_type> {
+                fn multiply_frequency_response(self, function: &RealFrequencyResponse<$data_type>, ratio: $data_type) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().multiply_frequency_response(function, ratio))
                 }
             }
             
-            impl<'a> Convolution<$data_type, &'a RealFrequencyResponse<$data_type>> for ComplexFreqVector<$data_type> {
-                fn convolve(self, function: &RealFrequencyResponse<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().convolve(function, ratio, len))
+            impl<'a> FrequencyMultiplication<$data_type, &'a RealFrequencyResponse<$data_type>> for ComplexFreqVector<$data_type> {
+                fn multiply_frequency_response(self, function: &RealFrequencyResponse<$data_type>, ratio: $data_type) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().multiply_frequency_response(function, ratio))
                 }
             }
         )*
     }
 }
 add_conv_forw!(f32, f64);
+
+macro_rules! add_conv_vector_forward{
+    ($($name:ident, $($data_type:ident),*);*) => {
+        $(
+            $(
+                impl VectorConvolution<$data_type> for $name<$data_type> {
+                    fn convolve_vector(self, other: &Self, len: usize) -> VecResult<Self> {
+                        Self::from_genres(self.to_gen().convolve_vector(other.to_gen_borrow(), len))
+                    }
+                }
+            )*
+        )*
+    }
+}
+add_conv_vector_forward!(
+        RealTimeVector, f32, f64;
+        ComplexTimeVector, f32, f64;
+        RealFreqVector, f32, f64;
+        ComplexFreqVector, f32, f64);
 
 #[cfg(test)]
 mod tests {
@@ -357,7 +347,7 @@ mod tests {
 	fn convolve_real_freq_and_freq32() {
         let vector = ComplexFreqVector32::from_constant(Complex32::new(1.0, 1.0), 10);
         let rc: RaisedCosineFuncton<f32> = RaisedCosineFuncton::new(1.0);
-        let result = vector.convolve(&rc as &RealFrequencyResponse<f32>, 1.0, 10).unwrap();
+        let result = vector.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 1.0).unwrap();
         let expected = 
             [0.0, 0.0, 0.3454914, 0.3454914, 0.9045085, 0.9045085, 0.9045085, 0.9045085, 0.3454914, 0.3454914];
         assert_eq_tol(result.data(), &expected, 1e-4);

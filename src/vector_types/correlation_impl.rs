@@ -10,7 +10,7 @@ use super::{
     ComplexVectorOperations,
     ComplexTimeVector,
     ComplexFreqVector};
-use super::convolution_impl::Convolution;
+use super::convolution_impl::VectorConvolution;
 
 /// Cross-correlation of data vectors. See also https://en.wikipedia.org/wiki/Cross-correlation
 /// # Unstable
@@ -37,7 +37,7 @@ macro_rules! define_correlation_impl {
                     if self.domain == DataVectorDomain::Time {
                         let points = self.points();
                         self.complex_conj()
-                        .and_then(|v|v.convolve(other, 1.0, points))
+                        .and_then(|v|v.convolve_vector(other, points))
                     } else {
                         self.complex_conj()
                         .and_then(|v|v.multiply_vector(&other))

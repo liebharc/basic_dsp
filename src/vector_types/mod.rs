@@ -104,7 +104,10 @@ pub use vector_types::time_freq_impl::{
         SymmetricFrequencyDomainOperations,
         SymmetricTimeDomainOperations
     };
-pub use vector_types::convolution_impl::Convolution;
+pub use vector_types::convolution_impl::{
+    Convolution,
+    VectorConvolution,
+    FrequencyMultiplication};
 pub use vector_types::correlation_impl::CrossCorrelation;
 pub use vector_types::interpolation_impl::Interpolation;
 use num::complex::Complex;

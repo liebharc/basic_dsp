@@ -67,6 +67,8 @@ pub use vector_types::
         Scale,
         Offset,
         Convolution,
+        VectorConvolution,
+        FrequencyMultiplication,
         CrossCorrelation,
         Interpolation
 	};
