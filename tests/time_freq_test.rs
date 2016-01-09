@@ -8,8 +8,11 @@ mod slow_test {
         GenericVectorOperations,
         RealVectorOperations,
         ComplexVectorOperations,
+        Convolution,
+        FrequencyMultiplication,
         RealTimeVector64,
         ComplexTimeVector32};
+    use basic_dsp::conv_types::*;
     use num::complex::Complex32;
     use basic_dsp::window_functions::HammingWindow;
     use tools::*;
@@ -121,4 +124,21 @@ mod slow_test {
             assert_eq!(result.is_complex(), true);
         }
     }
+    /*
+    #[test]
+    fn compare_conv_freq_multiplication() {
+        for iteration in 0 .. 3 {
+            let a = create_data_even(201511212, iteration, 101, 200);
+            let delta = create_delta(3561159, iteration);
+            let time = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let rc: RaisedCosineFuncton<f32> = RaisedCosineFuncton::new(0.35);
+            let freq = time.clone().fft().unwrap();
+            let points = time.points();
+            let time_res = time.convolve(&rc as &RealImpulseResponse<f32>, 0.5, points).unwrap();
+            let freq_res = freq.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 0.5).unwrap();
+            let ifreq_res = freq_res.ifft().unwrap();
+            assert_eq!(&ifreq_res.data(), &time_res.data());
+            assert_vector_eq_with_reason_and_tolerance(&ifreq_res.data(), &time_res.data(), 0.1, "Conv must match freq multiplication");
+        }
+    }*/
 }

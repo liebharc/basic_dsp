@@ -324,10 +324,12 @@ add_conv_vector_forward!(
 #[cfg(test)]
 mod tests {
 	use super::*;
-    use super::super::{
+    use vector_types::{
         ComplexFreqVector32,
         RealTimeVector32,
+        ComplexTimeVector32,
         DataVector};
+    use vector_types::time_freq_impl::*;
     use conv_types::*;
     use RealNumber;
     use std::fmt::Debug; 
@@ -345,7 +347,7 @@ mod tests {
     
     #[test]
 	fn convolve_real_freq_and_freq32() {
-        let vector = ComplexFreqVector32::from_constant(Complex32::new(1.0, 1.0), 10);
+        let vector = ComplexFreqVector32::from_constant(Complex32::new(1.0, 1.0), 5);
         let rc: RaisedCosineFuncton<f32> = RaisedCosineFuncton::new(1.0);
         let result = vector.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 1.0).unwrap();
         let expected = 
@@ -363,4 +365,20 @@ mod tests {
              1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
         assert_eq_tol(result.data(), &expected, 1e-4);
     }
+    /*
+    #[test]
+    fn compare_conv_freq_mul() {
+        let len = 10;
+        let mut time = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), len);
+        time[4] = 1.0;
+        let freq = time.clone().fft().unwrap();
+        let rc: RaisedCosineFuncton<f32> = RaisedCosineFuncton::new(0.2);
+        let ratio = 0.5;
+        let freq_res = freq;// freq.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, ratio).unwrap();
+        let time_res = time.convolve(&rc as &RealImpulseResponse<f32>, ratio, len).unwrap();
+        let ifreq_res = freq_res.ifft().unwrap();
+        assert_eq!(ifreq_res.is_complex(), time_res.is_complex());
+        assert_eq!(ifreq_res.domain(), time_res.domain());
+        assert_eq!(&ifreq_res.data(), &time_res.data());
+    }*/
 }

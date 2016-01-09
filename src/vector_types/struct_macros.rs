@@ -535,7 +535,7 @@ macro_rules! define_complex_basic_struct_members {
             pub fn from_constant_with_delta_and_options(constant: Complex<T>, length: usize, delta: T, options: MultiCoreSettings) -> Self {
                 let temp_length = 
                     if options.early_temp_allocation {
-                        length
+                        2 * length
                     } else {
                         0
                     };
@@ -552,7 +552,7 @@ macro_rules! define_complex_basic_struct_members {
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
-				  valid_len: length,
+				  valid_len: 2 * length,
                   multicore_settings: options
 				}
 			}
