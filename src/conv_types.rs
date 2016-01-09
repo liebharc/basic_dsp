@@ -6,6 +6,7 @@
 use RealNumber;
 use num::traits::Zero;
 use num::complex::{Complex, Complex32,Complex64};
+use std::marker::PhantomData;
 use vector_types::{
     RealTimeVector,
     ComplexTimeVector,
@@ -302,7 +303,7 @@ macro_rules! add_complex_frequency_linear_table_impl {
 add_complex_frequency_linear_table_impl!(f32, f64);
 
 /// Raised cosine function according to https://en.wikipedia.org/wiki/Raised-cosine_filter
-pub struct  RaisedCosineFuncton<T>
+pub struct RaisedCosineFuncton<T>
     where T: RealNumber {
     rolloff: T        
 }
@@ -358,10 +359,52 @@ impl<T> RaisedCosineFuncton<T>
     }
 }
 
+/// Sinc function according to https://en.wikipedia.org/wiki/Sinc_function
+pub struct SincFunction<T> 
+    where T: RealNumber {
+    _ghost: PhantomData<T>
+}
+
+impl<T> RealImpulseResponse<T> for SincFunction<T>
+    where T: RealNumber {
+    fn calc(&self, x: T) -> T {
+        if x == T::zero() {
+            return T::one();
+        }
+        
+        let one = T::one();
+        let two = T::from(2.0).unwrap();
+        let pi = two * one.asin();
+        let pi_x = pi * x;
+        return pi_x.sin() / pi_x
+    }
+}
+
+impl<T> RealFrequencyResponse<T> for SincFunction<T>
+    where T: RealNumber {
+    fn calc(&self, x: T) -> T {
+        let one = T::one();
+        let two = T::from(2.0).unwrap();
+        if x.abs() <= one / two {
+            return one;
+        }
+        
+        return T::zero();
+    }
+}
+
+impl<T> SincFunction<T> 
+    where T: RealNumber {
+    /// Creates a sinc function.
+    pub fn new() -> Self {
+        SincFunction { _ghost: PhantomData }
+    }
+}
+
 #[cfg(test)]
 mod tests {
 	use super::*;
-    use super::super::RealNumber;
+    use RealNumber;
     use std::fmt::Debug;
     use num::complex::Complex;
     use num::traits::Zero;
@@ -428,13 +471,29 @@ mod tests {
 	}
     
     #[test]
+    fn sinc_test() {
+        let rc = SincFunction::<f32>::new();
+        let expected = 
+            [0.1273, -0.0000, -0.2122, 0.0000, 0.6366, 
+             1.0000, 0.6366, 0.0000, -0.2122, -0.0000];
+        conv_test(rc, &expected, 0.5, 1e-4);
+    }
+    
+    #[test]
+    fn sinc_freq_test() {
+        let rc = SincFunction::<f32>::new();
+        let expected = [0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0];
+        real_freq_conv_test(rc, &expected, 0.5, 1e-4);
+    }    
+    
+    #[test]
     fn lookup_table_test() {
         let rc = RaisedCosineFuncton::new(0.35);
         let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.2, 5);
         let expected = 
             [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 
              1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
-        conv_test(table, &expected, 0.2, 1e-4);
+        conv_test(table, &expected, 0.2, 1e-4); 
     }
     
     #[test]

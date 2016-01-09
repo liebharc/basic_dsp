@@ -124,7 +124,7 @@ mod slow_test {
             assert_eq!(result.is_complex(), true);
         }
     }
-    /*
+    
     #[test]
     fn compare_conv_freq_multiplication() {
         for iteration in 0 .. 3 {
@@ -140,5 +140,5 @@ mod slow_test {
             assert_eq!(&ifreq_res.data(), &time_res.data());
             assert_vector_eq_with_reason_and_tolerance(&ifreq_res.data(), &time_res.data(), 0.1, "Conv must match freq multiplication");
         }
-    }*/
+    }
 }

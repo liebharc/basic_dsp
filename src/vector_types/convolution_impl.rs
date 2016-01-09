@@ -66,7 +66,7 @@ macro_rules! add_conv_impl{
             impl<'a> Convolution<$data_type, &'a RealImpulseResponse<$data_type>> for GenericDataVector<$data_type> {
                 fn convolve(self, function: &RealImpulseResponse<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
                     assert_time!(self);
-                    if self.domain == DataVectorDomain::Time {
+                    if !self.is_complex {
                         Ok(self.convolve_function_priv(
                                 ratio,
                                 len,
@@ -116,8 +116,10 @@ macro_rules! add_conv_impl{
                 {
                     {
                         let len = self.len();
+                        let mut temp = temp_mut!(self, len);
                         let complex = convert(&self.data[0..len]);
-                        let dest = convert_mut(&mut self.temp[0..len]);
+                        let dest = convert_mut(&mut temp[0..len]);
+                        let len = complex.len();
                         let mut i = 0;
                         for num in dest {
                             let start = if i > conv_len { i - conv_len } else { 0 };
@@ -323,13 +325,7 @@ add_conv_vector_forward!(
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-    use vector_types::{
-        ComplexFreqVector32,
-        RealTimeVector32,
-        ComplexTimeVector32,
-        DataVector};
-    use vector_types::time_freq_impl::*;
+    use vector_types::*;
     use conv_types::*;
     use RealNumber;
     use std::fmt::Debug; 
@@ -365,18 +361,34 @@ mod tests {
              1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
         assert_eq_tol(result.data(), &expected, 1e-4);
     }
+    
+    #[test]
+	fn convolve_complex_time_and_time32() {
+        let len = 11;
+        let mut time = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), len);
+        time[len] = 1.0;
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let result = time.convolve(&sinc as &RealImpulseResponse<f32>, 0.5, len).unwrap();
+        let result = result.magnitude().unwrap();
+        let expected = 
+            [0.12732396, 0.000000027827534, 0.21220659, 0.000000027827534, 0.63661975, 
+             1.0, 0.63661975, 0.000000027827534, 0.21220659, 0.000000027827534, 0.12732396];
+        assert_eq_tol(result.data(), &expected, 1e-4);
+    }
     /*
     #[test]
     fn compare_conv_freq_mul() {
-        let len = 10;
+        let len = 11;
         let mut time = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), len);
-        time[4] = 1.0;
+        time[len] = 1.0;
         let freq = time.clone().fft().unwrap();
-        let rc: RaisedCosineFuncton<f32> = RaisedCosineFuncton::new(0.2);
+        let sinc: SincFunction<f32> = SincFunction::new();
         let ratio = 0.5;
-        let freq_res = freq;// freq.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, ratio).unwrap();
-        let time_res = time.convolve(&rc as &RealImpulseResponse<f32>, ratio, len).unwrap();
+        let freq_res = freq.multiply_frequency_response(&sinc as &RealFrequencyResponse<f32>, 0.5).unwrap();
+        let time_res = time.convolve(&sinc as &RealImpulseResponse<f32>, 0.5, len).unwrap();
         let ifreq_res = freq_res.ifft().unwrap();
+        let time_res = time_res.magnitude().unwrap();
+        let ifreq_res = ifreq_res.magnitude().unwrap();
         assert_eq!(ifreq_res.is_complex(), time_res.is_complex());
         assert_eq!(ifreq_res.domain(), time_res.domain());
         assert_eq!(&ifreq_res.data(), &time_res.data());
