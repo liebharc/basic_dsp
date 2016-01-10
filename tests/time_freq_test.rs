@@ -134,7 +134,7 @@ mod slow_test {
             let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
             let freq = time.clone().fft().unwrap();
             let points = time.points();
-            let ratio = 0.5;
+            let ratio = create_delta(201601091, iteration).abs() / 10.0; // Should get us a range [0.0 .. 1.0] and hopefully we are not that unlucky to get 0.0
             let time_res = time.convolve(&fun as &RealImpulseResponse<f32>, ratio, points).unwrap();
             let freq_res = freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
             let ifreq_res = freq_res.ifft().unwrap();
@@ -161,7 +161,7 @@ mod slow_test {
             let fun: SincFunction<f32> = SincFunction::new();
             let freq = time.clone().fft().unwrap();
             let points = time.points();
-            let ratio = 0.5;
+            let ratio = create_delta(201601093, iteration).abs() / 20.0 + 0.5; // Should get us a range [0.5 .. 1.0]
             let time_res = time.convolve(&fun as &RealImpulseResponse<f32>, ratio, points).unwrap();
             let freq_res = freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
             let ifreq_res = freq_res.ifft().unwrap();
