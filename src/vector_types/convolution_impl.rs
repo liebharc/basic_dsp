@@ -8,6 +8,8 @@ use RealNumber;
 use num::traits::Zero;
 use std::ops::Mul;
 use std::fmt::Display;
+use std::iter;
+use std::iter::Chain;
 use num::complex::Complex;
 use super::{
     GenericDataVector,
@@ -128,31 +130,10 @@ macro_rules! add_conv_impl{
                                 conv_len
                             };
                         for num in dest {
-                            let (start, wrap_left) = 
-                                if i >= conv_len { 
-                                    (i - conv_len, len)
-                                } else {
-                                    let delta = conv_len - i;
-                                    (0, len - delta)
-                                };
-                            let (end, wrap_right) = 
-                                if i + conv_len + 1 < len { 
-                                    (i + conv_len + 1, 0) 
-                                } else { 
-                                    (len, i + conv_len + 1 - len) 
-                                };
+                            let iter = Self::build_wrapping_iter(complex, i, conv_len);
                             let mut sum = T::zero();
                             let mut j = -(conv_len as $data_type);
-                            for c in &complex[wrap_left..len] {
-                                sum = sum + (*c) * fun(j * ratio);
-                                j += 1.0;
-                            }
-                            for c in &complex[start..end] {
-                                sum = sum + (*c) * fun(j * ratio);
-                                j += 1.0;
-                            }
-                            for c in &complex[0..wrap_right] {
-                                //print!("{}\n",*c);
+                            for c in iter {
                                 sum = sum + (*c) * fun(j * ratio);
                                 j += 1.0;
                             }
@@ -229,57 +210,82 @@ macro_rules! add_conv_impl{
                     }
                     self
                 }
+                
+                // This function puzzles me in several aspects. The intend is to create an iterator which wraps around edges just 
+                // as the fft math does. Main thing seems strange to me is why are all the type casts to Box<Iterator<..>> necessary?
+                fn build_wrapping_iter<'a, T>(array: &'a [T], i: usize, conv_len: usize) -> Chain<Box<Iterator<Item=&T> + 'a>, Box<Iterator<Item=&T> + 'a>> {
+                    let start: usize;
+                    let len = array.len();
+                    if i >= conv_len {
+                        start = i - conv_len; 
+                        Box::new(iter::empty()) as Box<Iterator<Item=&T>>
+                    } else {
+                        start = 0;
+                        let delta = conv_len - i;
+                        Box::new(array[len - delta..len].iter()) as Box<Iterator<Item=&T>>
+                    }.chain(
+                        if i + conv_len + 1 < len {
+                            Box::new(array[start..i + conv_len + 1].iter()) as Box<Iterator<Item=&T>>
+                        } else {
+                            Box::new(array[start..len].iter().
+                                    chain(array[0..i + conv_len + 1 - len].iter())) as Box<Iterator<Item=&T>>
+                        })
+                }
             }
             
             impl VectorConvolution<$data_type> for GenericDataVector<$data_type> {
                 fn convolve_vector(mut self, vector: &Self, conv_len: usize) -> VecResult<Self> {
                     assert_meta_data!(self, vector);
                     assert_time!(self);
-                    reject_if!(self, self.points() != vector.points(), ErrorReason::VectorMetaDataMustAgree);
+                    let points = self.points();
+                    let other_points = vector.points();
+                    let min_points = if points > other_points { other_points } else { points };
+                    let conv_len =
+                            if conv_len > min_points {
+                                min_points
+                            } else {
+                                conv_len
+                            };
                     if self.is_complex {
                         {
                             let len = self.len();
-                            let other = Self::array_to_complex(&vector.data[0..len]);
+                            let other = Self::array_to_complex(&vector.data[0..vector.len()]);
+                            let other_center = other_points / 2;
                             let complex = Self::array_to_complex(&self.data[0..len]);
                             let dest = Self::array_to_complex_mut(&mut self.temp[0..len]);
                             let mut i = 0;
                             for num in dest {
-                                let start = if i > conv_len { i - conv_len } else { 0 };
-                                let end = if i + conv_len < len { i + conv_len } else { len };
+                                let data_iter = Self::build_wrapping_iter(&complex, i, conv_len);
+                                let other_iter = Self::build_wrapping_iter(&other, other_center, conv_len); 
                                 let mut sum = Complex::<$data_type>::zero();
-                                let center = i;
-                                let mut j = start - center;
-                                for c in &complex[start..end] {
-                                    sum = sum + (*c) * other[j];
-                                    j += 1;
+                                for (this, other) in data_iter.zip(other_iter) {
+                                    sum = sum + this * other;
                                 }
                                 (*num) = sum;
                                 i += 1;
                             }
                         }
-                        Ok(self)
+                        Ok(self.swap_data_temp())
                     } else {
                         {
                             let len = self.len();
-                            let other = &vector.data[0..len];
+                            let other = &vector.data[0..vector.len()];
+                            let other_center = other.len() / 2;
                             let data = &self.data[0..len];
                             let dest = &mut self.temp[0..len];
                             let mut i = 0;
                             for num in dest {
-                                let start = if i > conv_len { i - conv_len } else { 0 };
-                                let end = if i + conv_len < len { i + conv_len } else { len };
+                                let data_iter = Self::build_wrapping_iter(&data, i, conv_len);
+                                let other_iter = Self::build_wrapping_iter(&other, other_center, conv_len); 
                                 let mut sum = 0.0;
-                                let center = i;
-                                let mut j = start - center;
-                                for c in &data[start..end] {
-                                    sum = sum + (*c) * other[j];
-                                    j += 1;
+                                for (this, other) in data_iter.zip(other_iter) {
+                                    sum = sum + this * other;
                                 }
                                 (*num) = sum;
                                 i += 1;
                             }
                         }
-                        Ok(self)
+                        Ok(self.swap_data_temp())
                     }
                 }
             }
@@ -428,5 +434,31 @@ mod tests {
         let sinc: SincFunction<f32> = SincFunction::new();
         let _result = time.convolve(&sinc as &RealImpulseResponse<f32>, 0.5, 10 * len).unwrap();
         // As long as we don't panic we are happy with the error handling here
+    }
+    
+    #[test]
+	fn convolve_complex_vectors32() {
+        const LEN: usize = 11;
+        let mut time = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), LEN);
+        time[LEN] = 1.0;
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let mut argument_data = [0.0; LEN];
+        {
+            let mut v = -5.0;
+            for a in &mut argument_data {
+                *a = (&sinc as &RealImpulseResponse<f32>).calc(v * 0.5);
+                v += 1.0;
+            }
+        }
+        let argument = ComplexTimeVector32::from_real_imag(&argument_data, &[0.0; LEN]);
+        assert_eq!(time.points(), argument.points());
+        let result = time.convolve_vector(&argument, LEN / 2).unwrap();
+        assert_eq!(result.points(), LEN);
+        let result = result.magnitude().unwrap();
+        assert_eq!(result.points(), LEN);
+        let expected = 
+            [0.12732396, 0.000000027827534, 0.21220659, 0.000000027827534, 0.63661975, 
+             1.0, 0.63661975, 0.000000027827534, 0.21220659, 0.000000027827534, 0.12732396];
+        assert_eq_tol(result.data(), &expected, 1e-4);
     }
 }
