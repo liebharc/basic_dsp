@@ -23,6 +23,7 @@ pub struct VectorBox<T>
 #[derive(PartialEq)]
 #[derive(Debug)]
 pub enum Size {
+    Tiny,
 	Small,
     Medium,
     Large
@@ -30,6 +31,7 @@ pub enum Size {
 
 fn translate_size(size: Size) -> usize {
     match size {
+        Size::Tiny => 1000,
         Size::Small => DEFAULT_DATA_SIZE,
         Size::Medium => 100000,
         Size::Large => 1000000

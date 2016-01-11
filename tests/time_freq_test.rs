@@ -138,17 +138,9 @@ mod slow_test {
             let time_res = time.convolve(&fun as &RealImpulseResponse<f32>, ratio, points).unwrap();
             let freq_res = freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
             let ifreq_res = freq_res.ifft().unwrap();
-            let tol = 0.1;
             let left = &ifreq_res.data();
             let right = &time_res.data();
-            let mut failures = 0;
-            for i in 0..left.len() {
-                if (left[i] - right[i]).abs() > tol {
-                    failures+=1;
-                }
-            }
-            let limit = a.len() / 100;
-            assert!(failures < limit, "Found {} failures (limit is {})", failures, limit);
+            assert_vector_eq_with_reason_and_tolerance(&left, &right, 0.1, "Results should match independent if done in time or frequency domain");
         }
     }
     
@@ -165,17 +157,9 @@ mod slow_test {
             let time_res = time.convolve(&fun as &RealImpulseResponse<f32>, ratio, points).unwrap();
             let freq_res = freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
             let ifreq_res = freq_res.ifft().unwrap();
-            let tol = 0.5;
             let left = &ifreq_res.data();
             let right = &time_res.data();
-            let mut failures = 0;
-            for i in 0..left.len() {
-                if (left[i] - right[i]).abs() > tol {
-                    failures+=1;
-                }
-            }
-            let limit = a.len() / 50;
-            assert!(failures < limit, "Found {} failures (limit is {})", failures, limit);
+            assert_vector_eq_with_reason_and_tolerance(&left, &right, 0.1, "Results should match independent if done in time or frequency domain");
         }
     }
 }

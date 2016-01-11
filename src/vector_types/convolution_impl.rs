@@ -121,13 +121,38 @@ macro_rules! add_conv_impl{
                         let dest = convert_mut(&mut temp[0..len]);
                         let len = complex.len();
                         let mut i = 0;
+                        let conv_len =
+                            if conv_len > len {
+                                len
+                            } else {
+                                conv_len
+                            };
                         for num in dest {
-                            let start = if i > conv_len { i - conv_len } else { 0 };
-                            let end = if i + conv_len < len { i + conv_len } else { len };
+                            let (start, wrap_left) = 
+                                if i >= conv_len { 
+                                    (i - conv_len, len)
+                                } else {
+                                    let delta = conv_len - i;
+                                    (0, len - delta)
+                                };
+                            let (end, wrap_right) = 
+                                if i + conv_len + 1 < len { 
+                                    (i + conv_len + 1, 0) 
+                                } else { 
+                                    (len, i + conv_len + 1 - len) 
+                                };
                             let mut sum = T::zero();
-                            let center = i as $data_type;
-                            let mut j = start as $data_type - center;
+                            let mut j = -(conv_len as $data_type);
+                            for c in &complex[wrap_left..len] {
+                                sum = sum + (*c) * fun(j * ratio);
+                                j += 1.0;
+                            }
                             for c in &complex[start..end] {
+                                sum = sum + (*c) * fun(j * ratio);
+                                j += 1.0;
+                            }
+                            for c in &complex[0..wrap_right] {
+                                //print!("{}\n",*c);
                                 sum = sum + (*c) * fun(j * ratio);
                                 j += 1.0;
                             }
@@ -357,7 +382,7 @@ mod tests {
 	fn convolve_real_time_and_time32() {
         let vector = RealTimeVector32::from_array(&[0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0]);
         let rc: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
-        let result = vector.convolve(&rc as &RealImpulseResponse<f32>, 0.2, 10).unwrap();
+        let result = vector.convolve(&rc as &RealImpulseResponse<f32>, 0.2, 5).unwrap();
         let expected = 
             [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 
              1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
@@ -370,7 +395,7 @@ mod tests {
         let mut time = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), len);
         time[len] = 1.0;
         let sinc: SincFunction<f32> = SincFunction::new();
-        let result = time.convolve(&sinc as &RealImpulseResponse<f32>, 0.5, len).unwrap();
+        let result = time.convolve(&sinc as &RealImpulseResponse<f32>, 0.5, len / 2).unwrap();
         let result = result.magnitude().unwrap();
         let expected = 
             [0.12732396, 0.000000027827534, 0.21220659, 0.000000027827534, 0.63661975, 
@@ -394,5 +419,14 @@ mod tests {
         assert_eq!(ifreq_res.is_complex(), time_res.is_complex());
         assert_eq!(ifreq_res.domain(), time_res.domain());
         assert_eq_tol(time_res.data(), ifreq_res.data(), 0.2);
+    }
+    
+    #[test]
+	fn invalid_length_parameter() {
+        let len = 20;
+        let time = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), len);
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let _result = time.convolve(&sinc as &RealImpulseResponse<f32>, 0.5, 10 * len).unwrap();
+        // As long as we don't panic we are happy with the error handling here
     }
 }
