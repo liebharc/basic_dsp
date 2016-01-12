@@ -35,9 +35,8 @@ macro_rules! define_correlation_impl {
                     assert_complex!(self);
                     assert_meta_data!(self, other);
                     if self.domain == DataVectorDomain::Time {
-                        let points = self.points();
                         self.complex_conj()
-                        .and_then(|v|v.convolve_vector(other, points))
+                        .and_then(|v|v.convolve_vector(other))
                     } else {
                         self.complex_conj()
                         .and_then(|v|v.multiply_vector(&other))

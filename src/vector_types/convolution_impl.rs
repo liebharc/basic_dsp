@@ -8,8 +8,6 @@ use RealNumber;
 use num::traits::Zero;
 use std::ops::Mul;
 use std::fmt::Display;
-use std::iter;
-use std::iter::Chain;
 use num::complex::Complex;
 use super::{
     GenericDataVector,
@@ -42,7 +40,7 @@ pub trait VectorConvolution<T> : DataVector<T>
     /// 
     /// 1. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
     /// 2. `VectorMetaDataMustAgree`: in case `self` and `impulse_response` are not in the same number space and same domain.
-    fn convolve_vector(self, impulse_response: &Self, len: usize) -> VecResult<Self>;
+    fn convolve_vector(self, impulse_response: &Self) -> VecResult<Self>;
 }
 
 /// Provides a frequency response multiplication operation for data vectors.
@@ -130,11 +128,11 @@ macro_rules! add_conv_impl{
                                 conv_len
                             };
                         for num in dest {
-                            let iter = Self::build_wrapping_iter(complex, i, conv_len);
+                            let iter = WrappingIterator::new(complex, i as isize - conv_len as isize -1);
                             let mut sum = T::zero();
                             let mut j = -(conv_len as $data_type);
-                            for c in iter {
-                                sum = sum + (*c) * fun(j * ratio);
+                            for c in iter.take(2 * conv_len + 1) {
+                                sum = sum + c * fun(j * ratio);
                                 j += 1.0;
                             }
                             (*num) = sum;
@@ -210,53 +208,33 @@ macro_rules! add_conv_impl{
                     }
                     self
                 }
-                
-                // This function puzzles me in several aspects. The intend is to create an iterator which wraps around edges just 
-                // as the fft math does. Main thing seems strange to me is why are all the type casts to Box<Iterator<..>> necessary?
-                fn build_wrapping_iter<'a, T>(array: &'a [T], i: usize, conv_len: usize) -> Chain<Box<Iterator<Item=&T> + 'a>, Box<Iterator<Item=&T> + 'a>> {
-                    let start: usize;
-                    let len = array.len();
-                    if i >= conv_len {
-                        start = i - conv_len; 
-                        Box::new(iter::empty()) as Box<Iterator<Item=&T>>
-                    } else {
-                        start = 0;
-                        let delta = conv_len - i;
-                        Box::new(array[len - delta..len].iter()) as Box<Iterator<Item=&T>>
-                    }.chain(
-                        if i + conv_len + 1 < len {
-                            Box::new(array[start..i + conv_len + 1].iter()) as Box<Iterator<Item=&T>>
-                        } else {
-                            Box::new(array[start..len].iter().
-                                    chain(array[0..i + conv_len + 1 - len].iter())) as Box<Iterator<Item=&T>>
-                        })
-                }
             }
             
             impl VectorConvolution<$data_type> for GenericDataVector<$data_type> {
-                fn convolve_vector(mut self, vector: &Self, conv_len: usize) -> VecResult<Self> {
+                fn convolve_vector(mut self, vector: &Self) -> VecResult<Self> {
                     assert_meta_data!(self, vector);
                     assert_time!(self);
                     let points = self.points();
                     let other_points = vector.points();
-                    let min_points = if points > other_points { other_points } else { points };
-                    let conv_len =
-                            if conv_len > min_points {
-                                min_points
+                    let (other_start, other_end, conv_len) =
+                            if other_points > points {
+                                let center = other_points / 2;
+                                let conv_len = points / 2;
+                                (center - conv_len, center + conv_len, conv_len)
                             } else {
-                                conv_len
+                                (0, other_points, other_points / 2)
                             };
                     if self.is_complex {
                         {
                             let len = self.len();
                             let other = Self::array_to_complex(&vector.data[0..vector.len()]);
-                            let other_center = other_points / 2;
                             let complex = Self::array_to_complex(&self.data[0..len]);
                             let dest = Self::array_to_complex_mut(&mut self.temp[0..len]);
+                            print!("{}, {}\n", other_start, other_end);
+                            let other_iter = &other[other_start .. other_end];
                             let mut i = 0;
                             for num in dest {
-                                let data_iter = Self::build_wrapping_iter(&complex, i, conv_len);
-                                let other_iter = Self::build_wrapping_iter(&other, other_center, conv_len); 
+                                let data_iter = WrappingIterator::new(complex, i as isize - conv_len as isize -1); 
                                 let mut sum = Complex::<$data_type>::zero();
                                 for (this, other) in data_iter.zip(other_iter) {
                                     sum = sum + this * other;
@@ -270,13 +248,12 @@ macro_rules! add_conv_impl{
                         {
                             let len = self.len();
                             let other = &vector.data[0..vector.len()];
-                            let other_center = other.len() / 2;
                             let data = &self.data[0..len];
                             let dest = &mut self.temp[0..len];
+                            let other_iter = &other[other_start .. other_end];
                             let mut i = 0;
                             for num in dest {
-                                let data_iter = Self::build_wrapping_iter(&data, i, conv_len);
-                                let other_iter = Self::build_wrapping_iter(&other, other_center, conv_len); 
+                                let data_iter = WrappingIterator::new(data, i as isize - conv_len as isize -1);
                                 let mut sum = 0.0;
                                 for (this, other) in data_iter.zip(other_iter) {
                                     sum = sum + this * other;
@@ -342,8 +319,8 @@ macro_rules! add_conv_vector_forward{
         $(
             $(
                 impl VectorConvolution<$data_type> for $name<$data_type> {
-                    fn convolve_vector(self, other: &Self, len: usize) -> VecResult<Self> {
-                        Self::from_genres(self.to_gen().convolve_vector(other.to_gen_borrow(), len))
+                    fn convolve_vector(self, other: &Self) -> VecResult<Self> {
+                        Self::from_genres(self.to_gen().convolve_vector(other.to_gen_borrow()))
                     }
                 }
             )*
@@ -355,9 +332,61 @@ add_conv_vector_forward!(
         ComplexTimeVector, f32, f64;
         RealFreqVector, f32, f64;
         ComplexFreqVector, f32, f64);
+        
+struct WrappingIterator<T>
+    where T: Clone {
+    start: *const T,
+    end: *const T,
+    pos: *const T
+}
+
+impl<T> Iterator for WrappingIterator<T> 
+    where T: Clone {
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        unsafe {
+            let mut n = self.pos;
+            if n < self.end {
+                n = n.offset(1);
+            } else {
+                n = self.start;
+            }
+            
+            self.pos = n;
+            Some((*n).clone())
+        }
+    }
+}
+
+impl<T> WrappingIterator<T>
+    where T: Clone {
+    fn new(slice: &[T], pos: isize) -> Self {
+        use std::isize;
+        assert!(slice.len() <= isize::MAX as usize);
+        let len = slice.len() as isize;
+        let pos = pos % len;
+        let pos = 
+            if pos >= 0 {
+                pos
+            } else {
+                (len + pos)
+            };
+        let start = slice.as_ptr();
+        unsafe {
+            WrappingIterator {
+                start: start,
+                end: start.offset(len - 1),
+                pos: start.offset(pos)
+            }
+        }
+    }
+}
+
 
 #[cfg(test)]
 mod tests {
+    use super::WrappingIterator;
     use vector_types::*;
     use conv_types::*;
     use RealNumber;
@@ -452,7 +481,7 @@ mod tests {
         }
         let argument = ComplexTimeVector32::from_real_imag(&argument_data, &[0.0; LEN]);
         assert_eq!(time.points(), argument.points());
-        let result = time.convolve_vector(&argument, LEN / 2).unwrap();
+        let result = time.convolve_vector(&argument).unwrap();
         assert_eq!(result.points(), LEN);
         let result = result.magnitude().unwrap();
         assert_eq!(result.points(), LEN);
@@ -460,5 +489,19 @@ mod tests {
             [0.12732396, 0.000000027827534, 0.21220659, 0.000000027827534, 0.63661975, 
              1.0, 0.63661975, 0.000000027827534, 0.21220659, 0.000000027827534, 0.12732396];
         assert_eq_tol(result.data(), &expected, 1e-4);
+    }
+    
+    #[test]
+    fn wrapping_iterator() {
+        let array = [1.0, 2.0, 3.0, 4.0, 5.0];
+        let mut iter = WrappingIterator::new(&array, -3);
+        assert_eq!(iter.next().unwrap(), 4.0);
+        assert_eq!(iter.next().unwrap(), 5.0);
+        assert_eq!(iter.next().unwrap(), 1.0);
+        assert_eq!(iter.next().unwrap(), 2.0);
+        assert_eq!(iter.next().unwrap(), 3.0);
+        assert_eq!(iter.next().unwrap(), 4.0);
+        assert_eq!(iter.next().unwrap(), 5.0);
+        assert_eq!(iter.next().unwrap(), 1.0);
     }
 }
