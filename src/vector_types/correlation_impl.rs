@@ -64,3 +64,13 @@ define_correlation_forward!(
     ComplexTimeVector, f32; ComplexTimeVector, f64;
     ComplexFreqVector, f32; ComplexFreqVector, f64
 );
+/*
+#[cfg(test)]
+mod tests {
+    use super::WrappingIterator;
+    use vector_types::*;
+    use conv_types::*;
+    use RealNumber;
+    use std::fmt::Debug; 
+    use num::complex::Complex32;
+}*/

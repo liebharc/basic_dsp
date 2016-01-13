@@ -5,7 +5,8 @@ use super::definitions::{
 	GenericVectorOperations,
     VecResult,
     VoidResult,
-    ErrorReason};
+    ErrorReason,
+    PaddingOption};
 use super::GenericDataVector;
 use num::complex::Complex;
 use num::traits::Float;
@@ -552,16 +553,39 @@ macro_rules! add_general_impl {
                     }
                 }
                 
-                fn zero_pad(mut self, points: usize) -> VecResult<Self>
+                fn zero_pad(mut self, points: usize, option: PaddingOption) -> VecResult<Self>
                 {
                     {
                         let len_before = self.len();
-                        let len = if self.is_complex { 2 * points } else { points };
+                        let is_complex = self.is_complex;
+                        let len = if is_complex { 2 * points } else { points };
                         self.reallocate(len);
                         let array = &mut self.data;
-                        for i in len_before..len
-                        {
-                            array[i] = 0.0;
+                        if option == PaddingOption::End {
+                            // Zero target
+                            let ptr = &mut array[len_before] as *mut $data_type;
+                            unsafe {
+                                ptr::write_bytes(ptr, 0, len - len_before);
+                            }
+                        }
+                        else {
+                            let diff = (len - len_before) / if is_complex { 2 } else { 1 };
+                            let mut right = diff / 2;
+                            let mut left = diff - right;
+                            if is_complex {
+                                right *= 2;
+                                left *= 2;
+                            }
+                            
+                            unsafe {
+                                let src = &array[0] as *const $data_type;
+                                let dest = &mut array[left] as *mut $data_type;
+                                ptr::copy(src, dest, len_before);
+                                let dest = &mut array[len - right] as *mut $data_type;
+                                ptr::write_bytes(dest, 0, right);
+                                let dest = &mut array[0] as *mut $data_type;
+                                ptr::write_bytes(dest, 0, left);
+                            }
                         }
                     }
                     

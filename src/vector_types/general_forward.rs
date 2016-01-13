@@ -45,9 +45,9 @@ macro_rules! define_generic_operations_forward {
                     Self::from_genres(self.to_gen().divide_smaller_vector(&divisor.to_gen_borrow()))
                 }
                 
-                fn zero_pad(self, points: usize) -> VecResult<Self>
+                fn zero_pad(self, points: usize, option: PaddingOption) -> VecResult<Self>
                 {
-                    Self::from_genres(self.to_gen().zero_pad(points))
+                    Self::from_genres(self.to_gen().zero_pad(points, option))
                 }
                 
                 fn zero_interleave(self, factor: u32) -> VecResult<Self>

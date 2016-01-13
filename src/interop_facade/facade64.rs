@@ -130,9 +130,15 @@ pub extern fn complex_statistics64(vector: &DataVector64) -> Statistics<Complex6
     vector.complex_statistics()
 }
 
+/// `padding_option` argument is translated to:
+/// Returns the vector domain as integer:
+///
+/// 1. `0` for [`PaddingOption::End`](../../enum.PaddingOption.html)
+/// 2. `1` for [`PaddingOption::Surround`](../../enum.PaddingOption.html)
 #[no_mangle]
-pub extern fn zero_pad64(vector: Box<DataVector64>, points: usize) -> VectorResult<DataVector64> {
-    convert_vec!(vector.zero_pad(points))
+pub extern fn zero_pad64(vector: Box<DataVector64>, points: usize, padding_option: i32) -> VectorResult<DataVector64> {
+    let padding_option = translate_to_padding_option(padding_option);
+    convert_vec!(vector.zero_pad(points, padding_option))
 }
 
 #[no_mangle]

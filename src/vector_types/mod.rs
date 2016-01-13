@@ -96,7 +96,8 @@ pub use vector_types::definitions::{
         Statistics,
         RededicateVector,
         Scale,
-        Offset
+        Offset,
+        PaddingOption
 	};
 pub use vector_types::time_freq_impl::{
         TimeDomainOperations,
@@ -566,5 +567,30 @@ mod tests {
 		let c = ComplexTimeVector32::from_interleaved(&mut a);
         let r = c.swap_halves().unwrap();
 		assert_eq!(r.data(), &[7.0, 8.0, 9.0, 10.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+	}
+    
+    #[test]
+	fn zero_pad_end_test()
+	{
+		let mut a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
+		let c = ComplexTimeVector32::from_interleaved(&mut a);
+        let r = c.zero_pad(9, PaddingOption::End).unwrap();
+        let expected =
+            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+             0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+		assert_eq!(r.data(), &expected);
+	}
+    
+    #[test]
+	fn zero_pad_surround_test()
+	{
+		let mut a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
+		let c = ComplexTimeVector32::from_interleaved(&mut a);
+        let r = c.zero_pad(10, PaddingOption::Surround).unwrap();
+        let expected =
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+             1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+             0.0, 0.0, 0.0, 0.0];
+		assert_eq!(r.data(), &expected);
 	}
 }

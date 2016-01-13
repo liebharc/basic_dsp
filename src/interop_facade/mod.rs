@@ -39,6 +39,7 @@ macro_rules! convert_scalar {
 pub mod facade32;
 pub mod facade64;
 use vector_types::{
+    PaddingOption,
     ErrorReason};
 use window_functions::*;
 use RealNumber;
@@ -63,6 +64,14 @@ pub fn translate_to_window_function<T>(value: i32) -> Box<WindowFunction<T>>
         Box::new(TriangularWindow)
     } else {
         Box::new(TriangularWindow)
+    }
+}
+
+pub fn translate_to_padding_option(value: i32) -> PaddingOption {
+    if value == 0 {
+        PaddingOption::End
+    } else {
+        PaddingOption::Surround
     }
 }
 

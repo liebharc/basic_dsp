@@ -271,15 +271,15 @@ pub trait GenericVectorOperations<T>: DataVector<T>
 	/// # Example
 	///
 	/// ```
-	/// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, GenericVectorOperations, DataVector};
+	/// use basic_dsp::PaddingOption, RealTimeVector32, ComplexTimeVector32, GenericVectorOperations, DataVector};
 	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let result = vector.zero_pad(4).expect("Ignoring error handling in examples");
+	/// let result = vector.zero_pad(4, PaddingOption::End).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());
 	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0]);
-	/// let result = vector.zero_pad(2).expect("Ignoring error handling in examples");
+	/// let result = vector.zero_pad(2, PaddingOption::End).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());
 	/// ```
-	fn zero_pad(self, points: usize) -> VecResult<Self>;
+	fn zero_pad(self, points: usize, option: PaddingOption) -> VecResult<Self>;
 	
 	/// Ineterleaves zeros `factor - 1`times after every vector element, so that the resulting
     /// vector will have a length of `self.len() * factor`.
@@ -1081,4 +1081,16 @@ pub struct Statistics<T> {
     pub min_index: usize,
     pub max: T,
     pub max_index: usize
+}
+
+/// An option which defines how a vector should be padded
+#[derive(Copy)]
+#[derive(Clone)]
+#[derive(PartialEq)]
+#[derive(Debug)]
+pub enum PaddingOption {
+	/// Appends zeros to the end of the vector.
+	End,
+	/// Surrounds the vector with zeros at the beginning and at the end.
+    Surround
 }

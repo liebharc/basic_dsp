@@ -70,7 +70,8 @@ pub use vector_types::
         VectorConvolution,
         FrequencyMultiplication,
         CrossCorrelation,
-        Interpolation
+        Interpolation,
+        PaddingOption
 	};
  pub use multicore_support::MultiCoreSettings;
  use num::traits::Float;   
