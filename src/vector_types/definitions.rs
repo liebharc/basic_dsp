@@ -271,7 +271,7 @@ pub trait GenericVectorOperations<T>: DataVector<T>
 	/// # Example
 	///
 	/// ```
-	/// use basic_dsp::PaddingOption, RealTimeVector32, ComplexTimeVector32, GenericVectorOperations, DataVector};
+	/// use basic_dsp::{PaddingOption, RealTimeVector32, ComplexTimeVector32, GenericVectorOperations, DataVector};
 	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
 	/// let result = vector.zero_pad(4, PaddingOption::End).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());
@@ -280,6 +280,9 @@ pub trait GenericVectorOperations<T>: DataVector<T>
 	/// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());
 	/// ```
 	fn zero_pad(self, points: usize, option: PaddingOption) -> VecResult<Self>;
+    
+    /// Reverses the data inside the vector.
+    fn reverse(self) -> VecResult<Self>;
 	
 	/// Ineterleaves zeros `factor - 1`times after every vector element, so that the resulting
     /// vector will have a length of `self.len() * factor`.

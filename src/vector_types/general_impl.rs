@@ -592,6 +592,28 @@ macro_rules! add_general_impl {
                     Ok(self)
                 }
                 
+                fn reverse(mut self) -> VecResult<Self> {
+                    {
+                        let len = self.len();
+                        let is_complex = self.is_complex;
+                        let src = &self.data;
+                        let dest = temp_mut!(self, len);
+                        if is_complex {
+                            let src = Self::array_to_complex(&src[0..len]);
+                            let dest = Self::array_to_complex_mut(&mut dest[0..len]);
+                            for (s, d) in src.iter().rev().zip(dest) {
+                                *d = *s;
+                            }
+                        } else {
+                            for (s, d) in src.iter().rev().zip(dest) {
+                                *d = *s;
+                            }
+                        }
+                    }
+                    
+                    Ok(self.swap_data_temp())
+                }
+                
                 fn zero_interleave(self, factor: u32) -> VecResult<Self> {
                     if self.is_complex {
                         self.zero_interleave_complex(factor)

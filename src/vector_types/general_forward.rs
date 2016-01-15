@@ -50,6 +50,10 @@ macro_rules! define_generic_operations_forward {
                     Self::from_genres(self.to_gen().zero_pad(points, option))
                 }
                 
+                fn reverse(self) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().reverse())
+                }
+                
                 fn zero_interleave(self, factor: u32) -> VecResult<Self>
                 {
                     Self::from_genres(self.to_gen().zero_interleave(factor))

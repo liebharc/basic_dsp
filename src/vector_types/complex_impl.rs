@@ -116,8 +116,10 @@ macro_rules! add_complex_impl {
                 fn complex_conj(self) -> VecResult<Self>
                 {
                     assert_complex!(self);
+                    // We load the multiplicator with a complex number, however note that we use the regular
+                    // reg multiplication which is correct 
                     let multiplicator = $reg::from_complex(Complex::<$data_type>::new(1.0, -1.0));
-                    self.simd_complex_operation(|x,y| x * y, |x,_arg| x * Complex::<$data_type>::new(1.0, -1.0), multiplicator, Complexity::Small)
+                    self.simd_complex_operation(|x,y| x * y, |x,_arg| x.conj(), multiplicator, Complexity::Small)
                 }
                 
                 fn to_real(self) -> VecResult<Self>
