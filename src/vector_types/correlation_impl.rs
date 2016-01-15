@@ -19,10 +19,10 @@ use super::{
 ///
 /// The correlation is calculated in two steps. This is done to give you more control over two things:
 ///
-/// 1. Should the correlation use zero padding or not. This is done by calling either `prepare_argument`
+/// 1. Should the correlation use zero padding or not? This is done by calling either `prepare_argument`
 ///    or `prepare_argument_padded`.
 /// 2. The lifetime of the argument. The argument needs to be transformed for the correlation and
-///    depending on the application that might be just okay, a clone needs to be created or
+///    depending on the application that might be just fine, or a clone needs to be created or
 ///    it's okay to use one argument for multiple correlations.
 ///
 /// To get the same behavior like GNU Octave or MATLAB `prepare_argument_padded` needs to be 
