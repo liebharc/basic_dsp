@@ -15,7 +15,6 @@ use super::{
     RealTimeVector,
     ComplexFreqVector,
     ComplexTimeVector};
-use multicore_support::{Chunk, Complexity};
 
 /// Provides a convolution operation for data vectors. 
 pub trait Convolution<T, C> : DataVector<T> 
@@ -175,41 +174,6 @@ macro_rules! add_conv_impl{
                 }
             }
             
-            impl GenericDataVector<$data_type> {
-                fn multiply_function_priv<T,CMut,FA, F>(
-                    mut self, 
-                    ratio: $data_type,
-                    convert_mut: CMut,
-                    function_arg: FA, 
-                    fun: F) -> Self
-                        where 
-                            CMut: Fn(&mut [$data_type]) -> &mut [T],
-                            FA: Copy + Sync,
-                            F: Fn(FA, $data_type)->T + 'static + Sync,
-                            T: Zero + Mul<Output=T> + Copy + Display + Send + Sync + From<$data_type>
-                {
-                    {
-                        let len = self.len();
-                        let points = self.points();
-                        let complex = convert_mut(&mut self.data[0..len]);
-                        Chunk::execute_with_range(
-                            Complexity::Medium, &self.multicore_settings,
-                            complex, points, 1, function_arg,
-                            move |array, range, arg| {
-                                let scale = T::from(ratio);
-                                let offset = if points % 2 != 0 { 1 } else { 0 };
-                                let max = (points - offset) as $data_type / 2.0; 
-                                let mut j = -((points - offset + range.start) as $data_type) / 2.0;
-                                for num in array {
-                                    (*num) = (*num) * scale * fun(arg, j / max * ratio);
-                                    j += 1.0;
-                                }
-                            });
-                    }
-                    self
-                }
-            }
-            
             impl VectorConvolution<$data_type> for GenericDataVector<$data_type> {
                 fn convolve_vector(mut self, vector: &Self) -> VecResult<Self> {
                     assert_meta_data!(self, vector);
@@ -230,7 +194,6 @@ macro_rules! add_conv_impl{
                             let other = Self::array_to_complex(&vector.data[0..vector.len()]);
                             let complex = Self::array_to_complex(&self.data[0..len]);
                             let dest = Self::array_to_complex_mut(&mut self.temp[0..len]);
-                            print!("{}, {}\n", other_start, other_end);
                             let other_iter = &other[other_start .. other_end];
                             let mut i = 0;
                             for num in dest {

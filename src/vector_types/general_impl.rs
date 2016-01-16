@@ -561,30 +561,50 @@ macro_rules! add_general_impl {
                         let len = if is_complex { 2 * points } else { points };
                         self.reallocate(len);
                         let array = &mut self.data;
-                        if option == PaddingOption::End {
-                            // Zero target
-                            let ptr = &mut array[len_before] as *mut $data_type;
-                            unsafe {
-                                ptr::write_bytes(ptr, 0, len - len_before);
+                        match option {
+                            PaddingOption::End => {
+                                // Zero target
+                                let ptr = &mut array[len_before] as *mut $data_type;
+                                unsafe {
+                                    ptr::write_bytes(ptr, 0, len - len_before);
+                                }
                             }
-                        }
-                        else {
-                            let diff = (len - len_before) / if is_complex { 2 } else { 1 };
-                            let mut right = diff / 2;
-                            let mut left = diff - right;
-                            if is_complex {
-                                right *= 2;
-                                left *= 2;
+                            PaddingOption::Surround => {
+                                let diff = (len - len_before) / if is_complex { 2 } else { 1 };
+                                let mut right = diff / 2;
+                                let mut left = diff - right;
+                                if is_complex {
+                                    right *= 2;
+                                    left *= 2;
+                                }
+                                
+                                unsafe {
+                                    let src = &array[0] as *const $data_type;
+                                    let dest = &mut array[left] as *mut $data_type;
+                                    ptr::copy(src, dest, len_before);
+                                    let dest = &mut array[len - right] as *mut $data_type;
+                                    ptr::write_bytes(dest, 0, right);
+                                    let dest = &mut array[0] as *mut $data_type;
+                                    ptr::write_bytes(dest, 0, left);
+                                }
                             }
-                            
-                            unsafe {
-                                let src = &array[0] as *const $data_type;
-                                let dest = &mut array[left] as *mut $data_type;
-                                ptr::copy(src, dest, len_before);
-                                let dest = &mut array[len - right] as *mut $data_type;
-                                ptr::write_bytes(dest, 0, right);
-                                let dest = &mut array[0] as *mut $data_type;
-                                ptr::write_bytes(dest, 0, left);
+                            PaddingOption::Center => {
+                                let mut diff = (len - len_before) / if is_complex { 2 } else { 1 };
+                                let mut right = diff / 2;
+                                let mut left = diff - right;
+                                if is_complex {
+                                    right *= 2;
+                                    left *= 2;
+                                    diff *= 2;
+                                }
+                                
+                                unsafe {
+                                    let src = &array[left] as *const $data_type;
+                                    let dest = &mut array[len-right] as *mut $data_type;
+                                    ptr::copy(src, dest, right);
+                                    let dest = &mut array[left] as *mut $data_type;
+                                    ptr::write_bytes(dest, 0, len - diff);
+                                }
                             }
                         }
                     }

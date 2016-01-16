@@ -134,6 +134,7 @@ pub extern fn complex_statistics32(vector: &DataVector32) -> Statistics<Complex3
 ///
 /// 1. `0` for [`PaddingOption::End`](../../enum.PaddingOption.html)
 /// 2. `1` for [`PaddingOption::Surround`](../../enum.PaddingOption.html)
+/// 2. `2` for [`PaddingOption::Center`](../../enum.PaddingOption.html)
 #[no_mangle]
 pub extern fn zero_pad32(vector: Box<DataVector32>, points: usize, padding_option: i32) -> VectorResult<DataVector32> {
     let padding_option = translate_to_padding_option(padding_option);

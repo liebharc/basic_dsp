@@ -68,10 +68,10 @@ pub fn translate_to_window_function<T>(value: i32) -> Box<WindowFunction<T>>
 }
 
 pub fn translate_to_padding_option(value: i32) -> PaddingOption {
-    if value == 0 {
-        PaddingOption::End
-    } else {
-        PaddingOption::Surround
+    match value {
+        0 => PaddingOption::End,
+        1 => PaddingOption::Surround,
+        _ => PaddingOption::Center
     }
 }
 

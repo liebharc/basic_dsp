@@ -118,6 +118,9 @@ use std::mem;
 use std::ptr;
 use simd_extensions::{Simd, Reg32, Reg64};
 use std::ops::{Index, IndexMut, Range, RangeTo, RangeFrom, RangeFull};
+use num::traits::Zero;
+use std::ops::Mul;
+use std::fmt::Display;
     
 define_vector_struct!(struct GenericDataVector);
 add_basic_private_impl!(f32, Reg32; f64, Reg64);
@@ -590,6 +593,20 @@ mod tests {
         let expected =
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
              1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+             0.0, 0.0, 0.0, 0.0];
+		assert_eq!(r.data(), &expected);
+	}
+    
+    #[test]
+	fn zero_pad_center_test()
+	{
+		let mut a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
+		let c = ComplexFreqVector32::from_interleaved(&mut a);
+        let r = c.zero_pad(10, PaddingOption::Center).unwrap();
+        let r = r.fft_shift().unwrap();
+        let expected =
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+             7.0, 8.0, 9.0, 10.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
              0.0, 0.0, 0.0, 0.0];
 		assert_eq!(r.data(), &expected);
 	}

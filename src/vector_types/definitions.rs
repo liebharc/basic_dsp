@@ -1095,5 +1095,8 @@ pub enum PaddingOption {
 	/// Appends zeros to the end of the vector.
 	End,
 	/// Surrounds the vector with zeros at the beginning and at the end.
-    Surround
+    Surround,
+    
+    /// Inserts zeros in the center of the vector
+    Center,
 }
