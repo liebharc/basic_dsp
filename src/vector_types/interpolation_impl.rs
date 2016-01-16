@@ -2,7 +2,9 @@ use super::definitions::{
     DataVector,
     VecResult};
 use RealNumber;
-use conv_types::{RealImpulseResponse,RealFrequencyResponse};
+use conv_types::{
+    RealImpulseResponse,
+    RealFrequencyResponse};
 use super::{
     PaddingOption,
     GenericDataVector,
@@ -15,6 +17,8 @@ use super::{
     ComplexTimeVector,
     ComplexFreqVector};
 use num::complex::Complex;
+use num::traits::Zero;
+use super::convolution_impl::WrappingIterator;
 
 /// Provides a interpolation operation for data vectors.
 /// # Unstable
@@ -23,9 +27,13 @@ use num::complex::Complex;
 pub trait Interpolation<T> : DataVector<T> 
     where T : RealNumber {
     /// Interpolates `self` with the convolution function `function` by the real value `interpolation_factor`.
-    fn interpolatef(self, function: &RealImpulseResponse<T>, interpolation_factor: T, delay: T, len: usize) -> VecResult<Self>;
+    /// Interpolation is done in in time domain and the argument `conv_len` can be used to balance accuracy 
+    /// and performance. 
+    /// A `delay` can be used to delay or phase shift the vector. The `delay` considers `self.delta()`.
+    fn interpolatef(self, function: &RealImpulseResponse<T>, interpolation_factor: T, delay: T, conv_len: usize) -> VecResult<Self>;
     
     /// Interpolates `self` with the convolution function `function` by the interger value `interpolation_factor`.
+    /// Interpolation is done in in frequency domain.
     fn interpolatei(self, function: &RealFrequencyResponse<T>, interpolation_factor: usize) -> VecResult<Self>;
 }
 
@@ -35,25 +43,36 @@ macro_rules! define_interpolation_impl {
             impl Interpolation<$data_type> for GenericDataVector<$data_type> {
                 fn interpolatef(mut self, function: &RealImpulseResponse<$data_type>, interpolation_factor: $data_type, delay: $data_type, conv_len: usize) -> VecResult<Self> {
                     {
+                        let delay = delay / self.delta;
                         let len = self.len();
-                        let new_len = (len as $data_type * interpolation_factor) as usize;
+                        let points_half = self.points() / 2;
+                        let conv_len =
+                            if conv_len > points_half {
+                                points_half
+                            } else {
+                                conv_len
+                            };
+                        let new_len = (len as $data_type * interpolation_factor).round() as usize;
                         let data = &self.data[0..len];
                         let temp = temp_mut!(self, new_len);
+                        let temp = Self::array_to_complex_mut(temp);
+                        let data = Self::array_to_complex(data);
                         let mut i = 0;
                         for num in temp {
-                            let k = (i as $data_type / interpolation_factor).round() as usize;
-                            let start = if k > conv_len { i - conv_len } else { 0 };
-                            let end = if k + conv_len < len { i + conv_len } else { len };
-                            let mut sum = 0.0;
-                            let center = k as $data_type;
-                            let mut j = start as $data_type - center - delay;
-                            for c in &data[start..end] {
-                                sum = sum + (*c) * function.calc(j * interpolation_factor);
+                            let center = i as $data_type / interpolation_factor;
+                            let rounded = (center).floor();
+                            let iter = WrappingIterator::new(&data, rounded as isize - conv_len as isize -1);
+                            let mut sum = Complex::<$data_type>::zero();
+                            let mut j = -(conv_len as $data_type) - (center - rounded) + delay;
+                            for c in iter.take(2 * conv_len + 1) {
+                                sum = sum + c * function.calc(j);
                                 j += 1.0;
                             }
                             (*num) = sum;
                             i += 1;
                         }
+                        
+                        self.valid_len = new_len;
                     }
                     Ok(self.swap_data_temp())
                 }
@@ -119,7 +138,7 @@ mod tests {
         assert_eq!(left.len(), right.len());
         for i in 0..left.len() {
             if (left[i] - right[i]).abs() > tol {
-                panic!("assertion failed: {:?} != {:?}", left, right);
+                panic!("assertion failed: {:?} != {:?} at index {}", left, right, i);
             }
         }
     }
@@ -150,5 +169,33 @@ mod tests {
             [0.07765429, 0.093237594, 0.08049384, 0.1812773, 0.08617285, 0.6247517, 
              0.9109876, 0.6247517, 0.08617285, 0.18127733, 0.0804938, 0.09323766];
         assert_eq_tol(result.data(), &expected, 1e-4);
+    }
+    
+    #[test]
+    fn interpolatef_sinc_test() {
+        let len = 6;
+        let mut time = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), len);
+        time[len] = 1.0;
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let result = time.interpolatef(&sinc as &RealImpulseResponse<f32>, 2.0, 0.0, len).unwrap();
+        let result = result.magnitude().unwrap();
+        let expected = 
+            [0.00000, 0.04466, 0.00000, 0.16667, 0.00000, 0.62201,
+             1.00000, 0.62201, 0.00000, 0.16667, 0.00000, 0.04466];
+        assert_eq_tol(result.data(), &expected, 0.1);
+    }
+    
+    #[test]
+    fn interpolatef_delayed_sinc_test() {
+        let len = 6;
+        let mut time = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), len);
+        time[len] = 1.0;
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let result = time.interpolatef(&sinc as &RealImpulseResponse<f32>, 2.0, 1.0, len).unwrap();
+        let result = result.magnitude().unwrap();
+        let expected = 
+            [0.00000, 0.00000, 0.00000, 0.04466, 0.00000, 0.16667,
+             0.00000, 0.62201, 1.00000, 0.62201, 0.00000, 0.16667];
+        assert_eq_tol(result.data(), &expected, 0.1);
     }
 }

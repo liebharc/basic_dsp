@@ -296,7 +296,7 @@ add_conv_vector_forward!(
         RealFreqVector, f32, f64;
         ComplexFreqVector, f32, f64);
         
-struct WrappingIterator<T>
+pub struct WrappingIterator<T>
     where T: Clone {
     start: *const T,
     end: *const T,
@@ -324,7 +324,7 @@ impl<T> Iterator for WrappingIterator<T>
 
 impl<T> WrappingIterator<T>
     where T: Clone {
-    fn new(slice: &[T], pos: isize) -> Self {
+    pub fn new(slice: &[T], pos: isize) -> Self {
         use std::isize;
         assert!(slice.len() <= isize::MAX as usize);
         let len = slice.len() as isize;
