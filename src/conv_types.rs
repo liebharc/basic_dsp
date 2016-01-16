@@ -29,6 +29,10 @@ macro_rules! define_real_conv_trait {
             /// A convolution function in $domain_comment domain and real number space
             pub trait $name<T> : Sync
                 where T: RealNumber {
+                /// Indicates whether this function is symmetric around 0 or not.
+                /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
+                fn is_symmetric(&self) -> bool;
+                
                 /// Calculates the convolution for a data point
                 fn calc(&self, x: T) -> T;
             }
@@ -43,6 +47,10 @@ macro_rules! define_complex_conv_trait {
             /// A convolution function in $domain_comment domain and complex number space
             pub trait $name<T> : Sync
                 where T: RealNumber {
+                /// Indicates whether this function is symmetric around 0 or not.
+                /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
+                fn is_symmetric(&self) -> bool;
+                
                 /// Calculates the convolution for a data point
                 fn calc(&self, x: T) -> Complex<T>;
             }
@@ -59,7 +67,8 @@ macro_rules! define_real_lookup_table {
             pub struct $name<T>
                 where T: RealNumber {
                 table: Vec<T>,
-                delta: T
+                delta: T,
+                is_symmetric: bool
             }
             
             impl<T> $name<T>
@@ -88,7 +97,8 @@ macro_rules! define_complex_lookup_table {
             pub struct $name<T>
                 where T: RealNumber {
                 table: Vec<Complex<T>>,
-                delta: T
+                delta: T,
+                is_symmetric: bool
             }
             
             impl<T> $name<T>
@@ -113,7 +123,11 @@ macro_rules! add_linear_table_lookup_impl {
     ($($name: ident: $conv_type: ident, $($data_type: ident, $result_type:ident),*);*) => {
         $(            
             $(
-                impl $conv_type<$data_type> for $name<$data_type> {                
+                impl $conv_type<$data_type> for $name<$data_type> {
+                    fn is_symmetric(&self) -> bool {
+                        self.is_symmetric
+                    }
+                
                     fn calc(&self, x: $data_type) -> $result_type {
                         let len = self.table.len();
                         let center = len / 2;
@@ -154,9 +168,9 @@ macro_rules! add_linear_table_lookup_impl {
 
                 impl $name<$data_type> {
                     /// Creates a lookup table by putting the pieces together.             
-                    pub fn from_raw_parts(table: &[$result_type], delta: $data_type) -> Self {
+                    pub fn from_raw_parts(table: &[$result_type], delta: $data_type, is_symmetric: bool) -> Self {
                         let owned_table = Vec::from(table);
-                        $name { table: owned_table, delta: delta }
+                        $name { table: owned_table, delta: delta, is_symmetric: is_symmetric }
                     }
                     
                     
@@ -165,13 +179,14 @@ macro_rules! add_linear_table_lookup_impl {
                     pub fn from_conv_function(other: &$conv_type<$data_type>, delta: $data_type, len: usize) -> Self {
                         let center = len as isize;
                         let len = 2 * len + 1;
+                        let is_symmetric = other.is_symmetric();
                         let mut table = vec![$result_type::zero(); len];
                         let mut i = -center;
                         for n in &mut table {
                             *n = other.calc((i as $data_type) * delta);
                             i += 1;
                         }
-                        $name { table: table, delta: delta }
+                        $name { table: table, delta: delta, is_symmetric: is_symmetric }
                     }
                 }
             )*
@@ -194,11 +209,12 @@ macro_rules! add_real_linear_table_impl {
                         let vector = RealTimeVector::from_array(&self.table);
                         let complex = vector.to_complex().expect("to_complex shouldn't fail");
                         let complex = complex.complex_data();
+                        let is_symmetric = self.is_symmetric;
                         let mut table = Vec::with_capacity(complex.len());
                         for n in complex {
                             table.push(*n);
                         }
-                        $complex { table: table, delta: self.delta }
+                        $complex { table: table, delta: self.delta, is_symmetric: is_symmetric }
                     }
                 }
             )*
@@ -219,11 +235,12 @@ macro_rules! add_complex_linear_table_impl {
                         let vector = ComplexTimeVector::from_complex(&self.table);
                         let real = vector.to_real().expect("to_complex shouldn't fail");
                         let real = real.data();
+                        let is_symmetric = self.is_symmetric;
                         let mut table = Vec::with_capacity(real.len());
                         for n in real {
                             table.push(*n);
                         }
-                        $real { table: table, delta: self.delta }
+                        $real { table: table, delta: self.delta, is_symmetric: is_symmetric }
                     }
                 }
             )*
@@ -244,11 +261,12 @@ macro_rules! add_complex_time_linear_table_impl {
                     let freq = vector.fft().expect("vector fft shouldn't fail");
                     let delta = freq.delta();
                     let freq = freq.complex_data();
+                    let is_symmetric = self.is_symmetric;
                     let mut table = Vec::with_capacity(freq.len());
                     for n in freq {
                         table.push(*n);
                     }
-                    ComplexFrequencyLinearTableLookup { table: table, delta: delta }
+                    ComplexFrequencyLinearTableLookup { table: table, delta: delta, is_symmetric: is_symmetric }
                 }
             }
         )*
@@ -265,13 +283,14 @@ macro_rules! add_real_time_linear_table_impl {
                     let vector = RealTimeVector::from_array_with_delta(&self.table, self.delta);
                     let freq = vector.fft().expect("vector fft shouldn't fail");
                     let freq = freq.magnitude().expect("vector magnitude shouldn't fail");
+                    let is_symmetric = self.is_symmetric;
                     let delta = freq.delta();
                     let freq = freq.data();
                     let mut table = Vec::with_capacity(freq.len());
                     for n in freq {
                         table.push(*n);
                     }
-                    RealFrequencyLinearTableLookup { table: table, delta: delta }
+                    RealFrequencyLinearTableLookup { table: table, delta: delta, is_symmetric: is_symmetric }
                 }
             }
         )*
@@ -290,11 +309,12 @@ macro_rules! add_complex_frequency_linear_table_impl {
                     let time = vector.ifft().expect("vector ifft shouldn't fail");
                     let delta = time.delta();
                     let time = time.complex_data();
+                    let is_symmetric = self.is_symmetric;
                     let mut table = Vec::with_capacity(time.len());
                     for n in time {
                         table.push(*n);
                     }
-                    ComplexTimeLinearTableLookup { table: table, delta: delta }
+                    ComplexTimeLinearTableLookup { table: table, delta: delta, is_symmetric: is_symmetric }
                 }
             }
         )*
@@ -310,6 +330,10 @@ pub struct RaisedCosineFunction<T>
 
 impl<T> RealImpulseResponse<T> for RaisedCosineFunction<T> 
     where T: RealNumber {
+    fn is_symmetric(&self) -> bool {
+        true
+    }
+    
     fn calc(&self, x: T) -> T {
         if x == T::zero() {
             return T::one();
@@ -332,6 +356,10 @@ impl<T> RealImpulseResponse<T> for RaisedCosineFunction<T>
 
 impl<T> RealFrequencyResponse<T> for RaisedCosineFunction<T> 
     where T: RealNumber {
+    fn is_symmetric(&self) -> bool {
+        true
+    }
+    
     fn calc(&self, x: T) -> T {
         // assume x_delta = 1.0
         let one = T::one();
@@ -367,6 +395,10 @@ pub struct SincFunction<T>
 
 impl<T> RealImpulseResponse<T> for SincFunction<T>
     where T: RealNumber {
+    fn is_symmetric(&self) -> bool {
+        true
+    }
+    
     fn calc(&self, x: T) -> T {
         if x == T::zero() {
             return T::one();
@@ -382,6 +414,10 @@ impl<T> RealImpulseResponse<T> for SincFunction<T>
 
 impl<T> RealFrequencyResponse<T> for SincFunction<T>
     where T: RealNumber {
+    fn is_symmetric(&self) -> bool {
+        true
+    }
+    
     fn calc(&self, x: T) -> T {
         let one = T::one();
         if x.abs() <= one {
