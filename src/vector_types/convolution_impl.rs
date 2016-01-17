@@ -349,7 +349,6 @@ impl<T> WrappingIterator<T>
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::WrappingIterator;
