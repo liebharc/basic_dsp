@@ -13,10 +13,12 @@ mod slow_test {
         RealTimeVector64,
         ComplexTimeVector32};
     use basic_dsp::conv_types::*;
+    use basic_dsp::interop_facade::facade32::*;
     use num::complex::Complex32;
-    use basic_dsp::window_functions::HammingWindow;
+    use basic_dsp::window_functions::*;
     use tools::*;
     use std::f64::consts::PI;
+    use std::os::raw::c_void;
        
     #[test]
     fn complex_plain_fft_plain_ifft_vector32_large() {
@@ -128,7 +130,7 @@ mod slow_test {
     #[test]
     fn compare_conv_freq_multiplication_for_rc() {
         for iteration in 0 .. 3 {
-            let a = create_data_even(201511212, iteration, 10001, 20000);
+            let a = create_data_even(201511212, iteration, 1001, 2000);
             let delta = create_delta(3561159, iteration);
             let time = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
@@ -147,7 +149,7 @@ mod slow_test {
     #[test]
     fn compare_conv_freq_multiplication_for_sinc() {
         for iteration in 0 .. 3 {
-            let a = create_data_even(201511212, iteration, 10001, 20000);
+            let a = create_data_even(201511212, iteration, 2001, 4000);
             let delta = create_delta(3561159, iteration);
             let time = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let fun: SincFunction<f32> = SincFunction::new();
@@ -159,7 +161,38 @@ mod slow_test {
             let ifreq_res = freq_res.ifft().unwrap();
             let left = &ifreq_res.data();
             let right = &time_res.data();
-            assert_vector_eq_with_reason_and_tolerance(&left, &right, 0.1, "Results should match independent if done in time or frequency domain");
+            assert_vector_eq_with_reason_and_tolerance(&left, &right, 0.2, "Results should match independent if done in time or frequency domain");
         }
+    }
+    
+    /// Calls to another window with the only
+    /// difference that it doesn't allow to make use of symmetry
+    fn unsym_triag_window() -> ForeignWindowFunction {
+        ForeignWindowFunction {
+            window_data: 0,
+            window_function: call_triag,
+            is_symmetric: false
+        }
+    }
+    
+    extern fn call_triag(_arg: *const c_void, i: usize, points: usize) -> f32 {
+        let triag: &WindowFunction<f32> = &TriangularWindow;
+        triag.window(i, points)
+    }
+    
+    #[test]
+    fn compare_sym_optimized_window_with_normal_version() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data_even(20160116, iteration, range.start, range.end);
+            let delta = create_delta(201601161, iteration);
+            let time = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let triag_sym = TriangularWindow;
+            let triag_unsym = unsym_triag_window();
+            let result_sym = time.clone().apply_window(&triag_sym).unwrap();
+            let result_unsym = time.apply_window(&triag_unsym).unwrap();
+            let left = &result_sym.data();
+            let right = &result_unsym.data();
+            assert_vector_eq_with_reason_and_tolerance(&left, &right, 1e-2, "Results should match with or without symmetry optimization");
+        });
     }
 }

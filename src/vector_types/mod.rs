@@ -120,7 +120,7 @@ use simd_extensions::{Simd, Reg32, Reg64};
 use std::ops::{Index, IndexMut, Range, RangeTo, RangeFrom, RangeFull};
 use num::traits::Zero;
 use std::ops::Mul;
-use std::fmt::Display;
+use std::fmt::{Display, Debug};
     
 define_vector_struct!(struct GenericDataVector);
 add_basic_private_impl!(f32, Reg32; f64, Reg64);

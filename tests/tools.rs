@@ -33,15 +33,13 @@ pub fn assert_vector_eq_with_reason_and_tolerance<T>(left: &[T], right: &[T], to
     
     let len = if left.len() < right.len() { left.len() } else { right.len() };
     let mut differences = 0;
-    let mut first_difference = false;
     for i in 0 .. len {
         if (left[i] - right[i]).abs() > tolerance
         {
             differences += 1;
-            if !first_difference
+            if differences <= 10
             {
-                errors.push(format!("First difference at index {}, left: {} != right: {}", i, left[i], right[i]));
-                first_difference = true;
+                errors.push(format!("Difference {} at index {}, left: {} != right: {}", differences, i, left[i], right[i]));
             }
         }
     }

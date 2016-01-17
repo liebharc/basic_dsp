@@ -13,6 +13,9 @@ use RealNumber;
 /// 3. All real return values are allowed
 pub trait WindowFunction<T> : Sync
     where T: RealNumber {
+    /// Indicates whether this function is symmetric around 0 or not.
+    /// Symmetry is defined as `self.window(x) == self.window(-x)`.
+    fn is_symmetric(&self) -> bool;
     /// Calculates a point of the window function
     fn window(&self, n: usize, length: usize) -> T;
 }
@@ -21,6 +24,10 @@ pub trait WindowFunction<T> : Sync
 pub struct TriangularWindow;
 impl<T> WindowFunction<T> for TriangularWindow
     where T: RealNumber {
+    fn is_symmetric(&self) -> bool {
+        true
+    }
+    
     fn window(&self, n: usize, length: usize) -> T {
         let one = T::one();
         let two = T::from(2.0).unwrap();
@@ -52,6 +59,10 @@ impl<T> HammingWindow<T>
 
 impl<T> WindowFunction<T> for HammingWindow<T> 
     where T: RealNumber {
+    fn is_symmetric(&self) -> bool {
+        true
+    }
+    
     fn window(&self, n: usize, length: usize) -> T {
         let one = T::one();
         let two = T::from(2.0).unwrap();

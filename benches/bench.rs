@@ -7,3 +7,4 @@ extern crate num;
 pub mod tools;
 pub mod complex_bench;
 pub mod real_bench;
+pub mod time_freq_bench;

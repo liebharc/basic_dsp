@@ -87,6 +87,7 @@ macro_rules! define_interpolation_impl {
                     freq.zero_pad(points * interpolation_factor, PaddingOption::Surround)
                     .and_then(|v| {
                         Ok(v.multiply_function_priv(
+                                        function.is_symmetric(),
                                         interpolation_factorf,
                                         |array|Self::array_to_complex_mut(array),
                                         function,

@@ -147,6 +147,7 @@ macro_rules! add_conv_impl{
                     assert_complex!(self);
                     assert_freq!(self);
                     Ok(self.multiply_function_priv(
+                                    function.is_symmetric(),
                                     ratio,
                                     |array|Self::array_to_complex_mut(array),
                                     function,
@@ -159,6 +160,7 @@ macro_rules! add_conv_impl{
                     assert_freq!(self);
                     if self.is_complex {
                         Ok(self.multiply_function_priv(
+                                        function.is_symmetric(),
                                         ratio,
                                         |array|Self::array_to_complex_mut(array),
                                         function,
@@ -166,6 +168,7 @@ macro_rules! add_conv_impl{
                     }
                     else {
                         Ok(self.multiply_function_priv(
+                                        function.is_symmetric(),
                                         ratio,
                                         |array|array,
                                         function,
@@ -367,12 +370,22 @@ mod tests {
     }
     
     #[test]
-	fn convolve_real_freq_and_freq32() {
+	fn convolve_complex_freq_and_freq32() {
         let vector = ComplexFreqVector32::from_constant(Complex32::new(1.0, 1.0), 5);
         let rc: RaisedCosineFunction<f32> = RaisedCosineFunction::new(1.0);
         let result = vector.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 2.0).unwrap();
         let expected = 
             [0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 0.0, 0.0];
+        assert_eq_tol(result.data(), &expected, 1e-4);
+    }
+    
+    #[test]
+	fn convolve_complex_freq_and_freq_even32() {
+        let vector = ComplexFreqVector32::from_constant(Complex32::new(1.0, 1.0), 6);
+        let rc: RaisedCosineFunction<f32> = RaisedCosineFunction::new(1.0);
+        let result = vector.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 2.0).unwrap();
+        let expected = 
+            [0.0, 0.0, 0.5, 0.5, 1.5, 1.5, 2.0, 2.0, 1.5, 1.5, 0.5, 0.5];
         assert_eq_tol(result.data(), &expected, 1e-4);
     }
     

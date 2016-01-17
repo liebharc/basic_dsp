@@ -13,9 +13,9 @@ use super::{
 use rustfft::FFT;
 use RealNumber;
 use std::ptr;
-use std::ops::{Mul, Div};
 use window_functions::WindowFunction;
-use multicore_support::{Chunk, Complexity};
+use num::complex::Complex;
+use std::ops::{Mul, Div};
 
 /// Defines all operations which are valid on `DataVectors` containing time domain data.
 /// # Failures
@@ -267,38 +267,21 @@ macro_rules! define_time_domain_forward {
 macro_rules! implement_window_function {
     ($($name:ident, $data_type:ident, $operation: ident);*) => {
         $( 
-            fn $name(mut self, window: &WindowFunction<$data_type>) -> VecResult<Self> {
+            fn $name(self, window: &WindowFunction<$data_type>) -> VecResult<Self> {
                     assert_time!(self);
                     if self.is_complex {
-                        let len = self.len();
-                        let points = self.points();
-                        let complex = Self::array_to_complex_mut(&mut self.data[0..len]);
-                        Chunk::execute_with_range(
-                            Complexity::Medium, &self.multicore_settings,
-                            complex, points, 1, window,
-                            move |array, range, window| {
-                                let mut i = range.start;
-                                for num in array {
-                                    (*num) = (*num).$operation(window.window(i, points));
-                                    i += 1;
-                                }
-                            });
+                        Ok(self.multiply_window_priv(
+                            window.is_symmetric(),
+                            |array|Self::array_to_complex_mut(array),
+                            window,
+                            |f,i,p|Complex::<$data_type>::new(1.0.$operation(f.window(i, p)), 0.0)))
                     } else {
-                        let len = self.len();
-                        let data = &mut self.data[0..len];
-                        Chunk::execute_with_range(
-                            Complexity::Medium, &self.multicore_settings,
-                            data, len, 1, window,
-                            move |array, range, window| {
-                                let mut i = range.start;
-                                for num in array {
-                                    (*num) = (*num).$operation(window.window(i, len));
-                                    i += 1;
-                                }
-                            });
+                        Ok(self.multiply_window_priv(
+                            window.is_symmetric(),
+                            |array|array,
+                            window,
+                            |f,i,p|1.0.$operation(f.window(i, p))))
                     }
-                    
-                    Ok(self)
                 }
         )*
     }
@@ -673,5 +656,27 @@ mod tests {
         let expected = [0.1, 0.3, 0.5, 0.7, 0.9, 0.9, 0.7, 0.5, 0.3, 0.1];
         let r = r.data();
 		assert_eq_tol(r, &expected, 1e-4);
+	}
+    
+    #[test]
+	fn window_odd_test()
+	{
+		let c = ComplexTimeVector32::from_constant(Complex32::new(1.0, 0.0), 9);
+        let triag = TriangularWindow;
+        let r = c.apply_window(&triag).unwrap().magnitude().unwrap();
+        let expected = [0.111, 0.333, 0.555, 0.777, 1.0, 0.777, 0.555, 0.333, 0.111];
+        let r = r.data();
+		assert_eq_tol(r, &expected, 1e-2);
+	}
+    
+    #[test]
+	fn unapply_window_test()
+	{
+		let c = RealTimeVector32::from_array(&[0.1, 0.3, 0.5, 0.7, 0.9, 0.9, 0.7, 0.5, 0.3, 0.1]);
+        let triag = TriangularWindow;
+        let r = c.unapply_window(&triag).unwrap();
+        let expected = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
+        let r = r.data();
+		assert_eq_tol(r, &expected, 1e-2);
 	}
 }

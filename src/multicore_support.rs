@@ -6,6 +6,7 @@ use std::ops::Range;
 use std::sync::Mutex;
 use std::mem;
 use super::RealNumber;
+use std::iter::Iterator;
 
 /// Indicates how complex an operation is and determines how many cores 
 /// will be used since operations with smaller complexity are memory bus bound
@@ -253,6 +254,59 @@ impl Chunk
 		else
 		{
 			function(&mut array[0..array_length], Range { start: 0, end: array_length }, arguments);
+		}
+	}
+    
+    /// Executes the given function on the all elements of the array and also tells the function on which range/chunk
+    /// it operates on.
+    ///
+    /// This function will chunk the array into an even number and pass every
+    /// call to `function` two chunks. The two chunks will always be symmetric 
+    /// around 0. This allos `function` to make use of symmetry properties of the
+    /// underlying data or the argument.
+	#[inline]
+	pub fn execute_sym_pairs_with_range<T,S,F>(
+            complexity: Complexity, 
+            settings: &MultiCoreSettings, 
+            array: &mut [T], array_length: usize, step_size: usize, 
+            arguments: S, ref function: F)
+		where F: Fn(&mut &mut [T], &Range<usize>, &mut &mut [T], &Range<usize>, S) + 'static + Sync,
+			  T : Copy + Clone + Send + Sync,
+			  S: Sync + Copy
+	{
+		let number_of_chunks = 2 * Chunk::determine_number_of_chunks(array_length, complexity, settings);
+		if number_of_chunks > 2
+		{
+			let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
+			let ranges = Chunk::partition_in_ranges(array_length, step_size, chunks.len());
+			let ref mut pool = Chunk::get_static_pool();
+            let mut i = 0;
+            let (mut chunks1, mut chunks2): (Vec<_>, Vec<_>) = 
+                chunks.partition(|_c| { i += 1; i <= number_of_chunks / 2 });
+            i = 0;
+            let (ranges1, ranges2): (Vec<_>, Vec<_>)  = 
+                ranges.iter().partition(|_r| { i += 1; i <= number_of_chunks / 2 });
+            let chunks2 = chunks2.iter_mut().rev();
+            let ranges2 = ranges2.iter().rev();
+            let zipped1 = chunks1.iter_mut().zip(ranges1);
+            let zipped2 = chunks2.zip(ranges2);
+			pool.for_(zipped1.zip(zipped2), |chunk|
+				{
+                    let (pair1, pair2) = chunk;
+					function(pair1.0, pair1.1, pair2.0, pair2.1, arguments);
+				});
+		}
+		else
+		{
+            let mut chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
+            let mut chunks1 = chunks.next().unwrap();
+            let mut chunks2 = chunks.next().unwrap();
+			function(
+                &mut chunks1, 
+                &Range { start: 0, end: array_length / 2 }, 
+                &mut chunks2, 
+                &Range { start: array_length / 2, end: array_length }, 
+                arguments);
 		}
 	}
     

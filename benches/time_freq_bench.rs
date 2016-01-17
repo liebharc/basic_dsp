@@ -2,34 +2,35 @@
 mod bench {
 	use test::Bencher;
 	use basic_dsp::{
-		DataVector,
-		RealVectorOperations,
-		ComplexVectorOperations,
         TimeDomainOperations,
         FrequencyDomainOperations,
-		DataVector32, 
-		RealTimeVector32, 
-		ComplexTimeVector32, 
-		Operation32};
-	use num::complex::Complex32;
-	use std::boxed::Box;
-    use tools::{VectorBox, DEFAULT_DATA_SIZE};
+		DataVector32};
+    use tools::VectorBox;
+    use basic_dsp::window_functions::TriangularWindow;
 	
 	#[bench]
-	fn plain_fft_32_benchmark(b: &mut Bencher)
+	fn plain_fft_ifft_32_benchmark(b: &mut Bencher)
 	{
 		let mut vector = VectorBox::<DataVector32>::with_size(true, 10000);
 		b.iter(|| {
-			vector.execute(|v|  { v.plain_fft() } )
+			vector.execute_res(|v|  
+            { 
+                v.plain_fft()
+                .and_then(|v|v.plain_ifft()) 
+            } )
 		});
 	}
-	
-	#[bench]
-	fn plain_ifft_32_benchmark(b: &mut Bencher)
+    
+    #[bench]
+	fn window_32_benchmark(b: &mut Bencher)
 	{
 		let mut vector = VectorBox::<DataVector32>::with_size(true, 10000);
 		b.iter(|| {
-			vector.execute(|v|  { v.plain_ifft() } )
+			vector.execute_res(|v|  
+            { 
+                let triag = TriangularWindow;
+                v.apply_window(&triag) 
+            } )
 		});
 	}
 }

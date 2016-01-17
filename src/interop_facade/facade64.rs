@@ -135,6 +135,7 @@ pub extern fn complex_statistics64(vector: &DataVector64) -> Statistics<Complex6
 ///
 /// 1. `0` for [`PaddingOption::End`](../../enum.PaddingOption.html)
 /// 2. `1` for [`PaddingOption::Surround`](../../enum.PaddingOption.html)
+/// 2. `2` for [`PaddingOption::Center`](../../enum.PaddingOption.html)
 #[no_mangle]
 pub extern fn zero_pad64(vector: Box<DataVector64>, points: usize, padding_option: i32) -> VectorResult<DataVector64> {
     let padding_option = translate_to_padding_option(padding_option);
@@ -525,10 +526,16 @@ struct ForeignWindowFunction {
     window_function: extern fn(*const c_void, usize, usize) -> f64,
     // Actual data type is a const* c_void, but Rust doesn't allow that becaues it's usafe so we store
     // it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.
-    window_data: usize 
+    window_data: usize,
+    
+    is_symmetric: bool
 }
 
 impl WindowFunction<f64> for ForeignWindowFunction {
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
     fn window(&self, idx: usize, points: usize) -> f64 {
         let fun = self.window_function;
         unsafe { fun(mem::transmute(self.window_data), idx, points) }
@@ -538,45 +545,65 @@ impl WindowFunction<f64> for ForeignWindowFunction {
 /// Creates a window from the function `window` and the void pointer `window_data`. The `window_data` pointer is passed to the `window`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
-pub extern fn apply_custom_window64(vector: Box<DataVector64>, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
+pub extern fn apply_custom_window64(
+    vector: Box<DataVector64>, 
+    window: extern fn(*const c_void, usize, usize) -> f64, 
+    window_data: *const c_void,
+    is_symmetric: bool) -> VectorResult<DataVector64> {
     unsafe {
-        let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data) };
+        let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data), is_symmetric: is_symmetric };
         convert_vec!(vector.apply_window(&window))
     }
 }
 
 /// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
-pub extern fn unapply_custom_window64(vector: Box<DataVector64>, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
+pub extern fn unapply_custom_window64(
+    vector: Box<DataVector64>, 
+    window: extern fn(*const c_void, usize, usize) -> f64, 
+    window_data: *const c_void,
+    is_symmetric: bool) -> VectorResult<DataVector64> {
     unsafe {
-        let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data) };
+        let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data), is_symmetric: is_symmetric };
         convert_vec!(vector.unapply_window(&window))
     }
 }
 
 /// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
-pub extern fn windowed_custom_fft64(vector: Box<DataVector64>, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
+pub extern fn windowed_custom_fft64(
+    vector: Box<DataVector64>, 
+    window: extern fn(*const c_void, usize, usize) -> f64, 
+    window_data: *const c_void,
+    is_symmetric: bool) -> VectorResult<DataVector64> {
     unsafe {
-        let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data) };
+        let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data), is_symmetric: is_symmetric };
         convert_vec!(vector.windowed_fft(&window))
     }
 }
 
 /// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
-pub extern fn windowed_custom_ifft64(vector: Box<DataVector64>, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
+pub extern fn windowed_custom_ifft64(
+    vector: Box<DataVector64>, 
+    window: extern fn(*const c_void, usize, usize) -> f64, 
+    window_data: *const c_void,
+    is_symmetric: bool) -> VectorResult<DataVector64> {
     unsafe {
-        let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data) };
+        let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data), is_symmetric: is_symmetric };
         convert_vec!(vector.windowed_ifft(&window))
     }
 }
 
 /// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
-pub extern fn windowed_custom_sifft64(vector: Box<DataVector64>, window: extern fn(*const c_void, usize, usize) -> f64, window_data: *const c_void) -> VectorResult<DataVector64> {
+pub extern fn windowed_custom_sifft64(
+    vector: Box<DataVector64>, 
+    window: extern fn(*const c_void, usize, usize) -> f64, 
+    window_data: *const c_void,
+    is_symmetric: bool) -> VectorResult<DataVector64> {
     unsafe {
-        let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data) };
+        let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data), is_symmetric: is_symmetric };
         convert_vec!(vector.windowed_sifft(&window))
     }
 }
