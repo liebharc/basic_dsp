@@ -560,7 +560,22 @@ mod tests {
         ComplexTimeVector32,
         ComplexFreqVector32,
         RealTimeVector32,
+        ComplexVectorOperations,
         DataVector};
+    use num::complex::Complex32;
+    use window_functions::*;
+    use RealNumber;
+    use std::fmt::Debug;
+    
+    fn assert_eq_tol<T>(left: &[T], right: &[T], tol: T) 
+        where T: RealNumber + Debug {
+        assert_eq!(left.len(), right.len());
+        for i in 0..left.len() {
+            if (left[i] - right[i]).abs() > tol {
+                panic!("assertion failed: {:?} != {:?}", left, right);
+            }
+        }
+    }
 
 	#[test]
 	fn plain_fft_test()
@@ -647,5 +662,16 @@ mod tests {
 		let c = ComplexFreqVector32::from_interleaved(&mut a);
         let r = c.fft_shift().unwrap();
 		assert_eq!(r.data(), &[5.0, 6.0, 1.0, 2.0, 3.0, 4.0]);
+	}
+    
+    #[test]
+	fn window_test()
+	{
+		let c = ComplexTimeVector32::from_constant(Complex32::new(1.0, 0.0), 10);
+        let triag = TriangularWindow;
+        let r = c.apply_window(&triag).unwrap().magnitude().unwrap();
+        let expected = [0.1, 0.3, 0.5, 0.7, 0.9, 0.9, 0.7, 0.5, 0.3, 0.1];
+        let r = r.data();
+		assert_eq_tol(r, &expected, 1e-4);
 	}
 }
