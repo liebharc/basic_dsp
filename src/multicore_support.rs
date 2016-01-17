@@ -300,12 +300,13 @@ impl Chunk
 		{
             let mut chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
             let mut chunks1 = chunks.next().unwrap();
+            let len1 = chunks1.len();
             let mut chunks2 = chunks.next().unwrap();
 			function(
                 &mut chunks1, 
-                &Range { start: 0, end: array_length / 2 }, 
+                &Range { start: 0, end: len1 }, 
                 &mut chunks2, 
-                &Range { start: array_length / 2, end: array_length }, 
+                &Range { start: len1, end: array_length }, 
                 arguments);
 		}
 	}

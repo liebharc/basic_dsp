@@ -219,7 +219,7 @@ macro_rules! add_basic_private_impl {
                                     let scale = T::from(ratio);
                                     let offset = if points % 2 != 0 { 1 } else { 0 };
                                     let max = (points - offset) as $data_type / 2.0; 
-                                    let mut j = -((points - offset + range.start) as $data_type) / 2.0;
+                                    let mut j = -((points - offset) as $data_type) / 2.0 + (range.start as $data_type);
                                     for num in array {
                                         *num = (*num) * scale * fun(arg, j / max * ratio);
                                         j += 1.0;
@@ -235,48 +235,55 @@ macro_rules! add_basic_private_impl {
                             Chunk::execute_sym_pairs_with_range(
                                 Complexity::Medium, &self.multicore_settings,
                                 converted, points, 1, function_arg,
-                                move |array1, range, array2, _, arg| {
+                                move |array1, range1, array2, range2, arg| {
+                                    assert!(array1.len() >= array2.len());
+                                    assert!(range1.end <= range2.start);let scale = T::from(ratio);
                                     let len1 = array1.len();
                                     let len2 = array2.len();
-                                    let scale = T::from(ratio);
-                                    let (offset, skip) = if points % 2 != 0 { (1, 0) } else { (0, 1) };
+                                    let offset = if points % 2 != 0 { 1 } else { 0 };
                                     let max = (points - offset) as $data_type / 2.0; 
-                                    let mut j = -((points - offset + range.start) as $data_type) / 2.0 + skip as $data_type;
-                                    let mut i = 0;
+                                    let mut j1 = -((points - offset) as $data_type) / 2.0 + range1.start as $data_type;
+                                    let mut j2 = ((points - offset) as $data_type) / 2.0 - (range2.end - 1) as $data_type; 
+                                    let mut i1 = 0;
+                                    let mut i2 = 0;
                                     {
-                                    
-                                        let iter1 = array1.iter_mut().skip(skip);
-                                        let iter2 = array2.iter_mut().rev();
+                                        let mut iter1 = array1.iter_mut();
+                                        let mut iter2 = array2.iter_mut().rev();
+                                        while j1 < j2 {
+                                            let num = iter1.next().unwrap();
+                                            (*num) = (*num) * scale * fun(arg, j1 / max * ratio);
+                                            j1 += 1.0;
+                                            i1 += 1;
+                                        }
+                                        while j2 < j1 {
+                                            let num = iter2.next().unwrap();
+                                            (*num) = (*num) * scale * fun(arg, j2 / max * ratio);
+                                            j2 += 1.0;
+                                            i2 += 1;
+                                        }
+                                        // At this point we can be sure that `j1 == j2`
                                         for (num1, num2) in iter1.zip(iter2) {
-                                            let arg = scale * fun(arg, j / max * ratio);
+                                            let arg = scale * fun(arg, j1 / max * ratio);
                                             *num1 = (*num1) * arg;
                                             *num2 = (*num2) * arg;
-                                            j += 1.0;
-                                            i += 1;
+                                            j1 += 1.0;
                                         }
+                                        j2 = j1;
                                     }
-                                    // Now we have to look into all the edge cases
-                                    // All for loops are expected to a max run for one iteration
-                                    for num2 in &mut array2[0..len2-i] {
-                                        let arg = scale * fun(arg, j / max * ratio);
-                                        (*num2) = (*num2) * arg;
-                                        j += 1.0;
+                                    
+                                    // Now we have to deal with differences in length
+                                    // `common_length` is the number of iterations we spent
+                                    // in the previous loop.
+                                    let pos1 = len1 - i1;
+                                    let pos2 = len2 - i2;
+                                    let common_length = if pos1 < pos2 { pos1 } else { pos2 };
+                                    for num in &mut array1[i1 + common_length..len1] {
+                                        (*num) = (*num) * scale * fun(arg, j1 / max * ratio);
+                                        j1 += 1.0;
                                     }
-                                    if skip != 0 {
-                                        j = -((points - offset + range.start) as $data_type) / 2.0 as $data_type;
-                                        for num1 in &mut array1[0..len1-i] {
-                                            let arg = scale * fun(arg, j / max * ratio);
-                                            *num1 = (*num1) * arg;
-                                            j += 1.0;
-                                        }
-                                    } else {
-                                        for num1 in &mut array1[i .. len1] {
-                                            {
-                                                let arg = scale * fun(arg, j / max * ratio);
-                                                *num1 = (*num1) * arg;
-                                                j += 1.0;
-                                            }
-                                        }
+                                    for num in &mut array2[0..len2-common_length-i2] {
+                                        (*num) = (*num) * scale * fun(arg, j2 / max * ratio);
+                                        j2 += 1.0;
                                     }
                                 });
                         }
@@ -322,6 +329,7 @@ macro_rules! add_basic_private_impl {
                                 Complexity::Medium, &self.multicore_settings,
                                 converted, points, 1, function_arg,
                                 move |array1, range, array2, _, arg| {
+                                    assert!(array1.len() >= array2.len());
                                     let mut j = range.start;
                                     let len1 = array1.len();
                                     let len_diff = len1 - array2.len();

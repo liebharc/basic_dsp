@@ -12,6 +12,7 @@ use vector_types:: {
 		DataVector32, 
         Statistics};
 use window_functions::WindowFunction;
+use conv_types::*;
 use num::complex::Complex32;
 use std::slice;
 use std::os::raw::c_void;
@@ -538,6 +539,68 @@ impl WindowFunction<f32> for ForeignWindowFunction {
     fn window(&self, idx: usize, points: usize) -> f32 {
         let fun = self.window_function;
         unsafe { fun(mem::transmute(self.window_data), idx, points) }
+    }
+}
+
+pub struct ForeignRealConvolutionFunction {
+    pub conv_function: extern fn(*const c_void, f32) -> f32,
+    // Actual data type is a const* c_void, but Rust doesn't allow that becaues it's usafe so we store
+    // it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.
+    pub conv_data: usize,
+    
+    pub is_symmetric: bool
+}
+
+impl RealImpulseResponse<f32> for ForeignRealConvolutionFunction {
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    fn calc(&self, x: f32) -> f32 {
+        let fun = self.conv_function;
+        unsafe { fun(mem::transmute(self.conv_data), x) }
+    }
+}
+
+impl RealFrequencyResponse<f32> for ForeignRealConvolutionFunction {
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    fn calc(&self, x: f32) -> f32 {
+        let fun = self.conv_function;
+        unsafe { fun(mem::transmute(self.conv_data), x) }
+    }
+}
+
+pub struct ForeignComplexConvolutionFunction {
+    pub conv_function: extern fn(*const c_void, f32) -> Complex32,
+    // Actual data type is a const* c_void, but Rust doesn't allow that becaues it's usafe so we store
+    // it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.
+    pub conv_data: usize,
+    
+    pub is_symmetric: bool
+}
+
+impl ComplexImpulseResponse<f32> for ForeignComplexConvolutionFunction {
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    fn calc(&self, x: f32) -> Complex32 {
+        let fun = self.conv_function;
+        unsafe { fun(mem::transmute(self.conv_data), x) }
+    }
+}
+
+impl ComplexFrequencyResponse<f32> for ForeignComplexConvolutionFunction {
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    fn calc(&self, x: f32) -> Complex32 {
+        let fun = self.conv_function;
+        unsafe { fun(mem::transmute(self.conv_data), x) }
     }
 }
 

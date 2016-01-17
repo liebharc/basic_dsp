@@ -11,7 +11,8 @@ mod slow_test {
         Convolution,
         FrequencyMultiplication,
         RealTimeVector64,
-        ComplexTimeVector32};
+        ComplexTimeVector32,
+        ComplexFreqVector32};
     use basic_dsp::conv_types::*;
     use basic_dsp::interop_facade::facade32::*;
     use num::complex::Complex32;
@@ -174,10 +175,25 @@ mod slow_test {
             is_symmetric: false
         }
     }
-    
+       
     extern fn call_triag(_arg: *const c_void, i: usize, points: usize) -> f32 {
         let triag: &WindowFunction<f32> = &TriangularWindow;
         triag.window(i, points)
+    }
+    
+    /// Calls to another window with the only
+    /// difference that it doesn't allow to make use of symmetry
+    fn unsym_rc_mul() -> ForeignRealConvolutionFunction {
+        ForeignRealConvolutionFunction {
+            conv_data: 0,
+            conv_function: call_freq_rc,
+            is_symmetric: false
+        }
+    }
+       
+    extern fn call_freq_rc(_arg: *const c_void, x: f32) -> f32 {
+        let rc: &RealFrequencyResponse<f32> = &RaisedCosineFunction::new(0.35);
+        rc.calc(x)
     }
     
     #[test]
@@ -190,6 +206,23 @@ mod slow_test {
             let triag_unsym = unsym_triag_window();
             let result_sym = time.clone().apply_window(&triag_sym).unwrap();
             let result_unsym = time.apply_window(&triag_unsym).unwrap();
+            let left = &result_sym.data();
+            let right = &result_unsym.data();
+            assert_vector_eq_with_reason_and_tolerance(&left, &right, 1e-2, "Results should match with or without symmetry optimization");
+        });
+    }
+    
+    #[test]
+    fn compare_sym_optimized_freq_mul_with_normal_version() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data_even(20160116, iteration, range.start, range.end);
+            let delta = create_delta(201601161, iteration);
+            let freq = ComplexFreqVector32::from_interleaved_with_delta(&a, delta);
+            let rc_sym: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
+            let rc_unsym = unsym_rc_mul();
+            let ratio = create_delta(201601093, iteration).abs() / 20.0 + 0.5; // Should get us a range [0.5 .. 1.0]
+            let result_sym = freq.clone().multiply_frequency_response(&rc_sym as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
+            let result_unsym = freq.multiply_frequency_response(&rc_unsym as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
             let left = &result_sym.data();
             let right = &result_unsym.data();
             assert_vector_eq_with_reason_and_tolerance(&left, &right, 1e-2, "Results should match with or without symmetry optimization");
