@@ -331,8 +331,7 @@ pub struct WrappingIterator<T>
     start: *const T,
     end: *const T,
     pos: *const T,
-    count: usize,
-    len: usize
+    count: usize
 }
 
 impl<T> Iterator for WrappingIterator<T> 
@@ -341,7 +340,7 @@ impl<T> Iterator for WrappingIterator<T>
 
     fn next(&mut self) -> Option<T> {
         unsafe {
-            if self.count >= self.len {
+            if self.count == 0 {
                 return None;
             }
             
@@ -353,7 +352,7 @@ impl<T> Iterator for WrappingIterator<T>
             }
             
             self.pos = n;
-            self.count += 1;
+            self.count -= 1;
             Some((*n).clone())
         }
     }
@@ -377,8 +376,7 @@ impl<T> WrappingIterator<T>
                 start: start,
                 end: start.offset(len - 1),
                 pos: start.offset(pos),
-                count: 0,
-                len: iter_len
+                count: iter_len
             }
         }
     }
@@ -389,8 +387,7 @@ pub struct ReverseWrappingIterator<T>
     start: *const T,
     end: *const T,
     pos: *const T,
-    count: usize,
-    len: usize,
+    count: usize
 }
 
 impl<T> Iterator for ReverseWrappingIterator<T> 
@@ -399,7 +396,7 @@ impl<T> Iterator for ReverseWrappingIterator<T>
 
     fn next(&mut self) -> Option<T> {
         unsafe {
-            if self.count >= self.len {
+            if self.count == 0 {
                 return None;
             }
             
@@ -411,7 +408,7 @@ impl<T> Iterator for ReverseWrappingIterator<T>
             }
             
             self.pos = n;
-            self.count += 1;
+            self.count -= 1;
             Some((*n).clone())
         }
     }
@@ -435,8 +432,7 @@ impl<T> ReverseWrappingIterator<T>
                 start: start,
                 end: start.offset(len - 1),
                 pos: start.offset(pos),
-                count: 0,
-                len: iter_len
+                count: iter_len
             }
         }
     }
