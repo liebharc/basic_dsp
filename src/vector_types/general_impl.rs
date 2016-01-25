@@ -616,7 +616,7 @@ macro_rules! add_general_impl {
                     {
                         let len = self.len();
                         let is_complex = self.is_complex;
-                        let src = &self.data;
+                        let src = &self.data[0..len];
                         let dest = temp_mut!(self, len);
                         if is_complex {
                             let src = Self::array_to_complex(&src[0..len]);

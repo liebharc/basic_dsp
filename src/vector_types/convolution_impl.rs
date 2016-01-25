@@ -131,7 +131,7 @@ macro_rules! add_conv_impl{
                             let mut sum = T::zero();
                             let mut j = -(conv_len as $data_type);
                             for c in iter.take(2 * conv_len + 1) {
-                                sum = sum + c * fun(j * ratio);
+                                sum = sum + c * fun(-j * ratio);
                                 j += 1.0;
                             }
                             (*num) = sum;
@@ -178,31 +178,54 @@ macro_rules! add_conv_impl{
             }
             
             impl VectorConvolution<$data_type> for GenericDataVector<$data_type> {
-                fn convolve_vector(mut self, vector: &Self) -> VecResult<Self> {
+                fn convolve_vector(self, vector: &Self) -> VecResult<Self> {
                     assert_meta_data!(self, vector);
                     assert_time!(self);
+                    // The values in this condition are nothing more than a 
+                    // ... guess. The reasoning is basically this:
+                    // For the SIMD operation we need to clone `vector` several
+                    // times and this only is worthwhile if `vector.len() << self.len()`
+                    // where `<<` means "significant smaller".
+                    /*if self.len() > 1000 && vector.len() < 200 && self.is_complex && false {
+                        self.convolve_vector_simd(vector) // TODO: Real implementation
+                    }
+                    else */{
+                        self.convolve_vector_scalar(vector)
+                    }
+                }
+            }
+            
+            impl GenericDataVector<$data_type> {
+                fn convolve_vector_scalar(mut self, vector: &Self) -> VecResult<Self> {
                     let points = self.points();
                     let other_points = vector.points();
-                    let (other_start, other_end, conv_len) =
+                    let (other_start, other_end, full_conv_len, conv_len) =
                             if other_points > points {
                                 let center = other_points / 2;
                                 let conv_len = points / 2;
-                                (center - conv_len, center + conv_len, conv_len)
+                                (center - conv_len, center + conv_len, points, conv_len)
                             } else {
-                                (0, other_points, other_points / 2)
+                                (0, other_points, other_points, other_points / 2)
                             };
                     if self.is_complex {
                         {
                             let len = self.len();
                             let other = Self::array_to_complex(&vector.data[0..vector.len()]);
+                            let temp = temp_mut!(self, vector.len());
                             let complex = Self::array_to_complex(&self.data[0..len]);
-                            let dest = Self::array_to_complex_mut(&mut self.temp[0..len]);
+                            let dest = Self::array_to_complex_mut(&mut temp[0..len]);
                             let other_iter = &other[other_start .. other_end];
+                            let conv_len = conv_len as isize;
                             let mut i = 0;
                             for num in dest {
-                                let data_iter = WrappingIterator::new(complex, i as isize - conv_len as isize -1); 
+                                let other_iter = WrappingIterator::rev(other_iter, 0);
+                                let complex_iter = WrappingIterator::new(complex, i as isize - conv_len -1);
                                 let mut sum = Complex::<$data_type>::zero();
-                                for (this, other) in data_iter.zip(other_iter) {
+                                let iteration = 
+                                    complex_iter
+                                    .take(full_conv_len)
+                                    .zip(other_iter);
+                                for (this, other) in iteration {
                                     sum = sum + this * other;
                                 }
                                 (*num) = sum;
@@ -215,13 +238,20 @@ macro_rules! add_conv_impl{
                             let len = self.len();
                             let other = &vector.data[0..vector.len()];
                             let data = &self.data[0..len];
-                            let dest = &mut self.temp[0..len];
+                            let temp = temp_mut!(self, vector.len());
+                            let dest = &mut temp[0..len];
                             let other_iter = &other[other_start .. other_end];
+                            let conv_len = conv_len as isize;
                             let mut i = 0;
                             for num in dest {
-                                let data_iter = WrappingIterator::new(data, i as isize - conv_len as isize -1);
+                                let other_iter = WrappingIterator::rev(other_iter, 0);
+                                let data_iter = WrappingIterator::new(data, i as isize - conv_len -1);
                                 let mut sum = 0.0;
-                                for (this, other) in data_iter.zip(other_iter) {
+                                let iteration = 
+                                    data_iter
+                                    .take(full_conv_len)
+                                    .zip(other_iter);
+                                for (this, other) in iteration {
                                     sum = sum + this * other;
                                 }
                                 (*num) = sum;
@@ -303,7 +333,8 @@ pub struct WrappingIterator<T>
     where T: Clone {
     start: *const T,
     end: *const T,
-    pos: *const T
+    pos: *const T,
+    step: isize
 }
 
 impl<T> Iterator for WrappingIterator<T> 
@@ -313,10 +344,11 @@ impl<T> Iterator for WrappingIterator<T>
     fn next(&mut self) -> Option<T> {
         unsafe {
             let mut n = self.pos;
-            if n < self.end {
-                n = n.offset(1);
-            } else {
+            n = n.offset(self.step);
+            if n > self.end {
                 n = self.start;
+            } else if n < self.start {
+                n = self.end;
             }
             
             self.pos = n;
@@ -328,6 +360,14 @@ impl<T> Iterator for WrappingIterator<T>
 impl<T> WrappingIterator<T>
     where T: Clone {
     pub fn new(slice: &[T], pos: isize) -> Self {
+        Self::new_priv(slice, pos, 1)
+    }
+    
+    pub fn rev(slice: &[T], pos: isize) -> Self {
+        Self::new_priv(slice, pos, -1)
+    }
+    
+    fn new_priv(slice: &[T], pos: isize, step: isize) -> Self {
         use std::isize;
         assert!(slice.len() <= isize::MAX as usize);
         let len = slice.len() as isize;
@@ -343,7 +383,8 @@ impl<T> WrappingIterator<T>
             WrappingIterator {
                 start: start,
                 end: start.offset(len - 1),
-                pos: start.offset(pos)
+                pos: start.offset(pos),
+                step: step
             }
         }
     }
@@ -478,5 +519,90 @@ mod tests {
         assert_eq!(iter.next().unwrap(), 4.0);
         assert_eq!(iter.next().unwrap(), 5.0);
         assert_eq!(iter.next().unwrap(), 1.0);
+    }
+    
+    #[test]
+    fn wrapping_rev_iterator() {
+        let array = [1.0, 2.0, 3.0, 4.0, 5.0];
+        let mut iter = WrappingIterator::rev(&array, 2);
+        assert_eq!(iter.next().unwrap(), 2.0);
+        assert_eq!(iter.next().unwrap(), 1.0);
+        assert_eq!(iter.next().unwrap(), 5.0);
+        assert_eq!(iter.next().unwrap(), 4.0);
+        assert_eq!(iter.next().unwrap(), 3.0);
+    }
+        
+    #[test]
+    fn vector_conv_vs_freq_multiplication() {
+        let a = ComplexTimeVector32::from_interleaved(&[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]);
+        let b = ComplexTimeVector32::from_interleaved(&[15.0, 14.0, 13.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0]);
+        let conv = a.clone().convolve_vector(&b).unwrap();
+        let a = a.fft().unwrap();
+        let b = b.fft().unwrap();
+        let mul = a.multiply_vector(&b).unwrap();
+        let mul = mul.ifft().unwrap();
+        let mul = mul.reverse().unwrap();
+        let mul = mul.swap_halves().unwrap();
+        assert_eq_tol(mul.data(), conv.data(), 1e-4);
+    }
+    
+    #[test]
+    fn shift_left_by_1_as_conv() {
+        let a = RealTimeVector32::from_array(&[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]);
+        let b = RealTimeVector32::from_array(&[0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
+        let a = a.to_complex().unwrap();
+        let b = b.to_complex().unwrap();
+        let conv = a.convolve_vector(&b).unwrap();
+        let conv = conv.magnitude().unwrap();
+        let exp = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
+        assert_eq_tol(conv.data(), &exp, 1e-4);
+    }
+    
+    #[test]
+    fn shift_left_by_1_as_conv_shorter() {
+        let a = RealTimeVector32::from_array(&[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]);
+        let b = RealTimeVector32::from_array(&[0.0, 0.0, 1.0]);
+        let a = a.to_complex().unwrap();
+        let b = b.to_complex().unwrap();
+        let conv = a.convolve_vector(&b).unwrap();
+        let conv = conv.magnitude().unwrap();
+        let exp = [9.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+        assert_eq_tol(conv.data(), &exp, 1e-4);
+    }
+    
+    #[test]
+    fn vector_conv_vs_freq_multiplication_pure_real_data() {
+        let a = RealTimeVector32::from_array(&[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]);
+        let b = RealTimeVector32::from_array(&[15.0, 14.0, 13.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0]);
+        let a = a.to_complex().unwrap();
+        let b = b.to_complex().unwrap();
+        let conv = a.clone().convolve_vector(&b).unwrap();
+        let a = a.fft().unwrap();
+        let b = b.fft().unwrap();
+        let mul = a.multiply_vector(&b).unwrap();
+        let mul = mul.ifft().unwrap();
+        let mul = mul.magnitude().unwrap();
+        let mul = mul.reverse().unwrap();
+        let mul = mul.swap_halves().unwrap();
+        let conv = conv.magnitude().unwrap();
+        assert_eq_tol(mul.data(), conv.data(), 1e-4);
+    }
+    
+    #[test]
+    fn vector_conv_vs_freq_multiplication_pure_real_data_odd() {
+        let a = RealTimeVector32::from_array(&[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+        let b = RealTimeVector32::from_array(&[15.0, 14.0, 13.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0]);
+        let a = a.to_complex().unwrap();
+        let b = b.to_complex().unwrap();
+        let conv = a.clone().convolve_vector(&b).unwrap();
+        let a = a.fft().unwrap();
+        let b = b.fft().unwrap();
+        let mul = a.multiply_vector(&b).unwrap();
+        let mul = mul.ifft().unwrap();
+        let mul = mul.magnitude().unwrap();
+        let mul = mul.reverse().unwrap();
+        let mul = mul.swap_halves().unwrap();
+        let conv = conv.magnitude().unwrap();
+        assert_eq_tol(mul.data(), conv.data(), 1e-4);
     }
 }

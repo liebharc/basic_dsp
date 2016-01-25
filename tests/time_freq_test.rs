@@ -9,6 +9,7 @@ mod slow_test {
         RealVectorOperations,
         ComplexVectorOperations,
         Convolution,
+        VectorConvolution,
         FrequencyMultiplication,
         RealTimeVector64,
         ComplexTimeVector32,
@@ -164,6 +165,47 @@ mod slow_test {
             let right = &time_res.data();
             assert_vector_eq_with_reason_and_tolerance(&left, &right, 0.2, "Results should match independent if done in time or frequency domain");
         }
+    }
+    
+    #[test]
+    fn compare_vector_conv_freq_multiplication() {
+        for iteration in 0 .. 3 {
+            let a = create_data_even(201601171, iteration, 51, 100);
+            let b = create_data_with_len(201601172, iteration, a.len());
+            let delta = create_delta(201601173, iteration);
+            let time1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let time2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
+            let left = time1.clone().convolve_vector(&time2).unwrap();
+            let freq1 = time1.fft().unwrap();
+            let freq2 = time2.fft().unwrap();
+            let freq_res = freq1.multiply_vector(&freq2).unwrap();
+            let right = freq_res.ifft().unwrap();
+            assert_vector_eq_with_reason_and_tolerance(
+                left.data(), 
+                &conv_swap(right.data())[0..left.len()], 
+                0.2, 
+                "Results should match independent if done in time or frequency domain");
+        }
+    }
+    
+    /// This kind of swapping is necessary since we defined
+    /// our conv to have 0s in the center
+    fn conv_swap(data: &[f32]) -> Vec<f32> {
+        let len = data.len();
+        let mut result = vec![0.0; len];
+        let half = len / 2 + 2;
+        for i in 0..len {
+            if i < half {
+                result[i] = data[len - half + i];
+            }
+            else if i >= len - half {
+                result[i] = data[i - half];
+            }
+            else /* Center */ { 
+                result[i] = data[i]; 
+            }
+        }
+        result
     }
     
     /// Calls to another window with the only
