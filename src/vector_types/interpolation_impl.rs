@@ -61,10 +61,10 @@ macro_rules! define_interpolation_impl {
                         for num in temp {
                             let center = i as $data_type / interpolation_factor;
                             let rounded = (center).floor();
-                            let iter = WrappingIterator::new(&data, rounded as isize - conv_len as isize -1);
+                            let iter = WrappingIterator::new(&data, rounded as isize - conv_len as isize -1, 2 * conv_len + 1);
                             let mut sum = Complex::<$data_type>::zero();
                             let mut j = -(conv_len as $data_type) - (center - rounded) + delay;
-                            for c in iter.take(2 * conv_len + 1) {
+                            for c in iter {
                                 sum = sum + c * function.calc(j);
                                 j += 1.0;
                             }

@@ -126,11 +126,12 @@ macro_rules! add_conv_impl{
                             } else {
                                 conv_len
                             };
+                        let sconv_len = conv_len as isize;
                         for num in dest {
-                            let iter = WrappingIterator::new(complex, i as isize - conv_len as isize -1);
+                            let iter = WrappingIterator::new(complex, i - sconv_len - 1, 2 * conv_len + 1);
                             let mut sum = T::zero();
                             let mut j = -(conv_len as $data_type);
-                            for c in iter.take(2 * conv_len + 1) {
+                            for c in iter {
                                 sum = sum + c * fun(-j * ratio);
                                 j += 1.0;
                             }
@@ -205,7 +206,7 @@ macro_rules! add_conv_impl{
                                 let conv_len = points / 2;
                                 (center - conv_len, center + conv_len, points, conv_len)
                             } else {
-                                (0, other_points, other_points, other_points / 2)
+                                (0, other_points, other_points, other_points - other_points / 2)
                             };
                     if self.is_complex {
                         {
@@ -218,12 +219,10 @@ macro_rules! add_conv_impl{
                             let conv_len = conv_len as isize;
                             let mut i = 0;
                             for num in dest {
-                                let other_iter = WrappingIterator::rev(other_iter, 0);
-                                let complex_iter = WrappingIterator::new(complex, i as isize - conv_len -1);
+                                let complex_iter = ReverseWrappingIterator::new(complex, i + conv_len, full_conv_len);
                                 let mut sum = Complex::<$data_type>::zero();
                                 let iteration = 
                                     complex_iter
-                                    .take(full_conv_len)
                                     .zip(other_iter);
                                 for (this, other) in iteration {
                                     sum = sum + this * other;
@@ -244,12 +243,10 @@ macro_rules! add_conv_impl{
                             let conv_len = conv_len as isize;
                             let mut i = 0;
                             for num in dest {
-                                let other_iter = WrappingIterator::rev(other_iter, 0);
-                                let data_iter = WrappingIterator::new(data, i as isize - conv_len -1);
+                                let data_iter = ReverseWrappingIterator::new(data, i + conv_len, full_conv_len);
                                 let mut sum = 0.0;
                                 let iteration = 
                                     data_iter
-                                    .take(full_conv_len)
                                     .zip(other_iter);
                                 for (this, other) in iteration {
                                     sum = sum + this * other;
@@ -334,7 +331,8 @@ pub struct WrappingIterator<T>
     start: *const T,
     end: *const T,
     pos: *const T,
-    step: isize
+    count: usize,
+    len: usize
 }
 
 impl<T> Iterator for WrappingIterator<T> 
@@ -343,15 +341,19 @@ impl<T> Iterator for WrappingIterator<T>
 
     fn next(&mut self) -> Option<T> {
         unsafe {
+            if self.count >= self.len {
+                return None;
+            }
+            
             let mut n = self.pos;
-            n = n.offset(self.step);
-            if n > self.end {
+            if n < self.end {
+                n = n.offset(1);
+            } else {
                 n = self.start;
-            } else if n < self.start {
-                n = self.end;
             }
             
             self.pos = n;
+            self.count += 1;
             Some((*n).clone())
         }
     }
@@ -359,32 +361,82 @@ impl<T> Iterator for WrappingIterator<T>
 
 impl<T> WrappingIterator<T>
     where T: Clone {
-    pub fn new(slice: &[T], pos: isize) -> Self {
-        Self::new_priv(slice, pos, 1)
-    }
-    
-    pub fn rev(slice: &[T], pos: isize) -> Self {
-        Self::new_priv(slice, pos, -1)
-    }
-    
-    fn new_priv(slice: &[T], pos: isize, step: isize) -> Self {
+    pub fn new(slice: &[T], pos: isize, iter_len: usize) -> Self {
         use std::isize;
+        
         assert!(slice.len() <= isize::MAX as usize);
         let len = slice.len() as isize;
-        let pos = pos % len;
-        let pos = 
-            if pos >= 0 {
-                pos
-            } else {
-                (len + pos)
-            };
+        let mut pos = pos % len;
+        while pos < 0 {
+            pos += len;
+        }
+        
         let start = slice.as_ptr();
         unsafe {
             WrappingIterator {
                 start: start,
                 end: start.offset(len - 1),
                 pos: start.offset(pos),
-                step: step
+                count: 0,
+                len: iter_len
+            }
+        }
+    }
+}
+
+pub struct ReverseWrappingIterator<T>
+    where T: Clone {
+    start: *const T,
+    end: *const T,
+    pos: *const T,
+    count: usize,
+    len: usize,
+}
+
+impl<T> Iterator for ReverseWrappingIterator<T> 
+    where T: Clone {
+    type Item = T;
+
+    fn next(&mut self) -> Option<T> {
+        unsafe {
+            if self.count >= self.len {
+                return None;
+            }
+            
+            let mut n = self.pos;
+            if n > self.start {
+                n = n.offset(-1);
+            } else {
+                n = self.end;
+            }
+            
+            self.pos = n;
+            self.count += 1;
+            Some((*n).clone())
+        }
+    }
+}
+
+impl<T> ReverseWrappingIterator<T>
+    where T: Clone {
+    pub fn new(slice: &[T], pos: isize, iter_len: usize) -> Self {
+        use std::isize;
+        
+        assert!(slice.len() <= isize::MAX as usize);
+        let len = slice.len() as isize;
+        let mut pos = pos % len;
+        while pos < 0 {
+            pos += len;
+        }
+        
+        let start = slice.as_ptr();
+        unsafe {
+            ReverseWrappingIterator {
+                start: start,
+                end: start.offset(len - 1),
+                pos: start.offset(pos),
+                count: 0,
+                len: iter_len
             }
         }
     }
@@ -392,7 +444,7 @@ impl<T> WrappingIterator<T>
 
 #[cfg(test)]
 mod tests {
-    use super::WrappingIterator;
+    use super::{WrappingIterator, ReverseWrappingIterator};
     use vector_types::*;
     use conv_types::*;
     use RealNumber;
@@ -510,7 +562,7 @@ mod tests {
     #[test]
     fn wrapping_iterator() {
         let array = [1.0, 2.0, 3.0, 4.0, 5.0];
-        let mut iter = WrappingIterator::new(&array, -3);
+        let mut iter = WrappingIterator::new(&array, -3, 8);
         assert_eq!(iter.next().unwrap(), 4.0);
         assert_eq!(iter.next().unwrap(), 5.0);
         assert_eq!(iter.next().unwrap(), 1.0);
@@ -524,7 +576,7 @@ mod tests {
     #[test]
     fn wrapping_rev_iterator() {
         let array = [1.0, 2.0, 3.0, 4.0, 5.0];
-        let mut iter = WrappingIterator::rev(&array, 2);
+        let mut iter = ReverseWrappingIterator::new(&array, 2, 5);
         assert_eq!(iter.next().unwrap(), 2.0);
         assert_eq!(iter.next().unwrap(), 1.0);
         assert_eq!(iter.next().unwrap(), 5.0);
