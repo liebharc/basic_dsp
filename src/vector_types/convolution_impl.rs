@@ -39,6 +39,7 @@ pub trait VectorConvolution<T> : DataVector<T>
     /// 
     /// 1. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
     /// 2. `VectorMetaDataMustAgree`: in case `self` and `impulse_response` are not in the same number space and same domain.
+    /// 3. `InvalidArgumentLength`: if `self.points() < impulse_response.points()`.
     fn convolve_vector(self, impulse_response: &Self) -> VecResult<Self>;
 }
 
@@ -182,6 +183,7 @@ macro_rules! add_conv_impl{
                 fn convolve_vector(self, vector: &Self) -> VecResult<Self> {
                     assert_meta_data!(self, vector);
                     assert_time!(self);
+                    reject_if!(self, self.points() < vector.points(), ErrorReason::InvalidArgumentLength);
                     // The values in this condition are nothing more than a 
                     // ... guess. The reasoning is basically this:
                     // For the SIMD operation we need to clone `vector` several

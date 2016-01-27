@@ -170,7 +170,7 @@ mod slow_test {
     #[test]
     fn compare_vector_conv_freq_multiplication() {
         for iteration in 0 .. 3 {
-            let a = create_data_even(201601171, iteration, 51, 100);
+            let a = create_data_even(201601171, iteration, 502, 1000);
             let b = create_data_with_len(201601172, iteration, a.len());
             let delta = create_delta(201601173, iteration);
             let time1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
@@ -188,12 +188,44 @@ mod slow_test {
         }
     }
     
+    #[test]
+    fn compare_smaller_vector_conv_with_zero_padded_conv() {
+        for iteration in 0 .. 3 {
+            let a = create_data_even(201601171, iteration, 1002, 2000);
+            let b = create_data_even(201601172, iteration, 50, 202);
+            let delta = create_delta(201601173, iteration);
+            let time1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let time2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
+            let left = time1.clone().convolve_vector(&time2).unwrap();
+            let time2 = ComplexTimeVector32::from_interleaved_with_delta(&conv_zero_pad(&b, time1.len()), delta);
+            let right = time1.convolve_vector(&time2).unwrap();
+            assert_vector_eq_with_reason_and_tolerance(
+                left.data(), 
+                right.data(), 
+                0.2, 
+                "Results should match independent if done with a smaller vector or with a zero padded vector of the same size");
+        }
+    }
+    
+    fn conv_zero_pad(data: &[f32], len: usize) -> Vec<f32> {
+        let mut result = vec![0.0; len];
+        let points = len / 2;
+        let data_points = data.len() / 2;
+        let diff = points - data_points;
+        let left = diff - diff / 2;
+        for i in 0..data.len() {
+            result[2 * left + i] = data[i];
+        }
+        result
+    }
+    
     /// This kind of swapping is necessary since we defined
     /// our conv to have 0s in the center
     fn conv_swap(data: &[f32]) -> Vec<f32> {
         let len = data.len();
         let mut result = vec![0.0; len];
-        let half = len / 2 + 2;
+        let points = len / 2;
+        let half = 2 *(points / 2 + 1);
         for i in 0..len {
             if i < half {
                 result[i] = data[len - half + i];

@@ -539,12 +539,14 @@ macro_rules! define_complex_basic_struct_members {
                     } else {
                         0
                     };
-                let data = unsafe {
-                    let complex = vec![constant; length];
-                    let mut trans: Vec<T> = mem::transmute(complex);
-                    trans.set_len(2 * length);
-                    trans
-                };
+                assert!(length < 1000000);
+                let mut data = vec![T::zero(); 2 * length];
+                let mut i = 0;
+                for num in &mut data {
+                    *num = if i % 2 == 0 { constant.re } else { constant.im };
+                    i += 1;
+                }
+                
 				$name 
 				{ 
 				  data: data,
