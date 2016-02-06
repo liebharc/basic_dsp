@@ -190,7 +190,7 @@ macro_rules! add_conv_impl{
                     // For the SIMD operation we need to clone `vector` several
                     // times and this only is worthwhile if `vector.len() << self.len()`
                     // where `<<` means "significant smaller".
-                    if self.len() > 1000 && self.len() % $reg::len() == 0 && vector.len() <= 202 && self.is_complex {
+                    if self.len() > 1000 && self.len() % $reg::len() == 0 && vector.len() <= 202 {
                         self.convolve_vector_simd(vector)
                     }
                     else {
@@ -269,13 +269,14 @@ macro_rules! add_conv_impl{
                     if self.is_complex {
                         {
                             let len = self.len();
+                            let points = self.points();
                             let other = Self::array_to_complex(&vector.data[0..vector.len()]);
                             let temp = temp_mut!(self, vector.len());
                             let complex = Self::array_to_complex(&self.data[0..len]);
                             let dest = Self::array_to_complex_mut(&mut temp[0..len]);
                             let other_iter = &other[other_start .. other_end];
                             
-                            let shifted_copies = Self::create_shifted_copies_complex(vector);
+                            let shifted_copies = Self::create_shifted_copies(vector);
                             let mut shifts = Vec::with_capacity(shifted_copies.len());
                             for shift in 0..shifted_copies.len() {
                                 let simd = $reg::array_to_regs(&shifted_copies[shift]);
@@ -291,7 +292,7 @@ macro_rules! add_conv_impl{
                             }
                             
                             let simd = $reg::array_to_regs(&self.data[0..len]);
-                            for num in &mut dest[scalar_len .. len / 2 - scalar_len] {
+                            for num in &mut dest[scalar_len .. points - scalar_len] {
                                 let end = (i + conv_len) as usize;
                                 let shift = end % shifts.len();
                                 let end = (end + shifts.len() - 1) / shifts.len();
@@ -308,43 +309,100 @@ macro_rules! add_conv_impl{
                                 i += 1;
                             }
                             
-                            for num in &mut dest[len / 2 - scalar_len .. len / 2] {
+                            for num in &mut dest[points - scalar_len .. points] {
                                 *num = Self::convolve_iteration(complex, other_iter, i, conv_len, full_conv_len);
                                 i += 1;
                             }
                         }
-                        Ok(self.swap_data_temp())
                     } else {
-                        panic!("Not implemented yet");
+                        let len = self.len();
+                        let points = self.points();
+                        let other = &vector.data[0..vector.len()];
+                        let temp = temp_mut!(self, vector.len());
+                        let complex = &self.data[0..len];
+                        let dest = &mut temp[0..len];
+                        let other_iter = &other[other_start .. other_end];
+                        
+                        let shifted_copies = Self::create_shifted_copies(vector);
+                        let mut shifts = Vec::with_capacity(shifted_copies.len());
+                        for shift in 0..shifted_copies.len() {
+                            let simd = $reg::array_to_regs(&shifted_copies[shift]);
+                            shifts.push(simd);
+                        }
+
+                        let scalar_len = conv_len;
+                        let conv_len = conv_len as isize;
+                        let mut i = 0;
+                        for num in &mut dest[0..scalar_len] {
+                            *num = Self::convolve_iteration(complex, other_iter, i, conv_len, full_conv_len);
+                            i += 1;
+                        }
+                        
+                        let simd = $reg::array_to_regs(&self.data[0..len]);
+                        for num in &mut dest[scalar_len .. points - scalar_len] {
+                            let end = (i + conv_len) as usize;
+                            let shift = end % shifts.len();
+                            let end = (end + shifts.len() - 1) / shifts.len();
+                            let mut sum = $reg::splat(0.0);
+                            let shifted = shifts[shift];
+                            let complex_iter = simd[end - shifted.len() .. end].iter(); 
+                            let iteration = 
+                                complex_iter
+                                .zip(shifted);
+                            for (this, other) in iteration {
+                                sum = sum + (*this) * (*other);
+                            }
+                            (*num) = sum.sum_real();
+                            i += 1;
+                        }
+                        
+                        for num in &mut dest[points - scalar_len .. points] {
+                            *num = Self::convolve_iteration(complex, other_iter, i, conv_len, full_conv_len);
+                            i += 1;
+                        }
                     }
+                    Ok(self.swap_data_temp())
                 }
                 
-                fn create_shifted_copies_complex(vector: &GenericDataVector<$data_type>) -> Vec<Vec<$data_type>>{
-                    let mut shifted_copies = Vec::with_capacity($reg::len() / 2);
-                    let mut shift = 0;
-                    while shift < $reg::len() {
+                fn create_shifted_copies(vector: &GenericDataVector<$data_type>) -> Vec<Vec<$data_type>>{
+                    let step = if vector.is_complex { 2 } else { 1 };
+                    let number_of_shifts = $reg::len() / step;
+                    let mut shifted_copies = Vec::with_capacity(number_of_shifts);
+                    let mut i = 0;
+                    while i < number_of_shifts {
                         let mut data = vector.data.iter().rev();
+                        let shift = match i {
+                            0 => 0,
+                            x => (number_of_shifts - x) * step
+                        };
                         let min_len = vector.len() + shift;
                         let len = if min_len % $reg::len() == 0 { min_len } else { min_len - min_len % $reg::len() + $reg::len() };
                         let mut copy = Vec::with_capacity(len);
                         
                         let mut j = len;
                         while j > 0 {
-                            j -= 2;
+                            j -= step;
                             if j < shift || j >= vector.len() + shift {
                                 copy.push(0.0);
-                                copy.push(0.0);
+                                if step > 1 {
+                                    copy.push(0.0);
+                                }
                             } else {
-                                let im = *data.next().unwrap();
-                                let re = *data.next().unwrap();
-                                copy.push(re);
-                                copy.push(im);
+                                if step > 1 {
+                                    let im = *data.next().unwrap();
+                                    let re = *data.next().unwrap();
+                                    copy.push(re);
+                                    copy.push(im);
+                                }
+                                else {
+                                    copy.push(*data.next().unwrap());
+                                }
                             }
                         }
                         
                         assert_eq!(copy.len(), len);
                         shifted_copies.push(copy);
-                        shift += 2;
+                        i += 1;
                     }
                     shifted_copies
                 }
