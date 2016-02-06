@@ -169,6 +169,25 @@ mod slow_test {
     }
     
     #[test]
+    fn compare_optimized_and_non_optimized_conv() {
+        for iteration in 0 .. 3 {
+            // This offset is small enough to now have a big impact on the results (for the RC function)
+            // but the code will use a different non-optimized branch since it won't recognize ratio as an
+            // integer
+            let offset = 2e-6; 
+            let a = create_data_even(201511212, iteration, 2002, 4000);
+            let b = create_data_even(201601172, iteration, 50, 202);
+            let delta = create_delta(3561159, iteration);
+            let time = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
+            let ratio = iteration as f32 + 1.0;
+            let left = time.clone().convolve(&fun as &RealImpulseResponse<f32>, ratio, b.len()).unwrap();
+            let right = time.convolve(&fun as &RealImpulseResponse<f32>, ratio + offset, b.len()).unwrap();
+            assert_vector_eq_with_reason_and_tolerance(&left.data(), &right.data(), 0.1, "Results should match independent if done in optimized or non optimized code branch");
+        }
+    }
+    
+    #[test]
     fn compare_vector_conv_freq_multiplication() {
         for iteration in 0 .. 3 {
             let a = create_data_even(201601171, iteration, 502, 1000);

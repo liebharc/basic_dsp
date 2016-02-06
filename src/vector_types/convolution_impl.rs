@@ -22,6 +22,9 @@ pub trait Convolution<T, C> : DataVector<T>
     where T : RealNumber {
     /// Convolves `self` with the convolution function `impulse_response`. For performance it's recommended 
     /// to use `FrequencyMultiplication` instead of this operation.
+    ///
+    /// An optimized convolution algorithm is used if  `1.0 / ratio` is an integer (inside a `1e-6` tolerance) 
+    /// and `len` is smaller than a threshold (`202` right now).
     /// # Failures
     /// VecResult may report the following `ErrorReason` members:
     /// 
@@ -68,6 +71,21 @@ macro_rules! add_conv_impl{
                 fn convolve(self, function: &RealImpulseResponse<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
                     assert_time!(self);
                     if !self.is_complex {
+                        let ratio_inv = 1.0 / ratio;
+                        if len <= 202 && self.len() > 2000 && (ratio_inv.round() - ratio_inv).abs() < 1e-6 && ratio > 0.5 {
+                            let mut imp_resp = ComplexTimeVector::<$data_type>::from_constant_with_delta(Complex::<$data_type>::zero(), (2 * len + 1) * ratio as usize, self.delta());
+                            let mut i = 0;
+                            let mut j = -(len as $data_type);
+                            while i < imp_resp.len() {
+                                let value = function.calc(j * ratio_inv);
+                                imp_resp[i] = value;
+                                i += 1;
+                                j += 1.0;
+                            }
+                            
+                            return self.convolve_vector(&imp_resp.to_gen_borrow());
+                        }
+                        
                         Ok(self.convolve_function_priv(
                                 ratio,
                                 len,
@@ -76,6 +94,21 @@ macro_rules! add_conv_impl{
                                 |x|function.calc(x)
                             ))
                     } else {
+                        let ratio_inv = 1.0 / ratio;
+                        if len <= 202 && self.len() > 2000 && (ratio_inv.round() - ratio_inv).abs() < 1e-6 && ratio > 0.5 {
+                            let mut imp_resp = ComplexTimeVector::<$data_type>::from_constant_with_delta(Complex::<$data_type>::zero(), (2 * len + 1) * ratio as usize, self.delta());
+                            let mut i = 0;
+                            let mut j = -(len as $data_type);
+                            while i < imp_resp.len() {
+                                let value = function.calc(j * ratio_inv);
+                                imp_resp[i] = value;
+                                i += 2;
+                                j += 1.0;
+                            }
+                            
+                            return self.convolve_vector(&imp_resp.to_gen_borrow());
+                        }
+                        
                         Ok(self.convolve_function_priv(
                             ratio,
                             len,
@@ -91,6 +124,24 @@ macro_rules! add_conv_impl{
                 fn convolve(self, function: &ComplexImpulseResponse<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
                     assert_complex!(self);
                     assert_time!(self);
+                    
+                    let ratio_inv = 1.0 / ratio;
+                    if len <= 202 && self.len() > 2000 && (ratio_inv.round() - ratio_inv).abs() < 1e-6 && ratio > 0.5 {
+                        let mut imp_resp = ComplexTimeVector::<$data_type>::from_constant_with_delta(Complex::<$data_type>::zero(), (2 * len + 1) * ratio as usize, self.delta());
+                        let mut i = 0;
+                        let mut j = -(len as $data_type);
+                        while i < imp_resp.len() {
+                            let value = function.calc(j * ratio_inv);
+                            imp_resp[i] = value.re;
+                            i += 2;
+                            imp_resp[i] = value.im;
+                            i += 1;
+                            j += 1.0;
+                        }
+                        
+                        return self.convolve_vector(&imp_resp.to_gen_borrow());
+                    }
+                    
                     Ok(self.convolve_function_priv(
                             ratio,
                             len,
