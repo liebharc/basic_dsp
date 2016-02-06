@@ -6,7 +6,7 @@ use super::definitions::{
 use conv_types::*;
 use RealNumber;
 use num::traits::Zero;
-use std::ops::Mul;
+use std::ops::{Add, Mul};
 use std::fmt::Display;
 use num::complex::Complex;
 use simd_extensions::*;
@@ -222,15 +222,7 @@ macro_rules! add_conv_impl{
                             let conv_len = conv_len as isize;
                             let mut i = 0;
                             for num in dest {
-                                let complex_iter = ReverseWrappingIterator::new(complex, i + conv_len, full_conv_len);
-                                let mut sum = Complex::<$data_type>::zero();
-                                let iteration = 
-                                    complex_iter
-                                    .zip(other_iter);
-                                for (this, other) in iteration {
-                                    sum = sum + this * other;
-                                }
-                                (*num) = sum;
+                                *num = Self::convolve_iteration(complex, other_iter, i, conv_len, full_conv_len);
                                 i += 1;
                             }
                         }
@@ -246,20 +238,26 @@ macro_rules! add_conv_impl{
                             let conv_len = conv_len as isize;
                             let mut i = 0;
                             for num in dest {
-                                let data_iter = ReverseWrappingIterator::new(data, i + conv_len, full_conv_len);
-                                let mut sum = 0.0;
-                                let iteration = 
-                                    data_iter
-                                    .zip(other_iter);
-                                for (this, other) in iteration {
-                                    sum = sum + this * other;
-                                }
-                                (*num) = sum;
+                                *num = Self::convolve_iteration(data, other_iter, i, conv_len, full_conv_len);
                                 i += 1;
                             }
                         }
                         Ok(self.swap_data_temp())
                     }
+                }
+                
+                #[inline]
+                fn convolve_iteration<T>(data: &[T], other_iter: &[T], i: isize, conv_len: isize, full_conv_len: usize) -> T 
+                    where T: Zero + Clone + Copy + Add<Output=T> + Mul<Output=T> {
+                    let data_iter = ReverseWrappingIterator::new(data, i + conv_len, full_conv_len);
+                    let mut sum = T::zero();
+                    let iteration = 
+                        data_iter
+                        .zip(other_iter);
+                    for (this, other) in iteration {
+                        sum = sum + this * (*other);
+                    }
+                    sum
                 }
                 
                  fn convolve_vector_simd(mut self, vector: &Self) -> VecResult<Self> {
@@ -276,66 +274,30 @@ macro_rules! add_conv_impl{
                             let complex = Self::array_to_complex(&self.data[0..len]);
                             let dest = Self::array_to_complex_mut(&mut temp[0..len]);
                             let other_iter = &other[other_start .. other_end];
-                            let mut shifted_copies = Vec::with_capacity($reg::len() / 2);
-                            let mut shift = 0;
-                            while shift < $reg::len() {
-                                let mut data = vector.data.iter().rev();
-                                let min_len = vector.len() + shift;
-                                let len = if min_len % $reg::len() == 0 { min_len } else { min_len - min_len % $reg::len() + $reg::len() };
-                                let mut copy = Vec::with_capacity(len);
-                                
-                                let mut j = len;
-                                while j > 0 {
-                                    j -= 2;
-                                    if j < shift || j >= vector.len() + shift {
-                                        copy.push(0.0);
-                                        copy.push(0.0);
-                                    } else {
-                                        let im = *data.next().unwrap();
-                                        let re = *data.next().unwrap();
-                                        copy.push(re);
-                                        copy.push(im);
-                                    }
-                                }
-                                
-                                assert_eq!(copy.len(), len);
-                                shifted_copies.push(copy);
-                                shift += 2;
-                            }
+                            
+                            let shifted_copies = Self::create_shifted_copies_complex(vector);
                             let mut shifts = Vec::with_capacity(shifted_copies.len());
                             for shift in 0..shifted_copies.len() {
                                 let simd = $reg::array_to_regs(&shifted_copies[shift]);
                                 shifts.push(simd);
                             }
 
-                            let scalar_len = conv_len + 2;
+                            let scalar_len = conv_len;
                             let conv_len = conv_len as isize;
                             let mut i = 0;
                             for num in &mut dest[0..scalar_len] {
-                                let complex_iter = ReverseWrappingIterator::new(complex, i + conv_len, full_conv_len);
-                                let mut sum = Complex::<$data_type>::zero();
-                                let iteration = 
-                                    complex_iter
-                                    .zip(other_iter);
-                                for (this, other) in iteration {
-                                    sum = sum + this * other;
-                                }
-                                (*num) = sum;
+                                *num = Self::convolve_iteration(complex, other_iter, i, conv_len, full_conv_len);
                                 i += 1;
                             }
                             
                             let simd = $reg::array_to_regs(&self.data[0..len]);
                             for num in &mut dest[scalar_len .. len / 2 - scalar_len] {
-                                let mut end = (i + conv_len) as usize;
-                                let mut odd = 0;
-                                if end % 2 == 1 {
-                                    odd = 1;
-                                    end = end + 1;
-                                }
-                                
+                                let end = (i + conv_len) as usize;
+                                let shift = end % shifts.len();
+                                let end = (end + shifts.len() - 1) / shifts.len();
                                 let mut sum = $reg::splat(0.0);
-                                let shifted = shifts[odd];
-                                let complex_iter = simd[end /2 - shifted.len() .. end / 2].iter(); 
+                                let shifted = shifts[shift];
+                                let complex_iter = simd[end - shifted.len() .. end].iter(); 
                                 let iteration = 
                                     complex_iter
                                     .zip(shifted);
@@ -347,15 +309,7 @@ macro_rules! add_conv_impl{
                             }
                             
                             for num in &mut dest[len / 2 - scalar_len .. len / 2] {
-                                let complex_iter = ReverseWrappingIterator::new(complex, i + conv_len, full_conv_len);
-                                let mut sum = Complex::<$data_type>::zero();
-                                let iteration = 
-                                    complex_iter
-                                    .zip(other_iter);
-                                for (this, other) in iteration {
-                                    sum = sum + this * other;
-                                }
-                                (*num) = sum;
+                                *num = Self::convolve_iteration(complex, other_iter, i, conv_len, full_conv_len);
                                 i += 1;
                             }
                         }
@@ -363,6 +317,36 @@ macro_rules! add_conv_impl{
                     } else {
                         panic!("Not implemented yet");
                     }
+                }
+                
+                fn create_shifted_copies_complex(vector: &GenericDataVector<$data_type>) -> Vec<Vec<$data_type>>{
+                    let mut shifted_copies = Vec::with_capacity($reg::len() / 2);
+                    let mut shift = 0;
+                    while shift < $reg::len() {
+                        let mut data = vector.data.iter().rev();
+                        let min_len = vector.len() + shift;
+                        let len = if min_len % $reg::len() == 0 { min_len } else { min_len - min_len % $reg::len() + $reg::len() };
+                        let mut copy = Vec::with_capacity(len);
+                        
+                        let mut j = len;
+                        while j > 0 {
+                            j -= 2;
+                            if j < shift || j >= vector.len() + shift {
+                                copy.push(0.0);
+                                copy.push(0.0);
+                            } else {
+                                let im = *data.next().unwrap();
+                                let re = *data.next().unwrap();
+                                copy.push(re);
+                                copy.push(im);
+                            }
+                        }
+                        
+                        assert_eq!(copy.len(), len);
+                        shifted_copies.push(copy);
+                        shift += 2;
+                    }
+                    shifted_copies
                 }
             }
         )*

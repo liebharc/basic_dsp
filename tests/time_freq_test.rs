@@ -12,6 +12,7 @@ mod slow_test {
         VectorConvolution,
         FrequencyMultiplication,
         RealTimeVector64,
+        RealTimeVector32,
         ComplexTimeVector32,
         ComplexFreqVector32};
     use basic_dsp::conv_types::*;
@@ -197,7 +198,7 @@ mod slow_test {
             let time1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let time2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
             let left = time1.clone().convolve_vector(&time2).unwrap();
-            let time2 = ComplexTimeVector32::from_interleaved_with_delta(&conv_zero_pad(&b, time1.len()), delta);
+            let time2 = ComplexTimeVector32::from_interleaved_with_delta(&conv_zero_pad(&b, time1.len(), true), delta);
             let right = time1.convolve_vector(&time2).unwrap();
             assert_vector_eq_with_reason_and_tolerance(
                 left.data(), 
@@ -207,16 +208,47 @@ mod slow_test {
         }
     }
     
-    fn conv_zero_pad(data: &[f32], len: usize) -> Vec<f32> {
-        let mut result = vec![0.0; len];
-        let points = len / 2;
-        let data_points = data.len() / 2;
-        let diff = points - data_points;
-        let left = diff - diff / 2;
-        for i in 0..data.len() {
-            result[2 * left + i] = data[i];
+    #[test]
+    fn compare_smaller_vector_conv_with_zero_padded_conv_real() {
+        for iteration in 0 .. 3 {
+            let a = create_data_even(201601171, iteration, 1002, 2000);
+            let b = create_data_even(201601172, iteration, 50, 202);
+            let delta = create_delta(201601173, iteration);
+            let time1 = RealTimeVector32::from_array_with_delta(&a, delta);
+            let time2 = RealTimeVector32::from_array_with_delta(&b, delta);
+            let left = time1.clone().convolve_vector(&time2).unwrap();
+            let time2 = RealTimeVector32::from_array_with_delta(&conv_zero_pad(&b, time1.len(), false), delta);
+            let right = time1.convolve_vector(&time2).unwrap();
+            assert_vector_eq_with_reason_and_tolerance(
+                left.data(), 
+                right.data(), 
+                0.2, 
+                "Results should match independent if done with a smaller vector or with a zero padded vector of the same size");
         }
-        result
+    }
+    
+    fn conv_zero_pad(data: &[f32], len: usize, is_complex: bool) -> Vec<f32> {
+        if is_complex {
+            let mut result = vec![0.0; len];
+            let points = len / 2;
+            let data_points = data.len() / 2;
+            let diff = points - data_points;
+            let left = diff - diff / 2;
+            for i in 0..data.len() {
+                result[2 * left + i] = data[i];
+            }
+            result
+        }
+        else {
+            let mut result = vec![0.0; len];
+            let data_len = data.len();
+            let diff = len - data_len;
+            let left = diff - diff / 2;
+            for i in 0..data.len() {
+                result[left + i] = data[i];
+            }
+            result
+        }
     }
     
     /// This kind of swapping is necessary since we defined
