@@ -260,69 +260,51 @@ macro_rules! add_conv_impl{
                     sum
                 }
                 
-                 fn convolve_vector_simd(mut self, vector: &Self) -> VecResult<Self> {
+                fn convolve_vector_simd(self, vector: &Self) -> VecResult<Self> {
+                    if self.is_complex {
+                        self.convolve_vector_simd_impl(
+                            vector,
+                            |x| Self::array_to_complex(x),
+                            |x| Self::array_to_complex_mut(x),
+                            |x,y| x.mul_complex(y),
+                            |x| x.sum_complex())
+                    } else {
+                        self.convolve_vector_simd_impl(
+                            vector,
+                            |x| x,
+                            |x| x,
+                            |x,y| x * y,
+                            |x| x.sum_real())
+                    }
+                }
+                
+                fn convolve_vector_simd_impl<T, C, CMut, RMul, RSum>(
+                    mut self, 
+                    vector: &Self,
+                    convert: C,
+                    convert_mut: CMut,
+                    simd_mul: RMul,
+                    simd_sum: RSum) -> VecResult<Self> 
+                        where 
+                            T: Zero + Clone + Copy + Add<Output=T> + Mul<Output=T>,
+                            C: Fn(&[$data_type]) -> &[T],
+                            CMut: Fn(&mut [$data_type]) -> &mut [T],
+                            RMul: Fn($reg, $reg) -> $reg,
+                            RSum: Fn($reg) -> T {
                     let points = self.points();
                     let other_points = vector.points();
                     assert!(other_points < points);
                     let (other_start, other_end, full_conv_len, conv_len) =
                                 (0, other_points, other_points, other_points - other_points / 2);
-                    if self.is_complex {
-                        {
-                            let len = self.len();
-                            let points = self.points();
-                            let other = Self::array_to_complex(&vector.data[0..vector.len()]);
-                            let temp = temp_mut!(self, vector.len());
-                            let complex = Self::array_to_complex(&self.data[0..len]);
-                            let dest = Self::array_to_complex_mut(&mut temp[0..len]);
-                            let other_iter = &other[other_start .. other_end];
-                            
-                            let shifted_copies = Self::create_shifted_copies(vector);
-                            let mut shifts = Vec::with_capacity(shifted_copies.len());
-                            for shift in 0..shifted_copies.len() {
-                                let simd = $reg::array_to_regs(&shifted_copies[shift]);
-                                shifts.push(simd);
-                            }
-
-                            let scalar_len = conv_len;
-                            let conv_len = conv_len as isize;
-                            let mut i = 0;
-                            for num in &mut dest[0..scalar_len] {
-                                *num = Self::convolve_iteration(complex, other_iter, i, conv_len, full_conv_len);
-                                i += 1;
-                            }
-                            
-                            let simd = $reg::array_to_regs(&self.data[0..len]);
-                            for num in &mut dest[scalar_len .. points - scalar_len] {
-                                let end = (i + conv_len) as usize;
-                                let shift = end % shifts.len();
-                                let end = (end + shifts.len() - 1) / shifts.len();
-                                let mut sum = $reg::splat(0.0);
-                                let shifted = shifts[shift];
-                                let complex_iter = simd[end - shifted.len() .. end].iter(); 
-                                let iteration = 
-                                    complex_iter
-                                    .zip(shifted);
-                                for (this, other) in iteration {
-                                    sum = sum + this.mul_complex(*other);
-                                }
-                                (*num) = sum.sum_complex();
-                                i += 1;
-                            }
-                            
-                            for num in &mut dest[points - scalar_len .. points] {
-                                *num = Self::convolve_iteration(complex, other_iter, i, conv_len, full_conv_len);
-                                i += 1;
-                            }
-                        }
-                    } else {
+                    {
                         let len = self.len();
                         let points = self.points();
-                        let other = &vector.data[0..vector.len()];
+                        let other = convert(&vector.data[0..vector.len()]);
                         let temp = temp_mut!(self, vector.len());
-                        let complex = &self.data[0..len];
-                        let dest = &mut temp[0..len];
+                        let complex = convert(&self.data[0..len]);
+                        let dest = convert_mut(&mut temp[0..len]);
                         let other_iter = &other[other_start .. other_end];
-                        
+
                         let shifted_copies = Self::create_shifted_copies(vector);
                         let mut shifts = Vec::with_capacity(shifted_copies.len());
                         for shift in 0..shifted_copies.len() {
@@ -337,7 +319,7 @@ macro_rules! add_conv_impl{
                             *num = Self::convolve_iteration(complex, other_iter, i, conv_len, full_conv_len);
                             i += 1;
                         }
-                        
+
                         let simd = $reg::array_to_regs(&self.data[0..len]);
                         for num in &mut dest[scalar_len .. points - scalar_len] {
                             let end = (i + conv_len) as usize;
@@ -350,12 +332,12 @@ macro_rules! add_conv_impl{
                                 complex_iter
                                 .zip(shifted);
                             for (this, other) in iteration {
-                                sum = sum + (*this) * (*other);
+                                sum = sum + simd_mul(*this, *other);
                             }
-                            (*num) = sum.sum_real();
+                            (*num) = simd_sum(sum);
                             i += 1;
                         }
-                        
+
                         for num in &mut dest[points - scalar_len .. points] {
                             *num = Self::convolve_iteration(complex, other_iter, i, conv_len, full_conv_len);
                             i += 1;
