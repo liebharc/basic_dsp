@@ -53,9 +53,9 @@ mod bench {
 	}
     
     #[bench]
-	fn convolve_vector_with_signal_32t_benchmark(b: &mut Bencher)
+	fn convolve_vector_with_signal_32s_benchmark(b: &mut Bencher)
 	{
-		let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Tiny);
+		let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Small);
 		b.iter(|| {
 			vector.execute_res(|v| {
                 let sinc: SincFunction<f32> = SincFunction::new();
@@ -79,9 +79,9 @@ mod bench {
 	}
     
     #[bench]
-	fn convolve_vector_with_smaller_vector_32t_benchmark(b: &mut Bencher)
+	fn convolve_vector_with_smaller_vector_32s_benchmark(b: &mut Bencher)
 	{
-		let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Tiny);
+		let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Small);
 		b.iter(|| {
 			vector.execute_res(|v| {
                 let operand = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), 100);

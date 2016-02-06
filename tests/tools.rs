@@ -123,6 +123,16 @@ pub fn create_data_even_in_range(seed: usize, iteration: usize, from: usize, to:
     create_data_in_range_with_len(seed, iteration, len, range_start, range_end)
 }
 
+pub fn create_data_simd_len_in_range(seed: usize, iteration: usize, from: usize, to: usize) -> Vec<f32>
+{
+    let len_seed: &[_] = &[seed, iteration];
+    let mut rng: StdRng = SeedableRng::from_seed(len_seed);
+    let len = rng.gen_range(from, to);
+    let len = (len / 8 + 1) + 8; // Not exact but good enough
+    let len = if len > to { to } else { len };
+    create_data_with_len(seed, iteration, len)
+}
+
 pub fn create_data_in_range_with_len(seed: usize, iteration: usize, len: usize, range_start: f32, range_end: f32) -> Vec<f32>
 {
     let seed: &[_] = &[seed, iteration];

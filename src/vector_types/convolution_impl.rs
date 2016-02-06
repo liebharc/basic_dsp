@@ -9,6 +9,7 @@ use num::traits::Zero;
 use std::ops::Mul;
 use std::fmt::Display;
 use num::complex::Complex;
+use simd_extensions::*;
 use super::{
     GenericDataVector,
     RealFreqVector,
@@ -61,7 +62,7 @@ pub trait FrequencyMultiplication<T, C> : DataVector<T>
 }
 
 macro_rules! add_conv_impl{
-    ($($data_type:ident),*) => {
+    ($($data_type:ident, $reg:ident);*) => {
         $(
             impl<'a> Convolution<$data_type, &'a RealImpulseResponse<$data_type>> for GenericDataVector<$data_type> {
                 fn convolve(self, function: &RealImpulseResponse<$data_type>, ratio: $data_type, len: usize) -> VecResult<Self> {
@@ -189,10 +190,10 @@ macro_rules! add_conv_impl{
                     // For the SIMD operation we need to clone `vector` several
                     // times and this only is worthwhile if `vector.len() << self.len()`
                     // where `<<` means "significant smaller".
-                    /*if self.len() > 1000 && vector.len() < 200 && self.is_complex && false {
-                        self.convolve_vector_simd(vector) // TODO: Real implementation
+                    if self.len() > 1000 && self.len() % $reg::len() == 0 && vector.len() <= 202 && self.is_complex {
+                        self.convolve_vector_simd(vector)
                     }
-                    else */{
+                    else {
                         self.convolve_vector_scalar(vector)
                     }
                 }
@@ -260,11 +261,114 @@ macro_rules! add_conv_impl{
                         Ok(self.swap_data_temp())
                     }
                 }
+                
+                 fn convolve_vector_simd(mut self, vector: &Self) -> VecResult<Self> {
+                    let points = self.points();
+                    let other_points = vector.points();
+                    assert!(other_points < points);
+                    let (other_start, other_end, full_conv_len, conv_len) =
+                                (0, other_points, other_points, other_points - other_points / 2);
+                    if self.is_complex {
+                        {
+                            let len = self.len();
+                            let other = Self::array_to_complex(&vector.data[0..vector.len()]);
+                            let temp = temp_mut!(self, vector.len());
+                            let complex = Self::array_to_complex(&self.data[0..len]);
+                            let dest = Self::array_to_complex_mut(&mut temp[0..len]);
+                            let other_iter = &other[other_start .. other_end];
+                            let mut shifted_copies = Vec::with_capacity($reg::len() / 2);
+                            let mut shift = 0;
+                            while shift < $reg::len() {
+                                let mut data = vector.data.iter().rev();
+                                let min_len = vector.len() + shift;
+                                let len = if min_len % $reg::len() == 0 { min_len } else { min_len - min_len % $reg::len() + $reg::len() };
+                                let mut copy = Vec::with_capacity(len);
+                                
+                                let mut j = len;
+                                while j > 0 {
+                                    j -= 2;
+                                    if j < shift || j >= vector.len() + shift {
+                                        copy.push(0.0);
+                                        copy.push(0.0);
+                                    } else {
+                                        let im = *data.next().unwrap();
+                                        let re = *data.next().unwrap();
+                                        copy.push(re);
+                                        copy.push(im);
+                                    }
+                                }
+                                
+                                assert_eq!(copy.len(), len);
+                                shifted_copies.push(copy);
+                                shift += 2;
+                            }
+                            let mut shifts = Vec::with_capacity(shifted_copies.len());
+                            for shift in 0..shifted_copies.len() {
+                                let simd = $reg::array_to_regs(&shifted_copies[shift]);
+                                shifts.push(simd);
+                            }
+
+                            let scalar_len = conv_len + 2;
+                            let conv_len = conv_len as isize;
+                            let mut i = 0;
+                            for num in &mut dest[0..scalar_len] {
+                                let complex_iter = ReverseWrappingIterator::new(complex, i + conv_len, full_conv_len);
+                                let mut sum = Complex::<$data_type>::zero();
+                                let iteration = 
+                                    complex_iter
+                                    .zip(other_iter);
+                                for (this, other) in iteration {
+                                    sum = sum + this * other;
+                                }
+                                (*num) = sum;
+                                i += 1;
+                            }
+                            
+                            let simd = $reg::array_to_regs(&self.data[0..len]);
+                            for num in &mut dest[scalar_len .. len / 2 - scalar_len] {
+                                let mut end = (i + conv_len) as usize;
+                                let mut odd = 0;
+                                if end % 2 == 1 {
+                                    odd = 1;
+                                    end = end + 1;
+                                }
+                                
+                                let mut sum = $reg::splat(0.0);
+                                let shifted = shifts[odd];
+                                let complex_iter = simd[end /2 - shifted.len() .. end / 2].iter(); 
+                                let iteration = 
+                                    complex_iter
+                                    .zip(shifted);
+                                for (this, other) in iteration {
+                                    sum = sum + this.mul_complex(*other);
+                                }
+                                (*num) = sum.sum_complex();
+                                i += 1;
+                            }
+                            
+                            for num in &mut dest[len / 2 - scalar_len .. len / 2] {
+                                let complex_iter = ReverseWrappingIterator::new(complex, i + conv_len, full_conv_len);
+                                let mut sum = Complex::<$data_type>::zero();
+                                let iteration = 
+                                    complex_iter
+                                    .zip(other_iter);
+                                for (this, other) in iteration {
+                                    sum = sum + this * other;
+                                }
+                                (*num) = sum;
+                                i += 1;
+                            }
+                        }
+                        Ok(self.swap_data_temp())
+                    } else {
+                        panic!("Not implemented yet");
+                    }
+                }
             }
         )*
     }
 }
-add_conv_impl!(f32, f64);
+add_conv_impl!(f32, Reg32; f64, Reg64);
 
 macro_rules! add_conv_forw{
     ($($data_type:ident),*) => {
