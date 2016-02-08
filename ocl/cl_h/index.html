@@ -1,0 +1,2965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `cl_h` mod in crate `ocl`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, cl_h">
+
+    <title>ocl::cl_h - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>ocl</a></p><script>window.sidebarCurrent = {name: 'cl_h', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>ocl</a>::<wbr><a class='mod' href=''>cl_h</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-131' class='srclink' href='../../src/ocl/cl_h.rs.html#1-894' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Rust definitions for the OpenCL ABI</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.cl_buffer_region.html'
+                               title='ocl::cl_h::cl_buffer_region'>cl_buffer_region</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.cl_image_format.html'
+                               title='ocl::cl_h::cl_image_format'>cl_image_format</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.CLStatus.html'
+                               title='ocl::cl_h::CLStatus'>CLStatus</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='statics' class='section-header'><a href="#statics">Statics</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_A.html'
+                               title='ocl::cl_h::CL_A'>CL_A</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_ADDRESS_CLAMP.html'
+                               title='ocl::cl_h::CL_ADDRESS_CLAMP'>CL_ADDRESS_CLAMP</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_ADDRESS_CLAMP_TO_EDGE.html'
+                               title='ocl::cl_h::CL_ADDRESS_CLAMP_TO_EDGE'>CL_ADDRESS_CLAMP_TO_EDGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_ADDRESS_MIRRORED_REPEAT.html'
+                               title='ocl::cl_h::CL_ADDRESS_MIRRORED_REPEAT'>CL_ADDRESS_MIRRORED_REPEAT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_ADDRESS_NONE.html'
+                               title='ocl::cl_h::CL_ADDRESS_NONE'>CL_ADDRESS_NONE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_ADDRESS_REPEAT.html'
+                               title='ocl::cl_h::CL_ADDRESS_REPEAT'>CL_ADDRESS_REPEAT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_ARGB.html'
+                               title='ocl::cl_h::CL_ARGB'>CL_ARGB</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_BGRA.html'
+                               title='ocl::cl_h::CL_BGRA'>CL_BGRA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_BUFFER_CREATE_TYPE_REGION.html'
+                               title='ocl::cl_h::CL_BUFFER_CREATE_TYPE_REGION'>CL_BUFFER_CREATE_TYPE_REGION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_BUILD_ERROR.html'
+                               title='ocl::cl_h::CL_BUILD_ERROR'>CL_BUILD_ERROR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_BUILD_IN_PROGRESS.html'
+                               title='ocl::cl_h::CL_BUILD_IN_PROGRESS'>CL_BUILD_IN_PROGRESS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_BUILD_NONE.html'
+                               title='ocl::cl_h::CL_BUILD_NONE'>CL_BUILD_NONE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_BUILD_SUCCESS.html'
+                               title='ocl::cl_h::CL_BUILD_SUCCESS'>CL_BUILD_SUCCESS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_ACQUIRE_GL_OBJECTS.html'
+                               title='ocl::cl_h::CL_COMMAND_ACQUIRE_GL_OBJECTS'>CL_COMMAND_ACQUIRE_GL_OBJECTS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_COPY_BUFFER.html'
+                               title='ocl::cl_h::CL_COMMAND_COPY_BUFFER'>CL_COMMAND_COPY_BUFFER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_COPY_BUFFER_RECT.html'
+                               title='ocl::cl_h::CL_COMMAND_COPY_BUFFER_RECT'>CL_COMMAND_COPY_BUFFER_RECT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_COPY_BUFFER_TO_IMAGE.html'
+                               title='ocl::cl_h::CL_COMMAND_COPY_BUFFER_TO_IMAGE'>CL_COMMAND_COPY_BUFFER_TO_IMAGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_COPY_IMAGE.html'
+                               title='ocl::cl_h::CL_COMMAND_COPY_IMAGE'>CL_COMMAND_COPY_IMAGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_COPY_IMAGE_TO_BUFFER.html'
+                               title='ocl::cl_h::CL_COMMAND_COPY_IMAGE_TO_BUFFER'>CL_COMMAND_COPY_IMAGE_TO_BUFFER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_MAP_BUFFER.html'
+                               title='ocl::cl_h::CL_COMMAND_MAP_BUFFER'>CL_COMMAND_MAP_BUFFER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_MAP_IMAGE.html'
+                               title='ocl::cl_h::CL_COMMAND_MAP_IMAGE'>CL_COMMAND_MAP_IMAGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_MARKER.html'
+                               title='ocl::cl_h::CL_COMMAND_MARKER'>CL_COMMAND_MARKER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_NATIVE_KERNEL.html'
+                               title='ocl::cl_h::CL_COMMAND_NATIVE_KERNEL'>CL_COMMAND_NATIVE_KERNEL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_NDRANGE_KERNEL.html'
+                               title='ocl::cl_h::CL_COMMAND_NDRANGE_KERNEL'>CL_COMMAND_NDRANGE_KERNEL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_READ_BUFFER.html'
+                               title='ocl::cl_h::CL_COMMAND_READ_BUFFER'>CL_COMMAND_READ_BUFFER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_READ_BUFFER_RECT.html'
+                               title='ocl::cl_h::CL_COMMAND_READ_BUFFER_RECT'>CL_COMMAND_READ_BUFFER_RECT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_READ_IMAGE.html'
+                               title='ocl::cl_h::CL_COMMAND_READ_IMAGE'>CL_COMMAND_READ_IMAGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_RELEASE_GL_OBJECTS.html'
+                               title='ocl::cl_h::CL_COMMAND_RELEASE_GL_OBJECTS'>CL_COMMAND_RELEASE_GL_OBJECTS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_TASK.html'
+                               title='ocl::cl_h::CL_COMMAND_TASK'>CL_COMMAND_TASK</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_UNMAP_MEM_OBJECT.html'
+                               title='ocl::cl_h::CL_COMMAND_UNMAP_MEM_OBJECT'>CL_COMMAND_UNMAP_MEM_OBJECT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_USER.html'
+                               title='ocl::cl_h::CL_COMMAND_USER'>CL_COMMAND_USER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_WRITE_BUFFER.html'
+                               title='ocl::cl_h::CL_COMMAND_WRITE_BUFFER'>CL_COMMAND_WRITE_BUFFER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_WRITE_BUFFER_RECT.html'
+                               title='ocl::cl_h::CL_COMMAND_WRITE_BUFFER_RECT'>CL_COMMAND_WRITE_BUFFER_RECT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMMAND_WRITE_IMAGE.html'
+                               title='ocl::cl_h::CL_COMMAND_WRITE_IMAGE'>CL_COMMAND_WRITE_IMAGE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_COMPLETE.html'
+                               title='ocl::cl_h::CL_COMPLETE'>CL_COMPLETE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_CONTEXT_DEVICES.html'
+                               title='ocl::cl_h::CL_CONTEXT_DEVICES'>CL_CONTEXT_DEVICES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_CONTEXT_NUM_DEVICES.html'
+                               title='ocl::cl_h::CL_CONTEXT_NUM_DEVICES'>CL_CONTEXT_NUM_DEVICES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_CONTEXT_PLATFORM.html'
+                               title='ocl::cl_h::CL_CONTEXT_PLATFORM'>CL_CONTEXT_PLATFORM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_CONTEXT_PROPERTIES.html'
+                               title='ocl::cl_h::CL_CONTEXT_PROPERTIES'>CL_CONTEXT_PROPERTIES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_CONTEXT_REFERENCE_COUNT.html'
+                               title='ocl::cl_h::CL_CONTEXT_REFERENCE_COUNT'>CL_CONTEXT_REFERENCE_COUNT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_ADDRESS_BITS.html'
+                               title='ocl::cl_h::CL_DEVICE_ADDRESS_BITS'>CL_DEVICE_ADDRESS_BITS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_AVAILABLE.html'
+                               title='ocl::cl_h::CL_DEVICE_AVAILABLE'>CL_DEVICE_AVAILABLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_COMPILER_AVAILABLE.html'
+                               title='ocl::cl_h::CL_DEVICE_COMPILER_AVAILABLE'>CL_DEVICE_COMPILER_AVAILABLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_DOUBLE_FP_CONFIG.html'
+                               title='ocl::cl_h::CL_DEVICE_DOUBLE_FP_CONFIG'>CL_DEVICE_DOUBLE_FP_CONFIG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_ENDIAN_LITTLE.html'
+                               title='ocl::cl_h::CL_DEVICE_ENDIAN_LITTLE'>CL_DEVICE_ENDIAN_LITTLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_ERROR_CORRECTION_SUPPORT.html'
+                               title='ocl::cl_h::CL_DEVICE_ERROR_CORRECTION_SUPPORT'>CL_DEVICE_ERROR_CORRECTION_SUPPORT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_EXECUTION_CAPABILITIES.html'
+                               title='ocl::cl_h::CL_DEVICE_EXECUTION_CAPABILITIES'>CL_DEVICE_EXECUTION_CAPABILITIES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_EXTENSIONS.html'
+                               title='ocl::cl_h::CL_DEVICE_EXTENSIONS'>CL_DEVICE_EXTENSIONS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE.html'
+                               title='ocl::cl_h::CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE'>CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_GLOBAL_MEM_CACHE_SIZE.html'
+                               title='ocl::cl_h::CL_DEVICE_GLOBAL_MEM_CACHE_SIZE'>CL_DEVICE_GLOBAL_MEM_CACHE_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_GLOBAL_MEM_CACHE_TYPE.html'
+                               title='ocl::cl_h::CL_DEVICE_GLOBAL_MEM_CACHE_TYPE'>CL_DEVICE_GLOBAL_MEM_CACHE_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_GLOBAL_MEM_SIZE.html'
+                               title='ocl::cl_h::CL_DEVICE_GLOBAL_MEM_SIZE'>CL_DEVICE_GLOBAL_MEM_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_HALF_FP_CONFIG.html'
+                               title='ocl::cl_h::CL_DEVICE_HALF_FP_CONFIG'>CL_DEVICE_HALF_FP_CONFIG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_HOST_UNIFIED_MEMORY.html'
+                               title='ocl::cl_h::CL_DEVICE_HOST_UNIFIED_MEMORY'>CL_DEVICE_HOST_UNIFIED_MEMORY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_IMAGE2D_MAX_HEIGHT.html'
+                               title='ocl::cl_h::CL_DEVICE_IMAGE2D_MAX_HEIGHT'>CL_DEVICE_IMAGE2D_MAX_HEIGHT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_IMAGE2D_MAX_WIDTH.html'
+                               title='ocl::cl_h::CL_DEVICE_IMAGE2D_MAX_WIDTH'>CL_DEVICE_IMAGE2D_MAX_WIDTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_IMAGE3D_MAX_DEPTH.html'
+                               title='ocl::cl_h::CL_DEVICE_IMAGE3D_MAX_DEPTH'>CL_DEVICE_IMAGE3D_MAX_DEPTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_IMAGE3D_MAX_HEIGHT.html'
+                               title='ocl::cl_h::CL_DEVICE_IMAGE3D_MAX_HEIGHT'>CL_DEVICE_IMAGE3D_MAX_HEIGHT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_IMAGE3D_MAX_WIDTH.html'
+                               title='ocl::cl_h::CL_DEVICE_IMAGE3D_MAX_WIDTH'>CL_DEVICE_IMAGE3D_MAX_WIDTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_IMAGE_SUPPORT.html'
+                               title='ocl::cl_h::CL_DEVICE_IMAGE_SUPPORT'>CL_DEVICE_IMAGE_SUPPORT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_LOCAL_MEM_SIZE.html'
+                               title='ocl::cl_h::CL_DEVICE_LOCAL_MEM_SIZE'>CL_DEVICE_LOCAL_MEM_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_LOCAL_MEM_TYPE.html'
+                               title='ocl::cl_h::CL_DEVICE_LOCAL_MEM_TYPE'>CL_DEVICE_LOCAL_MEM_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_MAX_CLOCK_FREQUENCY.html'
+                               title='ocl::cl_h::CL_DEVICE_MAX_CLOCK_FREQUENCY'>CL_DEVICE_MAX_CLOCK_FREQUENCY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_MAX_COMPUTE_UNITS.html'
+                               title='ocl::cl_h::CL_DEVICE_MAX_COMPUTE_UNITS'>CL_DEVICE_MAX_COMPUTE_UNITS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_MAX_CONSTANT_ARGS.html'
+                               title='ocl::cl_h::CL_DEVICE_MAX_CONSTANT_ARGS'>CL_DEVICE_MAX_CONSTANT_ARGS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE.html'
+                               title='ocl::cl_h::CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE'>CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_MAX_MEM_ALLOC_SIZE.html'
+                               title='ocl::cl_h::CL_DEVICE_MAX_MEM_ALLOC_SIZE'>CL_DEVICE_MAX_MEM_ALLOC_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_MAX_PARAMETER_SIZE.html'
+                               title='ocl::cl_h::CL_DEVICE_MAX_PARAMETER_SIZE'>CL_DEVICE_MAX_PARAMETER_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_MAX_READ_IMAGE_ARGS.html'
+                               title='ocl::cl_h::CL_DEVICE_MAX_READ_IMAGE_ARGS'>CL_DEVICE_MAX_READ_IMAGE_ARGS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_MAX_SAMPLERS.html'
+                               title='ocl::cl_h::CL_DEVICE_MAX_SAMPLERS'>CL_DEVICE_MAX_SAMPLERS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_MAX_WORK_GROUP_SIZE.html'
+                               title='ocl::cl_h::CL_DEVICE_MAX_WORK_GROUP_SIZE'>CL_DEVICE_MAX_WORK_GROUP_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS.html'
+                               title='ocl::cl_h::CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS'>CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_MAX_WORK_ITEM_SIZES.html'
+                               title='ocl::cl_h::CL_DEVICE_MAX_WORK_ITEM_SIZES'>CL_DEVICE_MAX_WORK_ITEM_SIZES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_MAX_WRITE_IMAGE_ARGS.html'
+                               title='ocl::cl_h::CL_DEVICE_MAX_WRITE_IMAGE_ARGS'>CL_DEVICE_MAX_WRITE_IMAGE_ARGS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_MEM_BASE_ADDR_ALIGN.html'
+                               title='ocl::cl_h::CL_DEVICE_MEM_BASE_ADDR_ALIGN'>CL_DEVICE_MEM_BASE_ADDR_ALIGN</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE.html'
+                               title='ocl::cl_h::CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE'>CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_NAME.html'
+                               title='ocl::cl_h::CL_DEVICE_NAME'>CL_DEVICE_NAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR.html'
+                               title='ocl::cl_h::CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR'>CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE.html'
+                               title='ocl::cl_h::CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE'>CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT.html'
+                               title='ocl::cl_h::CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT'>CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF.html'
+                               title='ocl::cl_h::CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF'>CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_NATIVE_VECTOR_WIDTH_INT.html'
+                               title='ocl::cl_h::CL_DEVICE_NATIVE_VECTOR_WIDTH_INT'>CL_DEVICE_NATIVE_VECTOR_WIDTH_INT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG.html'
+                               title='ocl::cl_h::CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG'>CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT.html'
+                               title='ocl::cl_h::CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT'>CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_OPENCL_C_VERSION.html'
+                               title='ocl::cl_h::CL_DEVICE_OPENCL_C_VERSION'>CL_DEVICE_OPENCL_C_VERSION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_PLATFORM.html'
+                               title='ocl::cl_h::CL_DEVICE_PLATFORM'>CL_DEVICE_PLATFORM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR.html'
+                               title='ocl::cl_h::CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR'>CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE.html'
+                               title='ocl::cl_h::CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE'>CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT.html'
+                               title='ocl::cl_h::CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT'>CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF.html'
+                               title='ocl::cl_h::CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF'>CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT.html'
+                               title='ocl::cl_h::CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT'>CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG.html'
+                               title='ocl::cl_h::CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG'>CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT.html'
+                               title='ocl::cl_h::CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT'>CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_PROFILE.html'
+                               title='ocl::cl_h::CL_DEVICE_PROFILE'>CL_DEVICE_PROFILE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_PROFILING_TIMER_RESOLUTION.html'
+                               title='ocl::cl_h::CL_DEVICE_PROFILING_TIMER_RESOLUTION'>CL_DEVICE_PROFILING_TIMER_RESOLUTION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_QUEUE_PROPERTIES.html'
+                               title='ocl::cl_h::CL_DEVICE_QUEUE_PROPERTIES'>CL_DEVICE_QUEUE_PROPERTIES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_SINGLE_FP_CONFIG.html'
+                               title='ocl::cl_h::CL_DEVICE_SINGLE_FP_CONFIG'>CL_DEVICE_SINGLE_FP_CONFIG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_TYPE.html'
+                               title='ocl::cl_h::CL_DEVICE_TYPE'>CL_DEVICE_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_TYPE_ACCELERATOR.html'
+                               title='ocl::cl_h::CL_DEVICE_TYPE_ACCELERATOR'>CL_DEVICE_TYPE_ACCELERATOR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_TYPE_ALL.html'
+                               title='ocl::cl_h::CL_DEVICE_TYPE_ALL'>CL_DEVICE_TYPE_ALL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_TYPE_CPU.html'
+                               title='ocl::cl_h::CL_DEVICE_TYPE_CPU'>CL_DEVICE_TYPE_CPU</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_TYPE_DEFAULT.html'
+                               title='ocl::cl_h::CL_DEVICE_TYPE_DEFAULT'>CL_DEVICE_TYPE_DEFAULT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_TYPE_GPU.html'
+                               title='ocl::cl_h::CL_DEVICE_TYPE_GPU'>CL_DEVICE_TYPE_GPU</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_VENDOR.html'
+                               title='ocl::cl_h::CL_DEVICE_VENDOR'>CL_DEVICE_VENDOR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_VENDOR_ID.html'
+                               title='ocl::cl_h::CL_DEVICE_VENDOR_ID'>CL_DEVICE_VENDOR_ID</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DEVICE_VERSION.html'
+                               title='ocl::cl_h::CL_DEVICE_VERSION'>CL_DEVICE_VERSION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_DRIVER_VERSION.html'
+                               title='ocl::cl_h::CL_DRIVER_VERSION'>CL_DRIVER_VERSION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_EVENT_COMMAND_EXECUTION_STATUS.html'
+                               title='ocl::cl_h::CL_EVENT_COMMAND_EXECUTION_STATUS'>CL_EVENT_COMMAND_EXECUTION_STATUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_EVENT_COMMAND_QUEUE.html'
+                               title='ocl::cl_h::CL_EVENT_COMMAND_QUEUE'>CL_EVENT_COMMAND_QUEUE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_EVENT_COMMAND_TYPE.html'
+                               title='ocl::cl_h::CL_EVENT_COMMAND_TYPE'>CL_EVENT_COMMAND_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_EVENT_CONTEXT.html'
+                               title='ocl::cl_h::CL_EVENT_CONTEXT'>CL_EVENT_CONTEXT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_EVENT_REFERENCE_COUNT.html'
+                               title='ocl::cl_h::CL_EVENT_REFERENCE_COUNT'>CL_EVENT_REFERENCE_COUNT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_EXEC_KERNEL.html'
+                               title='ocl::cl_h::CL_EXEC_KERNEL'>CL_EXEC_KERNEL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_EXEC_NATIVE_KERNEL.html'
+                               title='ocl::cl_h::CL_EXEC_NATIVE_KERNEL'>CL_EXEC_NATIVE_KERNEL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_FALSE.html'
+                               title='ocl::cl_h::CL_FALSE'>CL_FALSE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_FILTER_LINEAR.html'
+                               title='ocl::cl_h::CL_FILTER_LINEAR'>CL_FILTER_LINEAR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_FILTER_NEAREST.html'
+                               title='ocl::cl_h::CL_FILTER_NEAREST'>CL_FILTER_NEAREST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_FLOAT.html'
+                               title='ocl::cl_h::CL_FLOAT'>CL_FLOAT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_FP_DENORM.html'
+                               title='ocl::cl_h::CL_FP_DENORM'>CL_FP_DENORM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_FP_FMA.html'
+                               title='ocl::cl_h::CL_FP_FMA'>CL_FP_FMA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_FP_INF_NAN.html'
+                               title='ocl::cl_h::CL_FP_INF_NAN'>CL_FP_INF_NAN</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_FP_ROUND_TO_INF.html'
+                               title='ocl::cl_h::CL_FP_ROUND_TO_INF'>CL_FP_ROUND_TO_INF</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_FP_ROUND_TO_NEAREST.html'
+                               title='ocl::cl_h::CL_FP_ROUND_TO_NEAREST'>CL_FP_ROUND_TO_NEAREST</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_FP_ROUND_TO_ZERO.html'
+                               title='ocl::cl_h::CL_FP_ROUND_TO_ZERO'>CL_FP_ROUND_TO_ZERO</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_FP_SOFT_FLOAT.html'
+                               title='ocl::cl_h::CL_FP_SOFT_FLOAT'>CL_FP_SOFT_FLOAT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_GLOBAL.html'
+                               title='ocl::cl_h::CL_GLOBAL'>CL_GLOBAL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_HALF_FLOAT.html'
+                               title='ocl::cl_h::CL_HALF_FLOAT'>CL_HALF_FLOAT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_IMAGE_DEPTH.html'
+                               title='ocl::cl_h::CL_IMAGE_DEPTH'>CL_IMAGE_DEPTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_IMAGE_ELEMENT_SIZE.html'
+                               title='ocl::cl_h::CL_IMAGE_ELEMENT_SIZE'>CL_IMAGE_ELEMENT_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_IMAGE_FORMAT.html'
+                               title='ocl::cl_h::CL_IMAGE_FORMAT'>CL_IMAGE_FORMAT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_IMAGE_HEIGHT.html'
+                               title='ocl::cl_h::CL_IMAGE_HEIGHT'>CL_IMAGE_HEIGHT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_IMAGE_ROW_PITCH.html'
+                               title='ocl::cl_h::CL_IMAGE_ROW_PITCH'>CL_IMAGE_ROW_PITCH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_IMAGE_SLICE_PITCH.html'
+                               title='ocl::cl_h::CL_IMAGE_SLICE_PITCH'>CL_IMAGE_SLICE_PITCH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_IMAGE_WIDTH.html'
+                               title='ocl::cl_h::CL_IMAGE_WIDTH'>CL_IMAGE_WIDTH</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_INTENSITY.html'
+                               title='ocl::cl_h::CL_INTENSITY'>CL_INTENSITY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_KERNEL_COMPILE_WORK_GROUP_SIZE.html'
+                               title='ocl::cl_h::CL_KERNEL_COMPILE_WORK_GROUP_SIZE'>CL_KERNEL_COMPILE_WORK_GROUP_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_KERNEL_CONTEXT.html'
+                               title='ocl::cl_h::CL_KERNEL_CONTEXT'>CL_KERNEL_CONTEXT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_KERNEL_FUNCTION_NAME.html'
+                               title='ocl::cl_h::CL_KERNEL_FUNCTION_NAME'>CL_KERNEL_FUNCTION_NAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_KERNEL_LOCAL_MEM_SIZE.html'
+                               title='ocl::cl_h::CL_KERNEL_LOCAL_MEM_SIZE'>CL_KERNEL_LOCAL_MEM_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_KERNEL_NUM_ARGS.html'
+                               title='ocl::cl_h::CL_KERNEL_NUM_ARGS'>CL_KERNEL_NUM_ARGS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE.html'
+                               title='ocl::cl_h::CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE'>CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_KERNEL_PRIVATE_MEM_SIZE.html'
+                               title='ocl::cl_h::CL_KERNEL_PRIVATE_MEM_SIZE'>CL_KERNEL_PRIVATE_MEM_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_KERNEL_PROGRAM.html'
+                               title='ocl::cl_h::CL_KERNEL_PROGRAM'>CL_KERNEL_PROGRAM</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_KERNEL_REFERENCE_COUNT.html'
+                               title='ocl::cl_h::CL_KERNEL_REFERENCE_COUNT'>CL_KERNEL_REFERENCE_COUNT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_KERNEL_WORK_GROUP_SIZE.html'
+                               title='ocl::cl_h::CL_KERNEL_WORK_GROUP_SIZE'>CL_KERNEL_WORK_GROUP_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_LOCAL.html'
+                               title='ocl::cl_h::CL_LOCAL'>CL_LOCAL</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_LUMINANCE.html'
+                               title='ocl::cl_h::CL_LUMINANCE'>CL_LUMINANCE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MAP_READ.html'
+                               title='ocl::cl_h::CL_MAP_READ'>CL_MAP_READ</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MAP_WRITE.html'
+                               title='ocl::cl_h::CL_MAP_WRITE'>CL_MAP_WRITE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_ALLOC_HOST_PTR.html'
+                               title='ocl::cl_h::CL_MEM_ALLOC_HOST_PTR'>CL_MEM_ALLOC_HOST_PTR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_ASSOCIATED_MEMOBJECT.html'
+                               title='ocl::cl_h::CL_MEM_ASSOCIATED_MEMOBJECT'>CL_MEM_ASSOCIATED_MEMOBJECT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_CONTEXT.html'
+                               title='ocl::cl_h::CL_MEM_CONTEXT'>CL_MEM_CONTEXT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_COPY_HOST_PTR.html'
+                               title='ocl::cl_h::CL_MEM_COPY_HOST_PTR'>CL_MEM_COPY_HOST_PTR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_FLAGS.html'
+                               title='ocl::cl_h::CL_MEM_FLAGS'>CL_MEM_FLAGS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_HOST_PTR.html'
+                               title='ocl::cl_h::CL_MEM_HOST_PTR'>CL_MEM_HOST_PTR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_MAP_COUNT.html'
+                               title='ocl::cl_h::CL_MEM_MAP_COUNT'>CL_MEM_MAP_COUNT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_OBJECT_BUFFER.html'
+                               title='ocl::cl_h::CL_MEM_OBJECT_BUFFER'>CL_MEM_OBJECT_BUFFER</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_OBJECT_IMAGE2D.html'
+                               title='ocl::cl_h::CL_MEM_OBJECT_IMAGE2D'>CL_MEM_OBJECT_IMAGE2D</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_OBJECT_IMAGE3D.html'
+                               title='ocl::cl_h::CL_MEM_OBJECT_IMAGE3D'>CL_MEM_OBJECT_IMAGE3D</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_OFFSET.html'
+                               title='ocl::cl_h::CL_MEM_OFFSET'>CL_MEM_OFFSET</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_READ_ONLY.html'
+                               title='ocl::cl_h::CL_MEM_READ_ONLY'>CL_MEM_READ_ONLY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_READ_WRITE.html'
+                               title='ocl::cl_h::CL_MEM_READ_WRITE'>CL_MEM_READ_WRITE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_REFERENCE_COUNT.html'
+                               title='ocl::cl_h::CL_MEM_REFERENCE_COUNT'>CL_MEM_REFERENCE_COUNT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_SIZE.html'
+                               title='ocl::cl_h::CL_MEM_SIZE'>CL_MEM_SIZE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_TYPE.html'
+                               title='ocl::cl_h::CL_MEM_TYPE'>CL_MEM_TYPE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_USE_HOST_PTR.html'
+                               title='ocl::cl_h::CL_MEM_USE_HOST_PTR'>CL_MEM_USE_HOST_PTR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_MEM_WRITE_ONLY.html'
+                               title='ocl::cl_h::CL_MEM_WRITE_ONLY'>CL_MEM_WRITE_ONLY</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_NONE.html'
+                               title='ocl::cl_h::CL_NONE'>CL_NONE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PLATFORM_EXTENSIONS.html'
+                               title='ocl::cl_h::CL_PLATFORM_EXTENSIONS'>CL_PLATFORM_EXTENSIONS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PLATFORM_NAME.html'
+                               title='ocl::cl_h::CL_PLATFORM_NAME'>CL_PLATFORM_NAME</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PLATFORM_PROFILE.html'
+                               title='ocl::cl_h::CL_PLATFORM_PROFILE'>CL_PLATFORM_PROFILE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PLATFORM_VENDOR.html'
+                               title='ocl::cl_h::CL_PLATFORM_VENDOR'>CL_PLATFORM_VENDOR</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PLATFORM_VERSION.html'
+                               title='ocl::cl_h::CL_PLATFORM_VERSION'>CL_PLATFORM_VERSION</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PROFILING_COMMAND_END.html'
+                               title='ocl::cl_h::CL_PROFILING_COMMAND_END'>CL_PROFILING_COMMAND_END</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PROFILING_COMMAND_QUEUED.html'
+                               title='ocl::cl_h::CL_PROFILING_COMMAND_QUEUED'>CL_PROFILING_COMMAND_QUEUED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PROFILING_COMMAND_START.html'
+                               title='ocl::cl_h::CL_PROFILING_COMMAND_START'>CL_PROFILING_COMMAND_START</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PROFILING_COMMAND_SUBMIT.html'
+                               title='ocl::cl_h::CL_PROFILING_COMMAND_SUBMIT'>CL_PROFILING_COMMAND_SUBMIT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PROGRAM_BINARIES.html'
+                               title='ocl::cl_h::CL_PROGRAM_BINARIES'>CL_PROGRAM_BINARIES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PROGRAM_BINARY_SIZES.html'
+                               title='ocl::cl_h::CL_PROGRAM_BINARY_SIZES'>CL_PROGRAM_BINARY_SIZES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PROGRAM_BUILD_LOG.html'
+                               title='ocl::cl_h::CL_PROGRAM_BUILD_LOG'>CL_PROGRAM_BUILD_LOG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PROGRAM_BUILD_OPTIONS.html'
+                               title='ocl::cl_h::CL_PROGRAM_BUILD_OPTIONS'>CL_PROGRAM_BUILD_OPTIONS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PROGRAM_BUILD_STATUS.html'
+                               title='ocl::cl_h::CL_PROGRAM_BUILD_STATUS'>CL_PROGRAM_BUILD_STATUS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PROGRAM_CONTEXT.html'
+                               title='ocl::cl_h::CL_PROGRAM_CONTEXT'>CL_PROGRAM_CONTEXT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PROGRAM_DEVICES.html'
+                               title='ocl::cl_h::CL_PROGRAM_DEVICES'>CL_PROGRAM_DEVICES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PROGRAM_NUM_DEVICES.html'
+                               title='ocl::cl_h::CL_PROGRAM_NUM_DEVICES'>CL_PROGRAM_NUM_DEVICES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PROGRAM_REFERENCE_COUNT.html'
+                               title='ocl::cl_h::CL_PROGRAM_REFERENCE_COUNT'>CL_PROGRAM_REFERENCE_COUNT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_PROGRAM_SOURCE.html'
+                               title='ocl::cl_h::CL_PROGRAM_SOURCE'>CL_PROGRAM_SOURCE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_QUEUED.html'
+                               title='ocl::cl_h::CL_QUEUED'>CL_QUEUED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_QUEUE_CONTEXT.html'
+                               title='ocl::cl_h::CL_QUEUE_CONTEXT'>CL_QUEUE_CONTEXT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_QUEUE_DEVICE.html'
+                               title='ocl::cl_h::CL_QUEUE_DEVICE'>CL_QUEUE_DEVICE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE.html'
+                               title='ocl::cl_h::CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE'>CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_QUEUE_PROFILING_ENABLE.html'
+                               title='ocl::cl_h::CL_QUEUE_PROFILING_ENABLE'>CL_QUEUE_PROFILING_ENABLE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_QUEUE_PROPERTIES.html'
+                               title='ocl::cl_h::CL_QUEUE_PROPERTIES'>CL_QUEUE_PROPERTIES</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_QUEUE_REFERENCE_COUNT.html'
+                               title='ocl::cl_h::CL_QUEUE_REFERENCE_COUNT'>CL_QUEUE_REFERENCE_COUNT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_R.html'
+                               title='ocl::cl_h::CL_R'>CL_R</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_RA.html'
+                               title='ocl::cl_h::CL_RA'>CL_RA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_READ_ONLY_CACHE.html'
+                               title='ocl::cl_h::CL_READ_ONLY_CACHE'>CL_READ_ONLY_CACHE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_READ_WRITE_CACHE.html'
+                               title='ocl::cl_h::CL_READ_WRITE_CACHE'>CL_READ_WRITE_CACHE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_RG.html'
+                               title='ocl::cl_h::CL_RG'>CL_RG</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_RGB.html'
+                               title='ocl::cl_h::CL_RGB'>CL_RGB</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_RGBA.html'
+                               title='ocl::cl_h::CL_RGBA'>CL_RGBA</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_RGBx.html'
+                               title='ocl::cl_h::CL_RGBx'>CL_RGBx</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_RGx.html'
+                               title='ocl::cl_h::CL_RGx'>CL_RGx</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_RUNNING.html'
+                               title='ocl::cl_h::CL_RUNNING'>CL_RUNNING</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_Rx.html'
+                               title='ocl::cl_h::CL_Rx'>CL_Rx</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_SAMPLER_ADDRESSING_MODE.html'
+                               title='ocl::cl_h::CL_SAMPLER_ADDRESSING_MODE'>CL_SAMPLER_ADDRESSING_MODE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_SAMPLER_CONTEXT.html'
+                               title='ocl::cl_h::CL_SAMPLER_CONTEXT'>CL_SAMPLER_CONTEXT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_SAMPLER_FILTER_MODE.html'
+                               title='ocl::cl_h::CL_SAMPLER_FILTER_MODE'>CL_SAMPLER_FILTER_MODE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_SAMPLER_NORMALIZED_COORDS.html'
+                               title='ocl::cl_h::CL_SAMPLER_NORMALIZED_COORDS'>CL_SAMPLER_NORMALIZED_COORDS</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_SAMPLER_REFERENCE_COUNT.html'
+                               title='ocl::cl_h::CL_SAMPLER_REFERENCE_COUNT'>CL_SAMPLER_REFERENCE_COUNT</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_SIGNED_INT16.html'
+                               title='ocl::cl_h::CL_SIGNED_INT16'>CL_SIGNED_INT16</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_SIGNED_INT32.html'
+                               title='ocl::cl_h::CL_SIGNED_INT32'>CL_SIGNED_INT32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_SIGNED_INT8.html'
+                               title='ocl::cl_h::CL_SIGNED_INT8'>CL_SIGNED_INT8</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_SNORM_INT16.html'
+                               title='ocl::cl_h::CL_SNORM_INT16'>CL_SNORM_INT16</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_SNORM_INT8.html'
+                               title='ocl::cl_h::CL_SNORM_INT8'>CL_SNORM_INT8</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_SUBMITTED.html'
+                               title='ocl::cl_h::CL_SUBMITTED'>CL_SUBMITTED</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_TRUE.html'
+                               title='ocl::cl_h::CL_TRUE'>CL_TRUE</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_UNORM_INT16.html'
+                               title='ocl::cl_h::CL_UNORM_INT16'>CL_UNORM_INT16</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_UNORM_INT8.html'
+                               title='ocl::cl_h::CL_UNORM_INT8'>CL_UNORM_INT8</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_UNORM_INT_101010.html'
+                               title='ocl::cl_h::CL_UNORM_INT_101010'>CL_UNORM_INT_101010</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_UNORM_SHORT_555.html'
+                               title='ocl::cl_h::CL_UNORM_SHORT_555'>CL_UNORM_SHORT_555</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_UNORM_SHORT_565.html'
+                               title='ocl::cl_h::CL_UNORM_SHORT_565'>CL_UNORM_SHORT_565</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_UNSIGNED_INT16.html'
+                               title='ocl::cl_h::CL_UNSIGNED_INT16'>CL_UNSIGNED_INT16</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_UNSIGNED_INT32.html'
+                               title='ocl::cl_h::CL_UNSIGNED_INT32'>CL_UNSIGNED_INT32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_UNSIGNED_INT8.html'
+                               title='ocl::cl_h::CL_UNSIGNED_INT8'>CL_UNSIGNED_INT8</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_VERSION_1_0.html'
+                               title='ocl::cl_h::CL_VERSION_1_0'>CL_VERSION_1_0</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_VERSION_1_1.html'
+                               title='ocl::cl_h::CL_VERSION_1_1'>CL_VERSION_1_1</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='static' href='static.CL_VERSION_1_2.html'
+                               title='ocl::cl_h::CL_VERSION_1_2'>CL_VERSION_1_2</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clBuildProgram.html'
+                               title='ocl::cl_h::clBuildProgram'>clBuildProgram</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clCreateBuffer.html'
+                               title='ocl::cl_h::clCreateBuffer'>clCreateBuffer</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clCreateCommandQueue.html'
+                               title='ocl::cl_h::clCreateCommandQueue'>clCreateCommandQueue</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clCreateContext.html'
+                               title='ocl::cl_h::clCreateContext'>clCreateContext</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clCreateContextFromType.html'
+                               title='ocl::cl_h::clCreateContextFromType'>clCreateContextFromType</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clCreateImage2D.html'
+                               title='ocl::cl_h::clCreateImage2D'>clCreateImage2D</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clCreateImage3D.html'
+                               title='ocl::cl_h::clCreateImage3D'>clCreateImage3D</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clCreateKernel.html'
+                               title='ocl::cl_h::clCreateKernel'>clCreateKernel</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clCreateKernelsInProgram.html'
+                               title='ocl::cl_h::clCreateKernelsInProgram'>clCreateKernelsInProgram</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clCreateProgramWithBinary.html'
+                               title='ocl::cl_h::clCreateProgramWithBinary'>clCreateProgramWithBinary</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clCreateProgramWithSource.html'
+                               title='ocl::cl_h::clCreateProgramWithSource'>clCreateProgramWithSource</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clCreateSampler.html'
+                               title='ocl::cl_h::clCreateSampler'>clCreateSampler</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clCreateSubBuffer.html'
+                               title='ocl::cl_h::clCreateSubBuffer'>clCreateSubBuffer</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clCreateUserEvent.html'
+                               title='ocl::cl_h::clCreateUserEvent'>clCreateUserEvent</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueBarrier.html'
+                               title='ocl::cl_h::clEnqueueBarrier'>clEnqueueBarrier</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueCopyBuffer.html'
+                               title='ocl::cl_h::clEnqueueCopyBuffer'>clEnqueueCopyBuffer</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueCopyBufferRect.html'
+                               title='ocl::cl_h::clEnqueueCopyBufferRect'>clEnqueueCopyBufferRect</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueCopyBufferToImage.html'
+                               title='ocl::cl_h::clEnqueueCopyBufferToImage'>clEnqueueCopyBufferToImage</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueCopyImage.html'
+                               title='ocl::cl_h::clEnqueueCopyImage'>clEnqueueCopyImage</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueCopyImageToBuffer.html'
+                               title='ocl::cl_h::clEnqueueCopyImageToBuffer'>clEnqueueCopyImageToBuffer</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueMapBuffer.html'
+                               title='ocl::cl_h::clEnqueueMapBuffer'>clEnqueueMapBuffer</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueMapImage.html'
+                               title='ocl::cl_h::clEnqueueMapImage'>clEnqueueMapImage</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueMarker.html'
+                               title='ocl::cl_h::clEnqueueMarker'>clEnqueueMarker</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueNDRangeKernel.html'
+                               title='ocl::cl_h::clEnqueueNDRangeKernel'>clEnqueueNDRangeKernel</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueNativeKernel.html'
+                               title='ocl::cl_h::clEnqueueNativeKernel'>clEnqueueNativeKernel</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueReadBuffer.html'
+                               title='ocl::cl_h::clEnqueueReadBuffer'>clEnqueueReadBuffer</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueReadBufferRect.html'
+                               title='ocl::cl_h::clEnqueueReadBufferRect'>clEnqueueReadBufferRect</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueReadImage.html'
+                               title='ocl::cl_h::clEnqueueReadImage'>clEnqueueReadImage</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueTask.html'
+                               title='ocl::cl_h::clEnqueueTask'>clEnqueueTask</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueUnmapMemObject.html'
+                               title='ocl::cl_h::clEnqueueUnmapMemObject'>clEnqueueUnmapMemObject</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueWaitForEvents.html'
+                               title='ocl::cl_h::clEnqueueWaitForEvents'>clEnqueueWaitForEvents</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueWriteBuffer.html'
+                               title='ocl::cl_h::clEnqueueWriteBuffer'>clEnqueueWriteBuffer</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueWriteBufferRect.html'
+                               title='ocl::cl_h::clEnqueueWriteBufferRect'>clEnqueueWriteBufferRect</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clEnqueueWriteImage.html'
+                               title='ocl::cl_h::clEnqueueWriteImage'>clEnqueueWriteImage</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clFinish.html'
+                               title='ocl::cl_h::clFinish'>clFinish</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clFlush.html'
+                               title='ocl::cl_h::clFlush'>clFlush</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetCommandQueueInfo.html'
+                               title='ocl::cl_h::clGetCommandQueueInfo'>clGetCommandQueueInfo</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetContextInfo.html'
+                               title='ocl::cl_h::clGetContextInfo'>clGetContextInfo</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetDeviceIDs.html'
+                               title='ocl::cl_h::clGetDeviceIDs'>clGetDeviceIDs</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetDeviceInfo.html'
+                               title='ocl::cl_h::clGetDeviceInfo'>clGetDeviceInfo</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetEventInfo.html'
+                               title='ocl::cl_h::clGetEventInfo'>clGetEventInfo</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetEventProfilingInfo.html'
+                               title='ocl::cl_h::clGetEventProfilingInfo'>clGetEventProfilingInfo</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetExtensionFunctionAddress.html'
+                               title='ocl::cl_h::clGetExtensionFunctionAddress'>clGetExtensionFunctionAddress</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetImageInfo.html'
+                               title='ocl::cl_h::clGetImageInfo'>clGetImageInfo</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetKernelInfo.html'
+                               title='ocl::cl_h::clGetKernelInfo'>clGetKernelInfo</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetKernelWorkGroupInfo.html'
+                               title='ocl::cl_h::clGetKernelWorkGroupInfo'>clGetKernelWorkGroupInfo</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetMemObjectInfo.html'
+                               title='ocl::cl_h::clGetMemObjectInfo'>clGetMemObjectInfo</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetPlatformIDs.html'
+                               title='ocl::cl_h::clGetPlatformIDs'>clGetPlatformIDs</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetPlatformInfo.html'
+                               title='ocl::cl_h::clGetPlatformInfo'>clGetPlatformInfo</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetProgramBuildInfo.html'
+                               title='ocl::cl_h::clGetProgramBuildInfo'>clGetProgramBuildInfo</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetProgramInfo.html'
+                               title='ocl::cl_h::clGetProgramInfo'>clGetProgramInfo</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetSamplerInfo.html'
+                               title='ocl::cl_h::clGetSamplerInfo'>clGetSamplerInfo</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clGetSupportedImageFormats.html'
+                               title='ocl::cl_h::clGetSupportedImageFormats'>clGetSupportedImageFormats</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clReleaseCommandQueue.html'
+                               title='ocl::cl_h::clReleaseCommandQueue'>clReleaseCommandQueue</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clReleaseContext.html'
+                               title='ocl::cl_h::clReleaseContext'>clReleaseContext</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clReleaseEvent.html'
+                               title='ocl::cl_h::clReleaseEvent'>clReleaseEvent</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clReleaseKernel.html'
+                               title='ocl::cl_h::clReleaseKernel'>clReleaseKernel</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clReleaseMemObject.html'
+                               title='ocl::cl_h::clReleaseMemObject'>clReleaseMemObject</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clReleaseProgram.html'
+                               title='ocl::cl_h::clReleaseProgram'>clReleaseProgram</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clReleaseSampler.html'
+                               title='ocl::cl_h::clReleaseSampler'>clReleaseSampler</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clRetainCommandQueue.html'
+                               title='ocl::cl_h::clRetainCommandQueue'>clRetainCommandQueue</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clRetainContext.html'
+                               title='ocl::cl_h::clRetainContext'>clRetainContext</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clRetainEvent.html'
+                               title='ocl::cl_h::clRetainEvent'>clRetainEvent</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clRetainKernel.html'
+                               title='ocl::cl_h::clRetainKernel'>clRetainKernel</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clRetainMemObject.html'
+                               title='ocl::cl_h::clRetainMemObject'>clRetainMemObject</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clRetainProgram.html'
+                               title='ocl::cl_h::clRetainProgram'>clRetainProgram</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clRetainSampler.html'
+                               title='ocl::cl_h::clRetainSampler'>clRetainSampler</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clSetEventCallback.html'
+                               title='ocl::cl_h::clSetEventCallback'>clSetEventCallback</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clSetKernelArg.html'
+                               title='ocl::cl_h::clSetKernelArg'>clSetKernelArg</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clSetMemObjectDestructorCallback.html'
+                               title='ocl::cl_h::clSetMemObjectDestructorCallback'>clSetMemObjectDestructorCallback</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clSetUserEventStatus.html'
+                               title='ocl::cl_h::clSetUserEventStatus'>clSetUserEventStatus</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clUnloadCompsaler.html'
+                               title='ocl::cl_h::clUnloadCompsaler'>clUnloadCompsaler</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.clWaitForEvents.html'
+                               title='ocl::cl_h::clWaitForEvents'>clWaitForEvents</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_addressing_mode.html'
+                               title='ocl::cl_h::cl_addressing_mode'>cl_addressing_mode</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_bitfield.html'
+                               title='ocl::cl_h::cl_bitfield'>cl_bitfield</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_bool.html'
+                               title='ocl::cl_h::cl_bool'>cl_bool</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_buffer_create_type.html'
+                               title='ocl::cl_h::cl_buffer_create_type'>cl_buffer_create_type</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_build_status.html'
+                               title='ocl::cl_h::cl_build_status'>cl_build_status</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_channel_order.html'
+                               title='ocl::cl_h::cl_channel_order'>cl_channel_order</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_channel_type.html'
+                               title='ocl::cl_h::cl_channel_type'>cl_channel_type</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_char.html'
+                               title='ocl::cl_h::cl_char'>cl_char</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_command_queue.html'
+                               title='ocl::cl_h::cl_command_queue'>cl_command_queue</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_command_queue_info.html'
+                               title='ocl::cl_h::cl_command_queue_info'>cl_command_queue_info</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_command_queue_properties.html'
+                               title='ocl::cl_h::cl_command_queue_properties'>cl_command_queue_properties</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_command_type.html'
+                               title='ocl::cl_h::cl_command_type'>cl_command_type</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_context.html'
+                               title='ocl::cl_h::cl_context'>cl_context</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_context_info.html'
+                               title='ocl::cl_h::cl_context_info'>cl_context_info</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_context_properties.html'
+                               title='ocl::cl_h::cl_context_properties'>cl_context_properties</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_device_exec_capabilities.html'
+                               title='ocl::cl_h::cl_device_exec_capabilities'>cl_device_exec_capabilities</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_device_fp_config.html'
+                               title='ocl::cl_h::cl_device_fp_config'>cl_device_fp_config</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_device_id.html'
+                               title='ocl::cl_h::cl_device_id'>cl_device_id</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_device_info.html'
+                               title='ocl::cl_h::cl_device_info'>cl_device_info</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_device_local_mem_type.html'
+                               title='ocl::cl_h::cl_device_local_mem_type'>cl_device_local_mem_type</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_device_mem_cache_type.html'
+                               title='ocl::cl_h::cl_device_mem_cache_type'>cl_device_mem_cache_type</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_device_type.html'
+                               title='ocl::cl_h::cl_device_type'>cl_device_type</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_double.html'
+                               title='ocl::cl_h::cl_double'>cl_double</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_event.html'
+                               title='ocl::cl_h::cl_event'>cl_event</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_event_info.html'
+                               title='ocl::cl_h::cl_event_info'>cl_event_info</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_filter_mode.html'
+                               title='ocl::cl_h::cl_filter_mode'>cl_filter_mode</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_float.html'
+                               title='ocl::cl_h::cl_float'>cl_float</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_half.html'
+                               title='ocl::cl_h::cl_half'>cl_half</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_image_info.html'
+                               title='ocl::cl_h::cl_image_info'>cl_image_info</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_int.html'
+                               title='ocl::cl_h::cl_int'>cl_int</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_kernel.html'
+                               title='ocl::cl_h::cl_kernel'>cl_kernel</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_kernel_info.html'
+                               title='ocl::cl_h::cl_kernel_info'>cl_kernel_info</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_kernel_work_group_info.html'
+                               title='ocl::cl_h::cl_kernel_work_group_info'>cl_kernel_work_group_info</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_long.html'
+                               title='ocl::cl_h::cl_long'>cl_long</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_map_flags.html'
+                               title='ocl::cl_h::cl_map_flags'>cl_map_flags</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_mem.html'
+                               title='ocl::cl_h::cl_mem'>cl_mem</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_mem_flags.html'
+                               title='ocl::cl_h::cl_mem_flags'>cl_mem_flags</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_mem_info.html'
+                               title='ocl::cl_h::cl_mem_info'>cl_mem_info</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_mem_object_type.html'
+                               title='ocl::cl_h::cl_mem_object_type'>cl_mem_object_type</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_platform_id.html'
+                               title='ocl::cl_h::cl_platform_id'>cl_platform_id</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_platform_info.html'
+                               title='ocl::cl_h::cl_platform_info'>cl_platform_info</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_profiling_info.html'
+                               title='ocl::cl_h::cl_profiling_info'>cl_profiling_info</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_program.html'
+                               title='ocl::cl_h::cl_program'>cl_program</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_program_build_info.html'
+                               title='ocl::cl_h::cl_program_build_info'>cl_program_build_info</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_program_info.html'
+                               title='ocl::cl_h::cl_program_info'>cl_program_info</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_sampler.html'
+                               title='ocl::cl_h::cl_sampler'>cl_sampler</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_sampler_info.html'
+                               title='ocl::cl_h::cl_sampler_info'>cl_sampler_info</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_short.html'
+                               title='ocl::cl_h::cl_short'>cl_short</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_uchar.html'
+                               title='ocl::cl_h::cl_uchar'>cl_uchar</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_uint.html'
+                               title='ocl::cl_h::cl_uint'>cl_uint</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_ulong.html'
+                               title='ocl::cl_h::cl_ulong'>cl_ulong</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.cl_ushort.html'
+                               title='ocl::cl_h::cl_ushort'>cl_ushort</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "ocl";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

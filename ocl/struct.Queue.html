@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Queue` struct in crate `ocl`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Queue">
+
+    <title>ocl::Queue - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>ocl</a></p><script>window.sidebarCurrent = {name: 'Queue', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>ocl</a>::<wbr><a class='struct' href=''>Queue</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-105' class='srclink' href='../src/ocl/queue.rs.html#11-15' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Queue {
+    // some fields omitted
+}</pre><div class='docblock'><p>An OpenCL command queue.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../ocl/struct.Queue.html' title='ocl::Queue'>Queue</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(context: &amp;<a class='struct' href='../ocl/struct.Context.html' title='ocl::Context'>Context</a>, device_idx: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>&gt;) -&gt; <a class='struct' href='../ocl/struct.Queue.html' title='ocl::Queue'>Queue</a></code></h4>
+<div class='docblock'><p>Returns a new Queue on the device specified by <code>device_idx</code>.</p>
+
+<p>&#39;device_idx<code>refers to a index in the list of devices generated when creating</code>context<code>. For a list of these devices, call</code>context.device_ids()<code>. If</code>device_idx<code>is out of range, it will automatically &#39;wrap around&#39; via a modulo operation and therefore is valid up to the limit of</code>usize<code>. See the documentation for</code>Context` for more information.</p>
+</div><h4 id='method.finish' class='method'><code>fn <a href='#method.finish' class='fnname'>finish</a>(&amp;self)</code></h4>
+<div class='docblock'><p>Blocks until all commands in this queue have completed.</p>
+</div><h4 id='method.obj' class='method'><code>fn <a href='#method.obj' class='fnname'>obj</a>(&amp;self) -&gt; <a class='type' href='../ocl/cl_h/type.cl_command_queue.html' title='ocl::cl_h::cl_command_queue'>cl_command_queue</a></code></h4>
+<div class='docblock'><p>Returns the OpenCL command queue object associated with this queue.</p>
+</div><h4 id='method.context_obj' class='method'><code>fn <a href='#method.context_obj' class='fnname'>context_obj</a>(&amp;self) -&gt; <a class='type' href='../ocl/cl_h/type.cl_context.html' title='ocl::cl_h::cl_context'>cl_context</a></code></h4>
+<div class='docblock'><p>Returns the OpenCL context object associated with this queue.</p>
+</div><h4 id='method.device_id' class='method'><code>fn <a href='#method.device_id' class='fnname'>device_id</a>(&amp;self) -&gt; <a class='type' href='../ocl/cl_h/type.cl_device_id.html' title='ocl::cl_h::cl_device_id'>cl_device_id</a></code></h4>
+<div class='docblock'><p>Returns the OpenCL device id associated with this queue.</p>
+
+<p>Not to be confused with the zero-indexed <code>device_idx</code> passed to <code>::new()</code>
+when creating this queue.</p>
+</div><h4 id='method.release' class='method'><code>fn <a href='#method.release' class='fnname'>release</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Decrements the reference counter of the associated OpenCL command queue object.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../ocl/struct.Queue.html' title='ocl::Queue'>Queue</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../ocl/struct.Queue.html' title='ocl::Queue'>Queue</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "ocl";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

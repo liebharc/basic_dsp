@@ -1,1 +1,1 @@
-initSidebarItems({"trait":[["Convolution","Provides a convolution operation for data vectors."]]});
+initSidebarItems({"trait":[["Convolution","Provides a convolution operation for data vectors."],["FrequencyMultiplication","Provides a frequency response multiplication operation for data vectors."],["VectorConvolution","Provides a convolution operation for data vectors with data vectors."]]});

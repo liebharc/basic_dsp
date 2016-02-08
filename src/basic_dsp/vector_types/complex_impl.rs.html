@@ -423,6 +423,8 @@
 <span id="380">380</span>
 <span id="381">381</span>
 <span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>multicore_support</span>::{<span class='ident'>Chunk</span>, <span class='ident'>Complexity</span>};
 <span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>definitions</span>::{
@@ -542,8 +544,10 @@
                 <span class='kw'>fn</span> <span class='ident'>complex_conj</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>
                 {
                     <span class='macro'>assert_complex</span><span class='macro'>!</span>(<span class='self'>self</span>);
+                    <span class='comment'>// We load the multiplicator with a complex number, however note that we use the regular</span>
+                    <span class='comment'>// reg multiplication which is correct </span>
                     <span class='kw'>let</span> <span class='ident'>multiplicator</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>::<span class='ident'>from_complex</span>(<span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='number'>1.0</span>, <span class='op'>-</span><span class='number'>1.0</span>));
-                    <span class='self'>self</span>.<span class='ident'>simd_complex_operation</span>(<span class='op'>|</span><span class='ident'>x</span>,<span class='ident'>y</span><span class='op'>|</span> <span class='ident'>x</span> <span class='op'>*</span> <span class='ident'>y</span>, <span class='op'>|</span><span class='ident'>x</span>,<span class='ident'>_arg</span><span class='op'>|</span> <span class='ident'>x</span> <span class='op'>*</span> <span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='number'>1.0</span>, <span class='op'>-</span><span class='number'>1.0</span>), <span class='ident'>multiplicator</span>, <span class='ident'>Complexity</span>::<span class='ident'>Small</span>)
+                    <span class='self'>self</span>.<span class='ident'>simd_complex_operation</span>(<span class='op'>|</span><span class='ident'>x</span>,<span class='ident'>y</span><span class='op'>|</span> <span class='ident'>x</span> <span class='op'>*</span> <span class='ident'>y</span>, <span class='op'>|</span><span class='ident'>x</span>,<span class='ident'>_arg</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>conj</span>(), <span class='ident'>multiplicator</span>, <span class='ident'>Complexity</span>::<span class='ident'>Small</span>)
                 }
                 
                 <span class='kw'>fn</span> <span class='ident'>to_real</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>

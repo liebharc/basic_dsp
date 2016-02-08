@@ -46,21 +46,20 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-2705' class='srclink' href='../src/basic_dsp/vector_types/time_freq_impl.rs.html#154-213' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-2746' class='srclink' href='../src/basic_dsp/vector_types/time_freq_impl.rs.html#132-197' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait FrequencyDomainOperations&lt;T&gt;: <a class='trait' href='../basic_dsp/trait.DataVector.html' title='basic_dsp::DataVector'>DataVector</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
     type ComplexTimePartner;
     fn <a href='#tymethod.plain_ifft' class='fnname'>plain_ifft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.FrequencyDomainOperations.html' title='basic_dsp::FrequencyDomainOperations'>ComplexTimePartner</a>&gt;;
-    fn <a href='#tymethod.mirror' class='fnname'>mirror</a>(self, even_odd: <a class='enum' href='../basic_dsp/enum.EvenOdd.html' title='basic_dsp::EvenOdd'>EvenOdd</a>) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;;
+    fn <a href='#tymethod.mirror' class='fnname'>mirror</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;;
     fn <a href='#tymethod.ifft' class='fnname'>ifft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.FrequencyDomainOperations.html' title='basic_dsp::FrequencyDomainOperations'>ComplexTimePartner</a>&gt;;
     fn <a href='#tymethod.windowed_ifft' class='fnname'>windowed_ifft</a>(self, window: &amp;<a class='trait' href='../basic_dsp/window_functions/trait.WindowFunction.html' title='basic_dsp::window_functions::WindowFunction'>WindowFunction</a>&lt;T&gt;) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.FrequencyDomainOperations.html' title='basic_dsp::FrequencyDomainOperations'>ComplexTimePartner</a>&gt;;
+    fn <a href='#tymethod.fft_shift' class='fnname'>fft_shift</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;;
+    fn <a href='#tymethod.ifft_shift' class='fnname'>ifft_shift</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;;
 }</pre><div class='docblock'><p>Defines all operations which are valid on <code>DataVectors</code> containing frequency domain data.</p>
 
 <h1 id='failures' class='section-header'><a href='#failures'>Failures</a></h1>
 <p>All operations in this trait fail with <code>VectorMustBeInFrquencyDomain</code> or <code>VectorMustBeComplex</code> 
 if the vector isn&#39;t in frequency domain and complex number space.</p>
-
-<h1 id='unstable' class='section-header'><a href='#unstable'>Unstable</a></h1>
-<p>A lot of details about FFTs and IFFTs aren&#39;t working out yet. Changes and updates are expected.</p>
 </div>
             <h2 id='associated-types'>Associated Types</h2>
             <div class='methods'>
@@ -83,22 +82,22 @@ vector.</p>
 <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>actual</span>.<span class='ident'>len</span>() {
     <span class='macro'>assert</span><span class='macro'>!</span>((<span class='ident'>actual</span>[<span class='ident'>i</span>] <span class='op'>-</span> <span class='ident'>expected</span>[<span class='ident'>i</span>]).<span class='ident'>abs</span>() <span class='op'>&lt;</span> <span class='number'>1e-4</span>);
 }</pre>
-</div><h3 id='tymethod.mirror' class='method stab '><code>fn <a href='#tymethod.mirror' class='fnname'>mirror</a>(self, even_odd: <a class='enum' href='../basic_dsp/enum.EvenOdd.html' title='basic_dsp::EvenOdd'>EvenOdd</a>) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>This function mirrors the spectrum vector to transform a symmetric spectrum
+</div><h3 id='tymethod.mirror' class='method stab '><code>fn <a href='#tymethod.mirror' class='fnname'>mirror</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>This function mirrors the spectrum vector to transform a symmetric spectrum
 into a full spectrum with the DC element at index 0 (no fft shift/swap halves).</p>
 
 <p>The argument indicates whether the resulting real vector should have <code>2*N</code> or <code>2*N-1</code> points.</p>
 
 <h1 id='example-1' class='section-header'><a href='#example-1'>Example</a></h1><pre class='rust rust-example-rendered'>
-<span class='kw'>use</span> <span class='ident'>basic_dsp</span>::{<span class='ident'>ComplexFreqVector32</span>, <span class='ident'>FrequencyDomainOperations</span>, <span class='ident'>DataVector</span>, <span class='ident'>EvenOdd</span>};
+<span class='kw'>use</span> <span class='ident'>basic_dsp</span>::{<span class='ident'>ComplexFreqVector32</span>, <span class='ident'>FrequencyDomainOperations</span>, <span class='ident'>DataVector</span>};
 <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='ident'>ComplexFreqVector32</span>::<span class='ident'>from_interleaved</span>(<span class='kw-2'>&amp;</span>[<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>, <span class='number'>5.0</span>, <span class='number'>6.0</span>]);
-<span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>mirror</span>(<span class='ident'>EvenOdd</span>::<span class='ident'>Odd</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
+<span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>mirror</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
 <span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>, <span class='number'>5.0</span>, <span class='number'>6.0</span>, <span class='number'>5.0</span>, <span class='op'>-</span><span class='number'>6.0</span>, <span class='number'>3.0</span>, <span class='op'>-</span><span class='number'>4.0</span>], <span class='ident'>result</span>.<span class='ident'>data</span>());</pre>
 </div><h3 id='tymethod.ifft' class='method stab '><code>fn <a href='#tymethod.ifft' class='fnname'>ifft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.FrequencyDomainOperations.html' title='basic_dsp::FrequencyDomainOperations'>ComplexTimePartner</a>&gt;</code></h3><div class='docblock'><p>Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
 into a time domain vector.</p>
 
 <h1 id='example-2' class='section-header'><a href='#example-2'>Example</a></h1><pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>basic_dsp</span>::{<span class='ident'>ComplexFreqVector32</span>, <span class='ident'>FrequencyDomainOperations</span>, <span class='ident'>DataVector</span>};
-<span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='ident'>ComplexFreqVector32</span>::<span class='ident'>from_interleaved</span>(<span class='kw-2'>&amp;</span>[<span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>3.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>]);
+<span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='ident'>ComplexFreqVector32</span>::<span class='ident'>from_interleaved</span>(<span class='kw-2'>&amp;</span>[<span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>3.0</span>, <span class='number'>0.0</span>]);
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>ifft</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
 <span class='kw'>let</span> <span class='ident'>actual</span> <span class='op'>=</span> <span class='ident'>result</span>.<span class='ident'>data</span>();
 <span class='kw'>let</span> <span class='ident'>expected</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span>[<span class='number'>1.0</span>, <span class='number'>0.0</span>, <span class='op'>-</span><span class='number'>0.5</span>, <span class='number'>0.8660254</span>, <span class='op'>-</span><span class='number'>0.5</span>, <span class='op'>-</span><span class='number'>0.8660254</span>];
@@ -108,6 +107,8 @@ into a time domain vector.</p>
 }</pre>
 </div><h3 id='tymethod.windowed_ifft' class='method stab '><code>fn <a href='#tymethod.windowed_ifft' class='fnname'>windowed_ifft</a>(self, window: &amp;<a class='trait' href='../basic_dsp/window_functions/trait.WindowFunction.html' title='basic_dsp::window_functions::WindowFunction'>WindowFunction</a>&lt;T&gt;) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.FrequencyDomainOperations.html' title='basic_dsp::FrequencyDomainOperations'>ComplexTimePartner</a>&gt;</code></h3><div class='docblock'><p>Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
 into a time domain vector and removes the FFT window.</p>
+</div><h3 id='tymethod.fft_shift' class='method stab '><code>fn <a href='#tymethod.fft_shift' class='fnname'>fft_shift</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Swaps vector halves after a Fourier Transformation.</p>
+</div><h3 id='tymethod.ifft_shift' class='method stab '><code>fn <a href='#tymethod.ifft_shift' class='fnname'>ifft_shift</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Swaps vector halves before an Inverse Fourier Transformation.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>

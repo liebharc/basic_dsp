@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["SimpleDims","A simple implementation of a type specifying the sizes of up to three dimensions. "]]});

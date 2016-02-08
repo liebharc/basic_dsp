@@ -46,9 +46,10 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-3738' class='srclink' href='../src/basic_dsp/vector_types/interpolation_impl.rs.html#17-21' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-3999' class='srclink' href='../src/basic_dsp/vector_types/interpolation_impl.rs.html#27-38' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Interpolation&lt;T&gt;: <a class='trait' href='../basic_dsp/trait.DataVector.html' title='basic_dsp::DataVector'>DataVector</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
-    fn <a href='#tymethod.interpolate' class='fnname'>interpolate</a>(self, function: &amp;<a class='trait' href='../basic_dsp/conv_types/trait.RealTimeConvFunction.html' title='basic_dsp::conv_types::RealTimeConvFunction'>RealTimeConvFunction</a>&lt;T&gt;, interpolation_factor: T, delay: T, len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;;
+    fn <a href='#tymethod.interpolatef' class='fnname'>interpolatef</a>(self, function: &amp;<a class='trait' href='../basic_dsp/conv_types/trait.RealImpulseResponse.html' title='basic_dsp::conv_types::RealImpulseResponse'>RealImpulseResponse</a>&lt;T&gt;, interpolation_factor: T, delay: T, conv_len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;;
+    fn <a href='#tymethod.interpolatei' class='fnname'>interpolatei</a>(self, function: &amp;<a class='trait' href='../basic_dsp/conv_types/trait.RealFrequencyResponse.html' title='basic_dsp::conv_types::RealFrequencyResponse'>RealFrequencyResponse</a>&lt;T&gt;, interpolation_factor: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;;
 }</pre><div class='docblock'><p>Provides a interpolation operation for data vectors.</p>
 
 <h1 id='unstable' class='section-header'><a href='#unstable'>Unstable</a></h1>
@@ -57,7 +58,12 @@ However the actual implementation is lacking tests.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.interpolate' class='method stab '><code>fn <a href='#tymethod.interpolate' class='fnname'>interpolate</a>(self, function: &amp;<a class='trait' href='../basic_dsp/conv_types/trait.RealTimeConvFunction.html' title='basic_dsp::conv_types::RealTimeConvFunction'>RealTimeConvFunction</a>&lt;T&gt;, interpolation_factor: T, delay: T, len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Interpolates <code>self</code> with the convolution function <code>function</code>.</p>
+        <h3 id='tymethod.interpolatef' class='method stab '><code>fn <a href='#tymethod.interpolatef' class='fnname'>interpolatef</a>(self, function: &amp;<a class='trait' href='../basic_dsp/conv_types/trait.RealImpulseResponse.html' title='basic_dsp::conv_types::RealImpulseResponse'>RealImpulseResponse</a>&lt;T&gt;, interpolation_factor: T, delay: T, conv_len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Interpolates <code>self</code> with the convolution function <code>function</code> by the real value <code>interpolation_factor</code>.
+Interpolation is done in in time domain and the argument <code>conv_len</code> can be used to balance accuracy 
+and performance. 
+A <code>delay</code> can be used to delay or phase shift the vector. The <code>delay</code> considers <code>self.delta()</code>.</p>
+</div><h3 id='tymethod.interpolatei' class='method stab '><code>fn <a href='#tymethod.interpolatei' class='fnname'>interpolatei</a>(self, function: &amp;<a class='trait' href='../basic_dsp/conv_types/trait.RealFrequencyResponse.html' title='basic_dsp::conv_types::RealFrequencyResponse'>RealFrequencyResponse</a>&lt;T&gt;, interpolation_factor: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Interpolates <code>self</code> with the convolution function <code>function</code> by the interger value <code>interpolation_factor</code>.
+Interpolation is done in in frequency domain.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>

@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-2695' class='srclink' href='../src/basic_dsp/vector_types/time_freq_impl.rs.html#101-146' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-2736' class='srclink' href='../src/basic_dsp/vector_types/time_freq_impl.rs.html#81-126' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait SymmetricTimeDomainOperations&lt;T&gt;: <a class='trait' href='../basic_dsp/trait.DataVector.html' title='basic_dsp::DataVector'>DataVector</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
     type FreqPartner;
     fn <a href='#tymethod.plain_sfft' class='fnname'>plain_sfft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>FreqPartner</a>&gt;;
@@ -55,10 +55,8 @@
 }</pre><div class='docblock'><p>Defines all operations which are valid on <code>DataVectors</code> containing real time domain data.</p>
 
 <h1 id='failures' class='section-header'><a href='#failures'>Failures</a></h1>
-<p>All operations in this trait fail with <code>VectorMustBeInTimeDomain</code> if the vector isn&#39;t in time domain.</p>
-
-<h1 id='unstable' class='section-header'><a href='#unstable'>Unstable</a></h1>
-<p>A lot of details about FFTs and IFFTs aren&#39;t working out yet. Changes and updates are expected.</p>
+<p>All operations in this trait fail with <code>VectorMustBeInTimeDomain</code> if the vector isn&#39;t in time domain or
+with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#39;t and odd number.</p>
 </div>
             <h2 id='associated-types'>Associated Types</h2>
             <div class='methods'>
@@ -80,7 +78,7 @@ vector.</p>
 <li><code>VectorMustBeInTimeDomain</code>: if <code>self</code> is in frequency domain.</li>
 </ol>
 
-<h1 id='unstable-1' class='section-header'><a href='#unstable-1'>Unstable</a></h1>
+<h1 id='unstable' class='section-header'><a href='#unstable'>Unstable</a></h1>
 <p>Symmetric IFFTs are unstable and may only work under certain conditions.</p>
 </div><h3 id='tymethod.sfft' class='method stab '><code>fn <a href='#tymethod.sfft' class='fnname'>sfft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>FreqPartner</a>&gt;</code></h3><div class='docblock'><p>Performs a Symmetric Fast Fourier Transformation under the assumption that <code>self</code>
 is symmetric around the center. This assumption
@@ -94,7 +92,7 @@ isn&#39;t verified and no error is raised if the vector isn&#39;t symmetric.</p>
 <li><code>VectorMustBeInTimeDomain</code>: if <code>self</code> is in frequency domain.</li>
 </ol>
 
-<h1 id='unstable-2' class='section-header'><a href='#unstable-2'>Unstable</a></h1>
+<h1 id='unstable-1' class='section-header'><a href='#unstable-1'>Unstable</a></h1>
 <p>Symmetric IFFTs are unstable and may only work under certain conditions.</p>
 </div><h3 id='tymethod.windowed_sfft' class='method stab '><code>fn <a href='#tymethod.windowed_sfft' class='fnname'>windowed_sfft</a>(self, window: &amp;<a class='trait' href='../basic_dsp/window_functions/trait.WindowFunction.html' title='basic_dsp::window_functions::WindowFunction'>WindowFunction</a>&lt;T&gt;) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>FreqPartner</a>&gt;</code></h3><div class='docblock'><p>Performs a Symmetric Fast Fourier Transformation under the assumption that <code>self</code>
 is symmetric around the center. This assumption
@@ -108,7 +106,7 @@ isn&#39;t verified and no error is raised if the vector isn&#39;t symmetric.</p>
 <li><code>VectorMustBeInTimeDomain</code>: if <code>self</code> is in frequency domain.</li>
 </ol>
 
-<h1 id='unstable-3' class='section-header'><a href='#unstable-3'>Unstable</a></h1>
+<h1 id='unstable-2' class='section-header'><a href='#unstable-2'>Unstable</a></h1>
 <p>Symmetric IFFTs are unstable and may only work under certain conditions.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>

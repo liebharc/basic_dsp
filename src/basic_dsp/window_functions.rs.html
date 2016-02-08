@@ -142,6 +142,17 @@
 <span id="99"> 99</span>
 <span id="100">100</span>
 <span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! This mod contains a definition for window functions and provides implementations for a </span>
 <span class='doccomment'>//! few standard windows. See the `WindowFunction` type for more information.</span>
@@ -158,6 +169,9 @@
 <span class='doccomment'>/// 3. All real return values are allowed</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> : <span class='ident'>Sync</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
+    <span class='doccomment'>/// Indicates whether this function is symmetric around 0 or not.</span>
+    <span class='doccomment'>/// Symmetry is defined as `self.window(x) == self.window(-x)`.</span>
+    <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span>;
     <span class='doccomment'>/// Calculates a point of the window function</span>
     <span class='kw'>fn</span> <span class='ident'>window</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>n</span>: <span class='ident'>usize</span>, <span class='ident'>length</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span>;
 }
@@ -166,6 +180,10 @@
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>TriangularWindow</span>;
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>TriangularWindow</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
+    <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='boolval'>true</span>
+    }
+    
     <span class='kw'>fn</span> <span class='ident'>window</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>n</span>: <span class='ident'>usize</span>, <span class='ident'>length</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
         <span class='kw'>let</span> <span class='ident'>one</span> <span class='op'>=</span> <span class='ident'>T</span>::<span class='ident'>one</span>();
         <span class='kw'>let</span> <span class='ident'>two</span> <span class='op'>=</span> <span class='ident'>T</span>::<span class='ident'>from</span>(<span class='number'>2.0</span>).<span class='ident'>unwrap</span>();
@@ -197,6 +215,10 @@
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>HammingWindow</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> 
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
+    <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='boolval'>true</span>
+    }
+    
     <span class='kw'>fn</span> <span class='ident'>window</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>n</span>: <span class='ident'>usize</span>, <span class='ident'>length</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
         <span class='kw'>let</span> <span class='ident'>one</span> <span class='op'>=</span> <span class='ident'>T</span>::<span class='ident'>one</span>();
         <span class='kw'>let</span> <span class='ident'>two</span> <span class='op'>=</span> <span class='ident'>T</span>::<span class='ident'>from</span>(<span class='number'>2.0</span>).<span class='ident'>unwrap</span>();

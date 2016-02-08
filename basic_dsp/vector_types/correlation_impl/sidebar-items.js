@@ -1,1 +1,1 @@
-initSidebarItems({"trait":[["CrossCorrelation","Cross-correlation of data vectors. See also https://en.wikipedia.org/wiki/Cross-correlation # Unstable This functionality has been recently added in order to find out if the definitions are consistent. However the actual implementation is lacking tests. # Failures VecResult may report the following `ErrorReason` members:"]]});
+initSidebarItems({"trait":[["CrossCorrelation","Cross-correlation of data vectors. See also https://en.wikipedia.org/wiki/Cross-correlation"]]});

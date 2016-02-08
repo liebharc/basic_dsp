@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-7152' class='srclink' href='../../src/basic_dsp/conv_types.rs.html#1-505' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-7829' class='srclink' href='../../src/basic_dsp/conv_types.rs.html#1-573' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Types around a convolution, see also <a href="https://en.wikipedia.org/wiki/Convolution">https://en.wikipedia.org/wiki/Convolution</a>.</p>
 
 <p>Convolutions in this library can be defined in time or frequency domain. In
@@ -75,8 +75,8 @@ This usually speeds up a convolution and sacrifies accuracy.</p>
                     </tr>
                 
                     <tr class=' module-item'>
-                        <td><a class='struct' href='struct.RaisedCosineFuncton.html'
-                               title='basic_dsp::conv_types::RaisedCosineFuncton'>RaisedCosineFuncton</a></td>
+                        <td><a class='struct' href='struct.RaisedCosineFunction.html'
+                               title='basic_dsp::conv_types::RaisedCosineFunction'>RaisedCosineFunction</a></td>
                         <td class='docblock short'>
                              <p>Raised cosine function according to <a href="https://en.wikipedia.org/wiki/Raised-cosine_filter">https://en.wikipedia.org/wiki/Raised-cosine_filter</a></p>
 
@@ -102,11 +102,20 @@ This usually speeds up a convolution and sacrifies accuracy.</p>
 
                         </td>
                     </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.SincFunction.html'
+                               title='basic_dsp::conv_types::SincFunction'>SincFunction</a></td>
+                        <td class='docblock short'>
+                             <p>Sinc function according to <a href="https://en.wikipedia.org/wiki/Sinc_function">https://en.wikipedia.org/wiki/Sinc_function</a></p>
+
+                        </td>
+                    </tr>
                 </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
 <table>
                     <tr class=' module-item'>
-                        <td><a class='trait' href='trait.ComplexFrequencyConvFunction.html'
-                               title='basic_dsp::conv_types::ComplexFrequencyConvFunction'>ComplexFrequencyConvFunction</a></td>
+                        <td><a class='trait' href='trait.ComplexFrequencyResponse.html'
+                               title='basic_dsp::conv_types::ComplexFrequencyResponse'>ComplexFrequencyResponse</a></td>
                         <td class='docblock short'>
                              <p>A convolution function in $domain_comment domain and complex number space</p>
 
@@ -114,8 +123,8 @@ This usually speeds up a convolution and sacrifies accuracy.</p>
                     </tr>
                 
                     <tr class=' module-item'>
-                        <td><a class='trait' href='trait.ComplexTimeConvFunction.html'
-                               title='basic_dsp::conv_types::ComplexTimeConvFunction'>ComplexTimeConvFunction</a></td>
+                        <td><a class='trait' href='trait.ComplexImpulseResponse.html'
+                               title='basic_dsp::conv_types::ComplexImpulseResponse'>ComplexImpulseResponse</a></td>
                         <td class='docblock short'>
                              <p>A convolution function in $domain_comment domain and complex number space</p>
 
@@ -123,8 +132,8 @@ This usually speeds up a convolution and sacrifies accuracy.</p>
                     </tr>
                 
                     <tr class=' module-item'>
-                        <td><a class='trait' href='trait.RealFrequencyConvFunction.html'
-                               title='basic_dsp::conv_types::RealFrequencyConvFunction'>RealFrequencyConvFunction</a></td>
+                        <td><a class='trait' href='trait.RealFrequencyResponse.html'
+                               title='basic_dsp::conv_types::RealFrequencyResponse'>RealFrequencyResponse</a></td>
                         <td class='docblock short'>
                              <p>A convolution function in $domain_comment domain and real number space</p>
 
@@ -132,8 +141,8 @@ This usually speeds up a convolution and sacrifies accuracy.</p>
                     </tr>
                 
                     <tr class=' module-item'>
-                        <td><a class='trait' href='trait.RealTimeConvFunction.html'
-                               title='basic_dsp::conv_types::RealTimeConvFunction'>RealTimeConvFunction</a></td>
+                        <td><a class='trait' href='trait.RealImpulseResponse.html'
+                               title='basic_dsp::conv_types::RealImpulseResponse'>RealImpulseResponse</a></td>
                         <td class='docblock short'>
                              <p>A convolution function in $domain_comment domain and real number space</p>
 

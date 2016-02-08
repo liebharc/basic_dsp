@@ -1113,6 +1113,36 @@
 <span id="1070">1070</span>
 <span id="1071">1071</span>
 <span id="1072">1072</span>
+<span id="1073">1073</span>
+<span id="1074">1074</span>
+<span id="1075">1075</span>
+<span id="1076">1076</span>
+<span id="1077">1077</span>
+<span id="1078">1078</span>
+<span id="1079">1079</span>
+<span id="1080">1080</span>
+<span id="1081">1081</span>
+<span id="1082">1082</span>
+<span id="1083">1083</span>
+<span id="1084">1084</span>
+<span id="1085">1085</span>
+<span id="1086">1086</span>
+<span id="1087">1087</span>
+<span id="1088">1088</span>
+<span id="1089">1089</span>
+<span id="1090">1090</span>
+<span id="1091">1091</span>
+<span id="1092">1092</span>
+<span id="1093">1093</span>
+<span id="1094">1094</span>
+<span id="1095">1095</span>
+<span id="1096">1096</span>
+<span id="1097">1097</span>
+<span id="1098">1098</span>
+<span id="1099">1099</span>
+<span id="1100">1100</span>
+<span id="1101">1101</span>
+<span id="1102">1102</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>result</span>;
 <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>complex</span>::<span class='ident'>Complex</span>;
@@ -1387,15 +1417,18 @@
 	<span class='doccomment'>/// # Example</span>
 	<span class='doccomment'>///</span>
 	<span class='doccomment'>/// ```</span>
-	<span class='doccomment'>/// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, GenericVectorOperations, DataVector};</span>
+	<span class='doccomment'>/// use basic_dsp::{PaddingOption, RealTimeVector32, ComplexTimeVector32, GenericVectorOperations, DataVector};</span>
 	<span class='doccomment'>/// let vector = RealTimeVector32::from_array(&amp;[1.0, 2.0]);</span>
-	<span class='doccomment'>/// let result = vector.zero_pad(4).expect(&quot;Ignoring error handling in examples&quot;);</span>
+	<span class='doccomment'>/// let result = vector.zero_pad(4, PaddingOption::End).expect(&quot;Ignoring error handling in examples&quot;);</span>
 	<span class='doccomment'>/// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());</span>
 	<span class='doccomment'>/// let vector = ComplexTimeVector32::from_interleaved(&amp;[1.0, 2.0]);</span>
-	<span class='doccomment'>/// let result = vector.zero_pad(2).expect(&quot;Ignoring error handling in examples&quot;);</span>
+	<span class='doccomment'>/// let result = vector.zero_pad(2, PaddingOption::End).expect(&quot;Ignoring error handling in examples&quot;);</span>
 	<span class='doccomment'>/// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());</span>
 	<span class='doccomment'>/// ```</span>
-	<span class='kw'>fn</span> <span class='ident'>zero_pad</span>(<span class='self'>self</span>, <span class='ident'>points</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>;
+	<span class='kw'>fn</span> <span class='ident'>zero_pad</span>(<span class='self'>self</span>, <span class='ident'>points</span>: <span class='ident'>usize</span>, <span class='ident'>option</span>: <span class='ident'>PaddingOption</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>;
+    
+    <span class='doccomment'>/// Reverses the data inside the vector.</span>
+    <span class='kw'>fn</span> <span class='ident'>reverse</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>;
 	
 	<span class='doccomment'>/// Ineterleaves zeros `factor - 1`times after every vector element, so that the resulting</span>
     <span class='doccomment'>/// vector will have a length of `self.len() * factor`.</span>
@@ -1646,8 +1679,8 @@
     <span class='doccomment'>/// let a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];</span>
 	<span class='doccomment'>/// let merge = RealTimeVector32::from_array(&amp;a);</span>
     <span class='doccomment'>/// let mut split = &amp;mut </span>
-    <span class='doccomment'>///     [Box::new(RealTimeVector32::real_empty()), </span>
-    <span class='doccomment'>///     Box::new(RealTimeVector32::real_empty())];</span>
+    <span class='doccomment'>///     [Box::new(RealTimeVector32::empty()), </span>
+    <span class='doccomment'>///     Box::new(RealTimeVector32::empty())];</span>
     <span class='doccomment'>/// merge.split_into(split).unwrap();</span>
     <span class='doccomment'>/// assert_eq!([1.0, 3.0, 5.0, 7.0, 9.0], split[0].data());</span>
 	<span class='doccomment'>/// ```</span>
@@ -1664,7 +1697,7 @@
 	<span class='doccomment'>///</span>
 	<span class='doccomment'>/// ```</span>
 	<span class='doccomment'>/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};</span>
-	<span class='doccomment'>/// let vector = RealTimeVector32::real_empty();</span>
+	<span class='doccomment'>/// let vector = RealTimeVector32::empty();</span>
     <span class='doccomment'>/// let parts = &amp;[</span>
     <span class='doccomment'>///     Box::new(RealTimeVector32::from_array(&amp;[1.0, 2.0])),</span>
     <span class='doccomment'>///     Box::new(RealTimeVector32::from_array(&amp;[1.0, 2.0]))];</span>
@@ -2158,6 +2191,18 @@
     <span class='doccomment'>/// operations documentation should have more information about the requirements.</span>
     <span class='doccomment'>/// Please open a defect if this isn&#39;t the case.</span>
     <span class='ident'>InvalidArgumentLength</span>,
+    
+    <span class='doccomment'>/// The operations is only valid if the data vector contains half of a symmetric spectrum.</span>
+    <span class='doccomment'>/// The symmetry definition follows soon however more important is that the element at 0 Hz</span>
+    <span class='doccomment'>/// which happens to be the first vector element must be real. This is actually violated </span>
+    <span class='doccomment'>/// if this error message appears and the rest of the definition is only listed here for</span>
+    <span class='doccomment'>/// completness.</span>
+    <span class='doccomment'>/// The required symmetry is that for every point `vector[x].conj() == vector[-x]`(pseudocode)</span>
+    <span class='doccomment'>/// where `x` is the x-axis position relativ to 0Hz and `conj` is the complex conjungate.</span>
+    <span class='ident'>VectorMustBeConjSymmetric</span>,
+    
+    <span class='doccomment'>/// `self.points()` must be an odd number.</span>
+    <span class='ident'>VectorMustHaveAnOddLength</span>,
 }
 
 <span class='doccomment'>/// Result contains on success the vector. On failure it contains an error reason and an vector with invalid data</span>
@@ -2185,6 +2230,21 @@
     <span class='kw'>pub</span> <span class='ident'>min_index</span>: <span class='ident'>usize</span>,
     <span class='kw'>pub</span> <span class='ident'>max</span>: <span class='ident'>T</span>,
     <span class='kw'>pub</span> <span class='ident'>max_index</span>: <span class='ident'>usize</span>
+}
+
+<span class='doccomment'>/// An option which defines how a vector should be padded</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>PaddingOption</span> {
+	<span class='doccomment'>/// Appends zeros to the end of the vector.</span>
+	<span class='ident'>End</span>,
+	<span class='doccomment'>/// Surrounds the vector with zeros at the beginning and at the end.</span>
+    <span class='ident'>Surround</span>,
+    
+    <span class='doccomment'>/// Inserts zeros in the center of the vector</span>
+    <span class='ident'>Center</span>,
 }</pre>
 </section>
     <section id='search' class="content hidden"></section>

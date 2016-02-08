@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `EventList` struct in crate `ocl`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, EventList">
+
+    <title>ocl::EventList - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>ocl</a></p><script>window.sidebarCurrent = {name: 'EventList', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>ocl</a>::<wbr><a class='struct' href=''>EventList</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-1869' class='srclink' href='../src/ocl/event_list.rs.html#11-13' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct EventList {
+    // some fields omitted
+}</pre><div class='docblock'><p>A list of OpenCL events which contain status information about the command that
+created them. Used to coordinate the activity of multiple commands.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../ocl/struct.EventList.html' title='ocl::EventList'>EventList</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../ocl/struct.EventList.html' title='ocl::EventList'>EventList</a></code></h4>
+<div class='docblock'><p>Returns a new, empty, <code>EventList</code>.</p>
+</div><h4 id='method.union' class='method'><code>fn <a href='#method.union' class='fnname'>union</a>(&amp;self, other_list: &amp;<a class='struct' href='../ocl/struct.EventList.html' title='ocl::EventList'>EventList</a>) -&gt; <a class='struct' href='../ocl/struct.EventList.html' title='ocl::EventList'>EventList</a></code></h4>
+<div class='docblock'><p>Merges the copied contents of this list and another into a new list and returns it.</p>
+</div><h4 id='method.allot' class='method'><code>fn <a href='#method.allot' class='fnname'>allot</a>(&amp;mut self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;mut [</a><a class='type' href='../ocl/cl_h/type.cl_event.html' title='ocl::cl_h::cl_event'>cl_event</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a></code></h4>
+<div class='docblock'><p>Appends a new null element to the end of the list and returns a mutable slice
+containing only that element.</p>
+</div><h4 id='method.events' class='method'><code>fn <a href='#method.events' class='fnname'>events</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='type' href='../ocl/cl_h/type.cl_event.html' title='ocl::cl_h::cl_event'>cl_event</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a></code></h4>
+<div class='docblock'><p>Returns an immutable slice to the events list.</p>
+</div><h4 id='method.as_ptr' class='method'><code>fn <a href='#method.as_ptr' class='fnname'>as_ptr</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const </a><a class='type' href='../ocl/cl_h/type.cl_event.html' title='ocl::cl_h::cl_event'>cl_event</a></code></h4>
+<div class='docblock'><p>Returns a const pointer to the list, useful for passing directly to the c ffi.</p>
+</div><h4 id='method.wait' class='method'><code>fn <a href='#method.wait' class='fnname'>wait</a>(&amp;self)</code></h4>
+<div class='docblock'><p>Waits for all events in list to complete.</p>
+</div><h4 id='method.set_callback' class='method'><code>unsafe fn <a href='#method.set_callback' class='fnname'>set_callback</a>&lt;T&gt;(&amp;self, callback_receiver:  extern "C" fn(<a class='type' href='../ocl/cl_h/type.cl_event.html' title='ocl::cl_h::cl_event'>cl_event</a>, <a class='type' href='../ocl/cl_h/type.cl_int.html' title='ocl::cl_h::cl_int'>cl_int</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut </a><a class='enum' href='../libc/enum.c_void.html' title='libc::c_void'>c_void</a>), user_data: &amp;mut T)</code></h4>
+<div class='docblock'><p>Sets a callback function, <code>callback_receiver</code>, to trigger upon completion of
+the <em>last event</em> added to the event list with an optional reference to user 
+data.</p>
+
+<h1 id='safety' class='section-header'><a href='#safety'>Safety</a></h1>
+<p><code>user_data</code> must be guaranteed to still exist if and when <code>callback_receiver</code> 
+is ever called.</p>
+</div><h4 id='method.count' class='method'><code>fn <a href='#method.count' class='fnname'>count</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h4>
+<div class='docblock'><p>Returns the number of events in the list.</p>
+</div><h4 id='method.clear' class='method'><code>fn <a href='#method.clear' class='fnname'>clear</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Clears this list regardless of whether or not its events have completed.</p>
+</div><h4 id='method.clear_completed' class='method'><code>fn <a href='#method.clear_completed' class='fnname'>clear_completed</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Clears each completed event from the list.</p>
+</div><h4 id='method.release_all' class='method'><code>fn <a href='#method.release_all' class='fnname'>release_all</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Releases all events in the list by decrementing their reference counts by one
+and empties the list.</p>
+
+<p>Events will continue to exist until their creating commands have completed 
+and no other commands are waiting for them to complete.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../ocl/struct.EventList.html' title='ocl::EventList'>EventList</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "ocl";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

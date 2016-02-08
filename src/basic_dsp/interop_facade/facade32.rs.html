@@ -631,6 +631,89 @@
 <span id="588">588</span>
 <span id="589">589</span>
 <span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
+<span id="664">664</span>
+<span id="665">665</span>
+<span id="666">666</span>
+<span id="667">667</span>
+<span id="668">668</span>
+<span id="669">669</span>
+<span id="670">670</span>
+<span id="671">671</span>
+<span id="672">672</span>
+<span id="673">673</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Functions for 32bit floating point number based vectors. Please refer to the other chapters of the help for documentation of the functions.</span>
 <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
@@ -646,6 +729,7 @@
 		<span class='ident'>DataVector32</span>, 
         <span class='ident'>Statistics</span>};
 <span class='kw'>use</span> <span class='ident'>window_functions</span>::<span class='ident'>WindowFunction</span>;
+<span class='kw'>use</span> <span class='ident'>conv_types</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>complex</span>::<span class='ident'>Complex32</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>os</span>::<span class='ident'>raw</span>::<span class='ident'>c_void</span>;
@@ -763,9 +847,16 @@
     <span class='ident'>vector</span>.<span class='ident'>complex_statistics</span>()
 }
 
+<span class='doccomment'>/// `padding_option` argument is translated to:</span>
+<span class='doccomment'>/// Returns the vector domain as integer:</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// 1. `0` for [`PaddingOption::End`](../../enum.PaddingOption.html)</span>
+<span class='doccomment'>/// 2. `1` for [`PaddingOption::Surround`](../../enum.PaddingOption.html)</span>
+<span class='doccomment'>/// 2. `2` for [`PaddingOption::Center`](../../enum.PaddingOption.html)</span>
 <span class='attribute'>#[<span class='ident'>no_mangle</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>zero_pad32</span>(<span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, <span class='ident'>points</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
-    <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>zero_pad</span>(<span class='ident'>points</span>))
+<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>zero_pad32</span>(<span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, <span class='ident'>points</span>: <span class='ident'>usize</span>, <span class='ident'>padding_option</span>: <span class='ident'>i32</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
+    <span class='kw'>let</span> <span class='ident'>padding_option</span> <span class='op'>=</span> <span class='ident'>translate_to_padding_option</span>(<span class='ident'>padding_option</span>);
+    <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>zero_pad</span>(<span class='ident'>points</span>, <span class='ident'>padding_option</span>))
 }
 
 <span class='attribute'>#[<span class='ident'>no_mangle</span>]</span>
@@ -1095,28 +1186,19 @@
     <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>ifft</span>())
 }
 
-<span class='doccomment'>/// `even_odd` is translated according to:</span>
-<span class='doccomment'>/// </span>
-<span class='doccomment'>/// 1. `0` to [`EvenOdd::Even`](../../enum.EvenOdd.html) </span>
-<span class='doccomment'>/// 2. `1` to [`EvenOdd::Odd`](../../enum.EvenOdd.html)</span>
 <span class='attribute'>#[<span class='ident'>no_mangle</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>plain_sifft32</span>(<span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, <span class='ident'>even_odd</span>: <span class='ident'>i32</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>even_odd</span> <span class='op'>=</span> <span class='ident'>translate_to_even_odd</span>(<span class='ident'>even_odd</span>);
-    <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>plain_sifft</span>(<span class='ident'>even_odd</span>))
+<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>plain_sifft32</span>(<span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
+    <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>plain_sifft</span>())
 }
 
-<span class='doccomment'>/// See [`plain_sifft32`](fn.plain_sifft32.html) for a description of the `even_odd` parameter.</span>
 <span class='attribute'>#[<span class='ident'>no_mangle</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>sifft32</span>(<span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, <span class='ident'>even_odd</span>: <span class='ident'>i32</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>even_odd</span> <span class='op'>=</span> <span class='ident'>translate_to_even_odd</span>(<span class='ident'>even_odd</span>);
-    <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>sifft</span>(<span class='ident'>even_odd</span>))
+<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>sifft32</span>(<span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
+    <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>sifft</span>())
 }
 
-<span class='doccomment'>/// See [`plain_sifft32`](fn.plain_sifft32.html) for a description of the `even_odd` parameter.</span>
 <span class='attribute'>#[<span class='ident'>no_mangle</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>mirror32</span>(<span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, <span class='ident'>even_odd</span>: <span class='ident'>i32</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>even_odd</span> <span class='op'>=</span> <span class='ident'>translate_to_even_odd</span>(<span class='ident'>even_odd</span>);
-    <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>mirror</span>(<span class='ident'>even_odd</span>))
+<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>mirror32</span>(<span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
+    <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>mirror</span>())
 }
 
 <span class='doccomment'>/// `window` argument is translated to:</span>
@@ -1150,74 +1232,158 @@
     <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>windowed_ifft</span>(<span class='ident'>window</span>.<span class='ident'>as_ref</span>()))
 }
 
-<span class='doccomment'>/// See [`plain_sifft32`](fn.plain_sifft32.html) for a description of the `even_odd` parameter.</span>
 <span class='doccomment'>/// See [`apply_window32`](fn.apply_window32.html) for a description of the `window` parameter.</span>
 <span class='attribute'>#[<span class='ident'>no_mangle</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>windowed_sifft32</span>(<span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, <span class='ident'>even_odd</span>: <span class='ident'>i32</span>, <span class='ident'>window</span>: <span class='ident'>i32</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>even_odd</span> <span class='op'>=</span> <span class='ident'>translate_to_even_odd</span>(<span class='ident'>even_odd</span>);
+<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>windowed_sifft32</span>(<span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, <span class='ident'>window</span>: <span class='ident'>i32</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>translate_to_window_function</span>(<span class='ident'>window</span>);
-    <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>windowed_sifft</span>(<span class='ident'>even_odd</span>, <span class='ident'>window</span>.<span class='ident'>as_ref</span>()))
+    <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>windowed_sifft</span>(<span class='ident'>window</span>.<span class='ident'>as_ref</span>()))
 }
 
-<span class='kw'>struct</span> <span class='ident'>ForeignWindowFunction</span> {
-    <span class='ident'>window_function</span>: <span class='kw'>extern</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span>,
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ForeignWindowFunction</span> {
+    <span class='kw'>pub</span> <span class='ident'>window_function</span>: <span class='kw'>extern</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span>,
     <span class='comment'>// Actual data type is a const* c_void, but Rust doesn&#39;t allow that becaues it&#39;s usafe so we store</span>
     <span class='comment'>// it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.</span>
-    <span class='ident'>window_data</span>: <span class='ident'>usize</span> 
+    <span class='kw'>pub</span> <span class='ident'>window_data</span>: <span class='ident'>usize</span>,
+    
+    <span class='kw'>pub</span> <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>
 }
 
 <span class='kw'>impl</span> <span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>ForeignWindowFunction</span> {
+    <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>is_symmetric</span>
+    }
+
     <span class='kw'>fn</span> <span class='ident'>window</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>idx</span>: <span class='ident'>usize</span>, <span class='ident'>points</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span> {
         <span class='kw'>let</span> <span class='ident'>fun</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>window_function</span>;
         <span class='kw'>unsafe</span> { <span class='ident'>fun</span>(<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>.<span class='ident'>window_data</span>), <span class='ident'>idx</span>, <span class='ident'>points</span>) }
     }
 }
 
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ForeignRealConvolutionFunction</span> {
+    <span class='kw'>pub</span> <span class='ident'>conv_function</span>: <span class='kw'>extern</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>f32</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span>,
+    <span class='comment'>// Actual data type is a const* c_void, but Rust doesn&#39;t allow that becaues it&#39;s usafe so we store</span>
+    <span class='comment'>// it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.</span>
+    <span class='kw'>pub</span> <span class='ident'>conv_data</span>: <span class='ident'>usize</span>,
+    
+    <span class='kw'>pub</span> <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>
+}
+
+<span class='kw'>impl</span> <span class='ident'>RealImpulseResponse</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>ForeignRealConvolutionFunction</span> {
+    <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>is_symmetric</span>
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>f32</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span> {
+        <span class='kw'>let</span> <span class='ident'>fun</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>conv_function</span>;
+        <span class='kw'>unsafe</span> { <span class='ident'>fun</span>(<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>.<span class='ident'>conv_data</span>), <span class='ident'>x</span>) }
+    }
+}
+
+<span class='kw'>impl</span> <span class='ident'>RealFrequencyResponse</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>ForeignRealConvolutionFunction</span> {
+    <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>is_symmetric</span>
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>f32</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span> {
+        <span class='kw'>let</span> <span class='ident'>fun</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>conv_function</span>;
+        <span class='kw'>unsafe</span> { <span class='ident'>fun</span>(<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>.<span class='ident'>conv_data</span>), <span class='ident'>x</span>) }
+    }
+}
+
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ForeignComplexConvolutionFunction</span> {
+    <span class='kw'>pub</span> <span class='ident'>conv_function</span>: <span class='kw'>extern</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>f32</span>) <span class='op'>-&gt;</span> <span class='ident'>Complex32</span>,
+    <span class='comment'>// Actual data type is a const* c_void, but Rust doesn&#39;t allow that becaues it&#39;s usafe so we store</span>
+    <span class='comment'>// it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.</span>
+    <span class='kw'>pub</span> <span class='ident'>conv_data</span>: <span class='ident'>usize</span>,
+    
+    <span class='kw'>pub</span> <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>
+}
+
+<span class='kw'>impl</span> <span class='ident'>ComplexImpulseResponse</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>ForeignComplexConvolutionFunction</span> {
+    <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>is_symmetric</span>
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>f32</span>) <span class='op'>-&gt;</span> <span class='ident'>Complex32</span> {
+        <span class='kw'>let</span> <span class='ident'>fun</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>conv_function</span>;
+        <span class='kw'>unsafe</span> { <span class='ident'>fun</span>(<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>.<span class='ident'>conv_data</span>), <span class='ident'>x</span>) }
+    }
+}
+
+<span class='kw'>impl</span> <span class='ident'>ComplexFrequencyResponse</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>ForeignComplexConvolutionFunction</span> {
+    <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>is_symmetric</span>
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>f32</span>) <span class='op'>-&gt;</span> <span class='ident'>Complex32</span> {
+        <span class='kw'>let</span> <span class='ident'>fun</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>conv_function</span>;
+        <span class='kw'>unsafe</span> { <span class='ident'>fun</span>(<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>.<span class='ident'>conv_data</span>), <span class='ident'>x</span>) }
+    }
+}
+
 <span class='doccomment'>/// Creates a window from the function `window` and the void pointer `window_data`. The `window_data` pointer is passed to the `window`</span>
 <span class='doccomment'>/// function at every call and can be used to store parameters.</span>
 <span class='attribute'>#[<span class='ident'>no_mangle</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>apply_custom_window32</span>(<span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, <span class='ident'>window</span>: <span class='kw'>extern</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span>, <span class='ident'>window_data</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
+<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>apply_custom_window32</span>(
+    <span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, 
+    <span class='ident'>window</span>: <span class='kw'>extern</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span>, 
+    <span class='ident'>window_data</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>,
+    <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
     <span class='kw'>unsafe</span> {
-        <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>ForeignWindowFunction</span> { <span class='ident'>window_function</span>: <span class='ident'>window</span>, <span class='ident'>window_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>window_data</span>) };
+        <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>ForeignWindowFunction</span> { <span class='ident'>window_function</span>: <span class='ident'>window</span>, <span class='ident'>window_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>window_data</span>), <span class='ident'>is_symmetric</span>: <span class='ident'>is_symmetric</span> };
         <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>apply_window</span>(<span class='kw-2'>&amp;</span><span class='ident'>window</span>))
     }
 }
 
 <span class='doccomment'>/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.</span>
 <span class='attribute'>#[<span class='ident'>no_mangle</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>unapply_custom_window32</span>(<span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, <span class='ident'>window</span>: <span class='kw'>extern</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span>, <span class='ident'>window_data</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
+<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>unapply_custom_window32</span>(
+    <span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, 
+    <span class='ident'>window</span>: <span class='kw'>extern</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span>, 
+    <span class='ident'>window_data</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>,
+    <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
     <span class='kw'>unsafe</span> {
-        <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>ForeignWindowFunction</span> { <span class='ident'>window_function</span>: <span class='ident'>window</span>, <span class='ident'>window_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>window_data</span>) };
+        <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>ForeignWindowFunction</span> { <span class='ident'>window_function</span>: <span class='ident'>window</span>, <span class='ident'>window_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>window_data</span>), <span class='ident'>is_symmetric</span>: <span class='ident'>is_symmetric</span> };
         <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>unapply_window</span>(<span class='kw-2'>&amp;</span><span class='ident'>window</span>))
     }
 }
 
 <span class='doccomment'>/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.</span>
 <span class='attribute'>#[<span class='ident'>no_mangle</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>windowed_custom_fft32</span>(<span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, <span class='ident'>window</span>: <span class='kw'>extern</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span>, <span class='ident'>window_data</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
+<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>windowed_custom_fft32</span>(
+    <span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, 
+    <span class='ident'>window</span>: <span class='kw'>extern</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span>, 
+    <span class='ident'>window_data</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>,
+    <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
     <span class='kw'>unsafe</span> {
-        <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>ForeignWindowFunction</span> { <span class='ident'>window_function</span>: <span class='ident'>window</span>, <span class='ident'>window_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>window_data</span>) };
+        <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>ForeignWindowFunction</span> { <span class='ident'>window_function</span>: <span class='ident'>window</span>, <span class='ident'>window_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>window_data</span>), <span class='ident'>is_symmetric</span>: <span class='ident'>is_symmetric</span> };
         <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>windowed_fft</span>(<span class='kw-2'>&amp;</span><span class='ident'>window</span>))
     }
 }
 
 <span class='doccomment'>/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.</span>
 <span class='attribute'>#[<span class='ident'>no_mangle</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>windowed_custom_ifft32</span>(<span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, <span class='ident'>window</span>: <span class='kw'>extern</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span>, <span class='ident'>window_data</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
+<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>windowed_custom_ifft32</span>(
+    <span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, 
+    <span class='ident'>window</span>: <span class='kw'>extern</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span>, 
+    <span class='ident'>window_data</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>,
+    <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
     <span class='kw'>unsafe</span> {
-        <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>ForeignWindowFunction</span> { <span class='ident'>window_function</span>: <span class='ident'>window</span>, <span class='ident'>window_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>window_data</span>) };
+        <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>ForeignWindowFunction</span> { <span class='ident'>window_function</span>: <span class='ident'>window</span>, <span class='ident'>window_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>window_data</span>), <span class='ident'>is_symmetric</span>: <span class='ident'>is_symmetric</span> };
         <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>windowed_ifft</span>(<span class='kw-2'>&amp;</span><span class='ident'>window</span>))
     }
 }
 
 <span class='doccomment'>/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.</span>
-<span class='doccomment'>/// See [`plain_sifft32`](fn.plain_sifft32.html) for a description of the `even_odd` parameter.</span>
 <span class='attribute'>#[<span class='ident'>no_mangle</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>windowed_custom_sifft32</span>(<span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, <span class='ident'>even_odd</span>: <span class='ident'>i32</span>, <span class='ident'>window</span>: <span class='kw'>extern</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span>, <span class='ident'>window_data</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
+<span class='kw'>pub</span> <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>windowed_custom_sifft32</span>(
+    <span class='ident'>vector</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span>, 
+    <span class='ident'>window</span>: <span class='kw'>extern</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>f32</span>, 
+    <span class='ident'>window_data</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>,
+    <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='ident'>VectorResult</span><span class='op'>&lt;</span><span class='ident'>DataVector32</span><span class='op'>&gt;</span> {
     <span class='kw'>unsafe</span> {
-        <span class='kw'>let</span> <span class='ident'>even_odd</span> <span class='op'>=</span> <span class='ident'>translate_to_even_odd</span>(<span class='ident'>even_odd</span>);
-        <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>ForeignWindowFunction</span> { <span class='ident'>window_function</span>: <span class='ident'>window</span>, <span class='ident'>window_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>window_data</span>) };
-        <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>windowed_sifft</span>(<span class='ident'>even_odd</span>, <span class='kw-2'>&amp;</span><span class='ident'>window</span>))
+        <span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>ForeignWindowFunction</span> { <span class='ident'>window_function</span>: <span class='ident'>window</span>, <span class='ident'>window_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>window_data</span>), <span class='ident'>is_symmetric</span>: <span class='ident'>is_symmetric</span> };
+        <span class='macro'>convert_vec</span><span class='macro'>!</span>(<span class='ident'>vector</span>.<span class='ident'>windowed_sifft</span>(<span class='kw-2'>&amp;</span><span class='ident'>window</span>))
     }
 }
 

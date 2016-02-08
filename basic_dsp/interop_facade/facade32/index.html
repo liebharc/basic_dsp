@@ -46,9 +46,34 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-7691' class='srclink' href='../../../src/basic_dsp/interop_facade/facade32.rs.html#1-588' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-8442' class='srclink' href='../../../src/basic_dsp/interop_facade/facade32.rs.html#1-671' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Functions for 32bit floating point number based vectors. Please refer to the other chapters of the help for documentation of the functions.</p>
-</div><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.ForeignComplexConvolutionFunction.html'
+                               title='basic_dsp::interop_facade::facade32::ForeignComplexConvolutionFunction'>ForeignComplexConvolutionFunction</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.ForeignRealConvolutionFunction.html'
+                               title='basic_dsp::interop_facade::facade32::ForeignRealConvolutionFunction'>ForeignRealConvolutionFunction</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.ForeignWindowFunction.html'
+                               title='basic_dsp::interop_facade::facade32::ForeignWindowFunction'>ForeignWindowFunction</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
                     <tr class=' module-item'>
                         <td><a class='fn' href='fn.abs32.html'
@@ -450,8 +475,7 @@ function at every call and can be used to store parameters.</p>
                         <td><a class='fn' href='fn.mirror32.html'
                                title='basic_dsp::interop_facade::facade32::mirror32'>mirror32</a></td>
                         <td class='docblock short'>
-                             <p>See <a href="fn.plain_sifft32.html"><code>plain_sifft32</code></a> for a description of the <code>even_odd</code> parameter.</p>
-
+                             
                         </td>
                     </tr>
                 
@@ -523,8 +547,7 @@ function at every call and can be used to store parameters.</p>
                         <td><a class='fn' href='fn.plain_sifft32.html'
                                title='basic_dsp::interop_facade::facade32::plain_sifft32'>plain_sifft32</a></td>
                         <td class='docblock short'>
-                             <p><code>even_odd</code> is translated according to:</p>
-
+                             
                         </td>
                     </tr>
                 
@@ -612,8 +635,7 @@ function at every call and can be used to store parameters.</p>
                         <td><a class='fn' href='fn.sifft32.html'
                                title='basic_dsp::interop_facade::facade32::sifft32'>sifft32</a></td>
                         <td class='docblock short'>
-                             <p>See <a href="fn.plain_sifft32.html"><code>plain_sifft32</code></a> for a description of the <code>even_odd</code> parameter.</p>
-
+                             
                         </td>
                     </tr>
                 
@@ -769,8 +791,7 @@ function at every call and can be used to store parameters.</p>
                         <td><a class='fn' href='fn.windowed_custom_sifft32.html'
                                title='basic_dsp::interop_facade::facade32::windowed_custom_sifft32'>windowed_custom_sifft32</a></td>
                         <td class='docblock short'>
-                             <p>See <a href="fn.apply_custom_window32.html"><code>apply_custom_window32</code></a> for a description of the <code>window</code> and <code>window_data</code> parameter.
-See <a href="fn.plain_sifft32.html"><code>plain_sifft32</code></a> for a description of the <code>even_odd</code> parameter.</p>
+                             <p>See <a href="fn.apply_custom_window32.html"><code>apply_custom_window32</code></a> for a description of the <code>window</code> and <code>window_data</code> parameter.</p>
 
                         </td>
                     </tr>
@@ -797,8 +818,7 @@ See <a href="fn.plain_sifft32.html"><code>plain_sifft32</code></a> for a descrip
                         <td><a class='fn' href='fn.windowed_sifft32.html'
                                title='basic_dsp::interop_facade::facade32::windowed_sifft32'>windowed_sifft32</a></td>
                         <td class='docblock short'>
-                             <p>See <a href="fn.plain_sifft32.html"><code>plain_sifft32</code></a> for a description of the <code>even_odd</code> parameter.
-See <a href="fn.apply_window32.html"><code>apply_window32</code></a> for a description of the <code>window</code> parameter.</p>
+                             <p>See <a href="fn.apply_window32.html"><code>apply_window32</code></a> for a description of the <code>window</code> parameter.</p>
 
                         </td>
                     </tr>
@@ -823,7 +843,9 @@ See <a href="fn.apply_window32.html"><code>apply_window32</code></a> for a descr
                         <td><a class='fn' href='fn.zero_pad32.html'
                                title='basic_dsp::interop_facade::facade32::zero_pad32'>zero_pad32</a></td>
                         <td class='docblock short'>
-                             
+                             <p><code>padding_option</code> argument is translated to:
+Returns the vector domain as integer:</p>
+
                         </td>
                     </tr>
                 </table></section>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `ocl` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, ocl">
+
+    <title>ocl - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'ocl', ty: 'mod', relpath: '../'};</script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>ocl</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-0' class='srclink' href='../src/ocl/lib.rs.html#1-611' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Rust implementation of OpenCL.</p>
+
+<p>This documentation is very much a work in progress and is roughly 60% complete.
+Please help by filing an <a href="https://github.com/cogciprocate/ocl/issues">issue</a> about 
+unclear and/or incomplete documentation and it will be addressed (hopefully) 
+quickly.</p>
+
+<h2 id='links' class='section-header'><a href='#links'>Links</a></h2>
+<p><strong>GitHub:</strong> <a href="https://github.com/cogciprocate/ocl">https://github.com/cogciprocate/ocl</a></p>
+
+<p><strong>crates.io:</strong> <a href="https://crates.io/crates/ocl"><img src="http://meritbadge.herokuapp.com/ocl" alt=""></a></p>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+<table><tr><td><code>pub use self::cl_h::{<a class='type' href='../ocl/cl_h/type.cl_float.html' title='ocl::cl_h::cl_float'>cl_float</a>, <a class='type' href='../ocl/cl_h/type.cl_char.html' title='ocl::cl_h::cl_char'>cl_char</a>, <a class='type' href='../ocl/cl_h/type.cl_uchar.html' title='ocl::cl_h::cl_uchar'>cl_uchar</a>, <a class='type' href='../ocl/cl_h/type.cl_short.html' title='ocl::cl_h::cl_short'>cl_short</a>, <a class='type' href='../ocl/cl_h/type.cl_ushort.html' title='ocl::cl_h::cl_ushort'>cl_ushort</a>, <a class='type' href='../ocl/cl_h/type.cl_int.html' title='ocl::cl_h::cl_int'>cl_int</a>, <a class='type' href='../ocl/cl_h/type.cl_uint.html' title='ocl::cl_h::cl_uint'>cl_uint</a>, <a class='type' href='../ocl/cl_h/type.cl_long.html' title='ocl::cl_h::cl_long'>cl_long</a>, <a class='type' href='../ocl/cl_h/type.cl_bitfield.html' title='ocl::cl_h::cl_bitfield'>cl_bitfield</a>, <a class='enum' href='../ocl/cl_h/enum.CLStatus.html' title='ocl::cl_h::CLStatus'>CLStatus</a>, CL_DEVICE_TYPE_DEFAULT, CL_DEVICE_TYPE_CPU, CL_DEVICE_TYPE_GPU, CL_DEVICE_TYPE_ACCELERATOR, CL_DEVICE_TYPE_ALL};</code></td></tr><tr><td><code>pub use self::<a class='mod' href='../ocl/formatting/index.html' title='ocl::formatting'>formatting</a> as fmt;</code></td></tr><tr><td><code>pub use self::<a class='mod'
+                                            href='./buffer/index.html'>buffer</a>::<a class='struct' href='../ocl/buffer/struct.Buffer.html' title='ocl::buffer::Buffer'>Buffer</a>;</code></td></tr><tr><td><code>pub use self::<a class='mod'
+                                            href='./buffer/index.html'>buffer</a>::<a class='mod'
+                                            href='./buffer/tests/index.html'>tests</a>::<a class='trait' href='../ocl/buffer/tests/trait.BufferTest.html' title='ocl::buffer::tests::BufferTest'>BufferTest</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='buffer/index.html'
+                               title='ocl::buffer'>buffer</a></td>
+                        <td class='docblock short'>
+                             <p>Interfaces to an OpenCL buffer.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='cl_h/index.html'
+                               title='ocl::cl_h'>cl_h</a></td>
+                        <td class='docblock short'>
+                             <p>Rust definitions for the OpenCL ABI</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='formatting/index.html'
+                               title='ocl::formatting'>formatting</a></td>
+                        <td class='docblock short'>
+                             <p>Tools for rendering objects to the screen or as text.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.BuildConfig.html'
+                               title='ocl::BuildConfig'>BuildConfig</a></td>
+                        <td class='docblock short'>
+                             <p>Compilation options for building an OpenCL program. Used when creating
+a new <code>Program</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Context.html'
+                               title='ocl::Context'>Context</a></td>
+                        <td class='docblock short'>
+                             <p>An OpenCL context for a particular platform and set of device types.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.EventList.html'
+                               title='ocl::EventList'>EventList</a></td>
+                        <td class='docblock short'>
+                             <p>A list of OpenCL events which contain status information about the command that
+created them. Used to coordinate the activity of multiple commands.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Kernel.html'
+                               title='ocl::Kernel'>Kernel</a></td>
+                        <td class='docblock short'>
+                             <p>An OpenCL kernel.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.OclError.html'
+                               title='ocl::OclError'>OclError</a></td>
+                        <td class='docblock short'>
+                             <p>Error type containing a string.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.ProQue.html'
+                               title='ocl::ProQue'>ProQue</a></td>
+                        <td class='docblock short'>
+                             <p>A convenience wrapper chimera of <code>Program</code> and <code>Queue</code>.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Program.html'
+                               title='ocl::Program'>Program</a></td>
+                        <td class='docblock short'>
+                             <p>An OpenCL program, sometimes referred to as a build.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Queue.html'
+                               title='ocl::Queue'>Queue</a></td>
+                        <td class='docblock short'>
+                             <p>An OpenCL command queue.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.BuildOpt.html'
+                               title='ocl::BuildOpt'>BuildOpt</a></td>
+                        <td class='docblock short'>
+                             <p>A build option intended for use either by the compiler as a command line switch
+or for inclusion at the top of the final build source code.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.SimpleDims.html'
+                               title='ocl::SimpleDims'>SimpleDims</a></td>
+                        <td class='docblock short'>
+                             <p>A simple implementation of a type specifying the sizes of up to three
+dimensions. </p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.WorkSize.html'
+                               title='ocl::WorkSize'>WorkSize</a></td>
+                        <td class='docblock short'>
+                             <p>Defines the amount of work to be done by a kernel for each of up to three
+dimensions.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.BufferDims.html'
+                               title='ocl::BufferDims'>BufferDims</a></td>
+                        <td class='docblock short'>
+                             <p>A type which has dimensional properties allowing it to be used to define the size
+of buffers and work sizes.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.OclNum.html'
+                               title='ocl::OclNum'>OclNum</a></td>
+                        <td class='docblock short'>
+                             <p>A number compatible with OpenCL.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.padded_len.html'
+                               title='ocl::padded_len'>padded_len</a></td>
+                        <td class='docblock short'>
+                             <p>Pads <code>len</code> to make it evenly divisible by <code>incr</code>.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='type' href='type.OclResult.html'
+                               title='ocl::OclResult'>OclResult</a></td>
+                        <td class='docblock short'>
+                             <p><code>OclError</code> result type.</p>
+
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "ocl";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

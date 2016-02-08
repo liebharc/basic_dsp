@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["WorkSize","Defines the amount of work to be done by a kernel for each of up to three dimensions."]]});
