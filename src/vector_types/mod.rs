@@ -123,7 +123,7 @@ use std::ops::Mul;
 use std::fmt::{Display, Debug};
 
 fn round_len(len: usize) -> usize {
-    ((len + Reg64::len() - 1) / Reg64::len()) * Reg64::len()
+    ((len + Reg32::len() - 1) / Reg32::len()) * Reg32::len()
 }
     
 define_vector_struct!(struct GenericDataVector);

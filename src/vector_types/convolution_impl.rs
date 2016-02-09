@@ -241,7 +241,7 @@ macro_rules! add_conv_impl{
                     // For the SIMD operation we need to clone `vector` several
                     // times and this only is worthwhile if `vector.len() << self.len()`
                     // where `<<` means "significant smaller".
-                    if self.len() > 1000 && self.len() % $reg::len() == 0 && vector.len() <= 202 {
+                    if self.len() > 1000 && vector.len() <= 202 {
                         self.convolve_vector_simd(vector)
                     }
                     else {
@@ -363,7 +363,7 @@ macro_rules! add_conv_impl{
                             shifts.push(simd);
                         }
 
-                        let scalar_len = conv_len;
+                        let scalar_len = conv_len + 1; // + 1 due to rounding of odd numbers
                         let conv_len = conv_len as isize;
                         let mut i = 0;
                         for num in &mut dest[0..scalar_len] {
@@ -371,7 +371,9 @@ macro_rules! add_conv_impl{
                             i += 1;
                         }
 
-                        let simd = $reg::array_to_regs(&self.data[0..len]);
+                        let len_rounded = (len / $reg::len()) * $reg::len(); // The exact value is of no importance here
+                        print!("{}, {}\n", len, len_rounded); 
+                        let simd = $reg::array_to_regs(&self.data[0..len_rounded]);
                         for num in &mut dest[scalar_len .. points - scalar_len] {
                             let end = (i + conv_len) as usize;
                             let shift = end % shifts.len();
