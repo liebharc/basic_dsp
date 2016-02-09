@@ -121,6 +121,10 @@ use std::ops::{Index, IndexMut, Range, RangeTo, RangeFrom, RangeFull};
 use num::traits::Zero;
 use std::ops::Mul;
 use std::fmt::{Display, Debug};
+
+fn round_len(len: usize) -> usize {
+    ((len + Reg64::len() - 1) / Reg64::len()) * Reg64::len()
+}
     
 define_vector_struct!(struct GenericDataVector);
 add_basic_private_impl!(f32, Reg32; f64, Reg64);

@@ -299,7 +299,7 @@ macro_rules! add_time_freq_impl {
                     if self.is_complex {
                         {
                             let points = self.points();
-                            let rbw = (points as $data_type)  * self.delta;
+                            let rbw = (points as $data_type) * self.delta;
                             self.delta = rbw;
                             let mut fft = FFT::new(points, false);
                             let signal = &self.data;

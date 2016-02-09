@@ -323,21 +323,28 @@ macro_rules! define_real_basic_struct_members {
 			
 			/// Same as `from_array_with_delta` but also allows to set multicore options.
             pub fn from_array_with_delta_and_options(data: &[T], delta: T, options: MultiCoreSettings) -> Self {
-				let data_length = data.len();
+				let data_length = round_len(data.len());
                 let temp_length = 
                     if options.early_temp_allocation {
                         data_length
                     } else {
                         0
                     };
+                let mut rounded_copy: Vec<T> = Vec::with_capacity(data_length);
+                if data.len() > 0 {
+                    unsafe {
+                        rounded_copy.set_len(data.len());
+                        ptr::copy(data.as_ptr(), rounded_copy.as_mut_ptr(), data.len());
+                    }
+                }
 				$name 
 				{ 
-				  data: data.to_vec(), 
+				  data: rounded_copy, 
 				  temp: vec![T::zero(); temp_length],
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: false,
-				  valid_len: data_length,
+				  valid_len: data.len(),
                   multicore_settings: options
 				}
 			}
@@ -377,15 +384,16 @@ macro_rules! define_real_basic_struct_members {
 			
 			/// Same as `from_constant_with_delta` but also allows to set multicore options.
             pub fn from_constant_with_delta_and_options(constant: T, length: usize, delta: T, options: MultiCoreSettings) -> Self {
+                let data_length = round_len(length);
                 let temp_length = 
                     if options.early_temp_allocation {
-                        length
+                        data_length
                     } else {
                         0
                     };
 				$name 
 				{ 
-				  data: vec![constant; length],
+				  data: vec![constant; data_length],
 				  temp: vec![T::zero(); temp_length],
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
@@ -479,21 +487,28 @@ macro_rules! define_complex_basic_struct_members {
 			
 			/// Same as `from_interleaved_with_delta` but also allows to set multicore options.
             pub fn from_interleaved_with_delta_and_options(data: &[T], delta: T, options: MultiCoreSettings) -> Self {
-				let data_length = data.len();
+				let data_length = round_len(data.len());
                 let temp_length = 
                     if options.early_temp_allocation {
                         data_length
                     } else {
                         0
                     };
+                let mut rounded_copy: Vec<T> = Vec::with_capacity(data_length);
+                if data.len() > 0 {
+                    unsafe {
+                        rounded_copy.set_len(data.len());
+                        ptr::copy(data.as_ptr(), rounded_copy.as_mut_ptr(), data.len());
+                    }
+                }
 				$name 
 				{ 
-				  data: data.to_vec(), 
+				  data: rounded_copy, 
 				  temp: vec![T::zero(); temp_length],
 				  delta: delta,
 				  domain: DataVectorDomain::$domain,
 				  is_complex: true,
-				  valid_len: data_length,
+				  valid_len: data.len(),
                   multicore_settings: options
 				}
 			}
@@ -533,14 +548,14 @@ macro_rules! define_complex_basic_struct_members {
 			
 			/// Same as `complex_from_constant_with_delta` but also allows to set multicore options.
             pub fn from_constant_with_delta_and_options(constant: Complex<T>, length: usize, delta: T, options: MultiCoreSettings) -> Self {
+                let rounded_len = round_len(2 * length);
                 let temp_length = 
                     if options.early_temp_allocation {
-                        2 * length
+                        rounded_len
                     } else {
                         0
                     };
-                assert!(length < 1000000);
-                let mut data = vec![T::zero(); 2 * length];
+                let mut data = vec![T::zero(); rounded_len];
                 let mut i = 0;
                 for num in &mut data {
                     *num = if i % 2 == 0 { constant.re } else { constant.im };
@@ -571,7 +586,8 @@ macro_rules! define_complex_basic_struct_members {
 					panic!("Input lengths differ: real has {} elements and imag has {} elements", real.len(), imag.len());
 				}
 				
-				let mut data = Vec::with_capacity(real.len() + imag.len());
+                let rounded_len = round_len(real.len() + imag.len());
+				let mut data = Vec::with_capacity(rounded_len);
 				for i in 0 .. real.len() {
 					data.push(real[i]);
 					data.push(imag[i]);
@@ -609,7 +625,8 @@ macro_rules! define_complex_basic_struct_members {
 					panic!("Input lengths differ: magnitude has {} elements and phase has {} elements", magnitude.len(), phase.len());
 				}
 				
-				let mut data = Vec::with_capacity(magnitude.len() + phase.len());
+                let rounded_len = round_len(magnitude.len() + phase.len());
+				let mut data = Vec::with_capacity(rounded_len);
 				for i in 0 .. magnitude.len() {
 					let complex = Complex::from_polar(&magnitude[i], &phase[i]);
 					data.push(complex.re);
@@ -727,8 +744,8 @@ macro_rules! define_complex_basic_struct_members {
             pub fn from_complex_with_delta(complex: &[Complex<T>], delta: T) -> Self {
                 Self::from_complex_with_delta_and_options(complex, delta, MultiCoreSettings::default())
             }
-            /// Creates a complex `DataVector` from an array of complex numbers.
             
+            /// Creates a complex `DataVector` from an array of complex numbers.
             pub fn from_complex_with_delta_and_options(complex: &[Complex<T>], delta: T, options: MultiCoreSettings) -> Self {
                 use std::slice;
                 let data = unsafe {

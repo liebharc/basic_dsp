@@ -30,7 +30,7 @@ macro_rules! add_basic_private_impl {
                     {
                         let data_length = self.len();
                         let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;           
+                        let vectorization_length = data_length - scalar_length;
                         let mut array = &mut self.data;
                         Chunk::execute_partial(
                             complexity, &self.multicore_settings,
