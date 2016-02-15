@@ -191,10 +191,11 @@ impl<T> GenericDataVector<T>
 		if length > self.allocated_len()
 		{
 			let data = &mut self.data;
-			data.resize(length, T::zero());
+            let alloc_len = round_len(length);
+			data.resize(alloc_len, T::zero());
             if self.multicore_settings.early_temp_allocation {
                 let temp = &mut self.temp;
-                temp.resize(length, T::zero());
+                temp.resize(alloc_len, T::zero());
             }
 		}
 		
@@ -269,12 +270,20 @@ impl GenericDataVector<f32> {
 		}
 		
 		let data_length = self.len();
-		let scalar_length = data_length % Reg32::len();
-		let vectorization_length = data_length - scalar_length;
-		if scalar_length > 0
-		{
-			panic!("perform_operations requires right now that the array length is dividable by 4")
-		}
+        let alloc_len = self.allocated_len();
+        let rounded_len = round_len(data_length);
+        let vectorization_length = 
+            if rounded_len <= alloc_len {
+                rounded_len
+            }
+            else {
+                let scalar_length = data_length % Reg32::len();
+                if scalar_length > 0
+                {
+                    panic!("perform_operations requires right now that the array length is dividable by 4")
+                }
+                data_length - scalar_length
+            };
 		
 		{
 			let mut array = &mut self.data;
