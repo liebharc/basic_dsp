@@ -38,8 +38,6 @@ pub struct MultiCoreSettings {
 impl MultiCoreSettings {
     /// Creates multi core settings with default values
     pub fn default() -> MultiCoreSettings {
-        // Initialize the pool
-        Chunk::init_static_pool();
         // Half because we assume hyper threading and that we will keep a core so busy
         // that hyper threading isn't of any use
         Self::new(num_cpus::get() / 2, true)
@@ -47,8 +45,6 @@ impl MultiCoreSettings {
     
     /// Creates multi core settings with the given values.
     pub fn new(core_limit: usize, early_temp_allocation: bool) -> MultiCoreSettings {
-        // Initialize the pool
-        Chunk::init_static_pool();
         MultiCoreSettings {
             core_limit: if core_limit >= 1 { core_limit } else { 1 }, 
             early_temp_allocation: early_temp_allocation
@@ -69,34 +65,15 @@ impl Clone for MultiCoreSettings {
     }
 }
 
-static mut POOL: *mut Pool = 0 as *mut Pool;
-
 /// Contains logic which helps to perform an operation
 /// in parallel by dividing an array into chunks.
 pub struct Chunk;
 impl Chunk
-{
-    fn init_static_pool() {
-        use std::mem::transmute;
-		use std::sync::{Once, ONCE_INIT};
-		unsafe
-		{
-			static mut ONCE: Once = ONCE_INIT;
-			ONCE.call_once(||
-			{
-				POOL = transmute::<Box<Pool>, *mut Pool>(Box::new(Pool::new(num_cpus::get())));
-			});
-		}
-    }
-    
+{  
     /// Gives access to the thread pool singleton
-	fn get_static_pool() -> &'static mut Pool
+	fn get_pool() -> Pool
 	{
-		unsafe
-		{
-			let mut static_pool = &mut *POOL;
-			static_pool
-		}
+		Pool::new(num_cpus::get())
 	}
 
     /// Figures out how many threads make use for the an operation with the given complexity on 
@@ -216,7 +193,7 @@ impl Chunk
 		if number_of_chunks > 1
 		{
 			let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
-			let ref mut pool = Chunk::get_static_pool();
+			let ref mut pool = Chunk::get_pool();
 			pool.for_(chunks, |chunk|
 				{
 					function(chunk, arguments);
@@ -245,7 +222,7 @@ impl Chunk
 		{
 			let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
 			let ranges = Chunk::partition_in_ranges(array_length, step_size, chunks.len());
-			let ref mut pool = Chunk::get_static_pool();
+			let ref mut pool = Chunk::get_pool();
 			pool.for_(chunks.zip(ranges), |chunk|
 				{
 					function(chunk.0, chunk.1, arguments);
@@ -279,7 +256,7 @@ impl Chunk
 		{
 			let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
 			let ranges = Chunk::partition_in_ranges(array_length, step_size, chunks.len());
-			let ref mut pool = Chunk::get_static_pool();
+			let ref mut pool = Chunk::get_pool();
             let mut i = 0;
             let (mut chunks1, mut chunks2): (Vec<_>, Vec<_>) = 
                 chunks.partition(|_c| { i += 1; i <= number_of_chunks / 2 });
@@ -329,7 +306,7 @@ impl Chunk
 		{
 			let chunks = Chunk::partition(b, b_len, b_step, number_of_chunks);
 			let ranges = Chunk::partition_in_ranges(a_len, a_step, chunks.len());
-			let ref mut pool = Chunk::get_static_pool();
+			let ref mut pool = Chunk::get_pool();
             let result = Vec::with_capacity(chunks.len());
             let stack_array = Mutex::new(result);
             pool.for_(chunks.zip(ranges), |chunk|
@@ -365,7 +342,7 @@ impl Chunk
 		{
 			let chunks = Chunk::partition(a, a_len, a_step, number_of_chunks);
             let ranges = Chunk::partition_in_ranges(a_len, a_step, chunks.len());
-			let ref mut pool = Chunk::get_static_pool();
+			let ref mut pool = Chunk::get_pool();
             let result = Vec::with_capacity(chunks.len());
             let stack_array = Mutex::new(result);
             pool.for_(chunks.zip(ranges), |chunk|
@@ -401,7 +378,7 @@ impl Chunk
 		{
 			let chunks = Chunk::partition_mut(target, target_length, target_step, number_of_chunks);
 			let ranges = Chunk::partition_in_ranges(original_length, original_step, chunks.len());
-			let ref mut pool = Chunk::get_static_pool();
+			let ref mut pool = Chunk::get_pool();
 			pool.for_(chunks.zip(ranges), |chunk|
 				{
 					function(original, chunk.1, chunk.0, arguments);
