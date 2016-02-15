@@ -186,23 +186,7 @@ pub enum Operation<T>
 impl<T> GenericDataVector<T> 
     where T: RealNumber
 {  
-    fn reallocate(&mut self, length: usize)
-	{
-		if length > self.allocated_len()
-		{
-			let data = &mut self.data;
-            let alloc_len = round_len(length);
-			data.resize(alloc_len, T::zero());
-            if self.multicore_settings.early_temp_allocation {
-                let temp = &mut self.temp;
-                temp.resize(alloc_len, T::zero());
-            }
-		}
-		
-		self.valid_len = length;
-	}
-	
-	fn swap_data_temp(mut self) -> Self
+    fn swap_data_temp(mut self) -> Self
 	{
 		let temp = self.temp;
 		self.temp = self.data;

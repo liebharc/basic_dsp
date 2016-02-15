@@ -44,6 +44,22 @@ macro_rules! define_vector_struct {
 			{
 				self.valid_len
 			}
+            
+            fn set_len(&mut self, len: usize)
+			{
+                if len > self.allocated_len()
+                {
+                    let data = &mut self.data;
+                    let alloc_len = round_len(len);
+                    data.resize(alloc_len, T::zero());
+                    if self.multicore_settings.early_temp_allocation {
+                        let temp = &mut self.temp;
+                        temp.resize(alloc_len, T::zero());
+                    }
+                }
+                
+                self.valid_len = len;
+			}
 			
 			fn allocated_len(&self) -> usize
 			{

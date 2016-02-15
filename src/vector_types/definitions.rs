@@ -34,6 +34,10 @@ pub trait DataVector<T> : Sized
 	
 	/// The number of valid elements in the the vector.
 	fn len(&self) -> usize;
+    
+    /// Sets the vector length to the given length. 
+    /// If `self.len() < len` then the value of the new elements is undefined.
+    fn set_len(&mut self, len: usize);
 	
 	/// The number of valid points. If the vector is complex then every valid point consists of two floating point numbers,
 	/// while for real vectors every point only consists of one floating point number.

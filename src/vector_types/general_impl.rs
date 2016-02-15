@@ -340,7 +340,7 @@ macro_rules! zero_interleave {
                 let step = $step as usize;
                 let old_len = $self_.len();
                 let new_len = step * old_len;
-                $self_.reallocate(new_len);
+                $self_.set_len(new_len);
                 let temp_len_old = $self_.temp.len();
                 let mut target = temp_mut!($self_, new_len);
                 if temp_len_old == target.len() // no reallocation
@@ -559,7 +559,7 @@ macro_rules! add_general_impl {
                         let len_before = self.len();
                         let is_complex = self.is_complex;
                         let len = if is_complex { 2 * points } else { points };
-                        self.reallocate(len);
+                        self.set_len(len);
                         let array = &mut self.data;
                         match option {
                             PaddingOption::End => {
@@ -700,7 +700,7 @@ macro_rules! add_general_impl {
                 
                 fn override_data(mut self, data: &[$data_type]) -> VecResult<Self> {
                     {
-                        self.reallocate(data.len());
+                        self.set_len(data.len());
                         let target = &mut self.data[0] as *mut $data_type;
                         let source = &data[0] as *const $data_type;
                         unsafe {
@@ -719,7 +719,7 @@ macro_rules! add_general_impl {
                     }
                     
                     for i in 0..num_targets {
-                        targets[i].reallocate(data_length / num_targets);
+                        targets[i].set_len(data_length / num_targets);
                     }
                     
                     let data = &self.data;
@@ -749,7 +749,7 @@ macro_rules! add_general_impl {
                             reject_if!(self, sources[0].len() != sources[i].len(), ErrorReason::InvalidArgumentLength);
                         }
                         
-                        self.reallocate(sources[0].len() * num_sources);
+                        self.set_len(sources[0].len() * num_sources);
                         
                         let data_length = self.len();
                         let data = &mut self.data;
