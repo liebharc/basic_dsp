@@ -556,6 +556,10 @@ macro_rules! add_general_impl {
                 fn zero_pad(mut self, points: usize, option: PaddingOption) -> VecResult<Self>
                 {
                     {
+                        if self.points() >= points {
+                            return Ok(self);
+                        }
+                        
                         let len_before = self.len();
                         let is_complex = self.is_complex;
                         let len = if is_complex { 2 * points } else { points };
