@@ -34,7 +34,7 @@ pub trait Interpolation<T> : DataVector<T>
     
     /// Interpolates `self` with the convolution function `function` by the interger value `interpolation_factor`.
     /// Interpolation is done in in frequency domain.
-    fn interpolatei(self, function: &RealFrequencyResponse<T>, interpolation_factor: usize) -> VecResult<Self>;
+    fn interpolatei(self, function: &RealFrequencyResponse<T>, interpolation_factor: u32) -> VecResult<Self>;
 }
 
 macro_rules! define_interpolation_impl {
@@ -77,14 +77,14 @@ macro_rules! define_interpolation_impl {
                     Ok(self.swap_data_temp())
                 }
                 
-                fn interpolatei(self, function: &RealFrequencyResponse<$data_type>, interpolation_factor: usize) -> VecResult<Self> {
+                fn interpolatei(self, function: &RealFrequencyResponse<$data_type>, interpolation_factor: u32) -> VecResult<Self> {
                     if interpolation_factor <= 1 {
                         return Ok(self);
                     }
                     let freq = try! { self.fft() };
                     let points = freq.points();
                     let interpolation_factorf = interpolation_factor as $data_type;
-                    freq.zero_pad(points * interpolation_factor, PaddingOption::Surround)
+                    freq.zero_pad(points * interpolation_factor as usize, PaddingOption::Surround)
                     .and_then(|v| {
                         Ok(v.multiply_function_priv(
                                         function.is_symmetric(),
@@ -111,7 +111,7 @@ macro_rules! define_interpolation_forward {
                     Self::from_genres(self.to_gen().interpolatef(function, interpolation_factor, delay, len))
                 }
                 
-                fn interpolatei(self, function: &RealFrequencyResponse<$data_type>, interpolation_factor: usize) -> VecResult<Self> {
+                fn interpolatei(self, function: &RealFrequencyResponse<$data_type>, interpolation_factor: u32) -> VecResult<Self> {
                     Self::from_genres(self.to_gen().interpolatei(function, interpolation_factor))
                 }
             }
