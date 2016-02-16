@@ -1,13 +1,7 @@
 #[cfg(test)]
 mod bench {
 	use test::Bencher;
-	use basic_dsp::{
-        DataVector,
-        GenericVectorOperations,
-		ComplexVectorOperations,
-		ComplexTimeVector32,
-        Convolution,
-        VectorConvolution};
+	use basic_dsp::*;
 	use num::complex::Complex32;
     use tools::{VectorBox, Size};
     use basic_dsp::conv_types::*;
@@ -86,6 +80,34 @@ mod bench {
 			vector.execute_res(|v| {
                 let operand = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), 100);
                 v.convolve_vector(&operand)
+            } )
+		});
+	}
+    
+    #[bench]
+	fn interpolatei_32t_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Tiny);
+		b.iter(|| {
+			vector.execute_res(|v| {
+                let len = v.len();
+                let mut v = v.interpolatei(&RaisedCosineFunction::new(0.35), 10).unwrap();
+                v.set_len(len);
+                Ok(v)
+            } )
+		});
+	}
+    
+    #[bench]
+	fn interpolatef_32t_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Tiny);
+		b.iter(|| {
+			vector.execute_res(|v| {
+                let len = v.len();
+                let mut v = v.interpolatef(&RaisedCosineFunction::new(0.35), 10.0, 0.0, 10).unwrap();
+                v.set_len(len);
+                Ok(v)
             } )
 		});
 	}
