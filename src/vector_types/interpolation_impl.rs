@@ -6,7 +6,6 @@ use conv_types::{
     RealImpulseResponse,
     RealFrequencyResponse};
 use super::{
-    PaddingOption,
     GenericDataVector,
     RealVectorOperations,
     GenericVectorOperations,
@@ -32,10 +31,9 @@ pub trait Interpolation<T> : DataVector<T>
     /// A `delay` can be used to delay or phase shift the vector. The `delay` considers `self.delta()`.
     fn interpolatef(self, function: &RealImpulseResponse<T>, interpolation_factor: T, delay: T, conv_len: usize) -> VecResult<Self>;
     
-    /// Interpolates `self` with the SINC convolution function by the interger value `interpolation_factor`.
-    /// This interpolation type preserves the shape of the signal in frequency domain.
+    /// Interpolates `self` with the convolution function `function` by the interger value `interpolation_factor`.
     /// Interpolation is done in in frequency domain.
-    fn interpolatei(self, interpolation_factor: u32) -> VecResult<Self>;
+    fn interpolatei(self, function: &RealFrequencyResponse<T>, interpolation_factor: u32) -> VecResult<Self>;
 }
 
 macro_rules! define_interpolation_impl {
@@ -78,18 +76,29 @@ macro_rules! define_interpolation_impl {
                     Ok(self.swap_data_temp())
                 }
                 
-                fn interpolatei(self, interpolation_factor: u32) -> VecResult<Self> {
+                fn interpolatei(self, function: &RealFrequencyResponse<$data_type>, interpolation_factor: u32) -> VecResult<Self> {
                     if interpolation_factor <= 1 {
                         return Ok(self);
-                      }
-                    let freq = try! { self.fft() };
+                    }
+                    let freq = try! { 
+                        Ok(self)
+                        .and_then(|v|v.zero_interleave(interpolation_factor))
+                        .and_then(|v|v.fft())
+                    };
                     let points = freq.points();
                     let interpolation_factorf = interpolation_factor as $data_type;
-                    freq.zero_pad(points * interpolation_factor as usize, PaddingOption::Surround)
-                    .and_then(|v|v.real_scale(interpolation_factor as $data_type))
+                    Ok(freq)
+                    .and_then(|v| {
+                        Ok(v.multiply_function_priv(
+                                        function.is_symmetric(),
+                                        interpolation_factorf,
+                                        |array|Self::array_to_complex_mut(array),
+                                        function,
+                                        |f,x|Complex::<$data_type>::new(f.calc(x), 0.0)))
+                    })
                     .and_then(|v|v.ifft_shift())
                     .and_then(|v|v.plain_ifft())
-                    .and_then(|v|v.real_scale(1.0 / points as $data_type / interpolation_factorf as $data_type))
+                    .and_then(|v|v.real_scale(1.0 / points as $data_type))
                 }
             }
         )*
@@ -105,8 +114,8 @@ macro_rules! define_interpolation_forward {
                     Self::from_genres(self.to_gen().interpolatef(function, interpolation_factor, delay, len))
                 }
                 
-                fn interpolatei(self, interpolation_factor: u32) -> VecResult<Self> {
-                    Self::from_genres(self.to_gen().interpolatei(interpolation_factor))
+                fn interpolatei(self, function: &RealFrequencyResponse<$data_type>, interpolation_factor: u32) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().interpolatei(function, interpolation_factor))
                 }
             }
         )*
@@ -143,11 +152,26 @@ mod tests {
         let len = 6;
         let mut time = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), len);
         time[len] = 1.0;
-        let result = time.interpolatei(2).unwrap();
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let result = time.interpolatei(&sinc as &RealFrequencyResponse<f32>, 2).unwrap();
         let result = result.magnitude().unwrap();
         let expected = 
-            [0.0, 0.17254603, 0.0000000227619, 0.23570225, 0.000000004967054, 0.6439505, 
-             1.0, 0.6439506, 0.000000017908969, 0.23570228, 0.000000004967054, 0.17254609];
+            [0.16666667, 0.044658206, 0.16666667, 0.16666667, 0.16666667, 0.6220085, 
+             1.1666667, 0.6220085, 0.16666667, 0.16666667, 0.16666667, 0.044658206];
+        assert_eq_tol(result.data(), &expected, 1e-4);
+    }
+    
+    #[test]
+    fn interpolatei_rc_test() {
+        let len = 6;
+        let mut time = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), len);
+        time[len] = 1.0;
+        let rc: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.4);
+        let result = time.interpolatei(&rc as &RealFrequencyResponse<f32>, 2).unwrap();
+        let result = result.magnitude().unwrap();
+        let expected = 
+            [0.0, 0.038979173, 0.0000000062572014, 0.15530863, 0.000000015884869, 0.6163295, 
+             1.0, 0.61632943, 0.0000000142918966, 0.15530863, 0.000000048099658, 0.038979173];
         assert_eq_tol(result.data(), &expected, 1e-4);
     }
     
