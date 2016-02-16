@@ -372,7 +372,6 @@ macro_rules! add_conv_impl{
                         }
 
                         let len_rounded = (len / $reg::len()) * $reg::len(); // The exact value is of no importance here
-                        print!("{}, {}\n", len, len_rounded); 
                         let simd = $reg::array_to_regs(&self.data[0..len_rounded]);
                         for num in &mut dest[scalar_len .. points - scalar_len] {
                             let end = (i + conv_len) as usize;
