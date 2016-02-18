@@ -27,12 +27,21 @@ pub trait Interpolation<T> : DataVector<T>
     where T : RealNumber {
     /// Interpolates `self` with the convolution function `function` by the real value `interpolation_factor`.
     /// Interpolation is done in in time domain and the argument `conv_len` can be used to balance accuracy 
-    /// and performance. 
+    /// and computational performance. 
     /// A `delay` can be used to delay or phase shift the vector. The `delay` considers `self.delta()`.
+    ///
+    /// The complexity of this `interpolatef` is `O(self.points() * conv_len)`, while for `interpolatei` it's
+    /// `O(self.points() * log(self.points()))`. If computational performance is important you should therefore decide
+    /// how large `conv_len` needs to be to yield the descired accuracy. Then compare `conv_len` and then do a test
+    /// run to compare the speed of `interpolatef` and `interpolatei`. Together with the information that 
+    /// changing the vectors size change `log(self.points()` but not `conv_len` gives the indication that `interpolatef`
+    /// performs faster for larger vectors while `interpolatei` performs faster for smaller vectors.
     fn interpolatef(self, function: &RealImpulseResponse<T>, interpolation_factor: T, delay: T, conv_len: usize) -> VecResult<Self>;
     
     /// Interpolates `self` with the convolution function `function` by the interger value `interpolation_factor`.
     /// Interpolation is done in in frequency domain.
+    ///
+    /// See the description of `interpolatef` for some basic performance considerations.
     fn interpolatei(self, function: &RealFrequencyResponse<T>, interpolation_factor: u32) -> VecResult<Self>;
 }
 
