@@ -1061,6 +1061,9 @@ pub enum ErrorReason {
     
     /// `self.points()` must be an odd number.
     VectorMustHaveAnOddLength,
+    
+    /// The function passed as argument must be symmetric
+    ArgumentFunctionMustBeSymmetric
 }
 
 /// Result contains on success the vector. On failure it contains an error reason and an vector with invalid data

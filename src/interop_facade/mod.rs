@@ -55,6 +55,7 @@ pub fn translate_error(reason: ErrorReason) -> i32 {
         ErrorReason::InvalidArgumentLength => 7,
         ErrorReason::VectorMustBeConjSymmetric => 8,
         ErrorReason::VectorMustHaveAnOddLength => 9,
+        ErrorReason::ArgumentFunctionMustBeSymmetric => 10,
     }
 }
 

@@ -8,16 +8,20 @@ use conv_types::{
 use super::{
     GenericDataVector,
     RealVectorOperations,
+    ComplexVectorOperations,
     GenericVectorOperations,
     RealTimeVector,
     RealFreqVector,
     TimeDomainOperations,
     FrequencyDomainOperations,
     ComplexTimeVector,
-    ComplexFreqVector};
+    ComplexFreqVector,
+    ErrorReason};
 use num::complex::Complex;
 use num::traits::Zero;
 use super::convolution_impl::WrappingIterator;
+use std::ops::Mul;
+use std::fmt::{Display, Debug};
 
 /// Provides a interpolation operation for data vectors.
 /// # Unstable
@@ -42,12 +46,42 @@ pub trait Interpolation<T> : DataVector<T>
     /// Interpolation is done in in frequency domain.
     ///
     /// See the description of `interpolatef` for some basic performance considerations.
+    /// # Failures
+    /// VecResult may report the following `ErrorReason` members:
+    /// 
+    /// 1. `ArgumentFunctionMustBeSymmetric`: if `!self.is_complex() && !function.is_symmetric()` or in words if `self` is a real
+    ///    vector and `function` is asymmetric. Converting the vector into a complex vector before the interpolation is one way
+    ///    to resolve this error. 
     fn interpolatei(self, function: &RealFrequencyResponse<T>, interpolation_factor: u32) -> VecResult<Self>;
 }
 
 macro_rules! define_interpolation_impl {
     ($($data_type:ident);*) => {
         $( 
+            impl GenericDataVector<$data_type> {
+                fn interpolate_priv<T>(
+                    temp: &mut [T], data: &[T], 
+                    function: &RealImpulseResponse<$data_type>, 
+                    interpolation_factor: $data_type, delay: $data_type,
+                    conv_len: usize) 
+                        where T: Zero + Mul<Output=T> + Copy + Display + Debug + Send + Sync + From<$data_type> {
+                    let mut i = 0;
+                    for num in temp {
+                        let center = i as $data_type / interpolation_factor;
+                        let rounded = (center).floor();
+                        let iter = WrappingIterator::new(&data, rounded as isize - conv_len as isize -1, 2 * conv_len + 1);
+                        let mut sum = T::zero();
+                        let mut j = -(conv_len as $data_type) - (center - rounded) + delay;
+                        for c in iter {
+                            sum = sum + c * T::from(function.calc(j));
+                            j += 1.0;
+                        }
+                        (*num) = sum;
+                        i += 1;
+                    }
+                }
+            }
+            
             impl Interpolation<$data_type> for GenericDataVector<$data_type> {
                 fn interpolatef(mut self, function: &RealImpulseResponse<$data_type>, interpolation_factor: $data_type, delay: $data_type, conv_len: usize) -> VecResult<Self> {
                     {
@@ -60,24 +94,23 @@ macro_rules! define_interpolation_impl {
                             } else {
                                 conv_len
                             };
+                        let is_complex = self.is_complex();
                         let new_len = (len as $data_type * interpolation_factor).round() as usize;
                         let data = &self.data[0..len];
                         let temp = temp_mut!(self, new_len);
-                        let temp = Self::array_to_complex_mut(temp);
-                        let data = Self::array_to_complex(data);
-                        let mut i = 0;
-                        for num in temp {
-                            let center = i as $data_type / interpolation_factor;
-                            let rounded = (center).floor();
-                            let iter = WrappingIterator::new(&data, rounded as isize - conv_len as isize -1, 2 * conv_len + 1);
-                            let mut sum = Complex::<$data_type>::zero();
-                            let mut j = -(conv_len as $data_type) - (center - rounded) + delay;
-                            for c in iter {
-                                sum = sum + c * function.calc(j);
-                                j += 1.0;
-                            }
-                            (*num) = sum;
-                            i += 1;
+                        if is_complex {
+                            let temp = Self::array_to_complex_mut(temp);
+                            let data = Self::array_to_complex(data);
+                            Self::interpolate_priv(
+                                temp, data,
+                                function,
+                                interpolation_factor, delay, conv_len);
+                        }
+                        else {
+                            Self::interpolate_priv(
+                                temp, data,
+                                function,
+                                interpolation_factor, delay, conv_len);
                         }
                         
                         self.valid_len = new_len;
@@ -89,6 +122,8 @@ macro_rules! define_interpolation_impl {
                     if interpolation_factor <= 1 {
                         return Ok(self);
                     }
+                    reject_if!(self, !function.is_symmetric() &&!self.is_complex , ErrorReason::ArgumentFunctionMustBeSymmetric);
+                    let is_complex = self.is_complex;
                     let freq = try! { 
                         Ok(self)
                         .and_then(|v|v.zero_interleave(interpolation_factor))
@@ -108,6 +143,9 @@ macro_rules! define_interpolation_impl {
                     .and_then(|v|v.ifft_shift())
                     .and_then(|v|v.plain_ifft())
                     .and_then(|v|v.real_scale(1.0 / points as $data_type))
+                    .and_then(|v| {
+                        if is_complex { Ok(v) } else { v.to_real() }
+                    })
                 }
             }
         )*
