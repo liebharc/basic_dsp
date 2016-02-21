@@ -96,6 +96,7 @@ macro_rules! define_interpolation_impl {
                             };
                         let is_complex = self.is_complex();
                         let new_len = (len as $data_type * interpolation_factor).round() as usize;
+                        let new_len = new_len + new_len % 2;
                         let data = &self.data[0..len];
                         let temp = temp_mut!(self, new_len);
                         if is_complex {
