@@ -53,6 +53,9 @@ pub trait Interpolation<T> : DataVector<T>
     ///    vector and `function` is asymmetric. Converting the vector into a complex vector before the interpolation is one way
     ///    to resolve this error. 
     fn interpolatei(self, function: &RealFrequencyResponse<T>, interpolation_factor: u32) -> VecResult<Self>;
+    
+    /// Decimates or downsamples `self`. `decimatei` is the inverse function to `interpolatei`.
+    fn decimatei(self, decimation_factor: u32, delay: u32) -> VecResult<Self>;
 }
 
 macro_rules! define_interpolation_impl {
@@ -148,6 +151,37 @@ macro_rules! define_interpolation_impl {
                         if is_complex { Ok(v) } else { v.to_real() }
                     })
                 }
+                
+                fn decimatei(mut self, decimation_factor: u32, delay: u32) -> VecResult<Self> {
+                    {
+                        let mut i = delay as usize;
+                        let mut j = 0;
+                        let len = self.points();
+                        let is_complex = self.is_complex();
+                        if is_complex {
+                            let mut data = Self::array_to_complex_mut(&mut self.data);
+                            let decimation_factor = decimation_factor as usize;
+                            while i < len {
+                                data[j] = data[i];
+                                i += decimation_factor;
+                                j += 1;
+                            }
+                            self.valid_len = j * 2;
+                        }
+                        else {
+                            let mut data = &mut self.data;
+                            let decimation_factor = decimation_factor as usize;
+                            while i < len {
+                                data[j] = data[i];
+                                i += decimation_factor;
+                                j += 1;
+                            }
+                            self.valid_len = j;
+                        }
+                    }
+                    
+                    Ok(self)
+                }
             }
         )*
     }
@@ -164,6 +198,10 @@ macro_rules! define_interpolation_forward {
                 
                 fn interpolatei(self, function: &RealFrequencyResponse<$data_type>, interpolation_factor: u32) -> VecResult<Self> {
                     Self::from_genres(self.to_gen().interpolatei(function, interpolation_factor))
+                }
+                
+                fn decimatei(self, decimation_factor: u32, delay: u32) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().decimatei(decimation_factor, delay))
                 }
             }
         )*
@@ -248,6 +286,14 @@ mod tests {
         let expected = 
             [0.00000, 0.00000, 0.00000, 0.04466, 0.00000, 0.16667,
              0.00000, 0.62201, 1.00000, 0.62201, 0.00000, 0.16667];
+        assert_eq_tol(result.data(), &expected, 0.1);
+    }
+    
+    #[test]
+    fn decimatei_test() {
+        let time = ComplexTimeVector32::from_interleaved(&[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0]);
+        let result = time.decimatei(2, 1).unwrap();
+        let expected = [2.0, 3.0, 6.0, 7.0, 10.0, 11.0];
         assert_eq_tol(result.data(), &expected, 0.1);
     }
 }
