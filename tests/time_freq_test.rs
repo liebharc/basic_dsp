@@ -120,32 +120,13 @@ mod slow_test {
     #[test]
     fn compare_conv_freq_multiplication_for_rc() {
         for iteration in 0 .. 3 {
-            let a = create_data_even(201511212, iteration, 1001, 2000);
-            let delta = create_delta(3561159, iteration);
+            let a = create_data_even(201602211, iteration, 1001, 2000);
+            let delta = create_delta(201602212, iteration);
             let time = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
             let freq = time.clone().fft().unwrap();
             let points = time.points();
-            let ratio = create_delta(201601091, iteration).abs() / 10.0; // Should get us a range [0.0 .. 1.0] and hopefully we are not that unlucky to get 0.0
-            let time_res = time.convolve(&fun as &RealImpulseResponse<f32>, ratio, points).unwrap();
-            let freq_res = freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
-            let ifreq_res = freq_res.ifft().unwrap();
-            let left = &ifreq_res.data();
-            let right = &time_res.data();
-            assert_vector_eq_with_reason_and_tolerance(&left, &right, 0.1, "Results should match independent if done in time or frequency domain");
-        }
-    }
-    
-    #[test]
-    fn compare_conv_freq_multiplication_for_sinc() {
-        for iteration in 0 .. 3 {
-            let a = create_data_even(201511212, iteration, 2001, 4000);
-            let delta = create_delta(3561159, iteration);
-            let time = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
-            let fun: SincFunction<f32> = SincFunction::new();
-            let freq = time.clone().fft().unwrap();
-            let points = time.points();
-            let ratio = create_delta(201601093, iteration).abs() / 20.0 + 0.5; // Should get us a range [0.5 .. 1.0]
+            let ratio = create_delta(20160229, iteration).abs() / 10.0; // Should get us a range [0.0 .. 1.0] and hopefully we are not that unlucky to get 0.0
             let time_res = time.convolve(&fun as &RealImpulseResponse<f32>, ratio, points).unwrap();
             let freq_res = freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
             let ifreq_res = freq_res.ifft().unwrap();
@@ -156,15 +137,34 @@ mod slow_test {
     }
     
     #[test]
+    fn compare_conv_freq_multiplication_for_sinc() {
+        for iteration in 0 .. 3 {
+            let a = create_data_even(201602214, iteration, 2001, 4000);
+            let delta = create_delta(201602215, iteration);
+            let time = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let fun: SincFunction<f32> = SincFunction::new();
+            let freq = time.clone().fft().unwrap();
+            let points = time.points();
+            let ratio = create_delta(201602216, iteration).abs() / 20.0 + 0.5; // Should get us a range [0.5 .. 1.0]
+            let time_res = time.convolve(&fun as &RealImpulseResponse<f32>, ratio, points).unwrap();
+            let freq_res = freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
+            let ifreq_res = freq_res.ifft().unwrap();
+            let left = &ifreq_res.data();
+            let right = &time_res.data();
+            assert_vector_eq_with_reason_and_tolerance(&left, &right, 0.3, "Results should match independent if done in time or frequency domain");
+        }
+    }
+    
+    #[test]
     fn compare_optimized_and_non_optimized_conv() {
         for iteration in 0 .. 3 {
             // This offset is small enough to now have a big impact on the results (for the RC function)
             // but the code will use a different non-optimized branch since it won't recognize ratio as an
             // integer
             let offset = 2e-6; 
-            let a = create_data_even(201511212, iteration, 2002, 4000);
-            let b = create_data_even(201601172, iteration, 50, 202);
-            let delta = create_delta(3561159, iteration);
+            let a = create_data_even(201602217, iteration, 2002, 4000);
+            let b = create_data_even(201602218, iteration, 50, 202);
+            let delta = create_delta(201602219, iteration);
             let time = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
             let ratio = iteration as f32 + 1.0;
@@ -198,9 +198,9 @@ mod slow_test {
     #[test]
     fn compare_smaller_vector_conv_with_zero_padded_conv() {
         for iteration in 0 .. 3 {
-            let a = create_data_even(201601171, iteration, 1002, 2000);
-            let b = create_data_even(201601172, iteration, 50, 202);
-            let delta = create_delta(201601173, iteration);
+            let a = create_data_even(201601174, iteration, 1002, 2000);
+            let b = create_data_even(201601175, iteration, 50, 202);
+            let delta = create_delta(201601176, iteration);
             let time1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let time2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
             let left = time1.clone().convolve_vector(&time2).unwrap();
@@ -217,9 +217,9 @@ mod slow_test {
     #[test]
     fn compare_smaller_vector_conv_with_zero_padded_conv_real() {
         for iteration in 0 .. 3 {
-            let a = create_data_even(201601171, iteration, 1002, 2000);
-            let b = create_data_even(201601172, iteration, 50, 202);
-            let delta = create_delta(201601173, iteration);
+            let a = create_data_even(201601177, iteration, 1002, 2000);
+            let b = create_data_even(201601178, iteration, 50, 202);
+            let delta = create_delta(201601179, iteration);
             let time1 = RealTimeVector32::from_array_with_delta(&a, delta);
             let time2 = RealTimeVector32::from_array_with_delta(&b, delta);
             let left = time1.clone().convolve_vector(&time2).unwrap();
@@ -327,12 +327,12 @@ mod slow_test {
     #[test]
     fn compare_sym_optimized_freq_mul_with_normal_version() {
         parameterized_vector_test(|iteration, range| {
-            let a = create_data_even(20160116, iteration, range.start, range.end);
-            let delta = create_delta(201601161, iteration);
+            let a = create_data_even(201601162, iteration, range.start, range.end);
+            let delta = create_delta(201601163, iteration);
             let freq = ComplexFreqVector32::from_interleaved_with_delta(&a, delta);
             let rc_sym: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
             let rc_unsym = unsym_rc_mul();
-            let ratio = create_delta(201601093, iteration).abs() / 20.0 + 0.5; // Should get us a range [0.5 .. 1.0]
+            let ratio = create_delta(201601164, iteration).abs() / 20.0 + 0.5; // Should get us a range [0.5 .. 1.0]
             let result_sym = freq.clone().multiply_frequency_response(&rc_sym as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
             let result_unsym = freq.multiply_frequency_response(&rc_unsym as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
             let left = &result_sym.data();
@@ -358,8 +358,8 @@ mod slow_test {
     #[test]
     fn compare_real_and_complex_interpolatef() {
         for iteration in 0 .. 3 {
-            let a = create_data_even(201511212, iteration, 2002, 4000);
-            let delta = create_delta(3561159, iteration);
+            let a = create_data_even(2015112121, iteration, 2002, 4000);
+            let delta = create_delta(35611592, iteration);
             let real = RealTimeVector32::from_array_with_delta(&a, delta);
             let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
             let factor = iteration as f32 + 1.0;
@@ -373,8 +373,8 @@ mod slow_test {
     #[test]
     fn compare_real_and_complex_interpolatei() {
         for iteration in 0 .. 3 {
-            let a = create_data_even(201511212, iteration, 2002, 4000);
-            let delta = create_delta(3561159, iteration);
+            let a = create_data_even(2015112123, iteration, 2002, 4000);
+            let delta = create_delta(35611594, iteration);
             let real = RealTimeVector32::from_array_with_delta(&a, delta);
             let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
             let factor = iteration as u32 + 1;
@@ -388,8 +388,8 @@ mod slow_test {
     #[test]
     fn upsample_downsample() {
         for iteration in 0 .. 3 {
-            let a = create_data_even(201511212, iteration, 2002, 4000);
-            let delta = create_delta(3561159, iteration);
+            let a = create_data_even(2015112125, iteration, 2002, 4000);
+            let delta = create_delta(35611596, iteration);
             let time = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
             let factor = (iteration as f32 + 4.0) * 0.5;
