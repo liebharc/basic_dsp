@@ -351,7 +351,7 @@ mod slow_test {
             let factor = iteration as u32 + 1;
             let left = time.clone().interpolatef(&fun as &RealImpulseResponse<f32>, factor as f32, 0.0, 10).unwrap();
             let right = time.interpolatei(&fun as &RealFrequencyResponse<f32>, factor).unwrap();
-            assert_vector_eq_with_reason_and_tolerance(&left.data(), &right.data(), 0.1, "Results should match independent if done with interpolatei or interpolatef");
+            assert_vector_eq_with_reason_and_tolerance(&left.data(), &right.data(), 0.1, &format!("Results should match independent if done with interpolatei or interpolatef, factor={}", factor));
         }
     }
     
@@ -366,7 +366,7 @@ mod slow_test {
             let factor = iteration as u32 + 1;
             let left = time.clone().interpolatef(&fun as &RealImpulseResponse<f32>, factor as f32, offset, 10).unwrap();
             let right = time.interpolatef(&fun as &RealImpulseResponse<f32>, factor as f32, 0.0, 10).unwrap();
-            assert_vector_eq_with_reason_and_tolerance(&left.data(), &right.data(), 0.1, "Results should match independent if done with optimized or non optimized interpolatef");
+            assert_vector_eq_with_reason_and_tolerance(&left.data(), &right.data(), 0.1, &format!("Results should match independent if done with optimized or non optimized interpolatef, factor={}", factor));
         }
     }
     
@@ -410,7 +410,7 @@ mod slow_test {
             let factor = (iteration as f32 + 4.0) * 0.5;
             let upsample = time.clone().interpolatef(&fun as &RealImpulseResponse<f32>, factor, 0.0, 10).unwrap();
             let downsample = upsample.interpolatef(&fun as &RealImpulseResponse<f32>, 1.0 / factor, 0.0, 10).unwrap();
-            assert_vector_eq_with_reason_and_tolerance(&time.data(), &downsample.data(), 0.2, "Results should match independent if done with interpolatei or interpolatef");
+            assert_vector_eq_with_reason_and_tolerance(&time.data(), &downsample.data(), 0.2, &format!("Results should match independent if done with interpolatei or interpolatef, factor={}", factor));
         }
     }
 }
