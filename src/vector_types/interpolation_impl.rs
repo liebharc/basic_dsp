@@ -137,8 +137,10 @@ macro_rules! define_interpolation_impl {
                             RMul: Fn($reg, $reg) -> $reg,
                             RSum: Fn($reg) -> T {
                     {              
+                        let step = if self.is_complex { 2 } else { 1 };
+                        let number_of_shifts = $reg::len() / step;
                         let vectors = Self::function_to_vectors(function, conv_len, interpolation_factor);
-                        let mut shifts_as_float = Vec::with_capacity(vectors.len() * $reg::len());
+                        let mut shifts_as_float = Vec::with_capacity(vectors.len() * number_of_shifts);
                         for vector in &vectors {
                             let shifted_copies = Self::create_shifted_copies(&vector);
                             for shift in shifted_copies {
@@ -156,11 +158,42 @@ macro_rules! define_interpolation_impl {
                         let mut temp = temp_mut!(self, new_len);
                         let dest = convert_mut(&mut temp[0..new_len]);
                         
+                        let data_len = data.len();
                         let len = dest.len();
-                        let scalar_len = conv_len + 1; // + 1 due to rounding of odd numbers
+                        let scalar_len = 2 * (conv_len + 1) * interpolation_factor; // + 1 due to rounding of odd numbers
                             
                         let mut i = 0;
                         for num in &mut dest[0..len] {
+                            (*num) = 
+                                Self::interpolate_priv_simd_step(
+                                    i, interpolation_factor, conv_len, 
+                                    data, &vectors);
+                            i += 1;
+                        }
+                        /*
+                        let len_rounded = (data_len / $reg::len()) * $reg::len(); // The exact value is of no importance here
+                        let simd = $reg::array_to_regs(&self.data[0..len_rounded]);
+                        for num in &mut dest[scalar_len .. len - scalar_len] {
+                            let rounded = i / interpolation_factor;
+                            let end = (rounded + conv_len) as usize;
+                            let factor_selector = (i % interpolation_factor) * number_of_shifts;
+                            let shift = (end / interpolation_factor) % number_of_shifts;
+                            let shifted = shifts[factor_selector+ shift];
+                            let end = (end + number_of_shifts - 1) / number_of_shifts;
+                            let end = if end < simd.len() { len } else { simd.len() };
+                            let mut sum = $reg::splat(0.0);
+                            let complex_iter = simd[end - shifted.len() .. end].iter();
+                            let iteration = 
+                                complex_iter
+                                .zip(shifted);
+                            for (this, other) in iteration {
+                                sum = sum + simd_mul(*this, *other);
+                            }
+                            (*num) = simd_sum(sum);
+                            i += 1;
+                        }*/
+                        /*
+                        for num in &mut dest[len - scalar_len..len] {
                             let rounded = i / interpolation_factor;
                             let iter = WrappingIterator::new(&data, rounded as isize - conv_len as isize -1, 2 * conv_len + 1);
                             let vector = &vectors[i % interpolation_factor];
@@ -172,10 +205,29 @@ macro_rules! define_interpolation_impl {
                             }
                             (*num) = sum;
                             i += 1;
-                        }
+                        }*/
                     }
                     self.valid_len = new_len;
                     Ok(self.swap_data_temp())
+                }
+                
+                #[inline]
+                fn interpolate_priv_simd_step<T>(
+                    i: usize, 
+                    interpolation_factor: usize, 
+                    conv_len: usize,
+                    data: &[T],
+                    vectors: &Vec<GenericDataVector<$data_type>>) -> T
+                        where 
+                            T: Zero + Clone + From<$data_type> + Copy + Add<Output=T> + Mul<Output=T> {
+                    let rounded = i / interpolation_factor;
+                    let iter = WrappingIterator::new(&data, rounded as isize - conv_len as isize -1, 2 * conv_len + 1);
+                    let vector = &vectors[i % interpolation_factor];
+                    let mut sum = T::zero();
+                    for (c, v) in iter.zip(vector.data()) {
+                        sum = sum + c * T::from(*v);
+                    }
+                    sum
                 }
             }
             
