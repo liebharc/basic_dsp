@@ -353,6 +353,51 @@ macro_rules! add_basic_private_impl {
                         self
                     }
                 }
+                
+                /// Creates shifted and reversed copies of the given data vector. 
+                /// This function is especially desgined for convolutions.
+                fn create_shifted_copies(vector: &GenericDataVector<$data_type>) -> Vec<Vec<$data_type>>{
+                    let step = if vector.is_complex { 2 } else { 1 };
+                    let number_of_shifts = $reg::len() / step;
+                    let mut shifted_copies = Vec::with_capacity(number_of_shifts);
+                    let mut i = 0;
+                    while i < number_of_shifts {
+                        let mut data = vector.data.iter().rev();
+                        let shift = match i {
+                            0 => 0,
+                            x => (number_of_shifts - x) * step
+                        };
+                        let min_len = vector.len() + shift;
+                        let len = if min_len % $reg::len() == 0 { min_len } else { min_len - min_len % $reg::len() + $reg::len() };
+                        let mut copy = Vec::with_capacity(len);
+                        
+                        let mut j = len;
+                        while j > 0 {
+                            j -= step;
+                            if j < shift || j >= vector.len() + shift {
+                                copy.push(0.0);
+                                if step > 1 {
+                                    copy.push(0.0);
+                                }
+                            } else {
+                                if step > 1 {
+                                    let im = *data.next().unwrap();
+                                    let re = *data.next().unwrap();
+                                    copy.push(re);
+                                    copy.push(im);
+                                }
+                                else {
+                                    copy.push(*data.next().unwrap());
+                                }
+                            }
+                        }
+                        
+                        assert_eq!(copy.len(), len);
+                        shifted_copies.push(copy);
+                        i += 1;
+                    }
+                    shifted_copies
+                }
             }
         )*
     }

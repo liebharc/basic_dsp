@@ -73,7 +73,10 @@ macro_rules! add_conv_impl{
                     if !self.is_complex {
                         let ratio_inv = 1.0 / ratio;
                         if len <= 202 && self.len() > 2000 && (ratio_inv.round() - ratio_inv).abs() < 1e-6 && ratio > 0.5 {
-                            let mut imp_resp = ComplexTimeVector::<$data_type>::from_constant_with_delta(Complex::<$data_type>::zero(), (2 * len + 1) * ratio as usize, self.delta());
+                            let mut imp_resp = ComplexTimeVector::<$data_type>::from_constant_with_delta(
+                                Complex::<$data_type>::zero(), 
+                                (2 * len + 1) * ratio as usize, 
+                                self.delta());
                             let mut i = 0;
                             let mut j = -(len as $data_type);
                             while i < imp_resp.len() {
@@ -396,49 +399,6 @@ macro_rules! add_conv_impl{
                         }
                     }
                     Ok(self.swap_data_temp())
-                }
-                
-                fn create_shifted_copies(vector: &GenericDataVector<$data_type>) -> Vec<Vec<$data_type>>{
-                    let step = if vector.is_complex { 2 } else { 1 };
-                    let number_of_shifts = $reg::len() / step;
-                    let mut shifted_copies = Vec::with_capacity(number_of_shifts);
-                    let mut i = 0;
-                    while i < number_of_shifts {
-                        let mut data = vector.data.iter().rev();
-                        let shift = match i {
-                            0 => 0,
-                            x => (number_of_shifts - x) * step
-                        };
-                        let min_len = vector.len() + shift;
-                        let len = if min_len % $reg::len() == 0 { min_len } else { min_len - min_len % $reg::len() + $reg::len() };
-                        let mut copy = Vec::with_capacity(len);
-                        
-                        let mut j = len;
-                        while j > 0 {
-                            j -= step;
-                            if j < shift || j >= vector.len() + shift {
-                                copy.push(0.0);
-                                if step > 1 {
-                                    copy.push(0.0);
-                                }
-                            } else {
-                                if step > 1 {
-                                    let im = *data.next().unwrap();
-                                    let re = *data.next().unwrap();
-                                    copy.push(re);
-                                    copy.push(im);
-                                }
-                                else {
-                                    copy.push(*data.next().unwrap());
-                                }
-                            }
-                        }
-                        
-                        assert_eq!(copy.len(), len);
-                        shifted_copies.push(copy);
-                        i += 1;
-                    }
-                    shifted_copies
                 }
             }
         )*
