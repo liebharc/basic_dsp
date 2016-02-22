@@ -7,6 +7,7 @@ use conv_types::{
     RealFrequencyResponse};
 use super::{
     GenericDataVector,
+    DataVectorDomain,
     RealVectorOperations,
     ComplexVectorOperations,
     GenericVectorOperations,
@@ -20,7 +21,8 @@ use super::{
 use num::complex::Complex;
 use num::traits::Zero;
 use super::convolution_impl::WrappingIterator;
-use std::ops::Mul;
+use simd_extensions::*;
+use std::ops::{Add, Mul};
 use std::fmt::{Display, Debug};
 
 /// Provides a interpolation operation for data vectors.
@@ -59,10 +61,10 @@ pub trait Interpolation<T> : DataVector<T>
 }
 
 macro_rules! define_interpolation_impl {
-    ($($data_type:ident);*) => {
+    ($($data_type:ident,$reg:ident);*) => {
         $( 
             impl GenericDataVector<$data_type> {
-                fn interpolate_priv<T>(
+                fn interpolate_priv_scalar<T>(
                     temp: &mut [T], data: &[T], 
                     function: &RealImpulseResponse<$data_type>, 
                     interpolation_factor: $data_type, delay: $data_type,
@@ -83,11 +85,121 @@ macro_rules! define_interpolation_impl {
                         i += 1;
                     }
                 }
+                
+                fn function_to_vectors(
+                    function: &RealImpulseResponse<$data_type>, 
+                    conv_len: usize, 
+                    interpolation_factor: usize) -> Vec<GenericDataVector<$data_type>> {
+                    let mut result = Vec::with_capacity(interpolation_factor);
+                    for shift in 0..interpolation_factor {
+                        let offset = shift as $data_type / interpolation_factor as $data_type;
+                        result.push(Self::function_to_vector(function, conv_len, offset));
+                    }
+                    
+                    result
+                }
+                
+                fn function_to_vector(
+                    function: &RealImpulseResponse<$data_type>, 
+                    conv_len: usize, 
+                    offset: $data_type) -> GenericDataVector<$data_type> {
+                    let mut imp_resp = GenericDataVector::<$data_type>::new(
+                        false,
+                        DataVectorDomain::Time,
+                        0.0, 
+                        2 * conv_len + 1,
+                        1.0);
+                    let mut i = 0;
+                    let mut j = -(conv_len as $data_type);
+                    while i < imp_resp.len() {
+                        let value = function.calc(j + offset);
+                        imp_resp[i] = value;
+                        i += 1;
+                        j += 1.0;
+                    }
+                    imp_resp
+                }
+                
+                fn interpolate_priv_simd<T, C, CMut, RMul, RSum>(
+                    mut self, 
+                    function: &RealImpulseResponse<$data_type>, 
+                    interpolation_factor: usize,
+                    conv_len: usize, 
+                    new_len: usize,
+                    convert: C,
+                    convert_mut: CMut,
+                    simd_mul: RMul,
+                    simd_sum: RSum) -> VecResult<Self> 
+                        where 
+                            T: Zero + Clone + From<$data_type> + Copy + Add<Output=T> + Mul<Output=T>,
+                            C: Fn(&[$data_type]) -> &[T],
+                            CMut: Fn(&mut [$data_type]) -> &mut [T],
+                            RMul: Fn($reg, $reg) -> $reg,
+                            RSum: Fn($reg) -> T {
+                    {              
+                        /*let vectors = Self::function_to_vectors(function, conv_len, interpolation_factor);
+                        let shifted_copies = Self::create_shifted_copies(&vector);
+                        let mut shifts = Vec::with_capacity(shifted_copies.len());
+                        for shift in 0..shifted_copies.len() {
+                            let simd = $reg::array_to_regs(&shifted_copies[shift]);
+                            shifts.push(simd);
+                        }*/
+                        
+                        let len = self.len();
+                        let data = convert(&self.data[0..len]);
+                        let mut temp = temp_mut!(self, new_len);
+                        let dest = convert_mut(&mut temp[0..new_len]);
+                        
+                        let len = dest.len();
+                        let scalar_len = conv_len + 1; // + 1 due to rounding of odd numbers
+                            
+                        let mut i = 0;
+                        for num in &mut dest[0..len] {
+                            let center = i as $data_type / interpolation_factor as $data_type;
+                            let rounded = (center).floor();
+                            let iter = WrappingIterator::new(&data, rounded as isize - conv_len as isize -1, 2 * conv_len + 1);
+                            // let vector = &vectors[0];
+                            let mut sum = T::zero();
+                            let mut j = -(conv_len as $data_type) - (center - rounded);
+                            for c in iter {
+                                sum = sum + c * T::from(function.calc(j));
+                                j += 1.0;
+                            }
+                           /* let mut j = 0;
+                            for c in iter {
+                                sum = sum + c * T::from(vector[j]);
+                                j += 1;
+                            }*/
+                            (*num) = sum;
+                            i += 1;
+                        }
+                        
+                        /*for num in &mut dest[len - scalar_len .. len] {
+                            let center = i as $data_type / interpolation_factor as $data_type;
+                            let rounded = (center).floor();
+                            let iter = WrappingIterator::new(&data, rounded as isize - conv_len as isize -1, 2 * conv_len + 1);
+                            let mut sum = T::zero();
+                            let mut j = 0;
+                            for c in iter {
+                                sum = sum + c * T::from(vector[j]);
+                                j += 1;
+                            }
+                            (*num) = sum;
+                            i += 1;
+                        }*/
+                    }
+                    self.valid_len = new_len;
+                    Ok(self.swap_data_temp())
+                }
             }
             
             impl Interpolation<$data_type> for GenericDataVector<$data_type> {
                 fn interpolatef(mut self, function: &RealImpulseResponse<$data_type>, interpolation_factor: $data_type, delay: $data_type, conv_len: usize) -> VecResult<Self> {
                     {
+                        if interpolation_factor == 1.0 {
+                            return Ok(self);
+                        }
+                        
                         let delay = delay / self.delta;
                         let len = self.len();
                         let points_half = self.points() / 2;
@@ -100,18 +212,46 @@ macro_rules! define_interpolation_impl {
                         let is_complex = self.is_complex();
                         let new_len = (len as $data_type * interpolation_factor).round() as usize;
                         let new_len = new_len + new_len % 2;
-                        let data = &self.data[0..len];
-                        let temp = temp_mut!(self, new_len);
-                        if is_complex {
+                        if conv_len <= 202 && new_len >= 2000 && 
+                            (interpolation_factor.round() - interpolation_factor).abs() < 1e-6 && 
+                            delay.abs() < 1e-6 {
+                            let interpolation_factor = interpolation_factor.round() as usize;
+                            if self.is_complex {
+                                return self.interpolate_priv_simd(
+                                    function,
+                                    interpolation_factor,
+                                    conv_len,
+                                    new_len,
+                                    |x| Self::array_to_complex(x),
+                                    |x| Self::array_to_complex_mut(x),
+                                    |x,y| x.mul_complex(y),
+                                    |x| x.sum_complex())
+                            } else {
+                                return self.interpolate_priv_simd(
+                                    function,
+                                    interpolation_factor,
+                                    conv_len,
+                                    new_len,
+                                    |x| x,
+                                    |x| x,
+                                    |x,y| x * y,
+                                    |x| x.sum_real())
+                            } 
+                        }
+                        else if is_complex {
+                            let data = &self.data[0..len];
+                            let temp = temp_mut!(self, new_len);
                             let temp = Self::array_to_complex_mut(temp);
                             let data = Self::array_to_complex(data);
-                            Self::interpolate_priv(
+                            Self::interpolate_priv_scalar(
                                 temp, data,
                                 function,
                                 interpolation_factor, delay, conv_len);
                         }
                         else {
-                            Self::interpolate_priv(
+                            let data = &self.data[0..len];
+                            let temp = temp_mut!(self, new_len);
+                            Self::interpolate_priv_scalar(
                                 temp, data,
                                 function,
                                 interpolation_factor, delay, conv_len);
@@ -186,7 +326,7 @@ macro_rules! define_interpolation_impl {
         )*
     }
 }
-define_interpolation_impl!(f32; f64);
+define_interpolation_impl!(f32, Reg32; f64, Reg64);
 
 macro_rules! define_interpolation_forward {
     ($($name:ident, $data_type:ident);*) => {
