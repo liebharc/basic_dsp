@@ -138,12 +138,18 @@ macro_rules! define_interpolation_impl {
                             RSum: Fn($reg) -> T {
                     {              
                         let vectors = Self::function_to_vectors(function, conv_len, interpolation_factor);
-                        /*let shifted_copies = Self::create_shifted_copies(&vector);
-                        let mut shifts = Vec::with_capacity(shifted_copies.len());
-                        for shift in 0..shifted_copies.len() {
-                            let simd = $reg::array_to_regs(&shifted_copies[shift]);
+                        let mut shifts_as_float = Vec::with_capacity(vectors.len() * $reg::len());
+                        for vector in &vectors {
+                            let shifted_copies = Self::create_shifted_copies(&vector);
+                            for shift in shifted_copies {
+                                shifts_as_float.push(shift);
+                            }
+                        }
+                        let mut shifts = Vec::with_capacity(shifts_as_float.len());
+                        for shift in 0..shifts_as_float.len() {
+                            let simd = $reg::array_to_regs(&shifts_as_float[shift]);
                             shifts.push(simd);
-                        }*/
+                        }
                         
                         let len = self.len();
                         let data = convert(&self.data[0..len]);
@@ -167,20 +173,6 @@ macro_rules! define_interpolation_impl {
                             (*num) = sum;
                             i += 1;
                         }
-                        
-                        /*for num in &mut dest[len - scalar_len .. len] {
-                            let center = i as $data_type / interpolation_factor as $data_type;
-                            let rounded = (center).floor();
-                            let iter = WrappingIterator::new(&data, rounded as isize - conv_len as isize -1, 2 * conv_len + 1);
-                            let mut sum = T::zero();
-                            let mut j = 0;
-                            for c in iter {
-                                sum = sum + c * T::from(vector[j]);
-                                j += 1;
-                            }
-                            (*num) = sum;
-                            i += 1;
-                        }*/
                     }
                     self.valid_len = new_len;
                     Ok(self.swap_data_temp())
