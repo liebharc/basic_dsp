@@ -112,7 +112,7 @@ macro_rules! define_interpolation_impl {
                     let mut i = 0;
                     let mut j = -(conv_len as $data_type);
                     while i < imp_resp.len() {
-                        let value = function.calc(j + offset);
+                        let value = function.calc(j - offset);
                         imp_resp[i] = value;
                         i += 1;
                         j += 1.0;
@@ -137,8 +137,8 @@ macro_rules! define_interpolation_impl {
                             RMul: Fn($reg, $reg) -> $reg,
                             RSum: Fn($reg) -> T {
                     {              
-                        /*let vectors = Self::function_to_vectors(function, conv_len, interpolation_factor);
-                        let shifted_copies = Self::create_shifted_copies(&vector);
+                        let vectors = Self::function_to_vectors(function, conv_len, interpolation_factor);
+                        /*let shifted_copies = Self::create_shifted_copies(&vector);
                         let mut shifts = Vec::with_capacity(shifted_copies.len());
                         for shift in 0..shifted_copies.len() {
                             let simd = $reg::array_to_regs(&shifted_copies[shift]);
@@ -155,21 +155,15 @@ macro_rules! define_interpolation_impl {
                             
                         let mut i = 0;
                         for num in &mut dest[0..len] {
-                            let center = i as $data_type / interpolation_factor as $data_type;
-                            let rounded = (center).floor();
+                            let rounded = i / interpolation_factor;
                             let iter = WrappingIterator::new(&data, rounded as isize - conv_len as isize -1, 2 * conv_len + 1);
-                            // let vector = &vectors[0];
+                            let vector = &vectors[i % interpolation_factor];
                             let mut sum = T::zero();
-                            let mut j = -(conv_len as $data_type) - (center - rounded);
-                            for c in iter {
-                                sum = sum + c * T::from(function.calc(j));
-                                j += 1.0;
-                            }
-                           /* let mut j = 0;
+                            let mut j = 0;
                             for c in iter {
                                 sum = sum + c * T::from(vector[j]);
                                 j += 1;
-                            }*/
+                            }
                             (*num) = sum;
                             i += 1;
                         }
