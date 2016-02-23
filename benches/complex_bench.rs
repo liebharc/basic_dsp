@@ -87,7 +87,7 @@ mod bench {
     #[bench]
 	fn interpolatei_32t_benchmark(b: &mut Bencher)
 	{
-		let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Tiny);
+		let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Small);
 		b.iter(|| {
 			vector.execute_res(|v| {
                 let len = v.len();
@@ -101,7 +101,7 @@ mod bench {
     #[bench]
 	fn interpolatef_32t_benchmark(b: &mut Bencher)
 	{
-		let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Tiny);
+		let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Small);
 		b.iter(|| {
 			vector.execute_res(|v| {
                 let len = v.len();

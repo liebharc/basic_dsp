@@ -382,9 +382,9 @@ macro_rules! add_conv_impl{
                             let end = (end + shifts.len() - 1) / shifts.len();
                             let mut sum = $reg::splat(0.0);
                             let shifted = shifts[shift];
-                            let complex_iter = simd[end - shifted.len() .. end].iter(); 
+                            let simd_iter = simd[end - shifted.len() .. end].iter(); 
                             let iteration = 
-                                complex_iter
+                                simd_iter
                                 .zip(shifted);
                             for (this, other) in iteration {
                                 sum = sum + simd_mul(*this, *other);
