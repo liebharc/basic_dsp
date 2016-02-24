@@ -1,3 +1,10 @@
+#![feature(recover, std_panic)]
+
+extern crate basic_dsp;
+extern crate rand;
+extern crate num;
+pub mod tools;
+
 #[cfg(feature = "slow_test")]
 mod slow_test {
     use basic_dsp::*;

@@ -1,3 +1,11 @@
+#![feature(test)]
+#![feature(box_syntax)] 
+extern crate test;
+extern crate basic_dsp;
+extern crate num;
+
+pub mod tools;
+
 #[cfg(test)]
 mod bench {
 	use test::Bencher;
