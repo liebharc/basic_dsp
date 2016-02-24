@@ -1,4 +1,3 @@
-
 #[cfg(feature = "slow_test")]
 mod slow_test {
     use basic_dsp::{

@@ -174,7 +174,6 @@ macro_rules! define_interpolation_impl {
                         let mut temp = temp_mut!(self, new_len);
                         let dest = convert_mut(&mut temp[0..new_len]);
                         
-                        let data_len = data.len();
                         let len = dest.len();
                         let scalar_len = vectors[0].len() * interpolation_factor; // + 1 due to rounding of odd numbers
                                                 
