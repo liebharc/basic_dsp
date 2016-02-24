@@ -363,18 +363,27 @@ macro_rules! add_basic_private_impl {
                     let mut i = 0;
                     while i < number_of_shifts {
                         let mut data = vector.data.iter().rev();
+                        
+                        // In general (number_of_shifts - i) indicates which prepared vector we need to use
+                        // if we later calculate end % number_of_shifts. Some examples:
+                        // number_of_shifts: 4, end: 13 -> mod: 1. The code will round end to the next SIMD register
+                        // which ends at 16. In order to get back to 13 we therefore have to ignore 3 numbers.
+                        // Ignoring is done by shifting and inserting zeros. So in this example the correct shift is 3
+                        // which equals number_of_shifts(4) - mod(1).
+                        // Now mod: 0 is a special case. This is because if we round up to the next SIMD register then
+                        // we still don't need to add any offset and so for the case 0, 0 is the right shift.
                         let shift = match i {
                             0 => 0,
                             x => (number_of_shifts - x) * step
                         };
                         let min_len = vector.len() + shift;
-                        let len = if min_len % $reg::len() == 0 { min_len } else { min_len - min_len % $reg::len() + $reg::len() };
+                        let len =  (min_len + $reg::len() - 1) / $reg::len() * $reg::len();
                         let mut copy = Vec::with_capacity(len);
                         
                         let mut j = len;
                         while j > 0 {
                             j -= step;
-                            if j < shift || j >= vector.len() + shift {
+                            if j < shift || j >= min_len {
                                 copy.push(0.0);
                                 if step > 1 {
                                     copy.push(0.0);

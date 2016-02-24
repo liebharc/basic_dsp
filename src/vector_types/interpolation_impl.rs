@@ -111,15 +111,14 @@ macro_rules! define_interpolation_impl {
                     offset: $data_type) -> GenericDataVector<$data_type> {
                     let step = if complex_result { 2 } else { 1 };
                     let data_len = step * (2 * conv_len + 1);
-                    let vec_len = ((data_len + $reg::len() - 1) / $reg::len()) * $reg::len();
                     let mut imp_resp = GenericDataVector::<$data_type>::new(
                         complex_result,
                         DataVectorDomain::Time,
                         0.0, 
-                        vec_len,
+                        data_len,
                         1.0);
                     let mut i = 0;
-                    let mut j = -(conv_len as $data_type);
+                    let mut j = -(conv_len as $data_type - 1.0);
                     while i < data_len {
                         let value = function.calc(j - offset);
                         imp_resp[i] = value;
@@ -167,15 +166,13 @@ macro_rules! define_interpolation_impl {
                             shifts.push(simd);
                         }
                         
-                        let translation = Self::create_shifts_access_lookup_table(shifts.len());
-                        
                         let len = self.len();
                         let data = convert(&self.data[0..len]);
                         let mut temp = temp_mut!(self, new_len);
                         let dest = convert_mut(&mut temp[0..new_len]);
                         
                         let len = dest.len();
-                        let scalar_len = vectors[0].len() * interpolation_factor; // + 1 due to rounding of odd numbers
+                        let scalar_len = vectors[0].points() * interpolation_factor; // + 1 due to rounding of odd numbers
                                                 
                         let mut i = 0;
                         for num in &mut dest[0..scalar_len] {
@@ -195,7 +192,16 @@ macro_rules! define_interpolation_impl {
                             let rounded = (i + interpolation_factor - 1) / interpolation_factor;
                             let end = (rounded + conv_len) as usize;
                             let simd_end = (end + simd_len_in_t - 1) / simd_len_in_t; 
-                            let selection = translation[i % shifts.len()];
+                            let simd_shift = end % simd_len_in_t;
+                            let factor_shift = i % interpolation_factor;
+                            // The reasoning for the next match is analog to the explanation in the
+                            // create_shifted_copies function. 
+                            // We need the inverse of the mod unless we start with zero
+                            let factor_shift = match factor_shift {
+                                0 => 0,
+                                x => interpolation_factor - x
+                            };
+                            let selection = factor_shift * simd_len_in_t + simd_shift;
                             let shifted = shifts[selection];
                             let mut sum = $reg::splat(0.0);
                             let simd_iter = simd[simd_end - shifted.len() .. simd_end].iter();
@@ -232,7 +238,7 @@ macro_rules! define_interpolation_impl {
                         where 
                             T: Zero + Clone + From<$data_type> + Copy + Add<Output=T> + Mul<Output=T> {
                     let rounded = i / interpolation_factor;
-                    let iter = WrappingIterator::new(&data, rounded as isize - conv_len as isize -1, 2 * conv_len + 1);
+                    let iter = WrappingIterator::new(&data, rounded as isize - conv_len as isize, 2 * conv_len + 1);
                     let vector = &vectors[i % interpolation_factor];
                     let step = if vector.is_complex() { 2 } else { 1 };
                     let mut sum = T::zero();
@@ -242,30 +248,6 @@ macro_rules! define_interpolation_impl {
                         j += step;
                     }
                     sum
-                }
-                
-                /// The code which produces the cached function values for the different interpolation values
-                /// and SIMD shifts returns results in a very confusing order. This is something which it would be good
-                /// to understand and to fix. Until then the workaround is to precalculate a lookup table which
-                /// helps to get the cached function values back into order. This function does that. 
-                /// Examples:
-                /// For len=4 -> vec![0, 3, 1, 2]
-                /// For len=6 -> vec![0, 5, 3, 1, 4, 2]
-                fn create_shifts_access_lookup_table(len: usize) -> Vec<usize> {
-                    let mut translation = vec![0; len]; 
-                    let mut k = translation.len() - 1;
-                    let mut value = 2;
-                    while k > 0
-                    {
-                        translation[k] = value;
-                        value += 2;
-                        if value >= translation.len() {
-                            value = 1;        
-                        }
-                        k -= 1;
-                    }
-                    
-                    translation
                 }
             }
             
