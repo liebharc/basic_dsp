@@ -35,8 +35,24 @@ mod slow_test {
             let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
             let factor = iteration as u32 + 2;
             let left = time.clone().interpolatef(&fun as &RealImpulseResponse<f32>, factor as f32 + offset, 0.0, 12).unwrap();
-            let right = time.interpolatef(&fun as &RealImpulseResponse<f32>, factor as f32, 0.0, 10).unwrap();
+            let right = time.interpolatef(&fun as &RealImpulseResponse<f32>, factor as f32, 0.0, 12).unwrap();
             assert_vector_eq_with_reason_and_tolerance(&left.data(), &right.data(), 1e-2, &format!("Results should match independent if done with optimized or non optimized interpolatef, factor={}", factor));
+        }
+    }
+    
+    #[test]
+    fn compare_interpolatef_and_interpolatef_optimized_with_delay() {
+        for iteration in 0 .. 3 {
+            let offset = 1.0001e-6; // This offset is just enough to trigger the non optimized code path
+            let a = create_data_even(201602221, iteration, 2002, 4000);
+            let delta = create_delta(201602222, iteration);
+            let time = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
+            let factor = iteration as u32 + 2;
+            let delay = 1.0 / (iteration as f32 + 2.0);
+            let left = time.clone().interpolatef(&fun as &RealImpulseResponse<f32>, factor as f32 + offset, delay, 12).unwrap();
+            let right = time.interpolatef(&fun as &RealImpulseResponse<f32>, factor as f32, delay, 12).unwrap();
+            assert_vector_eq_with_reason_and_tolerance(&left.data(), &right.data(), 0.1, &format!("Results should match independent if done with optimized or non optimized interpolatef, factor={}", factor));
         }
     }
     
