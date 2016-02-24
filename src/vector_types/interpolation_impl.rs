@@ -90,7 +90,8 @@ macro_rules! define_interpolation_impl {
                     function: &RealImpulseResponse<$data_type>, 
                     conv_len: usize, 
                     complex_result: bool,
-                    interpolation_factor: usize) -> Vec<GenericDataVector<$data_type>> {
+                    interpolation_factor: usize,
+                    delay: $data_type) -> Vec<GenericDataVector<$data_type>> {
                     let mut result = Vec::with_capacity(interpolation_factor);
                     for shift in 0..interpolation_factor {
                         let offset = shift as $data_type / interpolation_factor as $data_type;
@@ -98,7 +99,8 @@ macro_rules! define_interpolation_impl {
                             function, 
                             conv_len, 
                             complex_result,
-                            offset));
+                            offset,
+                            delay));
                     }
                     
                     result
@@ -108,7 +110,8 @@ macro_rules! define_interpolation_impl {
                     function: &RealImpulseResponse<$data_type>, 
                     conv_len: usize, 
                     complex_result: bool,
-                    offset: $data_type) -> GenericDataVector<$data_type> {
+                    offset: $data_type,
+                    delay: $data_type) -> GenericDataVector<$data_type> {
                     let step = if complex_result { 2 } else { 1 };
                     let data_len = step * (2 * conv_len + 1);
                     let mut imp_resp = GenericDataVector::<$data_type>::new(
@@ -118,7 +121,7 @@ macro_rules! define_interpolation_impl {
                         data_len,
                         1.0);
                     let mut i = 0;
-                    let mut j = -(conv_len as $data_type - 1.0);
+                    let mut j = -(conv_len as $data_type - 1.0) + delay;
                     while i < data_len {
                         let value = function.calc(j - offset);
                         imp_resp[i] = value;
@@ -133,6 +136,7 @@ macro_rules! define_interpolation_impl {
                     mut self, 
                     function: &RealImpulseResponse<$data_type>, 
                     interpolation_factor: usize,
+                    delay: $data_type,
                     conv_len: usize, 
                     new_len: usize,
                     convert: C,
@@ -152,7 +156,8 @@ macro_rules! define_interpolation_impl {
                             function, 
                             conv_len, 
                             self.is_complex,
-                            interpolation_factor);
+                            interpolation_factor,
+                            delay);
                         let mut shifts_as_float = Vec::with_capacity(vectors.len() * number_of_shifts);
                         for vector in &vectors {
                             let shifted_copies = Self::create_shifted_copies(&vector);
@@ -267,13 +272,13 @@ macro_rules! define_interpolation_impl {
                         let new_len = (len as $data_type * interpolation_factor).round() as usize;
                         let new_len = new_len + new_len % 2;
                         if conv_len <= 202 && new_len >= 2000 && 
-                            (interpolation_factor.round() - interpolation_factor).abs() < 1e-6 && 
-                            delay.abs() < 1e-6 {
+                            (interpolation_factor.round() - interpolation_factor).abs() < 1e-6 {
                             let interpolation_factor = interpolation_factor.round() as usize;
                             if self.is_complex {
                                 return self.interpolate_priv_simd(
                                     function,
                                     interpolation_factor,
+                                    delay,
                                     conv_len,
                                     new_len,
                                     |x| Self::array_to_complex(x),
@@ -284,6 +289,7 @@ macro_rules! define_interpolation_impl {
                                 return self.interpolate_priv_simd(
                                     function,
                                     interpolation_factor,
+                                    delay,
                                     conv_len,
                                     new_len,
                                     |x| x,

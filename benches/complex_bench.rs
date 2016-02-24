@@ -119,4 +119,18 @@ mod bench {
             } )
 		});
 	}
+    
+    #[bench]
+	fn interpolatef_delayed_32t_benchmark(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Small);
+		b.iter(|| {
+			vector.execute_res(|v| {
+                let len = v.len();
+                let mut v = v.interpolatef(&RaisedCosineFunction::new(0.35), 10.0, 0.5, 10).unwrap();
+                v.set_len(len);
+                Ok(v)
+            } )
+		});
+	}
 }
