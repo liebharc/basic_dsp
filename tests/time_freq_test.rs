@@ -357,7 +357,7 @@ mod slow_test {
     
     #[test]
     fn compare_interpolatef_and_interpolatef_optimized() {
-        for iteration in 0 .. 1 { // TODO set back to 3 iterations
+        for iteration in 0 .. 3 {
             let offset = 50e-6; // This offset is just enough to trigger the non optimized code path
             let a = create_data_even(201602221, iteration, 2002, 4000);
             let delta = create_delta(201602222, iteration);

@@ -111,7 +111,7 @@ macro_rules! define_interpolation_impl {
                     offset: $data_type) -> GenericDataVector<$data_type> {
                     let step = if complex_result { 2 } else { 1 };
                     let data_len = step * (2 * conv_len + 1);
-                    let vec_len = (data_len / $reg::len() + 1) * $reg::len();
+                    let vec_len = ((data_len + $reg::len() - 1) / $reg::len()) * $reg::len();
                     let mut imp_resp = GenericDataVector::<$data_type>::new(
                         complex_result,
                         DataVectorDomain::Time,
@@ -163,10 +163,11 @@ macro_rules! define_interpolation_impl {
                         }
                         let mut shifts = Vec::with_capacity(shifts_as_float.len());
                         for shift in 0..shifts_as_float.len() {
-                            println!("{:?}\n\n", shifts_as_float[shift]);
                             let simd = $reg::array_to_regs(&shifts_as_float[shift]);
                             shifts.push(simd);
                         }
+                        
+                        let translation = Self::create_shifts_access_lookup_table(shifts.len());
                         
                         let len = self.len();
                         let data = convert(&self.data[0..len]);
@@ -175,18 +176,8 @@ macro_rules! define_interpolation_impl {
                         
                         let data_len = data.len();
                         let len = dest.len();
-                        let scalar_len = (conv_len + 1) * interpolation_factor; // + 1 due to rounding of odd numbers
-                            
-                        let mut i = 0;
-                        // TODO limit range
-                        for num in &mut dest[0..len] {
-                            (*num) = 
-                                Self::interpolate_priv_simd_step(
-                                    i, interpolation_factor, conv_len, 
-                                    data, &vectors);
-                            i += 1;
-                        }
-                        
+                        let scalar_len = vectors[0].len() * interpolation_factor; // + 1 due to rounding of odd numbers
+                                                
                         let mut i = 0;
                         for num in &mut dest[0..scalar_len] {
                             (*num) = 
@@ -196,22 +187,19 @@ macro_rules! define_interpolation_impl {
                             i += 1;
                         }
                         
-                        let len_rounded = (data_len / $reg::len()) * $reg::len(); // The exact value is of no importance here
+                        let len_rounded = (self.data.len() / $reg::len()) * $reg::len(); // The exact value is of no importance here
                         let simd = $reg::array_to_regs(&self.data[0..len_rounded]);
-                        let translation = [0, 3, 1, 2];
-                        for num in &mut dest[scalar_len .. scalar_len + 100] {
-                            let rounded = (i + 1) / interpolation_factor;
+                        // Length of a SIMD reg relative to the length of type T 
+                        // which is 1 for real numbers or 2 for complex numbers
+                        let simd_len_in_t = $reg::len() / step; 
+                        for num in &mut dest[scalar_len .. len - scalar_len] {
+                            let rounded = (i + interpolation_factor - 1) / interpolation_factor;
                             let end = (rounded + conv_len) as usize;
-                            let factor_selector = i % number_of_shifts;
-                            //let factor_selector = interpolation_factor - 1 - i % interpolation_factor;
-                            let shift = (i / 2) % interpolation_factor;
+                            let simd_end = (end + simd_len_in_t - 1) / simd_len_in_t; 
                             let selection = translation[i % shifts.len()];
                             let shifted = shifts[selection];
-                            println!("shifts.len={}, selected={}, shift={}, factor_selector={}", shifts.len(), selection, shift, factor_selector);
-                            let end = (end + number_of_shifts - 1) / number_of_shifts;
                             let mut sum = $reg::splat(0.0);
-                            //println!("i={},interpolation_factor={},rounded={},selection={},end={},shifted.len={}", i, interpolation_factor, rounded, factor_selector + shift, end, shifted.len());
-                            let simd_iter = simd[end - shifted.len() .. end].iter();
+                            let simd_iter = simd[simd_end - shifted.len() .. simd_end].iter();
                             let iteration = 
                                 simd_iter
                                 .zip(shifted);
@@ -221,11 +209,20 @@ macro_rules! define_interpolation_impl {
                             (*num) = simd_sum(sum);
                             i += 1;
                         }
+                        
+                        i = len - scalar_len;
+                        for num in &mut dest[len-scalar_len..len] {
+                            (*num) = 
+                                Self::interpolate_priv_simd_step(
+                                    i, interpolation_factor, conv_len, 
+                                    data, &vectors);
+                            i += 1;
+                        }
                     }
                     self.valid_len = new_len;
                     Ok(self.swap_data_temp())
                 }
-                
+                              
                 #[inline]
                 fn interpolate_priv_simd_step<T>(
                     i: usize, 
@@ -246,6 +243,30 @@ macro_rules! define_interpolation_impl {
                         j += step;
                     }
                     sum
+                }
+                
+                /// The code which produces the cached function values for the different interpolation values
+                /// and SIMD shifts returns results in a very confusing order. This is something which it would be good
+                /// to understand and to fix. Until then the workaround is to precalculate a lookup table which
+                /// helps to get the cached function values back into order. This function does that. 
+                /// Examples:
+                /// For len=4 -> vec![0, 3, 1, 2]
+                /// For len=6 -> vec![0, 5, 3, 1, 4, 2]
+                fn create_shifts_access_lookup_table(len: usize) -> Vec<usize> {
+                    let mut translation = vec![0; len]; 
+                    let mut k = translation.len() - 1;
+                    let mut value = 2;
+                    while k > 0
+                    {
+                        translation[k] = value;
+                        value += 2;
+                        if value >= translation.len() {
+                            value = 1;        
+                        }
+                        k -= 1;
+                    }
+                    
+                    translation
                 }
             }
             
