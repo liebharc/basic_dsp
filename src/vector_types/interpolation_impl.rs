@@ -254,10 +254,6 @@ macro_rules! define_interpolation_impl {
             impl Interpolation<$data_type> for GenericDataVector<$data_type> {
                 fn interpolatef(mut self, function: &RealImpulseResponse<$data_type>, interpolation_factor: $data_type, delay: $data_type, conv_len: usize) -> VecResult<Self> {
                     {
-                        if interpolation_factor == 1.0 {
-                            return Ok(self);
-                        }
-                        
                         let delay = delay / self.delta;
                         let len = self.len();
                         let points_half = self.points() / 2;
