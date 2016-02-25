@@ -71,6 +71,7 @@ pub use vector_types::
         FrequencyMultiplication,
         CrossCorrelation,
         Interpolation,
+        RealInterpolation,
         PaddingOption
 	};
  pub use multicore_support::MultiCoreSettings;

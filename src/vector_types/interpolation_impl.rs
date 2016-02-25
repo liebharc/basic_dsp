@@ -25,7 +25,7 @@ use simd_extensions::*;
 use std::ops::{Add, Mul};
 use std::fmt::{Display, Debug};
 
-/// Provides a interpolation operation for data vectors.
+/// Provides interpolation operations for real and complex data vectors.
 /// # Unstable
 /// This functionality has been recently added in order to find out if the definitions are consistent.
 /// However the actual implementation is lacking tests.
@@ -58,6 +58,17 @@ pub trait Interpolation<T> : DataVector<T>
     
     /// Decimates or downsamples `self`. `decimatei` is the inverse function to `interpolatei`.
     fn decimatei(self, decimation_factor: u32, delay: u32) -> VecResult<Self>;
+}
+
+/// Provides interpolation operations which are only applicable for real data vectors.
+pub trait RealInterpolation<T> : DataVector<T>
+    where T: RealNumber {
+    
+    // Piecewise cubic hermite interpolation between samples.
+    fn interpolate_pchip(self, interpolation_factor: T, delay: T) -> VecResult<Self>;
+    
+    /// Linear interpolation between samples.
+    fn interpolate_lin(self, interpolation_factor: T, delay: T) -> VecResult<Self>;
 }
 
 macro_rules! define_interpolation_impl {
@@ -383,6 +394,16 @@ macro_rules! define_interpolation_impl {
                     Ok(self)
                 }
             }
+            
+            impl RealInterpolation<$data_type> for GenericDataVector<$data_type> {
+                fn interpolate_lin(self, interpolation_factor: $data_type, delay: $data_type) -> VecResult<Self> {
+                    panic!("Panic")
+                }
+                
+                fn interpolate_pchip(self, interpolation_factor: $data_type, delay: $data_type) -> VecResult<Self> {
+                    panic!("Panic")
+                }
+            }
         )*
     }
 }
@@ -408,11 +429,32 @@ macro_rules! define_interpolation_forward {
     }
 }
 
+macro_rules! define_real_only_interpolation_forward {
+    ($($name:ident, $data_type:ident);*) => {
+        $( 
+            impl RealInterpolation<$data_type> for $name<$data_type> {
+                fn interpolate_lin(self, interpolation_factor: $data_type, delay: $data_type) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().interpolate_lin(interpolation_factor, delay))
+                }
+                
+                fn interpolate_pchip(self, interpolation_factor: $data_type, delay: $data_type) -> VecResult<Self> {
+                    Self::from_genres(self.to_gen().interpolate_pchip(interpolation_factor, delay))
+                }
+            }
+        )*
+    }
+}
+
 define_interpolation_forward!(
     RealTimeVector, f32; RealTimeVector, f64;
     ComplexTimeVector, f32; ComplexTimeVector, f64;
     RealFreqVector, f32; RealFreqVector, f64;
     ComplexFreqVector, f32; ComplexFreqVector, f64
+);
+
+define_real_only_interpolation_forward!(
+    RealTimeVector, f32; RealTimeVector, f64;
+    RealFreqVector, f32; RealFreqVector, f64
 );
 
 #[cfg(test)]
@@ -494,6 +536,30 @@ mod tests {
         let time = ComplexTimeVector32::from_interleaved(&[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0]);
         let result = time.decimatei(2, 1).unwrap();
         let expected = [2.0, 3.0, 6.0, 7.0, 10.0, 11.0];
+        assert_eq_tol(result.data(), &expected, 0.1);
+    }
+    
+    #[test]
+    fn hermit_spline_test() {
+        // http://stackoverflow.com/questions/8557098/cubic-hermite-spline-behaving-strangely
+        // https://en.wikipedia.org/wiki/Cubic_Hermite_spline
+        let time = RealFreqVector32::from_array(&[-1.0, -2.0, -1.0, 0.0, 1.0, 3.0, 4.0]);
+        let result = time.interpolate_pchip(4.0, 0.0).unwrap();
+        let expected = [
+            -1.0000, -1.4375, -1.7500, -1.9375, -2.0000, -1.8906, -1.6250, -1.2969,
+            -1.0000, -0.7500, -0.5000, -0.2500, 0.0, 0.2344, 0.4583, 0.7031,
+            1.0000, 1.4375, 2.0000, 2.5625, 3.0000, 3.3203, 3.6042, 3.8359, 4.0];
+        assert_eq_tol(result.data(), &expected, 0.1);
+    }
+    
+    #[test]
+    fn linear_test() {
+        let time = RealFreqVector32::from_array(&[-1.0, -2.0, -1.0, 0.0, 1.0, 3.0, 4.0]);
+        let result = time.interpolate_lin(4.0, 0.0).unwrap();
+        let expected = [
+            -1.0000, -1.2500, -1.5000, -1.7500, -2.0000, -1.7500, -1.5000, -1.2500,
+            -1.0000, -0.7500, -0.5000, -0.2500, 0.0, 0.2500, 0.5000, 0.7500,
+             1.0000, 1.5000, 2.0000, 2.5000, 3.0000, 3.2500, 3.5000, 3.7500, 4.0];
         assert_eq_tol(result.data(), &expected, 0.1);
     }
 }

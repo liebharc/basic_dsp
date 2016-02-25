@@ -110,7 +110,9 @@ pub use vector_types::convolution_impl::{
     VectorConvolution,
     FrequencyMultiplication};
 pub use vector_types::correlation_impl::CrossCorrelation;
-pub use vector_types::interpolation_impl::Interpolation;
+pub use vector_types::interpolation_impl::{
+    Interpolation,
+    RealInterpolation};
 use num::complex::Complex;
 use RealNumber;
 use multicore_support::{Chunk, Complexity, MultiCoreSettings};
