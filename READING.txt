@@ -1,2 +1,0 @@
-https://software.intel.com/en-us/articles/basic-openmp-threading-overhead
-https://software.intel.com/en-us/articles/performance-obstacles-for-threading-how-do-they-affect-openmp-code
