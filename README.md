@@ -33,7 +33,7 @@ This crate brings vectors in different flavors.
 2. Specialized or generic vectors. The specialized vectors track the data types inside the vector in Rusts type system and therefore prevent certain errors. The generic vectors will instead throw exceptions at runtime if an operation is undefined. If in doubt then it's recommended to start with the specialized vector types.
 
 ## Design principals
-The main design goals where:
+The main design goals are:
 
 1. Prevent some typical errors by making use of the Rust type system, e.g. by preventing that an operation is called which isn't defined for a vector in real number space.
 2. Provide an interface to other programming languages which might be not as performant as Rust.
