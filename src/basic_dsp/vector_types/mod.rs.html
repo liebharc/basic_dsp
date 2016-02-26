@@ -653,7 +653,6 @@
 <span id="610">610</span>
 <span id="611">611</span>
 <span id="612">612</span>
-<span id="613">613</span>
 </pre><pre class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>reject_if</span> {
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>self_</span>: <span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>condition</span>: <span class='ident'>expr</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>message</span>: <span class='ident'>expr</span>) <span class='op'>=&gt;</span> {
@@ -767,7 +766,9 @@
     <span class='ident'>VectorConvolution</span>,
     <span class='ident'>FrequencyMultiplication</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>vector_types</span>::<span class='ident'>correlation_impl</span>::<span class='ident'>CrossCorrelation</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>vector_types</span>::<span class='ident'>interpolation_impl</span>::<span class='ident'>Interpolation</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>vector_types</span>::<span class='ident'>interpolation_impl</span>::{
+    <span class='ident'>Interpolation</span>,
+    <span class='ident'>RealInterpolation</span>};
 <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>complex</span>::<span class='ident'>Complex</span>;
 <span class='kw'>use</span> <span class='ident'>RealNumber</span>;
 <span class='kw'>use</span> <span class='ident'>multicore_support</span>::{<span class='ident'>Chunk</span>, <span class='ident'>Complexity</span>, <span class='ident'>MultiCoreSettings</span>};
@@ -778,6 +779,10 @@
 <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>traits</span>::<span class='ident'>Zero</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Mul</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='ident'>Display</span>, <span class='ident'>Debug</span>};
+
+<span class='kw'>fn</span> <span class='ident'>round_len</span>(<span class='ident'>len</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
+    ((<span class='ident'>len</span> <span class='op'>+</span> <span class='ident'>Reg32</span>::<span class='ident'>len</span>() <span class='op'>-</span> <span class='number'>1</span>) <span class='op'>/</span> <span class='ident'>Reg32</span>::<span class='ident'>len</span>()) <span class='op'>*</span> <span class='ident'>Reg32</span>::<span class='ident'>len</span>()
+}
     
 <span class='macro'>define_vector_struct</span><span class='macro'>!</span>(<span class='kw'>struct</span> <span class='ident'>GenericDataVector</span>);
 <span class='macro'>add_basic_private_impl</span><span class='macro'>!</span>(<span class='ident'>f32</span>, <span class='ident'>Reg32</span>; <span class='ident'>f64</span>, <span class='ident'>Reg64</span>);
@@ -839,22 +844,7 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>GenericDataVector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> 
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>
 {  
-    <span class='kw'>fn</span> <span class='ident'>reallocate</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>length</span>: <span class='ident'>usize</span>)
-	{
-		<span class='kw'>if</span> <span class='ident'>length</span> <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>allocated_len</span>()
-		{
-			<span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>;
-			<span class='ident'>data</span>.<span class='ident'>resize</span>(<span class='ident'>length</span>, <span class='ident'>T</span>::<span class='ident'>zero</span>());
-            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>multicore_settings</span>.<span class='ident'>early_temp_allocation</span> {
-                <span class='kw'>let</span> <span class='ident'>temp</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>temp</span>;
-                <span class='ident'>temp</span>.<span class='ident'>resize</span>(<span class='ident'>length</span>, <span class='ident'>T</span>::<span class='ident'>zero</span>());
-            }
-		}
-		
-		<span class='self'>self</span>.<span class='ident'>valid_len</span> <span class='op'>=</span> <span class='ident'>length</span>;
-	}
-	
-	<span class='kw'>fn</span> <span class='ident'>swap_data_temp</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>
+    <span class='kw'>fn</span> <span class='ident'>swap_data_temp</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>
 	{
 		<span class='kw'>let</span> <span class='ident'>temp</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>temp</span>;
 		<span class='self'>self</span>.<span class='ident'>temp</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>data</span>;
@@ -922,12 +912,20 @@
 		}
 		
 		<span class='kw'>let</span> <span class='ident'>data_length</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>len</span>();
-		<span class='kw'>let</span> <span class='ident'>scalar_length</span> <span class='op'>=</span> <span class='ident'>data_length</span> <span class='op'>%</span> <span class='ident'>Reg32</span>::<span class='ident'>len</span>();
-		<span class='kw'>let</span> <span class='ident'>vectorization_length</span> <span class='op'>=</span> <span class='ident'>data_length</span> <span class='op'>-</span> <span class='ident'>scalar_length</span>;
-		<span class='kw'>if</span> <span class='ident'>scalar_length</span> <span class='op'>&gt;</span> <span class='number'>0</span>
-		{
-			<span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;perform_operations requires right now that the array length is dividable by 4&quot;</span>)
-		}
+        <span class='kw'>let</span> <span class='ident'>alloc_len</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>allocated_len</span>();
+        <span class='kw'>let</span> <span class='ident'>rounded_len</span> <span class='op'>=</span> <span class='ident'>round_len</span>(<span class='ident'>data_length</span>);
+        <span class='kw'>let</span> <span class='ident'>vectorization_length</span> <span class='op'>=</span> 
+            <span class='kw'>if</span> <span class='ident'>rounded_len</span> <span class='op'>&lt;=</span> <span class='ident'>alloc_len</span> {
+                <span class='ident'>rounded_len</span>
+            }
+            <span class='kw'>else</span> {
+                <span class='kw'>let</span> <span class='ident'>scalar_length</span> <span class='op'>=</span> <span class='ident'>data_length</span> <span class='op'>%</span> <span class='ident'>Reg32</span>::<span class='ident'>len</span>();
+                <span class='kw'>if</span> <span class='ident'>scalar_length</span> <span class='op'>&gt;</span> <span class='number'>0</span>
+                {
+                    <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;perform_operations requires right now that the array length is dividable by 4&quot;</span>)
+                }
+                <span class='ident'>data_length</span> <span class='op'>-</span> <span class='ident'>scalar_length</span>
+            };
 		
 		{
 			<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>array</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>;

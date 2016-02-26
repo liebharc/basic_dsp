@@ -1143,6 +1143,13 @@
 <span id="1100">1100</span>
 <span id="1101">1101</span>
 <span id="1102">1102</span>
+<span id="1103">1103</span>
+<span id="1104">1104</span>
+<span id="1105">1105</span>
+<span id="1106">1106</span>
+<span id="1107">1107</span>
+<span id="1108">1108</span>
+<span id="1109">1109</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>result</span>;
 <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>complex</span>::<span class='ident'>Complex</span>;
@@ -1180,6 +1187,10 @@
 	
 	<span class='doccomment'>/// The number of valid elements in the the vector.</span>
 	<span class='kw'>fn</span> <span class='ident'>len</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span>;
+    
+    <span class='doccomment'>/// Sets the vector length to the given length. </span>
+    <span class='doccomment'>/// If `self.len() &lt; len` then the value of the new elements is undefined.</span>
+    <span class='kw'>fn</span> <span class='ident'>set_len</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>len</span>: <span class='ident'>usize</span>);
 	
 	<span class='doccomment'>/// The number of valid points. If the vector is complex then every valid point consists of two floating point numbers,</span>
 	<span class='doccomment'>/// while for real vectors every point only consists of one floating point number.</span>
@@ -2203,6 +2214,9 @@
     
     <span class='doccomment'>/// `self.points()` must be an odd number.</span>
     <span class='ident'>VectorMustHaveAnOddLength</span>,
+    
+    <span class='doccomment'>/// The function passed as argument must be symmetric</span>
+    <span class='ident'>ArgumentFunctionMustBeSymmetric</span>
 }
 
 <span class='doccomment'>/// Result contains on success the vector. On failure it contains an error reason and an vector with invalid data</span>

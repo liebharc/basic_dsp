@@ -124,14 +124,12 @@
 <span id="81">81</span>
 <span id="82">82</span>
 <span id="83">83</span>
-<span id="84">84</span>
-<span id="85">85</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>box_syntax</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>cfg_target_feature</span>)]</span>
 <span class='doccomment'>//! Basic digital signal processing (DSP) operations</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! The basic building blocks are 1xN (one times N) or Nx1 real or compelex vectors where N is typically at least in the order</span>
+<span class='doccomment'>//! The basic building blocks are 1xN (one times N) or Nx1 real or complex vectors where N is typically at least in the order</span>
 <span class='doccomment'>//! of magnitude of a couple of thousand elements. This crate tries to balance between a clear API and performance in terms of processing speed.</span>
 <span class='doccomment'>//! This project started as small pet project to learn more about DSP, CPU architecture and Rust. Since learning</span>
 <span class='doccomment'>//! involves making mistakes, don&#39;t expect things to be flawless or even close to flawless.</span>
@@ -154,11 +152,8 @@
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>simple_parallel</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>num</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rustfft</span>;
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;gpu&quot;</span>)]</span>
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>ocl</span>;
 <span class='kw'>mod</span> <span class='ident'>vector_types</span>;
 <span class='kw'>mod</span> <span class='ident'>multicore_support</span>;
-<span class='kw'>mod</span> <span class='ident'>gpu_support</span>;
 <span class='kw'>mod</span> <span class='ident'>simd_extensions</span>;
 <span class='kw'>mod</span> <span class='ident'>complex_extensions</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>window_functions</span>;
@@ -203,6 +198,7 @@
         <span class='ident'>FrequencyMultiplication</span>,
         <span class='ident'>CrossCorrelation</span>,
         <span class='ident'>Interpolation</span>,
+        <span class='ident'>RealInterpolation</span>,
         <span class='ident'>PaddingOption</span>
 	};
  <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>multicore_support</span>::<span class='ident'>MultiCoreSettings</span>;

@@ -502,7 +502,7 @@
                     }
                     
                     <span class='kw'>let</span> <span class='ident'>data_length</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>len</span>();
-                    <span class='ident'>destination</span>.<span class='ident'>reallocate</span>(<span class='ident'>data_length</span> <span class='op'>/</span> <span class='number'>2</span>);
+                    <span class='ident'>destination</span>.<span class='ident'>set_len</span>(<span class='ident'>data_length</span> <span class='op'>/</span> <span class='number'>2</span>);
                     <span class='kw'>let</span> <span class='ident'>scalar_length</span> <span class='op'>=</span> <span class='ident'>data_length</span> <span class='op'>%</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>::<span class='ident'>len</span>();
                     <span class='kw'>let</span> <span class='ident'>vectorization_length</span> <span class='op'>=</span> <span class='ident'>data_length</span> <span class='op'>-</span> <span class='ident'>scalar_length</span>;
                     <span class='kw'>let</span> <span class='ident'>array</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>;
@@ -698,8 +698,8 @@
                 
                 <span class='kw'>fn</span> <span class='ident'>get_real_imag</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>real</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Self</span>::<span class='ident'>RealPartner</span>, <span class='ident'>imag</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Self</span>::<span class='ident'>RealPartner</span>) <span class='op'>-&gt;</span> <span class='ident'>VoidResult</span> {
                     <span class='kw'>let</span> <span class='ident'>data_length</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>len</span>();
-                    <span class='ident'>real</span>.<span class='ident'>reallocate</span>(<span class='ident'>data_length</span> <span class='op'>/</span> <span class='number'>2</span>);
-                    <span class='ident'>imag</span>.<span class='ident'>reallocate</span>(<span class='ident'>data_length</span> <span class='op'>/</span> <span class='number'>2</span>);
+                    <span class='ident'>real</span>.<span class='ident'>set_len</span>(<span class='ident'>data_length</span> <span class='op'>/</span> <span class='number'>2</span>);
+                    <span class='ident'>imag</span>.<span class='ident'>set_len</span>(<span class='ident'>data_length</span> <span class='op'>/</span> <span class='number'>2</span>);
                     <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>;
                     <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>data_length</span> {
                         <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>%</span> <span class='number'>2</span> <span class='op'>==</span> <span class='number'>0</span> {
@@ -714,8 +714,8 @@
                 
                 <span class='kw'>fn</span> <span class='ident'>get_mag_phase</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>mag</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Self</span>::<span class='ident'>RealPartner</span>, <span class='ident'>phase</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Self</span>::<span class='ident'>RealPartner</span>) <span class='op'>-&gt;</span> <span class='ident'>VoidResult</span> {
                     <span class='kw'>let</span> <span class='ident'>data_length</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>len</span>();
-                    <span class='ident'>mag</span>.<span class='ident'>reallocate</span>(<span class='ident'>data_length</span> <span class='op'>/</span> <span class='number'>2</span>);
-                    <span class='ident'>phase</span>.<span class='ident'>reallocate</span>(<span class='ident'>data_length</span> <span class='op'>/</span> <span class='number'>2</span>);
+                    <span class='ident'>mag</span>.<span class='ident'>set_len</span>(<span class='ident'>data_length</span> <span class='op'>/</span> <span class='number'>2</span>);
+                    <span class='ident'>phase</span>.<span class='ident'>set_len</span>(<span class='ident'>data_length</span> <span class='op'>/</span> <span class='number'>2</span>);
                     <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>;
                     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='number'>0</span>;
                     <span class='kw'>while</span> <span class='ident'>i</span> <span class='op'>&lt;</span> <span class='ident'>data_length</span> {
@@ -732,7 +732,7 @@
                 <span class='kw'>fn</span> <span class='ident'>set_real_imag</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>real</span>: <span class='kw-2'>&amp;</span><span class='ident'>Self</span>::<span class='ident'>RealPartner</span>, <span class='ident'>imag</span>: <span class='kw-2'>&amp;</span><span class='ident'>Self</span>::<span class='ident'>RealPartner</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span> {
                     {
                         <span class='macro'>reject_if</span><span class='macro'>!</span>(<span class='self'>self</span>, <span class='ident'>real</span>.<span class='ident'>len</span>() <span class='op'>!=</span> <span class='ident'>imag</span>.<span class='ident'>len</span>(), <span class='ident'>ErrorReason</span>::<span class='ident'>InvalidArgumentLength</span>);
-                        <span class='self'>self</span>.<span class='ident'>reallocate</span>(<span class='number'>2</span> <span class='op'>*</span> <span class='ident'>real</span>.<span class='ident'>len</span>());
+                        <span class='self'>self</span>.<span class='ident'>set_len</span>(<span class='number'>2</span> <span class='op'>*</span> <span class='ident'>real</span>.<span class='ident'>len</span>());
                         <span class='kw'>let</span> <span class='ident'>data_length</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>len</span>();
                         <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>;
                         <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>data_length</span> {
@@ -750,7 +750,7 @@
                 <span class='kw'>fn</span> <span class='ident'>set_mag_phase</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>mag</span>: <span class='kw-2'>&amp;</span><span class='ident'>Self</span>::<span class='ident'>RealPartner</span>, <span class='ident'>phase</span>: <span class='kw-2'>&amp;</span><span class='ident'>Self</span>::<span class='ident'>RealPartner</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span> {
                     {
                         <span class='macro'>reject_if</span><span class='macro'>!</span>(<span class='self'>self</span>, <span class='ident'>mag</span>.<span class='ident'>len</span>() <span class='op'>!=</span> <span class='ident'>phase</span>.<span class='ident'>len</span>(), <span class='ident'>ErrorReason</span>::<span class='ident'>InvalidArgumentLength</span>);
-                        <span class='self'>self</span>.<span class='ident'>reallocate</span>(<span class='number'>2</span> <span class='op'>*</span> <span class='ident'>mag</span>.<span class='ident'>len</span>());
+                        <span class='self'>self</span>.<span class='ident'>set_len</span>(<span class='number'>2</span> <span class='op'>*</span> <span class='ident'>mag</span>.<span class='ident'>len</span>());
                         <span class='kw'>let</span> <span class='ident'>data_length</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>len</span>();
                         <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>;
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='number'>0</span>;
@@ -771,7 +771,7 @@
                     <span class='kw'>where</span> <span class='ident'>A</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span>,
                           <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='ident'>Complex</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>, <span class='ident'>A</span>) <span class='op'>-&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span> {
                     <span class='kw'>let</span> <span class='ident'>len</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>len</span>();
-                    <span class='ident'>destination</span>.<span class='ident'>reallocate</span>(<span class='ident'>len</span> <span class='op'>/</span> <span class='number'>2</span>);
+                    <span class='ident'>destination</span>.<span class='ident'>set_len</span>(<span class='ident'>len</span> <span class='op'>/</span> <span class='number'>2</span>);
                     <span class='ident'>destination</span>.<span class='ident'>delta</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>delta</span>;
                     <span class='ident'>destination</span>.<span class='ident'>is_complex</span> <span class='op'>=</span> <span class='boolval'>false</span>;
                     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>array</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>destination</span>.<span class='ident'>data</span>;

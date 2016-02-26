@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-282' class='srclink' href='../src/basic_dsp/vector_types/definitions.rs.html#1017-1060' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-285' class='srclink' href='../src/basic_dsp/vector_types/definitions.rs.html#1021-1067' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum ErrorReason {
     VectorsMustHaveTheSameSize,
     VectorMetaDataMustAgree,
@@ -57,6 +57,7 @@
     InvalidArgumentLength,
     VectorMustBeConjSymmetric,
     VectorMustHaveAnOddLength,
+    ArgumentFunctionMustBeSymmetric,
 }</pre><div class='docblock'><p>Enumeration of all error reasons</p>
 </div><h2 class='variants'>Variants</h2>
 <table><tr><td id='variant.VectorsMustHaveTheSameSize'><code>VectorsMustHaveTheSameSize</code></td><td><div class='docblock'><p>The operations requires all vectors to have the same size,
@@ -84,6 +85,7 @@ completness.
 The required symmetry is that for every point <code>vector[x].conj() == vector[-x]</code>(pseudocode)
 where <code>x</code> is the x-axis position relativ to 0Hz and <code>conj</code> is the complex conjungate.</p>
 </div></td></tr><tr><td id='variant.VectorMustHaveAnOddLength'><code>VectorMustHaveAnOddLength</code></td><td><div class='docblock'><p><code>self.points()</code> must be an odd number.</p>
+</div></td></tr><tr><td id='variant.ArgumentFunctionMustBeSymmetric'><code>ArgumentFunctionMustBeSymmetric</code></td><td><div class='docblock'><p>The function passed as argument must be symmetric</p>
 </div></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='enum' href='../basic_dsp/enum.ErrorReason.html' title='basic_dsp::ErrorReason'>ErrorReason</a></code></h3><div class='impl-items'></div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='enum' href='../basic_dsp/enum.ErrorReason.html' title='basic_dsp::ErrorReason'>ErrorReason</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='enum' href='../basic_dsp/enum.ErrorReason.html' title='basic_dsp::ErrorReason'>ErrorReason</a></code></h4>
 <h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
 </div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='enum' href='../basic_dsp/enum.ErrorReason.html' title='basic_dsp::ErrorReason'>ErrorReason</a></code></h3><div class='impl-items'><h4 id='method.eq' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class='enum' href='../basic_dsp/enum.ErrorReason.html' title='basic_dsp::ErrorReason'>ErrorReason</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>

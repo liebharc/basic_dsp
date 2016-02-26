@@ -46,10 +46,10 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/basic_dsp/lib.rs.html#1-85' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/basic_dsp/lib.rs.html#1-83' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Basic digital signal processing (DSP) operations</p>
 
-<p>The basic building blocks are 1xN (one times N) or Nx1 real or compelex vectors where N is typically at least in the order
+<p>The basic building blocks are 1xN (one times N) or Nx1 real or complex vectors where N is typically at least in the order
 of magnitude of a couple of thousand elements. This crate tries to balance between a clear API and performance in terms of processing speed.
 This project started as small pet project to learn more about DSP, CPU architecture and Rust. Since learning
 involves making mistakes, don&#39;t expect things to be flawless or even close to flawless.</p>
@@ -286,7 +286,7 @@ if the vector isn&#39;t in frequency domain and complex number space.</p>
                         <td><a class='trait' href='trait.Interpolation.html'
                                title='basic_dsp::Interpolation'>Interpolation</a></td>
                         <td class='docblock short'>
-                             <p>Provides a interpolation operation for data vectors.</p>
+                             <p>Provides interpolation operations for real and complex data vectors.</p>
 
 <h1 id='unstable' class='section-header'><a href='#unstable'>Unstable</a></h1>
 <p>This functionality has been recently added in order to find out if the definitions are consistent.
@@ -300,6 +300,18 @@ However the actual implementation is lacking tests.</p>
                                title='basic_dsp::Offset'>Offset</a></td>
                         <td class='docblock short'>
                              <p>An operation which adds a constant to each vector element</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='trait' href='trait.RealInterpolation.html'
+                               title='basic_dsp::RealInterpolation'>RealInterpolation</a></td>
+                        <td class='docblock short'>
+                             <p>Provides interpolation operations which are only applicable for real data vectors.</p>
+
+<h1 id='failures-2' class='section-header'><a href='#failures-2'>Failures</a></h1>
+<p>All operations in this trait fail with <code>VectorMustBeReal</code> if the vector isn&#39;t in the real number space.</p>
 
                         </td>
                     </tr>
@@ -319,7 +331,7 @@ However the actual implementation is lacking tests.</p>
                         <td class='docblock short'>
                              <p>Defines all operations which are valid on <code>DataVectors</code> containing real data.</p>
 
-<h1 id='failures-2' class='section-header'><a href='#failures-2'>Failures</a></h1>
+<h1 id='failures-3' class='section-header'><a href='#failures-3'>Failures</a></h1>
 <p>All operations in this trait fail with <code>VectorMustBeReal</code> if the vector isn&#39;t in the real number space.</p>
 
                         </td>
@@ -354,7 +366,7 @@ is to allow to reuse the memory of a vector for different operations.</p>
 the data is assumed to half of complex conjungate symmetric spectrum round 0 Hz where 
 the 0 Hz element itself is real.</p>
 
-<h1 id='failures-3' class='section-header'><a href='#failures-3'>Failures</a></h1>
+<h1 id='failures-4' class='section-header'><a href='#failures-4'>Failures</a></h1>
 <p>All operations in this trait fail with <code>VectorMustBeInFrquencyDomain</code>
 if the vector isn&#39;t in frequency domain or with <code>VectorMustBeConjSymmetric</code> if the first element (0Hz)
 isn&#39;t real.</p>
@@ -368,7 +380,7 @@ isn&#39;t real.</p>
                         <td class='docblock short'>
                              <p>Defines all operations which are valid on <code>DataVectors</code> containing real time domain data.</p>
 
-<h1 id='failures-4' class='section-header'><a href='#failures-4'>Failures</a></h1>
+<h1 id='failures-5' class='section-header'><a href='#failures-5'>Failures</a></h1>
 <p>All operations in this trait fail with <code>VectorMustBeInTimeDomain</code> if the vector isn&#39;t in time domain or
 with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#39;t and odd number.</p>
 
@@ -381,7 +393,7 @@ with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#3
                         <td class='docblock short'>
                              <p>Defines all operations which are valid on <code>DataVectors</code> containing time domain data.</p>
 
-<h1 id='failures-5' class='section-header'><a href='#failures-5'>Failures</a></h1>
+<h1 id='failures-6' class='section-header'><a href='#failures-6'>Failures</a></h1>
 <p>All operations in this trait fail with <code>VectorMustBeInTimeDomain</code> if the vector isn&#39;t in time domain.</p>
 
                         </td>

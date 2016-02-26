@@ -475,29 +475,6 @@
 <span id="432">432</span>
 <span id="433">433</span>
 <span id="434">434</span>
-<span id="435">435</span>
-<span id="436">436</span>
-<span id="437">437</span>
-<span id="438">438</span>
-<span id="439">439</span>
-<span id="440">440</span>
-<span id="441">441</span>
-<span id="442">442</span>
-<span id="443">443</span>
-<span id="444">444</span>
-<span id="445">445</span>
-<span id="446">446</span>
-<span id="447">447</span>
-<span id="448">448</span>
-<span id="449">449</span>
-<span id="450">450</span>
-<span id="451">451</span>
-<span id="452">452</span>
-<span id="453">453</span>
-<span id="454">454</span>
-<span id="455">455</span>
-<span id="456">456</span>
-<span id="457">457</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>num_cpus</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>::{<span class='ident'>Chunks</span>, <span class='ident'>ChunksMut</span>};
@@ -539,8 +516,6 @@
 <span class='kw'>impl</span> <span class='ident'>MultiCoreSettings</span> {
     <span class='doccomment'>/// Creates multi core settings with default values</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='ident'>MultiCoreSettings</span> {
-        <span class='comment'>// Initialize the pool</span>
-        <span class='ident'>Chunk</span>::<span class='ident'>init_static_pool</span>();
         <span class='comment'>// Half because we assume hyper threading and that we will keep a core so busy</span>
         <span class='comment'>// that hyper threading isn&#39;t of any use</span>
         <span class='ident'>Self</span>::<span class='ident'>new</span>(<span class='ident'>num_cpus</span>::<span class='ident'>get</span>() <span class='op'>/</span> <span class='number'>2</span>, <span class='boolval'>true</span>)
@@ -548,8 +523,6 @@
     
     <span class='doccomment'>/// Creates multi core settings with the given values.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>core_limit</span>: <span class='ident'>usize</span>, <span class='ident'>early_temp_allocation</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='ident'>MultiCoreSettings</span> {
-        <span class='comment'>// Initialize the pool</span>
-        <span class='ident'>Chunk</span>::<span class='ident'>init_static_pool</span>();
         <span class='ident'>MultiCoreSettings</span> {
             <span class='ident'>core_limit</span>: <span class='kw'>if</span> <span class='ident'>core_limit</span> <span class='op'>&gt;=</span> <span class='number'>1</span> { <span class='ident'>core_limit</span> } <span class='kw'>else</span> { <span class='number'>1</span> }, 
             <span class='ident'>early_temp_allocation</span>: <span class='ident'>early_temp_allocation</span>
@@ -570,34 +543,15 @@
     }
 }
 
-<span class='kw'>static</span> <span class='kw-2'>mut</span> <span class='ident'>POOL</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>Pool</span> <span class='op'>=</span> <span class='number'>0</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>Pool</span>;
-
 <span class='doccomment'>/// Contains logic which helps to perform an operation</span>
 <span class='doccomment'>/// in parallel by dividing an array into chunks.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Chunk</span>;
 <span class='kw'>impl</span> <span class='ident'>Chunk</span>
-{
-    <span class='kw'>fn</span> <span class='ident'>init_static_pool</span>() {
-        <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>transmute</span>;
-		<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::{<span class='ident'>Once</span>, <span class='ident'>ONCE_INIT</span>};
-		<span class='kw'>unsafe</span>
-		{
-			<span class='kw'>static</span> <span class='kw-2'>mut</span> <span class='ident'>ONCE</span>: <span class='ident'>Once</span> <span class='op'>=</span> <span class='ident'>ONCE_INIT</span>;
-			<span class='ident'>ONCE</span>.<span class='ident'>call_once</span>(<span class='op'>||</span>
-			{
-				<span class='ident'>POOL</span> <span class='op'>=</span> <span class='ident'>transmute</span>::<span class='op'>&lt;</span><span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Pool</span><span class='op'>&gt;</span>, <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>Pool</span><span class='op'>&gt;</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>Pool</span>::<span class='ident'>new</span>(<span class='ident'>num_cpus</span>::<span class='ident'>get</span>())));
-			});
-		}
-    }
-    
+{  
     <span class='doccomment'>/// Gives access to the thread pool singleton</span>
-	<span class='kw'>fn</span> <span class='ident'>get_static_pool</span>() <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='kw-2'>mut</span> <span class='ident'>Pool</span>
+	<span class='kw'>fn</span> <span class='ident'>get_pool</span>() <span class='op'>-&gt;</span> <span class='ident'>Pool</span>
 	{
-		<span class='kw'>unsafe</span>
-		{
-			<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>static_pool</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='ident'>POOL</span>;
-			<span class='ident'>static_pool</span>
-		}
+		<span class='ident'>Pool</span>::<span class='ident'>new</span>(<span class='ident'>num_cpus</span>::<span class='ident'>get</span>())
 	}
 
     <span class='doccomment'>/// Figures out how many threads make use for the an operation with the given complexity on </span>
@@ -717,7 +671,7 @@
 		<span class='kw'>if</span> <span class='ident'>number_of_chunks</span> <span class='op'>&gt;</span> <span class='number'>1</span>
 		{
 			<span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='ident'>array</span>, <span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
-			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_static_pool</span>();
+			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_pool</span>();
 			<span class='ident'>pool</span>.<span class='ident'>for_</span>(<span class='ident'>chunks</span>, <span class='op'>|</span><span class='ident'>chunk</span><span class='op'>|</span>
 				{
 					<span class='ident'>function</span>(<span class='ident'>chunk</span>, <span class='ident'>arguments</span>);
@@ -746,7 +700,7 @@
 		{
 			<span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='ident'>array</span>, <span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
 			<span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>chunks</span>.<span class='ident'>len</span>());
-			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_static_pool</span>();
+			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_pool</span>();
 			<span class='ident'>pool</span>.<span class='ident'>for_</span>(<span class='ident'>chunks</span>.<span class='ident'>zip</span>(<span class='ident'>ranges</span>), <span class='op'>|</span><span class='ident'>chunk</span><span class='op'>|</span>
 				{
 					<span class='ident'>function</span>(<span class='ident'>chunk</span>.<span class='number'>0</span>, <span class='ident'>chunk</span>.<span class='number'>1</span>, <span class='ident'>arguments</span>);
@@ -780,7 +734,7 @@
 		{
 			<span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='ident'>array</span>, <span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
 			<span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>chunks</span>.<span class='ident'>len</span>());
-			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_static_pool</span>();
+			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_pool</span>();
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='number'>0</span>;
             <span class='kw'>let</span> (<span class='kw-2'>mut</span> <span class='ident'>chunks1</span>, <span class='kw-2'>mut</span> <span class='ident'>chunks2</span>): (<span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;</span>) <span class='op'>=</span> 
                 <span class='ident'>chunks</span>.<span class='ident'>partition</span>(<span class='op'>|</span><span class='ident'>_c</span><span class='op'>|</span> { <span class='ident'>i</span> <span class='op'>+=</span> <span class='number'>1</span>; <span class='ident'>i</span> <span class='op'>&lt;=</span> <span class='ident'>number_of_chunks</span> <span class='op'>/</span> <span class='number'>2</span> });
@@ -830,7 +784,7 @@
 		{
 			<span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition</span>(<span class='ident'>b</span>, <span class='ident'>b_len</span>, <span class='ident'>b_step</span>, <span class='ident'>number_of_chunks</span>);
 			<span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='ident'>a_len</span>, <span class='ident'>a_step</span>, <span class='ident'>chunks</span>.<span class='ident'>len</span>());
-			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_static_pool</span>();
+			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_pool</span>();
             <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>chunks</span>.<span class='ident'>len</span>());
             <span class='kw'>let</span> <span class='ident'>stack_array</span> <span class='op'>=</span> <span class='ident'>Mutex</span>::<span class='ident'>new</span>(<span class='ident'>result</span>);
             <span class='ident'>pool</span>.<span class='ident'>for_</span>(<span class='ident'>chunks</span>.<span class='ident'>zip</span>(<span class='ident'>ranges</span>), <span class='op'>|</span><span class='ident'>chunk</span><span class='op'>|</span>
@@ -866,7 +820,7 @@
 		{
 			<span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition</span>(<span class='ident'>a</span>, <span class='ident'>a_len</span>, <span class='ident'>a_step</span>, <span class='ident'>number_of_chunks</span>);
             <span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='ident'>a_len</span>, <span class='ident'>a_step</span>, <span class='ident'>chunks</span>.<span class='ident'>len</span>());
-			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_static_pool</span>();
+			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_pool</span>();
             <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>chunks</span>.<span class='ident'>len</span>());
             <span class='kw'>let</span> <span class='ident'>stack_array</span> <span class='op'>=</span> <span class='ident'>Mutex</span>::<span class='ident'>new</span>(<span class='ident'>result</span>);
             <span class='ident'>pool</span>.<span class='ident'>for_</span>(<span class='ident'>chunks</span>.<span class='ident'>zip</span>(<span class='ident'>ranges</span>), <span class='op'>|</span><span class='ident'>chunk</span><span class='op'>|</span>
@@ -902,7 +856,7 @@
 		{
 			<span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='ident'>target</span>, <span class='ident'>target_length</span>, <span class='ident'>target_step</span>, <span class='ident'>number_of_chunks</span>);
 			<span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='ident'>original_length</span>, <span class='ident'>original_step</span>, <span class='ident'>chunks</span>.<span class='ident'>len</span>());
-			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_static_pool</span>();
+			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_pool</span>();
 			<span class='ident'>pool</span>.<span class='ident'>for_</span>(<span class='ident'>chunks</span>.<span class='ident'>zip</span>(<span class='ident'>ranges</span>), <span class='op'>|</span><span class='ident'>chunk</span><span class='op'>|</span>
 				{
 					<span class='ident'>function</span>(<span class='ident'>original</span>, <span class='ident'>chunk</span>.<span class='number'>1</span>, <span class='ident'>chunk</span>.<span class='number'>0</span>, <span class='ident'>arguments</span>);

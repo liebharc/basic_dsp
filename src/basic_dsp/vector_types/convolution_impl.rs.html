@@ -839,45 +839,6 @@
 <span id="796">796</span>
 <span id="797">797</span>
 <span id="798">798</span>
-<span id="799">799</span>
-<span id="800">800</span>
-<span id="801">801</span>
-<span id="802">802</span>
-<span id="803">803</span>
-<span id="804">804</span>
-<span id="805">805</span>
-<span id="806">806</span>
-<span id="807">807</span>
-<span id="808">808</span>
-<span id="809">809</span>
-<span id="810">810</span>
-<span id="811">811</span>
-<span id="812">812</span>
-<span id="813">813</span>
-<span id="814">814</span>
-<span id="815">815</span>
-<span id="816">816</span>
-<span id="817">817</span>
-<span id="818">818</span>
-<span id="819">819</span>
-<span id="820">820</span>
-<span id="821">821</span>
-<span id="822">822</span>
-<span id="823">823</span>
-<span id="824">824</span>
-<span id="825">825</span>
-<span id="826">826</span>
-<span id="827">827</span>
-<span id="828">828</span>
-<span id="829">829</span>
-<span id="830">830</span>
-<span id="831">831</span>
-<span id="832">832</span>
-<span id="833">833</span>
-<span id="834">834</span>
-<span id="835">835</span>
-<span id="836">836</span>
-<span id="837">837</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>definitions</span>::{
     <span class='ident'>DataVector</span>,
@@ -954,7 +915,10 @@
                     <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>is_complex</span> {
                         <span class='kw'>let</span> <span class='ident'>ratio_inv</span> <span class='op'>=</span> <span class='number'>1.0</span> <span class='op'>/</span> <span class='ident'>ratio</span>;
                         <span class='kw'>if</span> <span class='ident'>len</span> <span class='op'>&lt;=</span> <span class='number'>202</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='number'>2000</span> <span class='op'>&amp;&amp;</span> (<span class='ident'>ratio_inv</span>.<span class='ident'>round</span>() <span class='op'>-</span> <span class='ident'>ratio_inv</span>).<span class='ident'>abs</span>() <span class='op'>&lt;</span> <span class='number'>1e-6</span> <span class='op'>&amp;&amp;</span> <span class='ident'>ratio</span> <span class='op'>&gt;</span> <span class='number'>0.5</span> {
-                            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>imp_resp</span> <span class='op'>=</span> <span class='ident'>ComplexTimeVector</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>::<span class='ident'>from_constant_with_delta</span>(<span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>::<span class='ident'>zero</span>(), (<span class='number'>2</span> <span class='op'>*</span> <span class='ident'>len</span> <span class='op'>+</span> <span class='number'>1</span>) <span class='op'>*</span> <span class='ident'>ratio</span> <span class='kw'>as</span> <span class='ident'>usize</span>, <span class='self'>self</span>.<span class='ident'>delta</span>());
+                            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>imp_resp</span> <span class='op'>=</span> <span class='ident'>ComplexTimeVector</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>::<span class='ident'>from_constant_with_delta</span>(
+                                <span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>::<span class='ident'>zero</span>(), 
+                                (<span class='number'>2</span> <span class='op'>*</span> <span class='ident'>len</span> <span class='op'>+</span> <span class='number'>1</span>) <span class='op'>*</span> <span class='ident'>ratio</span> <span class='kw'>as</span> <span class='ident'>usize</span>, 
+                                <span class='self'>self</span>.<span class='ident'>delta</span>());
                             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='number'>0</span>;
                             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>j</span> <span class='op'>=</span> <span class='op'>-</span>(<span class='ident'>len</span> <span class='kw'>as</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>);
                             <span class='kw'>while</span> <span class='ident'>i</span> <span class='op'>&lt;</span> <span class='ident'>imp_resp</span>.<span class='ident'>len</span>() {
@@ -1122,7 +1086,7 @@
                     <span class='comment'>// For the SIMD operation we need to clone `vector` several</span>
                     <span class='comment'>// times and this only is worthwhile if `vector.len() &lt;&lt; self.len()`</span>
                     <span class='comment'>// where `&lt;&lt;` means &quot;significant smaller&quot;.</span>
-                    <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='number'>1000</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>len</span>() <span class='op'>%</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>::<span class='ident'>len</span>() <span class='op'>==</span> <span class='number'>0</span> <span class='op'>&amp;&amp;</span> <span class='ident'>vector</span>.<span class='ident'>len</span>() <span class='op'>&lt;=</span> <span class='number'>202</span> {
+                    <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='number'>1000</span> <span class='op'>&amp;&amp;</span> <span class='ident'>vector</span>.<span class='ident'>len</span>() <span class='op'>&lt;=</span> <span class='number'>202</span> {
                         <span class='self'>self</span>.<span class='ident'>convolve_vector_simd</span>(<span class='ident'>vector</span>)
                     }
                     <span class='kw'>else</span> {
@@ -1244,7 +1208,7 @@
                             <span class='ident'>shifts</span>.<span class='ident'>push</span>(<span class='ident'>simd</span>);
                         }
 
-                        <span class='kw'>let</span> <span class='ident'>scalar_len</span> <span class='op'>=</span> <span class='ident'>conv_len</span>;
+                        <span class='kw'>let</span> <span class='ident'>scalar_len</span> <span class='op'>=</span> <span class='ident'>conv_len</span> <span class='op'>+</span> <span class='number'>1</span>; <span class='comment'>// + 1 due to rounding of odd numbers</span>
                         <span class='kw'>let</span> <span class='ident'>conv_len</span> <span class='op'>=</span> <span class='ident'>conv_len</span> <span class='kw'>as</span> <span class='ident'>isize</span>;
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='number'>0</span>;
                         <span class='kw'>for</span> <span class='ident'>num</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>dest</span>[<span class='number'>0</span>..<span class='ident'>scalar_len</span>] {
@@ -1252,16 +1216,17 @@
                             <span class='ident'>i</span> <span class='op'>+=</span> <span class='number'>1</span>;
                         }
 
-                        <span class='kw'>let</span> <span class='ident'>simd</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>::<span class='ident'>array_to_regs</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>[<span class='number'>0</span>..<span class='ident'>len</span>]);
+                        <span class='kw'>let</span> <span class='ident'>len_rounded</span> <span class='op'>=</span> (<span class='ident'>len</span> <span class='op'>/</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>::<span class='ident'>len</span>()) <span class='op'>*</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>::<span class='ident'>len</span>(); <span class='comment'>// The exact value is of no importance here</span>
+                        <span class='kw'>let</span> <span class='ident'>simd</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>::<span class='ident'>array_to_regs</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>[<span class='number'>0</span>..<span class='ident'>len_rounded</span>]);
                         <span class='kw'>for</span> <span class='ident'>num</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>dest</span>[<span class='ident'>scalar_len</span> .. <span class='ident'>points</span> <span class='op'>-</span> <span class='ident'>scalar_len</span>] {
                             <span class='kw'>let</span> <span class='ident'>end</span> <span class='op'>=</span> (<span class='ident'>i</span> <span class='op'>+</span> <span class='ident'>conv_len</span>) <span class='kw'>as</span> <span class='ident'>usize</span>;
                             <span class='kw'>let</span> <span class='ident'>shift</span> <span class='op'>=</span> <span class='ident'>end</span> <span class='op'>%</span> <span class='ident'>shifts</span>.<span class='ident'>len</span>();
                             <span class='kw'>let</span> <span class='ident'>end</span> <span class='op'>=</span> (<span class='ident'>end</span> <span class='op'>+</span> <span class='ident'>shifts</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='number'>1</span>) <span class='op'>/</span> <span class='ident'>shifts</span>.<span class='ident'>len</span>();
                             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sum</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>::<span class='ident'>splat</span>(<span class='number'>0.0</span>);
                             <span class='kw'>let</span> <span class='ident'>shifted</span> <span class='op'>=</span> <span class='ident'>shifts</span>[<span class='ident'>shift</span>];
-                            <span class='kw'>let</span> <span class='ident'>complex_iter</span> <span class='op'>=</span> <span class='ident'>simd</span>[<span class='ident'>end</span> <span class='op'>-</span> <span class='ident'>shifted</span>.<span class='ident'>len</span>() .. <span class='ident'>end</span>].<span class='ident'>iter</span>(); 
+                            <span class='kw'>let</span> <span class='ident'>simd_iter</span> <span class='op'>=</span> <span class='ident'>simd</span>[<span class='ident'>end</span> <span class='op'>-</span> <span class='ident'>shifted</span>.<span class='ident'>len</span>() .. <span class='ident'>end</span>].<span class='ident'>iter</span>(); 
                             <span class='kw'>let</span> <span class='ident'>iteration</span> <span class='op'>=</span> 
-                                <span class='ident'>complex_iter</span>
+                                <span class='ident'>simd_iter</span>
                                 .<span class='ident'>zip</span>(<span class='ident'>shifted</span>);
                             <span class='kw'>for</span> (<span class='ident'>this</span>, <span class='ident'>other</span>) <span class='kw'>in</span> <span class='ident'>iteration</span> {
                                 <span class='ident'>sum</span> <span class='op'>=</span> <span class='ident'>sum</span> <span class='op'>+</span> <span class='ident'>simd_mul</span>(<span class='op'>*</span><span class='ident'>this</span>, <span class='op'>*</span><span class='ident'>other</span>);
@@ -1276,49 +1241,6 @@
                         }
                     }
                     <span class='prelude-val'>Ok</span>(<span class='self'>self</span>.<span class='ident'>swap_data_temp</span>())
-                }
-                
-                <span class='kw'>fn</span> <span class='ident'>create_shifted_copies</span>(<span class='ident'>vector</span>: <span class='kw-2'>&amp;</span><span class='ident'>GenericDataVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;&gt;</span>{
-                    <span class='kw'>let</span> <span class='ident'>step</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>vector</span>.<span class='ident'>is_complex</span> { <span class='number'>2</span> } <span class='kw'>else</span> { <span class='number'>1</span> };
-                    <span class='kw'>let</span> <span class='ident'>number_of_shifts</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>::<span class='ident'>len</span>() <span class='op'>/</span> <span class='ident'>step</span>;
-                    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>shifted_copies</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>number_of_shifts</span>);
-                    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='number'>0</span>;
-                    <span class='kw'>while</span> <span class='ident'>i</span> <span class='op'>&lt;</span> <span class='ident'>number_of_shifts</span> {
-                        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>data</span>.<span class='ident'>iter</span>().<span class='ident'>rev</span>();
-                        <span class='kw'>let</span> <span class='ident'>shift</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>i</span> {
-                            <span class='number'>0</span> <span class='op'>=&gt;</span> <span class='number'>0</span>,
-                            <span class='ident'>x</span> <span class='op'>=&gt;</span> (<span class='ident'>number_of_shifts</span> <span class='op'>-</span> <span class='ident'>x</span>) <span class='op'>*</span> <span class='ident'>step</span>
-                        };
-                        <span class='kw'>let</span> <span class='ident'>min_len</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>len</span>() <span class='op'>+</span> <span class='ident'>shift</span>;
-                        <span class='kw'>let</span> <span class='ident'>len</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>min_len</span> <span class='op'>%</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>::<span class='ident'>len</span>() <span class='op'>==</span> <span class='number'>0</span> { <span class='ident'>min_len</span> } <span class='kw'>else</span> { <span class='ident'>min_len</span> <span class='op'>-</span> <span class='ident'>min_len</span> <span class='op'>%</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>::<span class='ident'>len</span>() <span class='op'>+</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>::<span class='ident'>len</span>() };
-                        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>copy</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>len</span>);
-                        
-                        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>j</span> <span class='op'>=</span> <span class='ident'>len</span>;
-                        <span class='kw'>while</span> <span class='ident'>j</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
-                            <span class='ident'>j</span> <span class='op'>-=</span> <span class='ident'>step</span>;
-                            <span class='kw'>if</span> <span class='ident'>j</span> <span class='op'>&lt;</span> <span class='ident'>shift</span> <span class='op'>||</span> <span class='ident'>j</span> <span class='op'>&gt;=</span> <span class='ident'>vector</span>.<span class='ident'>len</span>() <span class='op'>+</span> <span class='ident'>shift</span> {
-                                <span class='ident'>copy</span>.<span class='ident'>push</span>(<span class='number'>0.0</span>);
-                                <span class='kw'>if</span> <span class='ident'>step</span> <span class='op'>&gt;</span> <span class='number'>1</span> {
-                                    <span class='ident'>copy</span>.<span class='ident'>push</span>(<span class='number'>0.0</span>);
-                                }
-                            } <span class='kw'>else</span> {
-                                <span class='kw'>if</span> <span class='ident'>step</span> <span class='op'>&gt;</span> <span class='number'>1</span> {
-                                    <span class='kw'>let</span> <span class='ident'>im</span> <span class='op'>=</span> <span class='op'>*</span><span class='ident'>data</span>.<span class='ident'>next</span>().<span class='ident'>unwrap</span>();
-                                    <span class='kw'>let</span> <span class='ident'>re</span> <span class='op'>=</span> <span class='op'>*</span><span class='ident'>data</span>.<span class='ident'>next</span>().<span class='ident'>unwrap</span>();
-                                    <span class='ident'>copy</span>.<span class='ident'>push</span>(<span class='ident'>re</span>);
-                                    <span class='ident'>copy</span>.<span class='ident'>push</span>(<span class='ident'>im</span>);
-                                }
-                                <span class='kw'>else</span> {
-                                    <span class='ident'>copy</span>.<span class='ident'>push</span>(<span class='op'>*</span><span class='ident'>data</span>.<span class='ident'>next</span>().<span class='ident'>unwrap</span>());
-                                }
-                            }
-                        }
-                        
-                        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>copy</span>.<span class='ident'>len</span>(), <span class='ident'>len</span>);
-                        <span class='ident'>shifted_copies</span>.<span class='ident'>push</span>(<span class='ident'>copy</span>);
-                        <span class='ident'>i</span> <span class='op'>+=</span> <span class='number'>1</span>;
-                    }
-                    <span class='ident'>shifted_copies</span>
                 }
             }
         )<span class='op'>*</span>
