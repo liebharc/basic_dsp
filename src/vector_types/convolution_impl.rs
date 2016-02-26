@@ -269,7 +269,7 @@ macro_rules! add_conv_impl{
                         {
                             let len = self.len();
                             let other = Self::array_to_complex(&vector.data[0..vector.len()]);
-                            let temp = temp_mut!(self, vector.len());
+                            let temp = temp_mut!(self, len);
                             let complex = Self::array_to_complex(&self.data[0..len]);
                             let dest = Self::array_to_complex_mut(&mut temp[0..len]);
                             let other_iter = &other[other_start .. other_end];
@@ -286,7 +286,7 @@ macro_rules! add_conv_impl{
                             let len = self.len();
                             let other = &vector.data[0..vector.len()];
                             let data = &self.data[0..len];
-                            let temp = temp_mut!(self, vector.len());
+                            let temp = temp_mut!(self, len);
                             let dest = &mut temp[0..len];
                             let other_iter = &other[other_start .. other_end];
                             let conv_len = conv_len as isize;
@@ -354,7 +354,7 @@ macro_rules! add_conv_impl{
                         let len = self.len();
                         let points = self.points();
                         let other = convert(&vector.data[0..vector.len()]);
-                        let temp = temp_mut!(self, vector.len());
+                        let temp = temp_mut!(self, len);
                         let complex = convert(&self.data[0..len]);
                         let dest = convert_mut(&mut temp[0..len]);
                         let other_iter = &other[other_start .. other_end];

@@ -40,7 +40,7 @@ impl MultiCoreSettings {
     pub fn default() -> MultiCoreSettings {
         // Half because we assume hyper threading and that we will keep a core so busy
         // that hyper threading isn't of any use
-        Self::new(num_cpus::get() / 2, true)
+        Self::new(num_cpus::get() / 2, false)
     }
     
     /// Creates multi core settings with the given values.
