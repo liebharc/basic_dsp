@@ -1,6 +1,6 @@
 [package]
 name = "basic_dsp"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Christian Liebhardt"]
 license = "MIT" # num_cpus prevents an Apache2 license
 homepage = "https://github.com/liebharc/basic_dsp"
@@ -9,7 +9,7 @@ documentation = "https://liebharc.github.io/basic_dsp/basic_dsp/"
 keywords = ["dsp", "digital signal processing"]
 description = """
 Digital signal processing based on 1xN (one times N) or Nx1 vectors in real or complex number space.
-Vectors come with basic arithmetic, convolution, fourier transformation and interpolation operations.
+Vectors come with basic arithmetic, convolution, Fourier transformation and interpolation operations.
 """
 
 [profile.dev]
