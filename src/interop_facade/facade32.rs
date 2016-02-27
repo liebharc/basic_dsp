@@ -1,16 +1,6 @@
 //! Functions for 32bit floating point number based vectors. Please refer to the other chapters of the help for documentation of the functions.
 use super::*;
-use vector_types:: {
-		DataVectorDomain,
-		DataVector,
-		GenericVectorOperations,
-		RealVectorOperations,
-		ComplexVectorOperations,
-		TimeDomainOperations,
-		FrequencyDomainOperations,
-        SymmetricFrequencyDomainOperations,
-		DataVector32, 
-        Statistics};
+use super::super::*;
 use window_functions::WindowFunction;
 use conv_types::*;
 use num::complex::Complex32;
@@ -83,6 +73,11 @@ pub extern fn get_points32(vector: &DataVector32) -> usize {
 #[no_mangle]
 pub extern fn get_delta32(vector: &DataVector32) -> f32 {
     vector.delta()
+}
+
+#[no_mangle]
+pub extern fn complex_data32(vector: &DataVector32) -> &[Complex32] {
+    vector.complex_data()
 }
 
 #[no_mangle]
@@ -367,6 +362,11 @@ pub extern fn plain_fft32(vector: Box<DataVector32>) -> VectorResult<DataVector3
 }
 
 #[no_mangle]
+pub extern fn plain_sfft32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.plain_sfft())
+}
+
+#[no_mangle]
 pub extern fn plain_ifft32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
     convert_vec!(vector.plain_ifft())
 }
@@ -465,6 +465,11 @@ pub extern fn fft32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
 }
 
 #[no_mangle]
+pub extern fn sfft32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.sfft())
+}
+
+#[no_mangle]
 pub extern fn ifft32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
     convert_vec!(vector.ifft())
 }
@@ -482,6 +487,14 @@ pub extern fn sifft32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
 #[no_mangle]
 pub extern fn mirror32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
     convert_vec!(vector.mirror())
+}
+
+pub extern fn fft_shift32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.fft_shift())
+}
+
+pub extern fn ifft_shift32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.ifft_shift())
 }
 
 /// `window` argument is translated to:
@@ -506,6 +519,13 @@ pub extern fn unapply_window32(vector: Box<DataVector32>, window: i32) -> Vector
 pub extern fn windowed_fft32(vector: Box<DataVector32>, window: i32) -> VectorResult<DataVector32> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.windowed_fft(window.as_ref()))
+}
+
+/// See [`apply_window32`](fn.apply_window32.html) for a description of the `window` parameter.
+#[no_mangle]
+pub extern fn windowed_sfft32(vector: Box<DataVector32>, window: i32) -> VectorResult<DataVector32> {
+    let window = translate_to_window_function(window);
+    convert_vec!(vector.windowed_sfft(window.as_ref()))
 }
 
 /// See [`apply_window32`](fn.apply_window32.html) for a description of the `window` parameter.
@@ -670,4 +690,199 @@ pub extern fn windowed_custom_sifft32(
     }
 }
 
-// pub extern fn complex_data32 isn't implemented to avoid to rely to much on the struct layout of Complex<T>
+#[no_mangle]
+pub extern fn reverse32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.reverse())
+}
+
+#[no_mangle]
+pub extern fn decimatei32(vector: Box<DataVector32>, decimation_factor: u32, delay: u32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.decimatei(decimation_factor, delay))
+}
+
+#[no_mangle]
+pub extern fn prepare_argument32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.prepare_argument())
+}
+
+#[no_mangle]
+pub extern fn prepare_argument_padded32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.prepare_argument_padded())
+}
+
+#[no_mangle]
+pub extern fn correlate32(vector: Box<DataVector32>, other: &DataVector32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.correlate(other))
+}
+
+#[no_mangle]
+pub extern fn convolve_vector32(vector: Box<DataVector32>, impulse_response: &DataVector32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.convolve_vector(impulse_response))
+}
+
+/// Convolves the vector with an impulse response defined by `impulse_response` and the void pointer `impulse_response_data`. 
+/// The `impulse_response_data` pointer is passed to the `impulse_response`
+/// function at every call and can be used to store parameters.
+#[no_mangle]
+pub extern fn convolve_real32(vector: Box<DataVector32>, 
+    impulse_response: extern fn(*const c_void, f32) -> f32, 
+    impulse_response_data: *const c_void,
+    is_symmetric: bool,
+    ratio: f32,
+    len: usize) -> VectorResult<DataVector32> {
+    unsafe {
+        let function: &RealImpulseResponse<f32> = &ForeignRealConvolutionFunction { conv_function: impulse_response, conv_data: mem::transmute(impulse_response_data), is_symmetric: is_symmetric };
+        convert_vec!(vector.convolve(function, ratio, len))
+    }
+}
+
+/// Convolves the vector with an impulse response defined by `impulse_response` and the void pointer `impulse_response_data`. 
+/// The `impulse_response_data` pointer is passed to the `impulse_response`
+/// function at every call and can be used to store parameters.
+#[no_mangle]
+pub extern fn convolve_complex32(vector: Box<DataVector32>, 
+    impulse_response: extern fn(*const c_void, f32) -> Complex32, 
+    impulse_response_data: *const c_void,
+    is_symmetric: bool,
+    ratio: f32,
+    len: usize) -> VectorResult<DataVector32> {
+    unsafe {
+        let function: &ComplexImpulseResponse<f32> = &ForeignComplexConvolutionFunction { conv_function: impulse_response, conv_data: mem::transmute(impulse_response_data), is_symmetric: is_symmetric };
+        convert_vec!(vector.convolve(function, ratio, len))
+    }
+}
+
+/// `impulse_response` argument is translated to:
+/// 
+/// 1. `0` to [`SincFunction`](../../conv_types/struct.SincFunction.html)
+/// 2. `1` to [`RaisedCosineFunction`](../../conv_types/struct.RaisedCosineFunction.html)
+///
+/// `rolloff` is only used if this is a valid parameter for the selected `impulse_response`
+#[no_mangle]    
+pub extern fn convolve32(vector: Box<DataVector32>, 
+    impulse_response: i32,
+    rolloff: f32,
+    ratio: f32,
+    len: usize) -> VectorResult<DataVector32> {
+    let function = translate_to_real_convolution_function(impulse_response, rolloff);
+    convert_vec!(vector.convolve(function.as_ref(), ratio, len))
+}
+
+/// Convolves the vector with an impulse response defined by `frequency_response` and the void pointer `frequency_response_data`. 
+/// The `frequency_response_data` pointer is passed to the `frequency_response`
+/// function at every call and can be used to store parameters.
+#[no_mangle]
+pub extern fn multiply_frequency_response_real32(vector: Box<DataVector32>, 
+    frequency_response: extern fn(*const c_void, f32) -> f32, 
+    frequency_response_data: *const c_void,
+    is_symmetric: bool,
+    ratio: f32) -> VectorResult<DataVector32> {
+    unsafe {
+        let function: &RealFrequencyResponse<f32> = &ForeignRealConvolutionFunction { conv_function: frequency_response, conv_data: mem::transmute(frequency_response_data), is_symmetric: is_symmetric };
+        convert_vec!(vector.multiply_frequency_response(function, ratio))
+    }
+}
+
+/// Convolves the vector with an impulse response defined by `frequency_response` and the void pointer `frequency_response_data`. 
+/// The `frequency_response` pointer is passed to the `frequency_response`
+/// function at every call and can be used to store parameters.
+#[no_mangle]
+pub extern fn multiply_frequency_response_complex32(vector: Box<DataVector32>, 
+    frequency_response: extern fn(*const c_void, f32) -> Complex32, 
+    frequency_response_data: *const c_void,
+    is_symmetric: bool,
+    ratio: f32) -> VectorResult<DataVector32> {
+    unsafe {
+        let function: &ComplexFrequencyResponse<f32> = &ForeignComplexConvolutionFunction { conv_function: frequency_response, conv_data: mem::transmute(frequency_response_data), is_symmetric: is_symmetric };
+        convert_vec!(vector.multiply_frequency_response(function, ratio))
+    }
+}
+
+/// `frequency_response` argument is translated to:
+/// 
+/// 1. `0` to [`SincFunction`](../../conv_types/struct.SincFunction.html)
+/// 2. `1` to [`RaisedCosineFunction`](../../conv_types/struct.RaisedCosineFunction.html)
+///
+/// `rolloff` is only used if this is a valid parameter for the selected `frequency_response`
+#[no_mangle]    
+pub extern fn multiply_frequency_response32(vector: Box<DataVector32>, 
+    frequency_response: i32,
+    rolloff: f32,
+    ratio: f32) -> VectorResult<DataVector32> {
+    let function = translate_to_real_frequency_response(frequency_response, rolloff);
+    convert_vec!(vector.multiply_frequency_response(function.as_ref(), ratio))
+}
+
+/// Convolves the vector with an impulse response defined by `impulse_response` and the void pointer `impulse_response_data`. 
+/// The `impulse_response_data` pointer is passed to the `impulse_response`
+/// function at every call and can be used to store parameters.
+#[no_mangle]
+pub extern fn interpolatef_custom32(vector: Box<DataVector32>, 
+    impulse_response: extern fn(*const c_void, f32) -> f32, 
+    impulse_response_data: *const c_void,
+    is_symmetric: bool,
+    interpolation_factor: f32,
+    delay: f32,
+    len: usize) -> VectorResult<DataVector32> {
+    unsafe {
+        let function: &RealImpulseResponse<f32> = &ForeignRealConvolutionFunction { conv_function: impulse_response, conv_data: mem::transmute(impulse_response_data), is_symmetric: is_symmetric };
+        convert_vec!(vector.interpolatef(function, interpolation_factor, delay, len))
+    }
+}
+
+/// `impulse_response` argument is translated to:
+/// 
+/// 1. `0` to [`SincFunction`](../../conv_types/struct.SincFunction.html)
+/// 2. `1` to [`RaisedCosineFunction`](../../conv_types/struct.RaisedCosineFunction.html)
+///
+/// `rolloff` is only used if this is a valid parameter for the selected `impulse_response`
+#[no_mangle]    
+pub extern fn interpolatef32(vector: Box<DataVector32>, 
+    impulse_response: i32,
+    rolloff: f32,
+    interpolation_factor: f32,
+    delay: f32,
+    len: usize) -> VectorResult<DataVector32> {
+    let function = translate_to_real_convolution_function(impulse_response, rolloff);
+    convert_vec!(vector.interpolatef(function.as_ref(), interpolation_factor, delay, len))
+}
+
+/// Convolves the vector with an impulse response defined by `frequency_response` and the void pointer `frequency_response_data`. 
+/// The `frequency_response_data` pointer is passed to the `frequency_response`
+/// function at every call and can be used to store parameters.
+#[no_mangle]
+pub extern fn interpolatei_custom32(vector: Box<DataVector32>, 
+    frequency_response: extern fn(*const c_void, f32) -> f32, 
+    frequency_response_data: *const c_void,
+    is_symmetric: bool,
+    interpolation_factor: i32) -> VectorResult<DataVector32> {
+    unsafe {
+        let function: &RealFrequencyResponse<f32> = &ForeignRealConvolutionFunction { conv_function: frequency_response, conv_data: mem::transmute(frequency_response_data), is_symmetric: is_symmetric };
+        convert_vec!(vector.interpolatei(function, interpolation_factor as u32))
+    }
+}
+
+/// `frequency_response` argument is translated to:
+/// 
+/// 1. `0` to [`SincFunction`](../../conv_types/struct.SincFunction.html)
+/// 2. `1` to [`RaisedCosineFunction`](../../conv_types/struct.RaisedCosineFunction.html)
+///
+/// `rolloff` is only used if this is a valid parameter for the selected `frequency_response`
+#[no_mangle]    
+pub extern fn interpolatei32(vector: Box<DataVector32>, 
+    frequency_response: i32,
+    rolloff: f32,
+    interpolation_factor: i32) -> VectorResult<DataVector32> {
+    let function = translate_to_real_frequency_response(frequency_response, rolloff);
+    convert_vec!(vector.interpolatei(function.as_ref(), interpolation_factor as u32))
+}
+
+#[no_mangle]    
+pub extern fn interpolate_lin32(vector: Box<DataVector32>, interpolation_factor: f32, delay: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.interpolate_lin(interpolation_factor, delay))
+}
+
+#[no_mangle]    
+pub extern fn interpolate_hermite32(vector: Box<DataVector32>, interpolation_factor: f32, delay: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.interpolate_hermite(interpolation_factor, delay))
+}  

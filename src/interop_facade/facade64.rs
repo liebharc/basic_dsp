@@ -1,18 +1,9 @@
 // Auto generated code, change facade32.rs and run facade64_create.pl
 //! Functions for 64bit floating point number based vectors. Please refer to the other chapters of the help for documentation of the functions.
 use super::*;
-use vector_types:: {
-		DataVectorDomain,
-		DataVector,
-		GenericVectorOperations,
-		RealVectorOperations,
-		ComplexVectorOperations,
-		TimeDomainOperations,
-		FrequencyDomainOperations,
-        SymmetricFrequencyDomainOperations,
-		DataVector64, 
-        Statistics};
+use super::super::*;
 use window_functions::WindowFunction;
+use conv_types::*;
 use num::complex::Complex64;
 use std::slice;
 use std::os::raw::c_void;
@@ -83,6 +74,11 @@ pub extern fn get_points64(vector: &DataVector64) -> usize {
 #[no_mangle]
 pub extern fn get_delta64(vector: &DataVector64) -> f64 {
     vector.delta()
+}
+
+#[no_mangle]
+pub extern fn complex_data64(vector: &DataVector64) -> &[Complex64] {
+    vector.complex_data()
 }
 
 #[no_mangle]
@@ -367,6 +363,11 @@ pub extern fn plain_fft64(vector: Box<DataVector64>) -> VectorResult<DataVector6
 }
 
 #[no_mangle]
+pub extern fn plain_sfft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+    convert_vec!(vector.plain_sfft())
+}
+
+#[no_mangle]
 pub extern fn plain_ifft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
     convert_vec!(vector.plain_ifft())
 }
@@ -465,6 +466,11 @@ pub extern fn fft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
 }
 
 #[no_mangle]
+pub extern fn sfft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+    convert_vec!(vector.sfft())
+}
+
+#[no_mangle]
 pub extern fn ifft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
     convert_vec!(vector.ifft())
 }
@@ -482,6 +488,14 @@ pub extern fn sifft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
 #[no_mangle]
 pub extern fn mirror64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
     convert_vec!(vector.mirror())
+}
+
+pub extern fn fft_shift64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+    convert_vec!(vector.fft_shift())
+}
+
+pub extern fn ifft_shift64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+    convert_vec!(vector.ifft_shift())
 }
 
 /// `window` argument is translated to:
@@ -510,6 +524,13 @@ pub extern fn windowed_fft64(vector: Box<DataVector64>, window: i32) -> VectorRe
 
 /// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
 #[no_mangle]
+pub extern fn windowed_sfft64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
+    let window = translate_to_window_function(window);
+    convert_vec!(vector.windowed_sfft(window.as_ref()))
+}
+
+/// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
+#[no_mangle]
 pub extern fn windowed_ifft64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.windowed_ifft(window.as_ref()))
@@ -522,13 +543,13 @@ pub extern fn windowed_sifft64(vector: Box<DataVector64>, window: i32) -> Vector
     convert_vec!(vector.windowed_sifft(window.as_ref()))
 }
 
-struct ForeignWindowFunction {
-    window_function: extern fn(*const c_void, usize, usize) -> f64,
+pub struct ForeignWindowFunction {
+    pub window_function: extern fn(*const c_void, usize, usize) -> f64,
     // Actual data type is a const* c_void, but Rust doesn't allow that becaues it's usafe so we store
     // it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.
-    window_data: usize,
+    pub window_data: usize,
     
-    is_symmetric: bool
+    pub is_symmetric: bool
 }
 
 impl WindowFunction<f64> for ForeignWindowFunction {
@@ -539,6 +560,68 @@ impl WindowFunction<f64> for ForeignWindowFunction {
     fn window(&self, idx: usize, points: usize) -> f64 {
         let fun = self.window_function;
         unsafe { fun(mem::transmute(self.window_data), idx, points) }
+    }
+}
+
+pub struct ForeignRealConvolutionFunction {
+    pub conv_function: extern fn(*const c_void, f64) -> f64,
+    // Actual data type is a const* c_void, but Rust doesn't allow that becaues it's usafe so we store
+    // it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.
+    pub conv_data: usize,
+    
+    pub is_symmetric: bool
+}
+
+impl RealImpulseResponse<f64> for ForeignRealConvolutionFunction {
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    fn calc(&self, x: f64) -> f64 {
+        let fun = self.conv_function;
+        unsafe { fun(mem::transmute(self.conv_data), x) }
+    }
+}
+
+impl RealFrequencyResponse<f64> for ForeignRealConvolutionFunction {
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    fn calc(&self, x: f64) -> f64 {
+        let fun = self.conv_function;
+        unsafe { fun(mem::transmute(self.conv_data), x) }
+    }
+}
+
+pub struct ForeignComplexConvolutionFunction {
+    pub conv_function: extern fn(*const c_void, f64) -> Complex64,
+    // Actual data type is a const* c_void, but Rust doesn't allow that becaues it's usafe so we store
+    // it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.
+    pub conv_data: usize,
+    
+    pub is_symmetric: bool
+}
+
+impl ComplexImpulseResponse<f64> for ForeignComplexConvolutionFunction {
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    fn calc(&self, x: f64) -> Complex64 {
+        let fun = self.conv_function;
+        unsafe { fun(mem::transmute(self.conv_data), x) }
+    }
+}
+
+impl ComplexFrequencyResponse<f64> for ForeignComplexConvolutionFunction {
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    fn calc(&self, x: f64) -> Complex64 {
+        let fun = self.conv_function;
+        unsafe { fun(mem::transmute(self.conv_data), x) }
     }
 }
 
@@ -608,4 +691,199 @@ pub extern fn windowed_custom_sifft64(
     }
 }
 
-// pub extern fn complex_data32 isn't implemented to avoid to rely to much on the struct layout of Complex<T>
+#[no_mangle]
+pub extern fn reverse64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+    convert_vec!(vector.reverse())
+}
+
+#[no_mangle]
+pub extern fn decimatei64(vector: Box<DataVector64>, decimation_factor: u32, delay: u32) -> VectorResult<DataVector64> {
+    convert_vec!(vector.decimatei(decimation_factor, delay))
+}
+
+#[no_mangle]
+pub extern fn prepare_argument64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+    convert_vec!(vector.prepare_argument())
+}
+
+#[no_mangle]
+pub extern fn prepare_argument_padded64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+    convert_vec!(vector.prepare_argument_padded())
+}
+
+#[no_mangle]
+pub extern fn correlate64(vector: Box<DataVector64>, other: &DataVector64) -> VectorResult<DataVector64> {
+    convert_vec!(vector.correlate(other))
+}
+
+#[no_mangle]
+pub extern fn convolve_vector64(vector: Box<DataVector64>, impulse_response: &DataVector64) -> VectorResult<DataVector64> {
+    convert_vec!(vector.convolve_vector(impulse_response))
+}
+
+/// Convolves the vector with an impulse response defined by `impulse_response` and the void pointer `impulse_response_data`. 
+/// The `impulse_response_data` pointer is passed to the `impulse_response`
+/// function at every call and can be used to store parameters.
+#[no_mangle]
+pub extern fn convolve_real64(vector: Box<DataVector64>, 
+    impulse_response: extern fn(*const c_void, f64) -> f64, 
+    impulse_response_data: *const c_void,
+    is_symmetric: bool,
+    ratio: f64,
+    len: usize) -> VectorResult<DataVector64> {
+    unsafe {
+        let function: &RealImpulseResponse<f64> = &ForeignRealConvolutionFunction { conv_function: impulse_response, conv_data: mem::transmute(impulse_response_data), is_symmetric: is_symmetric };
+        convert_vec!(vector.convolve(function, ratio, len))
+    }
+}
+
+/// Convolves the vector with an impulse response defined by `impulse_response` and the void pointer `impulse_response_data`. 
+/// The `impulse_response_data` pointer is passed to the `impulse_response`
+/// function at every call and can be used to store parameters.
+#[no_mangle]
+pub extern fn convolve_complex64(vector: Box<DataVector64>, 
+    impulse_response: extern fn(*const c_void, f64) -> Complex64, 
+    impulse_response_data: *const c_void,
+    is_symmetric: bool,
+    ratio: f64,
+    len: usize) -> VectorResult<DataVector64> {
+    unsafe {
+        let function: &ComplexImpulseResponse<f64> = &ForeignComplexConvolutionFunction { conv_function: impulse_response, conv_data: mem::transmute(impulse_response_data), is_symmetric: is_symmetric };
+        convert_vec!(vector.convolve(function, ratio, len))
+    }
+}
+
+/// `impulse_response` argument is translated to:
+/// 
+/// 1. `0` to [`SincFunction`](../../conv_types/struct.SincFunction.html)
+/// 2. `1` to [`RaisedCosineFunction`](../../conv_types/struct.RaisedCosineFunction.html)
+///
+/// `rolloff` is only used if this is a valid parameter for the selected `impulse_response`
+#[no_mangle]    
+pub extern fn convolve64(vector: Box<DataVector64>, 
+    impulse_response: i32,
+    rolloff: f64,
+    ratio: f64,
+    len: usize) -> VectorResult<DataVector64> {
+    let function = translate_to_real_convolution_function(impulse_response, rolloff);
+    convert_vec!(vector.convolve(function.as_ref(), ratio, len))
+}
+
+/// Convolves the vector with an impulse response defined by `frequency_response` and the void pointer `frequency_response_data`. 
+/// The `frequency_response_data` pointer is passed to the `frequency_response`
+/// function at every call and can be used to store parameters.
+#[no_mangle]
+pub extern fn multiply_frequency_response_real64(vector: Box<DataVector64>, 
+    frequency_response: extern fn(*const c_void, f64) -> f64, 
+    frequency_response_data: *const c_void,
+    is_symmetric: bool,
+    ratio: f64) -> VectorResult<DataVector64> {
+    unsafe {
+        let function: &RealFrequencyResponse<f64> = &ForeignRealConvolutionFunction { conv_function: frequency_response, conv_data: mem::transmute(frequency_response_data), is_symmetric: is_symmetric };
+        convert_vec!(vector.multiply_frequency_response(function, ratio))
+    }
+}
+
+/// Convolves the vector with an impulse response defined by `frequency_response` and the void pointer `frequency_response_data`. 
+/// The `frequency_response` pointer is passed to the `frequency_response`
+/// function at every call and can be used to store parameters.
+#[no_mangle]
+pub extern fn multiply_frequency_response_complex64(vector: Box<DataVector64>, 
+    frequency_response: extern fn(*const c_void, f64) -> Complex64, 
+    frequency_response_data: *const c_void,
+    is_symmetric: bool,
+    ratio: f64) -> VectorResult<DataVector64> {
+    unsafe {
+        let function: &ComplexFrequencyResponse<f64> = &ForeignComplexConvolutionFunction { conv_function: frequency_response, conv_data: mem::transmute(frequency_response_data), is_symmetric: is_symmetric };
+        convert_vec!(vector.multiply_frequency_response(function, ratio))
+    }
+}
+
+/// `frequency_response` argument is translated to:
+/// 
+/// 1. `0` to [`SincFunction`](../../conv_types/struct.SincFunction.html)
+/// 2. `1` to [`RaisedCosineFunction`](../../conv_types/struct.RaisedCosineFunction.html)
+///
+/// `rolloff` is only used if this is a valid parameter for the selected `frequency_response`
+#[no_mangle]    
+pub extern fn multiply_frequency_response64(vector: Box<DataVector64>, 
+    frequency_response: i32,
+    rolloff: f64,
+    ratio: f64) -> VectorResult<DataVector64> {
+    let function = translate_to_real_frequency_response(frequency_response, rolloff);
+    convert_vec!(vector.multiply_frequency_response(function.as_ref(), ratio))
+}
+
+/// Convolves the vector with an impulse response defined by `impulse_response` and the void pointer `impulse_response_data`. 
+/// The `impulse_response_data` pointer is passed to the `impulse_response`
+/// function at every call and can be used to store parameters.
+#[no_mangle]
+pub extern fn interpolatef_custom64(vector: Box<DataVector64>, 
+    impulse_response: extern fn(*const c_void, f64) -> f64, 
+    impulse_response_data: *const c_void,
+    is_symmetric: bool,
+    interpolation_factor: f64,
+    delay: f64,
+    len: usize) -> VectorResult<DataVector64> {
+    unsafe {
+        let function: &RealImpulseResponse<f64> = &ForeignRealConvolutionFunction { conv_function: impulse_response, conv_data: mem::transmute(impulse_response_data), is_symmetric: is_symmetric };
+        convert_vec!(vector.interpolatef(function, interpolation_factor, delay, len))
+    }
+}
+
+/// `impulse_response` argument is translated to:
+/// 
+/// 1. `0` to [`SincFunction`](../../conv_types/struct.SincFunction.html)
+/// 2. `1` to [`RaisedCosineFunction`](../../conv_types/struct.RaisedCosineFunction.html)
+///
+/// `rolloff` is only used if this is a valid parameter for the selected `impulse_response`
+#[no_mangle]    
+pub extern fn interpolatef64(vector: Box<DataVector64>, 
+    impulse_response: i32,
+    rolloff: f64,
+    interpolation_factor: f64,
+    delay: f64,
+    len: usize) -> VectorResult<DataVector64> {
+    let function = translate_to_real_convolution_function(impulse_response, rolloff);
+    convert_vec!(vector.interpolatef(function.as_ref(), interpolation_factor, delay, len))
+}
+
+/// Convolves the vector with an impulse response defined by `frequency_response` and the void pointer `frequency_response_data`. 
+/// The `frequency_response_data` pointer is passed to the `frequency_response`
+/// function at every call and can be used to store parameters.
+#[no_mangle]
+pub extern fn interpolatei_custom64(vector: Box<DataVector64>, 
+    frequency_response: extern fn(*const c_void, f64) -> f64, 
+    frequency_response_data: *const c_void,
+    is_symmetric: bool,
+    interpolation_factor: i32) -> VectorResult<DataVector64> {
+    unsafe {
+        let function: &RealFrequencyResponse<f64> = &ForeignRealConvolutionFunction { conv_function: frequency_response, conv_data: mem::transmute(frequency_response_data), is_symmetric: is_symmetric };
+        convert_vec!(vector.interpolatei(function, interpolation_factor as u32))
+    }
+}
+
+/// `frequency_response` argument is translated to:
+/// 
+/// 1. `0` to [`SincFunction`](../../conv_types/struct.SincFunction.html)
+/// 2. `1` to [`RaisedCosineFunction`](../../conv_types/struct.RaisedCosineFunction.html)
+///
+/// `rolloff` is only used if this is a valid parameter for the selected `frequency_response`
+#[no_mangle]    
+pub extern fn interpolatei64(vector: Box<DataVector64>, 
+    frequency_response: i32,
+    rolloff: f64,
+    interpolation_factor: i32) -> VectorResult<DataVector64> {
+    let function = translate_to_real_frequency_response(frequency_response, rolloff);
+    convert_vec!(vector.interpolatei(function.as_ref(), interpolation_factor as u32))
+}
+
+#[no_mangle]    
+pub extern fn interpolate_lin64(vector: Box<DataVector64>, interpolation_factor: f64, delay: f64) -> VectorResult<DataVector64> {
+    convert_vec!(vector.interpolate_lin(interpolation_factor, delay))
+}
+
+#[no_mangle]    
+pub extern fn interpolate_hermite64(vector: Box<DataVector64>, interpolation_factor: f64, delay: f64) -> VectorResult<DataVector64> {
+    convert_vec!(vector.interpolate_hermite(interpolation_factor, delay))
+}  

@@ -42,6 +42,7 @@ use vector_types::{
     PaddingOption,
     ErrorReason};
 use window_functions::*;
+use conv_types::*;
 use RealNumber;
 
 pub fn translate_error(reason: ErrorReason) -> i32 {
@@ -60,11 +61,29 @@ pub fn translate_error(reason: ErrorReason) -> i32 {
 }
 
 pub fn translate_to_window_function<T>(value: i32) -> Box<WindowFunction<T>> 
-    where T: RealNumber {
+    where T: RealNumber + 'static {
     if value == 0 {
         Box::new(TriangularWindow)
     } else {
-        Box::new(TriangularWindow)
+        Box::new(HammingWindow::default())
+    }
+}
+
+pub fn translate_to_real_convolution_function<T>(value: i32, rolloff: T) -> Box<RealImpulseResponse<T>> 
+    where T: RealNumber + 'static {
+    if value == 0 {
+        Box::new(SincFunction::new())
+    } else {
+        Box::new(RaisedCosineFunction::new(rolloff))
+    }
+}
+
+pub fn translate_to_real_frequency_response<T>(value: i32, rolloff: T) -> Box<RealFrequencyResponse<T>> 
+    where T: RealNumber + 'static {
+    if value == 0 {
+        Box::new(SincFunction::new())
+    } else {
+        Box::new(RaisedCosineFunction::new(rolloff))
     }
 }
 

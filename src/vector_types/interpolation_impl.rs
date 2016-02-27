@@ -38,7 +38,8 @@ pub trait Interpolation<T> : DataVector<T>
     ///
     /// The complexity of this `interpolatef` is `O(self.points() * conv_len)`, while for `interpolatei` it's
     /// `O(self.points() * log(self.points()))`. If computational performance is important you should therefore decide
-    /// how large `conv_len` needs to be to yield the descired accuracy. Then compare `conv_len` and then do a test
+    /// how large `conv_len` needs to be to yield the desired accuracy. If you compare `conv_len` to `log(self.points)` you should 
+    /// get a feeling for the expected performance difference. More important is however to do a test
     /// run to compare the speed of `interpolatef` and `interpolatei`. Together with the information that 
     /// changing the vectors size change `log(self.points()` but not `conv_len` gives the indication that `interpolatef`
     /// performs faster for larger vectors while `interpolatei` performs faster for smaller vectors.
@@ -66,15 +67,15 @@ pub trait Interpolation<T> : DataVector<T>
 pub trait RealInterpolation<T> : DataVector<T>
     where T: RealNumber {
     
-    // Piecewise cubic hermite interpolation between samples.
+    /// Piecewise cubic hermite interpolation between samples.
     /// # Unstable
     /// Algorithm might need to be revised.
-    /// This operation an `interpolate_lin` might be merged into one function with an additional argument in future.
+    /// This operation and `interpolate_lin` might be merged into one function with an additional argument in future.
     fn interpolate_hermite(self, interpolation_factor: T, delay: T) -> VecResult<Self>;
     
     /// Linear interpolation between samples.
     /// # Unstable
-    /// This operation an `interpolate_hermite` might be merged into one function with an additional argument in future.
+    /// This operation and `interpolate_hermite` might be merged into one function with an additional argument in future.
     fn interpolate_lin(self, interpolation_factor: T, delay: T) -> VecResult<Self>;
 }
 
