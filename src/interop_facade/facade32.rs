@@ -66,6 +66,11 @@ pub extern fn get_len32(vector: &DataVector32) -> usize {
 }
 
 #[no_mangle]
+pub extern fn set_len32(vector: &mut DataVector32, len: usize) {
+    vector.set_len(len)
+}
+
+#[no_mangle]
 pub extern fn get_points32(vector: &DataVector32) -> usize {
     vector.points()
 }
@@ -422,13 +427,19 @@ pub extern fn set_mag_phase32(vector: Box<DataVector32>, mag: &DataVector32, pha
 }
 
 #[no_mangle]
-pub extern fn split_into32(vector: Box<DataVector32>, targets: &mut [Box<DataVector32>]) -> i32 {
-    convert_void!(vector.split_into(targets))
+pub extern fn split_into32(vector: &DataVector32, targets: *mut Box<DataVector32>, len: usize) -> i32 {
+    unsafe {
+        let targets = slice::from_raw_parts_mut(targets, len);
+        convert_void!(vector.split_into(targets))
+    }
 }
 
 #[no_mangle]
-pub extern fn merge32(vector: Box<DataVector32>, sources: &[Box<DataVector32>]) -> VectorResult<DataVector32> {
-    convert_vec!(vector.merge(sources))
+pub extern fn merge32(vector: Box<DataVector32>, sources: *Box<DataVector32>, len: usize) -> VectorResult<DataVector32> {
+    unsafe {
+        let sources = slice::from_raw_parts(targets, len);
+        convert_vec!(vector.merge(sources))
+    }
 }
 
 #[no_mangle]
@@ -661,6 +672,19 @@ pub extern fn windowed_custom_fft32(
     unsafe {
         let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data), is_symmetric: is_symmetric };
         convert_vec!(vector.windowed_fft(&window))
+    }
+}
+
+/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.
+#[no_mangle]
+pub extern fn windowed_custom_sfft32(
+    vector: Box<DataVector32>, 
+    window: extern fn(*const c_void, usize, usize) -> f32, 
+    window_data: *const c_void,
+    is_symmetric: bool) -> VectorResult<DataVector32> {
+    unsafe {
+        let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data), is_symmetric: is_symmetric };
+        convert_vec!(vector.windowed_sfft(&window))
     }
 }
 
