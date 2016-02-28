@@ -9,7 +9,6 @@ pub mod tools;
 mod slow_test {
     use basic_dsp::*;
     use basic_dsp::conv_types::*;
-    use basic_dsp::interop_facade::facade32::*;
     use basic_dsp::window_functions::*;
     use tools::*;
     use std::os::raw::c_void;
@@ -177,7 +176,7 @@ mod slow_test {
     
     /// Calls to another window with the only
     /// difference that it doesn't allow to make use of symmetry
-    fn unsym_triag_window() -> ForeignWindowFunction {
+    fn unsym_triag_window() -> ForeignWindowFunction<f32> {
         ForeignWindowFunction {
             window_data: 0,
             window_function: call_triag,
@@ -192,7 +191,7 @@ mod slow_test {
     
     /// Calls to another window with the only
     /// difference that it doesn't allow to make use of symmetry
-    fn unsym_rc_mul() -> ForeignRealConvolutionFunction {
+    fn unsym_rc_mul() -> ForeignRealConvolutionFunction<f32> {
         ForeignRealConvolutionFunction {
             conv_data: 0,
             conv_function: call_freq_rc,

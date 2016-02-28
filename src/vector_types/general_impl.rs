@@ -388,7 +388,7 @@ macro_rules! add_general_impl {
                     GenericDataVector
                      {
                         data: vec![init_value; length],
-                        temp: vec![0.0; length],
+                        temp: if options.early_temp_allocation { vec![0.0; length] } else { Vec::new() },
                         delta: delta,
                         domain: domain,
                         is_complex: is_complex,
@@ -403,7 +403,7 @@ macro_rules! add_general_impl {
                     GenericDataVector
                     { 
                         data: data.to_vec(),
-                        temp: vec![0.0; length],
+                        temp: if options.early_temp_allocation { vec![0.0; length] } else { Vec::new() },
                         delta: 1.0,
                         domain: domain,
                         is_complex: is_complex,
@@ -418,7 +418,7 @@ macro_rules! add_general_impl {
                     GenericDataVector
                     { 
                         data: data,
-                        temp: vec![0.0; length],
+                        temp: if options.early_temp_allocation { vec![0.0; length] } else { Vec::new() },
                         delta: 1.0,
                         domain: domain,
                         is_complex: is_complex,
@@ -433,7 +433,7 @@ macro_rules! add_general_impl {
                     GenericDataVector
                     { 
                         data: data.to_vec(),
-                        temp: vec![0.0; length],
+                        temp: if options.early_temp_allocation { vec![0.0; length] } else { Vec::new() },
                         delta: delta,
                         domain: domain,
                         is_complex: is_complex,
@@ -448,7 +448,7 @@ macro_rules! add_general_impl {
                     GenericDataVector
                     { 
                         data: data,
-                        temp: vec![0.0; length],
+                        temp: if options.early_temp_allocation { vec![0.0; length] } else { Vec::new() },
                         delta: delta,
                         domain: domain,
                         is_complex: is_complex,
