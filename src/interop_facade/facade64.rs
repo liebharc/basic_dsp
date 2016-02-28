@@ -436,9 +436,9 @@ pub extern fn split_into64(vector: &DataVector64, targets: *mut Box<DataVector64
 }
 
 #[no_mangle]
-pub extern fn merge64(vector: Box<DataVector64>, sources: *Box<DataVector64>, len: usize) -> VectorResult<DataVector64> {
+pub extern fn merge64(vector: Box<DataVector64>, sources: *const Box<DataVector64>, len: usize) -> VectorResult<DataVector64> {
     unsafe {
-        let sources = slice::from_raw_parts(targets, len);
+        let sources = slice::from_raw_parts(sources, len);
         convert_vec!(vector.merge(sources))
     }
 }

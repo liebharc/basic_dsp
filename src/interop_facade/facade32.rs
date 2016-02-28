@@ -435,9 +435,9 @@ pub extern fn split_into32(vector: &DataVector32, targets: *mut Box<DataVector32
 }
 
 #[no_mangle]
-pub extern fn merge32(vector: Box<DataVector32>, sources: *Box<DataVector32>, len: usize) -> VectorResult<DataVector32> {
+pub extern fn merge32(vector: Box<DataVector32>, sources: *const Box<DataVector32>, len: usize) -> VectorResult<DataVector32> {
     unsafe {
-        let sources = slice::from_raw_parts(targets, len);
+        let sources = slice::from_raw_parts(sources, len);
         convert_vec!(vector.merge(sources))
     }
 }
