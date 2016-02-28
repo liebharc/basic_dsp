@@ -7,6 +7,8 @@ use RealNumber;
 use num::traits::Zero;
 use num::complex::{Complex, Complex32,Complex64};
 use std::marker::PhantomData;
+use std::os::raw::c_void;
+use std::mem;
 use vector_types::{
     RealTimeVector,
     ComplexTimeVector,
@@ -433,6 +435,116 @@ impl<T> SincFunction<T>
     /// Creates a sinc function.
     pub fn new() -> Self {
         SincFunction { _ghost: PhantomData }
+    }
+}
+
+/// A real function which can be constructed outside this crate.
+pub struct ForeignRealConvolutionFunction<T>
+    where T: RealNumber {
+    /// The function
+    pub conv_function: extern fn(*const c_void, T) -> T,
+    
+    /// The data which is passed to the function.
+    ///
+    /// Actual data type is a const* c_void, but Rust doesn't allow that becaues it's usafe so we store
+    /// it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.
+    pub conv_data: usize,
+    
+    /// Indicates whether this function is symmetric around 0 or not.
+    /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
+    pub is_symmetric: bool
+}
+
+impl<T> ForeignRealConvolutionFunction<T>
+    where T: RealNumber {
+    /// Creates a new real function
+    pub fn new(
+        function: extern fn(*const c_void, T) -> T, 
+        function_data: *const c_void,
+        is_symmetric: bool) -> Self {
+        unsafe {
+            ForeignRealConvolutionFunction { conv_function: function, conv_data: mem::transmute(function_data), is_symmetric: is_symmetric }
+        }
+    }        
+}
+
+impl<T> RealImpulseResponse<T> for ForeignRealConvolutionFunction<T>
+    where T: RealNumber {
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    fn calc(&self, x: T) -> T {
+        let fun = self.conv_function;
+        unsafe { fun(mem::transmute(self.conv_data), x) }
+    }
+}
+
+impl<T> RealFrequencyResponse<T> for ForeignRealConvolutionFunction<T>
+    where T: RealNumber {
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    fn calc(&self, x: T) -> T {
+        let fun = self.conv_function;
+        unsafe { fun(mem::transmute(self.conv_data), x) }
+    }
+}
+
+/// A complex function which can be constructed outside this crate.
+pub struct ForeignComplexConvolutionFunction<T>
+    where T: RealNumber {
+    /// The function
+    pub conv_function: extern fn(*const c_void, T) -> Complex<T>,
+    
+    /// The data which is passed to the window function
+    ///
+    /// Actual data type is a const* c_void, but Rust doesn't allow that becaues it's usafe so we store
+    /// it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.
+    pub conv_data: usize,
+    
+    /// Indicates whether this function is symmetric around 0 or not.
+    /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
+    pub is_symmetric: bool
+}
+
+impl<T> ForeignComplexConvolutionFunction<T>
+    where T: RealNumber {
+    /// Creates a new real function
+    pub fn new(
+        function: extern fn(*const c_void, T) -> Complex<T>, 
+        function_data: *const c_void,
+        is_symmetric: bool) -> Self {
+        unsafe {
+            ForeignComplexConvolutionFunction { conv_function: function, conv_data: mem::transmute(function_data), is_symmetric: is_symmetric }
+        }
+    }        
+}
+
+impl<T> ComplexImpulseResponse<T> for ForeignComplexConvolutionFunction<T>
+    where T: RealNumber {
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    fn calc(&self, x: T) -> Complex<T> {
+        let fun = self.conv_function;
+        unsafe { fun(mem::transmute(self.conv_data), x) }
+    }
+}
+
+impl<T> ComplexFrequencyResponse<T> for ForeignComplexConvolutionFunction<T>
+    where T: RealNumber {
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    /// Indicates whether this function is symmetric around 0 or not.
+    /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
+    fn calc(&self, x: T) -> Complex<T> {
+        let fun = self.conv_function;
+        unsafe { fun(mem::transmute(self.conv_data), x) }
     }
 }
 

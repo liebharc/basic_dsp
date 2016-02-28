@@ -1,7 +1,7 @@
 //! Functions for 32bit floating point number based vectors. Please refer to the other chapters of the help for documentation of the functions.
 use super::*;
 use super::super::*;
-use window_functions::WindowFunction;
+use window_functions::*;
 use conv_types::*;
 use num::complex::Complex32;
 use std::slice;
@@ -23,6 +23,19 @@ pub extern fn new32(is_complex: i32, domain: i32, init_value: f32, length: usize
         };
         
 	let vector = Box::new(DataVector32::new(is_complex != 0, domain, init_value, length, delta));
+    vector
+}
+
+#[no_mangle]
+pub extern fn new_with_performance_options32(is_complex: i32, domain: i32, init_value: f32, length: usize, delta: f32, core_limit: usize, early_temp_allocation: bool) -> Box<DataVector32> {
+    let domain = if domain == 0 {
+            DataVectorDomain::Time
+        }
+        else {
+            DataVectorDomain::Frequency
+        };
+        
+	let vector = Box::new(DataVector32::new_with_options(is_complex != 0, domain, init_value, length, delta, MultiCoreSettings::new(core_limit, early_temp_allocation)));
     vector
 }
 
@@ -551,88 +564,6 @@ pub extern fn windowed_ifft32(vector: Box<DataVector32>, window: i32) -> VectorR
 pub extern fn windowed_sifft32(vector: Box<DataVector32>, window: i32) -> VectorResult<DataVector32> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.windowed_sifft(window.as_ref()))
-}
-
-pub struct ForeignWindowFunction {
-    pub window_function: extern fn(*const c_void, usize, usize) -> f32,
-    // Actual data type is a const* c_void, but Rust doesn't allow that becaues it's usafe so we store
-    // it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.
-    pub window_data: usize,
-    
-    pub is_symmetric: bool
-}
-
-impl WindowFunction<f32> for ForeignWindowFunction {
-    fn is_symmetric(&self) -> bool {
-        self.is_symmetric
-    }
-
-    fn window(&self, idx: usize, points: usize) -> f32 {
-        let fun = self.window_function;
-        unsafe { fun(mem::transmute(self.window_data), idx, points) }
-    }
-}
-
-pub struct ForeignRealConvolutionFunction {
-    pub conv_function: extern fn(*const c_void, f32) -> f32,
-    // Actual data type is a const* c_void, but Rust doesn't allow that becaues it's usafe so we store
-    // it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.
-    pub conv_data: usize,
-    
-    pub is_symmetric: bool
-}
-
-impl RealImpulseResponse<f32> for ForeignRealConvolutionFunction {
-    fn is_symmetric(&self) -> bool {
-        self.is_symmetric
-    }
-
-    fn calc(&self, x: f32) -> f32 {
-        let fun = self.conv_function;
-        unsafe { fun(mem::transmute(self.conv_data), x) }
-    }
-}
-
-impl RealFrequencyResponse<f32> for ForeignRealConvolutionFunction {
-    fn is_symmetric(&self) -> bool {
-        self.is_symmetric
-    }
-
-    fn calc(&self, x: f32) -> f32 {
-        let fun = self.conv_function;
-        unsafe { fun(mem::transmute(self.conv_data), x) }
-    }
-}
-
-pub struct ForeignComplexConvolutionFunction {
-    pub conv_function: extern fn(*const c_void, f32) -> Complex32,
-    // Actual data type is a const* c_void, but Rust doesn't allow that becaues it's usafe so we store
-    // it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.
-    pub conv_data: usize,
-    
-    pub is_symmetric: bool
-}
-
-impl ComplexImpulseResponse<f32> for ForeignComplexConvolutionFunction {
-    fn is_symmetric(&self) -> bool {
-        self.is_symmetric
-    }
-
-    fn calc(&self, x: f32) -> Complex32 {
-        let fun = self.conv_function;
-        unsafe { fun(mem::transmute(self.conv_data), x) }
-    }
-}
-
-impl ComplexFrequencyResponse<f32> for ForeignComplexConvolutionFunction {
-    fn is_symmetric(&self) -> bool {
-        self.is_symmetric
-    }
-
-    fn calc(&self, x: f32) -> Complex32 {
-        let fun = self.conv_function;
-        unsafe { fun(mem::transmute(self.conv_data), x) }
-    }
 }
 
 /// Creates a window from the function `window` and the void pointer `window_data`. The `window_data` pointer is passed to the `window`

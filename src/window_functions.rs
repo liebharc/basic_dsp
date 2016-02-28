@@ -1,6 +1,8 @@
 //! This mod contains a definition for window functions and provides implementations for a 
 //! few standard windows. See the `WindowFunction` type for more information.
 use RealNumber;
+use std::os::raw::c_void;
+use std::mem;
 
 /// A window function for FFT windows. See https://en.wikipedia.org/wiki/Window_function
 /// for details. Window functions should document if they aren't applicable for 
@@ -71,6 +73,48 @@ impl<T> WindowFunction<T> for HammingWindow<T>
         let length = T::from(length).unwrap();
         self.alpha - self.beta * (two * pi * n / (length - one)).cos()
     }  
+}
+
+/// A window function which can be constructed outside this crate.
+pub struct ForeignWindowFunction<T>
+    where T: RealNumber  {
+    /// The window function
+    pub window_function: extern fn(*const c_void, usize, usize) -> T,
+    
+    /// The data which is passed to the window function
+    ///
+    /// Actual data type is a const* c_void, but Rust doesn't allow that becaues it's usafe so we store
+    /// it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.
+    pub window_data: usize,
+    
+    /// Indicates whether this function is symmetric around 0 or not.
+    /// Symmetry is defined as `self.window(x) == self.window(-x)`.
+    pub is_symmetric: bool
+}
+
+impl<T> ForeignWindowFunction<T>
+    where T: RealNumber {
+    /// Creates a new window function
+    pub fn new(
+        window: extern fn(*const c_void, usize, usize) -> T, 
+        window_data: *const c_void,
+        is_symmetric: bool) -> Self {
+        unsafe {
+            ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data), is_symmetric: is_symmetric }
+        }
+    }        
+}
+
+impl<T> WindowFunction<T> for ForeignWindowFunction<T>
+    where T: RealNumber {
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    fn window(&self, idx: usize, points: usize) -> T {
+        let fun = self.window_function;
+        unsafe { fun(mem::transmute(self.window_data), idx, points) }
+    }
 }
 
 #[cfg(test)]
