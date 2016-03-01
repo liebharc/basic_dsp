@@ -354,6 +354,20 @@ macro_rules! add_basic_private_impl {
                     }
                 }
                 
+                /// Reallocates the data inside a vector, but 
+                /// not temp. The data will not be preserved by this operation
+                fn reallocate(&mut self, len: usize)
+                {
+                    if len > self.allocated_len()
+                    {
+                        let mut new_data = Vec::with_capacity(round_len(len));
+                        unsafe { new_data.set_len(len) };
+                        self.data = new_data;
+                    }
+                    
+                    self.valid_len = len;
+                }
+                
                 /// Creates shifted and reversed copies of the given data vector. 
                 /// This function is especially desgined for convolutions.
                 fn create_shifted_copies(vector: &GenericDataVector<$data_type>) -> Vec<Vec<$data_type>>{

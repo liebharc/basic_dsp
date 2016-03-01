@@ -54,7 +54,8 @@ macro_rules! assert_freq {
 macro_rules! temp_mut {
     ($self_: ident, $len: expr) => {
         if $self_.temp.len() < $len {
-            $self_.temp = vec![0.0; $len];
+            $self_.temp = Vec::with_capacity(round_len($len));
+            unsafe { $self_.temp.set_len($len); }
             &mut $self_.temp
         }
         else {

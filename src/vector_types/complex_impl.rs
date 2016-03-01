@@ -74,7 +74,7 @@ macro_rules! add_complex_impl {
                     }
                     
                     let data_length = self.len();
-                    destination.set_len(data_length / 2);
+                    destination.reallocate(data_length / 2);
                     let scalar_length = data_length % $reg::len();
                     let vectorization_length = data_length - scalar_length;
                     let array = &self.data;
@@ -270,8 +270,8 @@ macro_rules! add_complex_impl {
                 
                 fn get_real_imag(&self, real: &mut Self::RealPartner, imag: &mut Self::RealPartner) -> VoidResult {
                     let data_length = self.len();
-                    real.set_len(data_length / 2);
-                    imag.set_len(data_length / 2);
+                    real.reallocate(data_length / 2);
+                    imag.reallocate(data_length / 2);
                     let data = &self.data;
                     for i in 0..data_length {
                         if i % 2 == 0 {
@@ -286,8 +286,8 @@ macro_rules! add_complex_impl {
                 
                 fn get_mag_phase(&self, mag: &mut Self::RealPartner, phase: &mut Self::RealPartner) -> VoidResult {
                     let data_length = self.len();
-                    mag.set_len(data_length / 2);
-                    phase.set_len(data_length / 2);
+                    mag.reallocate(data_length / 2);
+                    phase.reallocate(data_length / 2);
                     let data = &self.data;
                     let mut i = 0;
                     while i < data_length {
@@ -304,7 +304,7 @@ macro_rules! add_complex_impl {
                 fn set_real_imag(mut self, real: &Self::RealPartner, imag: &Self::RealPartner) -> VecResult<Self> {
                     {
                         reject_if!(self, real.len() != imag.len(), ErrorReason::InvalidArgumentLength);
-                        self.set_len(2 * real.len());
+                        self.reallocate(2 * real.len());
                         let data_length = self.len();
                         let data = &mut self.data;
                         for i in 0..data_length {
@@ -322,7 +322,7 @@ macro_rules! add_complex_impl {
                 fn set_mag_phase(mut self, mag: &Self::RealPartner, phase: &Self::RealPartner) -> VecResult<Self> {
                     {
                         reject_if!(self, mag.len() != phase.len(), ErrorReason::InvalidArgumentLength);
-                        self.set_len(2 * mag.len());
+                        self.reallocate(2 * mag.len());
                         let data_length = self.len();
                         let data = &mut self.data;
                         let mut i = 0;
@@ -343,7 +343,7 @@ macro_rules! add_complex_impl {
                     where A: Sync + Copy,
                           F: Fn(Complex<$data_type>, A) -> $data_type + 'static + Sync {
                     let len = self.len();
-                    destination.set_len(len / 2);
+                    destination.reallocate(len / 2);
                     destination.delta = self.delta;
                     destination.is_complex = false;
                     let mut array = &mut destination.data;

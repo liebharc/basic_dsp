@@ -7,7 +7,9 @@ use super::definitions::{
     VoidResult,
     ErrorReason,
     PaddingOption};
-use super::GenericDataVector;
+use super::{
+    GenericDataVector,
+    round_len};
 use num::complex::Complex;
 use num::traits::Float;
 use complex_extensions::ComplexExtensions;
@@ -50,12 +52,12 @@ macro_rules! impl_function_call_real_complex {
     ($data_type: ident; fn $real_name: ident, $real_op: ident; fn $complex_name: ident, $complex_op: ident) => {
         fn $real_name(self) -> VecResult<Self>
         {
-            self.pure_real_operation(|v, _arg| v.$real_op(), (), Complexity::Medium)
+            self.pure_real_operation(|v, _arg| v.$real_op(), (), Complexity::Small)
         }
         
         fn $complex_name(self) -> VecResult<Self>
         {
-            self.pure_complex_operation(|v, _arg| v.$complex_op(), (), Complexity::Medium)
+            self.pure_complex_operation(|v, _arg| v.$complex_op(), (), Complexity::Small)
         }
     }
 }
@@ -340,31 +342,27 @@ macro_rules! zero_interleave {
                 let step = $step as usize;
                 let old_len = $self_.len();
                 let new_len = step * old_len;
-                $self_.set_len(new_len);
-                let temp_len_old = $self_.temp.len();
+                $self_.valid_len = new_len;
                 let mut target = temp_mut!($self_, new_len);
-                if temp_len_old == target.len() // no reallocation
-                {
-                    // Zero target
-                    let ptr = &mut target[0] as *mut $data_type;
-                    unsafe {
-                        ptr::write_bytes(ptr, 0, new_len);
-                    }
-                }
                 let source = &$self_.data;
                 Chunk::from_src_to_dest(
                     Complexity::Small, &$self_.multicore_settings,
                     &source, old_len, $tuple, 
                     &mut target, new_len, $tuple * step, (),
                     move|original, range, target, _arg| {
+                         // Zero target
+                        let ptr = &mut target[0] as *mut $data_type;
+                        unsafe {
+                            ptr::write_bytes(ptr, 0, new_len);
+                        }
+                        let skip = step * $tuple;
                         let mut i = 0;
                         let mut j = range.start;
-                        let skip = step * $tuple;
                         while i < target.len() {
-                            let original = &original[j] as *const $data_type;
-                            let target = &mut target[i] as *mut $data_type;
+                            let original_ptr = unsafe { original.get_unchecked(j) };
+                            let target_ptr = unsafe { target.get_unchecked_mut(i) };
                             unsafe {
-                                ptr::copy(original, target, $tuple);
+                                ptr::copy(original_ptr, target_ptr, $tuple);
                             }
                             
                             j += $tuple;
@@ -559,7 +557,13 @@ macro_rules! add_general_impl {
                         let len_before = self.len();
                         let is_complex = self.is_complex;
                         let len = if is_complex { 2 * points } else { points };
-                        self.set_len(len);
+                        if len < len_before {
+                            return Ok(self);
+                        }
+                        if len > self.allocated_len() {
+                            self.data.resize(len, 0.0);
+                        }
+                        self.valid_len = len;
                         let array = &mut self.data;
                         match option {
                             PaddingOption::End => {
@@ -700,7 +704,7 @@ macro_rules! add_general_impl {
                 
                 fn override_data(mut self, data: &[$data_type]) -> VecResult<Self> {
                     {
-                        self.set_len(data.len());
+                        self.reallocate(data.len());
                         let target = &mut self.data[0] as *mut $data_type;
                         let source = &data[0] as *const $data_type;
                         unsafe {
@@ -719,7 +723,7 @@ macro_rules! add_general_impl {
                     }
                     
                     for i in 0..num_targets {
-                        targets[i].set_len(data_length / num_targets);
+                        targets[i].reallocate(data_length / num_targets);
                     }
                     
                     let data = &self.data;
@@ -749,7 +753,7 @@ macro_rules! add_general_impl {
                             reject_if!(self, sources[0].len() != sources[i].len(), ErrorReason::InvalidArgumentLength);
                         }
                         
-                        self.set_len(sources[0].len() * num_sources);
+                        self.reallocate(sources[0].len() * num_sources);
                         
                         let data_length = self.len();
                         let data = &mut self.data;

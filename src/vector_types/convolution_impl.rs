@@ -15,7 +15,8 @@ use super::{
     RealFreqVector,
     RealTimeVector,
     ComplexFreqVector,
-    ComplexTimeVector};
+    ComplexTimeVector,
+    round_len};
 
 /// Provides a convolution operation for data vectors. 
 pub trait Convolution<T, C> : DataVector<T> 

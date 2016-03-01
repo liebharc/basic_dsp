@@ -17,7 +17,8 @@ use super::{
     FrequencyDomainOperations,
     ComplexTimeVector,
     ComplexFreqVector,
-    ErrorReason};
+    ErrorReason,
+    round_len};
 use num::complex::Complex;
 use num::traits::Zero;
 use super::convolution_impl::WrappingIterator;
@@ -147,7 +148,6 @@ macro_rules! define_interpolation_impl {
                         i += step;
                         j += 1.0;
                     }
-                    imp_resp.set_len(data_len);
                     imp_resp
                 }
                 

@@ -9,7 +9,8 @@ use super::{
     GenericDataVector,
     RealTimeVector,
     ComplexFreqVector,
-    ComplexTimeVector};
+    ComplexTimeVector,
+    round_len};
 use rustfft::FFT;
 use RealNumber;
 use std::ptr;

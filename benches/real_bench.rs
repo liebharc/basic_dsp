@@ -62,7 +62,20 @@ mod bench {
         let mut vector = VectorBox::<Vec<f64>>::new(Size::Small);
 		b.iter(|| {
 			vector.execute(|v|  { add_offset_reference64(v, 100.0) } )
-			});
+			})
+    }
+    
+    #[inline(never)]
+	pub fn real_logn_reference32(mut array: Vec<f32>) -> Vec<f32>
+	{
+		let mut i = 0;
+		while i < array.len()
+		{
+			array[i] = array[i].ln();
+			i += 1;
+		}
+        
+        array
 	}
 	
 	#[bench]
@@ -178,6 +191,15 @@ mod bench {
 		b.iter(|| {
 			vector.execute_res(|v|  { v.logn() } )
 		});
+    }
+    
+    #[bench]
+	fn real_logn_32s_reference(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<Vec<f32>>::new(Size::Small);
+		b.iter(|| {
+			vector.execute(|v|  { real_logn_reference32(v) } )
+			});
     }
     
     #[bench]
