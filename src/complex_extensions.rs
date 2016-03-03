@@ -1,5 +1,6 @@
 use num::complex::Complex;
 use num::traits::Float;
+use std::{f32,f64};
 
 pub trait ComplexExtensions<T>
     where T: Float
@@ -14,54 +15,71 @@ pub trait ComplexExtensions<T>
     fn exp_base(&self, value: T) -> Self;
 }
 
-impl<T> ComplexExtensions<T> for Complex<T>
-    where T: Float
-{   
-    fn sin(&self) -> Self {
-        Complex::new(self.re.sin() * self.im.cosh(), self.re.cos() * self.im.sinh())
-    }
-    
-    fn cos(&self) -> Self {
-        Complex::new(self.re.cos() * self.im.cosh(), -self.re.sin() * self.im.sinh())
-    }
-       
-    fn sqrt(&self) -> Self {
-        let two = T::one() + T::one();
-        let (r, theta) = self.to_polar();
-        Complex::from_polar(&(r.sqrt()), &(theta/two))
-    }
-    
-    fn powf(&self, value: T) -> Self {
-        let (r, theta) = self.to_polar();
-        Complex::from_polar(&(r.powf(value)), &(theta*value))
-    }
-    
-    fn ln(&self) -> Self {
-        let (r, theta) = self.to_polar();
-        Complex::new(r.ln(), theta)
-    }
-    
-    fn expn(&self) -> Self {
-        let exp = self.re.exp();
-        // Equation is taken from http://mathfaculty.fullerton.edu/mathews/c2003/ComplexFunExponentialMod.html
-        Complex::new(exp * self.im.cos(), exp * self.im.sin())
-    }
-    
-    fn log_base(&self, value: T) -> Self {
-        let (r, theta) = self.to_polar();
-        let e = T::one().exp(); // there is for sure a faster way to get the constant, but I don't know how to do that in this generic context 
-        Complex::new(r.log(value), theta * e.log(value))
-    }
-    
-    // Same as value.powf(self) but I would prefer to have this version
-    // around too
-    fn exp_base(&self, value: T) -> Self {
-        let ln = value.ln();
-        let exp = (self.re * ln).exp();
-        let im = self.im * ln; 
-        Complex::new(exp * im.cos(), exp * im.sin())
-    }
+macro_rules! add_complex_extensions {
+    ($($data_type:ident);*)
+	 =>
+	 {	 
+        $(
+            impl ComplexExtensions<$data_type> for Complex<$data_type>
+            {   
+                fn sin(&self) -> Self {
+                    let re = self.re;
+                    let im = self.im;
+                    Complex::new(
+                        re.sin() * im.cosh(), 
+                        re.cos() * im.sinh())
+                }
+                
+                fn cos(&self) -> Self {
+                    let re = self.re;
+                    let im = self.im;
+                    Complex::new(
+                        re.cos() * im.cosh(), 
+                        -re.sin() * im.sinh())
+                }
+                   
+                fn sqrt(&self) -> Self {
+                    let (r, theta) = self.to_polar();
+                    Complex::from_polar(&(r.sqrt()), &(theta/2.0))
+                }
+                
+                fn powf(&self, value: $data_type) -> Self {
+                    let (r, theta) = self.to_polar();
+                    Complex::from_polar(&(r.powf(value)), &(theta*value))
+                }
+                
+                fn ln(&self) -> Self {
+                    let (r, theta) = self.to_polar();
+                    Complex::new(r.ln(), theta)
+                }
+                
+                fn expn(&self) -> Self {
+                    let re = self.re;
+                    let im = self.im;
+                    let exp = re.exp();
+                    // Equation is taken from http://mathfaculty.fullerton.edu/mathews/c2003/ComplexFunExponentialMod.html
+                    Complex::new(exp * im.cos(), exp * im.sin())
+                }
+                
+                fn log_base(&self, value: $data_type) -> Self {
+                    let (r, theta) = self.to_polar();
+                    let e = $data_type::consts::E;
+                    Complex::new(r.log(value), theta * e.log(value))
+                }
+                
+                // Same as value.powf(self) but I would prefer to have this version
+                // around too
+                fn exp_base(&self, value: $data_type) -> Self {
+                    let ln = value.ln();
+                    let exp = (self.re * ln).exp();
+                    let im = self.im * ln; 
+                    Complex::new(exp * im.cos(), exp * im.sin())
+                }
+            }
+        )*
+     }
 }
+add_complex_extensions!(f32; f64);
 
 #[cfg(test)]
 mod tests {

@@ -555,6 +555,7 @@ macro_rules! add_general_impl {
                 {
                     {
                         let len_before = self.len();
+                        let allocated_len = self.allocated_len();
                         let is_complex = self.is_complex;
                         let len = if is_complex { 2 * points } else { points };
                         if len < len_before {
@@ -570,7 +571,7 @@ macro_rules! add_general_impl {
                                 // Zero target
                                 let ptr = &mut array[len_before] as *mut $data_type;
                                 unsafe {
-                                    ptr::write_bytes(ptr, 0, len - len_before);
+                                    ptr::write_bytes(ptr, 0, allocated_len - len_before);
                                 }
                             }
                             PaddingOption::Surround => {

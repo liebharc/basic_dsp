@@ -610,4 +610,15 @@ mod tests {
              0.0, 0.0, 0.0, 0.0];
 		assert_eq!(r.data(), &expected);
 	}
+    
+    #[test]
+	fn complex_conj_test()
+	{
+		let mut a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
+		let c = ComplexFreqVector32::from_interleaved(&mut a);
+        let r = c.complex_conj().unwrap();
+        let expected =
+            [1.0, -2.0, 3.0, -4.0, 5.0, -6.0, 7.0, -8.0, 9.0, -10.0];
+		assert_eq!(r.data(), &expected);
+	}
 }
