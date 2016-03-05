@@ -78,7 +78,7 @@ pub trait RededicateVector<T> : DataVector<T>
 	/// assert_eq!(true, complex.is_complex());
     /// assert_eq!(DataVectorDomain::Time, complex.domain());
     /// assert_eq!(0, complex.len());
-    /// assert_eq!(4, complex.allocated_len());
+    /// assert_eq!(2, complex.allocated_len());
 	/// ```
     fn rededicate_as_complex_time_vector(self, delta: T) -> ComplexTimeVector<T>;
     

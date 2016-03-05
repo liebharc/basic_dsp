@@ -76,7 +76,7 @@ macro_rules! add_basic_private_impl {
                     {
                         let data_length = self.len();       
                         let mut array = &mut self.data;
-                        let mut temp = temp_mut!(self, data_length);
+                        let mut temp = temp_mut!(self, data_length / 2);
                         Chunk::from_src_to_dest(
                             complexity, &self.multicore_settings,
                             &mut array, data_length, 2, 

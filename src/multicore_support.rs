@@ -170,7 +170,7 @@ impl Chunk
 		let mut sum = 0;
 		for i in 0..number_of_chunks {
 			let new_sum = if i < number_of_chunks - 1 { sum + chunk_size } else { array_length };
-			ranges.push(Range { start: sum, end: new_sum - 1 });
+			ranges.push(Range { start: sum, end: new_sum });
 			sum = new_sum;
 		} 
 		
@@ -428,7 +428,7 @@ mod tests {
 	{
 		let ranges = Chunk::partition_in_ranges(1023, 4, 2);
 		assert_eq!(ranges.len(), 2);
-		assert_eq!(ranges[0], Range { start: 0, end: 511 });
-		assert_eq!(ranges[1], Range { start: 512, end: 1022 });
+		assert_eq!(ranges[0], Range { start: 0, end: 512 });
+		assert_eq!(ranges[1], Range { start: 512, end: 1023 });
 	}
 }
