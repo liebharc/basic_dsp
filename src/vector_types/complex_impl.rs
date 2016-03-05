@@ -113,13 +113,54 @@ macro_rules! add_complex_impl {
                     self.simd_complex_to_real_operation(|x,_arg| x.complex_abs_squared(), |x,_arg| x.re * x.re + x.im * x.im, (), Complexity::Small)
                 }
                 
-                fn complex_conj(self) -> VecResult<Self>
+                fn complex_conj(mut self) -> VecResult<Self>
                 {
                     assert_complex!(self);
-                    // We load the multiplicator with a complex number, however note that we use the regular
-                    // reg multiplication which is correct 
-                    let multiplicator = $reg::from_complex(Complex::<$data_type>::new(1.0, -1.0));
-                    self.simd_complex_operation(|x,y| x * y, |x,_arg| x.conj(), multiplicator, Complexity::Small)
+                    {
+                        let data_length = self.len();
+                        if data_length == 0 {
+                            return Ok(self);
+                        }
+                        
+                        let unroll_len = 8;
+                        let scalar_length = data_length % unroll_len;
+                        let unrolled_length = data_length - scalar_length;           
+                        let mut array = &mut self.data;
+                        Chunk::execute_partial(
+                            Complexity::Small, &self.multicore_settings,
+                            &mut array, unrolled_length, unroll_len, (), 
+                            move |array, _| {
+                                unsafe {
+                                    let array_len = array.len();
+                                    if array_len == 0 {
+                                        return;
+                                    }
+                                    let end = &mut array[array_len - 1] as *mut $data_type;
+                                    let mut array = &mut array[1] as *mut $data_type;
+                                    while array <= end {
+                                        *array = -(*array);
+                                        array = array.offset(2);
+                                        *array = -(*array);
+                                        array = array.offset(2);
+                                        *array = -(*array);
+                                        array = array.offset(2);
+                                        *array = -(*array);
+                                        array = array.offset(2);
+                                    }
+                                }
+                            });
+                        if data_length > unrolled_length {
+                            let end = &mut array[data_length - 1] as *mut $data_type;
+                            let mut array = &mut array[unrolled_length + 1] as *mut $data_type;
+                            unsafe {
+                                while array <= end {
+                                    *array = -(*array);
+                                    array = array.offset(2);
+                                }
+                            }
+                        }
+                    }
+                    Ok(self)
                 }
                 
                 fn to_real(self) -> VecResult<Self>

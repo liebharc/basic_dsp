@@ -824,7 +824,6 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
 	/// # extern crate num;
 	/// # extern crate basic_dsp;
 	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
-	/// use num::complex::Complex32;
 	/// # fn main() { 
 	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
 	/// let result = vector.complex_conj().expect("Ignoring error handling in examples");
