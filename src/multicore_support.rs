@@ -23,7 +23,7 @@ pub enum Complexity {
 
 /// Holds parameters which specifiy how multiple cores are used
 /// to execute an operation.
-#[derive(Debug)] 
+#[derive(Debug, Copy)] 
 #[repr(C)]  
 pub struct MultiCoreSettings {
     /// All operations will be limited to not create more threads than specified here
