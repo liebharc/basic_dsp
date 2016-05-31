@@ -30,7 +30,7 @@ git = "https://github.com/carllerche/hamcrest-rust.git"
 [dev-dependencies.rand]
 rand = "^0.3.12"
 [dependencies]
-simd = { git = "https://github.com/rekka/simd.git", branch="avx" }
+simd = "^0.1.1"
 num_cpus = "^0.2.10"
 simple_parallel = "^0.3.0"
 num = "^0.1.30"

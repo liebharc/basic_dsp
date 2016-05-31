@@ -21,8 +21,8 @@ use super::{
 /// Provides a convolution operation for data vectors. 
 pub trait Convolution<T, C> : DataVector<T> 
     where T : RealNumber {
-    /// Convolves `self` with the convolution function `impulse_response`. For performance it's recommended 
-    /// to use `FrequencyMultiplication` instead of this operation.
+    /// Convolves `self` with the convolution function `impulse_response`. For performance consider to 
+    /// to use `FrequencyMultiplication` instead of this operation depending on `len`.
     ///
     /// An optimized convolution algorithm is used if  `1.0 / ratio` is an integer (inside a `1e-6` tolerance) 
     /// and `len` is smaller than a threshold (`202` right now).
