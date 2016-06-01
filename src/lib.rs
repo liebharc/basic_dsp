@@ -22,7 +22,7 @@
 //! memory available so that the optimization focus is on decreasing the processing time for every (common) operation.  
 extern crate simd;
 extern crate num_cpus;
-extern crate simple_parallel;
+extern crate crossbeam;
 extern crate num;
 extern crate rustfft;
 mod vector_types;

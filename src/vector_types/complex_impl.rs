@@ -13,7 +13,6 @@ use super::GenericDataVector;
 use super::stats_impl::Stats;
 use simd_extensions::{Simd,Reg32,Reg64};
 use num::complex::Complex;
-use num::traits::Float;
 
 macro_rules! add_complex_impl {
     ($($data_type:ident, $reg:ident);*)
@@ -381,7 +380,7 @@ macro_rules! add_complex_impl {
             
             impl GenericDataVector<$data_type> {
                 fn pure_complex_into_real_target_operation<A, F>(&self, destination: &mut Self, op: F, argument: A, complexity: Complexity) -> VoidResult 
-                    where A: Sync + Copy,
+                    where A: Sync + Copy + Send,
                           F: Fn(Complex<$data_type>, A) -> $data_type + 'static + Sync {
                     let len = self.len();
                     destination.reallocate(len / 2);

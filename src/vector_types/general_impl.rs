@@ -11,7 +11,6 @@ use super::{
     GenericDataVector,
     round_len};
 use num::complex::Complex;
-use num::traits::Float;
 use complex_extensions::ComplexExtensions;
 use simd_extensions::{Simd, Reg32, Reg64};
 use multicore_support::MultiCoreSettings;

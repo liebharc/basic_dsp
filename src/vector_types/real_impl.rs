@@ -12,7 +12,6 @@ use super::definitions::{
 use super::GenericDataVector;    
 use super::stats_impl::Stats;
 use simd_extensions::{Simd, Reg32, Reg64};
-use num::traits::Float;
 
 macro_rules! add_real_impl {
     ($($data_type:ident, $reg:ident);*)

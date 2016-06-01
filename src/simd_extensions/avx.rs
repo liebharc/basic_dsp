@@ -1,6 +1,5 @@
 use num::complex::Complex;
 use super::Simd;
-use simd::x86::sse3::Sse3F32x4;
 use simd::x86::avx::{f32x8,f64x4,AvxF32x8,AvxF64x4};
 use std::mem;
 

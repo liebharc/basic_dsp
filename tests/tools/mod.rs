@@ -209,10 +209,10 @@ pub fn parameterized_vector_test<F>(test_code: F)
         
         let small_range = RANGE_SINGLE_CORE;
         let test_code = test_code.clone();
-        let safe_iteration = panic::AssertRecoverSafe::new(iteration);
-        let small_range = panic::AssertRecoverSafe::new(small_range);
-        let test_code = panic::AssertRecoverSafe::new(test_code);
-        let result = panic::recover(move|| {
+        let safe_iteration = panic::AssertUnwindSafe(iteration);
+        let small_range = panic::AssertUnwindSafe(small_range);
+        let test_code = panic::AssertUnwindSafe(test_code);
+        let result = panic::catch_unwind(move|| {
             let test_code = test_code.lock().unwrap();
             test_code(*safe_iteration, (*small_range).clone());
         });
@@ -240,10 +240,10 @@ pub fn parameterized_vector_test<F>(test_code: F)
         
         let large_range = RANGE_MULTI_CORE;
         let test_code = test_code.clone();
-        let safe_iteration = panic::AssertRecoverSafe::new(iteration);
-        let large_range = panic::AssertRecoverSafe::new(large_range);
-        let test_code = panic::AssertRecoverSafe::new(test_code);
-        let result = panic::recover(move|| {
+        let safe_iteration = panic::AssertUnwindSafe(iteration);
+        let large_range = panic::AssertUnwindSafe(large_range);
+        let test_code = panic::AssertUnwindSafe(test_code);
+        let result = panic::catch_unwind(move|| {
             let test_code = test_code.lock().unwrap();
             test_code(*safe_iteration, (*large_range).clone());
         });

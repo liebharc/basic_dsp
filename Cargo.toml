@@ -28,7 +28,7 @@ slow_test = []
 [dependencies]
 simd = "^0.1.1"
 num_cpus = "^0.2.10"
-simple_parallel = "^0.3.0"
+crossbeam = "^0.2.0"
 num = "^0.1.30"
 rustfft = "^1.0.0"
 

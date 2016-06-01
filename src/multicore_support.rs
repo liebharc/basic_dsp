@@ -1,9 +1,9 @@
 use num_cpus;
 use std::slice::{Chunks, ChunksMut};
 use num::traits::Float;
-use simple_parallel::Pool;
+use crossbeam;
 use std::ops::Range;
-use std::sync::Mutex;
+use std::sync::{Mutex, Arc};
 use std::mem;
 use super::RealNumber;
 use std::iter::Iterator;
@@ -70,12 +70,6 @@ impl Clone for MultiCoreSettings {
 pub struct Chunk;
 impl Chunk
 {  
-    /// Gives access to the thread pool singleton
-	fn get_pool() -> Pool
-	{
-		Pool::new(num_cpus::get())
-	}
-
     /// Figures out how many threads make use for the an operation with the given complexity on 
     /// an array with the given size. 
     ///
@@ -187,17 +181,19 @@ impl Chunk
             arguments:S, ref function: F)
 		where F: Fn(&mut [T], S) + 'static + Sync, 
 			  T: RealNumber,
-			  S: Sync + Copy
+			  S: Sync + Copy + Send
 	{
 		let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity, settings);
 		if number_of_chunks > 1
 		{
-			let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
-			let ref mut pool = Chunk::get_pool();
-			pool.for_(chunks, |chunk|
-				{
-					function(chunk, arguments);
-				});
+            let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
+            crossbeam::scope(|scope| {
+                for chunk in chunks {
+                    scope.spawn(move|| {
+                        function(chunk, arguments);
+                    });
+                }
+            });
 		}
 		else
 		{
@@ -215,18 +211,20 @@ impl Chunk
             arguments: S, ref function: F)
 		where F: Fn(&mut [T], Range<usize>, S) + 'static + Sync,
 			  T : Copy + Clone + Send + Sync,
-			  S: Sync + Copy
+			  S: Sync + Copy + Send
 	{
 		let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity, settings);
 		if number_of_chunks > 1
 		{
 			let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
 			let ranges = Chunk::partition_in_ranges(array_length, step_size, chunks.len());
-			let ref mut pool = Chunk::get_pool();
-			pool.for_(chunks.zip(ranges), |chunk|
-				{
-					function(chunk.0, chunk.1, arguments);
-				});
+            crossbeam::scope(|scope| {
+                for chunk in chunks.zip(ranges) {
+                    scope.spawn(move|| {
+                        function(chunk.0, chunk.1, arguments);
+                    });
+                }
+            });
 		}
 		else
 		{
@@ -248,15 +246,14 @@ impl Chunk
             array: &mut [T], array_length: usize, step_size: usize, 
             arguments: S, ref function: F)
 		where F: Fn(&mut &mut [T], &Range<usize>, &mut &mut [T], &Range<usize>, S) + 'static + Sync,
-			  T : Copy + Clone + Send + Sync,
-			  S: Sync + Copy
+			  T: Copy + Clone + Send + Sync,
+			  S: Sync + Copy + Send
 	{
 		let number_of_chunks = 2 * Chunk::determine_number_of_chunks(array_length, complexity, settings);
 		if number_of_chunks > 2
 		{
 			let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
 			let ranges = Chunk::partition_in_ranges(array_length, step_size, chunks.len());
-			let ref mut pool = Chunk::get_pool();
             let mut i = 0;
             let (mut chunks1, mut chunks2): (Vec<_>, Vec<_>) = 
                 chunks.partition(|_c| { i += 1; i <= number_of_chunks / 2 });
@@ -267,11 +264,14 @@ impl Chunk
             let ranges2 = ranges2.iter().rev();
             let zipped1 = chunks1.iter_mut().zip(ranges1);
             let zipped2 = chunks2.zip(ranges2);
-			pool.for_(zipped1.zip(zipped2), |chunk|
-				{
-                    let (pair1, pair2) = chunk;
-					function(pair1.0, pair1.1, pair2.0, pair2.1, arguments);
-				});
+            crossbeam::scope(|scope| {
+                for chunk in zipped1.zip(zipped2) {
+                    scope.spawn(move|| {
+                        let (pair1, pair2) = chunk;
+                        function(pair1.0, pair1.1, pair2.0, pair2.1, arguments);
+                    });
+                }
+            });
 		}
 		else
 		{
@@ -296,7 +296,7 @@ impl Chunk
             settings: &MultiCoreSettings, 
             a: &[T], a_len: usize, a_step: usize, 
             b: &[T], b_len: usize, b_step: usize, 
-            function: F) -> Vec<R>
+            ref function: F) -> Vec<R>
 		where F: Fn(&[T], Range<usize>, &[T]) -> R + 'static + Sync,
 			  T: Float + Copy + Clone + Send + Sync,
               R: Send
@@ -306,14 +306,17 @@ impl Chunk
 		{
 			let chunks = Chunk::partition(b, b_len, b_step, number_of_chunks);
 			let ranges = Chunk::partition_in_ranges(a_len, a_step, chunks.len());
-			let ref mut pool = Chunk::get_pool();
             let result = Vec::with_capacity(chunks.len());
-            let stack_array = Mutex::new(result);
-            pool.for_(chunks.zip(ranges), |chunk|
-                {   
-                    let r = function(a, chunk.1, chunk.0);
-                    stack_array.lock().unwrap().push(r);
-                });
+            let stack_array = Arc::new(Mutex::new(result));
+            crossbeam::scope(|scope| {
+                for chunk in chunks.zip(ranges) {
+                    let stack_array = stack_array.clone();
+                    scope.spawn(move|| {
+                        let r = function(a, chunk.1, chunk.0);
+                        stack_array.lock().unwrap().push(r);
+                    });
+                }
+            });
             let mut guard = stack_array.lock().unwrap();
             mem::replace(&mut guard, Vec::new())
 		}
@@ -331,25 +334,28 @@ impl Chunk
             complexity: Complexity, 
             settings: &MultiCoreSettings, 
             a: &[T], a_len: usize, a_step: usize, 
-            arguments:S, function: F) -> Vec<R>
+            arguments:S, ref function: F) -> Vec<R>
 		where F: Fn(&[T], Range<usize>, S) -> R + 'static + Sync,
 			  T: Float + Copy + Clone + Send + Sync,
               R: Send,
-              S: Sync + Copy
+              S: Sync + Copy + Send
 	{
 		let number_of_chunks = Chunk::determine_number_of_chunks(a_len, complexity, settings);
 		if number_of_chunks > 1
 		{
 			let chunks = Chunk::partition(a, a_len, a_step, number_of_chunks);
             let ranges = Chunk::partition_in_ranges(a_len, a_step, chunks.len());
-			let ref mut pool = Chunk::get_pool();
             let result = Vec::with_capacity(chunks.len());
-            let stack_array = Mutex::new(result);
-            pool.for_(chunks.zip(ranges), |chunk|
-                {   
-                    let r = function(chunk.0, chunk.1, arguments);
-                    stack_array.lock().unwrap().push(r);
-                });
+            let stack_array = Arc::new(Mutex::new(result));
+            crossbeam::scope(|scope| {
+                for chunk in chunks.zip(ranges) {
+                    let stack_array = stack_array.clone();
+                    scope.spawn(move|| {
+                        let r = function(chunk.0, chunk.1, arguments);
+                        stack_array.lock().unwrap().push(r);
+                    });
+                }
+            });
             let mut guard = stack_array.lock().unwrap();
             mem::replace(&mut guard, Vec::new())
 		}
@@ -370,19 +376,22 @@ impl Chunk
             target: &mut [T], target_length: usize, target_step: usize, 
             arguments: S, ref function: F)
 		where F: Fn(&[T], Range<usize>, &mut [T], S) + 'static + Sync,
-			  T : Float + Copy + Clone + Send + Sync,
-			  S: Sync + Copy
+			  T: Float + Copy + Clone + Send + Sync,
+			  S: Sync + Copy + Send
 	{
 		let number_of_chunks = Chunk::determine_number_of_chunks(original_length, complexity, settings);
 		if number_of_chunks > 1
 		{
 			let chunks = Chunk::partition_mut(target, target_length, target_step, number_of_chunks);
 			let ranges = Chunk::partition_in_ranges(original_length, original_step, chunks.len());
-			let ref mut pool = Chunk::get_pool();
-			pool.for_(chunks.zip(ranges), |chunk|
-				{
-					function(original, chunk.1, chunk.0, arguments);
-				});
+            
+            crossbeam::scope(|scope| {
+                for chunk in chunks.zip(ranges) {
+                    scope.spawn(move|| {
+                        function(original, chunk.1, chunk.0, arguments);
+                    });
+                }
+            });
 		}
 		else
 		{

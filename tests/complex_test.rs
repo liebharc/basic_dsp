@@ -1,5 +1,3 @@
-#![feature(recover, std_panic)]
-
 extern crate basic_dsp;
 extern crate rand;
 extern crate num;
