@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-14' class='srclink' href='../../src/num/bigint.rs.html#11-4730' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-14' class='srclink' href='../../src/num/bigint.rs.html#11-4888' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>A Big integer (signed version: <code>BigInt</code>, unsigned version: <code>BigUint</code>).</p>
 
 <p>A <code>BigUint</code> is represented as a vector of <code>BigDigit</code>s.
@@ -55,7 +55,8 @@ A <code>BigInt</code> is a combination of <code>BigUint</code> and <code>Sign</c
 <p>Common numerical operations are overloaded, so we can treat them
 the same way we treat other numbers.</p>
 
-<h2 id='example' class='section-header'><a href='#example'>Example</a></h2><span class='rusttest'>extern crate num;
+<h2 id='example' class='section-header'><a href='#example'>Example</a></h2>
+<span class='rusttest'>extern crate num;
 fn main() {
     use num::{BigUint, Zero, One};
     use std::mem::replace;
@@ -94,6 +95,7 @@ fn main() {
 <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;fib(1000) = {}&quot;</span>, <span class='ident'>fib</span>(<span class='number'>1000</span>));</pre>
 
 <p>It&#39;s easy to generate large random numbers:</p>
+
 <span class='rusttest'>extern crate rand;
 extern crate num;
 
@@ -147,7 +149,6 @@ fn main() {
                                title='num::bigint::BigInt'>BigInt</a></td>
                         <td class='docblock short'>
                              <p>A big signed integer type.</p>
-
                         </td>
                     </tr>
                 
@@ -156,7 +157,6 @@ fn main() {
                                title='num::bigint::BigUint'>BigUint</a></td>
                         <td class='docblock short'>
                              <p>A big unsigned integer type.</p>
-
                         </td>
                     </tr>
                 </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
@@ -174,7 +174,6 @@ fn main() {
                                title='num::bigint::Sign'>Sign</a></td>
                         <td class='docblock short'>
                              <p>A Sign is a <code>BigInt</code>&#39;s composing element.</p>
-
                         </td>
                     </tr>
                 </table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
@@ -201,7 +200,6 @@ fn main() {
                                title='num::bigint::ToBigInt'>ToBigInt</a></td>
                         <td class='docblock short'>
                              <p>A generic trait for converting a value to a <code>BigInt</code>.</p>
-
                         </td>
                     </tr>
                 
@@ -210,7 +208,6 @@ fn main() {
                                title='num::bigint::ToBigUint'>ToBigUint</a></td>
                         <td class='docblock short'>
                              <p>A generic trait for converting a value to a <code>BigUint</code>.</p>
-
                         </td>
                     </tr>
                 </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
@@ -220,7 +217,6 @@ fn main() {
                                title='num::bigint::BigDigit'>BigDigit</a></td>
                         <td class='docblock short'>
                              <p>A <code>BigDigit</code> is a <code>BigUint</code>&#39;s composing element.</p>
-
                         </td>
                     </tr>
                 
@@ -230,7 +226,6 @@ fn main() {
                         <td class='docblock short'>
                              <p>A <code>DoubleBigDigit</code> is the internal type used to do the computations.  Its
 size is the double of the size of <code>BigDigit</code>.</p>
-
                         </td>
                     </tr>
                 </table></section>
@@ -276,7 +271,7 @@ size is the double of the size of <code>BigDigit</code>.</p>
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>

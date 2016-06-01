@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Context","An OpenCL context for a particular platform and set of device types."]]});

@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Queue","An OpenCL command queue."]]});

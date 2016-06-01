@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-8464' class='srclink' href='../../src/basic_dsp/conv_types.rs.html#30-38' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-8555' class='srclink' href='../../src/basic_dsp/src/conv_types.rs.html#32-40' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait RealFrequencyResponse&lt;T&gt;: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
     fn <a href='#tymethod.is_symmetric' class='fnname'>is_symmetric</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
     fn <a href='#tymethod.calc' class='fnname'>calc</a>(&amp;self, x: T) -&gt; T;
@@ -64,7 +64,7 @@ Symmetry is defined as <code>self.calc(x) == self.calc(-x)</code>.</p>
 <li><code>impl <a class='trait' href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html' title='basic_dsp::conv_types::RealFrequencyResponse'>RealFrequencyResponse</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.RealFrequencyLinearTableLookup.html' title='basic_dsp::conv_types::RealFrequencyLinearTableLookup'>RealFrequencyLinearTableLookup</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
 <li><code>impl&lt;T&gt; <a class='trait' href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html' title='basic_dsp::conv_types::RealFrequencyResponse'>RealFrequencyResponse</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.RaisedCosineFunction.html' title='basic_dsp::conv_types::RaisedCosineFunction'>RaisedCosineFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
 <li><code>impl&lt;T&gt; <a class='trait' href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html' title='basic_dsp::conv_types::RealFrequencyResponse'>RealFrequencyResponse</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.SincFunction.html' title='basic_dsp::conv_types::SincFunction'>SincFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
-<li><code>impl <a class='trait' href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html' title='basic_dsp::conv_types::RealFrequencyResponse'>RealFrequencyResponse</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../../basic_dsp/interop_facade/facade32/struct.ForeignRealConvolutionFunction.html' title='basic_dsp::interop_facade::facade32::ForeignRealConvolutionFunction'>ForeignRealConvolutionFunction</a></code></li>
+<li><code>impl&lt;T&gt; <a class='trait' href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html' title='basic_dsp::conv_types::RealFrequencyResponse'>RealFrequencyResponse</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.ForeignRealConvolutionFunction.html' title='basic_dsp::conv_types::ForeignRealConvolutionFunction'>ForeignRealConvolutionFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
 </ul><script type="text/javascript" async
                               src="../../implementors/basic_dsp/conv_types/trait.RealFrequencyResponse.js">
                       </script></section>
@@ -110,7 +110,7 @@ Symmetry is defined as <code>self.calc(x) == self.calc(-x)</code>.</p>
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>

@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Program","An OpenCL program, sometimes referred to as a build."]]});

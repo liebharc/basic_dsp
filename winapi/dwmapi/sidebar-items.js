@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["DWM_BLURBEHIND",""]]});

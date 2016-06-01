@@ -1,1 +1,0 @@
-initSidebarItems({"constant":[["WerRegFileTypeMax",""],["WerRegFileTypeOther",""],["WerRegFileTypeUserDocument",""]],"struct":[["WER_REGISTER_FILE_TYPE",""]]});

@@ -1,1 +1,0 @@
-initSidebarItems({"constant":[["ExceptionCollidedUnwind",""],["ExceptionContinueExecution",""],["ExceptionContinueSearch",""],["ExceptionNestedException",""]],"struct":[["EXCEPTION_DISPOSITION",""],["_CONTEXT",""],["_DISPATCHER_CONTEXT",""],["_EXCEPTION_RECORD",""]]});

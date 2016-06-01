@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["ProQue","A convenience wrapper chimera of `Program` and `Queue`."]]});

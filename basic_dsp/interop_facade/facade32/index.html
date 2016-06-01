@@ -46,34 +46,9 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-9061' class='srclink' href='../../../src/basic_dsp/interop_facade/facade32.rs.html#1-671' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-9214' class='srclink' href='../../../src/basic_dsp/src/interop_facade/facade32.rs.html#1-843' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Functions for 32bit floating point number based vectors. Please refer to the other chapters of the help for documentation of the functions.</p>
-</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
-<table>
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.ForeignComplexConvolutionFunction.html'
-                               title='basic_dsp::interop_facade::facade32::ForeignComplexConvolutionFunction'>ForeignComplexConvolutionFunction</a></td>
-                        <td class='docblock short'>
-                             
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.ForeignRealConvolutionFunction.html'
-                               title='basic_dsp::interop_facade::facade32::ForeignRealConvolutionFunction'>ForeignRealConvolutionFunction</a></td>
-                        <td class='docblock short'>
-                             
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.ForeignWindowFunction.html'
-                               title='basic_dsp::interop_facade::facade32::ForeignWindowFunction'>ForeignWindowFunction</a></td>
-                        <td class='docblock short'>
-                             
-                        </td>
-                    </tr>
-                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+</div><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
                     <tr class=' module-item'>
                         <td><a class='fn' href='fn.abs32.html'
@@ -121,7 +96,6 @@
                         <td class='docblock short'>
                              <p>Creates a window from the function <code>window</code> and the void pointer <code>window_data</code>. The <code>window_data</code> pointer is passed to the <code>window</code>
 function at every call and can be used to store parameters.</p>
-
                         </td>
                     </tr>
                 
@@ -130,7 +104,6 @@ function at every call and can be used to store parameters.</p>
                                title='basic_dsp::interop_facade::facade32::apply_window32'>apply_window32</a></td>
                         <td class='docblock short'>
                              <p><code>window</code> argument is translated to:</p>
-
                         </td>
                     </tr>
                 
@@ -177,6 +150,14 @@ function at every call and can be used to store parameters.</p>
                     <tr class=' module-item'>
                         <td><a class='fn' href='fn.complex_conj32.html'
                                title='basic_dsp::interop_facade::facade32::complex_conj32'>complex_conj32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.complex_data32.html'
+                               title='basic_dsp::interop_facade::facade32::complex_data32'>complex_data32</a></td>
                         <td class='docblock short'>
                              
                         </td>
@@ -231,6 +212,50 @@ function at every call and can be used to store parameters.</p>
                     </tr>
                 
                     <tr class=' module-item'>
+                        <td><a class='fn' href='fn.convolve32.html'
+                               title='basic_dsp::interop_facade::facade32::convolve32'>convolve32</a></td>
+                        <td class='docblock short'>
+                             <p><code>impulse_response</code> argument is translated to:</p>
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.convolve_complex32.html'
+                               title='basic_dsp::interop_facade::facade32::convolve_complex32'>convolve_complex32</a></td>
+                        <td class='docblock short'>
+                             <p>Convolves the vector with an impulse response defined by <code>impulse_response</code> and the void pointer <code>impulse_response_data</code>.
+The <code>impulse_response_data</code> pointer is passed to the <code>impulse_response</code>
+function at every call and can be used to store parameters.</p>
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.convolve_real32.html'
+                               title='basic_dsp::interop_facade::facade32::convolve_real32'>convolve_real32</a></td>
+                        <td class='docblock short'>
+                             <p>Convolves the vector with an impulse response defined by <code>impulse_response</code> and the void pointer <code>impulse_response_data</code>.
+The <code>impulse_response_data</code> pointer is passed to the <code>impulse_response</code>
+function at every call and can be used to store parameters.</p>
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.convolve_vector32.html'
+                               title='basic_dsp::interop_facade::facade32::convolve_vector32'>convolve_vector32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.correlate32.html'
+                               title='basic_dsp::interop_facade::facade32::correlate32'>correlate32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
                         <td><a class='fn' href='fn.cos32.html'
                                title='basic_dsp::interop_facade::facade32::cos32'>cos32</a></td>
                         <td class='docblock short'>
@@ -249,6 +274,14 @@ function at every call and can be used to store parameters.</p>
                     <tr class=' module-item'>
                         <td><a class='fn' href='fn.cum_sum32.html'
                                title='basic_dsp::interop_facade::facade32::cum_sum32'>cum_sum32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.decimatei32.html'
+                               title='basic_dsp::interop_facade::facade32::decimatei32'>decimatei32</a></td>
                         <td class='docblock short'>
                              
                         </td>
@@ -319,6 +352,14 @@ function at every call and can be used to store parameters.</p>
                     </tr>
                 
                     <tr class=' module-item'>
+                        <td><a class='fn' href='fn.fft_shift32.html'
+                               title='basic_dsp::interop_facade::facade32::fft_shift32'>fft_shift32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
                         <td><a class='fn' href='fn.get_allocated_len32.html'
                                title='basic_dsp::interop_facade::facade32::get_allocated_len32'>get_allocated_len32</a></td>
                         <td class='docblock short'>
@@ -339,7 +380,6 @@ function at every call and can be used to store parameters.</p>
                                title='basic_dsp::interop_facade::facade32::get_domain32'>get_domain32</a></td>
                         <td class='docblock short'>
                              <p>Returns the vector domain as integer:</p>
-
                         </td>
                     </tr>
                 
@@ -424,6 +464,66 @@ function at every call and can be used to store parameters.</p>
                     </tr>
                 
                     <tr class=' module-item'>
+                        <td><a class='fn' href='fn.ifft_shift32.html'
+                               title='basic_dsp::interop_facade::facade32::ifft_shift32'>ifft_shift32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.interpolate_hermite32.html'
+                               title='basic_dsp::interop_facade::facade32::interpolate_hermite32'>interpolate_hermite32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.interpolate_lin32.html'
+                               title='basic_dsp::interop_facade::facade32::interpolate_lin32'>interpolate_lin32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.interpolatef32.html'
+                               title='basic_dsp::interop_facade::facade32::interpolatef32'>interpolatef32</a></td>
+                        <td class='docblock short'>
+                             <p><code>impulse_response</code> argument is translated to:</p>
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.interpolatef_custom32.html'
+                               title='basic_dsp::interop_facade::facade32::interpolatef_custom32'>interpolatef_custom32</a></td>
+                        <td class='docblock short'>
+                             <p>Convolves the vector with an impulse response defined by <code>impulse_response</code> and the void pointer <code>impulse_response_data</code>.
+The <code>impulse_response_data</code> pointer is passed to the <code>impulse_response</code>
+function at every call and can be used to store parameters.</p>
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.interpolatei32.html'
+                               title='basic_dsp::interop_facade::facade32::interpolatei32'>interpolatei32</a></td>
+                        <td class='docblock short'>
+                             <p><code>frequency_response</code> argument is translated to:</p>
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.interpolatei_custom32.html'
+                               title='basic_dsp::interop_facade::facade32::interpolatei_custom32'>interpolatei_custom32</a></td>
+                        <td class='docblock short'>
+                             <p>Convolves the vector with an impulse response defined by <code>frequency_response</code> and the void pointer <code>frequency_response_data</code>.
+The <code>frequency_response_data</code> pointer is passed to the <code>frequency_response</code>
+function at every call and can be used to store parameters.</p>
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
                         <td><a class='fn' href='fn.is_complex32.html'
                                title='basic_dsp::interop_facade::facade32::is_complex32'>is_complex32</a></td>
                         <td class='docblock short'>
@@ -488,6 +588,34 @@ function at every call and can be used to store parameters.</p>
                     </tr>
                 
                     <tr class=' module-item'>
+                        <td><a class='fn' href='fn.multiply_frequency_response32.html'
+                               title='basic_dsp::interop_facade::facade32::multiply_frequency_response32'>multiply_frequency_response32</a></td>
+                        <td class='docblock short'>
+                             <p><code>frequency_response</code> argument is translated to:</p>
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.multiply_frequency_response_complex32.html'
+                               title='basic_dsp::interop_facade::facade32::multiply_frequency_response_complex32'>multiply_frequency_response_complex32</a></td>
+                        <td class='docblock short'>
+                             <p>Convolves the vector with an impulse response defined by <code>frequency_response</code> and the void pointer <code>frequency_response_data</code>.
+The <code>frequency_response</code> pointer is passed to the <code>frequency_response</code>
+function at every call and can be used to store parameters.</p>
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.multiply_frequency_response_real32.html'
+                               title='basic_dsp::interop_facade::facade32::multiply_frequency_response_real32'>multiply_frequency_response_real32</a></td>
+                        <td class='docblock short'>
+                             <p>Convolves the vector with an impulse response defined by <code>frequency_response</code> and the void pointer <code>frequency_response_data</code>.
+The <code>frequency_response_data</code> pointer is passed to the <code>frequency_response</code>
+function at every call and can be used to store parameters.</p>
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
                         <td><a class='fn' href='fn.multiply_smaller_vector32.html'
                                title='basic_dsp::interop_facade::facade32::multiply_smaller_vector32'>multiply_smaller_vector32</a></td>
                         <td class='docblock short'>
@@ -506,6 +634,14 @@ function at every call and can be used to store parameters.</p>
                     <tr class=' module-item'>
                         <td><a class='fn' href='fn.new32.html'
                                title='basic_dsp::interop_facade::facade32::new32'>new32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.new_with_performance_options32.html'
+                               title='basic_dsp::interop_facade::facade32::new_with_performance_options32'>new_with_performance_options32</a></td>
                         <td class='docblock short'>
                              
                         </td>
@@ -544,6 +680,14 @@ function at every call and can be used to store parameters.</p>
                     </tr>
                 
                     <tr class=' module-item'>
+                        <td><a class='fn' href='fn.plain_sfft32.html'
+                               title='basic_dsp::interop_facade::facade32::plain_sfft32'>plain_sfft32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
                         <td><a class='fn' href='fn.plain_sifft32.html'
                                title='basic_dsp::interop_facade::facade32::plain_sifft32'>plain_sifft32</a></td>
                         <td class='docblock short'>
@@ -554,6 +698,22 @@ function at every call and can be used to store parameters.</p>
                     <tr class=' module-item'>
                         <td><a class='fn' href='fn.power32.html'
                                title='basic_dsp::interop_facade::facade32::power32'>power32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.prepare_argument32.html'
+                               title='basic_dsp::interop_facade::facade32::prepare_argument32'>prepare_argument32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.prepare_argument_padded32.html'
+                               title='basic_dsp::interop_facade::facade32::prepare_argument_padded32'>prepare_argument_padded32</a></td>
                         <td class='docblock short'>
                              
                         </td>
@@ -600,8 +760,24 @@ function at every call and can be used to store parameters.</p>
                     </tr>
                 
                     <tr class=' module-item'>
+                        <td><a class='fn' href='fn.reverse32.html'
+                               title='basic_dsp::interop_facade::facade32::reverse32'>reverse32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
                         <td><a class='fn' href='fn.root32.html'
                                title='basic_dsp::interop_facade::facade32::root32'>root32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_len32.html'
+                               title='basic_dsp::interop_facade::facade32::set_len32'>set_len32</a></td>
                         <td class='docblock short'>
                              
                         </td>
@@ -626,6 +802,14 @@ function at every call and can be used to store parameters.</p>
                     <tr class=' module-item'>
                         <td><a class='fn' href='fn.set_value32.html'
                                title='basic_dsp::interop_facade::facade32::set_value32'>set_value32</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.sfft32.html'
+                               title='basic_dsp::interop_facade::facade32::sfft32'>sfft32</a></td>
                         <td class='docblock short'>
                              
                         </td>
@@ -748,7 +932,6 @@ function at every call and can be used to store parameters.</p>
                                title='basic_dsp::interop_facade::facade32::unapply_custom_window32'>unapply_custom_window32</a></td>
                         <td class='docblock short'>
                              <p>See <a href="fn.apply_custom_window32.html"><code>apply_custom_window32</code></a> for a description of the <code>window</code> and <code>window_data</code> parameter.</p>
-
                         </td>
                     </tr>
                 
@@ -757,7 +940,6 @@ function at every call and can be used to store parameters.</p>
                                title='basic_dsp::interop_facade::facade32::unapply_window32'>unapply_window32</a></td>
                         <td class='docblock short'>
                              <p>See <a href="fn.apply_window32.html"><code>apply_window32</code></a> for a description of the <code>window</code> parameter.</p>
-
                         </td>
                     </tr>
                 
@@ -774,7 +956,6 @@ function at every call and can be used to store parameters.</p>
                                title='basic_dsp::interop_facade::facade32::windowed_custom_fft32'>windowed_custom_fft32</a></td>
                         <td class='docblock short'>
                              <p>See <a href="fn.apply_custom_window32.html"><code>apply_custom_window32</code></a> for a description of the <code>window</code> and <code>window_data</code> parameter.</p>
-
                         </td>
                     </tr>
                 
@@ -783,7 +964,14 @@ function at every call and can be used to store parameters.</p>
                                title='basic_dsp::interop_facade::facade32::windowed_custom_ifft32'>windowed_custom_ifft32</a></td>
                         <td class='docblock short'>
                              <p>See <a href="fn.apply_custom_window32.html"><code>apply_custom_window32</code></a> for a description of the <code>window</code> and <code>window_data</code> parameter.</p>
-
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.windowed_custom_sfft32.html'
+                               title='basic_dsp::interop_facade::facade32::windowed_custom_sfft32'>windowed_custom_sfft32</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.apply_custom_window32.html"><code>apply_custom_window32</code></a> for a description of the <code>window</code> and <code>window_data</code> parameter.</p>
                         </td>
                     </tr>
                 
@@ -792,7 +980,6 @@ function at every call and can be used to store parameters.</p>
                                title='basic_dsp::interop_facade::facade32::windowed_custom_sifft32'>windowed_custom_sifft32</a></td>
                         <td class='docblock short'>
                              <p>See <a href="fn.apply_custom_window32.html"><code>apply_custom_window32</code></a> for a description of the <code>window</code> and <code>window_data</code> parameter.</p>
-
                         </td>
                     </tr>
                 
@@ -801,7 +988,6 @@ function at every call and can be used to store parameters.</p>
                                title='basic_dsp::interop_facade::facade32::windowed_fft32'>windowed_fft32</a></td>
                         <td class='docblock short'>
                              <p>See <a href="fn.apply_window32.html"><code>apply_window32</code></a> for a description of the <code>window</code> parameter.</p>
-
                         </td>
                     </tr>
                 
@@ -810,7 +996,14 @@ function at every call and can be used to store parameters.</p>
                                title='basic_dsp::interop_facade::facade32::windowed_ifft32'>windowed_ifft32</a></td>
                         <td class='docblock short'>
                              <p>See <a href="fn.apply_window32.html"><code>apply_window32</code></a> for a description of the <code>window</code> parameter.</p>
-
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.windowed_sfft32.html'
+                               title='basic_dsp::interop_facade::facade32::windowed_sfft32'>windowed_sfft32</a></td>
+                        <td class='docblock short'>
+                             <p>See <a href="fn.apply_window32.html"><code>apply_window32</code></a> for a description of the <code>window</code> parameter.</p>
                         </td>
                     </tr>
                 
@@ -819,7 +1012,6 @@ function at every call and can be used to store parameters.</p>
                                title='basic_dsp::interop_facade::facade32::windowed_sifft32'>windowed_sifft32</a></td>
                         <td class='docblock short'>
                              <p>See <a href="fn.apply_window32.html"><code>apply_window32</code></a> for a description of the <code>window</code> parameter.</p>
-
                         </td>
                     </tr>
                 
@@ -845,7 +1037,6 @@ function at every call and can be used to store parameters.</p>
                         <td class='docblock short'>
                              <p><code>padding_option</code> argument is translated to:
 Returns the vector domain as integer:</p>
-
                         </td>
                     </tr>
                 </table></section>
@@ -891,7 +1082,7 @@ Returns the vector domain as integer:</p>
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>

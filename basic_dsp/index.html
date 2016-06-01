@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/basic_dsp/lib.rs.html#1-83' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/basic_dsp/src/lib.rs.html#1-83' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Basic digital signal processing (DSP) operations</p>
 
 <p>The basic building blocks are 1xN (one times N) or Nx1 real or complex vectors where N is typically at least in the order
@@ -74,7 +74,6 @@ memory available so that the optimization focus is on decreasing the processing 
                                title='basic_dsp::conv_types'>conv_types</a></td>
                         <td class='docblock short'>
                              <p>Types around a convolution, see also <a href="https://en.wikipedia.org/wiki/Convolution">https://en.wikipedia.org/wiki/Convolution</a>.</p>
-
                         </td>
                     </tr>
                 
@@ -84,7 +83,6 @@ memory available so that the optimization focus is on decreasing the processing 
                         <td class='docblock short'>
                              <p>Clients using other programming languages should use the functions
 in this mod. Please refer to the other chapters of the help for documentation of the functions.</p>
-
                         </td>
                     </tr>
                 
@@ -94,7 +92,6 @@ in this mod. Please refer to the other chapters of the help for documentation of
                         <td class='docblock short'>
                              <p>This mod contains a definition for window functions and provides implementations for a
 few standard windows. See the <code>WindowFunction</code> type for more information.</p>
-
                         </td>
                     </tr>
                 </table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
@@ -106,7 +103,6 @@ few standard windows. See the <code>WindowFunction</code> type for more informat
                              <p>A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing (DSP) operations.
 All data vector operations consume the vector they operate on and return a new vector. A consumed vector
 must not be accessed again.</p>
-
                         </td>
                     </tr>
                 
@@ -117,7 +113,6 @@ must not be accessed again.</p>
                              <p>A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing (DSP) operations.
 All data vector operations consume the vector they operate on and return a new vector. A consumed vector
 must not be accessed again.</p>
-
                         </td>
                     </tr>
                 
@@ -128,7 +123,6 @@ must not be accessed again.</p>
                              <p>A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing (DSP) operations.
 All data vector operations consume the vector they operate on and return a new vector. A consumed vector
 must not be accessed again.</p>
-
                         </td>
                     </tr>
                 
@@ -138,7 +132,6 @@ must not be accessed again.</p>
                         <td class='docblock short'>
                              <p>Holds parameters which specifiy how multiple cores are used
 to execute an operation.</p>
-
                         </td>
                     </tr>
                 
@@ -149,7 +142,6 @@ to execute an operation.</p>
                              <p>A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing (DSP) operations.
 All data vector operations consume the vector they operate on and return a new vector. A consumed vector
 must not be accessed again.</p>
-
                         </td>
                     </tr>
                 
@@ -160,7 +152,6 @@ must not be accessed again.</p>
                              <p>A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing (DSP) operations.
 All data vector operations consume the vector they operate on and return a new vector. A consumed vector
 must not be accessed again.</p>
-
                         </td>
                     </tr>
                 
@@ -169,7 +160,6 @@ must not be accessed again.</p>
                                title='basic_dsp::Statistics'>Statistics</a></td>
                         <td class='docblock short'>
                              <p>Statistics about the data in a vector</p>
-
                         </td>
                     </tr>
                 </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
@@ -179,7 +169,6 @@ must not be accessed again.</p>
                                title='basic_dsp::DataVectorDomain'>DataVectorDomain</a></td>
                         <td class='docblock short'>
                              <p>The domain of a data vector</p>
-
                         </td>
                     </tr>
                 
@@ -188,7 +177,6 @@ must not be accessed again.</p>
                                title='basic_dsp::ErrorReason'>ErrorReason</a></td>
                         <td class='docblock short'>
                              <p>Enumeration of all error reasons</p>
-
                         </td>
                     </tr>
                 
@@ -198,7 +186,6 @@ must not be accessed again.</p>
                         <td class='docblock short'>
                              <p>An alternative way to define operations on a vector.
 Warning: Highly unstable and not even fully implemented right now.</p>
-
                         </td>
                     </tr>
                 
@@ -207,7 +194,6 @@ Warning: Highly unstable and not even fully implemented right now.</p>
                                title='basic_dsp::PaddingOption'>PaddingOption</a></td>
                         <td class='docblock short'>
                              <p>An option which defines how a vector should be padded</p>
-
                         </td>
                     </tr>
                 </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
@@ -217,10 +203,6 @@ Warning: Highly unstable and not even fully implemented right now.</p>
                                title='basic_dsp::ComplexVectorOperations'>ComplexVectorOperations</a></td>
                         <td class='docblock short'>
                              <p>Defines all operations which are valid on <code>DataVectors</code> containing complex data.</p>
-
-<h1 id='failures' class='section-header'><a href='#failures'>Failures</a></h1>
-<p>All operations in this trait fail with <code>VectorMustBeComplex</code> if the vector isn&#39;t in the complex number space.</p>
-
                         </td>
                     </tr>
                 
@@ -229,7 +211,6 @@ Warning: Highly unstable and not even fully implemented right now.</p>
                                title='basic_dsp::Convolution'>Convolution</a></td>
                         <td class='docblock short'>
                              <p>Provides a convolution operation for data vectors.</p>
-
                         </td>
                     </tr>
                 
@@ -238,7 +219,6 @@ Warning: Highly unstable and not even fully implemented right now.</p>
                                title='basic_dsp::CrossCorrelation'>CrossCorrelation</a></td>
                         <td class='docblock short'>
                              <p>Cross-correlation of data vectors. See also <a href="https://en.wikipedia.org/wiki/Cross-correlation">https://en.wikipedia.org/wiki/Cross-correlation</a></p>
-
                         </td>
                     </tr>
                 
@@ -247,7 +227,6 @@ Warning: Highly unstable and not even fully implemented right now.</p>
                                title='basic_dsp::DataVector'>DataVector</a></td>
                         <td class='docblock short'>
                              <p>DataVector gives access to the basic properties of all data vectors</p>
-
                         </td>
                     </tr>
                 
@@ -256,11 +235,6 @@ Warning: Highly unstable and not even fully implemented right now.</p>
                                title='basic_dsp::FrequencyDomainOperations'>FrequencyDomainOperations</a></td>
                         <td class='docblock short'>
                              <p>Defines all operations which are valid on <code>DataVectors</code> containing frequency domain data.</p>
-
-<h1 id='failures-1' class='section-header'><a href='#failures-1'>Failures</a></h1>
-<p>All operations in this trait fail with <code>VectorMustBeInFrquencyDomain</code> or <code>VectorMustBeComplex</code> 
-if the vector isn&#39;t in frequency domain and complex number space.</p>
-
                         </td>
                     </tr>
                 
@@ -269,7 +243,6 @@ if the vector isn&#39;t in frequency domain and complex number space.</p>
                                title='basic_dsp::FrequencyMultiplication'>FrequencyMultiplication</a></td>
                         <td class='docblock short'>
                              <p>Provides a frequency response multiplication operation for data vectors.</p>
-
                         </td>
                     </tr>
                 
@@ -278,7 +251,6 @@ if the vector isn&#39;t in frequency domain and complex number space.</p>
                                title='basic_dsp::GenericVectorOperations'>GenericVectorOperations</a></td>
                         <td class='docblock short'>
                              <p>Defines all operations which are valid on all <code>DataVectors</code>.</p>
-
                         </td>
                     </tr>
                 
@@ -287,11 +259,6 @@ if the vector isn&#39;t in frequency domain and complex number space.</p>
                                title='basic_dsp::Interpolation'>Interpolation</a></td>
                         <td class='docblock short'>
                              <p>Provides interpolation operations for real and complex data vectors.</p>
-
-<h1 id='unstable' class='section-header'><a href='#unstable'>Unstable</a></h1>
-<p>This functionality has been recently added in order to find out if the definitions are consistent.
-However the actual implementation is lacking tests.</p>
-
                         </td>
                     </tr>
                 
@@ -300,7 +267,6 @@ However the actual implementation is lacking tests.</p>
                                title='basic_dsp::Offset'>Offset</a></td>
                         <td class='docblock short'>
                              <p>An operation which adds a constant to each vector element</p>
-
                         </td>
                     </tr>
                 
@@ -309,10 +275,6 @@ However the actual implementation is lacking tests.</p>
                                title='basic_dsp::RealInterpolation'>RealInterpolation</a></td>
                         <td class='docblock short'>
                              <p>Provides interpolation operations which are only applicable for real data vectors.</p>
-
-<h1 id='failures-2' class='section-header'><a href='#failures-2'>Failures</a></h1>
-<p>All operations in this trait fail with <code>VectorMustBeReal</code> if the vector isn&#39;t in the real number space.</p>
-
                         </td>
                     </tr>
                 
@@ -321,7 +283,6 @@ However the actual implementation is lacking tests.</p>
                                title='basic_dsp::RealNumber'>RealNumber</a></td>
                         <td class='docblock short'>
                              <p>A real floating pointer number intended to abstract over <code>f32</code> and <code>f64</code>.</p>
-
                         </td>
                     </tr>
                 
@@ -330,10 +291,6 @@ However the actual implementation is lacking tests.</p>
                                title='basic_dsp::RealVectorOperations'>RealVectorOperations</a></td>
                         <td class='docblock short'>
                              <p>Defines all operations which are valid on <code>DataVectors</code> containing real data.</p>
-
-<h1 id='failures-3' class='section-header'><a href='#failures-3'>Failures</a></h1>
-<p>All operations in this trait fail with <code>VectorMustBeReal</code> if the vector isn&#39;t in the real number space.</p>
-
                         </td>
                     </tr>
                 
@@ -345,7 +302,6 @@ However the actual implementation is lacking tests.</p>
 convert a vector to a different type and set <code>self.len()</code> to zero.
 However <code>self.allocated_len()</code> will remain unchanged. The use case for this
 is to allow to reuse the memory of a vector for different operations.</p>
-
                         </td>
                     </tr>
                 
@@ -354,7 +310,6 @@ is to allow to reuse the memory of a vector for different operations.</p>
                                title='basic_dsp::Scale'>Scale</a></td>
                         <td class='docblock short'>
                              <p>An operation which multiplies each vector element with a constant</p>
-
                         </td>
                     </tr>
                 
@@ -365,12 +320,6 @@ is to allow to reuse the memory of a vector for different operations.</p>
                              <p>Defines all operations which are valid on <code>DataVectors</code> containing frequency domain data and
 the data is assumed to half of complex conjungate symmetric spectrum round 0 Hz where 
 the 0 Hz element itself is real.</p>
-
-<h1 id='failures-4' class='section-header'><a href='#failures-4'>Failures</a></h1>
-<p>All operations in this trait fail with <code>VectorMustBeInFrquencyDomain</code>
-if the vector isn&#39;t in frequency domain or with <code>VectorMustBeConjSymmetric</code> if the first element (0Hz)
-isn&#39;t real.</p>
-
                         </td>
                     </tr>
                 
@@ -379,11 +328,6 @@ isn&#39;t real.</p>
                                title='basic_dsp::SymmetricTimeDomainOperations'>SymmetricTimeDomainOperations</a></td>
                         <td class='docblock short'>
                              <p>Defines all operations which are valid on <code>DataVectors</code> containing real time domain data.</p>
-
-<h1 id='failures-5' class='section-header'><a href='#failures-5'>Failures</a></h1>
-<p>All operations in this trait fail with <code>VectorMustBeInTimeDomain</code> if the vector isn&#39;t in time domain or
-with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#39;t and odd number.</p>
-
                         </td>
                     </tr>
                 
@@ -392,10 +336,6 @@ with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#3
                                title='basic_dsp::TimeDomainOperations'>TimeDomainOperations</a></td>
                         <td class='docblock short'>
                              <p>Defines all operations which are valid on <code>DataVectors</code> containing time domain data.</p>
-
-<h1 id='failures-6' class='section-header'><a href='#failures-6'>Failures</a></h1>
-<p>All operations in this trait fail with <code>VectorMustBeInTimeDomain</code> if the vector isn&#39;t in time domain.</p>
-
                         </td>
                     </tr>
                 
@@ -404,7 +344,6 @@ with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#3
                                title='basic_dsp::VectorConvolution'>VectorConvolution</a></td>
                         <td class='docblock short'>
                              <p>Provides a convolution operation for data vectors with data vectors.</p>
-
                         </td>
                     </tr>
                 </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
@@ -414,7 +353,6 @@ with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#3
                                title='basic_dsp::ComplexFreqVector32'>ComplexFreqVector32</a></td>
                         <td class='docblock short'>
                              <p>Specialization of a vector for a certain data type.</p>
-
                         </td>
                     </tr>
                 
@@ -423,7 +361,6 @@ with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#3
                                title='basic_dsp::ComplexFreqVector64'>ComplexFreqVector64</a></td>
                         <td class='docblock short'>
                              <p>Specialization of a vector for a certain data type.</p>
-
                         </td>
                     </tr>
                 
@@ -432,7 +369,6 @@ with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#3
                                title='basic_dsp::ComplexTimeVector32'>ComplexTimeVector32</a></td>
                         <td class='docblock short'>
                              <p>Specialization of a vector for a certain data type.</p>
-
                         </td>
                     </tr>
                 
@@ -441,7 +377,6 @@ with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#3
                                title='basic_dsp::ComplexTimeVector64'>ComplexTimeVector64</a></td>
                         <td class='docblock short'>
                              <p>Specialization of a vector for a certain data type.</p>
-
                         </td>
                     </tr>
                 
@@ -450,7 +385,6 @@ with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#3
                                title='basic_dsp::DataVector32'>DataVector32</a></td>
                         <td class='docblock short'>
                              <p>Specialization of a vector for a certain data type.</p>
-
                         </td>
                     </tr>
                 
@@ -459,7 +393,6 @@ with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#3
                                title='basic_dsp::DataVector64'>DataVector64</a></td>
                         <td class='docblock short'>
                              <p>Specialization of a vector for a certain data type.</p>
-
                         </td>
                     </tr>
                 
@@ -468,7 +401,6 @@ with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#3
                                title='basic_dsp::RealFreqVector32'>RealFreqVector32</a></td>
                         <td class='docblock short'>
                              <p>Specialization of a vector for a certain data type.</p>
-
                         </td>
                     </tr>
                 
@@ -477,7 +409,6 @@ with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#3
                                title='basic_dsp::RealFreqVector64'>RealFreqVector64</a></td>
                         <td class='docblock short'>
                              <p>Specialization of a vector for a certain data type.</p>
-
                         </td>
                     </tr>
                 
@@ -486,7 +417,6 @@ with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#3
                                title='basic_dsp::RealTimeVector32'>RealTimeVector32</a></td>
                         <td class='docblock short'>
                              <p>Specialization of a vector for a certain data type.</p>
-
                         </td>
                     </tr>
                 
@@ -495,7 +425,6 @@ with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#3
                                title='basic_dsp::RealTimeVector64'>RealTimeVector64</a></td>
                         <td class='docblock short'>
                              <p>Specialization of a vector for a certain data type.</p>
-
                         </td>
                     </tr>
                 
@@ -505,7 +434,6 @@ with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#3
                         <td class='docblock short'>
                              <p>Result contains on success the vector. On failure it contains an error reason and an vector with invalid data
 which still can be used in order to avoid memory allocation.</p>
-
                         </td>
                     </tr>
                 
@@ -514,7 +442,6 @@ which still can be used in order to avoid memory allocation.</p>
                                title='basic_dsp::VoidResult'>VoidResult</a></td>
                         <td class='docblock short'>
                              <p>Void/nothing in case of success or a reason in case of an error.</p>
-
                         </td>
                     </tr>
                 </table></section>
@@ -560,7 +487,7 @@ which still can be used in order to avoid memory allocation.</p>
 
                 <p>
                     Search functions by type signature (e.g.
-                    <code>vec -> usize</code>)
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
                 </p>
             </div>
         </div>
