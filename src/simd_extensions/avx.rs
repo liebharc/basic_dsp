@@ -19,7 +19,7 @@ impl Simd<f32> for f32x8
 			let trans: &[Self] = mem::transmute(array);
 			&trans[0 .. len / reg_len]
 		}
-    }
+   }
     
     fn array_to_regs_mut(array: &mut [f32]) -> &mut [Self] {
         unsafe { 
@@ -79,7 +79,7 @@ impl Simd<f32> for f32x8
 		let parallel = scaling_real * self;
 		// There should be a shufps operation which shuffles the vector self
 		let shuffled = f32x8::new(self.extract(1), self.extract(0), self.extract(3), self.extract(2),
-                                  self.extract(5), self.extract(4), self.extract(6), self.extract(7)); 
+                                  self.extract(5), self.extract(4), self.extract(7), self.extract(6)); 
 		let cross = scaling_imag * shuffled;
 		parallel.addsub(cross)
 	}
@@ -93,30 +93,30 @@ impl Simd<f32> for f32x8
 		let parallel = scaling_real * self;
 		// There should be a shufps operation which shuffles the vector self
 		let shuffled = f32x8::new(self.extract(1), self.extract(0), self.extract(3), self.extract(2),
-                                  self.extract(5), self.extract(4), self.extract(6), self.extract(7)); 
+                                  self.extract(5), self.extract(4), self.extract(7), self.extract(6)); 
 		let cross = scaling_imag * shuffled; 
 		parallel.addsub(cross)
 	}
 	
 	fn div_complex(self, value: f32x8) -> f32x8
 	{
-		let scaling_real = f32x8::new(value.extract(0), value.extract(0), value.extract(2), value.extract(2),
-                                      value.extract(4), value.extract(4), value.extract(6), value.extract(6));
-		let scaling_imag = f32x8::new(value.extract(1), value.extract(1), value.extract(3), value.extract(3),
-                                      value.extract(5), value.extract(5), value.extract(7), value.extract(7));
-		let parallel = scaling_real * value;
-		// There should be a shufps operation which shuffles the vector self
-		let shuffled = f32x8::new(value.extract(1), value.extract(0), value.extract(3), value.extract(2),
-                                  value.extract(5), value.extract(4), value.extract(6), value.extract(7));  
-		let cross = scaling_imag * shuffled;
-		let mul = parallel.addsub(cross);
-		let square = shuffled * shuffled;
-		let square_shuffled = f32x8::new(square.extract(1), square.extract(0), square.extract(3), square.extract(2),
-                                         square.extract(5), square.extract(4), square.extract(6), square.extract(7));  
-		let sum = square + square_shuffled;
-		let div = mul / sum;
-		f32x8::new(div.extract(1), div.extract(0), div.extract(3), div.extract(2),
-                   div.extract(5), div.extract(4), div.extract(6), div.extract(7))
+                let scaling_imag = f32x8::new(self.extract(0), self.extract(0), self.extract(2), self.extract(2),
+                                      self.extract(4), self.extract(4), self.extract(6), self.extract(6));
+                let scaling_real = f32x8::new(self.extract(1), self.extract(1), self.extract(3), self.extract(3),
+                                      self.extract(5), self.extract(5), self.extract(7), self.extract(7));
+                let parallel = scaling_real * value;
+                // There should be a shufps operation which shuffles the vector self
+                let shuffled = f32x8::new(value.extract(1), value.extract(0), value.extract(3), value.extract(2),
+                                  value.extract(5), value.extract(4), value.extract(7), value.extract(6));
+                let cross = scaling_imag * shuffled;
+                let mul = parallel.addsub(cross);
+                let square = shuffled * shuffled;
+                let square_shuffled = f32x8::new(square.extract(1), square.extract(0), square.extract(3), square.extract(2),
+                                         square.extract(5), square.extract(4), square.extract(7), square.extract(6));
+                let sum = square + square_shuffled;
+                let div = mul / sum;
+                f32x8::new(div.extract(1), div.extract(0), div.extract(3), div.extract(2),
+                   div.extract(5), div.extract(4), div.extract(7), div.extract(6))
 	}
 	
 	fn complex_abs_squared(self) -> f32x8
@@ -127,8 +127,7 @@ impl Simd<f32> for f32x8
 	
 	fn complex_abs(self) -> f32x8
 	{
-		let squared = self * self;
-		let squared_sum = squared.hadd(squared);
+		let squared_sum = self.complex_abs_squared();
 		AvxF32x8::sqrt(squared_sum)
 	}
     
@@ -147,8 +146,8 @@ impl Simd<f32> for f32x8
 		self.store(&mut temp, 0);
 		target[index] = temp[0];
 		target[index + 1] = temp[1];
-        target[index + 2] = temp[2];
-        target[index + 3] = temp[3];
+        target[index + 2] = temp[4];
+        target[index + 3] = temp[5];
 	}
     
     fn sum_real(&self) -> f32 {
@@ -164,7 +163,7 @@ impl Simd<f32> for f32x8
     
     fn sum_complex(&self) -> Complex<f32> {
         Complex::<f32>::new(self.extract(0) + self.extract(2) + self.extract(4) + self.extract(6),
-                            self.extract(1) + self.extract(3) + self.extract(6) + self.extract(7))
+                            self.extract(1) + self.extract(3) + self.extract(5) + self.extract(7))
     }
 }
 
@@ -278,9 +277,8 @@ impl Simd<f64> for f64x4
 	
 	fn complex_abs(self) -> f64x4
 	{
-		let squared = self * self;
-		let squared_sum = squared.hadd(squared);
-		f64x4::new(squared_sum.extract(0).sqrt(), squared_sum.extract(1).sqrt(), 0.0, 0.0)
+		let squared_sum = self.complex_abs_squared();
+		AvxF64x4::sqrt(squared_sum)
 	}
     
     fn sqrt(self) -> f64x4 {
@@ -297,7 +295,7 @@ impl Simd<f64> for f64x4
 		let mut temp = [0.0; 4];
 		self.store(&mut temp, 0);
 		target[index] = temp[0];
-		target[index + 1] = temp[1];
+		target[index + 1] = temp[2];
 	}
     
     fn sum_real(&self) -> f64 {

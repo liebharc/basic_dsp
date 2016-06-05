@@ -367,7 +367,7 @@ macro_rules! add_conv_impl{
                             shifts.push(simd);
                         }
 
-                        let scalar_len = conv_len + 1; // + 1 due to rounding of odd numbers
+                        let scalar_len = conv_len + $reg::len(); // + $reg::len() due to rounding of odd numbers
                         let conv_len = conv_len as isize;
                         let mut i = 0;
                         for num in &mut dest[0..scalar_len] {
