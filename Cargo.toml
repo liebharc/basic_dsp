@@ -1,8 +1,8 @@
 [package]
 name = "basic_dsp"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Christian Liebhardt"]
-license = "MIT" # num_cpus prevents an Apache2 license
+license = "MIT/Apache-2.0"
 homepage = "https://github.com/liebharc/basic_dsp"
 repository = "https://github.com/liebharc/basic_dsp"
 documentation = "https://liebharc.github.io/basic_dsp/basic_dsp/"
