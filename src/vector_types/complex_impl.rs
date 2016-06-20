@@ -1,6 +1,6 @@
 use multicore_support::{Chunk, Complexity};
 use super::definitions::{
-	DataVector,
+    DataVector,
     VecResult,
     VoidResult,
     ErrorReason,
@@ -8,7 +8,7 @@ use super::definitions::{
     Statistics,
     Scale,
     Offset,
-	ComplexVectorOperations};
+    ComplexVectorOperations};
 use super::GenericDataVector;
 use super::stats_impl::Stats;
 use simd_extensions::{Simd,Reg32,Reg64};
@@ -16,8 +16,8 @@ use num::complex::Complex;
 
 macro_rules! add_complex_impl {
     ($($data_type:ident, $reg:ident);*)
-	 =>
-	 {	 
+     =>
+     {     
         $(
             impl ComplexVectorOperations<$data_type> for GenericDataVector<$data_type>
             {
@@ -172,7 +172,7 @@ macro_rules! add_complex_impl {
                 {
                     assert_complex!(self);
                     self.pure_complex_to_real_operation(|x,_arg|x.im, (), Complexity::Small)
-                }	
+                }    
                         
                 fn get_real(&self, destination: &mut Self) -> VoidResult
                 {

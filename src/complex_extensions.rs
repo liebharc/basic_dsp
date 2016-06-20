@@ -17,8 +17,8 @@ pub trait ComplexExtensions<T>
 
 macro_rules! add_complex_extensions {
     ($($data_type:ident);*)
-	 =>
-	 {	 
+     =>
+     {     
         $(
             impl ComplexExtensions<$data_type> for Complex<$data_type>
             {   
@@ -83,51 +83,51 @@ add_complex_extensions!(f32; f64);
 
 #[cfg(test)]
 mod tests {
-	use super::*;
-	use num::complex::Complex32;
+    use super::*;
+    use num::complex::Complex32;
     
     fn assert_complex(left: Complex32, right: Complex32) {
         assert!((left.re - right.re).abs() < 1e-4);
         assert!((left.im - right.im).abs() < 1e-4);
     }
-	
+    
     #[test]
-	fn powf_test()
-	{
-		let c = Complex32::new(2.0, -1.0);
+    fn powf_test()
+    {
+        let c = Complex32::new(2.0, -1.0);
         let r = c.powf(3.5);
         assert_complex(r, Complex32::new(-0.8684746, -16.695934));
-	}
+    }
     
     #[test]
-	fn logn_test()
-	{
-		let c = Complex32::new(2.0, -1.0);
+    fn logn_test()
+    {
+        let c = Complex32::new(2.0, -1.0);
         let r = c.ln();
         assert_complex(r, Complex32::new(0.804719, -0.4636476));
-	}
+    }
     
     #[test]
-	fn expn_test()
-	{
-		let c = Complex32::new(2.0, -1.0);
+    fn expn_test()
+    {
+        let c = Complex32::new(2.0, -1.0);
         let r = c.expn();
         assert_complex(r, Complex32::new(3.9923239, -6.217676));
-	}
+    }
     
     #[test]
-	fn log_test()
-	{
-		let c = Complex32::new(2.0, -1.0);
+    fn log_test()
+    {
+        let c = Complex32::new(2.0, -1.0);
         let r = c.log_base(10.0);
         assert_complex(r, Complex32::new(0.349485, -0.20135958));
-	}
+    }
     
     #[test]
-	fn exp_test()
-	{
-		let c = Complex32::new(2.0, -1.0);
+    fn exp_test()
+    {
+        let c = Complex32::new(2.0, -1.0);
         let r = c.exp_base(10.0);
         assert_complex(r, Complex32::new(-66.82015, -74.39803));
-	}
+    }
 }

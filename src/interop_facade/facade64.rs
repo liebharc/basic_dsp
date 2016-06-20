@@ -23,7 +23,7 @@ pub extern fn new64(is_complex: i32, domain: i32, init_value: f64, length: usize
             DataVectorDomain::Frequency
         };
         
-	let vector = Box::new(DataVector64::new(is_complex != 0, domain, init_value, length, delta));
+    let vector = Box::new(DataVector64::new(is_complex != 0, domain, init_value, length, delta));
     vector
 }
 
@@ -36,7 +36,7 @@ pub extern fn new_with_performance_options64(is_complex: i32, domain: i32, init_
             DataVectorDomain::Frequency
         };
         
-	let vector = Box::new(DataVector64::new_with_options(is_complex != 0, domain, init_value, length, delta, MultiCoreSettings::new(core_limit, early_temp_allocation)));
+    let vector = Box::new(DataVector64::new_with_options(is_complex != 0, domain, init_value, length, delta, MultiCoreSettings::new(core_limit, early_temp_allocation)));
     vector
 }
 

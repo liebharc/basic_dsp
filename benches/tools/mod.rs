@@ -24,7 +24,7 @@ pub struct VectorBox<T>
 #[derive(Debug)]
 pub enum Size {
     Tiny,
-	Small,
+    Small,
     Medium,
     Large
 }

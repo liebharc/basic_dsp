@@ -17,36 +17,36 @@ pub trait DataVector<T> : Sized
     where T : RealNumber
 {
     /// Gives direct access to the underlying data sequence. It's recommended to use the `Index functions .
-	/// For users outside of Rust: It's discouraged to hold references to this array while executing operations on the vector,
-	/// since the vector may decide at any operation to invalidate the array. 
-	fn data(&self) -> &[T];
-	
-	/// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
-	fn delta(&self) -> T;
-	
-	/// The domain in which the data vector resides. Basically specifies the x-axis and the type of operations which
-	/// are valid on this vector.
-	fn domain(&self) -> DataVectorDomain;
-	
-	/// Indicates whether the vector contains complex data. This also specifies the type of operations which are valid
-	/// on this vector.
-	fn is_complex(&self) -> bool;
-	
-	/// The number of valid elements in the the vector.
-	fn len(&self) -> usize;
+    /// For users outside of Rust: It's discouraged to hold references to this array while executing operations on the vector,
+    /// since the vector may decide at any operation to invalidate the array. 
+    fn data(&self) -> &[T];
+    
+    /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
+    fn delta(&self) -> T;
+    
+    /// The domain in which the data vector resides. Basically specifies the x-axis and the type of operations which
+    /// are valid on this vector.
+    fn domain(&self) -> DataVectorDomain;
+    
+    /// Indicates whether the vector contains complex data. This also specifies the type of operations which are valid
+    /// on this vector.
+    fn is_complex(&self) -> bool;
+    
+    /// The number of valid elements in the the vector.
+    fn len(&self) -> usize;
     
     /// Sets the vector length to the given length. 
     /// If `self.len() < len` then the value of the new elements is undefined.
     fn set_len(&mut self, len: usize);
-	
-	/// The number of valid points. If the vector is complex then every valid point consists of two floating point numbers,
-	/// while for real vectors every point only consists of one floating point number.
-	fn points(&self) -> usize;
-	
-	/// Gets the number of allocated elements in the underlying vector.
-	/// The allocated length may be larger than the length of valid points. 
-	/// In most cases you likely want to have `len`or `points` instead.
-	fn allocated_len(&self) -> usize;
+    
+    /// The number of valid points. If the vector is complex then every valid point consists of two floating point numbers,
+    /// while for real vectors every point only consists of one floating point number.
+    fn points(&self) -> usize;
+    
+    /// Gets the number of allocated elements in the underlying vector.
+    /// The allocated length may be larger than the length of valid points. 
+    /// In most cases you likely want to have `len`or `points` instead.
+    fn allocated_len(&self) -> usize;
 }
 
 /// The domain of a data vector
@@ -55,9 +55,9 @@ pub trait DataVector<T> : Sized
 #[derive(PartialEq)]
 #[derive(Debug)]
 pub enum DataVectorDomain {
-	/// Time domain, the x-axis is in [s]
-	Time,
-	/// Frequency domain, the x-axis in in [Hz]
+    /// Time domain, the x-axis is in [s]
+    Time,
+    /// Frequency domain, the x-axis in in [Hz]
     Frequency
 }
 
@@ -69,17 +69,17 @@ pub trait RededicateVector<T> : DataVector<T>
     where T: RealNumber {
     /// Make `self` a complex time vector
     /// # Example
-	///
-	/// ```
-	/// use basic_dsp::{ComplexFreqVector32, ComplexVectorOperations, RededicateVector, DataVector, DataVectorDomain};
-	/// let complex = ComplexFreqVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-	/// let real = complex.phase().expect("Ignoring error handling in examples");
+    ///
+    /// ```
+    /// use basic_dsp::{ComplexFreqVector32, ComplexVectorOperations, RededicateVector, DataVector, DataVectorDomain};
+    /// let complex = ComplexFreqVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+    /// let real = complex.phase().expect("Ignoring error handling in examples");
     /// let complex = real.rededicate_as_complex_time_vector(2.0);
-	/// assert_eq!(true, complex.is_complex());
+    /// assert_eq!(true, complex.is_complex());
     /// assert_eq!(DataVectorDomain::Time, complex.domain());
     /// assert_eq!(0, complex.len());
     /// assert_eq!(2, complex.allocated_len());
-	/// ```
+    /// ```
     fn rededicate_as_complex_time_vector(self, delta: T) -> ComplexTimeVector<T>;
     
     /// Make `self` a complex frequency vector
@@ -112,23 +112,23 @@ pub trait Offset<T> : Sized
 /// Defines all operations which are valid on all `DataVectors`.
 pub trait GenericVectorOperations<T>: DataVector<T> 
     where T : RealNumber {
-	/// Calculates the sum of `self + summand`. It consumes self and returns the result.
+    /// Calculates the sum of `self + summand`. It consumes self and returns the result.
     /// # Failures
     /// VecResult may report the following `ErrorReason` members:
     /// 
     /// 1. `VectorsMustHaveTheSameSize`: `self` and `summand` must have the same size
     /// 2. `VectorMetaDataMustAgree`: `self` and `summand` must be in the same domain and number space
     /// 
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
-	/// let result = vector1.add_vector(&vector2).expect("Ignoring error handling in examples");
-	/// assert_eq!([11.0, 13.0], result.data());
-	/// ```
-	fn add_vector(self, summand: &Self) -> VecResult<Self>;
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
+    /// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
+    /// let result = vector1.add_vector(&vector2).expect("Ignoring error handling in examples");
+    /// assert_eq!([11.0, 13.0], result.data());
+    /// ```
+    fn add_vector(self, summand: &Self) -> VecResult<Self>;
     
     /// Calculates the sum of `self + summand`. `summand` may be smaller than `self` as long
     /// as `self.len() % summand.len() == 0`. THe result is the same as it would be if 
@@ -140,34 +140,34 @@ pub trait GenericVectorOperations<T>: DataVector<T>
     /// 1. `InvalidArgumentLength`: `self.points()` isn't dividable by `summand.points()`
     /// 2. `VectorMetaDataMustAgree`: `self` and `summand` must be in the same domain and number space
     /// 
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector1 = RealTimeVector32::from_array(&[10.0, 11.0, 12.0, 13.0]);
-	/// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let result = vector1.add_smaller_vector(&vector2).expect("Ignoring error handling in examples");
-	/// assert_eq!([11.0, 13.0, 13.0, 15.0], result.data());
-	/// ```
-	fn add_smaller_vector(self, summand: &Self) -> VecResult<Self>;
-	
-	/// Calculates the difference of `self - subtrahend`. It consumes self and returns the result.
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector1 = RealTimeVector32::from_array(&[10.0, 11.0, 12.0, 13.0]);
+    /// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
+    /// let result = vector1.add_smaller_vector(&vector2).expect("Ignoring error handling in examples");
+    /// assert_eq!([11.0, 13.0, 13.0, 15.0], result.data());
+    /// ```
+    fn add_smaller_vector(self, summand: &Self) -> VecResult<Self>;
+    
+    /// Calculates the difference of `self - subtrahend`. It consumes self and returns the result.
     /// # Failures
     /// VecResult may report the following `ErrorReason` members:
     /// 
     /// 1. `VectorsMustHaveTheSameSize`: `self` and `subtrahend` must have the same size
     /// 2. `VectorMetaDataMustAgree`: `self` and `subtrahend` must be in the same domain and number space
     /// 
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
-	/// let result = vector1.subtract_vector(&vector2).expect("Ignoring error handling in examples");
-	/// assert_eq!([-9.0, -9.0], result.data());
-	/// ```
-	fn subtract_vector(self, subtrahend: &Self) -> VecResult<Self>;
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
+    /// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
+    /// let result = vector1.subtract_vector(&vector2).expect("Ignoring error handling in examples");
+    /// assert_eq!([-9.0, -9.0], result.data());
+    /// ```
+    fn subtract_vector(self, subtrahend: &Self) -> VecResult<Self>;
     
     /// Calculates the sum of `self - subtrahend`. `subtrahend` may be smaller than `self` as long
     /// as `self.len() % subtrahend.len() == 0`. THe result is the same as it would be if 
@@ -179,34 +179,34 @@ pub trait GenericVectorOperations<T>: DataVector<T>
     /// 1. `InvalidArgumentLength`: `self.points()` isn't dividable by `subtrahend.points()`
     /// 2. `VectorMetaDataMustAgree`: `self` and `subtrahend` must be in the same domain and number space
     /// 
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector1 = RealTimeVector32::from_array(&[10.0, 11.0, 12.0, 13.0]);
-	/// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let result = vector1.subtract_smaller_vector(&vector2).expect("Ignoring error handling in examples");
-	/// assert_eq!([9.0, 9.0, 11.0, 11.0], result.data());
-	/// ```
-	fn subtract_smaller_vector(self, summand: &Self) -> VecResult<Self>;
-	
-	/// Calculates the product of `self * factor`. It consumes self and returns the result.
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector1 = RealTimeVector32::from_array(&[10.0, 11.0, 12.0, 13.0]);
+    /// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
+    /// let result = vector1.subtract_smaller_vector(&vector2).expect("Ignoring error handling in examples");
+    /// assert_eq!([9.0, 9.0, 11.0, 11.0], result.data());
+    /// ```
+    fn subtract_smaller_vector(self, summand: &Self) -> VecResult<Self>;
+    
+    /// Calculates the product of `self * factor`. It consumes self and returns the result.
     /// # Failures
     /// VecResult may report the following `ErrorReason` members:
     /// 
     /// 1. `VectorsMustHaveTheSameSize`: `self` and `factor` must have the same size
     /// 2. `VectorMetaDataMustAgree`: `self` and `factor` must be in the same domain and number space
     /// 
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
-	/// let result = vector1.multiply_vector(&vector2).expect("Ignoring error handling in examples");
-	/// assert_eq!([10.0, 22.0], result.data());
-	/// ```
-	fn multiply_vector(self, factor: &Self) -> VecResult<Self>;
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
+    /// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
+    /// let result = vector1.multiply_vector(&vector2).expect("Ignoring error handling in examples");
+    /// assert_eq!([10.0, 22.0], result.data());
+    /// ```
+    fn multiply_vector(self, factor: &Self) -> VecResult<Self>;
     
     /// Calculates the sum of `self - factor`. `factor` may be smaller than `self` as long
     /// as `self.len() % factor.len() == 0`. THe result is the same as it would be if 
@@ -218,34 +218,34 @@ pub trait GenericVectorOperations<T>: DataVector<T>
     /// 1. `InvalidArgumentLength`: `self.points()` isn't dividable by `factor.points()`
     /// 2. `VectorMetaDataMustAgree`: `self` and `factor` must be in the same domain and number space
     /// 
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector1 = RealTimeVector32::from_array(&[10.0, 11.0, 12.0, 13.0]);
-	/// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let result = vector1.multiply_smaller_vector(&vector2).expect("Ignoring error handling in examples");
-	/// assert_eq!([10.0, 22.0, 12.0, 26.0], result.data());
-	/// ```
-	fn multiply_smaller_vector(self, factor: &Self) -> VecResult<Self>;
-	
-	/// Calculates the quotient of `self / summand`. It consumes self and returns the result.
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector1 = RealTimeVector32::from_array(&[10.0, 11.0, 12.0, 13.0]);
+    /// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
+    /// let result = vector1.multiply_smaller_vector(&vector2).expect("Ignoring error handling in examples");
+    /// assert_eq!([10.0, 22.0, 12.0, 26.0], result.data());
+    /// ```
+    fn multiply_smaller_vector(self, factor: &Self) -> VecResult<Self>;
+    
+    /// Calculates the quotient of `self / summand`. It consumes self and returns the result.
     /// # Failures
     /// VecResult may report the following `ErrorReason` members:
     /// 
     /// 1. `VectorsMustHaveTheSameSize`: `self` and `divisor` must have the same size
     /// 2. `VectorMetaDataMustAgree`: `self` and `divisor` must be in the same domain and number space
     /// 
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector1 = RealTimeVector32::from_array(&[10.0, 22.0]);
-	/// let vector2 = RealTimeVector32::from_array(&[2.0, 11.0]);
-	/// let result = vector1.divide_vector(&vector2).expect("Ignoring error handling in examples");
-	/// assert_eq!([5.0, 2.0], result.data());
-	/// ```
-	fn divide_vector(self, divisor: &Self) -> VecResult<Self>;
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector1 = RealTimeVector32::from_array(&[10.0, 22.0]);
+    /// let vector2 = RealTimeVector32::from_array(&[2.0, 11.0]);
+    /// let result = vector1.divide_vector(&vector2).expect("Ignoring error handling in examples");
+    /// assert_eq!([5.0, 2.0], result.data());
+    /// ```
+    fn divide_vector(self, divisor: &Self) -> VecResult<Self>;
     
     /// Calculates the sum of `self - divisor`. `divisor` may be smaller than `self` as long
     /// as `self.len() % divisor.len() == 0`. THe result is the same as it would be if 
@@ -257,226 +257,226 @@ pub trait GenericVectorOperations<T>: DataVector<T>
     /// 1. `InvalidArgumentLength`: `self.points()` isn't dividable by `divisor.points()`
     /// 2. `VectorMetaDataMustAgree`: `self` and `divisor` must be in the same domain and number space
     /// 
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector1 = RealTimeVector32::from_array(&[10.0, 12.0, 12.0, 14.0]);
-	/// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let result = vector1.divide_smaller_vector(&vector2).expect("Ignoring error handling in examples");
-	/// assert_eq!([10.0, 6.0, 12.0, 7.0], result.data());
-	/// ```
-	fn divide_smaller_vector(self, divisor: &Self) -> VecResult<Self>;
-	
-	/// Appends zeros add the end of the vector until the vector has the size given in the points argument.
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector1 = RealTimeVector32::from_array(&[10.0, 12.0, 12.0, 14.0]);
+    /// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
+    /// let result = vector1.divide_smaller_vector(&vector2).expect("Ignoring error handling in examples");
+    /// assert_eq!([10.0, 6.0, 12.0, 7.0], result.data());
+    /// ```
+    fn divide_smaller_vector(self, divisor: &Self) -> VecResult<Self>;
+    
+    /// Appends zeros add the end of the vector until the vector has the size given in the points argument.
     /// If `points` smaller than the `self.len()` then this operation won't do anything.
-	///
-	/// Note: Each point is two floating point numbers if the vector is complex.
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{PaddingOption, RealTimeVector32, ComplexTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let result = vector.zero_pad(4, PaddingOption::End).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());
-	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0]);
-	/// let result = vector.zero_pad(2, PaddingOption::End).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());
-	/// ```
-	fn zero_pad(self, points: usize, option: PaddingOption) -> VecResult<Self>;
+    ///
+    /// Note: Each point is two floating point numbers if the vector is complex.
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{PaddingOption, RealTimeVector32, ComplexTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
+    /// let result = vector.zero_pad(4, PaddingOption::End).expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0]);
+    /// let result = vector.zero_pad(2, PaddingOption::End).expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());
+    /// ```
+    fn zero_pad(self, points: usize, option: PaddingOption) -> VecResult<Self>;
     
     /// Reverses the data inside the vector.
     fn reverse(self) -> VecResult<Self>;
-	
-	/// Ineterleaves zeros `factor - 1`times after every vector element, so that the resulting
+    
+    /// Ineterleaves zeros `factor - 1`times after every vector element, so that the resulting
     /// vector will have a length of `self.len() * factor`.
-	///
-	/// Note: Remember that each complex number consists of two floating points and interleaving 
-	/// will take that into account.
+    ///
+    /// Note: Remember that each complex number consists of two floating points and interleaving 
+    /// will take that into account.
     ///
     /// If factor is 0 (zero) then `self` will be returned.
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let result = vector.zero_interleave(2).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 0.0, 2.0, 0.0], result.data());
-	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-	/// let result = vector.zero_interleave(2).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], result.data());
-	/// ```
-	fn zero_interleave(self, factor: u32) -> VecResult<Self>;
-	
-	/// Calculates the delta of each elements to its previous element. This will decrease the vector length by one point. 
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[2.0, 3.0, 2.0, 6.0]);
-	/// let result = vector.diff().expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, -1.0, 4.0], result.data());
-	/// ```
-	fn diff(self) -> VecResult<Self>;
-	
-	/// Calculates the delta of each elements to its previous element. The first element
-	/// will remain unchanged.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[2.0, 3.0, 2.0, 6.0]);
-	/// let result = vector.diff_with_start().expect("Ignoring error handling in examples");
-	/// assert_eq!([2.0, 1.0, -1.0, 4.0], result.data());
-	/// ```
-	fn diff_with_start(self) -> VecResult<Self>;
-	
-	/// Calculates the cumulative sum of all elements. This operation undoes the `diff_with_start`operation.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[2.0, 1.0, -1.0, 4.0]);
-	/// let result = vector.cum_sum().expect("Ignoring error handling in examples");
-	/// assert_eq!([2.0, 3.0, 2.0, 6.0], result.data());
-	/// ```
-	fn cum_sum(self) -> VecResult<Self>;
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
+    /// let result = vector.zero_interleave(2).expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 0.0, 2.0, 0.0], result.data());
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+    /// let result = vector.zero_interleave(2).expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], result.data());
+    /// ```
+    fn zero_interleave(self, factor: u32) -> VecResult<Self>;
+    
+    /// Calculates the delta of each elements to its previous element. This will decrease the vector length by one point. 
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[2.0, 3.0, 2.0, 6.0]);
+    /// let result = vector.diff().expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, -1.0, 4.0], result.data());
+    /// ```
+    fn diff(self) -> VecResult<Self>;
+    
+    /// Calculates the delta of each elements to its previous element. The first element
+    /// will remain unchanged.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[2.0, 3.0, 2.0, 6.0]);
+    /// let result = vector.diff_with_start().expect("Ignoring error handling in examples");
+    /// assert_eq!([2.0, 1.0, -1.0, 4.0], result.data());
+    /// ```
+    fn diff_with_start(self) -> VecResult<Self>;
+    
+    /// Calculates the cumulative sum of all elements. This operation undoes the `diff_with_start`operation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[2.0, 1.0, -1.0, 4.0]);
+    /// let result = vector.cum_sum().expect("Ignoring error handling in examples");
+    /// assert_eq!([2.0, 3.0, 2.0, 6.0], result.data());
+    /// ```
+    fn cum_sum(self) -> VecResult<Self>;
     
     /// Gets the square root of all vector elements.
-	///
-	/// The sqrt of a negative number gives NaN and not a complex vector.  
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// # use std::f32;
-	/// let vector = RealTimeVector32::from_array(&[1.0, 4.0, 9.0, 16.0, 25.0]);
-	/// let result = vector.sqrt().expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0], result.data());
-	/// let vector = RealTimeVector32::from_array(&[-1.0]);
-	/// let result = vector.sqrt().expect("Ignoring error handling in examples");
-	/// assert!(result[0].is_nan());
-	/// ```
-	fn sqrt(self) -> VecResult<Self>;
-	
-	/// Squares all vector elements.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0]);
-	/// let result = vector.square().expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 4.0, 9.0, 16.0, 25.0], result.data());
-	/// ```
-	fn square(self) -> VecResult<Self>;
-	
-	/// Calculates the n-th root of every vector element.
-	///
-	/// If the result would be a complex number then the vector will contain a NaN instead. So the vector
-	/// will never convert itself to a complex vector during this operation.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 8.0, 27.0]);
-	/// let result = vector.root(3.0).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 2.0, 3.0], result.data());
-	/// ```
-	fn root(self, degree: T) -> VecResult<Self>;
-	
-	/// Raises every vector element to the given power.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
-	/// let result = vector.power(3.0).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 8.0, 27.0], result.data());
-	/// ```
-	fn power(self, exponent: T) -> VecResult<Self>;
-	
-	/// Calculates the natural logarithm to the base e for every vector element.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[2.718281828459045	, 7.389056, 20.085537]);
-	/// let result = vector.logn().expect("Ignoring error handling in examples");
-	/// let actual = result.data();
-	/// let expected = &[1.0, 2.0, 3.0];
-	/// assert_eq!(actual.len(), expected.len());
-	/// for i in 0..actual.len() {
-	///		assert!((actual[i] - expected[i]).abs() < 1e-4);
-	/// }
-	/// ```
-	fn logn(self) -> VecResult<Self>;
-	
-	/// Calculates the natural exponential to the base e for every vector element.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
-	/// let result = vector.expn().expect("Ignoring error handling in examples");
-	/// assert_eq!([2.71828182846, 7.389056, 20.085537], result.data());
-	/// ```
-	fn expn(self) -> VecResult<Self>;
-	
-	/// Calculates the logarithm to the given base for every vector element.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[10.0, 100.0, 1000.0]);
-	/// let result = vector.log_base(10.0).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 2.0, 3.0], result.data());
-	/// ```
-	fn log_base(self, base: T) -> VecResult<Self>;
-	
-	/// Calculates the exponential to the given base for every vector element.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
-	/// let result = vector.exp_base(10.0).expect("Ignoring error handling in examples");
-	/// assert_eq!([10.0, 100.0, 1000.0], result.data());
-	/// ```
-	fn exp_base(self, base: T) -> VecResult<Self>;
+    ///
+    /// The sqrt of a negative number gives NaN and not a complex vector.  
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// # use std::f32;
+    /// let vector = RealTimeVector32::from_array(&[1.0, 4.0, 9.0, 16.0, 25.0]);
+    /// let result = vector.sqrt().expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0], result.data());
+    /// let vector = RealTimeVector32::from_array(&[-1.0]);
+    /// let result = vector.sqrt().expect("Ignoring error handling in examples");
+    /// assert!(result[0].is_nan());
+    /// ```
+    fn sqrt(self) -> VecResult<Self>;
+    
+    /// Squares all vector elements.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0]);
+    /// let result = vector.square().expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 4.0, 9.0, 16.0, 25.0], result.data());
+    /// ```
+    fn square(self) -> VecResult<Self>;
+    
+    /// Calculates the n-th root of every vector element.
+    ///
+    /// If the result would be a complex number then the vector will contain a NaN instead. So the vector
+    /// will never convert itself to a complex vector during this operation.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 8.0, 27.0]);
+    /// let result = vector.root(3.0).expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 2.0, 3.0], result.data());
+    /// ```
+    fn root(self, degree: T) -> VecResult<Self>;
+    
+    /// Raises every vector element to the given power.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
+    /// let result = vector.power(3.0).expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 8.0, 27.0], result.data());
+    /// ```
+    fn power(self, exponent: T) -> VecResult<Self>;
+    
+    /// Calculates the natural logarithm to the base e for every vector element.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[2.718281828459045    , 7.389056, 20.085537]);
+    /// let result = vector.logn().expect("Ignoring error handling in examples");
+    /// let actual = result.data();
+    /// let expected = &[1.0, 2.0, 3.0];
+    /// assert_eq!(actual.len(), expected.len());
+    /// for i in 0..actual.len() {
+    ///        assert!((actual[i] - expected[i]).abs() < 1e-4);
+    /// }
+    /// ```
+    fn logn(self) -> VecResult<Self>;
+    
+    /// Calculates the natural exponential to the base e for every vector element.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
+    /// let result = vector.expn().expect("Ignoring error handling in examples");
+    /// assert_eq!([2.71828182846, 7.389056, 20.085537], result.data());
+    /// ```
+    fn expn(self) -> VecResult<Self>;
+    
+    /// Calculates the logarithm to the given base for every vector element.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[10.0, 100.0, 1000.0]);
+    /// let result = vector.log_base(10.0).expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 2.0, 3.0], result.data());
+    /// ```
+    fn log_base(self, base: T) -> VecResult<Self>;
+    
+    /// Calculates the exponential to the given base for every vector element.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
+    /// let result = vector.exp_base(10.0).expect("Ignoring error handling in examples");
+    /// assert_eq!([10.0, 100.0, 1000.0], result.data());
+    /// ```
+    fn exp_base(self, base: T) -> VecResult<Self>;
     
     /// Calculates the sine of each element in radians.
     ///
     /// # Example
-	///
-	/// ```
+    ///
+    /// ```
     /// use std::f32;
     /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
     /// let vector = RealTimeVector32::from_array(&[f32::consts::PI/2.0, -f32::consts::PI/2.0]);
     /// let result = vector.sin().expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, -1.0], result.data());
+    /// assert_eq!([1.0, -1.0], result.data());
     /// ```
     fn sin(self) -> VecResult<Self>;
     
     /// Calculates the cosine of each element in radians.
     ///
     /// # Example
-	///
-	/// ```
+    ///
+    /// ```
     /// use std::f32;
     /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
     /// let vector = RealTimeVector32::from_array(&[2.0 * f32::consts::PI, f32::consts::PI]);
     /// let result = vector.cos().expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, -1.0], result.data());
+    /// assert_eq!([1.0, -1.0], result.data());
     /// ```
     fn cos(self) -> VecResult<Self>;
     
@@ -512,15 +512,15 @@ pub trait GenericVectorOperations<T>: DataVector<T>
     
     /// This function swaps both halves of the vector. This operation is also called fft shift
     /// Use it after a `plain_fft` to get a spectrum which is centered at `0 Hz`.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
-	/// let result = vector.swap_halves().expect("Ignoring error handling in examples");
-	/// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], result.data());
-	/// ```
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+    /// let result = vector.swap_halves().expect("Ignoring error handling in examples");
+    /// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], result.data());
+    /// ```
     fn swap_halves(self) -> VecResult<Self>;
     
     /// Splits the vector into several smaller vectors. `self.len()` must be dividable by
@@ -530,18 +530,18 @@ pub trait GenericVectorOperations<T>: DataVector<T>
     /// 
     /// 1. `InvalidArgumentLength`: `self.points()` isn't dividable by `targets.len()`
     ///     
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
     /// let a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
-	/// let merge = RealTimeVector32::from_array(&a);
+    /// let merge = RealTimeVector32::from_array(&a);
     /// let mut split = &mut 
     ///     [Box::new(RealTimeVector32::empty()), 
     ///     Box::new(RealTimeVector32::empty())];
     /// merge.split_into(split).unwrap();
     /// assert_eq!([1.0, 3.0, 5.0, 7.0, 9.0], split[0].data());
-	/// ```
+    /// ```
     fn split_into(&self, targets: &mut [Box<Self>]) -> VoidResult;
     
     /// Merges several vectors into `self`. All vectors must have the same size and
@@ -551,30 +551,30 @@ pub trait GenericVectorOperations<T>: DataVector<T>
     /// 
     /// 1. `InvalidArgumentLength`: if `sources.len() == 0`
     ///    
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::empty();
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::empty();
     /// let parts = &[
     ///     Box::new(RealTimeVector32::from_array(&[1.0, 2.0])),
     ///     Box::new(RealTimeVector32::from_array(&[1.0, 2.0]))];
-	/// let merged = vector.merge(parts).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 1.0, 2.0, 2.0], merged.data());
-	/// ```
+    /// let merged = vector.merge(parts).expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 1.0, 2.0, 2.0], merged.data());
+    /// ```
     fn merge(self, sources: &[Box<Self>]) -> VecResult<Self>;
     
     /// Overrides the data in the vector with the given data. This may also change 
     /// the vectors length (however not the allocated length).
     ///
     /// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0]);
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, GenericVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0]);
     /// let result = vector.override_data(&[5.0, 7.0]).expect("Ignoring error handling in examples");
-	/// assert_eq!(&[5.0, 7.0], result.data());
-	/// ```
+    /// assert_eq!(&[5.0, 7.0], result.data());
+    /// ```
     fn override_data(self, data: &[T]) -> VecResult<Self>;
 }
 
@@ -583,78 +583,78 @@ pub trait GenericVectorOperations<T>: DataVector<T>
 /// All operations in this trait fail with `VectorMustBeReal` if the vector isn't in the real number space.
 pub trait RealVectorOperations<T> : DataVector<T> 
     where T : RealNumber {
-	type ComplexPartner;
-	
-	/// Adds a scalar to the vector.
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let result = vector.real_offset(2.0).expect("Ignoring error handling in examples");
-	/// assert_eq!([3.0, 4.0], result.data());
-	/// ```
-	fn real_offset(self, offset: T) -> VecResult<Self>;
-	
-	/// Multiplies the vector with a scalar.
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let result = vector.real_scale(4.0).expect("Ignoring error handling in examples");
-	/// assert_eq!([4.0, 8.0], result.data());
-	/// ```
-	fn real_scale(self, offset: T) -> VecResult<Self>;
-	
-	/// Gets the absolute value of all vector elements.
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, -2.0]);
-	/// let result = vector.abs().expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 2.0], result.data());
-	/// ```
-	fn abs(self) -> VecResult<Self>;
-		
-	/// Converts the real vector into a complex vector.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let result = vector.to_complex().expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 0.0, 2.0, 0.0], result.data());
-	/// ```
-	fn to_complex(self) -> VecResult<Self::ComplexPartner>;
+    type ComplexPartner;
     
-	/// Each value in the vector is devided by the divisor and the remainder is stored in the resulting 
-	/// vector. This the same a modulo operation or to phase wrapping.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
-	/// let result = vector.wrap(4.0).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0], result.data());
-	/// ```
-	fn wrap(self, divisor: T) -> VecResult<Self>;
-	
-	/// This function corrects the jumps in the given vector which occur due to wrap or modulo operations.
-	/// This will undo a wrap operation only if the deltas are smaller than half the divisor.
-	///
-	/// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0]);
-	/// let result = vector.unwrap(4.0).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], result.data());
-	/// ```
-	fn unwrap(self, divisor: T) -> VecResult<Self>;
+    /// Adds a scalar to the vector.
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
+    /// let result = vector.real_offset(2.0).expect("Ignoring error handling in examples");
+    /// assert_eq!([3.0, 4.0], result.data());
+    /// ```
+    fn real_offset(self, offset: T) -> VecResult<Self>;
+    
+    /// Multiplies the vector with a scalar.
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
+    /// let result = vector.real_scale(4.0).expect("Ignoring error handling in examples");
+    /// assert_eq!([4.0, 8.0], result.data());
+    /// ```
+    fn real_scale(self, offset: T) -> VecResult<Self>;
+    
+    /// Gets the absolute value of all vector elements.
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[1.0, -2.0]);
+    /// let result = vector.abs().expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 2.0], result.data());
+    /// ```
+    fn abs(self) -> VecResult<Self>;
+        
+    /// Converts the real vector into a complex vector.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
+    /// let result = vector.to_complex().expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 0.0, 2.0, 0.0], result.data());
+    /// ```
+    fn to_complex(self) -> VecResult<Self::ComplexPartner>;
+    
+    /// Each value in the vector is devided by the divisor and the remainder is stored in the resulting 
+    /// vector. This the same a modulo operation or to phase wrapping.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+    /// let result = vector.wrap(4.0).expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0], result.data());
+    /// ```
+    fn wrap(self, divisor: T) -> VecResult<Self>;
+    
+    /// This function corrects the jumps in the given vector which occur due to wrap or modulo operations.
+    /// This will undo a wrap operation only if the deltas are smaller than half the divisor.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, RealVectorOperations, DataVector};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0]);
+    /// let result = vector.unwrap(4.0).expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], result.data());
+    /// ```
+    fn unwrap(self, divisor: T) -> VecResult<Self>;
     
     /// Calculates the dot product of self and factor. Self and factor remain unchanged.
     /// # Failures
@@ -663,24 +663,24 @@ pub trait RealVectorOperations<T> : DataVector<T>
     /// 1. `VectorMetaDataMustAgree`: `self` and `factor` must be in the same domain and number space
     /// 
     /// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations};
-	/// let vector1 = RealTimeVector32::from_array(&[9.0, 2.0, 7.0]);
-	/// let vector2 = RealTimeVector32::from_array(&[4.0, 8.0, 10.0]);
-	/// let result = vector1.real_dot_product(&vector2).expect("Ignoring error handling in examples");
-	/// assert_eq!(122.0, result);
-	/// ```  
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, RealVectorOperations};
+    /// let vector1 = RealTimeVector32::from_array(&[9.0, 2.0, 7.0]);
+    /// let vector2 = RealTimeVector32::from_array(&[4.0, 8.0, 10.0]);
+    /// let result = vector1.real_dot_product(&vector2).expect("Ignoring error handling in examples");
+    /// assert_eq!(122.0, result);
+    /// ```  
     fn real_dot_product(&self, factor: &Self) -> ScalarResult<T>;
     
     /// Calculates the statistics of the data contained in the vector.
     /// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0]);
-	/// let result = vector.real_statistics();
-	/// assert_eq!(result.sum, 15.0);
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, RealVectorOperations};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0]);
+    /// let result = vector.real_statistics();
+    /// assert_eq!(result.sum, 15.0);
     /// assert_eq!(result.count, 5);
     /// assert_eq!(result.average, 3.0);
     /// assert!((result.rms - 3.3166).abs() < 1e-4);
@@ -688,21 +688,21 @@ pub trait RealVectorOperations<T> : DataVector<T>
     /// assert_eq!(result.min_index, 0);
     /// assert_eq!(result.max, 5.0);
     /// assert_eq!(result.max_index, 4);
-	/// ```  
+    /// ```  
     fn real_statistics(&self) -> Statistics<T>;
     
     /// Calculates the statistics of the data contained in the vector as if the vector would
     /// have been split into `len` pieces. `self.len` should be devisable by `len` without a remainder,
     /// but this isn't enforced by the implementation.
     /// # Example
-	///
-	/// ```
-	/// use basic_dsp::{RealTimeVector32, RealVectorOperations};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0]);
-	/// let result = vector.real_statistics_splitted(2);
-	/// assert_eq!(result[0].sum, 4.0);
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, RealVectorOperations};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0]);
+    /// let result = vector.real_statistics_splitted(2);
+    /// assert_eq!(result[0].sum, 4.0);
     /// assert_eq!(result[1].sum, 6.0);
-	/// ```  
+    /// ```  
     fn real_statistics_splitted(&self, len: usize) -> Vec<Statistics<T>>;
 }
 
@@ -711,42 +711,42 @@ pub trait RealVectorOperations<T> : DataVector<T>
 /// All operations in this trait fail with `VectorMustBeComplex` if the vector isn't in the complex number space.
 pub trait ComplexVectorOperations<T> : DataVector<T> 
     where T : RealNumber {
-	type RealPartner;
+    type RealPartner;
     
     /// Gets `self.data()` as complex array.
     fn complex_data(&self) -> &[Complex<T>];
-	
-	/// Adds a scalar to the vector.
-	/// # Example
-	///
-	/// ```
-	/// # extern crate num;
-	/// # extern crate basic_dsp;
-	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
-	/// use num::complex::Complex32;
-	/// # fn main() { 
-	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-	/// let result = vector.complex_offset(Complex32::new(-1.0, 2.0)).expect("Ignoring error handling in examples");
-	/// assert_eq!([0.0, 4.0, 2.0, 6.0], result.data());
-	/// # }
-	/// ```
-	fn complex_offset(self, offset: Complex<T>) -> VecResult<Self>;
-	
-	/// Multiplies the vector with a scalar.
-	/// # Example
-	///
-	/// ```
-	/// # extern crate num;
-	/// # extern crate basic_dsp;
-	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
-	/// use num::complex::Complex32;
-	/// # fn main() { 
-	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-	/// let result = vector.complex_scale(Complex32::new(-1.0, 2.0)).expect("Ignoring error handling in examples");
-	/// assert_eq!([-5.0, 0.0, -11.0, 2.0], result.data());
-	/// # }
-	/// ```
-	fn complex_scale(self, factor: Complex<T>) -> VecResult<Self>;
+    
+    /// Adds a scalar to the vector.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+    /// use num::complex::Complex32;
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+    /// let result = vector.complex_offset(Complex32::new(-1.0, 2.0)).expect("Ignoring error handling in examples");
+    /// assert_eq!([0.0, 4.0, 2.0, 6.0], result.data());
+    /// # }
+    /// ```
+    fn complex_offset(self, offset: Complex<T>) -> VecResult<Self>;
+    
+    /// Multiplies the vector with a scalar.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+    /// use num::complex::Complex32;
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+    /// let result = vector.complex_scale(Complex32::new(-1.0, 2.0)).expect("Ignoring error handling in examples");
+    /// assert_eq!([-5.0, 0.0, -11.0, 2.0], result.data());
+    /// # }
+    /// ```
+    fn complex_scale(self, factor: Complex<T>) -> VecResult<Self>;
     
     /// Multiplies each vector element with `exp(j*(a*idx*self.delta() + b))`
     /// where `a` and `b` are arguments and `idx` is the index of the data points
@@ -756,174 +756,174 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
     /// This method can be used to perform a frequency shift in time domain.
     ///
     /// # Example
-	///
-	/// ```
+    ///
+    /// ```
     /// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
-	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-	/// let result = vector.multiply_complex_exponential(2.0, 3.0).expect("Ignoring error handling in examples");
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+    /// let result = vector.multiply_complex_exponential(2.0, 3.0).expect("Ignoring error handling in examples");
     /// let expected = [-1.2722325, -1.838865, 4.6866837, -1.7421241];
     /// let result = result.data();
     /// for i in 0..expected.len() {
     ///     assert!((result[i] - expected[i]).abs() < 1e-4);   
     /// }
-	/// ```
+    /// ```
     fn multiply_complex_exponential(mut self, a: T, b: T) -> VecResult<Self>;
-	
-	/// Gets the absolute value or magnitude of all vector elements.
-	/// # Example
-	///
-	/// ```
-	/// # extern crate num;
-	/// # extern crate basic_dsp;
-	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
-	/// use num::complex::Complex32;
-	/// # fn main() { 
-	/// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
-	/// let result = vector.magnitude().expect("Ignoring error handling in examples");
-	/// assert_eq!([5.0, 5.0], result.data());
-	/// # }
-	/// ```
-	fn magnitude(self) -> VecResult<Self::RealPartner>;
-	
-	/// Copies the absolute value or magnitude of all vector elements into the given target vector.
-	/// # Example
-	///
-	/// ```
-	/// # extern crate num;
-	/// # extern crate basic_dsp;
-	/// use basic_dsp::{ComplexTimeVector32, RealTimeVector32, ComplexVectorOperations, DataVector};
-	/// # fn main() { 
-	/// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
-	/// let mut result = RealTimeVector32::from_array(&[0.0]);
-	/// vector.get_magnitude(&mut result).expect("Ignoring error handling in examples");
-	/// assert_eq!([5.0, 5.0], result.data());
-	/// # }
-	/// ```
-	fn get_magnitude(&self, destination: &mut Self::RealPartner) -> VoidResult;
-	
-	/// Gets the square root of the absolute value of all vector elements.
-	/// # Example
-	///
-	/// ```
-	/// # extern crate num;
-	/// # extern crate basic_dsp;
-	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
-	/// use num::complex::Complex32;
-	/// # fn main() { 
-	/// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
-	/// let result = vector.magnitude_squared().expect("Ignoring error handling in examples");
-	/// assert_eq!([25.0, 25.0], result.data());
-	/// # }
-	/// ```
-	fn magnitude_squared(self) -> VecResult<Self::RealPartner>;
-	
-	/// Calculates the complex conjugate of the vector. 
-	/// # Example
-	///
-	/// ```
-	/// # extern crate num;
-	/// # extern crate basic_dsp;
-	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
-	/// # fn main() { 
-	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-	/// let result = vector.complex_conj().expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, -2.0, 3.0, -4.0], result.data());
-	/// # }
-	/// ```
-	fn complex_conj(self) -> VecResult<Self>;
-	
-	/// Gets all real elements.
-	/// # Example
-	///
-	/// ```
-	/// # extern crate num;
-	/// # extern crate basic_dsp;
-	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
-	/// # fn main() { 
-	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-	/// let result = vector.to_real().expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 3.0], result.data());
-	/// # }
-	/// ```
-	fn to_real(self) -> VecResult<Self::RealPartner>;
-	
-	/// Gets all imag elements.
-	/// # Example
-	///
-	/// ```
-	/// # extern crate num;
-	/// # extern crate basic_dsp;
-	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
-	/// # fn main() { 
-	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-	/// let result = vector.to_imag().expect("Ignoring error handling in examples");
-	/// assert_eq!([2.0, 4.0], result.data());
-	/// # }
-	/// ```
-	fn to_imag(self) -> VecResult<Self::RealPartner>;
-	
-	/// Copies all real elements into the given vector.
-	/// # Example
-	///
-	/// ```
-	/// # extern crate num;
-	/// # extern crate basic_dsp;
-	/// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOperations, DataVector};
-	/// # fn main() { 
-	/// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
-	/// let vector = ComplexTimeVector32::from_real_imag(&[1.0, 3.0], &[2.0, 4.0]);
-	/// vector.get_real(&mut result).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 3.0], result.data());
-	/// # }
-	/// ```
-	fn get_real(&self, destination: &mut Self::RealPartner) -> VoidResult;
-	
-	/// Copies all imag elements into the given vector.
-	/// # Example
-	///
-	/// ```
-	/// # extern crate num;
-	/// # extern crate basic_dsp;
-	/// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOperations, DataVector};
-	/// # fn main() { 
-	/// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
-	/// let vector = ComplexTimeVector32::from_real_imag(&[1.0, 3.0], &[2.0, 4.0]);
-	/// vector.get_imag(&mut result).expect("Ignoring error handling in examples");
-	/// assert_eq!([2.0, 4.0], result.data());
-	/// # }
-	/// ```
-	fn get_imag(&self, destination: &mut Self::RealPartner) -> VoidResult;
-	
-	/// Gets the phase of all elements in [rad].
-	/// # Example
-	///
-	/// ```
-	/// # extern crate num;
-	/// # extern crate basic_dsp;
-	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
-	/// # fn main() { 
-	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0]);
-	/// let result = vector.phase().expect("Ignoring error handling in examples");
-	/// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.data());
-	/// # }
-	/// ```
-	fn phase(self) -> VecResult<Self::RealPartner>;
-	
-	/// Copies the phase of all elements in [rad] into the given vector.
-	/// # Example
-	///
-	/// ```
-	/// # extern crate num;
-	/// # extern crate basic_dsp;
-	/// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOperations, DataVector};
-	/// # fn main() { 
-	/// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
-	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0]);
-	/// vector.get_phase(&mut result).expect("Ignoring error handling in examples");
-	/// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.data());
-	/// # }
-	/// ```
-	fn get_phase(&self, destination: &mut Self::RealPartner) -> VoidResult;
+    
+    /// Gets the absolute value or magnitude of all vector elements.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+    /// use num::complex::Complex32;
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
+    /// let result = vector.magnitude().expect("Ignoring error handling in examples");
+    /// assert_eq!([5.0, 5.0], result.data());
+    /// # }
+    /// ```
+    fn magnitude(self) -> VecResult<Self::RealPartner>;
+    
+    /// Copies the absolute value or magnitude of all vector elements into the given target vector.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// use basic_dsp::{ComplexTimeVector32, RealTimeVector32, ComplexVectorOperations, DataVector};
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
+    /// let mut result = RealTimeVector32::from_array(&[0.0]);
+    /// vector.get_magnitude(&mut result).expect("Ignoring error handling in examples");
+    /// assert_eq!([5.0, 5.0], result.data());
+    /// # }
+    /// ```
+    fn get_magnitude(&self, destination: &mut Self::RealPartner) -> VoidResult;
+    
+    /// Gets the square root of the absolute value of all vector elements.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+    /// use num::complex::Complex32;
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
+    /// let result = vector.magnitude_squared().expect("Ignoring error handling in examples");
+    /// assert_eq!([25.0, 25.0], result.data());
+    /// # }
+    /// ```
+    fn magnitude_squared(self) -> VecResult<Self::RealPartner>;
+    
+    /// Calculates the complex conjugate of the vector. 
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+    /// let result = vector.complex_conj().expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, -2.0, 3.0, -4.0], result.data());
+    /// # }
+    /// ```
+    fn complex_conj(self) -> VecResult<Self>;
+    
+    /// Gets all real elements.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+    /// let result = vector.to_real().expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 3.0], result.data());
+    /// # }
+    /// ```
+    fn to_real(self) -> VecResult<Self::RealPartner>;
+    
+    /// Gets all imag elements.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+    /// let result = vector.to_imag().expect("Ignoring error handling in examples");
+    /// assert_eq!([2.0, 4.0], result.data());
+    /// # }
+    /// ```
+    fn to_imag(self) -> VecResult<Self::RealPartner>;
+    
+    /// Copies all real elements into the given vector.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOperations, DataVector};
+    /// # fn main() { 
+    /// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
+    /// let vector = ComplexTimeVector32::from_real_imag(&[1.0, 3.0], &[2.0, 4.0]);
+    /// vector.get_real(&mut result).expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 3.0], result.data());
+    /// # }
+    /// ```
+    fn get_real(&self, destination: &mut Self::RealPartner) -> VoidResult;
+    
+    /// Copies all imag elements into the given vector.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOperations, DataVector};
+    /// # fn main() { 
+    /// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
+    /// let vector = ComplexTimeVector32::from_real_imag(&[1.0, 3.0], &[2.0, 4.0]);
+    /// vector.get_imag(&mut result).expect("Ignoring error handling in examples");
+    /// assert_eq!([2.0, 4.0], result.data());
+    /// # }
+    /// ```
+    fn get_imag(&self, destination: &mut Self::RealPartner) -> VoidResult;
+    
+    /// Gets the phase of all elements in [rad].
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0]);
+    /// let result = vector.phase().expect("Ignoring error handling in examples");
+    /// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.data());
+    /// # }
+    /// ```
+    fn phase(self) -> VecResult<Self::RealPartner>;
+    
+    /// Copies the phase of all elements in [rad] into the given vector.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// use basic_dsp::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOperations, DataVector};
+    /// # fn main() { 
+    /// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0]);
+    /// vector.get_phase(&mut result).expect("Ignoring error handling in examples");
+    /// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.data());
+    /// # }
+    /// ```
+    fn get_phase(&self, destination: &mut Self::RealPartner) -> VoidResult;
     
     /// Calculates the dot product of self and factor. Self and factor remain unchanged.
     /// # Failures
@@ -932,33 +932,33 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
     /// 1. `VectorMetaDataMustAgree`: `self` and `factor` must be in the same domain and number space
     /// 
     /// # Example
-	///
-	/// ```
+    ///
+    /// ```
     /// # extern crate num;
-	/// # extern crate basic_dsp;
+    /// # extern crate basic_dsp;
     /// # use num::complex::Complex32;
-	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations};
-	/// # fn main() { 
-	/// let vector1 = ComplexTimeVector32::from_interleaved(&[9.0, 2.0, 7.0, 1.0]);
-	/// let vector2 = ComplexTimeVector32::from_interleaved(&[4.0, 0.0, 10.0, 0.0]);
-	/// let result = vector1.complex_dot_product(&vector2).expect("Ignoring error handling in examples");
-	/// assert_eq!(Complex32::new(106.0, 18.0), result);
+    /// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations};
+    /// # fn main() { 
+    /// let vector1 = ComplexTimeVector32::from_interleaved(&[9.0, 2.0, 7.0, 1.0]);
+    /// let vector2 = ComplexTimeVector32::from_interleaved(&[4.0, 0.0, 10.0, 0.0]);
+    /// let result = vector1.complex_dot_product(&vector2).expect("Ignoring error handling in examples");
+    /// assert_eq!(Complex32::new(106.0, 18.0), result);
     /// }
-	/// ```  
+    /// ```  
     fn complex_dot_product(&self, factor: &Self) -> ScalarResult<Complex<T>>;
     
     /// Calculates the statistics of the data contained in the vector.
     /// # Example
-	///
-	/// ```
-	/// # extern crate num;
-	/// # extern crate basic_dsp;
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
     /// # use num::complex::Complex32;
-	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations};
-	/// # fn main() { 
-	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
-	/// let result = vector.complex_statistics();
-	/// assert_eq!(result.sum, Complex32::new(9.0, 12.0));
+    /// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations};
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+    /// let result = vector.complex_statistics();
+    /// assert_eq!(result.sum, Complex32::new(9.0, 12.0));
     /// assert_eq!(result.count, 3);
     /// assert_eq!(result.average, Complex32::new(3.0, 4.0));
     /// assert!((result.rms - Complex32::new(3.4027193, 4.3102784)).norm() < 1e-4);
@@ -967,26 +967,26 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
     /// assert_eq!(result.max, Complex32::new(5.0, 6.0));
     /// assert_eq!(result.max_index, 2);
     /// }
-	/// ```  
+    /// ```  
     fn complex_statistics(&self) -> Statistics<Complex<T>>;
     
     /// Calculates the statistics of the data contained in the vector as if the vector would
     /// have been split into `len` pieces. `self.len` should be devisable by `len` without a remainder,
     /// but this isn't enforced by the implementation.
     /// # Example
-	///
-	/// ```
-	/// # extern crate num;
-	/// # extern crate basic_dsp;
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
     /// # use num::complex::Complex32;
-	/// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations};
-	/// # fn main() { 
-	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
-	/// let result = vector.complex_statistics_splitted(2);
-	/// assert_eq!(result[0].sum, Complex32::new(6.0, 8.0));
+    /// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations};
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+    /// let result = vector.complex_statistics_splitted(2);
+    /// assert_eq!(result[0].sum, Complex32::new(6.0, 8.0));
     /// assert_eq!(result[1].sum, Complex32::new(10.0, 12.0));
     /// }
-	/// ```  
+    /// ```  
     fn complex_statistics_splitted(&self, len: usize) -> Vec<Statistics<Complex<T>>>; 
     
     /// Gets the real and imaginary parts and stores them in the given vectors. 
@@ -1021,7 +1021,7 @@ pub enum ErrorReason {
     /// The operations requires all vectors to have the same size, 
     /// in most cases this means that the following must be true:
     /// `self.len()` == `argument.len()`
-	VectorsMustHaveTheSameSize,
+    VectorsMustHaveTheSameSize,
     
     /// The operations requires all vectors to have the same meta data
     /// in most cases this means that the following must be true:
@@ -1098,9 +1098,9 @@ pub struct Statistics<T> {
 #[derive(PartialEq)]
 #[derive(Debug)]
 pub enum PaddingOption {
-	/// Appends zeros to the end of the vector.
-	End,
-	/// Surrounds the vector with zeros at the beginning and at the end.
+    /// Appends zeros to the end of the vector.
+    End,
+    /// Surrounds the vector with zeros at the beginning and at the end.
     Surround,
     
     /// Inserts zeros in the center of the vector

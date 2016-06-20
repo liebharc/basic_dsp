@@ -1,8 +1,8 @@
 use multicore_support::{Chunk, Complexity};
 use super::definitions::{
-	DataVector,
+    DataVector,
     DataVectorDomain,
-	GenericVectorOperations,
+    GenericVectorOperations,
     VecResult,
     VoidResult,
     ErrorReason,
@@ -376,8 +376,8 @@ macro_rules! zero_interleave {
 
 macro_rules! add_general_impl {
     ($($data_type:ident, $reg:ident);*)
-	 =>
-	 {	 
+     =>
+     {     
         $(
             impl GenericDataVector<$data_type> {
                 /// Same as `new` but also allows to set multicore options.

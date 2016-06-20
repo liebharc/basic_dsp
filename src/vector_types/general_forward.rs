@@ -1,7 +1,7 @@
 macro_rules! define_generic_operations_forward {
-	(from: $name:ident, to: $gen_type:ident, $($data_type:ident),*)
-	 =>
-	 {
+    (from: $name:ident, to: $gen_type:ident, $($data_type:ident),*)
+     =>
+     {
          $(
             impl GenericVectorOperations<$data_type> for $name<$data_type>
             {
@@ -186,5 +186,5 @@ macro_rules! define_generic_operations_forward {
                 }
             }
        )*
-	}	
+    }    
 }

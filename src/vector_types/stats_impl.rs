@@ -44,9 +44,9 @@ macro_rules! impl_common_stats {
 }
 
 macro_rules! impl_stat_trait {
-	($($data_type:ident),*)
-	 =>
-	 {
+    ($($data_type:ident),*)
+     =>
+     {
          $(
             impl Stats<$data_type> for Statistics<$data_type> {
                 fn empty() -> Self {

@@ -1,7 +1,7 @@
 macro_rules! define_complex_operations_forward {
     (from: $name:ident, to: $gen_type:ident, complex: $complex_type:ident, real_partner: $real_partner:ident, $($data_type:ident),*)
-	 =>
-	 { 
+     =>
+     { 
         $(
             impl ComplexVectorOperations<$data_type> for $name<$data_type>
             {
@@ -53,7 +53,7 @@ macro_rules! define_complex_operations_forward {
                 fn to_imag(self) -> VecResult<Self::RealPartner>
                 {
                     Self::RealPartner::from_genres(self.to_gen().to_imag())
-                }	
+                }    
                         
                 fn get_real(&self, destination: &mut Self::RealPartner) -> VoidResult
                 {
@@ -143,5 +143,5 @@ macro_rules! define_complex_operations_forward {
                 }
             }
         )*
-	 }
+     }
 }

@@ -1,6 +1,6 @@
 use multicore_support::{Chunk, Complexity};
 use super::definitions::{
-	DataVector,
+    DataVector,
     VecResult,
     ErrorReason,
     ScalarResult,
@@ -8,15 +8,15 @@ use super::definitions::{
     Scale,
     Offset,
     GenericVectorOperations,
-	RealVectorOperations};
+    RealVectorOperations};
 use super::GenericDataVector;    
 use super::stats_impl::Stats;
 use simd_extensions::{Simd, Reg32, Reg64};
 
 macro_rules! add_real_impl {
     ($($data_type:ident, $reg:ident);*)
-	 =>
-	 {	 
+     =>
+     {     
         $(
             impl RealVectorOperations<$data_type> for GenericDataVector<$data_type>
             {

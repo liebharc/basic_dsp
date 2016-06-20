@@ -33,17 +33,17 @@ pub mod window_functions;
 pub mod conv_types;
 pub mod interop_facade;
 pub use vector_types::
-	{
-		DataVectorDomain,
-		DataVector,
+    {
+        DataVectorDomain,
+        DataVector,
         VecResult,
         VoidResult,
         ErrorReason,
-		GenericVectorOperations,
-		RealVectorOperations,
-		ComplexVectorOperations,
-		TimeDomainOperations,
-		FrequencyDomainOperations,
+        GenericVectorOperations,
+        RealVectorOperations,
+        ComplexVectorOperations,
+        TimeDomainOperations,
+        FrequencyDomainOperations,
         SymmetricFrequencyDomainOperations,
         SymmetricTimeDomainOperations,
         GenericDataVector,
@@ -51,16 +51,16 @@ pub use vector_types::
         ComplexTimeVector,
         RealTimeVector,
         RealFreqVector,
-		DataVector32, 
-		RealTimeVector32,
-		ComplexTimeVector32, 
-		RealFreqVector32,
-		ComplexFreqVector32,
-		DataVector64, 
-		RealTimeVector64,
-		ComplexTimeVector64, 
-		RealFreqVector64,
-		ComplexFreqVector64,
+        DataVector32, 
+        RealTimeVector32,
+        ComplexTimeVector32, 
+        RealFreqVector32,
+        ComplexFreqVector32,
+        DataVector64, 
+        RealTimeVector64,
+        ComplexTimeVector64, 
+        RealFreqVector64,
+        ComplexFreqVector64,
         Operation,
         Statistics,
         RededicateVector,
@@ -73,7 +73,7 @@ pub use vector_types::
         Interpolation,
         RealInterpolation,
         PaddingOption
-	};
+    };
  pub use multicore_support::MultiCoreSettings;
  use num::traits::Float;   
  

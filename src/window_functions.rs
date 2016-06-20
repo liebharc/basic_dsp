@@ -119,7 +119,7 @@ impl<T> WindowFunction<T> for ForeignWindowFunction<T>
 
 #[cfg(test)]
 mod tests {
-	use super::*;
+    use super::*;
     use super::super::RealNumber;
     use std::fmt::Debug;
     
@@ -138,19 +138,19 @@ mod tests {
         }
     }
 
-	#[test]
-	fn triangular_window32_test()
-	{
+    #[test]
+    fn triangular_window32_test()
+    {
         let window = TriangularWindow;
         let expected = [0.2, 0.6, 1.0, 0.6, 0.2];
         window_test(window, &expected);
-	}
+    }
     
     #[test]
-	fn hamming_window32_test()
-	{
+    fn hamming_window32_test()
+    {
         let hamming = HammingWindow::<f32>::default();
         let expected = [0.08, 0.54, 1.0, 0.54, 0.08];
         window_test(hamming, &expected);
-	}
+    }
 }

@@ -550,7 +550,7 @@ impl<T> ComplexFrequencyResponse<T> for ForeignComplexConvolutionFunction<T>
 
 #[cfg(test)]
 mod tests {
-	use super::*;
+    use super::*;
     use RealNumber;
     use std::fmt::Debug;
     use num::complex::Complex;
@@ -607,15 +607,15 @@ mod tests {
         }
     }
 
-	#[test]
-	fn raised_cosine_test()
-	{
+    #[test]
+    fn raised_cosine_test()
+    {
         let rc = RaisedCosineFunction::new(0.35);
         let expected = 
             [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432, 
              1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
         conv_test(rc, &expected, 0.2, 1e-4);
-	}
+    }
     
     #[test]
     fn sinc_test() {

@@ -1,7 +1,7 @@
 macro_rules! define_real_operations_forward {
     (from: $name:ident, to: $gen_type:ident, complex_partner: $complex_partner:ident, $($data_type:ident),*)
-	 =>
-	 {	 
+     =>
+     {     
         $(
             impl RealVectorOperations<$data_type> for $name<$data_type>
             {
@@ -52,7 +52,7 @@ macro_rules! define_real_operations_forward {
             }
             
             impl $name<$data_type>
-            {		
+            {        
                 fn to_gen(self) -> $gen_type<$data_type>
                 {
                     unsafe { mem::transmute(self) }
@@ -95,5 +95,5 @@ macro_rules! define_real_operations_forward {
                 }
             }
         )*
-	 }
+     }
 }

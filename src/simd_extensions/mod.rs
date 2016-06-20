@@ -9,17 +9,17 @@ pub trait Simd<T> : Sized
     fn load(array: &[T], idx: usize) -> Self;
     fn load_wrap(array: &[T], idx: usize) -> Self;
     fn from_complex(value: Complex<T>) -> Self;
-	fn add_real(self, value: T) -> Self;
-	fn add_complex(self, value: Complex<T>) -> Self;
-	fn scale_real(self, value: T) -> Self;
-	fn scale_complex(self, value: Complex<T>) -> Self;
-	fn complex_abs_squared(self) -> Self;
-	fn complex_abs(self) -> Self;
+    fn add_real(self, value: T) -> Self;
+    fn add_complex(self, value: Complex<T>) -> Self;
+    fn scale_real(self, value: T) -> Self;
+    fn scale_complex(self, value: Complex<T>) -> Self;
+    fn complex_abs_squared(self) -> Self;
+    fn complex_abs(self) -> Self;
     fn sqrt(self) -> Self;
     fn store(self, target: &mut [T], index: usize);
-	fn store_half(self, target: &mut [T], index: usize);
-	fn mul_complex(self, value: Self) -> Self;
-	fn div_complex(self, value: Self) -> Self;
+    fn store_half(self, target: &mut [T], index: usize);
+    fn mul_complex(self, value: Self) -> Self;
+    fn div_complex(self, value: Self) -> Self;
     fn sum_real(&self) -> T;
     fn sum_complex(&self) -> Complex<T>;
 }

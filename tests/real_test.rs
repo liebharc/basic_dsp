@@ -61,7 +61,7 @@ mod slow_test {
             let a = create_data_with_len(201511141, iteration, 10000);
             let vector = DataVector32::from_array(false, DataVectorDomain::Time, &a);
             let result = vector.clone().perform_operations(
-						&[Operation::Log(10.0),
+                        &[Operation::Log(10.0),
                         Operation::MultiplyReal(10.0)]);
             let expected = vector.log_base(10.0).and_then(|v| v.real_scale(10.0)).unwrap();
             assert_vector_eq(&expected.data(), &result.data());
