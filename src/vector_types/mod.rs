@@ -183,7 +183,8 @@ pub enum Operation<T>
 	//MultiplyVector(&'a DataVector32<'a>),
 	AbsReal,
 	AbsComplex,
-	Sqrt
+	Sqrt,
+    Log(T)
 }
 
 impl<T> GenericDataVector<T> 
@@ -271,11 +272,12 @@ impl GenericDataVector<f32> {
                 }
                 data_length - scalar_length
             };
-		
+            
+        let complexity = if operations.len() > 5 { Complexity::Large } else { Complexity::Medium };
 		{
 			let mut array = &mut self.data;
 			Chunk::execute_partial(
-                Complexity::Large, &self.multicore_settings,
+                complexity, &self.multicore_settings,
                 &mut array, vectorization_length, Reg32::len(), 
                 operations, 
                 DataVector32::perform_operations_par);
@@ -346,6 +348,20 @@ impl GenericDataVector<f32> {
 							while k < Reg32::len()
 							{
 								content[k] = content[k].sqrt();
+								k = k + 1;
+							}
+						}
+						vector = Reg32::load(array, i);
+					}
+                    Operation::Log(value) =>
+					{
+						vector.store(array, i);
+						{
+							let mut content = &mut array[i .. i + Reg32::len()];
+							let mut k = 0;
+							while k < Reg32::len()
+							{
+								content[k] = content[k].log(value);
 								k = k + 1;
 							}
 						}

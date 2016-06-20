@@ -7,13 +7,16 @@ pub mod tools;
 mod slow_test {
     use basic_dsp::{
         DataVector,
+        DataVectorDomain,
+        DataVector32,
         RealTimeVector32,
         TimeDomainOperations,
         SymmetricTimeDomainOperations,
         FrequencyDomainOperations,
         SymmetricFrequencyDomainOperations,
         GenericVectorOperations,
-        RealVectorOperations};
+        RealVectorOperations,
+        Operation};
     use tools::*;
        
     #[allow(dead_code)]
@@ -49,6 +52,19 @@ mod slow_test {
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);
+        });
+    }
+    
+    #[test]
+    fn multi_ops_vector32() {
+        parameterized_vector_test(|iteration, _| {
+            let a = create_data_with_len(201511141, iteration, 10000);
+            let vector = DataVector32::from_array(false, DataVectorDomain::Time, &a);
+            let result = vector.clone().perform_operations(
+						&[Operation::Log(10.0),
+                        Operation::MultiplyReal(10.0)]);
+            let expected = vector.log_base(10.0).and_then(|v| v.real_scale(10.0)).unwrap();
+            assert_vector_eq(&expected.data(), &result.data());
         });
     }
     

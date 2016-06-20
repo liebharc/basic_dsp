@@ -18,7 +18,6 @@ mod bench {
 		RealTimeVector32,
         RealTimeVector64,
         Operation};
-	use num::complex::Complex32;
     use tools::{VectorBox, DEFAULT_DATA_SIZE, Size};
 	
     #[inline(never)]
@@ -96,10 +95,18 @@ mod bench {
 			vector.execute(|v|  
 				{
 					  v.perform_operations(
-						&[Operation::AddReal(1.0),
-						Operation::AddComplex(Complex32::new(1.0, 1.0)),
-						Operation::MultiplyComplex(Complex32::new(-1.0, 1.0))])
+						&[Operation::Log(10.0),
+                        Operation::MultiplyReal(10.0)])
 				})
+		});
+	}
+    
+    #[bench]
+	fn multi_operations_vector_32_reference(b: &mut Bencher)
+	{
+		let mut vector = VectorBox::<DataVector32>::new(Size::Small, true);
+		b.iter(|| {
+			vector.execute_res(|v|  { v.log_base(10.0).and_then(|v| v.real_scale(10.0)) } )
 		});
 	}
     
