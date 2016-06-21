@@ -34,8 +34,7 @@ fn main() {
         let mut file = File::create(format!("modulated_time{}.csv", i)).expect("Failed to create modulated time file");
         real_vector_to_file(&real, &mut file).expect("Failed to write modulated time file");
         
-        let delta = real.delta();
-        empty = real.rededicate_as_complex_time_vector(delta); // Reuse memory
+        empty = real.rededicate(); // reuse memory
     }
 }
 

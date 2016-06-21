@@ -93,12 +93,12 @@ macro_rules! define_vector_struct {
                 self.valid_len / if self.is_complex { 2 } else { 1 }
             }
         }
-        
-        impl<T> RededicateVector<T> for $name<T>
+       
+        impl<T> RededicateVector<ComplexTimeVector<T>> for $name<T>
             where T: RealNumber {
-            fn rededicate_as_complex_time_vector(self, delta: T) -> ComplexTimeVector<T> {
+            fn rededicate(self) -> ComplexTimeVector<T> {
                 ComplexTimeVector {
-                    delta: delta,
+                    delta: self.delta,
                     is_complex: true,
                     valid_len: 0,
                     domain: DataVectorDomain::Time,
@@ -107,23 +107,14 @@ macro_rules! define_vector_struct {
                     multicore_settings: self.multicore_settings
                 }
             }
-            
-            fn rededicate_as_complex_freq_vector(self, delta: T) -> ComplexFreqVector<T> {
+        }
+        
+        impl<T> RededicateVector<ComplexFreqVector<T>> for $name<T>
+            where T: RealNumber {
+            fn rededicate(self) -> ComplexFreqVector<T> {
                 ComplexFreqVector {
-                    delta: delta,
+                    delta: self.delta,
                     is_complex: true,
-                    valid_len: 0,
-                    domain: DataVectorDomain::Frequency,
-                    data: self.data,
-                    temp: self.temp,
-                    multicore_settings: self.multicore_settings
-                }
-            }
-            
-            fn rededicate_as_real_time_vector(self, delta: T) -> RealTimeVector<T> {
-                RealTimeVector {
-                    delta: delta,
-                    is_complex: false,
                     valid_len: 0,
                     domain: DataVectorDomain::Time,
                     data: self.data,
@@ -131,25 +122,46 @@ macro_rules! define_vector_struct {
                     multicore_settings: self.multicore_settings
                 }
             }
-            
-            fn rededicate_as_real_freq_vector(self, delta: T) -> RealFreqVector<T> {
-                RealFreqVector {
-                    delta: delta,
+        }
+        
+        impl<T> RededicateVector<RealTimeVector<T>> for $name<T>
+            where T: RealNumber {
+            fn rededicate(self) -> RealTimeVector<T> {
+                RealTimeVector {
+                    delta: self.delta,
                     is_complex: true,
                     valid_len: 0,
-                    domain: DataVectorDomain::Frequency,
+                    domain: DataVectorDomain::Time,
                     data: self.data,
                     temp: self.temp,
                     multicore_settings: self.multicore_settings
                 }
             }
-            
-            fn rededicate_as_generic_vector(self, is_complex: bool, domain: DataVectorDomain, delta: T) -> GenericDataVector<T> {
-                GenericDataVector {
-                    delta: delta,
-                    is_complex: is_complex,
+        }
+        
+        impl<T> RededicateVector<RealFreqVector<T>> for $name<T>
+            where T: RealNumber {
+            fn rededicate(self) -> RealFreqVector<T> {
+                RealFreqVector {
+                    delta: self.delta,
+                    is_complex: true,
                     valid_len: 0,
-                    domain: domain,
+                    domain: DataVectorDomain::Time,
+                    data: self.data,
+                    temp: self.temp,
+                    multicore_settings: self.multicore_settings
+                }
+            }
+        }
+        
+        impl<T> RededicateVector<GenericDataVector<T>> for $name<T>
+            where T: RealNumber {
+            fn rededicate(self) -> GenericDataVector<T> {
+                GenericDataVector {
+                    delta: self.delta,
+                    is_complex: true,
+                    valid_len: 0,
+                    domain: DataVectorDomain::Time,
                     data: self.data,
                     temp: self.temp,
                     multicore_settings: self.multicore_settings
