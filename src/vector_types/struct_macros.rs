@@ -107,6 +107,18 @@ macro_rules! define_vector_struct {
                     multicore_settings: self.multicore_settings
                 }
             }
+            
+            fn rededicate_from(other: ComplexTimeVector<T>) -> Self {
+                $name {
+                    delta: other.delta,
+                    is_complex: true,
+                    valid_len: 0,
+                    domain: DataVectorDomain::Time,
+                    data: other.data,
+                    temp: other.temp,
+                    multicore_settings: other.multicore_settings
+                }
+            }
         }
         
         impl<T> RededicateVector<ComplexFreqVector<T>> for $name<T>
@@ -120,6 +132,18 @@ macro_rules! define_vector_struct {
                     data: self.data,
                     temp: self.temp,
                     multicore_settings: self.multicore_settings
+                }
+            }
+            
+            fn rededicate_from(other: ComplexFreqVector<T>) -> Self {
+                $name {
+                    delta: other.delta,
+                    is_complex: true,
+                    valid_len: 0,
+                    domain: DataVectorDomain::Time,
+                    data: other.data,
+                    temp: other.temp,
+                    multicore_settings: other.multicore_settings
                 }
             }
         }
@@ -137,6 +161,18 @@ macro_rules! define_vector_struct {
                     multicore_settings: self.multicore_settings
                 }
             }
+            
+            fn rededicate_from(other: RealTimeVector<T>) -> Self {
+                $name {
+                    delta: other.delta,
+                    is_complex: true,
+                    valid_len: 0,
+                    domain: DataVectorDomain::Time,
+                    data: other.data,
+                    temp: other.temp,
+                    multicore_settings: other.multicore_settings
+                }
+            }
         }
         
         impl<T> RededicateVector<RealFreqVector<T>> for $name<T>
@@ -152,6 +188,18 @@ macro_rules! define_vector_struct {
                     multicore_settings: self.multicore_settings
                 }
             }
+            
+            fn rededicate_from(other: RealFreqVector<T>) -> Self {
+                $name {
+                    delta: other.delta,
+                    is_complex: true,
+                    valid_len: 0,
+                    domain: DataVectorDomain::Time,
+                    data: other.data,
+                    temp: other.temp,
+                    multicore_settings: other.multicore_settings
+                }
+            }
         }
         
         impl<T> RededicateVector<GenericDataVector<T>> for $name<T>
@@ -165,6 +213,18 @@ macro_rules! define_vector_struct {
                     data: self.data,
                     temp: self.temp,
                     multicore_settings: self.multicore_settings
+                }
+            }
+            
+            fn rededicate_from(other: GenericDataVector<T>) -> Self {
+                $name {
+                    delta: other.delta,
+                    is_complex: true,
+                    valid_len: 0,
+                    domain: DataVectorDomain::Time,
+                    data: other.data,
+                    temp: other.temp,
+                    multicore_settings: other.multicore_settings
                 }
             }
         }

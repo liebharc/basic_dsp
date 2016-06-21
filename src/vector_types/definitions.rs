@@ -58,8 +58,8 @@ pub enum DataVectorDomain {
 /// convert a vector to a different type and set `self.len()` to zero.
 /// However `self.allocated_len()` will remain unchanged. The use case for this
 /// is to allow to reuse the memory of a vector for different operations.
-pub trait RededicateVector<Target> {
-    /// Make `self` a `Target`.
+pub trait RededicateVector<Other> {
+    /// Make `self` a `Other`.
     /// # Example
     ///
     /// ```
@@ -72,7 +72,22 @@ pub trait RededicateVector<Target> {
     /// assert_eq!(0, complex.len());
     /// assert_eq!(2, complex.allocated_len());
     /// ```
-    fn rededicate(self) -> Target;
+    fn rededicate(self) -> Other;
+    
+    /// Make `Other` a `Self`.
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{ComplexFreqVector32, ComplexTimeVector32, ComplexVectorOperations, RededicateVector, DataVector, DataVectorDomain};
+    /// let complex = ComplexFreqVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+    /// let real = complex.phase().expect("Ignoring error handling in examples");
+    /// let complex = ComplexTimeVector32::rededicate_from(real);
+    /// assert_eq!(true, complex.is_complex());
+    /// assert_eq!(DataVectorDomain::Time, complex.domain());
+    /// assert_eq!(0, complex.len());
+    /// assert_eq!(2, complex.allocated_len());
+    /// ```
+    fn rededicate_from(origin: Other) -> Self;
 }
 
 /// An operation which multiplies each vector element with a constant
