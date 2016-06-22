@@ -115,6 +115,7 @@ pub use vector_types::correlation_impl::CrossCorrelation;
 pub use vector_types::interpolation_impl::{
     Interpolation,
     RealInterpolation};
+pub use vector_types::multi_ops::*;
 use num::complex::Complex;
 use RealNumber;
 use multicore_support::{Chunk, Complexity, MultiCoreSettings};
@@ -163,30 +164,6 @@ define_vector_struct_type_alias!(struct RealTimeVector64, based_on: RealTimeVect
 define_vector_struct_type_alias!(struct RealFreqVector64, based_on: RealFreqVector, f64);
 define_vector_struct_type_alias!(struct ComplexTimeVector64, based_on: ComplexTimeVector, f64);
 define_vector_struct_type_alias!(struct ComplexFreqVector64, based_on: ComplexFreqVector, f64);
-
-/// An alternative way to define operations on a vector.
-/// Warning: Highly unstable and not even fully implemented right now.
-///
-/// In future this enum will likely be deleted or hidden and be replaced with a builder
-/// pattern. The advantage of this is that with the builder we have the means to define at 
-/// compile time what kind of vector will result from the given set of operations.
-#[derive(Copy)]
-#[derive(Clone)]
-#[derive(PartialEq)]
-#[derive(Debug)]
-pub enum Operation<T>
-{
-    AddReal(T),
-    AddComplex(Complex<T>),
-    //AddVector(&'a DataVector32<'a>),
-    MultiplyReal(T),
-    MultiplyComplex(Complex<T>),
-    //MultiplyVector(&'a DataVector32<'a>),
-    AbsReal,
-    AbsComplex,
-    Sqrt,
-    Log(T)
-}
 
 impl<T> GenericDataVector<T> 
     where T: RealNumber

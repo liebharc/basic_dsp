@@ -2,13 +2,13 @@ use std::marker::PhantomData;
 use super::super::RealNumber;
 use super::{
     DataVector,
-    Operation,
     RealTimeVector,
     ComplexTimeVector,
     RealFreqVector,
     ComplexFreqVector,
     GenericDataVector,
-    RededicateVector};
+    RededicateVector};  
+use num::complex::Complex;    
 
 /// Trait which defines the relation between a vector
 /// and an identifier. 
@@ -84,6 +84,25 @@ pub enum Argument
     
     /// Second argument
     A2
+}
+
+/// An alternative way to define operations on a vector.
+#[derive(Copy)]
+#[derive(Clone)]
+#[derive(PartialEq)]
+#[derive(Debug)]
+pub enum Operation<T>
+{
+    AddReal(T),
+    AddComplex(Complex<T>),
+    //AddVector(&'a DataVector32<'a>),
+    MultiplyReal(T),
+    MultiplyComplex(Complex<T>),
+    //MultiplyVector(&'a DataVector32<'a>),
+    AbsReal,
+    AbsComplex,
+    Sqrt,
+    Log(T)
 }
 
 static mut OPERATION_SEQ_COUNTER : u64 = 0;
