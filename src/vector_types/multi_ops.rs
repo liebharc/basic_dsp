@@ -1,14 +1,18 @@
 use std::marker::PhantomData;
 use super::super::RealNumber;
 use super::{
+    round_len,
     DataVector,
+    DataVector32,
     RealTimeVector,
     ComplexTimeVector,
     RealFreqVector,
     ComplexFreqVector,
     GenericDataVector,
     RededicateVector};  
-use num::complex::Complex;    
+use num::complex::Complex;
+use multicore_support::{Chunk, Complexity, MultiCoreSettings};
+use simd_extensions::{Simd, Reg32, Reg64};
 
 /// Trait which defines the relation between a vector
 /// and an identifier. 
@@ -84,25 +88,6 @@ pub enum Argument
     
     /// Second argument
     A2
-}
-
-/// An alternative way to define operations on a vector.
-#[derive(Copy)]
-#[derive(Clone)]
-#[derive(PartialEq)]
-#[derive(Debug)]
-pub enum Operation<T>
-{
-    AddReal(T),
-    AddComplex(Complex<T>),
-    //AddVector(&'a DataVector32<'a>),
-    MultiplyReal(T),
-    MultiplyComplex(Complex<T>),
-    //MultiplyVector(&'a DataVector32<'a>),
-    AbsReal,
-    AbsComplex,
-    Sqrt,
-    Log(T)
 }
 
 static mut OPERATION_SEQ_COUNTER : u64 = 0;
@@ -324,4 +309,179 @@ fn multi_ops2<A, B>(a: A, b: B)
     let mut b: GenericDataVector<f32> = b.rededicate();
     b.set_len(len_b);
     MultiOperation2 { a: a, b: b, preped_ops: ops }
+}
+
+/// An alternative way to define operations on a vector.
+#[derive(Copy)]
+#[derive(Clone)]
+#[derive(PartialEq)]
+#[derive(Debug)]
+pub enum Operation<T>
+{
+    AddReal(T),
+    AddComplex(Complex<T>),
+    //AddVector(&'a DataVector32<'a>),
+    MultiplyReal(T),
+    MultiplyComplex(Complex<T>),
+    //MultiplyVector(&'a DataVector32<'a>),
+    AbsReal,
+    AbsComplex,
+    Sqrt,
+    Log(T)
+}
+
+impl GenericDataVector<f32> {
+    /// Perform a set of operations on the given vector. 
+    /// Warning: Highly unstable and not even fully implemented right now.
+    ///
+    /// With this approach we change how we operate on vectors. If you perform
+    /// `M` operations on a vector with the length `N` you iterate wit hall other methods like this:
+    ///
+    /// ```
+    /// // pseudocode:
+    /// // for m in M:
+    /// //  for n in N:
+    /// //    execute m on n
+    /// ```
+    ///
+    /// with this method the pattern is changed slighly:
+    ///
+    /// ```
+    /// // pseudocode:
+    /// // for n in N:
+    /// //  for m in M:
+    /// //    execute m on n
+    /// ```
+    ///
+    /// Both variants have the same complexity however the second one is benificial since we
+    /// have increased locality this way. This should help us by making better use of registers and 
+    /// CPU buffers. This might also help since for large data we might have the chance in future to 
+    /// move the data to a GPU, run all operations and get the result back. In this case the GPU is fast
+    /// for many operations but the roundtrips on the bus should be minimized to keep the speed advantage.
+    pub fn perform_operations(mut self, operations: &[Operation<f32>])
+        -> Self
+    {
+        if operations.len() == 0
+        {
+            return DataVector32 { data: self.data, .. self };
+        }
+        
+        let data_length = self.len();
+        let alloc_len = self.allocated_len();
+        let rounded_len = round_len(data_length);
+        let vectorization_length = 
+            if rounded_len <= alloc_len {
+                rounded_len
+            }
+            else {
+                let scalar_length = data_length % Reg32::len();
+                if scalar_length > 0
+                {
+                    panic!("perform_operations requires right now that the array length is dividable by 4")
+                }
+                data_length - scalar_length
+            };
+            
+        let complexity = if operations.len() > 5 { Complexity::Large } else { Complexity::Medium };
+        {
+            let mut array = &mut self.data;
+            Chunk::execute_partial(
+                complexity, &self.multicore_settings,
+                &mut array, vectorization_length, Reg32::len(), 
+                operations, 
+                DataVector32::perform_operations_par);
+        }
+        DataVector32 { data: self.data, .. self }
+    }
+    
+    fn perform_operations_par(array: &mut [f32], operations: &[Operation<f32>])
+    {
+        let mut i = 0;
+        while i < array.len()
+        { 
+            let mut vector = Reg32::load(array, i);
+            let mut j = 0;
+            while j < operations.len()
+            {
+                let operation = &operations[j];
+                match *operation
+                {
+                    Operation::AddReal(value) =>
+                    {
+                        vector = vector.add_real(value);
+                    }
+                    Operation::AddComplex(value) =>
+                    {
+                        vector = vector.add_complex(value);
+                    }
+                    /*Operation32::AddVector(value) =>
+                    {
+                        // TODO
+                    }*/
+                    Operation::MultiplyReal(value) =>
+                    {
+                        vector = vector.scale_real(value);
+                    }
+                    Operation::MultiplyComplex(value) =>
+                    {
+                        vector = vector.scale_complex(value);
+                    }
+                    /*Operation32::MultiplyVector(value) =>
+                    {
+                        // TODO
+                    }*/
+                    Operation::AbsReal =>
+                    {
+                        vector.store(array, i);
+                        {
+                            let mut content = &mut array[i .. i + Reg32::len()];
+                            let mut k = 0;
+                            while k < Reg32::len()
+                            {
+                                content[k] = content[k].abs();
+                                k = k + 1;
+                            }
+                        }
+                        vector = Reg32::load(array, i);
+                    }
+                    Operation::AbsComplex =>
+                    {
+                        vector = vector.complex_abs();
+                    }
+                    Operation::Sqrt =>
+                    {
+                        vector.store(array, i);
+                        {
+                            let mut content = &mut array[i .. i + Reg32::len()];
+                            let mut k = 0;
+                            while k < Reg32::len()
+                            {
+                                content[k] = content[k].sqrt();
+                                k = k + 1;
+                            }
+                        }
+                        vector = Reg32::load(array, i);
+                    }
+                    Operation::Log(value) =>
+                    {
+                        vector.store(array, i);
+                        {
+                            let mut content = &mut array[i .. i + Reg32::len()];
+                            let mut k = 0;
+                            while k < Reg32::len()
+                            {
+                                content[k] = content[k].log(value);
+                                k = k + 1;
+                            }
+                        }
+                        vector = Reg32::load(array, i);
+                    }
+                }
+                j += 1;
+            }
+        
+            vector.store(array, i);    
+            i += Reg32::len();
+        }
+    }
 }
