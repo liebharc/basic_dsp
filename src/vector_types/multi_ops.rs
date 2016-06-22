@@ -508,3 +508,40 @@ pub fn multi_ops2<T, A, B>(a: A, b: B)
     b.set_len(len_b);
     MultiOperation2 { a: a, b: b, preped_ops: ops }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::*;
+
+    #[test]
+    fn multi_ops_construction()
+    {
+        // This test case tests mainly the syntax and less the 
+        // runtime results.
+        let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+        let a = RealTimeVector32::from_array(&array);
+        let b = RealTimeVector32::from_array(&array);
+        
+        let ops = multi_ops2(a, b);
+        let ops = ops.add_ops(|a, b| (a, b));
+        let (a, _) = ops.get();
+        
+        assert_eq!(a.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+    }
+    
+    #[test]
+    fn prepared_ops_construction()
+    {
+        // This test case tests mainly the syntax and less the 
+        // runtime results.
+        let ops = prepare2::<f32, RealTimeVector32, RealTimeVector32>();
+        let ops = ops.add_ops(|a, b| (a, b));
+        
+        let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+        let a = RealTimeVector32::from_array(&array);
+        let b = RealTimeVector32::from_array(&array);
+        let (a, _) = ops.exec(a, b);
+        
+        assert_eq!(a.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+    }
+}
