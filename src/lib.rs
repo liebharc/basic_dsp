@@ -2,7 +2,7 @@
 #![feature(cfg_target_feature)]
 //! Basic digital signal processing (DSP) operations
 //!
-//! The basic building blocks are 1xN (one times N) or Nx1 real or complex vectors where N is typically at least in the order
+//! Digital signal processing based on real or complex vectors in time or frequency domain. Vectors are expected to typically have a size which is at least in the order
 //! of magnitude of a couple of thousand elements. This crate tries to balance between a clear API and performance in terms of processing speed.
 //! This project started as small pet project to learn more about DSP, CPU architecture and Rust. Since learning
 //! involves making mistakes, don't expect things to be flawless or even close to flawless.
@@ -19,7 +19,7 @@
 //! of multiple cores. In future there will be likely an option which tells the library how it should balance betweeen processing time
 //! and CPU utilization. The library also avoids to allocate and free memory and it allocates memory for temporary allocation.
 //! so the library is likely not suitable for devices which are tight on memory. On normal desktop computers there is usually plenty of
-//! memory available so that the optimization focus is on decreasing the processing time for every (common) operation.  
+//! memory available so that the optimization focus is on decreasing the processing time for every (common) operation and to spent little time with memory allocations.  
 extern crate simd;
 extern crate num_cpus;
 extern crate crossbeam;
@@ -32,6 +32,7 @@ mod complex_extensions;
 pub mod window_functions;
 pub mod conv_types;
 pub mod interop_facade;
+pub mod combined_ops;
 pub use vector_types::
     {
         DataVectorDomain,

@@ -11,8 +11,8 @@ use super::{
     GenericDataVector,
     RededicateVector};  
 use num::complex::Complex;
-use multicore_support::{Chunk, Complexity, MultiCoreSettings};
-use simd_extensions::{Simd, Reg32, Reg64};
+use multicore_support::{Chunk, Complexity};
+use simd_extensions::{Simd, Reg32};
 
 /// Trait which defines the relation between a vector
 /// and an identifier. 
@@ -76,7 +76,7 @@ create_identfier!(
     RealFreqVector, RealFreqIdentifier; 
     ComplexFreqVector, ComplexFreqIdentifier;);
 
-/// The argument position.
+/// The argument position. User internally to keep track of arguments.
 #[derive(Copy)]
 #[derive(Clone)]
 #[derive(PartialEq)]
@@ -248,6 +248,7 @@ impl ComplexIdentifier<f32> for ComplexTimeIdentifier<f32> {
     }
 }
 
+/// Prepares an operation with two inputs and two outputs.
 pub fn prepare2<A, B>()
     -> PreparedOperation2<f32, A, B, A, B> 
     where A: ToIdentifier<f32>, B: ToIdentifier<f32> {
@@ -262,7 +263,10 @@ pub fn prepare2<A, B>()
          }
 }
 
-struct MultiOperation2<TO1, TO2> 
+/// A multi operation which holds two vectors and records all changes
+/// which need to be done to the vectors. By calling `get` on the struct
+/// all operations will be executed in one run.
+pub struct MultiOperation2<TO1, TO2> 
     where TO1: ToIdentifier<f32>, TO2: ToIdentifier<f32> {
     a: GenericDataVector<f32>,
     b: GenericDataVector<f32>,
@@ -272,11 +276,11 @@ struct MultiOperation2<TO1, TO2>
 impl<TO1, TO2>  MultiOperation2<TO1, TO2> 
     where TO1: ToIdentifier<f32> + DataVector<f32> + RededicateVector<GenericDataVector<f32>>, 
           TO2: ToIdentifier<f32> + DataVector<f32> + RededicateVector<GenericDataVector<f32>> {
-    fn get(self) -> (TO1, TO2) {
+    pub fn get(self) -> (TO1, TO2) {
         self.preped_ops.exec(self.a, self.b)
     }
     
-    fn add_ops<F, TN1, TN2>(self, operation: F) 
+    pub fn add_ops<F, TN1, TN2>(self, operation: F) 
         -> MultiOperation2<TN1::Vector, TN2::Vector>
         where F: Fn(TO1::Identifier, TO2::Identifier) -> (TN1, TN2),
                  TN1: Identifier<f32>,
@@ -288,7 +292,8 @@ impl<TO1, TO2>  MultiOperation2<TO1, TO2>
     }
 }
 
-fn multi_ops2<A, B>(a: A, b: B)
+/// Creates a new multi operation for two vectors.
+pub fn multi_ops2<A, B>(a: A, b: B)
     -> MultiOperation2<A, B>
     where A: ToIdentifier<f32> + DataVector<f32> + RededicateVector<GenericDataVector<f32>>, 
     B: ToIdentifier<f32> + DataVector<f32> + RededicateVector<GenericDataVector<f32>> {
@@ -355,7 +360,7 @@ impl GenericDataVector<f32> {
     ///
     /// Both variants have the same complexity however the second one is benificial since we
     /// have increased locality this way. This should help us by making better use of registers and 
-    /// CPU buffers. This might also help since for large data we might have the chance in future to 
+    /// CPU caches. This might also help since for large data we might have the chance in future to 
     /// move the data to a GPU, run all operations and get the result back. In this case the GPU is fast
     /// for many operations but the roundtrips on the bus should be minimized to keep the speed advantage.
     pub fn perform_operations(mut self, operations: &[Operation<f32>])

@@ -115,7 +115,21 @@ pub use vector_types::correlation_impl::CrossCorrelation;
 pub use vector_types::interpolation_impl::{
     Interpolation,
     RealInterpolation};
-pub use vector_types::multi_ops::*;
+pub use vector_types::multi_ops::{
+    ToIdentifier,
+    Identifier,
+    GenericDataIdentifier,
+    RealTimeIdentifier,
+    ComplexTimeIdentifier,
+    RealFreqIdentifier,
+    ComplexFreqIdentifier,
+    Argument,
+    PreparedOperation1,
+    PreparedOperation2,
+    prepare2,
+    MultiOperation2,
+    Operation,
+    multi_ops2};    
 use num::complex::Complex;
 use RealNumber;
 use multicore_support::{Chunk, Complexity, MultiCoreSettings};
