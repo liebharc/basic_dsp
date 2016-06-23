@@ -10,12 +10,16 @@ mod slow_test {
         DataVectorDomain,
         DataVector32,
         RealTimeVector32,
+        RealFreqVector32,
+        ComplexTimeVector32,
+        ComplexFreqVector32,
         TimeDomainOperations,
         SymmetricTimeDomainOperations,
         FrequencyDomainOperations,
         SymmetricFrequencyDomainOperations,
         GenericVectorOperations,
         RealVectorOperations,
+        RededicateVector,
         Operation};
     use tools::*;
        
@@ -497,5 +501,277 @@ mod slow_test {
         let real_ifft = sym_fft.plain_sifft().unwrap()
                                 .real_scale(1.0 / 1001.0).unwrap();
         assert_vector_eq_with_reason_and_tolerance(&time.data(), &real_ifft.data(), 1e-3, "Ifft must give back the original result");
+    }
+    
+    #[test]
+    fn rededicate_test() {
+        // The test case is rather long since it basically
+        // just checks all the different combinations. I however
+        // sometimes prefer to have explict tests even if they 
+        // are repetetive.
+        let len = 8;
+        let data = create_data(20160622, 0, len, len);
+        // RealTimeVector32
+        let original = RealTimeVector32::from_array(&data);
+        original.assert_meta_data();
+        assert_eq!(original.len(), len);
+        
+        let vector: ComplexTimeVector32 = original.clone().rededicate();
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector: RealFreqVector32 = original.clone().rededicate();
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector: ComplexFreqVector32 = original.clone().rededicate();
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector: DataVector32 = original.clone().rededicate();
+        assert_eq!(vector.is_complex(), false);
+        assert_eq!(vector.domain(), DataVectorDomain::Time);
+        assert_eq!(vector.len(), len);
+        
+        // ComplexTimeVector32
+        let original = ComplexTimeVector32::from_interleaved(&data);
+        original.assert_meta_data();
+        assert_eq!(original.len(), len);
+        
+        let vector: RealTimeVector32 = original.clone().rededicate();
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector: RealFreqVector32 = original.clone().rededicate();
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector: ComplexFreqVector32 = original.clone().rededicate();
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector: DataVector32 = original.clone().rededicate();
+        assert_eq!(vector.is_complex(), true);
+        assert_eq!(vector.domain(), DataVectorDomain::Time);
+        assert_eq!(vector.len(), len);
+             
+        // RealFreqVector32
+        let original = RealFreqVector32::from_array(&data);
+        original.assert_meta_data();
+        assert_eq!(original.len(), len);
+        
+        let vector: RealTimeVector32 = original.clone().rededicate();
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector: ComplexTimeVector32 = original.clone().rededicate();
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector: ComplexFreqVector32 = original.clone().rededicate();
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector: DataVector32 = original.clone().rededicate();
+        assert_eq!(vector.is_complex(), false);
+        assert_eq!(vector.domain(), DataVectorDomain::Frequency);
+        assert_eq!(vector.len(), len);
+        
+        // ComplexFreqVector32
+        let original = ComplexFreqVector32::from_interleaved(&data);
+        original.assert_meta_data();
+        assert_eq!(original.len(), len);
+        
+        let vector: RealFreqVector32 = original.clone().rededicate();
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector: ComplexTimeVector32 = original.clone().rededicate();
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector: ComplexFreqVector32 = original.clone().rededicate();
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector: DataVector32 = original.clone().rededicate();
+        assert_eq!(vector.is_complex(), true);
+        assert_eq!(vector.domain(), DataVectorDomain::Frequency);
+        assert_eq!(vector.len(), len);
+    }
+    
+    #[test]
+    fn rededicate_from_test() {
+        let len = 8;
+        let data = create_data(20160622, 0, len, len);
+        // RealTimeVector32
+        let original = RealTimeVector32::from_array(&data);
+        original.assert_meta_data();
+        assert_eq!(original.len(), len);
+        
+        let vector = ComplexTimeVector32::rededicate_from(original.clone());
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector = RealFreqVector32::rededicate_from(original.clone());
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector = ComplexFreqVector32::rededicate_from(original.clone());
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector = DataVector32::rededicate_from(original.clone());
+        assert_eq!(vector.is_complex(), false);
+        assert_eq!(vector.domain(), DataVectorDomain::Time);
+        assert_eq!(vector.len(), len);
+        
+        // ComplexTimeVector32
+        let original = ComplexTimeVector32::from_interleaved(&data);
+        original.assert_meta_data();
+        assert_eq!(original.len(), len);
+        
+        let vector = RealTimeVector32::rededicate_from(original.clone());
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector = RealFreqVector32::rededicate_from(original.clone());
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector = ComplexFreqVector32::rededicate_from(original.clone());
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector = DataVector32::rededicate_from(original.clone());
+        assert_eq!(vector.is_complex(), true);
+        assert_eq!(vector.domain(), DataVectorDomain::Time);
+        assert_eq!(vector.len(), len);
+             
+        // RealFreqVector32
+        let original = RealFreqVector32::from_array(&data);
+        original.assert_meta_data();
+        assert_eq!(original.len(), len);
+        
+        let vector = RealTimeVector32::rededicate_from(original.clone());
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector = ComplexTimeVector32::rededicate_from(original.clone());
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector = ComplexFreqVector32::rededicate_from(original.clone());
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector = DataVector32::rededicate_from(original.clone());
+        assert_eq!(vector.is_complex(), false);
+        assert_eq!(vector.domain(), DataVectorDomain::Frequency);
+        assert_eq!(vector.len(), len);
+        
+        // ComplexFreqVector32
+        let original = ComplexFreqVector32::from_interleaved(&data);
+        original.assert_meta_data();
+        assert_eq!(original.len(), len);
+        
+        let vector = RealFreqVector32::rededicate_from(original.clone());
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector = ComplexTimeVector32::rededicate_from(original.clone());
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector = ComplexFreqVector32::rededicate_from(original.clone());
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), 0);
+        
+        let vector = DataVector32::rededicate_from(original.clone());
+        assert_eq!(vector.is_complex(), true);
+        assert_eq!(vector.domain(), DataVectorDomain::Frequency);
+        assert_eq!(vector.len(), len);
+    }
+    
+    #[test]
+    fn rededicate_generic_test() {
+        let len = 8;
+        let data = create_data(20160622, 0, len, len);
+        // RealTimeVector32
+        let vector: DataVector32 = RealTimeVector32::from_array(&data).rededicate();
+        assert_eq!(vector.is_complex(), false);
+        assert_eq!(vector.domain(), DataVectorDomain::Time);
+        assert_eq!(vector.len(), len);
+        let vector: RealTimeVector32 = vector.rededicate();
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), len);
+        
+        // ComplexTimeVector32
+        let vector: DataVector32 = ComplexTimeVector32::from_interleaved(&data).rededicate();
+        assert_eq!(vector.is_complex(), true);
+        assert_eq!(vector.domain(), DataVectorDomain::Time);
+        assert_eq!(vector.len(), len);
+        let vector: ComplexTimeVector32 = vector.rededicate();
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), len);
+        
+        // RealFreqVector32
+        let vector: DataVector32 = RealFreqVector32::from_array(&data).rededicate();
+        assert_eq!(vector.is_complex(), false);
+        assert_eq!(vector.domain(), DataVectorDomain::Frequency);
+        assert_eq!(vector.len(), len);
+        let vector: RealFreqVector32 = vector.rededicate();
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), len);
+        
+        // ComplexFreqVector32
+        let vector: DataVector32 = ComplexFreqVector32::from_interleaved(&data).rededicate();
+        assert_eq!(vector.is_complex(), true);
+        assert_eq!(vector.domain(), DataVectorDomain::Frequency);
+        assert_eq!(vector.len(), len);
+        let vector: ComplexFreqVector32 = vector.rededicate();
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), len);
+    }
+    
+     #[test]
+    fn rededicate_from_generic_test() {
+        let len = 8;
+        let data = create_data(20160622, 0, len, len);
+        // RealTimeVector32
+        let vector = DataVector32::rededicate_from(RealTimeVector32::from_array(&data));
+        assert_eq!(vector.is_complex(), false);
+        assert_eq!(vector.domain(), DataVectorDomain::Time);
+        assert_eq!(vector.len(), len);
+        let vector = RealTimeVector32::rededicate_from(vector);
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), len);
+        
+        // ComplexTimeVector32
+        let vector = DataVector32::rededicate_from(ComplexTimeVector32::from_interleaved(&data));
+        assert_eq!(vector.is_complex(), true);
+        assert_eq!(vector.domain(), DataVectorDomain::Time);
+        assert_eq!(vector.len(), len);
+        let vector = ComplexTimeVector32::rededicate_from(vector);
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), len);
+        
+        // RealFreqVector32
+        let vector = DataVector32::rededicate_from(RealFreqVector32::from_array(&data));
+        assert_eq!(vector.is_complex(), false);
+        assert_eq!(vector.domain(), DataVectorDomain::Frequency);
+        assert_eq!(vector.len(), len);
+        let vector = RealFreqVector32::rededicate_from(vector);
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), len);
+        
+        // ComplexFreqVector32
+        let vector = DataVector32::rededicate_from(ComplexFreqVector32::from_interleaved(&data));
+        assert_eq!(vector.is_complex(), true);
+        assert_eq!(vector.domain(), DataVectorDomain::Frequency);
+        assert_eq!(vector.len(), len);
+        let vector = ComplexFreqVector32::rededicate_from(vector);
+        vector.assert_meta_data();
+        assert_eq!(vector.len(), len);
     }
 }

@@ -5,6 +5,7 @@ Changes:
 Added a nicer interface for prepared operations/multi operations.
 
 - Breaking change: RededicateVector trait now defines exactly one conversion. Vectors implement the trait several times so the same functionality is still available.
+- Breaking change: perform_operations and related types appear on the API differently now.
 
 ## Version 0.2.2
 Added Apache-2.0 as license option.

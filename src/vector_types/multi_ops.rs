@@ -181,7 +181,7 @@ macro_rules! add_multi_ops_impl {
                             let r1arg = r1.get_arg();
                             new_ops.append(&mut r1.get_ops());
                             new_ops.append(&mut r2.get_ops());
-                            r1arg == Argument::A2
+                            self.swap != (r1arg == Argument::A2)
                         };
                      // TODO: Handle overflows in the sequence
                      new_ops.sort_by(|a, b| a.0.cmp(&b.0));
@@ -203,33 +203,17 @@ macro_rules! add_multi_ops_impl {
                     // First "cast" the vectors to generic vectors. This is done with the
                     // the rededicate trait since in contrast to the to_gen method it 
                     // can be used in a generic context.
-                    let len_a = a.len();
-                    let len_b = b.len();
-                    let mut a: GenericDataVector<$data_type> = a.rededicate();
-                    a.set_len(len_a);
-                    let mut b: GenericDataVector<$data_type> = b.rededicate();
-                    b.set_len(len_b);
+                    let a: GenericDataVector<$data_type> = a.rededicate();
+                    let b: GenericDataVector<$data_type> = b.rededicate();
                     
                     // at this point we would execute all ops and cast the result to the right types
                     
                     // Convert back
                     if self.swap {
-                        let len_a = a.len();
-                        let len_b = b.len();
-                        let mut x = TO1::rededicate_from(b);
-                        x.set_len(len_b);
-                        let mut y = TO2::rededicate_from(a);
-                        y.set_len(len_a);
-                        (x, y)
+                        (TO1::rededicate_from(b), TO2::rededicate_from(a))
                     }
                     else {
-                        let len_a = a.len();
-                        let len_b = b.len();
-                        let mut x = TO1::rededicate_from(a);
-                        x.set_len(len_a);
-                        let mut y = TO2::rededicate_from(b);
-                        y.set_len(len_b);
-                        (x, y)
+                        (TO1::rededicate_from(a), TO2::rededicate_from(b))
                     }
                 }
             }
@@ -239,16 +223,11 @@ macro_rules! add_multi_ops_impl {
                       TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>> {
                       
                 pub fn exec(&self, a: TI1) -> TO1 {
-                    let len_a = a.len();
-                    let mut a: GenericDataVector<$data_type> = a.rededicate();
-                    a.set_len(len_a);
+                    let a: GenericDataVector<$data_type> = a.rededicate();
                     
                     // at this point we would execute all ops and cast the result to the right types
                     
-                    let len_a = a.len();
-                    let mut x = TO1::rededicate_from(a);
-                    x.set_len(len_a);
-                    x
+                    TO1::rededicate_from(a)
                 }
                 
                 pub fn extend<TI2>(self) 
@@ -543,5 +522,56 @@ mod tests {
         let (a, _) = ops.exec(a, b);
         
         assert_eq!(a.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+    }
+    
+    #[test]
+    fn swapping()
+    {
+        let ops = prepare2::<f32, ComplexTimeVector32, RealTimeVector32>();
+        let ops = ops.add_ops(|a, b| (a, b));
+        
+        let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+        let a = ComplexTimeVector32::from_interleaved(&array);
+        let b = RealTimeVector32::from_array(&array);
+        assert_eq!(a.is_complex(), true);
+        let (a, b) = ops.exec(a, b);
+        // Check the compile time types with the assignments
+        let c: ComplexTimeVector32 = a; 
+        let d: RealTimeVector32 = b;
+        assert_eq!(c.is_complex(), true);
+        assert_eq!(d.is_complex(), false);
+        assert_eq!(d.len(), 8);
+        
+        let ops = ops.add_ops(|a, b| (b, a));
+        let a = ComplexTimeVector32::from_interleaved(&array);
+        let b = RealTimeVector32::from_array(&array);
+        assert_eq!(a.is_complex(), true);
+        let (b, a) = ops.exec(a, b);
+        // Check the compile time types with the assignments
+        let c: ComplexTimeVector32 = a; 
+        let d: RealTimeVector32 = b;
+        assert_eq!(c.is_complex(), true);
+        assert_eq!(d.is_complex(), false);
+        assert_eq!(d.len(), 8);
+    }
+    
+    #[test]
+    fn swap_twice()
+    {
+        let ops = prepare2::<f32, ComplexTimeVector32, RealTimeVector32>();
+        let ops = ops.add_ops(|a, b| (b, a));
+        let ops = ops.add_ops(|a, b| (b, a));
+        
+        let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+        let a = ComplexTimeVector32::from_interleaved(&array);
+        let b = RealTimeVector32::from_array(&array);
+        assert_eq!(a.is_complex(), true);
+        let (a, b) = ops.exec(a, b);
+        // Check the compile time types with the assignments
+        let c: ComplexTimeVector32 = a; 
+        let d: RealTimeVector32 = b;
+        assert_eq!(c.is_complex(), true);
+        assert_eq!(d.is_complex(), false);
+        assert_eq!(d.len(), 8);
     }
 }

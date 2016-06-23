@@ -83,6 +83,7 @@ pub mod convolution_impl;
 pub mod correlation_impl;
 pub mod interpolation_impl;
 pub mod multi_ops;
+mod rededicate_impl;
 mod stats_impl;
 
 pub use vector_types::definitions::{
