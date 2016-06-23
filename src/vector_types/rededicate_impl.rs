@@ -27,15 +27,7 @@ macro_rules! add_rededicate_impl {
             }
 
             fn rededicate_from(other: ComplexTimeVector<T>) -> Self {
-                $name {
-                    delta: other.delta,
-                    is_complex: $is_complex,
-                    valid_len: 0,
-                    domain: $domain,
-                    data: other.data,
-                    temp: other.temp,
-                    multicore_settings: other.multicore_settings
-                }
+                other.rededicate()
             }
         }
 
@@ -54,15 +46,7 @@ macro_rules! add_rededicate_impl {
             }
 
             fn rededicate_from(other: ComplexFreqVector<T>) -> Self {
-                $name {
-                    delta: other.delta,
-                    is_complex: $is_complex,
-                    valid_len: 0,
-                    domain: $domain,
-                    data: other.data,
-                    temp: other.temp,
-                    multicore_settings: other.multicore_settings
-                }
+                other.rededicate()
             }
         }
 
@@ -81,15 +65,7 @@ macro_rules! add_rededicate_impl {
             }
 
             fn rededicate_from(other: RealTimeVector<T>) -> Self {
-                $name {
-                    delta: other.delta,
-                    is_complex: $is_complex,
-                    valid_len: 0,
-                    domain: $domain,
-                    data: other.data,
-                    temp: other.temp,
-                    multicore_settings: other.multicore_settings
-                }
+                other.rededicate()
             }
         }
 
@@ -108,15 +84,7 @@ macro_rules! add_rededicate_impl {
             }
 
             fn rededicate_from(other: RealFreqVector<T>) -> Self {
-                $name {
-                    delta: other.delta,
-                    is_complex: $is_complex,
-                    valid_len: 0,
-                    domain: $domain,
-                    data: other.data,
-                    temp: other.temp,
-                    multicore_settings: other.multicore_settings
-                }
+                other.rededicate()
             }
         }
 
@@ -135,23 +103,7 @@ macro_rules! add_rededicate_impl {
             }
 
             fn rededicate_from(other: GenericDataVector<T>) -> Self {
-                let valid_len = 
-                    if other.is_complex == $is_complex
-                        && other.domain == $domain {
-                        other.valid_len
-                    } else {
-                        0
-                    };
-            
-                $name {
-                    delta: other.delta,
-                    is_complex: $is_complex,
-                    valid_len: valid_len,
-                    domain: $domain,
-                    data: other.data,
-                    temp: other.temp,
-                    multicore_settings: other.multicore_settings
-                }
+                other.rededicate()
             }
         }
       )*
