@@ -1,8 +1,11 @@
 use std::marker::PhantomData;
+use std::result;
 use super::super::RealNumber;
 use super::{
     round_len,
     DataVector,
+    VecResult,
+    ErrorReason,
     RealTimeVector,
     ComplexTimeVector,
     RealFreqVector,
@@ -199,7 +202,7 @@ macro_rules! add_multi_ops_impl {
                      }
                 }
                 
-                pub fn exec(&self, a: TI1, b: TI2) -> (TO1, TO2) {
+                pub fn exec(&self, a: TI1, b: TI2) -> result::Result<(TO1, TO2), (ErrorReason, TO1, TO2)> {
                     // First "cast" the vectors to generic vectors. This is done with the
                     // the rededicate trait since in contrast to the to_gen method it 
                     // can be used in a generic context.
@@ -210,10 +213,10 @@ macro_rules! add_multi_ops_impl {
                     
                     // Convert back
                     if self.swap {
-                        (TO1::rededicate_from(b), TO2::rededicate_from(a))
+                        Ok((TO1::rededicate_from(b), TO2::rededicate_from(a)))
                     }
                     else {
-                        (TO1::rededicate_from(a), TO2::rededicate_from(b))
+                        Ok((TO1::rededicate_from(a), TO2::rededicate_from(b)))
                     }
                 }
             }
@@ -222,12 +225,12 @@ macro_rules! add_multi_ops_impl {
                 where TI1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>,
                       TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>> {
                       
-                pub fn exec(&self, a: TI1) -> TO1 {
+                pub fn exec(&self, a: TI1) -> VecResult<TO1> {
                     let a: GenericDataVector<$data_type> = a.rededicate();
                     
                     // at this point we would execute all ops and cast the result to the right types
                     
-                    TO1::rededicate_from(a)
+                    Ok(TO1::rededicate_from(a))
                 }
                 
                 pub fn extend<TI2>(self) 
@@ -268,7 +271,7 @@ macro_rules! add_multi_ops_impl {
             impl<TO1, TO2>  MultiOperation2<$data_type, TO1, TO2> 
                 where TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
                       TO2: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>> {
-                pub fn get(self) -> (TO1, TO2) {
+                pub fn get(self) -> result::Result<(TO1, TO2), (ErrorReason, TO1, TO2)> {
                     self.preped_ops.exec(self.a, self.b)
                 }
                 
@@ -503,7 +506,7 @@ mod tests {
         
         let ops = multi_ops2(a, b);
         let ops = ops.add_ops(|a, b| (a, b));
-        let (a, _) = ops.get();
+        let (a, _) = ops.get().unwrap();
         
         assert_eq!(a.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
     }
@@ -519,7 +522,7 @@ mod tests {
         let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
         let a = RealTimeVector32::from_array(&array);
         let b = RealTimeVector32::from_array(&array);
-        let (a, _) = ops.exec(a, b);
+        let (a, _) = ops.exec(a, b).unwrap();
         
         assert_eq!(a.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
     }
@@ -534,7 +537,7 @@ mod tests {
         let a = ComplexTimeVector32::from_interleaved(&array);
         let b = RealTimeVector32::from_array(&array);
         assert_eq!(a.is_complex(), true);
-        let (a, b) = ops.exec(a, b);
+        let (a, b) = ops.exec(a, b).unwrap();
         // Check the compile time types with the assignments
         let c: ComplexTimeVector32 = a; 
         let d: RealTimeVector32 = b;
@@ -546,7 +549,7 @@ mod tests {
         let a = ComplexTimeVector32::from_interleaved(&array);
         let b = RealTimeVector32::from_array(&array);
         assert_eq!(a.is_complex(), true);
-        let (b, a) = ops.exec(a, b);
+        let (b, a) = ops.exec(a, b).unwrap();
         // Check the compile time types with the assignments
         let c: ComplexTimeVector32 = a; 
         let d: RealTimeVector32 = b;
@@ -566,7 +569,7 @@ mod tests {
         let a = ComplexTimeVector32::from_interleaved(&array);
         let b = RealTimeVector32::from_array(&array);
         assert_eq!(a.is_complex(), true);
-        let (a, b) = ops.exec(a, b);
+        let (a, b) = ops.exec(a, b).unwrap();
         // Check the compile time types with the assignments
         let c: ComplexTimeVector32 = a; 
         let d: RealTimeVector32 = b;
