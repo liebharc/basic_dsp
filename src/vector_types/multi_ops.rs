@@ -312,9 +312,7 @@ macro_rules! add_multi_ops_impl {
                 ///
                 /// Both variants have the same complexity however the second one is benificial since we
                 /// have increased locality this way. This should help us by making better use of registers and 
-                /// CPU caches. This might also help since for large data we might have the chance in future to 
-                /// move the data to a GPU, run all operations and get the result back. In this case the GPU is fast
-                /// for many operations but the roundtrips on the bus should be minimized to keep the speed advantage.
+                /// CPU caches.
                 pub fn perform_operations(mut self, operations: &[Operation<$data_type>])
                     -> Self
                 {
@@ -334,7 +332,7 @@ macro_rules! add_multi_ops_impl {
                             let scalar_length = data_length % $reg::len();
                             if scalar_length > 0
                             {
-                                panic!("perform_operations requires right now that the array length is dividable by 4")
+                                panic!("perform_operations requires right now that the array length is dividable by {}", $reg::len())
                             }
                             data_length - scalar_length
                         };
