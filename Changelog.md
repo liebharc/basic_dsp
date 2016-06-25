@@ -1,7 +1,7 @@
 # `basic_dsp`
 Changes:
 
-## Version 0.2.3 (Breaking changes)
+## Version 0.3.0 (Breaking changes)
 Added a nicer interface for prepared operations/multi operations.
 
 - Breaking change: RededicateVector trait now defines exactly one conversion. Vectors implement the trait several times so the same functionality is still available.
