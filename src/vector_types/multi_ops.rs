@@ -144,16 +144,16 @@ pub struct MultiOperation2<T, TO1, TO2>
 #[derive(Debug)]
 pub enum Operation<T>
 {
-    AddReal(T),
-    AddComplex(Complex<T>),
+    AddReal(Argument, T),
+    AddComplex(Argument, Complex<T>),
     //AddVector(&'a DataVector32<'a>),
-    MultiplyReal(T),
-    MultiplyComplex(Complex<T>),
+    MultiplyReal(Argument, T),
+    MultiplyComplex(Argument, Complex<T>),
     //MultiplyVector(&'a DataVector32<'a>),
-    AbsReal,
-    AbsComplex,
-    Sqrt,
-    Log(T)
+    AbsReal(Argument),
+    AbsComplex(Argument),
+    Sqrt(Argument),
+    Log(Argument, T)
 }
 
 macro_rules! add_multi_ops_impl {
@@ -263,7 +263,7 @@ macro_rules! add_multi_ops_impl {
                         OPERATION_SEQ_COUNTER += 1;
                         OPERATION_SEQ_COUNTER
                     };
-                    ops.push((seq, Operation::AbsComplex));
+                    ops.push((seq, Operation::AbsComplex(self.arg)));
                     RealTimeIdentifier { ops: ops, arg: self.arg }
                 }
             }
@@ -363,11 +363,11 @@ macro_rules! add_multi_ops_impl {
                             let operation = &operations[j];
                             match *operation
                             {
-                                Operation::AddReal(value) =>
+                                Operation::AddReal(_, value) =>
                                 {
                                     vector = vector.add_real(value);
                                 }
-                                Operation::AddComplex(value) =>
+                                Operation::AddComplex(_, value) =>
                                 {
                                     vector = vector.add_complex(value);
                                 }
@@ -375,11 +375,11 @@ macro_rules! add_multi_ops_impl {
                                 {
                                     // TODO
                                 }*/
-                                Operation::MultiplyReal(value) =>
+                                Operation::MultiplyReal(_, value) =>
                                 {
                                     vector = vector.scale_real(value);
                                 }
-                                Operation::MultiplyComplex(value) =>
+                                Operation::MultiplyComplex(_, value) =>
                                 {
                                     vector = vector.scale_complex(value);
                                 }
@@ -387,7 +387,7 @@ macro_rules! add_multi_ops_impl {
                                 {
                                     // TODO
                                 }*/
-                                Operation::AbsReal =>
+                                Operation::AbsReal(_) =>
                                 {
                                     vector.store(array, i);
                                     {
@@ -401,11 +401,11 @@ macro_rules! add_multi_ops_impl {
                                     }
                                     vector = $reg::load(array, i);
                                 }
-                                Operation::AbsComplex =>
+                                Operation::AbsComplex(_) =>
                                 {
                                     vector = vector.complex_abs();
                                 }
-                                Operation::Sqrt =>
+                                Operation::Sqrt(_) =>
                                 {
                                     vector.store(array, i);
                                     {
@@ -419,7 +419,7 @@ macro_rules! add_multi_ops_impl {
                                     }
                                     vector = $reg::load(array, i);
                                 }
-                                Operation::Log(value) =>
+                                Operation::Log(_, value) =>
                                 {
                                     vector.store(array, i);
                                     {

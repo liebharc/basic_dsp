@@ -18,6 +18,7 @@ mod bench {
         RealTimeVector32,
         RealTimeVector64,
         Operation};
+    use basic_dsp::combined_ops::Argument;
     use tools::{VectorBox, DEFAULT_DATA_SIZE, Size};
     
     #[inline(never)]
@@ -95,8 +96,8 @@ mod bench {
             vector.execute(|v|  
                 {
                       v.perform_operations(
-                        &[Operation::Log(10.0),
-                        Operation::MultiplyReal(10.0)])
+                        &[Operation::Log(Argument::A1, 10.0),
+                        Operation::MultiplyReal(Argument::A1, 10.0)])
                 })
         });
     }
