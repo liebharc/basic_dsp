@@ -94,6 +94,22 @@ macro_rules! define_real_operations_forward {
                     self.real_offset(offset)
                 }
             }
+            
+            impl DotProduct<$data_type> for $name<$data_type> {
+                fn dot_product(&self, factor: &Self) -> ScalarResult<$data_type> {
+                    self.real_dot_product(factor)
+                }
+            }
+            
+            impl StatisticsOperations<$data_type> for $name<$data_type> {
+                fn statistics(&self) -> Statistics<$data_type> {
+                    self.real_statistics()
+                }
+                
+                fn statistics_splitted(&self, len: usize) -> Vec<Statistics<$data_type>> {
+                    self.real_statistics_splitted(len)
+                }
+            }
         )*
      }
 }

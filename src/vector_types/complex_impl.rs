@@ -8,6 +8,8 @@ use super::definitions::{
     Statistics,
     Scale,
     Offset,
+    DotProduct,
+    StatisticsOperations,
     ComplexVectorOperations};
 use super::GenericDataVector;
 use super::stats_impl::Stats;
@@ -112,7 +114,7 @@ macro_rules! add_complex_impl {
                     self.simd_complex_to_real_operation(|x,_arg| x.complex_abs_squared(), |x,_arg| x.re * x.re + x.im * x.im, (), Complexity::Small)
                 }
                 
-                fn complex_conj(mut self) -> VecResult<Self>
+                fn conj(mut self) -> VecResult<Self>
                 {
                     assert_complex!(self);
                     {
@@ -416,6 +418,22 @@ macro_rules! add_complex_impl {
             impl Offset<Complex<$data_type>> for GenericDataVector<$data_type> {
                 fn offset(self, offset: Complex<$data_type>) -> VecResult<Self> {
                     self.complex_offset(offset)
+                }
+            }
+            
+            impl DotProduct<Complex<$data_type>> for GenericDataVector<$data_type> {
+                fn dot_product(&self, factor: &Self) -> ScalarResult<Complex<$data_type>> {
+                    self.complex_dot_product(factor)
+                }
+            }
+            
+            impl StatisticsOperations<Complex<$data_type>> for GenericDataVector<$data_type> {
+                fn statistics(&self) -> Statistics<Complex<$data_type>> {
+                    self.complex_statistics()
+                }
+                
+                fn statistics_splitted(&self, len: usize) -> Vec<Statistics<Complex<$data_type>>> {
+                    self.complex_statistics_splitted(len)
                 }
             }
         )*

@@ -40,9 +40,9 @@ macro_rules! define_complex_operations_forward {
                     Self::RealPartner::from_genres(self.to_gen().magnitude_squared())
                 }
                 
-                fn complex_conj(self) -> VecResult<Self>
+                fn conj(self) -> VecResult<Self>
                 {
-                    Self::from_genres(self.to_gen().complex_conj())
+                    Self::from_genres(self.to_gen().conj())
                 }
                 
                 fn to_real(self) -> VecResult<Self::RealPartner>
@@ -140,6 +140,22 @@ macro_rules! define_complex_operations_forward {
             impl Offset<Complex<$data_type>> for $name<$data_type> {
                 fn offset(self, offset: Complex<$data_type>) -> VecResult<Self> {
                     self.complex_offset(offset)
+                }
+            }
+            
+            impl DotProduct<Complex<$data_type>> for $name<$data_type> {
+                fn dot_product(&self, factor: &Self) -> ScalarResult<Complex<$data_type>> {
+                    self.complex_dot_product(factor)
+                }
+            }
+            
+            impl StatisticsOperations<Complex<$data_type>> for $name<$data_type> {
+                fn statistics(&self) -> Statistics<Complex<$data_type>> {
+                    self.complex_statistics()
+                }
+                
+                fn statistics_splitted(&self, len: usize) -> Vec<Statistics<Complex<$data_type>>> {
+                    self.complex_statistics_splitted(len)
                 }
             }
         )*

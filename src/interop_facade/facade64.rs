@@ -341,8 +341,8 @@ pub extern fn magnitude_squared64(vector: Box<DataVector64>) -> VectorResult<Dat
 }
 
 #[no_mangle]
-pub extern fn complex_conj64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
-    convert_vec!(vector.complex_conj())
+pub extern fn conj64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+    convert_vec!(vector.conj())
 }
 
 #[no_mangle]

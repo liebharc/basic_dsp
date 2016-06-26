@@ -104,6 +104,59 @@ pub trait Offset<T> : Sized
     fn offset(self, offset: T) -> VecResult<Self>;
 }
 
+/// An operation which multiplies each vector element with a constant
+pub trait DotProduct<T> : Sized
+    where T: Sized {
+    /// Calculates the dot product of self and factor. Self and factor remain unchanged.
+    fn dot_product(&self, factor: &Self) -> ScalarResult<T>;
+}
+
+/// Calculates the statistics of the data contained in the vector.
+pub trait StatisticsOperations<T> : Sized
+    where T: Sized {
+    /// Calculates the statistics of the data contained in the vector.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// # use num::complex::Complex32;
+    /// use basic_dsp::{ComplexTimeVector32, StatisticsOperations};
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+    /// let result = vector.statistics();
+    /// assert_eq!(result.sum, Complex32::new(9.0, 12.0));
+    /// assert_eq!(result.count, 3);
+    /// assert_eq!(result.average, Complex32::new(3.0, 4.0));
+    /// assert!((result.rms - Complex32::new(3.4027193, 4.3102784)).norm() < 1e-4);
+    /// assert_eq!(result.min, Complex32::new(1.0, 2.0));
+    /// assert_eq!(result.min_index, 0);
+    /// assert_eq!(result.max, Complex32::new(5.0, 6.0));
+    /// assert_eq!(result.max_index, 2);
+    /// }
+    /// ```  
+    fn statistics(&self) -> Statistics<T>;
+    
+    /// Calculates the statistics of the data contained in the vector as if the vector would
+    /// have been split into `len` pieces. `self.len` should be devisable by `len` without a remainder,
+    /// but this isn't enforced by the implementation.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// # use num::complex::Complex32;
+    /// use basic_dsp::{ComplexTimeVector32, StatisticsOperations};
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+    /// let result = vector.statistics_splitted(2);
+    /// assert_eq!(result[0].sum, Complex32::new(6.0, 8.0));
+    /// assert_eq!(result[1].sum, Complex32::new(10.0, 12.0));
+    /// }
+    /// ```  
+    fn statistics_splitted(&self, len: usize) -> Vec<Statistics<T>>;     
+}
+
 /// Defines all operations which are valid on all `DataVectors`.
 pub trait GenericVectorOperations<T>: DataVector<T> 
     where T : RealNumber {
@@ -580,7 +633,7 @@ pub trait RealVectorOperations<T> : DataVector<T>
     where T : RealNumber {
     type ComplexPartner;
     
-    /// Adds a scalar to the vector.
+    /// Adds a scalar to the vector. See also: `Offset` trait.
     /// # Example
     ///
     /// ```
@@ -591,7 +644,7 @@ pub trait RealVectorOperations<T> : DataVector<T>
     /// ```
     fn real_offset(self, offset: T) -> VecResult<Self>;
     
-    /// Multiplies the vector with a scalar.
+    /// Multiplies the vector with a scalar. See also: `Scale` trait.
     /// # Example
     ///
     /// ```
@@ -651,7 +704,7 @@ pub trait RealVectorOperations<T> : DataVector<T>
     /// ```
     fn unwrap(self, divisor: T) -> VecResult<Self>;
     
-    /// Calculates the dot product of self and factor. Self and factor remain unchanged.
+    /// Calculates the dot product of self and factor. Self and factor remain unchanged. See also: `DotProduct` trait.
     /// # Failures
     /// VecResult may report the following `ErrorReason` members:
     /// 
@@ -668,7 +721,7 @@ pub trait RealVectorOperations<T> : DataVector<T>
     /// ```  
     fn real_dot_product(&self, factor: &Self) -> ScalarResult<T>;
     
-    /// Calculates the statistics of the data contained in the vector.
+    /// Calculates the statistics of the data contained in the vector. . See also: `StatisticsOperations` trait.
     /// # Example
     ///
     /// ```
@@ -688,7 +741,7 @@ pub trait RealVectorOperations<T> : DataVector<T>
     
     /// Calculates the statistics of the data contained in the vector as if the vector would
     /// have been split into `len` pieces. `self.len` should be devisable by `len` without a remainder,
-    /// but this isn't enforced by the implementation.
+    /// but this isn't enforced by the implementation. . See also: `StatisticsOperations` trait.
     /// # Example
     ///
     /// ```
@@ -711,7 +764,7 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
     /// Gets `self.data()` as complex array.
     fn complex_data(&self) -> &[Complex<T>];
     
-    /// Adds a scalar to the vector.
+    /// Adds a scalar to the vector. See also: `Offset` trait.
     /// # Example
     ///
     /// ```
@@ -727,7 +780,7 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
     /// ```
     fn complex_offset(self, offset: Complex<T>) -> VecResult<Self>;
     
-    /// Multiplies the vector with a scalar.
+    /// Multiplies the vector with a scalar. See also: `Scale` trait.
     /// # Example
     ///
     /// ```
@@ -764,7 +817,7 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
     /// ```
     fn multiply_complex_exponential(mut self, a: T, b: T) -> VecResult<Self>;
     
-    /// Gets the absolute value or magnitude of all vector elements.
+    /// Gets the absolute value, magnitude or norm of all vector elements.
     /// # Example
     ///
     /// ```
@@ -821,11 +874,11 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
     /// use basic_dsp::{ComplexTimeVector32, ComplexVectorOperations, DataVector};
     /// # fn main() { 
     /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-    /// let result = vector.complex_conj().expect("Ignoring error handling in examples");
+    /// let result = vector.conj().expect("Ignoring error handling in examples");
     /// assert_eq!([1.0, -2.0, 3.0, -4.0], result.data());
     /// # }
     /// ```
-    fn complex_conj(self) -> VecResult<Self>;
+    fn conj(self) -> VecResult<Self>;
     
     /// Gets all real elements.
     /// # Example
@@ -920,7 +973,7 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
     /// ```
     fn get_phase(&self, destination: &mut Self::RealPartner) -> VoidResult;
     
-    /// Calculates the dot product of self and factor. Self and factor remain unchanged.
+    /// Calculates the dot product of self and factor. Self and factor remain unchanged. See also: `DotProduct` trait.
     /// # Failures
     /// VecResult may report the following `ErrorReason` members:
     /// 
@@ -942,7 +995,7 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
     /// ```  
     fn complex_dot_product(&self, factor: &Self) -> ScalarResult<Complex<T>>;
     
-    /// Calculates the statistics of the data contained in the vector.
+    /// Calculates the statistics of the data contained in the vector. See also: `StatisticsOperations` trait.
     /// # Example
     ///
     /// ```
@@ -967,7 +1020,7 @@ pub trait ComplexVectorOperations<T> : DataVector<T>
     
     /// Calculates the statistics of the data contained in the vector as if the vector would
     /// have been split into `len` pieces. `self.len` should be devisable by `len` without a remainder,
-    /// but this isn't enforced by the implementation.
+    /// but this isn't enforced by the implementation. . See also: `StatisticsOperations` trait.
     /// # Example
     ///
     /// ```

@@ -7,8 +7,14 @@
 use strict;
 use warnings;
 
-open FACADE32, "<", "facade32.rs" or die $!;
-open FACADE64, ">", "facade64.rs.tmp" or die $!;
+use Cwd 'abs_path';
+use File::Basename;
+
+my $location = dirname(abs_path($0));
+print "$location\n";
+
+open FACADE32, "<", "$location/facade32.rs" or die $!;
+open FACADE64, ">", "$location/facade64.rs.tmp" or die $!;
 print FACADE64 "// Auto generated code, change facade32.rs and run facade64_create.pl\n";
 while (<FACADE32>) {
     my $line = $_;
@@ -25,8 +31,8 @@ while (<FACADE32>) {
 close FACADE32;
 close FACADE64;
 
-if (-f "facade64.rs") {
-    unlink "facade64.rs";
+if (-f "$location/facade64.rs") {
+    unlink "$location/facade64.rs";
 }
 
-rename "facade64.rs.tmp", "facade64.rs";
+rename "$location/facade64.rs.tmp", "$location/facade64.rs";

@@ -340,8 +340,8 @@ pub extern fn magnitude_squared32(vector: Box<DataVector32>) -> VectorResult<Dat
 }
 
 #[no_mangle]
-pub extern fn complex_conj32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
-    convert_vec!(vector.complex_conj())
+pub extern fn conj32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.conj())
 }
 
 #[no_mangle]

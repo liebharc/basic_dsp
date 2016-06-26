@@ -100,6 +100,8 @@ pub use vector_types::definitions::{
         RededicateVector,
         Scale,
         Offset,
+        DotProduct,
+        StatisticsOperations,
         PaddingOption
     };
 pub use vector_types::time_freq_impl::{
@@ -469,7 +471,7 @@ mod tests {
     {
         let mut a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
         let c = ComplexFreqVector32::from_interleaved(&mut a);
-        let r = c.complex_conj().unwrap();
+        let r = c.conj().unwrap();
         let expected =
             [1.0, -2.0, 3.0, -4.0, 5.0, -6.0, 7.0, -8.0, 9.0, -10.0];
         assert_eq!(r.data(), &expected);

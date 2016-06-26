@@ -75,14 +75,14 @@ macro_rules! define_correlation_impl {
                 
                 fn prepare_argument(self) -> VecResult<Self::FreqPartner> {
                     self.plain_fft()
-                    .and_then(|v|v.complex_conj())
+                    .and_then(|v|v.conj())
                 }
     
                 fn prepare_argument_padded(self) -> VecResult<Self::FreqPartner> {
                     let points = self.points();
                     self.zero_pad(2 * points - 1, PaddingOption::Surround)
                     .and_then(|v|v.plain_fft())
-                    .and_then(|v|v.complex_conj())
+                    .and_then(|v|v.conj())
                 }
                 
                 fn correlate(self, other: &Self::FreqPartner) -> VecResult<Self> {

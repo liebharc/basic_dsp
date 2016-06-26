@@ -7,6 +7,8 @@ use super::definitions::{
     Statistics,
     Scale,
     Offset,
+    DotProduct,
+    StatisticsOperations,
     GenericVectorOperations,
     RealVectorOperations};
 use super::GenericDataVector;    
@@ -192,6 +194,22 @@ macro_rules! add_real_impl {
             impl Offset<$data_type> for GenericDataVector<$data_type> {
                 fn offset(self, offset: $data_type) -> VecResult<Self> {
                     self.real_offset(offset)
+                }
+            }
+            
+            impl DotProduct<$data_type> for GenericDataVector<$data_type> {
+                fn dot_product(&self, factor: &Self) -> ScalarResult<$data_type> {
+                    self.real_dot_product(factor)
+                }
+            }
+            
+            impl StatisticsOperations<$data_type> for GenericDataVector<$data_type> {
+                fn statistics(&self) -> Statistics<$data_type> {
+                    self.real_statistics()
+                }
+                
+                fn statistics_splitted(&self, len: usize) -> Vec<Statistics<$data_type>> {
+                    self.real_statistics_splitted(len)
                 }
             }
         )*

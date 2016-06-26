@@ -67,6 +67,8 @@ pub use vector_types::
         RededicateVector,
         Scale,
         Offset,
+        DotProduct,
+        StatisticsOperations,
         Convolution,
         VectorConvolution,
         FrequencyMultiplication,

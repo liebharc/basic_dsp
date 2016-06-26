@@ -4,6 +4,7 @@ Changes:
 ## Version 0.3.0 (Breaking changes)
 Added a nicer interface for prepared operations/multi operations.
 
+- Breaking change: Renamed a lot of operations so that their names match (more closely) with the `num` crate. 
 - Breaking change: RededicateVector trait now defines exactly one conversion. Vectors implement the trait several times so the same functionality is still available.
 - Breaking change: perform_operations and related types appear on the API differently now.
 

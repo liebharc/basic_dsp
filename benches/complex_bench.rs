@@ -37,7 +37,7 @@ mod bench {
     {
         let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Small);
         b.iter(|| {
-            vector.execute_res(|v|  { v.complex_conj() } )
+            vector.execute_res(|v|  { v.conj() } )
         });
     }
     
