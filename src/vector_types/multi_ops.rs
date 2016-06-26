@@ -334,6 +334,13 @@ macro_rules! add_multi_ops_impl {
                             {
                                 panic!("perform_operations requires right now that the array length is dividable by {}", $reg::len())
                             }
+                            // TODO We can possibly remove this restriction by copying
+                            // the last elements into a $eg
+                            // and then we can call perform_operation on it.
+                            // That's of course not optimal since it involves a copying operation
+                            // and in the worst case we don't care for $reg::len() -1 of the results
+                            // however it makes the implementation easy and the performance
+                            // loss seems to be tolerable
                             data_length - scalar_length
                         };
                         
@@ -355,89 +362,72 @@ macro_rules! add_multi_ops_impl {
                     while i < array.len()
                     { 
                         let mut vector = $reg::load(array, i);
-                        let mut j = 0;
-                        while j < operations.len()
+                        for operation in operations
                         {
-                            let operation = &operations[j];
-                            match *operation
-                            {
-                                Operation::AddReal(_, value) =>
-                                {
-                                    vector = vector.add_real(value);
-                                }
-                                Operation::AddComplex(_, value) =>
-                                {
-                                    vector = vector.add_complex(value);
-                                }
-                                /*Operation32::AddVector(value) =>
-                                {
-                                    // TODO
-                                }*/
-                                Operation::MultiplyReal(_, value) =>
-                                {
-                                    vector = vector.scale_real(value);
-                                }
-                                Operation::MultiplyComplex(_, value) =>
-                                {
-                                    vector = vector.scale_complex(value);
-                                }
-                                /*Operation32::MultiplyVector(value) =>
-                                {
-                                    // TODO
-                                }*/
-                                Operation::AbsReal(_) =>
-                                {
-                                    vector.store(array, i);
-                                    {
-                                        let mut content = &mut array[i .. i + $reg::len()];
-                                        let mut k = 0;
-                                        while k < $reg::len()
-                                        {
-                                            content[k] = content[k].abs();
-                                            k = k + 1;
-                                        }
-                                    }
-                                    vector = $reg::load(array, i);
-                                }
-                                Operation::AbsComplex(_) =>
-                                {
-                                    vector = vector.complex_abs();
-                                }
-                                Operation::Sqrt(_) =>
-                                {
-                                    vector.store(array, i);
-                                    {
-                                        let mut content = &mut array[i .. i + $reg::len()];
-                                        let mut k = 0;
-                                        while k < $reg::len()
-                                        {
-                                            content[k] = content[k].sqrt();
-                                            k = k + 1;
-                                        }
-                                    }
-                                    vector = $reg::load(array, i);
-                                }
-                                Operation::Log(_, value) =>
-                                {
-                                    vector.store(array, i);
-                                    {
-                                        let mut content = &mut array[i .. i + $reg::len()];
-                                        let mut k = 0;
-                                        while k < $reg::len()
-                                        {
-                                            content[k] = content[k].log(value);
-                                            k = k + 1;
-                                        }
-                                    }
-                                    vector = $reg::load(array, i);
-                                }
-                            }
-                            j += 1;
+                            vector = Self::perform_operation(*operation, vector);
                         }
                     
                         vector.store(array, i);    
                         i += $reg::len();
                     }
+                }
+                
+                fn perform_operation(
+                    operation: Operation<$data_type>,
+                    vector: $reg)-> $reg
+                {
+                    match operation
+                    {
+                        Operation::AddReal(_, value) =>
+                        {
+                            vector.add_real(value)
+                        }
+                        Operation::AddComplex(_, value) =>
+                        {
+                            vector.add_complex(value)
+                        }
+                        /*Operation32::AddVector(value) =>
+                        {
+                            // TODO
+                        }*/
+                        Operation::MultiplyReal(_, value) =>
+                        {
+                            vector.scale_real(value)
+                        }
+                        Operation::MultiplyComplex(_, value) =>
+                        {
+                            vector.scale_complex(value)
+                        }
+                        /*Operation32::MultiplyVector(value) =>
+                        {
+                            // TODO
+                        }*/
+                        Operation::AbsReal(_) =>
+                        {
+                            Self::iter_over_vector(vector, |x|x.abs())
+                        }
+                        Operation::AbsComplex(_) =>
+                        {
+                            vector.complex_abs()
+                        }
+                        Operation::Sqrt(_) =>
+                        {
+                             vector.sqrt()
+                        }
+                        Operation::Log(_, value) =>
+                        {
+                            Self::iter_over_vector(vector, |x|x.log(value))
+                        }
+                    }
+                }
+                
+                fn iter_over_vector<F>(vector: $reg, op: F) -> $reg
+                    where F: Fn($data_type) -> $data_type {
+                    let mut array = vector.to_array();
+                    for n in &mut array {
+                        *n = op(*n);
+                    }
+                    $reg::from_array(array)
                 }
             }
         )*

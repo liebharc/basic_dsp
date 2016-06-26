@@ -3,6 +3,9 @@ use num::complex::Complex;
 pub trait Simd<T> : Sized
     where T: Sized + Sync + Send
 {
+    type Array;
+    fn to_array(self) -> Self::Array;
+    fn from_array(array: Self::Array) -> Self;
     fn array_to_regs(array: &[T]) -> &[Self];
     fn array_to_regs_mut(array: &mut [T]) -> &mut [Self];
     fn len() -> usize;

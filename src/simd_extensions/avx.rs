@@ -9,6 +9,16 @@ pub type Reg64 = f64x4;
 
 impl Simd<f32> for f32x8
 {
+    type Array = [f32; 8];
+
+    fn to_array(self) -> Self::Array {
+        unsafe { mem::transmute(self) }
+    }
+    
+    fn from_array(array: Self::Array) -> Self {
+        unsafe { mem::transmute(array) }
+    }
+
     fn array_to_regs(array: &[f32]) -> &[Self] {
         unsafe { 
             let len = array.len();
@@ -169,6 +179,16 @@ impl Simd<f32> for f32x8
 
 impl Simd<f64> for f64x4
 {
+    type Array = [f64; 4];
+
+    fn to_array(self) -> Self::Array {
+        unsafe { mem::transmute(self) }
+    }
+    
+    fn from_array(array: Self::Array) -> Self {
+        unsafe { mem::transmute(array) }
+    }
+
     fn array_to_regs(array: &[f64]) -> &[Self] {
         unsafe { 
             let len = array.len();
