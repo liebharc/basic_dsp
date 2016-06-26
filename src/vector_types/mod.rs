@@ -93,15 +93,15 @@ pub use vector_types::definitions::{
         VoidResult,
         ScalarResult,
         ErrorReason,
-        GenericVectorOperations,
-        RealVectorOperations,
-        ComplexVectorOperations,    
+        GenericVectorOps,
+        RealVectorOps,
+        ComplexVectorOps,    
         Statistics,
         RededicateVector,
-        Scale,
-        Offset,
-        DotProduct,
-        StatisticsOperations,
+        ScaleOps,
+        OffsetOps,
+        DotProductOps,
+        StatisticsOps,
         PaddingOption
     };
 pub use vector_types::time_freq_impl::{

@@ -8,9 +8,9 @@ use conv_types::{
 use super::{
     GenericDataVector,
     DataVectorDomain,
-    RealVectorOperations,
-    ComplexVectorOperations,
-    GenericVectorOperations,
+    RealVectorOps,
+    ComplexVectorOps,
+    GenericVectorOps,
     RealTimeVector,
     RealFreqVector,
     TimeDomainOperations,

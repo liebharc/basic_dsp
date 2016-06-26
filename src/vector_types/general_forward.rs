@@ -3,7 +3,7 @@ macro_rules! define_generic_operations_forward {
      =>
      {
          $(
-            impl GenericVectorOperations<$data_type> for $name<$data_type>
+            impl GenericVectorOps<$data_type> for $name<$data_type>
             {
                 fn add_vector(self, summand: &Self) -> VecResult<Self>
                 {

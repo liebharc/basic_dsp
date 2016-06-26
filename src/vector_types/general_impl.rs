@@ -2,7 +2,7 @@ use multicore_support::{Chunk, Complexity};
 use super::definitions::{
     DataVector,
     DataVectorDomain,
-    GenericVectorOperations,
+    GenericVectorOps,
     VecResult,
     VoidResult,
     ErrorReason,
@@ -480,7 +480,7 @@ macro_rules! add_general_impl {
                 }
             }
             
-            impl GenericVectorOperations<$data_type> for GenericDataVector<$data_type> {
+            impl GenericVectorOps<$data_type> for GenericDataVector<$data_type> {
                 impl_binary_vector_operation!($data_type, $reg, fn add_vector, summand, add, add);
                 impl_binary_smaller_vector_operation!($data_type, $reg, fn add_smaller_vector, summand, add, add);
                 impl_binary_vector_operation!($data_type, $reg, fn subtract_vector, summand, sub, sub);

@@ -3,8 +3,8 @@ use super::definitions::{
     VecResult,
     DataVectorDomain,
     ErrorReason,
-    ComplexVectorOperations,
-    RealVectorOperations};
+    ComplexVectorOps,
+    RealVectorOps};
 use super::{
     GenericDataVector,
     RealTimeVector,
@@ -544,7 +544,7 @@ mod tests {
         ComplexTimeVector32,
         ComplexFreqVector32,
         RealTimeVector32,
-        ComplexVectorOperations,
+        ComplexVectorOps,
         DataVector};
     use num::complex::Complex32;
     use window_functions::*;

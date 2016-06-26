@@ -5,12 +5,12 @@ use super::definitions::{
     ErrorReason,
     ScalarResult,
     Statistics,
-    Scale,
-    Offset,
-    DotProduct,
-    StatisticsOperations,
-    GenericVectorOperations,
-    RealVectorOperations};
+    ScaleOps,
+    OffsetOps,
+    DotProductOps,
+    StatisticsOps,
+    GenericVectorOps,
+    RealVectorOps};
 use super::GenericDataVector;    
 use super::stats_impl::Stats;
 use simd_extensions::{Simd, Reg32, Reg64};
@@ -20,7 +20,7 @@ macro_rules! add_real_impl {
      =>
      {     
         $(
-            impl RealVectorOperations<$data_type> for GenericDataVector<$data_type>
+            impl RealVectorOps<$data_type> for GenericDataVector<$data_type>
             {
                 type ComplexPartner = Self;
                 
@@ -185,25 +185,25 @@ macro_rules! add_real_impl {
                 }
             }
             
-            impl Scale<$data_type> for GenericDataVector<$data_type> {
+            impl ScaleOps<$data_type> for GenericDataVector<$data_type> {
                 fn scale(self, offset: $data_type) -> VecResult<Self> {
                     self.real_scale(offset)
                 }
             }
             
-            impl Offset<$data_type> for GenericDataVector<$data_type> {
+            impl OffsetOps<$data_type> for GenericDataVector<$data_type> {
                 fn offset(self, offset: $data_type) -> VecResult<Self> {
                     self.real_offset(offset)
                 }
             }
             
-            impl DotProduct<$data_type> for GenericDataVector<$data_type> {
+            impl DotProductOps<$data_type> for GenericDataVector<$data_type> {
                 fn dot_product(&self, factor: &Self) -> ScalarResult<$data_type> {
                     self.real_dot_product(factor)
                 }
             }
             
-            impl StatisticsOperations<$data_type> for GenericDataVector<$data_type> {
+            impl StatisticsOps<$data_type> for GenericDataVector<$data_type> {
                 fn statistics(&self) -> Statistics<$data_type> {
                     self.real_statistics()
                 }

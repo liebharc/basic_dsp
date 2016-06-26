@@ -3,7 +3,7 @@ macro_rules! define_complex_operations_forward {
      =>
      { 
         $(
-            impl ComplexVectorOperations<$data_type> for $name<$data_type>
+            impl ComplexVectorOps<$data_type> for $name<$data_type>
             {
                 type RealPartner = $real_partner<$data_type>;
                 
@@ -131,25 +131,25 @@ macro_rules! define_complex_operations_forward {
                 }
             }
             
-            impl Scale<Complex<$data_type>> for $name<$data_type> {
+            impl ScaleOps<Complex<$data_type>> for $name<$data_type> {
                 fn scale(self, offset: Complex<$data_type>) -> VecResult<Self> {
                     self.complex_scale(offset)
                 }
             }
             
-            impl Offset<Complex<$data_type>> for $name<$data_type> {
+            impl OffsetOps<Complex<$data_type>> for $name<$data_type> {
                 fn offset(self, offset: Complex<$data_type>) -> VecResult<Self> {
                     self.complex_offset(offset)
                 }
             }
             
-            impl DotProduct<Complex<$data_type>> for $name<$data_type> {
+            impl DotProductOps<Complex<$data_type>> for $name<$data_type> {
                 fn dot_product(&self, factor: &Self) -> ScalarResult<Complex<$data_type>> {
                     self.complex_dot_product(factor)
                 }
             }
             
-            impl StatisticsOperations<Complex<$data_type>> for $name<$data_type> {
+            impl StatisticsOps<Complex<$data_type>> for $name<$data_type> {
                 fn statistics(&self) -> Statistics<Complex<$data_type>> {
                     self.complex_statistics()
                 }

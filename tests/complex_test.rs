@@ -8,8 +8,8 @@ mod slow_test {
     use basic_dsp::{
         DataVector,
         RealTimeVector32,
-        GenericVectorOperations,
-        ComplexVectorOperations,
+        GenericVectorOps,
+        ComplexVectorOps,
         ComplexTimeVector32};
     use num::complex::Complex32;
     use tools::*;

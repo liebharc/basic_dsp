@@ -17,8 +17,8 @@ mod slow_test {
         SymmetricTimeDomainOperations,
         FrequencyDomainOperations,
         SymmetricFrequencyDomainOperations,
-        GenericVectorOperations,
-        RealVectorOperations,
+        GenericVectorOps,
+        RealVectorOps,
         RededicateVector,
         Operation};
     use basic_dsp::combined_ops::Argument;

@@ -12,8 +12,8 @@ mod bench {
     use basic_dsp::{
         DataVector,
         DataVectorDomain,
-        GenericVectorOperations,
-        RealVectorOperations,
+        GenericVectorOps,
+        RealVectorOps,
         DataVector32,
         RealTimeVector32,
         RealTimeVector64,

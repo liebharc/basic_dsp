@@ -6,11 +6,11 @@ use super::definitions::{
     ErrorReason,
     ScalarResult,
     Statistics,
-    Scale,
-    Offset,
-    DotProduct,
-    StatisticsOperations,
-    ComplexVectorOperations};
+    ScaleOps,
+    OffsetOps,
+    DotProductOps,
+    StatisticsOps,
+    ComplexVectorOps};
 use super::GenericDataVector;
 use super::stats_impl::Stats;
 use simd_extensions::{Simd,Reg32,Reg64};
@@ -21,7 +21,7 @@ macro_rules! add_complex_impl {
      =>
      {     
         $(
-            impl ComplexVectorOperations<$data_type> for GenericDataVector<$data_type>
+            impl ComplexVectorOps<$data_type> for GenericDataVector<$data_type>
             {
                 type RealPartner = GenericDataVector<$data_type>;
                 
@@ -409,25 +409,25 @@ macro_rules! add_complex_impl {
                 }
             }
             
-            impl Scale<Complex<$data_type>> for GenericDataVector<$data_type> {
+            impl ScaleOps<Complex<$data_type>> for GenericDataVector<$data_type> {
                 fn scale(self, offset: Complex<$data_type>) -> VecResult<Self> {
                     self.complex_scale(offset)
                 }
             }
             
-            impl Offset<Complex<$data_type>> for GenericDataVector<$data_type> {
+            impl OffsetOps<Complex<$data_type>> for GenericDataVector<$data_type> {
                 fn offset(self, offset: Complex<$data_type>) -> VecResult<Self> {
                     self.complex_offset(offset)
                 }
             }
             
-            impl DotProduct<Complex<$data_type>> for GenericDataVector<$data_type> {
+            impl DotProductOps<Complex<$data_type>> for GenericDataVector<$data_type> {
                 fn dot_product(&self, factor: &Self) -> ScalarResult<Complex<$data_type>> {
                     self.complex_dot_product(factor)
                 }
             }
             
-            impl StatisticsOperations<Complex<$data_type>> for GenericDataVector<$data_type> {
+            impl StatisticsOps<Complex<$data_type>> for GenericDataVector<$data_type> {
                 fn statistics(&self) -> Statistics<Complex<$data_type>> {
                     self.complex_statistics()
                 }

@@ -7,9 +7,9 @@ use super::definitions::{
 use RealNumber;
 use super::{
     GenericDataVector,
-    RealVectorOperations,
-    GenericVectorOperations,
-    ComplexVectorOperations,
+    RealVectorOps,
+    GenericVectorOps,
+    ComplexVectorOps,
     TimeDomainOperations,
     FrequencyDomainOperations,
     ComplexTimeVector,

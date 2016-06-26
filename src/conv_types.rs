@@ -16,8 +16,8 @@ use vector_types::{
 };
 use vector_types::definitions::{
     DataVector,
-    RealVectorOperations,
-    ComplexVectorOperations
+    RealVectorOps,
+    ComplexVectorOps
 };
 
 use vector_types::time_freq_impl::{
