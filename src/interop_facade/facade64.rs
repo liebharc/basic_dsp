@@ -207,28 +207,28 @@ pub extern fn root64(vector: Box<DataVector64>, value: f64) -> VectorResult<Data
 }
 
 #[no_mangle]
-pub extern fn power64(vector: Box<DataVector64>, value: f64) -> VectorResult<DataVector64> {
-    convert_vec!(vector.power(value))
+pub extern fn powf64(vector: Box<DataVector64>, value: f64) -> VectorResult<DataVector64> {
+    convert_vec!(vector.powf(value))
 }
 
 #[no_mangle]
-pub extern fn logn64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
-    convert_vec!(vector.logn())
+pub extern fn ln64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+    convert_vec!(vector.ln())
 }
 
 #[no_mangle]
-pub extern fn expn64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
-    convert_vec!(vector.expn())
+pub extern fn exp64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+    convert_vec!(vector.exp())
 }
 
 #[no_mangle]
-pub extern fn log_base64(vector: Box<DataVector64>, value: f64) -> VectorResult<DataVector64> {
-    convert_vec!(vector.log_base(value))
+pub extern fn log64(vector: Box<DataVector64>, value: f64) -> VectorResult<DataVector64> {
+    convert_vec!(vector.log(value))
 }
 
 #[no_mangle]
-pub extern fn exp_base64(vector: Box<DataVector64>, value: f64) -> VectorResult<DataVector64> {
-    convert_vec!(vector.exp_base(value))
+pub extern fn expf64(vector: Box<DataVector64>, value: f64) -> VectorResult<DataVector64> {
+    convert_vec!(vector.expf(value))
 }
 
 #[no_mangle]

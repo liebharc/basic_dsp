@@ -679,11 +679,11 @@ macro_rules! add_general_impl {
                 impl_real_complex_dispatch!(fn sqrt, real_sqrt, complex_sqrt);
                 impl_real_complex_dispatch!(fn square, real_square, complex_square);
                 impl_real_complex_arg_dispatch!(fn root, $data_type, degree, real_root, complex_root);
-                impl_real_complex_arg_dispatch!(fn power, $data_type, exponent, real_power, complex_power);
-                impl_real_complex_dispatch!(fn logn, real_logn, complex_logn);
-                impl_real_complex_dispatch!(fn expn, real_expn, complex_expn);
-                impl_real_complex_arg_dispatch!(fn log_base, $data_type, base, real_log_base, complex_log_base);
-                impl_real_complex_arg_dispatch!(fn exp_base, $data_type, base, real_exp_base, complex_exp_base);
+                impl_real_complex_arg_dispatch!(fn powf, $data_type, exponent, real_power, complex_power);
+                impl_real_complex_dispatch!(fn ln, real_logn, complex_logn);
+                impl_real_complex_dispatch!(fn exp, real_expn, complex_expn);
+                impl_real_complex_arg_dispatch!(fn log, $data_type, base, real_log_base, complex_log_base);
+                impl_real_complex_arg_dispatch!(fn expf, $data_type, base, real_exp_base, complex_exp_base);
                 impl_real_complex_dispatch!(fn sin, real_sin, complex_sin);
                 impl_real_complex_dispatch!(fn cos, real_cos, complex_cos);
                 impl_real_complex_dispatch!(fn tan, real_tan, complex_tan);

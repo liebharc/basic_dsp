@@ -89,24 +89,24 @@ macro_rules! define_generic_operations_forward {
                     Self::from_genres(self.to_gen().root(degree)) 
                 }
                 
-                fn power(self, exponent: $data_type) -> VecResult<Self>
+                fn powf(self, exponent: $data_type) -> VecResult<Self>
                 {
-                    Self::from_genres(self.to_gen().power(exponent)) 
+                    Self::from_genres(self.to_gen().powf(exponent)) 
                 }
                 
-                fn logn(self) -> VecResult<Self>
+                fn ln(self) -> VecResult<Self>
                 {
-                    Self::from_genres(self.to_gen().logn()) 
+                    Self::from_genres(self.to_gen().ln()) 
                 }
                 
-                fn expn(self) -> VecResult<Self>
+                fn exp(self) -> VecResult<Self>
                 {
-                    Self::from_genres(self.to_gen().expn()) 
+                    Self::from_genres(self.to_gen().exp()) 
                 }
             
-                fn log_base(self, base: $data_type) -> VecResult<Self>
+                fn log(self, base: $data_type) -> VecResult<Self>
                 {
-                    Self::from_genres(self.to_gen().log_base(base)) 
+                    Self::from_genres(self.to_gen().log(base)) 
                 }
                 
                 fn sin(self) -> VecResult<Self>
@@ -164,9 +164,9 @@ macro_rules! define_generic_operations_forward {
                     Self::from_genres(self.to_gen().swap_halves()) 
                 }
                 
-                fn exp_base(self, base: $data_type) -> VecResult<Self>
+                fn expf(self, base: $data_type) -> VecResult<Self>
                 {
-                    Self::from_genres(self.to_gen().exp_base(base)) 
+                    Self::from_genres(self.to_gen().expf(base)) 
                 }
                 
                 fn override_data(self, data: &[$data_type]) -> VecResult<Self> {

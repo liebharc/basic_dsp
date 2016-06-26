@@ -206,28 +206,28 @@ pub extern fn root32(vector: Box<DataVector32>, value: f32) -> VectorResult<Data
 }
 
 #[no_mangle]
-pub extern fn power32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
-    convert_vec!(vector.power(value))
+pub extern fn powf32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.powf(value))
 }
 
 #[no_mangle]
-pub extern fn logn32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
-    convert_vec!(vector.logn())
+pub extern fn ln32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.ln())
 }
 
 #[no_mangle]
-pub extern fn expn32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
-    convert_vec!(vector.expn())
+pub extern fn exp32(vector: Box<DataVector32>) -> VectorResult<DataVector32> {
+    convert_vec!(vector.exp())
 }
 
 #[no_mangle]
-pub extern fn log_base32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
-    convert_vec!(vector.log_base(value))
+pub extern fn log32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.log(value))
 }
 
 #[no_mangle]
-pub extern fn exp_base32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
-    convert_vec!(vector.exp_base(value))
+pub extern fn expf32(vector: Box<DataVector32>, value: f32) -> VectorResult<DataVector32> {
+    convert_vec!(vector.expf(value))
 }
 
 #[no_mangle]

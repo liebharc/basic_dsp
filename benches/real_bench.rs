@@ -107,7 +107,7 @@ mod bench {
     {
         let mut vector = VectorBox::<DataVector32>::new(Size::Small, true);
         b.iter(|| {
-            vector.execute_res(|v|  { v.log_base(10.0).and_then(|v| v.real_scale(10.0)) } )
+            vector.execute_res(|v|  { v.log(10.0).and_then(|v| v.real_scale(10.0)) } )
         });
     }
     
@@ -188,7 +188,7 @@ mod bench {
     {
         let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
         b.iter(|| {
-            vector.execute_res(|v|  { v.power(3.0) } )
+            vector.execute_res(|v|  { v.powf(3.0) } )
         });
     }
     
@@ -197,7 +197,7 @@ mod bench {
     {
         let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
         b.iter(|| {
-            vector.execute_res(|v|  { v.logn() } )
+            vector.execute_res(|v|  { v.ln() } )
         });
     }
     
@@ -215,7 +215,7 @@ mod bench {
     {
         let mut vector = VectorBox::<RealTimeVector32>::new(Size::Medium);
         b.iter(|| {
-            vector.execute_res(|v|  { v.logn() } )
+            vector.execute_res(|v|  { v.ln() } )
         });
     }
     
@@ -224,7 +224,7 @@ mod bench {
     {
         let mut vector = VectorBox::<RealTimeVector32>::new(Size::Large);
         b.iter(|| {
-            vector.execute_res(|v|  { v.logn() } )
+            vector.execute_res(|v|  { v.ln() } )
         });
     }
     
@@ -233,7 +233,7 @@ mod bench {
     {
         let mut vector = VectorBox::<RealTimeVector32>::new(Size::Small);
         b.iter(|| {
-            vector.execute_res(|v|  { v.expn() } )
+            vector.execute_res(|v|  { v.exp() } )
         });
     }
     

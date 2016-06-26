@@ -68,7 +68,7 @@ mod slow_test {
             let result = vector.clone().perform_operations(
                         &[Operation::Log(Argument::A1, 10.0),
                         Operation::MultiplyReal(Argument::A2, 10.0)]);
-            let expected = vector.log_base(10.0).and_then(|v| v.real_scale(10.0)).unwrap();
+            let expected = vector.log(10.0).and_then(|v| v.real_scale(10.0)).unwrap();
             assert_vector_eq(&expected.data(), &result.data());
         });
     }
@@ -355,7 +355,7 @@ mod slow_test {
             let a = create_data(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
             let vector = RealTimeVector32::from_array_with_delta(&a, delta);
-            let result = vector.expn().unwrap().logn().unwrap();
+            let result = vector.exp().unwrap().ln().unwrap();
             assert_vector_eq(&a, &result.data());
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);
@@ -370,7 +370,7 @@ mod slow_test {
             let base = base[0];
             let delta = create_delta(3561159, iteration);
             let vector = RealTimeVector32::from_array_with_delta(&a, delta);
-            let result = vector.exp_base(base).unwrap().log_base(base).unwrap();
+            let result = vector.expf(base).unwrap().log(base).unwrap();
             assert_vector_eq(&a, &result.data());
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);

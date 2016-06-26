@@ -437,26 +437,26 @@ pub trait GenericVectorOps<T>: DataVector<T>
     /// ```
     fn root(self, degree: T) -> VecResult<Self>;
     
-    /// Raises every vector element to the given power.
+    /// Raises every vector element to a floating point power.
     ///
     /// # Example
     ///
     /// ```
     /// use basic_dsp::{RealTimeVector32, GenericVectorOps, DataVector};
     /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
-    /// let result = vector.power(3.0).expect("Ignoring error handling in examples");
+    /// let result = vector.powf(3.0).expect("Ignoring error handling in examples");
     /// assert_eq!([1.0, 8.0, 27.0], result.data());
     /// ```
-    fn power(self, exponent: T) -> VecResult<Self>;
+    fn powf(self, exponent: T) -> VecResult<Self>;
     
-    /// Calculates the natural logarithm to the base e for every vector element.
+    /// Computes the principal value of natural logarithm of every element in the vector.
     ///
     /// # Example
     ///
     /// ```
     /// use basic_dsp::{RealTimeVector32, GenericVectorOps, DataVector};
     /// let vector = RealTimeVector32::from_array(&[2.718281828459045    , 7.389056, 20.085537]);
-    /// let result = vector.logn().expect("Ignoring error handling in examples");
+    /// let result = vector.ln().expect("Ignoring error handling in examples");
     /// let actual = result.data();
     /// let expected = &[1.0, 2.0, 3.0];
     /// assert_eq!(actual.len(), expected.len());
@@ -464,19 +464,19 @@ pub trait GenericVectorOps<T>: DataVector<T>
     ///        assert!((actual[i] - expected[i]).abs() < 1e-4);
     /// }
     /// ```
-    fn logn(self) -> VecResult<Self>;
+    fn ln(self) -> VecResult<Self>;
     
-    /// Calculates the natural exponential to the base e for every vector element.
+    /// Calculates the natural exponential for every vector element.
     ///
     /// # Example
     ///
     /// ```
     /// use basic_dsp::{RealTimeVector32, GenericVectorOps, DataVector};
     /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
-    /// let result = vector.expn().expect("Ignoring error handling in examples");
+    /// let result = vector.exp().expect("Ignoring error handling in examples");
     /// assert_eq!([2.71828182846, 7.389056, 20.085537], result.data());
     /// ```
-    fn expn(self) -> VecResult<Self>;
+    fn exp(self) -> VecResult<Self>;
     
     /// Calculates the logarithm to the given base for every vector element.
     ///
@@ -485,10 +485,10 @@ pub trait GenericVectorOps<T>: DataVector<T>
     /// ```
     /// use basic_dsp::{RealTimeVector32, GenericVectorOps, DataVector};
     /// let vector = RealTimeVector32::from_array(&[10.0, 100.0, 1000.0]);
-    /// let result = vector.log_base(10.0).expect("Ignoring error handling in examples");
+    /// let result = vector.log(10.0).expect("Ignoring error handling in examples");
     /// assert_eq!([1.0, 2.0, 3.0], result.data());
     /// ```
-    fn log_base(self, base: T) -> VecResult<Self>;
+    fn log(self, base: T) -> VecResult<Self>;
     
     /// Calculates the exponential to the given base for every vector element.
     ///
@@ -497,10 +497,10 @@ pub trait GenericVectorOps<T>: DataVector<T>
     /// ```
     /// use basic_dsp::{RealTimeVector32, GenericVectorOps, DataVector};
     /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
-    /// let result = vector.exp_base(10.0).expect("Ignoring error handling in examples");
+    /// let result = vector.expf(10.0).expect("Ignoring error handling in examples");
     /// assert_eq!([10.0, 100.0, 1000.0], result.data());
     /// ```
-    fn exp_base(self, base: T) -> VecResult<Self>;
+    fn expf(self, base: T) -> VecResult<Self>;
     
     /// Calculates the sine of each element in radians.
     ///
