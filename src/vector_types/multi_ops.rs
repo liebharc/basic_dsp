@@ -269,18 +269,27 @@ macro_rules! add_multi_ops_impl {
                     let a: GenericDataVector<$data_type> = a.rededicate();
                     let b: GenericDataVector<$data_type> = b.rededicate();
                     
+                    let mut vec = Vec::new();
+                    vec.push(a);
+                    vec.push(b);
+                    
                     // at this point we would execute all ops and cast the result to the right types
-                    let a = a.perform_operations(&self.ops);
+                    let result = GenericDataVector::<$data_type>::perform_operations(vec, &self.ops);
                     
-                    if a.is_err() {
-                        let err = a.unwrap_err();
+                    if result.is_err() {
+                        let err = result.unwrap_err();
+                        let reason = err.0;
+                        let mut vec = err.1;
+                        let b = vec.pop().unwrap();
+                        let a = vec.pop().unwrap();
                         return Err((
-                            err.0, 
-                            TO1::rededicate_from(err.1), 
-                            TO2::rededicate_from(b)));
+                            reason, 
+                            TO1::rededicate_from(b),
+                            TO2::rededicate_from(a)));
                     }
-                    
-                    let a = a.unwrap();
+                    let mut vec = result.unwrap();
+                    let b = vec.pop().unwrap();
+                    let a = vec.pop().unwrap();
                     
                     // Convert back
                     if self.swap {
@@ -346,44 +355,20 @@ macro_rules! add_multi_ops_impl {
             }
             
             impl GenericDataVector<$data_type> {
-                /// Perform a set of operations on the given vector. 
-                /// Warning: Highly unstable and not even fully implemented right now.
-                ///
-                /// With this approach we change how we operate on vectors. If you perform
-                /// `M` operations on a vector with the length `N` you iterate wit hall other methods like this:
-                ///
-                /// ```
-                /// // pseudocode:
-                /// // for m in M:
-                /// //  for n in N:
-                /// //    execute m on n
-                /// ```
-                ///
-                /// with this method the pattern is changed slighly:
-                ///
-                /// ```
-                /// // pseudocode:
-                /// // for n in N:
-                /// //  for m in M:
-                /// //    execute m on n
-                /// ```
-                ///
-                /// Both variants have the same complexity however the second one is benificial since we
-                /// have increased locality this way. This should help us by making better use of registers and 
-                /// CPU caches.
-                pub fn perform_operations(mut self, operations: &[Operation<$data_type>])
-                    -> VecResult<Self>
+                fn perform_operations(vectors: Vec<Self>, operations: &[Operation<$data_type>])
+                    -> VecResult<Vec<Self>>
                 {
-                    let errors = Self::verify_ops(&[&self], operations);
+                    let errors = Self::verify_ops(&vectors, operations);
                     if errors.is_some() {
-                        return Err((errors.unwrap(), self));
+                        return Err((errors.unwrap(), vectors));
                     }
                 
                     if operations.len() == 0
                     {
-                        return Ok(GenericDataVector { data: self.data, .. self });
+                        return Ok(vectors);
                     }
-                    
+                    panic!("Panic")
+                    /*
                     let data_length = self.len();
                     let alloc_len = self.allocated_len();
                     let rounded_len = round_len(data_length);
@@ -416,7 +401,7 @@ macro_rules! add_multi_ops_impl {
                             operations, 
                             Self::perform_operations_par);
                     }
-                    Ok (GenericDataVector { data: self.data, .. self })
+                    Ok (GenericDataVector { data: self.data, .. self })*/
                 }
                 
                 fn perform_operations_par(array: &mut [$data_type], operations: &[Operation<$data_type>])
@@ -497,7 +482,7 @@ macro_rules! add_multi_ops_impl {
                     $reg::from_array(array)
                 }
                 
-                fn verify_ops(vectors: &[&Self], operations: &[Operation<$data_type>]) -> Option<ErrorReason> {
+                fn verify_ops(vectors: &[Self], operations: &[Operation<$data_type>]) -> Option<ErrorReason> {
                     let mut complex: Vec<bool> = vectors.iter().map(|v|v.is_complex()).collect();
                     for op in operations {
                         let arg = Self::get_argument(*op);
@@ -745,7 +730,7 @@ mod tests {
         let b = DataVector32::from_array(false, DataVectorDomain::Time, &array);
         
         let ops = multi_ops2(a, b);
-        let ops = ops.add_ops(|a, b| (a.magnitude(), b));
+        let ops = ops.add_ops(|a, b| (b.magnitude(), a));
         let res = ops.get();
         assert!(res.is_err());
     }
