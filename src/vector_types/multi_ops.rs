@@ -33,13 +33,21 @@ pub trait Identifier<T> : Sized
     fn get_arg(&self) -> Argument;
     fn get_ops(self) -> Vec<(u64, Operation<T>)>;
     fn new(arg: Argument) -> Self;
+    fn new_ops(ops: Vec<(u64, Operation<T>)>, arg: Argument) -> Self;
 }
 
-trait ComplexIdentifier<T> : Identifier<T>
+pub trait ComplexIdentifier<T> : Identifier<T>
     where T: RealNumber 
 {
     type RealPartner;
     fn magnitude(self) -> Self::RealPartner;
+}
+
+pub trait RealIdentifier<T> : Identifier<T>
+    where T: RealNumber 
+{
+    type ComplexPartner;
+    fn to_complex(self) -> Self::ComplexPartner;
 }
 
 macro_rules! create_identfier {
@@ -66,6 +74,28 @@ macro_rules! create_identfier {
                 fn get_arg(&self) -> Argument { self.arg }
                 fn get_ops(self) -> Vec<(u64, Operation<T>)> { self.ops }
                 fn new(arg: Argument) -> Self { $name { ops: Vec::new(), arg: arg } }
+                fn new_ops(ops: Vec<(u64, Operation<T>)>, arg: Argument) -> Self { $name { ops: ops, arg: arg } }
+            }
+            
+            impl<T> $name<T> 
+                where T: RealNumber {
+                fn add_op<R>(self, op: Operation<T>) -> R 
+                    where R: Identifier<T> {
+                    let mut ops = self.ops;
+                    // TODO: Rethink if this unsafe is sound.
+                    // Quick thinking was that the actual value in the sequence
+                    // doesn't matter as long as repeated calls by the same thread
+                    // produce an increasing value (where the distance between two numbers
+                    // never matters). Even with race conditions between multiple threads
+                    // this should be okay (counter overflows - while unlikely - need to be 
+                    // handled during sorting).
+                    let seq = unsafe {
+                        OPERATION_SEQ_COUNTER += 1;
+                        OPERATION_SEQ_COUNTER
+                    };
+                    ops.push((seq, op));
+                    R::new_ops(ops, self.arg)
+                }
             }
         )*
      }
@@ -153,8 +183,37 @@ pub enum Operation<T>
     AbsReal(Argument),
     AbsComplex(Argument),
     Sqrt(Argument),
-    Log(Argument, T)
+    Log(Argument, T),
+    ToComplex(Argument)
 }
+
+macro_rules! add_complex_multi_ops_impl {
+    ($data_type:ident, $name: ident, $partner: ident)
+     =>
+     {    
+        impl ComplexIdentifier<$data_type> for $name<$data_type> {
+            type RealPartner = $partner<$data_type>;
+            fn magnitude(self) -> Self::RealPartner {
+                let arg = self.arg;
+                self.add_op(Operation::AbsComplex(arg))
+            }
+        }
+     }
+}     
+
+macro_rules! add_real_multi_ops_impl {
+    ($data_type:ident, $name: ident, $partner: ident)
+     =>
+     {    
+        impl RealIdentifier<$data_type> for $name<$data_type> {
+            type ComplexPartner = $partner<$data_type>;
+            fn to_complex(self) -> Self::ComplexPartner {
+                let arg = self.arg;
+                self.add_op(Operation::ToComplex(arg))
+            }
+        }
+     }
+}   
 
 macro_rules! add_multi_ops_impl {
     ($($data_type:ident, $reg:ident);*)
@@ -247,26 +306,13 @@ macro_rules! add_multi_ops_impl {
                     }
                 }
             }
-
-            impl ComplexIdentifier<$data_type> for ComplexTimeIdentifier<$data_type> {
-                type RealPartner = RealTimeIdentifier<$data_type>;
-                fn magnitude(self) -> RealTimeIdentifier<$data_type> {
-                    let mut ops = self.ops;
-                    // TODO: Rethink if this unsafe is sound.
-                    // Quick thinking was that the actual value in the sequence
-                    // doesn't matter as long as repeated calls by the same thread
-                    // produce an increasing value (where the distance between two numbers
-                    // never matters). Even with race conditions between multiple threads
-                    // this should be okay (counter overflows - while unlikely - need to be 
-                    // handled during sorting).
-                    let seq = unsafe {
-                        OPERATION_SEQ_COUNTER += 1;
-                        OPERATION_SEQ_COUNTER
-                    };
-                    ops.push((seq, Operation::AbsComplex(self.arg)));
-                    RealTimeIdentifier { ops: ops, arg: self.arg }
-                }
-            }
+            
+            add_complex_multi_ops_impl!($data_type, ComplexTimeIdentifier, RealTimeIdentifier);
+            add_complex_multi_ops_impl!($data_type, ComplexFreqIdentifier, RealFreqIdentifier);
+            add_complex_multi_ops_impl!($data_type, GenericDataIdentifier, GenericDataIdentifier);
+            add_real_multi_ops_impl!($data_type, RealTimeIdentifier, ComplexTimeIdentifier);
+            add_real_multi_ops_impl!($data_type, RealFreqIdentifier, ComplexFreqIdentifier);
+            add_real_multi_ops_impl!($data_type, GenericDataIdentifier, RealTimeIdentifier);
 
             impl<TO1, TO2>  MultiOperation2<$data_type, TO1, TO2> 
                 where TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
@@ -417,6 +463,10 @@ macro_rules! add_multi_ops_impl {
                         Operation::Log(_, value) =>
                         {
                             Self::iter_over_vector(vector, |x|x.log(value))
+                        }
+                        Operation::ToComplex(_) =>
+                        {
+                            panic!("Type conversion should have already been resolved")
                         }
                     }
                 }

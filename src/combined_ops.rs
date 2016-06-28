@@ -23,5 +23,6 @@ pub use vector_types::{
     PreparedOperation2,
     prepare2,
     MultiOperation2,
+    ComplexIdentifier,
     Operation,
     multi_ops2};  

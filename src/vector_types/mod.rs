@@ -126,6 +126,7 @@ pub use vector_types::multi_ops::{
     ComplexTimeIdentifier,
     RealFreqIdentifier,
     ComplexFreqIdentifier,
+    ComplexIdentifier,
     Argument,
     PreparedOperation1,
     PreparedOperation2,
