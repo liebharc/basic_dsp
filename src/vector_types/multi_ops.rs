@@ -180,8 +180,8 @@ pub enum Operation<T>
     MultiplyReal(Argument, T),
     MultiplyComplex(Argument, Complex<T>),
     //MultiplyVector(&'a DataVector32<'a>),
-    AbsReal(Argument),
-    AbsComplex(Argument),
+    Abs(Argument),
+    Magnitude(Argument),
     Sqrt(Argument),
     Log(Argument, T),
     ToComplex(Argument)
@@ -195,7 +195,7 @@ macro_rules! add_complex_multi_ops_impl {
             type RealPartner = $partner<$data_type>;
             fn magnitude(self) -> Self::RealPartner {
                 let arg = self.arg;
-                self.add_op(Operation::AbsComplex(arg))
+                self.add_op(Operation::Magnitude(arg))
             }
         }
      }
@@ -265,10 +265,22 @@ macro_rules! add_multi_ops_impl {
                     // First "cast" the vectors to generic vectors. This is done with the
                     // the rededicate trait since in contrast to the to_gen method it 
                     // can be used in a generic context.
+                                       
                     let a: GenericDataVector<$data_type> = a.rededicate();
                     let b: GenericDataVector<$data_type> = b.rededicate();
                     
                     // at this point we would execute all ops and cast the result to the right types
+                    let a = a.perform_operations(&self.ops);
+                    
+                    if a.is_err() {
+                        let err = a.unwrap_err();
+                        return Err((
+                            err.0, 
+                            TO1::rededicate_from(err.1), 
+                            TO2::rededicate_from(b)));
+                    }
+                    
+                    let a = a.unwrap();
                     
                     // Convert back
                     if self.swap {
@@ -360,11 +372,16 @@ macro_rules! add_multi_ops_impl {
                 /// have increased locality this way. This should help us by making better use of registers and 
                 /// CPU caches.
                 pub fn perform_operations(mut self, operations: &[Operation<$data_type>])
-                    -> Self
+                    -> VecResult<Self>
                 {
+                    let errors = Self::verify_ops(&[&self], operations);
+                    if errors.is_some() {
+                        return Err((errors.unwrap(), self));
+                    }
+                
                     if operations.len() == 0
                     {
-                        return GenericDataVector { data: self.data, .. self };
+                        return Ok(GenericDataVector { data: self.data, .. self });
                     }
                     
                     let data_length = self.len();
@@ -399,7 +416,7 @@ macro_rules! add_multi_ops_impl {
                             operations, 
                             Self::perform_operations_par);
                     }
-                    GenericDataVector { data: self.data, .. self }
+                    Ok (GenericDataVector { data: self.data, .. self })
                 }
                 
                 fn perform_operations_par(array: &mut [$data_type], operations: &[Operation<$data_type>])
@@ -448,11 +465,11 @@ macro_rules! add_multi_ops_impl {
                         {
                             // TODO
                         }*/
-                        Operation::AbsReal(_) =>
+                        Operation::Abs(_) =>
                         {
                             Self::iter_over_vector(vector, |x|x.abs())
                         }
-                        Operation::AbsComplex(_) =>
+                        Operation::Magnitude(_) =>
                         {
                             vector.complex_abs()
                         }
@@ -478,6 +495,110 @@ macro_rules! add_multi_ops_impl {
                         *n = op(*n);
                     }
                     $reg::from_array(array)
+                }
+                
+                fn verify_ops(vectors: &[&Self], operations: &[Operation<$data_type>]) -> Option<ErrorReason> {
+                    let mut complex: Vec<bool> = vectors.iter().map(|v|v.is_complex()).collect();
+                    for op in operations {
+                        let arg = Self::get_argument(*op);
+                        let index = Self::argument_to_index(arg);
+                        let eval = Self::evaluate_number_space_transition(complex[index], *op);
+                        complex[index] = match eval {
+                            Err(reason) => { return Some(reason) }
+                            Ok(new_complex) => { new_complex }
+                        }
+                    }
+                    
+                    None
+                }
+                
+                fn argument_to_index(arg: Argument) -> usize {
+                    match arg {
+                        Argument::A1 => { 0 }
+                        Argument::A2 => { 1 }
+                    }
+                }
+                
+                fn evaluate_number_space_transition(is_complex: bool, operation: Operation<$data_type>) -> Result<bool, ErrorReason> {
+                    match operation
+                    {
+                        Operation::AddReal(_, _) =>
+                        {
+                            if is_complex { Err(ErrorReason::VectorMustBeReal) }
+                            else { Ok(is_complex) }
+                        }
+                        Operation::AddComplex(_, _) =>
+                        {
+                            if is_complex { Ok(is_complex) }
+                            else { Err(ErrorReason::VectorMustBeComplex) }
+                        }
+                        /*Operation32::AddVector(value) =>
+                        {
+                            // TODO
+                        }*/
+                        Operation::MultiplyReal(_, _) =>
+                        {
+                            if is_complex { Err(ErrorReason::VectorMustBeReal) }
+                            else { Ok(is_complex) }
+                        }
+                        Operation::MultiplyComplex(_, _) =>
+                        {
+                            if is_complex { Ok(is_complex) }
+                            else { Err(ErrorReason::VectorMustBeComplex) }
+                        }
+                        /*Operation32::MultiplyVector(value) =>
+                        {
+                            // TODO
+                        }*/
+                        Operation::Abs(_) =>
+                        {
+                            if is_complex { Err(ErrorReason::VectorMustBeReal) }
+                            else { Ok(is_complex) }
+                        }
+                        Operation::Magnitude(_) =>
+                        {
+                            if is_complex { Ok(false) }
+                            else { Err(ErrorReason::VectorMustBeComplex) }
+                        }
+                        Operation::Sqrt(_) =>
+                        {
+                            Ok(is_complex)
+                        }
+                        Operation::Log(_, _) =>
+                        {
+                            Ok(is_complex)
+                        }
+                        Operation::ToComplex(_) =>
+                        {
+                            panic!("Type conversion should have already been resolved")
+                        }
+                    }
+                }
+                
+                fn get_argument(operation: Operation<$data_type>) -> Argument {
+                    match operation
+                    {
+                        Operation::AddReal(arg, _) => { arg }
+                        Operation::AddComplex(arg, _) => { arg }
+                        /*Operation32::AddVector(value) =>
+                        {
+                            // TODO
+                        }*/
+                        Operation::MultiplyReal(arg, _) => { arg }
+                        Operation::MultiplyComplex(arg, _) => { arg }
+                        /*Operation32::MultiplyVector(value) =>
+                        {
+                            // TODO
+                        }*/
+                        Operation::Abs(arg) => { arg }
+                        Operation::Magnitude(arg) => { arg }
+                        Operation::Sqrt(arg) => { arg }
+                        Operation::Log(arg, _) => { arg }
+                        Operation::ToComplex(_) =>
+                        {
+                            panic!("Type conversion should have already been resolved")
+                        }
+                    }
                 }
             }
         )*
@@ -614,5 +735,18 @@ mod tests {
         assert_eq!(c.is_complex(), true);
         assert_eq!(d.is_complex(), false);
         assert_eq!(d.len(), 8);
+    }
+    
+    #[test]
+    fn complex_operation_on_real_vector()
+    {
+        let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+        let a = DataVector32::from_array(false, DataVectorDomain::Time, &array);
+        let b = DataVector32::from_array(false, DataVectorDomain::Time, &array);
+        
+        let ops = multi_ops2(a, b);
+        let ops = ops.add_ops(|a, b| (a.magnitude(), b));
+        let res = ops.get();
+        assert!(res.is_err());
     }
 }
