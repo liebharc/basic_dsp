@@ -85,6 +85,7 @@ pub mod interpolation_impl;
 pub mod multi_ops;
 mod rededicate_impl;
 mod stats_impl;
+mod operations_enum;
 
 pub use vector_types::definitions::{
         DataVectorDomain,
@@ -127,13 +128,17 @@ pub use vector_types::multi_ops::{
     RealFreqIdentifier,
     ComplexFreqIdentifier,
     ComplexIdentifier,
-    Argument,
     PreparedOperation1,
     PreparedOperation2,
     prepare2,
+    prepare1,
+    MultiOperation1,
     MultiOperation2,
-    Operation,
-    multi_ops2};    
+    multi_ops1,
+    multi_ops2};   
+pub use vector_types::operations_enum::{
+    Argument,
+    Operation};
 use num::complex::Complex;
 use RealNumber;
 use multicore_support::{Chunk, Complexity, MultiCoreSettings};

@@ -12,7 +12,13 @@ use super::{
     ComplexFreqVector,
     GenericDataVector,
     RededicateVector};  
-use num::complex::Complex;
+use super::operations_enum::{
+    Argument,
+    Operation,
+    argument_to_index,
+    evaluate_number_space_transition,
+    get_argument,
+    PerformOperationSimd};
 use multicore_support::{Chunk, Complexity};
 use simd_extensions::{Simd, Reg32, Reg64};
 
@@ -108,20 +114,6 @@ create_identfier!(
     RealFreqVector, RealFreqIdentifier; 
     ComplexFreqVector, ComplexFreqIdentifier;);
 
-/// The argument position. User internally to keep track of arguments.
-#[derive(Copy)]
-#[derive(Clone)]
-#[derive(PartialEq)]
-#[derive(Debug)]
-pub enum Argument
-{
-    /// First argument
-    A1,
-    
-    /// Second argument
-    A2
-}
-
 static mut OPERATION_SEQ_COUNTER : u64 = 0;
 
 /// An operation on one data vector which has been prepared in 
@@ -155,6 +147,16 @@ pub struct PreparedOperation2<T, TI1, TI2, TO1, TO2>
     swap: bool
 }
 
+/// A multi operation which holds a vector and records all changes
+/// which need to be done to the vectos. By calling `get` on the struct
+/// all operations will be executed in one run.
+pub struct MultiOperation1<T, TO> 
+    where T: RealNumber,
+        TO: ToIdentifier<T> {
+    a: GenericDataVector<T>,
+    prepared_ops: PreparedOperation1<T, GenericDataVector<T>, TO>
+}
+
 /// A multi operation which holds two vectors and records all changes
 /// which need to be done to the vectors. By calling `get` on the struct
 /// all operations will be executed in one run.
@@ -164,27 +166,7 @@ pub struct MultiOperation2<T, TO1, TO2>
         TO2: ToIdentifier<T> {
     a: GenericDataVector<T>,
     b: GenericDataVector<T>,
-    preped_ops: PreparedOperation2<T, GenericDataVector<T>, GenericDataVector<T>, TO1, TO2>
-}
-
-/// An alternative way to define operations on a vector.
-#[derive(Copy)]
-#[derive(Clone)]
-#[derive(PartialEq)]
-#[derive(Debug)]
-pub enum Operation<T>
-{
-    AddReal(Argument, T),
-    AddComplex(Argument, Complex<T>),
-    //AddVector(&'a DataVector32<'a>),
-    MultiplyReal(Argument, T),
-    MultiplyComplex(Argument, Complex<T>),
-    //MultiplyVector(&'a DataVector32<'a>),
-    Abs(Argument),
-    Magnitude(Argument),
-    Sqrt(Argument),
-    Log(Argument, T),
-    ToComplex(Argument)
+    prepared_ops: PreparedOperation2<T, GenericDataVector<T>, GenericDataVector<T>, TO1, TO2>
 }
 
 macro_rules! add_complex_multi_ops_impl {
@@ -216,163 +198,225 @@ macro_rules! add_real_multi_ops_impl {
 }   
 
 macro_rules! add_multi_ops_impl {
-    ($($data_type:ident, $reg:ident);*)
+    ($data_type:ident, $reg:ident)
      =>
      {     
-        $(
-            impl<TI1, TI2, TO1, TO2> PreparedOperation2<$data_type, TI1, TI2, TO1, TO2>
-                where TI1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
-                TI2: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
-                TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
-                TO2: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>
-            {
-                pub fn add_ops<F, TN1, TN2>(self, operation: F) 
-                    -> PreparedOperation2<$data_type, TI1, TI2, TN1::Vector, TN2::Vector>
-                    where F: Fn(TO1::Identifier, TO2::Identifier) -> (TN1, TN2),
-                             TN1: Identifier<$data_type>,
-                             TN2: Identifier<$data_type>
-                    
-                {
-                    let mut ops = self.ops;
-                    let mut new_ops = Vec::new();
-                    let swap = 
-                        {
-                            let t1 = TO1::Identifier::new(Argument::A1);
-                            let t2  = TO2::Identifier::new(Argument::A2);
-                            let (r1, r2) = operation(t1, t2);
-                            let r1arg = r1.get_arg();
-                            new_ops.append(&mut r1.get_ops());
-                            new_ops.append(&mut r2.get_ops());
-                            self.swap != (r1arg == Argument::A2)
-                        };
-                     // TODO: Handle overflows in the sequence
-                     new_ops.sort_by(|a, b| a.0.cmp(&b.0));
-                     for v in new_ops {
-                        ops.push(v.1);
-                     }
-                     PreparedOperation2 
-                     { 
-                        a: PhantomData,
-                        b: PhantomData, 
-                        c: PhantomData,
-                        d: PhantomData, 
-                        ops: ops, 
-                        swap: swap
-                     }
-                }
+        impl<TI1, TI2, TO1, TO2> PreparedOperation2<$data_type, TI1, TI2, TO1, TO2>
+            where TI1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
+            TI2: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
+            TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
+            TO2: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>
+        {
+            pub fn add_ops<F, TN1, TN2>(self, operation: F) 
+                -> PreparedOperation2<$data_type, TI1, TI2, TN1::Vector, TN2::Vector>
+                where F: Fn(TO1::Identifier, TO2::Identifier) -> (TN1, TN2),
+                         TN1: Identifier<$data_type>,
+                         TN2: Identifier<$data_type>
                 
-                pub fn exec(&self, a: TI1, b: TI2) -> result::Result<(TO1, TO2), (ErrorReason, TO1, TO2)> {
-                    // First "cast" the vectors to generic vectors. This is done with the
-                    // the rededicate trait since in contrast to the to_gen method it 
-                    // can be used in a generic context.
-                                       
-                    let a: GenericDataVector<$data_type> = a.rededicate();
-                    let b: GenericDataVector<$data_type> = b.rededicate();
-                    
-                    let mut vec = Vec::new();
-                    vec.push(a);
-                    vec.push(b);
-                    
-                    // at this point we would execute all ops and cast the result to the right types
-                    let result = GenericDataVector::<$data_type>::perform_operations(vec, &self.ops);
-                    
-                    if result.is_err() {
-                        let err = result.unwrap_err();
-                        let reason = err.0;
-                        let mut vec = err.1;
-                        let b = vec.pop().unwrap();
-                        let a = vec.pop().unwrap();
-                        return Err((
-                            reason, 
-                            TO1::rededicate_from(b),
-                            TO2::rededicate_from(a)));
-                    }
-                    let mut vec = result.unwrap();
+            {
+                let mut ops = self.ops;
+                let mut new_ops = Vec::new();
+                let swap = 
+                    {
+                        let t1 = TO1::Identifier::new(Argument::A1);
+                        let t2  = TO2::Identifier::new(Argument::A2);
+                        let (r1, r2) = operation(t1, t2);
+                        let r1arg = r1.get_arg();
+                        new_ops.append(&mut r1.get_ops());
+                        new_ops.append(&mut r2.get_ops());
+                        self.swap != (r1arg == Argument::A2)
+                    };
+                 // TODO: Handle overflows in the sequence
+                 new_ops.sort_by(|a, b| a.0.cmp(&b.0));
+                 for v in new_ops {
+                    ops.push(v.1);
+                 }
+                 PreparedOperation2 
+                 { 
+                    a: PhantomData,
+                    b: PhantomData, 
+                    c: PhantomData,
+                    d: PhantomData, 
+                    ops: ops, 
+                    swap: swap
+                 }
+            }
+            
+            pub fn exec(&self, a: TI1, b: TI2) -> result::Result<(TO1, TO2), (ErrorReason, TO1, TO2)> {
+                // First "cast" the vectors to generic vectors. This is done with the
+                // the rededicate trait since in contrast to the to_gen method it 
+                // can be used in a generic context.
+                                   
+                let a: GenericDataVector<$data_type> = a.rededicate();
+                let b: GenericDataVector<$data_type> = b.rededicate();
+                
+                let mut vec = Vec::new();
+                vec.push(a);
+                vec.push(b);
+                
+                // at this point we would execute all ops and cast the result to the right types
+                let result = GenericDataVector::<$data_type>::perform_operations(vec, &self.ops);
+                
+                if result.is_err() {
+                    let err = result.unwrap_err();
+                    let reason = err.0;
+                    let mut vec = err.1;
                     let b = vec.pop().unwrap();
                     let a = vec.pop().unwrap();
-                    
-                    // Convert back
-                    if self.swap {
-                        Ok((TO1::rededicate_from(b), TO2::rededicate_from(a)))
-                    }
-                    else {
-                        Ok((TO1::rededicate_from(a), TO2::rededicate_from(b)))
-                    }
+                    return Err((
+                        reason, 
+                        TO1::rededicate_from(b),
+                        TO2::rededicate_from(a)));
+                }
+                let mut vec = result.unwrap();
+                let b = vec.pop().unwrap();
+                let a = vec.pop().unwrap();
+                
+                // Convert back
+                if self.swap {
+                    Ok((TO1::rededicate_from(b), TO2::rededicate_from(a)))
+                }
+                else {
+                    Ok((TO1::rededicate_from(a), TO2::rededicate_from(b)))
                 }
             }
+        }
 
-            impl<TI1, TO1> PreparedOperation1<$data_type, TI1, TO1>
-                where TI1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>,
-                      TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>> {
-                      
-                pub fn exec(&self, a: TI1) -> VecResult<TO1> {
-                    let a: GenericDataVector<$data_type> = a.rededicate();
-                    
-                    // at this point we would execute all ops and cast the result to the right types
-                    
-                    Ok(TO1::rededicate_from(a))
-                }
-                
-                pub fn extend<TI2>(self) 
-                    -> PreparedOperation2<$data_type, TI1, TI2, TO1, TI2>
-                    where TI2: ToIdentifier<$data_type> {
-                    PreparedOperation2 
-                    { 
-                        a: PhantomData, 
-                        b: PhantomData, 
-                        c: PhantomData,
-                        d: PhantomData, 
-                        ops: self.ops, 
-                        swap: false 
-                    }
+        impl<TI1, TO1> PreparedOperation1<$data_type, TI1, TO1>
+            where TI1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>,
+                  TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>> {
+                  
+            pub fn extend<TI2>(self) 
+                -> PreparedOperation2<$data_type, TI1, TI2, TO1, TI2>
+                where TI2: ToIdentifier<$data_type> {
+                PreparedOperation2 
+                { 
+                    a: PhantomData, 
+                    b: PhantomData, 
+                    c: PhantomData,
+                    d: PhantomData, 
+                    ops: self.ops, 
+                    swap: false 
                 }
             }
             
-            add_complex_multi_ops_impl!($data_type, ComplexTimeIdentifier, RealTimeIdentifier);
-            add_complex_multi_ops_impl!($data_type, ComplexFreqIdentifier, RealFreqIdentifier);
-            add_complex_multi_ops_impl!($data_type, GenericDataIdentifier, GenericDataIdentifier);
-            add_real_multi_ops_impl!($data_type, RealTimeIdentifier, ComplexTimeIdentifier);
-            add_real_multi_ops_impl!($data_type, RealFreqIdentifier, ComplexFreqIdentifier);
-            add_real_multi_ops_impl!($data_type, GenericDataIdentifier, RealTimeIdentifier);
-
-            impl<TO1, TO2>  MultiOperation2<$data_type, TO1, TO2> 
-                where TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
-                      TO2: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>> {
-                pub fn get(self) -> result::Result<(TO1, TO2), (ErrorReason, TO1, TO2)> {
-                    self.preped_ops.exec(self.a, self.b)
-                }
+            pub fn add_ops<F, TN>(self, operation: F) 
+                -> PreparedOperation1<$data_type, TI1, TN::Vector>
+                where F: Fn(TO1::Identifier) -> TN,
+                         TN: Identifier<$data_type>
                 
-                pub fn add_ops<F, TN1, TN2>(self, operation: F) 
-                    -> MultiOperation2<$data_type, TN1::Vector, TN2::Vector>
-                    where F: Fn(TO1::Identifier, TO2::Identifier) -> (TN1, TN2),
-                             TN1: Identifier<$data_type>,
-                             TN2: Identifier<$data_type>
-                    
+            {
+                let mut ops = self.ops;
+                let new_ops =
                 {
-                    let ops = self.preped_ops.add_ops(operation);
-                    MultiOperation2 { a: self.a, b: self.b, preped_ops: ops }
-                }
+                    let t1 = TO1::Identifier::new(Argument::A1);
+                    let r1 = operation(t1);
+                    r1.get_ops()
+                };
+                 for v in new_ops {
+                    ops.push(v.1);
+                 }
+                 PreparedOperation1 
+                 { 
+                    a: PhantomData,
+                    b: PhantomData, 
+                    ops: ops
+                 }
             }
             
-            impl GenericDataVector<$data_type> {
-                fn perform_operations(vectors: Vec<Self>, operations: &[Operation<$data_type>])
-                    -> VecResult<Vec<Self>>
-                {
-                    let errors = Self::verify_ops(&vectors, operations);
-                    if errors.is_some() {
-                        return Err((errors.unwrap(), vectors));
-                    }
+            pub fn exec(&self, a: TI1) -> result::Result<TO1, (ErrorReason, TO1)> {
+                // First "cast" the vectors to generic vectors. This is done with the
+                // the rededicate trait since in contrast to the to_gen method it 
+                // can be used in a generic context.
+                                   
+                let a: GenericDataVector<$data_type> = a.rededicate();
                 
-                    if operations.len() == 0
+                let mut vec = Vec::new();
+                vec.push(a);
+                
+                // at this point we would execute all ops and cast the result to the right types
+                let result = GenericDataVector::<$data_type>::perform_operations(vec, &self.ops);
+                
+                if result.is_err() {
+                    let err = result.unwrap_err();
+                    let reason = err.0;
+                    let mut vec = err.1;
+                    let a = vec.pop().unwrap();
+                    return Err((
+                        reason, 
+                        TO1::rededicate_from(a)));
+                }
+                let mut vec = result.unwrap();
+                let a = vec.pop().unwrap();
+                
+                // Convert back
+                Ok(TO1::rededicate_from(a))
+            }
+        }
+        
+        add_complex_multi_ops_impl!($data_type, ComplexTimeIdentifier, RealTimeIdentifier);
+        add_complex_multi_ops_impl!($data_type, ComplexFreqIdentifier, RealFreqIdentifier);
+        add_complex_multi_ops_impl!($data_type, GenericDataIdentifier, GenericDataIdentifier);
+        add_real_multi_ops_impl!($data_type, RealTimeIdentifier, ComplexTimeIdentifier);
+        add_real_multi_ops_impl!($data_type, RealFreqIdentifier, ComplexFreqIdentifier);
+        add_real_multi_ops_impl!($data_type, GenericDataIdentifier, RealTimeIdentifier);
+
+        impl<TO1, TO2>  MultiOperation2<$data_type, TO1, TO2> 
+            where TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
+                  TO2: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>> {
+            pub fn get(self) -> result::Result<(TO1, TO2), (ErrorReason, TO1, TO2)> {
+                self.prepared_ops.exec(self.a, self.b)
+            }
+            
+            pub fn add_ops<F, TN1, TN2>(self, operation: F) 
+                -> MultiOperation2<$data_type, TN1::Vector, TN2::Vector>
+                where F: Fn(TO1::Identifier, TO2::Identifier) -> (TN1, TN2),
+                         TN1: Identifier<$data_type>,
+                         TN2: Identifier<$data_type>
+                
+            {
+                let ops = self.prepared_ops.add_ops(operation);
+                MultiOperation2 { a: self.a, b: self.b, prepared_ops: ops }
+            }
+        }
+        
+        impl<TO>  MultiOperation1<$data_type, TO> 
+            where TO: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>> {
+            pub fn get(self) -> result::Result<(TO), (ErrorReason, TO)> {
+                self.prepared_ops.exec(self.a)
+            }
+            
+            pub fn add_ops<F, TN>(self, operation: F) 
+                -> MultiOperation1<$data_type, TN::Vector>
+                where F: Fn(TO::Identifier) -> TN,
+                         TN: Identifier<$data_type>
+                
+            {
+                let ops = self.prepared_ops.add_ops(operation);
+                MultiOperation1 { a: self.a, prepared_ops: ops }
+            }
+        }
+        
+        impl GenericDataVector<$data_type> {
+            fn perform_operations(mut vectors: Vec<Self>, operations: &[Operation<$data_type>])
+                -> VecResult<Vec<Self>>
+            {
+                let errors = Self::verify_ops(&vectors, operations);
+                if errors.is_some() {
+                    return Err((errors.unwrap(), vectors));
+                }
+            
+                if operations.len() == 0
+                {
+                    return Ok(vectors);
+                }
+                
+                let vectorization_length =
                     {
-                        return Ok(vectors);
-                    }
-                    panic!("Panic")
-                    /*
-                    let data_length = self.len();
-                    let alloc_len = self.allocated_len();
-                    let rounded_len = round_len(data_length);
-                    let vectorization_length = 
+                        let first = &vectors[0];
+                        let data_length = first.len();
+                        let alloc_len = first.allocated_len();
+                        let rounded_len = round_len(data_length);
                         if rounded_len <= alloc_len {
                             rounded_len
                         }
@@ -390,206 +434,134 @@ macro_rules! add_multi_ops_impl {
                             // however it makes the implementation easy and the performance
                             // loss seems to be tolerable
                             data_length - scalar_length
-                        };
-                        
-                    let complexity = if operations.len() > 5 { Complexity::Large } else { Complexity::Medium };
-                    {
-                        let mut array = &mut self.data;
-                        Chunk::execute_partial(
-                            complexity, &self.multicore_settings,
-                            &mut array, vectorization_length, $reg::len(), 
-                            operations, 
-                            Self::perform_operations_par);
-                    }
-                    Ok (GenericDataVector { data: self.data, .. self })*/
-                }
-                
-                fn perform_operations_par(array: &mut [$data_type], operations: &[Operation<$data_type>])
+                        }
+                    };
+                let complexity = if operations.len() > 5 { Complexity::Large } else { Complexity::Medium };
                 {
                     let mut i = 0;
-                    while i < array.len()
-                    { 
-                        let mut vector = $reg::load(array, i);
-                        for operation in operations
-                        {
-                            vector = Self::perform_operation(*operation, vector);
-                        }
-                    
-                        vector.store(array, i);    
-                        i += $reg::len();
-                    }
-                }
-                
-                fn perform_operation(
-                    operation: Operation<$data_type>,
-                    vector: $reg)-> $reg
-                {
-                    match operation
+                    for v in &mut vectors
                     {
-                        Operation::AddReal(_, value) =>
-                        {
-                            vector.add_real(value)
-                        }
-                        Operation::AddComplex(_, value) =>
-                        {
-                            vector.add_complex(value)
-                        }
-                        /*Operation32::AddVector(value) =>
-                        {
-                            // TODO
-                        }*/
-                        Operation::MultiplyReal(_, value) =>
-                        {
-                            vector.scale_real(value)
-                        }
-                        Operation::MultiplyComplex(_, value) =>
-                        {
-                            vector.scale_complex(value)
-                        }
-                        /*Operation32::MultiplyVector(value) =>
-                        {
-                            // TODO
-                        }*/
-                        Operation::Abs(_) =>
-                        {
-                            Self::iter_over_vector(vector, |x|x.abs())
-                        }
-                        Operation::Magnitude(_) =>
-                        {
-                            vector.complex_abs()
-                        }
-                        Operation::Sqrt(_) =>
-                        {
-                             vector.sqrt()
-                        }
-                        Operation::Log(_, value) =>
-                        {
-                            Self::iter_over_vector(vector, |x|x.log(value))
-                        }
-                        Operation::ToComplex(_) =>
-                        {
-                            panic!("Type conversion should have already been resolved")
-                        }
+                        let ops: Vec<Operation<$data_type>> = 
+                            operations.iter()
+                            .filter(|o| {
+                                let arg = get_argument(**o);
+                                let idx = argument_to_index(arg);
+                                idx == i
+                            }).
+                            map(|o|*o).collect();
+                        
+                        // Make this conversion to slice explcit, otherwise the type checker and my brain get confused
+                        let ops: &[Operation<$data_type>] = &ops;
+                        let mut array = &mut v.data;
+                        Chunk::execute_partial(
+                            complexity, &v.multicore_settings,
+                            &mut array, vectorization_length, $reg::len(), 
+                            ops, 
+                            Self::perform_operations_par);
+                        i += 1;
                     }
                 }
-                
-                fn iter_over_vector<F>(vector: $reg, op: F) -> $reg
-                    where F: Fn($data_type) -> $data_type {
-                    let mut array = vector.to_array();
-                    for n in &mut array {
-                        *n = op(*n);
-                    }
-                    $reg::from_array(array)
-                }
-                
-                fn verify_ops(vectors: &[Self], operations: &[Operation<$data_type>]) -> Option<ErrorReason> {
-                    let mut complex: Vec<bool> = vectors.iter().map(|v|v.is_complex()).collect();
-                    for op in operations {
-                        let arg = Self::get_argument(*op);
-                        let index = Self::argument_to_index(arg);
-                        let eval = Self::evaluate_number_space_transition(complex[index], *op);
-                        complex[index] = match eval {
-                            Err(reason) => { return Some(reason) }
-                            Ok(new_complex) => { new_complex }
-                        }
-                    }
-                    
-                    None
-                }
-                
-                fn argument_to_index(arg: Argument) -> usize {
-                    match arg {
-                        Argument::A1 => { 0 }
-                        Argument::A2 => { 1 }
-                    }
-                }
-                
-                fn evaluate_number_space_transition(is_complex: bool, operation: Operation<$data_type>) -> Result<bool, ErrorReason> {
-                    match operation
+                Ok (vectors)
+            }
+            
+            fn perform_operations_par(array: &mut [$data_type], operations: &[Operation<$data_type>])
+            {
+                let mut i = 0;
+                while i < array.len()
+                { 
+                    let mut vector = $reg::load(array, i);
+                    for operation in operations
                     {
-                        Operation::AddReal(_, _) =>
-                        {
-                            if is_complex { Err(ErrorReason::VectorMustBeReal) }
-                            else { Ok(is_complex) }
-                        }
-                        Operation::AddComplex(_, _) =>
-                        {
-                            if is_complex { Ok(is_complex) }
-                            else { Err(ErrorReason::VectorMustBeComplex) }
-                        }
-                        /*Operation32::AddVector(value) =>
-                        {
-                            // TODO
-                        }*/
-                        Operation::MultiplyReal(_, _) =>
-                        {
-                            if is_complex { Err(ErrorReason::VectorMustBeReal) }
-                            else { Ok(is_complex) }
-                        }
-                        Operation::MultiplyComplex(_, _) =>
-                        {
-                            if is_complex { Ok(is_complex) }
-                            else { Err(ErrorReason::VectorMustBeComplex) }
-                        }
-                        /*Operation32::MultiplyVector(value) =>
-                        {
-                            // TODO
-                        }*/
-                        Operation::Abs(_) =>
-                        {
-                            if is_complex { Err(ErrorReason::VectorMustBeReal) }
-                            else { Ok(is_complex) }
-                        }
-                        Operation::Magnitude(_) =>
-                        {
-                            if is_complex { Ok(false) }
-                            else { Err(ErrorReason::VectorMustBeComplex) }
-                        }
-                        Operation::Sqrt(_) =>
-                        {
-                            Ok(is_complex)
-                        }
-                        Operation::Log(_, _) =>
-                        {
-                            Ok(is_complex)
-                        }
-                        Operation::ToComplex(_) =>
-                        {
-                            panic!("Type conversion should have already been resolved")
-                        }
+                        vector = vector.perform_operation(*operation);
                     }
-                }
                 
-                fn get_argument(operation: Operation<$data_type>) -> Argument {
-                    match operation
-                    {
-                        Operation::AddReal(arg, _) => { arg }
-                        Operation::AddComplex(arg, _) => { arg }
-                        /*Operation32::AddVector(value) =>
-                        {
-                            // TODO
-                        }*/
-                        Operation::MultiplyReal(arg, _) => { arg }
-                        Operation::MultiplyComplex(arg, _) => { arg }
-                        /*Operation32::MultiplyVector(value) =>
-                        {
-                            // TODO
-                        }*/
-                        Operation::Abs(arg) => { arg }
-                        Operation::Magnitude(arg) => { arg }
-                        Operation::Sqrt(arg) => { arg }
-                        Operation::Log(arg, _) => { arg }
-                        Operation::ToComplex(_) =>
-                        {
-                            panic!("Type conversion should have already been resolved")
-                        }
-                    }
+                    vector.store(array, i);    
+                    i += $reg::len();
                 }
             }
-        )*
+            
+            fn verify_ops(vectors: &[Self], operations: &[Operation<$data_type>]) -> Option<ErrorReason> {
+                let mut complex: Vec<bool> = vectors.iter().map(|v|v.is_complex()).collect();
+                for op in operations {
+                    let arg = get_argument(*op);
+                    let index = argument_to_index(arg);
+                    let eval = evaluate_number_space_transition(complex[index], *op);
+                    complex[index] = match eval {
+                        Err(reason) => { return Some(reason) }
+                        Ok(new_complex) => { new_complex }
+                    }
+                }
+                
+                None
+            }
+        }
      }
 }        
-add_multi_ops_impl!(f32, Reg32; f64, Reg64);
+add_multi_ops_impl!(f32, Reg32);
+add_multi_ops_impl!(f64, Reg64);
+
+impl<T> PreparedOperation1<
+    T, 
+    GenericDataVector<T>, GenericDataVector<T>>
+            where T: RealNumber
+{
+    /// Allows to directly push an `Operation` enum to a `PreparedOperation1`.
+    /// This mainly exists as interop between Rust and other languages.
+    pub fn add_enum_op(&mut self, op: Operation<T>) {
+        self.ops.push(op);
+    }
+}
+
+impl<T> PreparedOperation2<
+    T, 
+    GenericDataVector<T>, GenericDataVector<T>, 
+    GenericDataVector<T>, GenericDataVector<T>>
+            where T: RealNumber
+{
+    /// Allows to directly push an `Operation` enum to a `PreparedOperation2`.
+    /// This mainly exists as interop between Rust and other languages.
+    pub fn add_enum_op(&mut self, op: Operation<T>) {
+        self.ops.push(op);
+    }
+}
+
+impl<T> MultiOperation2<
+    T, 
+    GenericDataVector<T>, GenericDataVector<T>>
+            where T: RealNumber
+{
+    /// Allows to directly push an `Operation` enum to a `MultiOperation2`.
+    /// This mainly exists as interop between Rust and other languages.
+    pub fn add_enum_op(&mut self, op: Operation<T>) {
+        self.prepared_ops.add_enum_op(op);
+    }
+}
+
+impl<T> MultiOperation1<
+    T, 
+    GenericDataVector<T>>
+            where T: RealNumber
+{
+    /// Allows to directly push an `Operation` enum to a `MultiOperation1`.
+    /// This mainly exists as interop between Rust and other languages.
+    pub fn add_enum_op(&mut self, op: Operation<T>) {
+        self.prepared_ops.add_enum_op(op);
+    }
+}
+
+/// Prepares an operation with one input and one output.
+pub fn prepare1<T, A>()
+    -> PreparedOperation1<T, A, A> 
+    where 
+        T: RealNumber,
+        A: ToIdentifier<T> {
+    PreparedOperation1 
+         { 
+            a: PhantomData,
+            b: PhantomData, 
+            ops: Vec::new()
+         }
+}
 
 /// Prepares an operation with two inputs and two outputs.
 pub fn prepare2<T, A, B>()
@@ -609,6 +581,24 @@ pub fn prepare2<T, A, B>()
          }
 }
 
+/// Creates a new multi operation for one vectors.
+pub fn multi_ops1<T, A>(a: A)
+    -> MultiOperation1<T, A>
+    where 
+        T: RealNumber,
+        A: ToIdentifier<T> + DataVector<T> + RededicateVector<GenericDataVector<T>> {
+    let ops: PreparedOperation1<T, GenericDataVector<T>, A> =           
+         PreparedOperation1 
+         { 
+            a: PhantomData,
+            b: PhantomData, 
+            ops: Vec::new()
+         };
+    let a: GenericDataVector<T> = a.rededicate();
+    MultiOperation1 { a: a, prepared_ops: ops }
+}
+
+
 /// Creates a new multi operation for two vectors.
 pub fn multi_ops2<T, A, B>(a: A, b: B)
     -> MultiOperation2<T, A, B>
@@ -626,13 +616,9 @@ pub fn multi_ops2<T, A, B>(a: A, b: B)
             ops: Vec::new(), 
             swap: false
          };
-    let len_a = a.len();
-    let len_b = b.len();
-    let mut a: GenericDataVector<T> = a.rededicate();
-    a.set_len(len_a);
-    let mut b: GenericDataVector<T> = b.rededicate();
-    b.set_len(len_b);
-    MultiOperation2 { a: a, b: b, preped_ops: ops }
+    let a: GenericDataVector<T> = a.rededicate();
+    let b: GenericDataVector<T> = b.rededicate();
+    MultiOperation2 { a: a, b: b, prepared_ops: ops }
 }
 
 #[cfg(test)]

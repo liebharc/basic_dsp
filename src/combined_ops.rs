@@ -44,8 +44,11 @@ pub use vector_types::{
     Argument,
     PreparedOperation1,
     PreparedOperation2,
+    prepare1,
     prepare2,
+    MultiOperation1,
     MultiOperation2,
     ComplexIdentifier,
     Operation,
+    multi_ops1,
     multi_ops2};  

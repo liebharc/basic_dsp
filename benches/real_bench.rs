@@ -18,7 +18,9 @@ mod bench {
         RealTimeVector32,
         RealTimeVector64,
         Operation};
-    use basic_dsp::combined_ops::Argument;
+    use basic_dsp::combined_ops::{
+        multi_ops1,
+        Argument};
     use tools::{VectorBox, DEFAULT_DATA_SIZE, Size};
     
     #[inline(never)]
@@ -91,13 +93,14 @@ mod bench {
     #[bench]
     fn multi_operations_vector_32_benchmark(b: &mut Bencher)
     {
-        let mut vector = VectorBox::<DataVector32>::new(Size::Small, true);
+        let mut vector = VectorBox::<DataVector32>::new(Size::Small, false);
         b.iter(|| {
             vector.execute(|v|  
                 {
-                      v.perform_operations(
-                        &[Operation::Log(Argument::A1, 10.0),
-                        Operation::MultiplyReal(Argument::A1, 10.0)])
+                    let mut ops = multi_ops1(v);
+                    ops.add_enum_op(Operation::Log(Argument::A1, 10.0));
+                    ops.add_enum_op(Operation::MultiplyReal(Argument::A1, 10.0));
+                    ops.get().unwrap()
                 })
         });
     }
