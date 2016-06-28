@@ -2,7 +2,7 @@
 
 [![Build Status](https://api.travis-ci.org/liebharc/basic_dsp.png)](https://travis-ci.org/liebharc/basic_dsp)
 
-Digital signal processing based on 1xN (one times N) or Nx1 vectors in real or complex number space.
+Digital signal processing based on real or complex vectors in time or frequency domain.
 Vectors come with basic arithmetic, convolution, Fourier transformation and interpolation operations.
 
 [Documentation](https://liebharc.github.io/basic_dsp/basic_dsp/)
