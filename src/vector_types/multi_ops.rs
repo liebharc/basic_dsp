@@ -226,7 +226,10 @@ macro_rules! add_multi_ops_impl {
                         new_ops.append(&mut r2.get_ops());
                         self.swap != (r1arg == Argument::A2)
                     };
-                 // TODO: Handle overflows in the sequence
+                 // In theory the sequence counter could overflow.
+                 // In practice if we assume that the counter is increment 
+                 // every microsecond than the program needs to run for 500,000
+                 // years until an overflow occurs.
                  new_ops.sort_by(|a, b| a.0.cmp(&b.0));
                  for v in new_ops {
                     ops.push(v.1);
