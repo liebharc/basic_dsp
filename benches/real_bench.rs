@@ -98,6 +98,7 @@ mod bench {
                     let mut ops = multi_ops1(v);
                     ops.add_enum_op(Operation::Log(0, 10.0));
                     ops.add_enum_op(Operation::MultiplyReal(0, 10.0));
+                    ops.add_enum_op(Operation::Sqrt(0));
                     ops.get().unwrap()
                 })
         });
@@ -108,7 +109,11 @@ mod bench {
     {
         let mut vector = VectorBox::<DataVector32>::new(Size::Small, true);
         b.iter(|| {
-            vector.execute_res(|v|  { v.log(10.0).and_then(|v| v.real_scale(10.0)) } )
+            vector.execute_res(|v|  { 
+                v.log(10.0)
+                    .and_then(|v| v.real_scale(10.0)) 
+                    .and_then(|v| v.sqrt()) 
+            } )
         });
     }
     
