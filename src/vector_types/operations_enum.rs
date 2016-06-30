@@ -132,8 +132,8 @@ pub trait PerformOperationSimd<T>
     where T: RealNumber,
           Self: Sized {
     fn perform_operation(
-        self,
-        operation: Operation<T>) -> Self;
+        &mut [Self],
+        operation: Operation<T>);
         
     fn iter_over_vector<F>(self, op: F) -> Self
        where F: Fn(T) -> T;
@@ -145,50 +145,58 @@ macro_rules! add_perform_ops_impl {
      {
         impl PerformOperationSimd<$data_type> for $reg {
             fn perform_operation(
-                self,
-                operation: Operation<$data_type>) -> Self
+                vectors: &mut [Self],
+                operation: Operation<$data_type>)
             {
                 match operation
                 {
-                    Operation::AddReal(_, value) =>
+                    Operation::AddReal(arg, value) =>
                     {
-                        self.add_real(value)
+                        let idx = argument_to_index(arg);
+                        vectors[idx] = vectors[idx].add_real(value);
                     }
-                    Operation::AddComplex(_, value) =>
+                    Operation::AddComplex(arg, value) =>
                     {
-                        self.add_complex(value)
+                        let idx = argument_to_index(arg);
+                        vectors[idx] = vectors[idx].add_complex(value);
                     }
                     /*Operation32::Addself(value) =>
                     {
                         // TODO
                     }*/
-                    Operation::MultiplyReal(_, value) =>
+                    Operation::MultiplyReal(arg, value) =>
                     {
-                        self.scale_real(value)
+                        let idx = argument_to_index(arg);
+                        vectors[idx] = vectors[idx].scale_real(value);
                     }
-                    Operation::MultiplyComplex(_, value) =>
+                    Operation::MultiplyComplex(arg, value) =>
                     {
-                        self.scale_complex(value)
+                        let idx = argument_to_index(arg);
+                        vectors[idx] = vectors[idx].scale_complex(value);
                     }
                     /*Operation32::Multiplyself(value) =>
                     {
                         // TODO
                     }*/
-                    Operation::Abs(_) =>
+                    Operation::Abs(arg) =>
                     {
-                        self.iter_over_vector(|x|x.abs())
+                        let idx = argument_to_index(arg);
+                        vectors[idx] = vectors[idx].iter_over_vector(|x|x.abs());
                     }
-                    Operation::Magnitude(_) =>
+                    Operation::Magnitude(arg) =>
                     {
-                        self.complex_abs()
+                        let idx = argument_to_index(arg);
+                        vectors[idx] = vectors[idx].complex_abs();
                     }
-                    Operation::Sqrt(_) =>
+                    Operation::Sqrt(arg) =>
                     {
-                         self.sqrt()
+                        let idx = argument_to_index(arg);
+                        vectors[idx] = vectors[idx].sqrt();
                     }
-                    Operation::Log(_, value) =>
+                    Operation::Log(arg, value) =>
                     {
-                        self.iter_over_vector(|x|x.log(value))
+                        let idx = argument_to_index(arg);
+                        vectors[idx] = vectors[idx].iter_over_vector(|x|x.log(value));
                     }
                     Operation::ToComplex(_) =>
                     {

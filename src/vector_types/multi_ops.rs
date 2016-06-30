@@ -466,10 +466,9 @@ macro_rules! add_multi_ops_impl {
                     
                     for operation in operations
                     {
-                        let arg = get_argument(*operation);
-                        let idx = argument_to_index(arg);
-                        let vector = vectors[idx];
-                        vectors[idx] = vector.perform_operation(*operation);
+                        PerformOperationSimd::<$data_type>::perform_operation(
+                            &mut vectors, 
+                            *operation);
                     }
                 
                     for j in 0..array.len() {
