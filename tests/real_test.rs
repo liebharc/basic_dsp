@@ -65,7 +65,7 @@ mod slow_test {
     #[test]
     fn multi_ops_vector32() {
         parameterized_vector_test(|iteration, _| {
-            let a = create_data_with_len(201511141, iteration, 10000);
+            let a = create_data_with_len(201511141, iteration, 500008);
             let vector = DataVector32::from_array(false, DataVectorDomain::Time, &a);
             let mut ops = multi_ops1(vector.clone());
             ops.add_enum_op(Operation::Log(Argument::A1, 10.0));

@@ -201,6 +201,80 @@ impl Chunk
         }
     }
     
+    /// Executes the given function on the first `array_length` elements of the given list of arrays in parallel and passes
+    /// the argument to all function calls.
+    #[inline]
+    pub fn execute_partial_multidim<T,S,F>(
+            complexity: Complexity, 
+            settings: &MultiCoreSettings, 
+            array: &mut [&mut [T]], array_length: usize, step_size: usize, 
+            arguments:S, ref function: F)
+        where F: Fn(Vec<&mut [T]>, S) + 'static + Sync, 
+              T: RealNumber,
+              S: Sync + Copy + Send
+    {
+        let array_len = array.len();
+        let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity, settings);
+        if number_of_chunks > 1
+        {
+            // As an example: If this function is called with 2 arrays,
+            // and each array has 1000 elements and is splitted into 4 chunks then
+            // this:
+            // let matrix = array.iter_mut().map(|a| {
+            //    Chunk::partition_mut(a, array_length, step_size, number_of_chunks)
+            //}).collect();
+            // would give us a layout like this:
+            // Vector with 2 elements * 4 chunks * each chunk with 250 elements (mutable)
+            //
+            // But what we want to have is:
+            // 4 chunks * a vector of 2 elements * 250 elements in each vector (mutable)
+            //
+            // We achieve this by a) flatten the structure (flat_map) so that we get:
+            // array1 chunk1
+            // array1 chunk2
+            // array1 chunk3
+            // array1 chunk4
+            // array2 chunk1
+            // array2 chunk2
+            // array2 chunk3
+            // array2 chunk4
+            //
+            // and b) creating a nested vector structure so that we can push
+            // the elements on it in the correct order
+            let mut flat_layout: Vec<&mut [T]> = array.iter_mut().flat_map(|a| {
+                Chunk::partition_mut(a, array_length, step_size, number_of_chunks)
+            }).collect();
+            
+            
+            let mut reorganized = Vec::with_capacity(number_of_chunks);
+            for _ in 0..number_of_chunks {
+                reorganized.push(Vec::with_capacity(array_len));
+            }
+            let mut i = flat_layout.len();
+            while i > 0 {
+                let elem = flat_layout.pop().unwrap();
+                reorganized[i % number_of_chunks].push(elem);
+                i-=1;
+            }
+            
+            crossbeam::scope(|scope| {
+                for chunk in reorganized {
+                    scope.spawn(move|| {
+                        function(chunk, arguments);
+                    });
+                }
+            });
+        }
+        else
+        {
+          let mut shortened = Vec::with_capacity(array_len);
+          for a in array.iter_mut() {
+            shortened.push(&mut a[0..array_length]);
+          }
+          function(shortened, arguments);
+        }
+    }
+    
     /// Executes the given function on the all elements of the array and also tells the function on which range/chunk
     /// it operates on.
     #[inline]

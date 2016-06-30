@@ -414,14 +414,14 @@ macro_rules! add_multi_ops_impl {
                     return Ok(vectors);
                 }
                 
-                let vectorization_length =
+                let (vectorization_length, multicore_settings) =
                     {
                         let first = &vectors[0];
                         let data_length = first.len();
                         let alloc_len = first.allocated_len();
                         let rounded_len = round_len(data_length);
                         if rounded_len <= alloc_len {
-                            rounded_len
+                            (rounded_len, first.multicore_settings)
                         }
                         else {
                             let scalar_length = data_length % $reg::len();
@@ -436,49 +436,46 @@ macro_rules! add_multi_ops_impl {
                             // and in the worst case we don't care for $reg::len() -1 of the results
                             // however it makes the implementation easy and the performance
                             // loss seems to be tolerable
-                            data_length - scalar_length
+                            (data_length - scalar_length, first.multicore_settings)
                         }
                     };
                 let complexity = if operations.len() > 5 { Complexity::Large } else { Complexity::Medium };
                 {
-                    let mut i = 0;
-                    for v in &mut vectors
-                    {
-                        let ops: Vec<Operation<$data_type>> = 
-                            operations.iter()
-                            .filter(|o| {
-                                let arg = get_argument(**o);
-                                let idx = argument_to_index(arg);
-                                idx == i
-                            }).
-                            map(|o|*o).collect();
-                        
-                        // Make this conversion to slice explcit, otherwise the type checker and my brain get confused
-                        let ops: &[Operation<$data_type>] = &ops;
-                        let mut array = &mut v.data;
-                        Chunk::execute_partial(
-                            complexity, &v.multicore_settings,
+                    let mut array: Vec<&mut [$data_type]> = vectors.iter_mut().map(|v| {
+                        let len = v.len();
+                        &mut v.data[0..len]
+                    }).collect();
+                    Chunk::execute_partial_multidim(
+                            complexity, &multicore_settings,
                             &mut array, vectorization_length, $reg::len(), 
-                            ops, 
+                            operations, 
                             Self::perform_operations_par);
-                        i += 1;
-                    }
                 }
                 Ok (vectors)
             }
             
-            fn perform_operations_par(array: &mut [$data_type], operations: &[Operation<$data_type>])
+            fn perform_operations_par(mut array: Vec<&mut [$data_type]>, operations: &[Operation<$data_type>])
             {
                 let mut i = 0;
-                while i < array.len()
+                while i < array[0].len()
                 { 
-                    let mut vector = $reg::load(array, i);
+                    let mut vectors = Vec::with_capacity(array.len());
+                    for j in 0..array.len() {
+                        vectors.push($reg::load(array[j], i));
+                    }
+                    
                     for operation in operations
                     {
-                        vector = vector.perform_operation(*operation);
+                        let arg = get_argument(*operation);
+                        let idx = argument_to_index(arg);
+                        let vector = vectors[idx];
+                        vectors[idx] = vector.perform_operation(*operation);
                     }
                 
-                    vector.store(array, i);    
+                    for j in 0..array.len() {
+                        vectors[j].store(&mut array[j], i);
+                    }
+               
                     i += $reg::len();
                 }
             }
