@@ -13,14 +13,15 @@ use super::{
     GenericDataVector,
     RededicateVector};  
 use super::operations_enum::{
-    Argument,
     Operation,
-    argument_to_index,
     evaluate_number_space_transition,
     get_argument,
     PerformOperationSimd};
 use multicore_support::{Chunk, Complexity};
 use simd_extensions::{Simd, Reg32, Reg64};
+
+const ARGUMENT1: usize = 0;
+const ARGUMENT2: usize = 1;
 
 /// Trait which defines the relation between a vector
 /// and an identifier. 
@@ -36,10 +37,10 @@ pub trait Identifier<T> : Sized
     where T: RealNumber 
 {
     type Vector: DataVector<T> + ToIdentifier<T>;
-    fn get_arg(&self) -> Argument;
+    fn get_arg(&self) -> usize;
     fn get_ops(self) -> Vec<(u64, Operation<T>)>;
-    fn new(arg: Argument) -> Self;
-    fn new_ops(ops: Vec<(u64, Operation<T>)>, arg: Argument) -> Self;
+    fn new(arg: usize) -> Self;
+    fn new_ops(ops: Vec<(u64, Operation<T>)>, arg: usize) -> Self;
 }
 
 pub trait ComplexIdentifier<T> : Identifier<T>
@@ -65,7 +66,7 @@ macro_rules! create_identfier {
             pub struct $name<T>
                 where T: RealNumber 
             {
-                arg: Argument,
+                arg: usize,
                 ops: Vec<(u64, Operation<T>)>
             }
             
@@ -77,10 +78,10 @@ macro_rules! create_identfier {
             impl<T> Identifier<T> for $name<T>
                 where T: RealNumber {
                 type Vector = $vector<T>;
-                fn get_arg(&self) -> Argument { self.arg }
+                fn get_arg(&self) -> usize { self.arg }
                 fn get_ops(self) -> Vec<(u64, Operation<T>)> { self.ops }
-                fn new(arg: Argument) -> Self { $name { ops: Vec::new(), arg: arg } }
-                fn new_ops(ops: Vec<(u64, Operation<T>)>, arg: Argument) -> Self { $name { ops: ops, arg: arg } }
+                fn new(arg: usize) -> Self { $name { ops: Vec::new(), arg: arg } }
+                fn new_ops(ops: Vec<(u64, Operation<T>)>, arg: usize) -> Self { $name { ops: ops, arg: arg } }
             }
             
             impl<T> $name<T> 
@@ -218,13 +219,13 @@ macro_rules! add_multi_ops_impl {
                 let mut new_ops = Vec::new();
                 let swap = 
                     {
-                        let t1 = TO1::Identifier::new(Argument::A1);
-                        let t2  = TO2::Identifier::new(Argument::A2);
+                        let t1 = TO1::Identifier::new(ARGUMENT1);
+                        let t2  = TO2::Identifier::new(ARGUMENT2);
                         let (r1, r2) = operation(t1, t2);
                         let r1arg = r1.get_arg();
                         new_ops.append(&mut r1.get_ops());
                         new_ops.append(&mut r2.get_ops());
-                        self.swap != (r1arg == Argument::A2)
+                        self.swap != (r1arg == ARGUMENT2)
                     };
                  // In theory the sequence counter could overflow.
                  // In practice if we assume that the counter is increment 
@@ -312,7 +313,7 @@ macro_rules! add_multi_ops_impl {
                 let mut ops = self.ops;
                 let new_ops =
                 {
-                    let t1 = TO1::Identifier::new(Argument::A1);
+                    let t1 = TO1::Identifier::new(ARGUMENT1);
                     let r1 = operation(t1);
                     r1.get_ops()
                 };
@@ -482,8 +483,7 @@ macro_rules! add_multi_ops_impl {
             fn verify_ops(vectors: &[Self], operations: &[Operation<$data_type>]) -> Option<ErrorReason> {
                 let mut complex: Vec<bool> = vectors.iter().map(|v|v.is_complex()).collect();
                 for op in operations {
-                    let arg = get_argument(*op);
-                    let index = argument_to_index(arg);
+                    let index = get_argument(*op);
                     let eval = evaluate_number_space_transition(complex[index], *op);
                     complex[index] = match eval {
                         Err(reason) => { return Some(reason) }

@@ -41,7 +41,6 @@ pub use vector_types::{
     ComplexTimeIdentifier,
     RealFreqIdentifier,
     ComplexFreqIdentifier,
-    Argument,
     PreparedOperation1,
     PreparedOperation2,
     prepare1,

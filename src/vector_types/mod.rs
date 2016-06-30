@@ -136,9 +136,7 @@ pub use vector_types::multi_ops::{
     MultiOperation2,
     multi_ops1,
     multi_ops2};   
-pub use vector_types::operations_enum::{
-    Argument,
-    Operation};
+pub use vector_types::operations_enum::Operation;
 use num::complex::Complex;
 use RealNumber;
 use multicore_support::{Chunk, Complexity, MultiCoreSettings};

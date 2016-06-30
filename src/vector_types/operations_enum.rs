@@ -3,20 +3,6 @@ use super::ErrorReason;
 use num::complex::Complex;
 use simd_extensions::{Simd, Reg32, Reg64};
 
-/// The argument position. User internally to keep track of arguments.
-#[derive(Copy)]
-#[derive(Clone)]
-#[derive(PartialEq)]
-#[derive(Debug)]
-pub enum Argument
-{
-    /// First argument
-    A1,
-    
-    /// Second argument
-    A2
-}
-
 /// An alternative way to define operations on a vector.
 #[derive(Copy)]
 #[derive(Clone)]
@@ -24,24 +10,17 @@ pub enum Argument
 #[derive(Debug)]
 pub enum Operation<T>
 {
-    AddReal(Argument, T),
-    AddComplex(Argument, Complex<T>),
+    AddReal(usize, T),
+    AddComplex(usize, Complex<T>),
     //AddVector(&'a DataVector32<'a>),
-    MultiplyReal(Argument, T),
-    MultiplyComplex(Argument, Complex<T>),
+    MultiplyReal(usize, T),
+    MultiplyComplex(usize, Complex<T>),
     //MultiplyVector(&'a DataVector32<'a>),
-    Abs(Argument),
-    Magnitude(Argument),
-    Sqrt(Argument),
-    Log(Argument, T),
-    ToComplex(Argument)
-}
-
-pub fn argument_to_index(arg: Argument) -> usize {
-    match arg {
-        Argument::A1 => { 0 }
-        Argument::A2 => { 1 }
-    }
+    Abs(usize),
+    Magnitude(usize),
+    Sqrt(usize),
+    Log(usize, T),
+    ToComplex(usize)
 }
 
 pub fn evaluate_number_space_transition<T>(is_complex: bool, operation: Operation<T>) -> Result<bool, ErrorReason> 
@@ -101,7 +80,7 @@ pub fn evaluate_number_space_transition<T>(is_complex: bool, operation: Operatio
     }
 }
 
-pub fn get_argument<T>(operation: Operation<T>) -> Argument
+pub fn get_argument<T>(operation: Operation<T>) -> usize
     where T: RealNumber {
     match operation
     {
@@ -150,52 +129,44 @@ macro_rules! add_perform_ops_impl {
             {
                 match operation
                 {
-                    Operation::AddReal(arg, value) =>
+                    Operation::AddReal(idx, value) =>
                     {
-                        let idx = argument_to_index(arg);
                         vectors[idx] = vectors[idx].add_real(value);
                     }
-                    Operation::AddComplex(arg, value) =>
+                    Operation::AddComplex(idx, value) =>
                     {
-                        let idx = argument_to_index(arg);
                         vectors[idx] = vectors[idx].add_complex(value);
                     }
                     /*Operation32::Addself(value) =>
                     {
                         // TODO
                     }*/
-                    Operation::MultiplyReal(arg, value) =>
+                    Operation::MultiplyReal(idx, value) =>
                     {
-                        let idx = argument_to_index(arg);
                         vectors[idx] = vectors[idx].scale_real(value);
                     }
-                    Operation::MultiplyComplex(arg, value) =>
+                    Operation::MultiplyComplex(idx, value) =>
                     {
-                        let idx = argument_to_index(arg);
                         vectors[idx] = vectors[idx].scale_complex(value);
                     }
                     /*Operation32::Multiplyself(value) =>
                     {
                         // TODO
                     }*/
-                    Operation::Abs(arg) =>
+                    Operation::Abs(idx) =>
                     {
-                        let idx = argument_to_index(arg);
                         vectors[idx] = vectors[idx].iter_over_vector(|x|x.abs());
                     }
-                    Operation::Magnitude(arg) =>
+                    Operation::Magnitude(idx) =>
                     {
-                        let idx = argument_to_index(arg);
                         vectors[idx] = vectors[idx].complex_abs();
                     }
-                    Operation::Sqrt(arg) =>
+                    Operation::Sqrt(idx) =>
                     {
-                        let idx = argument_to_index(arg);
                         vectors[idx] = vectors[idx].sqrt();
                     }
-                    Operation::Log(arg, value) =>
+                    Operation::Log(idx, value) =>
                     {
-                        let idx = argument_to_index(arg);
                         vectors[idx] = vectors[idx].iter_over_vector(|x|x.log(value));
                     }
                     Operation::ToComplex(_) =>

@@ -21,9 +21,7 @@ mod slow_test {
         RealVectorOps,
         RededicateVector,
         Operation};
-    use basic_dsp::combined_ops::{
-        Argument, 
-        multi_ops1};
+    use basic_dsp::combined_ops::multi_ops1;
     use tools::*;
        
     #[allow(dead_code)]
@@ -68,8 +66,8 @@ mod slow_test {
             let a = create_data_with_len(201511141, iteration, 500008);
             let vector = DataVector32::from_array(false, DataVectorDomain::Time, &a);
             let mut ops = multi_ops1(vector.clone());
-            ops.add_enum_op(Operation::Log(Argument::A1, 10.0));
-            ops.add_enum_op(Operation::MultiplyReal(Argument::A1, 10.0));
+            ops.add_enum_op(Operation::Log(0, 10.0));
+            ops.add_enum_op(Operation::MultiplyReal(0, 10.0));
             let result = ops.get().unwrap();
             let expected = vector.log(10.0).and_then(|v| v.real_scale(10.0)).unwrap();
             assert_vector_eq(&expected.data(), &result.data());
