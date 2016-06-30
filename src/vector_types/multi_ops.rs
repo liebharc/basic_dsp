@@ -457,26 +457,29 @@ macro_rules! add_multi_ops_impl {
             
             fn perform_operations_par(mut array: Vec<&mut [$data_type]>, operations: &[Operation<$data_type>])
             {
-                let mut i = 0;
-                while i < array[0].len()
+                let mut regs: Vec<&mut [$reg]> = 
+                    array
+                        .iter_mut()
+                        .map(|a|$reg::array_to_regs_mut(a))
+                        .collect();
+            
+                for i in 0..regs[0].len()
                 { 
-                    let mut vectors = Vec::with_capacity(array.len());
-                    for j in 0..array.len() {
-                        vectors.push($reg::load(array[j], i));
+                    let mut vectors = Vec::with_capacity(regs.len());
+                    for j in 0..regs.len() {
+                        vectors.push(regs[j][i]);
                     }
-                    
+                
                     for operation in operations
                     {
                         PerformOperationSimd::<$data_type>::perform_operation(
                             &mut vectors, 
                             *operation);
                     }
-                
-                    for j in 0..array.len() {
-                        vectors[j].store(&mut array[j], i);
+                    
+                    for j in 0..regs.len() {
+                        regs[j][i] = vectors[j];
                     }
-               
-                    i += $reg::len();
                 }
             }
             

@@ -111,7 +111,7 @@ pub trait PerformOperationSimd<T>
     where T: RealNumber,
           Self: Sized {
     fn perform_operation(
-        &mut [Self],
+        vectors: &mut [Self],
         operation: Operation<T>);
         
     fn iter_over_vector<F>(self, op: F) -> Self
