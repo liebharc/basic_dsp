@@ -10,6 +10,8 @@ use super::{
     ComplexTimeVector,
     RealFreqVector,
     ComplexFreqVector,
+    RealVectorOps,
+    ComplexVectorOps,
     GenericDataVector,
     RededicateVector};  
 use super::operations_enum::{
@@ -410,26 +412,48 @@ macro_rules! add_multi_ops_impl {
                     return Err((ErrorReason::InvalidNumberOfArgumentsForCombinedOp, vectors));
                 }
             
-                let errors = Self::verify_ops(&vectors, operations);
-                if errors.is_some() {
-                    return Err((errors.unwrap(), vectors));
+                let verifcation = Self::verify_ops(&vectors, operations);
+                if verifcation.is_err() {
+                    return Err((verifcation.unwrap_err(), vectors));
                 }
+                
+                let (any_complex_ops, final_number_space) = verifcation.unwrap();
             
                 if operations.len() == 0
                 {
                     return Ok(vectors);
                 }
                 
-                let first_vec_len = vectors[0].len();
+                // All vectors are required to have the same length
+                let first_vec_len = vectors[0].points();
                 let mut has_errors = false;
                 for v in &vectors {
-                    if v.len() != first_vec_len {
+                    if v.points() != first_vec_len {
                         has_errors = true;
                     }
                 }
                 
                 if has_errors {
                     return Err((ErrorReason::InvalidNumberOfArgumentsForCombinedOp, vectors));
+                }
+                
+                // If the vectors needs to be complex at some point during the
+                // calculation the transform them to complex right away.
+                // This might be unnecessary in some cases, but covering
+                // complex/real mixed cases will cause more implementation effort
+                // later in the process so we better keep it simple for now.
+                if any_complex_ops {
+                    let mut complex_vectors = Vec::with_capacity(vectors.len());
+                    for _ in 0..vectors.len() {
+                        let vector = vectors.pop().unwrap();
+                        let as_complex = 
+                            if vector.is_complex() { vector }
+                            else { vector.to_complex().unwrap() };
+                        complex_vectors.push(as_complex);
+                    }
+                    
+                    complex_vectors.reverse();
+                    vectors = complex_vectors;
                 }
                 
                 let (vectorization_length, multicore_settings) =
@@ -469,6 +493,23 @@ macro_rules! add_multi_ops_impl {
                             operations, 
                             Self::perform_operations_par);
                 }
+                
+                // In case we converted vectors at the beginning to complex
+                // we might now need to convert them back to real.
+                if any_complex_ops {
+                    let mut correct_domain = Vec::with_capacity(vectors.len());
+                    for i in 0..vectors.len() {
+                        let vector = vectors.pop().unwrap();
+                        let right_domain = 
+                            if final_number_space[i] { vector }
+                            else { vector.to_real().unwrap() };
+                        correct_domain.push(right_domain);
+                    }
+                    
+                    correct_domain.reverse();
+                    vectors = correct_domain;
+                }
+                
                 Ok (vectors)
             }
             
@@ -509,24 +550,30 @@ macro_rules! add_multi_ops_impl {
                 }
             }
             
-            fn verify_ops(vectors: &[Self], operations: &[Operation<$data_type>]) -> Option<ErrorReason> {
+            fn verify_ops(vectors: &[Self], operations: &[Operation<$data_type>]) -> Result<(bool, Vec<bool>), ErrorReason> {
                 let mut complex: Vec<bool> = vectors.iter().map(|v|v.is_complex()).collect();
                 let max_arg_num =  vectors.len();
+                let mut complex_at_any_moment = complex.clone();
                 for op in operations {
                     let index = get_argument(*op);
                     
                     if index >= max_arg_num {
-                        return Some(ErrorReason::InvalidNumberOfArgumentsForCombinedOp);
+                        return Err(ErrorReason::InvalidNumberOfArgumentsForCombinedOp);
                     }
                     
                     let eval = evaluate_number_space_transition(complex[index], *op);
-                    complex[index] = match eval {
-                        Err(reason) => { return Some(reason) }
+                    let complex_after_op = match eval {
+                        Err(reason) => { return Err(reason) }
                         Ok(new_complex) => { new_complex }
+                    };
+                    
+                    complex[index] = complex_after_op;
+                    if complex_after_op {
+                        complex_at_any_moment[index] = complex_after_op;
                     }
                 }
                 
-                None
+                Ok((complex_at_any_moment.iter().any(|c|*c), complex))
             }
         }
      }

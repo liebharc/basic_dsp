@@ -110,6 +110,7 @@ pub fn get_argument<T>(operation: Operation<T>) -> usize
 pub trait PerformOperationSimd<T>
     where T: RealNumber,
           Self: Sized {
+    #[inline]
     fn perform_operation(
         vectors: &mut [Self],
         operation: Operation<T>);
@@ -123,6 +124,7 @@ macro_rules! add_perform_ops_impl {
      =>
      {
         impl PerformOperationSimd<$data_type> for $reg {
+            #[inline]
             fn perform_operation(
                 vectors: &mut [Self],
                 operation: Operation<$data_type>)
