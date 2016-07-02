@@ -19,9 +19,9 @@ mod slow_test {
         SymmetricFrequencyDomainOperations,
         GenericVectorOps,
         RealVectorOps,
-        RededicateVector,
-        Operation};
-    use basic_dsp::combined_ops::multi_ops1;
+        ComplexVectorOps,
+        RededicateVector};
+    use basic_dsp::combined_ops::*;
     use tools::*;
        
     #[allow(dead_code)]
@@ -61,7 +61,7 @@ mod slow_test {
     }
     
     #[test]
-    fn multi_ops_vector32() {
+    fn multi_ops1_vector32() {
         parameterized_vector_test(|iteration, _| {
             let a = create_data_with_len(201511141, iteration, 500008);
             let vector = DataVector32::from_array(false, DataVectorDomain::Time, &a);
