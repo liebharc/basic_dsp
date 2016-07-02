@@ -479,13 +479,13 @@ macro_rules! add_multi_ops_impl {
                 let mut new_ops = Vec::new();
                 let swap = 
                     {
-                        let t1 = TO1::Identifier::new(ARGUMENT1);
-                        let t2  = TO2::Identifier::new(ARGUMENT2);
+                        let t1 = TO1::Identifier::new(if self.swap { ARGUMENT2 } else { ARGUMENT1 });
+                        let t2  = TO2::Identifier::new(if self.swap { ARGUMENT1 } else { ARGUMENT2 });
                         let (r1, r2) = operation(t1, t2);
                         let r1arg = r1.get_arg();
                         new_ops.append(&mut r1.get_ops());
                         new_ops.append(&mut r2.get_ops());
-                        self.swap != (r1arg == ARGUMENT2)
+                        (r1arg == ARGUMENT2)
                     };
                  // In theory the sequence counter could overflow.
                  // In practice if we assume that the counter is increment 
@@ -745,6 +745,7 @@ macro_rules! add_multi_ops_impl {
                             (data_length - scalar_length, first.multicore_settings)
                         }
                     };
+                
                 let complexity = if operations.len() > 5 { Complexity::Large } else { Complexity::Medium };
                 {
                     let mut array: Vec<&mut [$data_type]> = vectors.iter_mut().map(|v| {
@@ -1015,6 +1016,7 @@ pub fn multi_ops2<T, A, B>(a: A, b: B)
 #[cfg(test)]
 mod tests {
     use super::super::*;
+    use super::super::operations_enum::*;
     use super::*;
 
     #[test]
@@ -1086,7 +1088,7 @@ mod tests {
         let ops = prepare2::<f32, ComplexTimeVector32, RealTimeVector32>();
         let ops = ops.add_ops(|a, b| (b, a));
         let ops = ops.add_ops(|a, b| (b, a));
-        
+                
         let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
         let a = ComplexTimeVector32::from_interleaved(&array);
         let b = RealTimeVector32::from_array(&array);
@@ -1098,6 +1100,18 @@ mod tests {
         assert_eq!(c.is_complex(), true);
         assert_eq!(d.is_complex(), false);
         assert_eq!(d.len(), 8);
+    }
+    
+    #[test]
+    fn argument_index_assignment()
+    {
+        let ops = prepare2::<f32, ComplexTimeVector32, RealTimeVector32>();
+        let ops = ops.add_ops(|a, b| (b.abs(), a));
+        let ops = ops.add_ops(|a, b| (b, a.abs()));
+        let mut exp_ops = Vec::new();
+        exp_ops.push(Operation::Abs(1));
+        exp_ops.push(Operation::Abs(1));
+        assert_eq!(ops.ops, exp_ops);
     }
     
     #[test]
