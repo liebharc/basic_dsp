@@ -642,7 +642,7 @@ pub trait RealVectorOps<T> : DataVector<T>
     /// let result = vector.real_offset(2.0).expect("Ignoring error handling in examples");
     /// assert_eq!([3.0, 4.0], result.data());
     /// ```
-    fn real_offset(self, offset: T) -> VecResult<Self>;
+    fn real_offset(self, factor: T) -> VecResult<Self>;
     
     /// Multiplies the vector with a scalar. See also: `ScaleOps` trait.
     /// # Example

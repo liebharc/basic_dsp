@@ -21,6 +21,7 @@ use super::operations_enum::{
     PerformOperationSimd};
 use multicore_support::{Chunk, Complexity};
 use simd_extensions::{Simd, Reg32, Reg64};
+use num::Complex;
 
 const ARGUMENT1: usize = 0;
 const ARGUMENT2: usize = 1;
@@ -49,14 +50,62 @@ pub trait ComplexIdentifier<T> : Identifier<T>
     where T: RealNumber 
 {
     type RealPartner;
+    fn complex_offset(self, offset: Complex<T>) -> Self;
+    fn complex_scale(self, factor: Complex<T>) -> Self;
+    fn multiply_complex_exponential(self, a: T, b: T) -> Self;
     fn magnitude(self) -> Self::RealPartner;
+    fn magnitude_squared(self) -> Self::RealPartner;
+    fn complex_conj(self) -> Self;
+    fn to_real(self) -> Self::RealPartner;
+    fn to_imag(self) -> Self::RealPartner;
+    fn phase(self) -> Self::RealPartner;
 }
 
 pub trait RealIdentifier<T> : Identifier<T>
     where T: RealNumber 
 {
     type ComplexPartner;
+    fn real_offset(self, offset: T) -> Self;
+    fn real_scale(self, factor: T) -> Self;
+    fn abs(self) -> Self;
     fn to_complex(self) -> Self::ComplexPartner;
+}
+
+pub trait GeneralIdentifier<T> : Identifier<T>
+    where T: RealNumber 
+{
+    fn add_vector(self, summand: &Self) -> Self;
+    fn subtract_vector(self, subtrahend: &Self) -> Self;
+    fn multiply_vector(self, factor: &Self) -> Self;
+    fn divide_vector(self, divisor: &Self) -> Self;
+    fn sqrt(self) -> Self;
+    fn square(self) -> Self;
+    fn root(self, degree: T) -> Self;
+    fn powf(self, exponent: T) -> Self;
+    fn ln(self) -> Self;
+    fn exp(self) -> Self;
+    fn log(self, base: T) -> Self;
+    fn expf(self, base: T) -> Self;
+    fn sin(self) -> Self;
+    fn cos(self) -> Self;
+    fn tan(self) -> Self;
+    fn asin(self) -> Self;
+    fn acos(self) -> Self;
+    fn atan(self) -> Self;
+    fn sinh(self) -> Self;
+    fn cosh(self) -> Self;
+    fn tanh(self) -> Self;
+    fn asinh(self) -> Self;
+    fn acosh(self) -> Self;
+    fn atanh(self) -> Self;
+}
+
+pub trait Scale<T>: Sized where T: Sized {
+    fn scale(self, offset: T) -> Self;
+}
+
+pub trait Offset<T>: Sized where T: Sized {
+    fn offset(self, offset: T) -> Self;
 }
 
 macro_rules! create_identfier {
@@ -178,9 +227,50 @@ macro_rules! add_complex_multi_ops_impl {
      {    
         impl ComplexIdentifier<$data_type> for $name<$data_type> {
             type RealPartner = $partner<$data_type>;
+            
+            fn complex_offset(self, offset: Complex<$data_type>) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::AddComplex(arg, offset))
+            }
+            
+            fn complex_scale(self, factor: Complex<$data_type>) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::MultiplyComplex(arg, factor))
+            }
+            
+            fn multiply_complex_exponential(self, a: $data_type, b: $data_type) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::MultiplyComplexExponential(arg, a, b))
+            }
+            
             fn magnitude(self) -> Self::RealPartner {
                 let arg = self.arg;
                 self.add_op(Operation::Magnitude(arg))
+            }
+            
+            fn magnitude_squared(self) -> Self::RealPartner {
+                let arg = self.arg;
+                self.add_op(Operation::MagnitudeSquared(arg))
+            }
+            
+            fn complex_conj(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::ComplexConj(arg))
+            }
+            
+            fn to_real(self) -> Self::RealPartner {
+                let arg = self.arg;
+                self.add_op(Operation::ToReal(arg))
+            }
+            
+            fn to_imag(self) -> Self::RealPartner {
+                let arg = self.arg;
+                self.add_op(Operation::ToImag(arg))
+            }
+            
+            fn phase(self) -> Self::RealPartner {
+                let arg = self.arg;
+                self.add_op(Operation::Phase(arg))
             }
         }
      }
@@ -192,10 +282,26 @@ macro_rules! add_real_multi_ops_impl {
      {    
         impl RealIdentifier<$data_type> for $name<$data_type> {
             type ComplexPartner = $partner<$data_type>;
+            fn real_offset(self, offset: $data_type) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::AddReal(arg, offset))
+            }
+            
+            fn real_scale(self, factor: $data_type) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::MultiplyReal(arg, factor))
+            }
+            
+            fn abs(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::Abs(arg))
+            }
+            
             fn to_complex(self) -> Self::ComplexPartner {
                 let arg = self.arg;
                 self.add_op(Operation::ToComplex(arg))
             }
+            
         }
      }
 }   
