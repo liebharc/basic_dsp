@@ -16,9 +16,10 @@ mod bench {
         RealVectorOps,
         DataVector32,
         RealTimeVector32,
-        RealTimeVector64,
+        RealTimeVector64};
+    use basic_dsp::combined_ops::{
+        multi_ops1,
         Operation};
-    use basic_dsp::combined_ops::multi_ops1;
     use tools::{VectorBox, DEFAULT_DATA_SIZE, Size};
     
     #[inline(never)]

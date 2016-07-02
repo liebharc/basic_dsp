@@ -1,6 +1,7 @@
 use super::super::RealNumber;
 use super::ErrorReason;
 use num::complex::Complex;
+use complex_extensions::ComplexExtensions;
 use simd_extensions::{Simd, Reg32, Reg64};
 use std::ops::{Add, Sub, Mul, Div};
 
@@ -20,7 +21,6 @@ pub enum Operation<T>
     // Complex Ops
     AddComplex(usize, Complex<T>),
     MultiplyComplex(usize, Complex<T>),
-    MultiplyComplexExponential(usize, T, T),
     Magnitude(usize),
     MagnitudeSquared(usize),
     ComplexConj(usize),
@@ -77,7 +77,6 @@ pub fn evaluate_number_space_transition<T>(is_complex: bool, operation: Operatio
         // Complex Ops
         Operation::AddComplex(_, _) => require_complex(is_complex),
         Operation::MultiplyComplex(_, _) => require_complex(is_complex),
-        Operation::MultiplyComplexExponential(_, _, _) => require_complex(is_complex),
         Operation::Magnitude(_) => require_complex(is_complex),
         Operation::MagnitudeSquared(_) => require_complex(is_complex),
         Operation::ComplexConj(_) => require_complex(is_complex),
@@ -124,7 +123,6 @@ pub fn get_argument<T>(operation: Operation<T>) -> usize
         // Complex Ops
         Operation::AddComplex(arg, _) => arg,
         Operation::MultiplyComplex(arg, _) => arg,
-        Operation::MultiplyComplexExponential(arg, _, _) => arg,
         Operation::Magnitude(arg) => arg,
         Operation::MagnitudeSquared(arg) => arg,
         Operation::ComplexConj(arg) => arg,
@@ -225,10 +223,6 @@ macro_rules! add_perform_ops_impl {
                         let v = unsafe { vectors.get_unchecked_mut(idx) };
                         *v = v.scale_complex(value);
                     }
-                    Operation::MultiplyComplexExponential(idx, _, _) => 
-                    {
-                        panic!("Not implemented yet {}", idx)
-                    }
                     Operation::Magnitude(idx) =>
                     {
                         let v = unsafe { vectors.get_unchecked_mut(idx) };
@@ -241,36 +235,54 @@ macro_rules! add_perform_ops_impl {
                     }
                     Operation::ComplexConj(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let arg = $reg::from_complex(Complex::<$data_type>::new(1.0, -1.0));
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.mul(arg);
                     }
                     Operation::ToReal(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        // We don't have to reorganize the data and just need to zero the imag part
+                        let arg = $reg::from_complex(Complex::<$data_type>::new(1.0, 0.0));
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.mul(arg);
                     }
                     Operation::ToImag(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let arg = $reg::from_complex(Complex::<$data_type>::new(0.0, -1.0));
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        let swapped  = v.mul_complex(arg);
+                        let arg = $reg::from_complex(Complex::<$data_type>::new(1.0, 0.0));
+                        *v = swapped.mul(arg);
                     }
                     Operation::Phase(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|Complex::new(x.arg(), 0.0));
                     }
                     // General Ops
-                    Operation::AddVector(idx, _) => 
+                    Operation::AddVector(idx1, idx2) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v2 = unsafe { *vectors.get_unchecked(idx2) };
+                        let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
+                        *v1 = v1.add(v2);
                     }
-                    Operation::SubVector(idx, _) => 
+                    Operation::SubVector(idx1, idx2) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v2 = unsafe { *vectors.get_unchecked(idx2) };
+                        let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
+                        *v1 = v1.sub(v2);
                     }
-                    Operation::MulVector(idx, _) => 
+                    Operation::MulVector(idx1, idx2) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v2 = unsafe { *vectors.get_unchecked(idx2) };
+                        let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
+                        *v1 = v1.mul_complex(v2);
                     }
-                    Operation::DivVector(idx, _) => 
+                    Operation::DivVector(idx1, idx2) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v2 = unsafe { *vectors.get_unchecked(idx2) };
+                        let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
+                        *v1 = v1.div_complex(v2);
                     }
                     Operation::Sqrt(idx) =>
                     {
@@ -279,80 +291,98 @@ macro_rules! add_perform_ops_impl {
                     }
                     Operation::Square(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.mul_complex(*v);
                     }
-                    Operation::Root(idx, _) => 
+                    Operation::Root(idx, value) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.powf(1.0 / value));
                     }
-                    Operation::Powf(idx, _) => 
+                    Operation::Powf(idx, value) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.powf(value));
                     }
                     Operation::Ln(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.ln());
                     }
                     Operation::Exp(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.exp());
                     }
                     Operation::Log(idx, value) =>
                     {
                         let v = unsafe { vectors.get_unchecked_mut(idx) };
-                        *v = v.iter_over_vector(|x|x.log(value));
+                        *v = v.iter_over_complex_vector(|x|x.log_base(value));
                     }
-                    Operation::Expf(idx, _) => 
+                    Operation::Expf(idx, value) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.exp_base(value));
                     }
                     Operation::Sin(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.sin());
                     }
                     Operation::Cos(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.cos());
                     }
                     Operation::Tan(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.tan());
                     }
                     Operation::ASin(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.asin());
                     }
                     Operation::ACos(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.acos());
                     }
                     Operation::ATan(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.atan());
                     }
                     Operation::Sinh(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.sinh());
                     }
                     Operation::Cosh(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.cosh());
                     }
                     Operation::Tanh(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.tanh());
                     }
                     Operation::ASinh(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.asinh());
                     }
                     Operation::ACosh(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.acosh());
                     }
                     Operation::ATanh(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_complex_vector(|x|x.atanh());
                     }
                 }
             }
@@ -390,10 +420,6 @@ macro_rules! add_perform_ops_impl {
                         panic!("complex operation on real vector indicates a bug");
                     }
                     Operation::MultiplyComplex(_, _) =>
-                    {
-                        panic!("complex operation on real vector indicates a bug");
-                    }
-                    Operation::MultiplyComplexExponential(_, _, _) => 
                     {
                         panic!("complex operation on real vector indicates a bug");
                     }

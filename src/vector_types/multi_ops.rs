@@ -52,7 +52,6 @@ pub trait ComplexIdentifier<T> : Identifier<T>
     type RealPartner;
     fn complex_offset(self, offset: Complex<T>) -> Self;
     fn complex_scale(self, factor: Complex<T>) -> Self;
-    fn multiply_complex_exponential(self, a: T, b: T) -> Self;
     fn magnitude(self) -> Self::RealPartner;
     fn magnitude_squared(self) -> Self::RealPartner;
     fn complex_conj(self) -> Self;
@@ -236,11 +235,6 @@ macro_rules! add_complex_multi_ops_impl {
             fn complex_scale(self, factor: Complex<$data_type>) -> Self {
                 let arg = self.arg;
                 self.add_op(Operation::MultiplyComplex(arg, factor))
-            }
-            
-            fn multiply_complex_exponential(self, a: $data_type, b: $data_type) -> Self {
-                let arg = self.arg;
-                self.add_op(Operation::MultiplyComplexExponential(arg, a, b))
             }
             
             fn magnitude(self) -> Self::RealPartner {
