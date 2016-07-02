@@ -82,10 +82,10 @@ pub mod time_freq_impl;
 pub mod convolution_impl;
 pub mod correlation_impl;
 pub mod interpolation_impl;
-pub mod multi_ops;
 mod rededicate_impl;
 mod stats_impl;
-mod operations_enum;
+pub mod multi_ops;
+pub mod operations_enum;
 
 pub use vector_types::definitions::{
         DataVectorDomain,
@@ -118,25 +118,7 @@ pub use vector_types::convolution_impl::{
 pub use vector_types::correlation_impl::CrossCorrelation;
 pub use vector_types::interpolation_impl::{
     Interpolation,
-    RealInterpolation};
-pub use vector_types::multi_ops::{
-    ToIdentifier,
-    Identifier,
-    GenericDataIdentifier,
-    RealTimeIdentifier,
-    ComplexTimeIdentifier,
-    RealFreqIdentifier,
-    ComplexFreqIdentifier,
-    ComplexIdentifier,
-    PreparedOperation1,
-    PreparedOperation2,
-    prepare2,
-    prepare1,
-    MultiOperation1,
-    MultiOperation2,
-    multi_ops1,
-    multi_ops2};   
-pub use vector_types::operations_enum::Operation;
+    RealInterpolation};  
 use num::complex::Complex;
 use RealNumber;
 use multicore_support::{Chunk, Complexity, MultiCoreSettings};

@@ -942,6 +942,7 @@ pub fn multi_ops2<T, A, B>(a: A, b: B)
 #[cfg(test)]
 mod tests {
     use super::super::*;
+    use super::*;
 
     #[test]
     fn multi_ops_construction()
