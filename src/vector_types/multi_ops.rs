@@ -306,6 +306,137 @@ macro_rules! add_real_multi_ops_impl {
      }
 }   
 
+macro_rules! add_general_multi_ops_impl {
+    ($data_type:ident, $name: ident, $partner: ident)
+     =>
+     {    
+        pub trait GeneralIdentifier<T> : Identifier<$data_type>
+                where $data_type: RealNumber 
+        {
+            fn add_vector(self, summand: &Self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::AddVector(arg, summand))
+            }
+            
+            fn subtract_vector(self, subtrahend: &Self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::SubVector(arg, subtrahend))
+            }
+            
+            fn multiply_vector(self, factor: &Self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::MulVector(arg, factor))
+            }
+            
+            fn divide_vector(self, divisor: &Self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::DivVector(arg, divisor))
+            }
+            
+            fn sqrt(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::Sqrt(arg))
+            }
+            
+            fn square(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::Square(arg))
+            }
+            
+            fn root(self, degree: $data_type) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::Root(arg, degree))
+            }
+            
+            fn powf(self, exponent: $data_type) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::Powf(arg, exponent))
+            }
+            
+            fn ln(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::Ln(arg))
+            }
+            
+            fn exp(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::Exp(arg))
+            }
+            
+            fn log(self, base: $data_type) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::Log(arg, base))
+            }
+            
+            fn expf(self, base: $data_type) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::Expf(arg, base))
+            }
+            
+            fn sin(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::Sin(arg))
+            }
+            
+            fn cos(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::Cos(arg))
+            }
+            
+            fn tan(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::Tan(arg))
+            }
+            
+            fn asin(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::ASin(arg))
+            }
+            
+            fn acos(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::ACos(arg))
+            }
+            
+            fn atan(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::ATan(arg))
+            }
+            
+            fn sinh(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::Sinh(arg))
+            }
+            
+            fn cosh(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::Cosh(arg))
+            }
+            
+            fn tanh(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::Tanh(arg))
+            }
+            
+            fn asinh(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::ASinh(arg))
+            }
+            
+            fn acosh(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::ACosh(arg))
+            }
+            
+            fn atanh(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::ATanh(arg))
+            }
+        }
+     }
+}   
+
+
 macro_rules! add_multi_ops_impl {
     ($data_type:ident, $reg:ident)
      =>
