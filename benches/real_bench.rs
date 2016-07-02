@@ -89,7 +89,34 @@ mod bench {
     }
     
     #[bench]
-    fn multi_operations_vector_32_benchmark(b: &mut Bencher)
+    fn multi_operations_2ops_vector_32_benchmark(b: &mut Bencher)
+    {
+        let mut vector = VectorBox::<DataVector32>::new(Size::Small, false);
+        b.iter(|| {
+            vector.execute(|v|  
+                {
+                    let mut ops = multi_ops1(v);
+                    ops.add_enum_op(Operation::Log(0, 10.0));
+                    ops.add_enum_op(Operation::MultiplyReal(0, 10.0));
+                    ops.get().unwrap()
+                })
+        });
+    }
+    
+    #[bench]
+    fn multi_operations_2ops_vector_32_reference(b: &mut Bencher)
+    {
+        let mut vector = VectorBox::<DataVector32>::new(Size::Small, true);
+        b.iter(|| {
+            vector.execute_res(|v|  { 
+                v.log(10.0)
+                    .and_then(|v| v.real_scale(10.0)) 
+            } )
+        });
+    }
+    
+    #[bench]
+    fn multi_operations_3ops_vector_32_benchmark(b: &mut Bencher)
     {
         let mut vector = VectorBox::<DataVector32>::new(Size::Small, false);
         b.iter(|| {
@@ -105,7 +132,7 @@ mod bench {
     }
     
     #[bench]
-    fn multi_operations_vector_32_reference(b: &mut Bencher)
+    fn multi_operations_3ops_vector_32_reference(b: &mut Bencher)
     {
         let mut vector = VectorBox::<DataVector32>::new(Size::Small, true);
         b.iter(|| {

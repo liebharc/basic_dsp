@@ -405,6 +405,11 @@ macro_rules! add_multi_ops_impl {
             fn perform_operations(mut vectors: Vec<Self>, operations: &[Operation<$data_type>])
                 -> VecResult<Vec<Self>>
             {
+                if vectors.len() == 0
+                {
+                    return Err((ErrorReason::InvalidNumberOfArgumentsForCombinedOp, vectors));
+                }
+            
                 let errors = Self::verify_ops(&vectors, operations);
                 if errors.is_some() {
                     return Err((errors.unwrap(), vectors));
@@ -413,6 +418,18 @@ macro_rules! add_multi_ops_impl {
                 if operations.len() == 0
                 {
                     return Ok(vectors);
+                }
+                
+                let first_vec_len = vectors[0].len();
+                let mut has_errors = false;
+                for v in &vectors {
+                    if v.len() != first_vec_len {
+                        has_errors = true;
+                    }
+                }
+                
+                if has_errors {
+                    return Err((ErrorReason::InvalidNumberOfArgumentsForCombinedOp, vectors));
                 }
                 
                 let (vectorization_length, multicore_settings) =
@@ -462,12 +479,18 @@ macro_rules! add_multi_ops_impl {
                         .iter_mut()
                         .map(|a|$reg::array_to_regs_mut(a))
                         .collect();
+                let mut vectors = Vec::with_capacity(regs.len());
+                for j in 0..regs.len() {
+                   vectors.push(regs[j][0]);
+                }
             
                 for i in 0..regs[0].len()
                 { 
-                    let mut vectors = Vec::with_capacity(regs.len());
                     for j in 0..regs.len() {
-                        vectors.push(regs[j][i]);
+                        unsafe {
+                            let elem = vectors.get_unchecked_mut(j);
+                            *elem = *regs.get_unchecked(j).get_unchecked(i);
+                        }
                     }
                 
                     for operation in operations
@@ -478,15 +501,24 @@ macro_rules! add_multi_ops_impl {
                     }
                     
                     for j in 0..regs.len() {
-                        regs[j][i] = vectors[j];
+                        unsafe {
+                            let elem = regs.get_unchecked_mut(j).get_unchecked_mut(i);
+                            *elem = *vectors.get_unchecked(j);
+                        }
                     }
                 }
             }
             
             fn verify_ops(vectors: &[Self], operations: &[Operation<$data_type>]) -> Option<ErrorReason> {
                 let mut complex: Vec<bool> = vectors.iter().map(|v|v.is_complex()).collect();
+                let max_arg_num =  vectors.len();
                 for op in operations {
                     let index = get_argument(*op);
+                    
+                    if index >= max_arg_num {
+                        return Some(ErrorReason::InvalidNumberOfArgumentsForCombinedOp);
+                    }
+                    
                     let eval = evaluate_number_space_transition(complex[index], *op);
                     complex[index] = match eval {
                         Err(reason) => { return Some(reason) }

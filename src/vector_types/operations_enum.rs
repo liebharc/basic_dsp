@@ -131,11 +131,13 @@ macro_rules! add_perform_ops_impl {
                 {
                     Operation::AddReal(idx, value) =>
                     {
-                        vectors[idx] = vectors[idx].add_real(value);
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.add_real(value);
                     }
                     Operation::AddComplex(idx, value) =>
                     {
-                        vectors[idx] = vectors[idx].add_complex(value);
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.add_complex(value);
                     }
                     /*Operation32::Addself(value) =>
                     {
@@ -143,11 +145,13 @@ macro_rules! add_perform_ops_impl {
                     }*/
                     Operation::MultiplyReal(idx, value) =>
                     {
-                        vectors[idx] = vectors[idx].scale_real(value);
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.scale_real(value);
                     }
                     Operation::MultiplyComplex(idx, value) =>
                     {
-                        vectors[idx] = vectors[idx].scale_complex(value);
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.scale_complex(value);
                     }
                     /*Operation32::Multiplyself(value) =>
                     {
@@ -155,19 +159,23 @@ macro_rules! add_perform_ops_impl {
                     }*/
                     Operation::Abs(idx) =>
                     {
-                        vectors[idx] = vectors[idx].iter_over_vector(|x|x.abs());
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.abs());
                     }
                     Operation::Magnitude(idx) =>
                     {
-                        vectors[idx] = vectors[idx].complex_abs();
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.complex_abs();
                     }
                     Operation::Sqrt(idx) =>
                     {
-                        vectors[idx] = vectors[idx].sqrt();
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.sqrt();
                     }
                     Operation::Log(idx, value) =>
                     {
-                        vectors[idx] = vectors[idx].iter_over_vector(|x|x.log(value));
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.log(value));
                     }
                     Operation::ToComplex(_) =>
                     {

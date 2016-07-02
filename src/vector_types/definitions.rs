@@ -1110,7 +1110,11 @@ pub enum ErrorReason {
     VectorMustHaveAnOddLength,
     
     /// The function passed as argument must be symmetric
-    ArgumentFunctionMustBeSymmetric
+    ArgumentFunctionMustBeSymmetric,
+    
+    /// The number of arguments passed into a combined operation methods doesn't match
+    /// with the number of arguments specified previously via the `add_op` methods.
+    InvalidNumberOfArgumentsForCombinedOp,
 }
 
 /// Result contains on success the vector. On failure it contains an error reason and an vector with invalid data
