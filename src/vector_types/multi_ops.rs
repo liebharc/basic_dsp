@@ -751,11 +751,20 @@ macro_rules! add_multi_ops_impl {
                         let len = v.len();
                         &mut v.data[0..len]
                     }).collect();
-                    Chunk::execute_partial_multidim(
+                    if any_complex_ops {
+                        Chunk::execute_partial_multidim(
                             complexity, &multicore_settings,
                             &mut array, vectorization_length, $reg::len(), 
                             operations, 
-                            Self::perform_operations_par);
+                            Self::perform_complex_operations_par);
+                    }
+                    else {
+                        Chunk::execute_partial_multidim(
+                            complexity, &multicore_settings,
+                            &mut array, vectorization_length, $reg::len(), 
+                            operations, 
+                            Self::perform_real_operations_par);
+                    }
                 }
                 
                 // In case we converted vectors at the beginning to complex
@@ -777,7 +786,7 @@ macro_rules! add_multi_ops_impl {
                 Ok (vectors)
             }
             
-            fn perform_operations_par(mut array: Vec<&mut [$data_type]>, operations: &[Operation<$data_type>])
+            fn perform_complex_operations_par(mut array: Vec<&mut [$data_type]>, operations: &[Operation<$data_type>])
             {
                 let mut regs: Vec<&mut [$reg]> = 
                     array
@@ -800,7 +809,44 @@ macro_rules! add_multi_ops_impl {
                 
                     for operation in operations
                     {
-                        PerformOperationSimd::<$data_type>::perform_operation(
+                        PerformOperationSimd::<$data_type>::perform_complex_operation(
+                            &mut vectors, 
+                            *operation);
+                    }
+                    
+                    for j in 0..regs.len() {
+                        unsafe {
+                            let elem = regs.get_unchecked_mut(j).get_unchecked_mut(i);
+                            *elem = *vectors.get_unchecked(j);
+                        }
+                    }
+                }
+            }
+            
+            fn perform_real_operations_par(mut array: Vec<&mut [$data_type]>, operations: &[Operation<$data_type>])
+            {
+                let mut regs: Vec<&mut [$reg]> = 
+                    array
+                        .iter_mut()
+                        .map(|a|$reg::array_to_regs_mut(a))
+                        .collect();
+                let mut vectors = Vec::with_capacity(regs.len());
+                for j in 0..regs.len() {
+                   vectors.push(regs[j][0]);
+                }
+            
+                for i in 0..regs[0].len()
+                { 
+                    for j in 0..regs.len() {
+                        unsafe {
+                            let elem = vectors.get_unchecked_mut(j);
+                            *elem = *regs.get_unchecked(j).get_unchecked(i);
+                        }
+                    }
+                
+                    for operation in operations
+                    {
+                        PerformOperationSimd::<$data_type>::perform_real_operation(
                             &mut vectors, 
                             *operation);
                     }

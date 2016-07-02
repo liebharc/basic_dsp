@@ -162,12 +162,21 @@ pub trait PerformOperationSimd<T>
     where T: RealNumber,
           Self: Sized {
     #[inline]
-    fn perform_operation(
+    fn perform_real_operation(
+        vectors: &mut [Self],
+        operation: Operation<T>);
+    #[inline]
+    fn perform_complex_operation(
         vectors: &mut [Self],
         operation: Operation<T>);
         
+    #[inline]
     fn iter_over_vector<F>(self, op: F) -> Self
        where F: Fn(T) -> T;
+       
+    #[inline]
+    fn iter_over_complex_vector<F>(self, op: F) -> Self
+       where F: Fn(Complex<T>) -> Complex<T>;
 }
 
 macro_rules! add_perform_ops_impl {
@@ -176,12 +185,10 @@ macro_rules! add_perform_ops_impl {
      {
         impl PerformOperationSimd<$data_type> for $reg {
             #[inline]
-            fn perform_operation(
+            fn perform_complex_operation(
                 vectors: &mut [Self],
                 operation: Operation<$data_type>)
             {
-                
-            
                 match operation
                 {
                     // Real Ops
@@ -346,6 +353,176 @@ macro_rules! add_perform_ops_impl {
                 }
             }
             
+            #[inline]
+            fn perform_real_operation(
+                vectors: &mut [Self],
+                operation: Operation<$data_type>)
+            {
+                match operation
+                {
+                    // Real Ops
+                    Operation::AddReal(idx, value) =>
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.add_real(value);
+                    }
+                    Operation::MultiplyReal(idx, value) =>
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.scale_real(value);
+                    }
+                    Operation::Abs(idx) =>
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.abs());
+                    }
+                    Operation::ToComplex(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    // Complex Ops
+                    Operation::AddComplex(idx, value) =>
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.add_complex(value);
+                    }
+                    Operation::MultiplyComplex(idx, value) =>
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.scale_complex(value);
+                    }
+                    Operation::MultiplyComplexExponential(idx, _, _) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::Magnitude(idx) =>
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.complex_abs();
+                    }
+                    Operation::MagnitudeSquared(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::ComplexConj(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::ToReal(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::ToImag(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::Phase(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    // General Ops
+                    Operation::AddVector(idx, _) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::SubVector(idx, _) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::MulVector(idx, _) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::DivVector(idx, _) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::Sqrt(idx) =>
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.sqrt();
+                    }
+                    Operation::Square(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::Root(idx, _) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::Powf(idx, _) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::Ln(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::Exp(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::Log(idx, value) =>
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.log(value));
+                    }
+                    Operation::Expf(idx, _) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::Sin(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::Cos(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::Tan(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::ASin(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::ACos(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::ATan(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::Sinh(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::Cosh(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::Tanh(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::ASinh(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::ACosh(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                    Operation::ATanh(idx) => 
+                    {
+                        panic!("Not implemented yet {}", idx)
+                    }
+                }
+            }
+            
+            #[inline]
             fn iter_over_vector<F>(self, op: F) -> Self
                 where F: Fn($data_type) -> $data_type {
                 let mut array = self.to_array();
@@ -353,6 +530,16 @@ macro_rules! add_perform_ops_impl {
                     *n = op(*n);
                 }
                 $reg::from_array(array)
+            }
+            
+            #[inline]
+            fn iter_over_complex_vector<F>(self, op: F) -> Self
+                where F: Fn(Complex<$data_type>) -> Complex<$data_type> {
+                let mut array = self.to_complex_array();
+                for n in &mut array {
+                    *n = op(*n);
+                }
+                $reg::from_complex_array(array)
             }
         }
     }

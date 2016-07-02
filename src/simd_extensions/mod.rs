@@ -6,6 +6,9 @@ pub trait Simd<T> : Sized
     type Array;
     fn to_array(self) -> Self::Array;
     fn from_array(array: Self::Array) -> Self;
+    type ComplexArray;
+    fn to_complex_array(self) -> Self::ComplexArray;
+    fn from_complex_array(array: Self::ComplexArray) -> Self;
     fn array_to_regs(array: &[T]) -> &[Self];
     fn array_to_regs_mut(array: &mut [T]) -> &mut [Self];
     fn len() -> usize;

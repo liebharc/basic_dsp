@@ -20,6 +20,16 @@ impl Simd<f32> for f32x4
     fn from_array(array: Self::Array) -> Self {
         unsafe { mem::transmute(array) }
     }
+    
+    type ComplexArray = [Complex<f32>; 2];
+
+    fn to_complex_array(self) -> Self::ComplexArray {
+        unsafe { mem::transmute(self) }
+    }
+    
+    fn from_complex_array(array: Self::ComplexArray) -> Self {
+        unsafe { mem::transmute(array) }
+    }
 
     fn array_to_regs(array: &[f32]) -> &[Self] {
         unsafe { 
@@ -172,6 +182,16 @@ impl Simd<f64> for f64x2
     }
     
     fn from_array(array: Self::Array) -> Self {
+        unsafe { mem::transmute(array) }
+    }
+    
+    type ComplexArray = [Complex<f64>; 1];
+
+    fn to_complex_array(self) -> Self::ComplexArray {
+        unsafe { mem::transmute(self) }
+    }
+    
+    fn from_complex_array(array: Self::ComplexArray) -> Self {
         unsafe { mem::transmute(array) }
     }
 
