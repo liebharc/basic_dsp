@@ -101,7 +101,7 @@ pub trait GeneralIdentifier<T> : Identifier<T>
 }
 
 pub trait Scale<T>: Sized where T: Sized {
-    fn scale(self, offset: T) -> Self;
+    fn scale(self, factor: T) -> Self;
 }
 
 pub trait Offset<T>: Sized where T: Sized {
@@ -273,6 +273,20 @@ macro_rules! add_complex_multi_ops_impl {
                 self.add_op(Operation::Phase(arg))
             }
         }
+        
+        impl Scale<Complex<$data_type>> for $name<$data_type> {
+            fn scale(self, factor: Complex<$data_type>) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::MultiplyComplex(arg, factor))
+            }
+        }
+        
+        impl Offset<Complex<$data_type>> for $name<$data_type> {
+            fn offset(self, offset: Complex<$data_type>) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::AddComplex(arg, offset))
+            }
+        }
      }
 }     
 
@@ -301,7 +315,20 @@ macro_rules! add_real_multi_ops_impl {
                 let arg = self.arg;
                 self.add_op(Operation::ToComplex(arg))
             }
-            
+        }
+        
+        impl Scale<$data_type> for $name<$data_type> {
+            fn scale(self, factor: $data_type) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::MultiplyReal(arg, factor))
+            }
+        }
+        
+        impl Offset<$data_type> for $name<$data_type> {
+            fn offset(self, offset: $data_type) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::AddReal(arg, offset))
+            }
         }
      }
 }   

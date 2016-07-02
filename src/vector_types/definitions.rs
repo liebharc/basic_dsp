@@ -94,7 +94,7 @@ pub trait RededicateVector<Other> {
 pub trait ScaleOps<T> : Sized
     where T: Sized {
     /// Multiplies the vector element with a scalar.
-    fn scale(self, offset: T) -> VecResult<Self>;
+    fn scale(self, factor: T) -> VecResult<Self>;
 }
 
 /// An operation which adds a constant to each vector element
