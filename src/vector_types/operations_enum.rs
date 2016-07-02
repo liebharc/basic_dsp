@@ -2,6 +2,7 @@ use super::super::RealNumber;
 use super::ErrorReason;
 use num::complex::Complex;
 use simd_extensions::{Simd, Reg32, Reg64};
+use std::ops::{Add, Sub, Mul, Div};
 
 /// An alternative way to define operations on a vector.
 #[derive(Copy)]
@@ -207,9 +208,11 @@ macro_rules! add_perform_ops_impl {
                         let v = unsafe { vectors.get_unchecked_mut(idx) };
                         *v = v.iter_over_vector(|x|x.abs());
                     }
-                    Operation::ToComplex(idx) => 
+                    Operation::ToComplex(_) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        // Number space conversions should already been done
+                        // before the operations are executed, so there is nothing
+                        // to do anymore
                     }
                     // Complex Ops
                     Operation::AddComplex(idx, value) =>
@@ -233,7 +236,8 @@ macro_rules! add_perform_ops_impl {
                     }
                     Operation::MagnitudeSquared(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.complex_abs_squared();
                     }
                     Operation::ComplexConj(idx) => 
                     {
@@ -376,66 +380,71 @@ macro_rules! add_perform_ops_impl {
                         let v = unsafe { vectors.get_unchecked_mut(idx) };
                         *v = v.iter_over_vector(|x|x.abs());
                     }
-                    Operation::ToComplex(idx) => 
+                    Operation::ToComplex(_) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        panic!("number space conversions should have already been completed");
                     }
                     // Complex Ops
-                    Operation::AddComplex(idx, value) =>
+                    Operation::AddComplex(_, _) =>
                     {
-                        let v = unsafe { vectors.get_unchecked_mut(idx) };
-                        *v = v.add_complex(value);
+                        panic!("complex operation on real vector indicates a bug");
                     }
-                    Operation::MultiplyComplex(idx, value) =>
+                    Operation::MultiplyComplex(_, _) =>
                     {
-                        let v = unsafe { vectors.get_unchecked_mut(idx) };
-                        *v = v.scale_complex(value);
+                        panic!("complex operation on real vector indicates a bug");
                     }
-                    Operation::MultiplyComplexExponential(idx, _, _) => 
+                    Operation::MultiplyComplexExponential(_, _, _) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        panic!("complex operation on real vector indicates a bug");
                     }
-                    Operation::Magnitude(idx) =>
+                    Operation::Magnitude(_) =>
                     {
-                        let v = unsafe { vectors.get_unchecked_mut(idx) };
-                        *v = v.complex_abs();
+                        panic!("complex operation on real vector indicates a bug");
                     }
-                    Operation::MagnitudeSquared(idx) => 
+                    Operation::MagnitudeSquared(_) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        panic!("complex operation on real vector indicates a bug");
                     }
-                    Operation::ComplexConj(idx) => 
+                    Operation::ComplexConj(_) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        panic!("complex operation on real vector indicates a bug");
                     }
-                    Operation::ToReal(idx) => 
+                    Operation::ToReal(_) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        panic!("complex operation on real vector indicates a bug");
                     }
-                    Operation::ToImag(idx) => 
+                    Operation::ToImag(_) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        panic!("complex operation on real vector indicates a bug");
                     }
-                    Operation::Phase(idx) => 
+                    Operation::Phase(_) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        panic!("complex operation on real vector indicates a bug");
                     }
                     // General Ops
-                    Operation::AddVector(idx, _) => 
+                    Operation::AddVector(idx1, idx2) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v2 = unsafe { *vectors.get_unchecked(idx2) };
+                        let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
+                        *v1 = v1.add(v2);
                     }
-                    Operation::SubVector(idx, _) => 
+                    Operation::SubVector(idx1, idx2) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v2 = unsafe { *vectors.get_unchecked(idx2) };
+                        let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
+                        *v1 = v1.sub(v2);
                     }
-                    Operation::MulVector(idx, _) => 
+                    Operation::MulVector(idx1, idx2) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v2 = unsafe { *vectors.get_unchecked(idx2) };
+                        let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
+                        *v1 = v1.mul(v2);
                     }
-                    Operation::DivVector(idx, _) => 
+                    Operation::DivVector(idx1, idx2) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v2 = unsafe { *vectors.get_unchecked(idx2) };
+                        let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
+                        *v1 = v1.div(v2);
                     }
                     Operation::Sqrt(idx) =>
                     {
@@ -444,80 +453,98 @@ macro_rules! add_perform_ops_impl {
                     }
                     Operation::Square(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.mul(*v);
                     }
-                    Operation::Root(idx, _) => 
+                    Operation::Root(idx, value) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.powf(1.0 / value));
                     }
-                    Operation::Powf(idx, _) => 
+                    Operation::Powf(idx, value) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.powf(value));
                     }
                     Operation::Ln(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.ln());
                     }
                     Operation::Exp(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.exp());
                     }
                     Operation::Log(idx, value) =>
                     {
                         let v = unsafe { vectors.get_unchecked_mut(idx) };
                         *v = v.iter_over_vector(|x|x.log(value));
                     }
-                    Operation::Expf(idx, _) => 
+                    Operation::Expf(idx, value) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|value.powf(x));
                     }
                     Operation::Sin(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.sin());
                     }
                     Operation::Cos(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.cos());
                     }
                     Operation::Tan(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.tan());
                     }
                     Operation::ASin(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.asin());
                     }
                     Operation::ACos(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.acos());
                     }
                     Operation::ATan(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.atan());
                     }
                     Operation::Sinh(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.sinh());
                     }
                     Operation::Cosh(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.cosh());
                     }
                     Operation::Tanh(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.tanh());
                     }
                     Operation::ASinh(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.asinh());
                     }
                     Operation::ACosh(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.acosh());
                     }
                     Operation::ATanh(idx) => 
                     {
-                        panic!("Not implemented yet {}", idx)
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.iter_over_vector(|x|x.atanh());
                     }
                 }
             }
