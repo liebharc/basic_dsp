@@ -328,30 +328,30 @@ macro_rules! add_real_multi_ops_impl {
 }   
 
 macro_rules! add_general_multi_ops_impl {
-    ($data_type:ident, $name: ident, $partner: ident)
+    ($data_type:ident, $name: ident)
      =>
      {    
-        pub trait GeneralIdentifier<T> : Identifier<$data_type>
+        impl GeneralIdentifier<$data_type> for $name<$data_type>
                 where $data_type: RealNumber 
         {
             fn add_vector(self, summand: &Self) -> Self {
                 let arg = self.arg;
-                self.add_op(Operation::AddVector(arg, summand))
+                self.add_op(Operation::AddVector(arg, summand.arg))
             }
             
             fn subtract_vector(self, subtrahend: &Self) -> Self {
                 let arg = self.arg;
-                self.add_op(Operation::SubVector(arg, subtrahend))
+                self.add_op(Operation::SubVector(arg, subtrahend.arg))
             }
             
             fn multiply_vector(self, factor: &Self) -> Self {
                 let arg = self.arg;
-                self.add_op(Operation::MulVector(arg, factor))
+                self.add_op(Operation::MulVector(arg, factor.arg))
             }
             
             fn divide_vector(self, divisor: &Self) -> Self {
                 let arg = self.arg;
-                self.add_op(Operation::DivVector(arg, divisor))
+                self.add_op(Operation::DivVector(arg, divisor.arg))
             }
             
             fn sqrt(self) -> Self {
@@ -624,6 +624,12 @@ macro_rules! add_multi_ops_impl {
         add_real_multi_ops_impl!($data_type, RealTimeIdentifier, ComplexTimeIdentifier);
         add_real_multi_ops_impl!($data_type, RealFreqIdentifier, ComplexFreqIdentifier);
         add_real_multi_ops_impl!($data_type, GenericDataIdentifier, RealTimeIdentifier);
+        
+        add_general_multi_ops_impl!($data_type, ComplexTimeIdentifier);
+        add_general_multi_ops_impl!($data_type, ComplexFreqIdentifier);
+        add_general_multi_ops_impl!($data_type, GenericDataIdentifier);
+        add_general_multi_ops_impl!($data_type, RealTimeIdentifier);
+        add_general_multi_ops_impl!($data_type, RealFreqIdentifier);
 
         impl<TO1, TO2>  MultiOperation2<$data_type, TO1, TO2> 
             where TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
