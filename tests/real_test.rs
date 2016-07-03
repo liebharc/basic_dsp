@@ -74,6 +74,36 @@ mod slow_test {
         });
     }
     
+    #[test]
+    fn multi_ops2_vector32() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 10;
+            let a = create_data_with_len(201511141, iteration, len);
+            let b = create_data_with_len(201511141, iteration, 2 * len);
+            let a = DataVector32::from_array(false, DataVectorDomain::Time, &a);
+            let b = DataVector32::from_array(true, DataVectorDomain::Time, &b);
+            let ops = multi_ops2(a.clone(), b.clone());
+            let ops = ops.add_ops(|r, c| {
+                let r = r.sin();
+                let c = c.magnitude();
+                //let r = r.add_vector(&c);
+                (r, c)
+            });
+            let (a_actual, b_actual) = ops.get().unwrap();
+            let b_expected = 
+                Ok(b)
+                .and_then(|v| v.magnitude())
+                .unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|v| v.sin())
+                .and_then(|v| v.add_vector(&b_expected))
+                .unwrap();
+            //assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&b_expected.data(), &b_actual.data());
+        });
+    }
+    
     fn real_mulitply_scalar(a: &Vec<f32>, value: f32) -> Vec<f32>
     {
         let mut result = vec![0.0; a.len()];

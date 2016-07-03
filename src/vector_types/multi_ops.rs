@@ -782,7 +782,6 @@ macro_rules! add_multi_ops_impl {
                     
                     vectors = correct_domain;
                 }
-                
                 Ok (vectors)
             }
             
@@ -1140,6 +1139,30 @@ mod tests {
         let b = RealTimeVector32::from_array(&array);
         assert_eq!(a.is_complex(), true);
         let (a, b) = ops.exec(a, b).unwrap();
+        assert_eq!(a.is_complex(), true);
+        assert_eq!(b.is_complex(), false);
+        let expected = [1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0,
+                     1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0];
+        assert_eq!(a.data(), &expected);   
+        let expected = [11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0];
+        assert_eq!(b.data(), &expected);            
+    }
+    
+    /// Same as `simple_operation` but the arguments are passed in reversed order.
+    #[test]
+    fn simple_operation2()
+    {
+        let ops = prepare2::<f32, RealTimeVector32, ComplexTimeVector32>();
+        let ops = ops.add_ops(|a, b| (b, a.abs()));
+        let ops = ops.add_ops(|a, b| (b.abs(), a));
+                
+        let array = [1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0,
+                     1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0];
+        let a = ComplexTimeVector32::from_interleaved(&array);
+        let array = [-11.0, 12.0, -13.0, 14.0, -15.0, 16.0, -17.0, 18.0];
+        let b = RealTimeVector32::from_array(&array);
+        assert_eq!(a.is_complex(), true);
+        let (b, a) = ops.exec(b, a).unwrap();
         assert_eq!(a.is_complex(), true);
         assert_eq!(b.is_complex(), false);
         let expected = [1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0,

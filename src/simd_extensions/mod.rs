@@ -21,6 +21,12 @@ pub trait Simd<T> : Sized
     fn scale_complex(self, value: Complex<T>) -> Self;
     fn complex_abs_squared(self) -> Self;
     fn complex_abs(self) -> Self;
+    /// Same as `complex_abs_squared` but stores the result
+    /// as complex number
+    fn complex_abs_squared2(self) -> Self;
+    /// Same as `complex_abs` but stores the result
+    /// as complex number
+    fn complex_abs2(self) -> Self;
     fn sqrt(self) -> Self;
     fn store(self, target: &mut [T], index: usize);
     fn store_half(self, target: &mut [T], index: usize);

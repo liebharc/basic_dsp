@@ -60,6 +60,16 @@ fn require_complex(is_complex: bool) -> Result<bool, ErrorReason> {
     else { Err(ErrorReason::VectorMustBeComplex) }
 }
 
+fn complex_to_real(is_complex: bool) -> Result<bool, ErrorReason> {
+    if is_complex { Ok(false) }
+    else { Err(ErrorReason::VectorMustBeComplex) }
+}
+
+fn real_to_complex(is_complex: bool) -> Result<bool, ErrorReason> {
+    if is_complex { Err(ErrorReason::VectorMustBeReal) }
+    else { Ok(true) }
+}
+
 fn require_real(is_complex: bool) -> Result<bool, ErrorReason> {
     if is_complex { Err(ErrorReason::VectorMustBeReal) }
     else { Ok(is_complex) }
@@ -73,16 +83,16 @@ pub fn evaluate_number_space_transition<T>(is_complex: bool, operation: Operatio
         Operation::AddReal(_, _) => require_real(is_complex),
         Operation::MultiplyReal(_, _) => require_real(is_complex),
         Operation::Abs(_) => require_real(is_complex),
-        Operation::ToComplex(_) => require_real(is_complex),
+        Operation::ToComplex(_) => real_to_complex(is_complex),
         // Complex Ops
         Operation::AddComplex(_, _) => require_complex(is_complex),
         Operation::MultiplyComplex(_, _) => require_complex(is_complex),
-        Operation::Magnitude(_) => require_complex(is_complex),
-        Operation::MagnitudeSquared(_) => require_complex(is_complex),
+        Operation::Magnitude(_) => complex_to_real(is_complex),
+        Operation::MagnitudeSquared(_) => complex_to_real(is_complex),
         Operation::ComplexConj(_) => require_complex(is_complex),
-        Operation::ToReal(_) => require_complex(is_complex),
-        Operation::ToImag(_) => require_complex(is_complex),
-        Operation::Phase(_) => require_complex(is_complex),
+        Operation::ToReal(_) => complex_to_real(is_complex),
+        Operation::ToImag(_) => complex_to_real(is_complex),
+        Operation::Phase(_) => complex_to_real(is_complex),
         // General Ops
         Operation::AddVector(_, _) => Ok(is_complex),
         Operation::SubVector(_, _) => Ok(is_complex),
@@ -226,12 +236,12 @@ macro_rules! add_perform_ops_impl {
                     Operation::Magnitude(idx) =>
                     {
                         let v = unsafe { vectors.get_unchecked_mut(idx) };
-                        *v = v.complex_abs();
+                        *v = v.complex_abs2();
                     }
                     Operation::MagnitudeSquared(idx) => 
                     {
                         let v = unsafe { vectors.get_unchecked_mut(idx) };
-                        *v = v.complex_abs_squared();
+                        *v = v.complex_abs_squared2();
                     }
                     Operation::ComplexConj(idx) => 
                     {
