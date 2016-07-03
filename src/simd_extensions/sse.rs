@@ -14,21 +14,23 @@ impl Simd<f32> for f32x4
     type Array = [f32; 4];
 
     fn to_array(self) -> Self::Array {
-        unsafe { mem::transmute(self) }
+        let mut target = [0.0; 4];
+        self.store(&mut target, 0);
+        target
     }
     
     fn from_array(array: Self::Array) -> Self {
-        unsafe { mem::transmute(array) }
+        Self::load(&array, 0)
     }
     
     type ComplexArray = [Complex<f32>; 2];
 
     fn to_complex_array(self) -> Self::ComplexArray {
-        unsafe { mem::transmute(self) }
+        unsafe { mem::transmute(self.to_array()) }
     }
     
     fn from_complex_array(array: Self::ComplexArray) -> Self {
-        unsafe { mem::transmute(array) }
+        Self::from_array(unsafe { mem::transmute(array) })
     }
 
     fn array_to_regs(array: &[f32]) -> &[Self] {
@@ -178,21 +180,23 @@ impl Simd<f64> for f64x2
     type Array = [f64; 2];
 
     fn to_array(self) -> Self::Array {
-        unsafe { mem::transmute(self) }
+        let mut target = [0.0; 2];
+        self.store(&mut target, 0);
+        target
     }
     
     fn from_array(array: Self::Array) -> Self {
-        unsafe { mem::transmute(array) }
+        Self::load(&array, 0)
     }
     
     type ComplexArray = [Complex<f64>; 1];
 
     fn to_complex_array(self) -> Self::ComplexArray {
-        unsafe { mem::transmute(self) }
+        unsafe { mem::transmute(self.to_array()) }
     }
     
     fn from_complex_array(array: Self::ComplexArray) -> Self {
-        unsafe { mem::transmute(array) }
+        Self::from_array(unsafe { mem::transmute(array) })
     }
 
     fn array_to_regs(array: &[f64]) -> &[Self] {

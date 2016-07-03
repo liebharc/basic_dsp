@@ -510,10 +510,9 @@ macro_rules! add_multi_ops_impl {
                 // First "cast" the vectors to generic vectors. This is done with the
                 // the rededicate trait since in contrast to the to_gen method it 
                 // can be used in a generic context.
-                                   
+                
                 let a: GenericDataVector<$data_type> = a.rededicate();
                 let b: GenericDataVector<$data_type> = b.rededicate();
-                
                 let mut vec = Vec::new();
                 vec.push(a);
                 vec.push(b);
@@ -772,6 +771,7 @@ macro_rules! add_multi_ops_impl {
                 // we might now need to convert them back to real.
                 if any_complex_ops {
                     let mut correct_domain = Vec::with_capacity(vectors.len());
+                    vectors.reverse();
                     for i in 0..vectors.len() {
                         let vector = vectors.pop().unwrap();
                         let right_domain = 
@@ -780,7 +780,6 @@ macro_rules! add_multi_ops_impl {
                         correct_domain.push(right_domain);
                     }
                     
-                    correct_domain.reverse();
                     vectors = correct_domain;
                 }
                 
@@ -1125,5 +1124,28 @@ mod tests {
         let ops = ops.add_ops(|a, b| (b.magnitude(), a));
         let res = ops.get();
         assert!(res.is_err());
+    }
+    
+    #[test]
+    fn simple_operation()
+    {
+        let ops = prepare2::<f32, ComplexTimeVector32, RealTimeVector32>();
+        let ops = ops.add_ops(|a, b| (b.abs(), a));
+        let ops = ops.add_ops(|a, b| (b, a.abs()));
+                
+        let array = [1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0,
+                     1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0];
+        let a = ComplexTimeVector32::from_interleaved(&array);
+        let array = [-11.0, 12.0, -13.0, 14.0, -15.0, 16.0, -17.0, 18.0];
+        let b = RealTimeVector32::from_array(&array);
+        assert_eq!(a.is_complex(), true);
+        let (a, b) = ops.exec(a, b).unwrap();
+        assert_eq!(a.is_complex(), true);
+        assert_eq!(b.is_complex(), false);
+        let expected = [1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0,
+                     1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0];
+        assert_eq!(a.data(), &expected);   
+        let expected = [11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0];
+        assert_eq!(b.data(), &expected);            
     }
 }
