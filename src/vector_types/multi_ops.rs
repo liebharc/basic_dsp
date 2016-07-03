@@ -54,7 +54,7 @@ pub trait ComplexIdentifier<T> : Identifier<T>
     fn complex_scale(self, factor: Complex<T>) -> Self;
     fn magnitude(self) -> Self::RealPartner;
     fn magnitude_squared(self) -> Self::RealPartner;
-    fn complex_conj(self) -> Self;
+    fn conj(self) -> Self;
     fn to_real(self) -> Self::RealPartner;
     fn to_imag(self) -> Self::RealPartner;
     fn phase(self) -> Self::RealPartner;
@@ -247,7 +247,7 @@ macro_rules! add_complex_multi_ops_impl {
                 self.add_op(Operation::MagnitudeSquared(arg))
             }
             
-            fn complex_conj(self) -> Self {
+            fn conj(self) -> Self {
                 let arg = self.arg;
                 self.add_op(Operation::ComplexConj(arg))
             }
@@ -663,6 +663,24 @@ macro_rules! add_multi_ops_impl {
             {
                 let ops = self.prepared_ops.add_ops(operation);
                 MultiOperation1 { a: self.a, prepared_ops: ops }
+            }
+            
+            pub fn extend<TI2>(self, vector: TI2) 
+                -> MultiOperation2<$data_type, TO, TI2>
+                where TI2: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>  {
+                let ops: PreparedOperation2<$data_type, GenericDataVector<$data_type>, GenericDataVector<$data_type>, TO, TI2> =           
+                     PreparedOperation2 
+                     { 
+                        a: PhantomData,
+                        b: PhantomData, 
+                        c: PhantomData,
+                        d: PhantomData, 
+                        ops: self.prepared_ops.ops, 
+                        swap: false
+                     };
+                let a: GenericDataVector<$data_type> = self.a;
+                let b: GenericDataVector<$data_type> = vector.rededicate();
+                MultiOperation2 { a: a, b: b, prepared_ops: ops }
             }
         }
         
