@@ -32,7 +32,7 @@ On CPUs with SSE instructions (should be all somewhat recent Intel or AMD deskto
 This crate brings vectors in different flavors.
 
 1. Single precision (`f32`) or double precision (`f64`) floating point numbers. This can be used to trade precision against performance. If in doubt then it's likely better to start with double precision floating numbers.
-2. Specialized or generic vectors. The specialized vectors track the data types inside the vector in Rusts type system and therefore prevent certain errors. The generic vectors will instead throw exceptions at runtime if an operation is undefined. If in doubt then it's recommended to start with the specialized vector types.
+2. Specialized or generic vectors. The specialized vectors track the meta data about the domain (Time/Frequency) and number space (real/complex) inside the vector in Rusts type system and therefore prevent certain errors. The generic vectors will instead throw exceptions at runtime if an operation is undefined. If in doubt then it's recommended to start with the specialized vector types.
 
 ## Design principals
 The main design goals are:
