@@ -86,7 +86,7 @@ mod slow_test {
             let ops = ops.add_ops(|r, c| {
                 let r = r.sin();
                 let c = c.magnitude();
-                //let r = r.add_vector(&c);
+                let r = r.add_vector(&c);
                 (r, c)
             });
             let (a_actual, b_actual) = ops.get().unwrap();
@@ -99,7 +99,7 @@ mod slow_test {
                 .and_then(|v| v.sin())
                 .and_then(|v| v.add_vector(&b_expected))
                 .unwrap();
-            //assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
             assert_vector_eq(&b_expected.data(), &b_actual.data());
         });
     }
