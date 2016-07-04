@@ -633,7 +633,7 @@ pub trait RealVectorOps<T> : DataVector<T>
     where T : RealNumber {
     type ComplexPartner;
     
-    /// Adds a scalar to the vector. See also: `OffsetOps` trait.
+    /// Adds a scalar to the vector. See also [`OffsetOps`](trait.OffsetOps.html).
     /// # Example
     ///
     /// ```
@@ -644,7 +644,7 @@ pub trait RealVectorOps<T> : DataVector<T>
     /// ```
     fn real_offset(self, factor: T) -> VecResult<Self>;
     
-    /// Multiplies the vector with a scalar. See also: `ScaleOps` trait.
+    /// Multiplies the vector with a scalar. See also [`ScaleOps`](trait.ScaleOps.html).
     /// # Example
     ///
     /// ```
@@ -704,7 +704,7 @@ pub trait RealVectorOps<T> : DataVector<T>
     /// ```
     fn unwrap(self, divisor: T) -> VecResult<Self>;
     
-    /// Calculates the dot product of self and factor. Self and factor remain unchanged. See also: `DotProductOps` trait.
+    /// Calculates the dot product of self and factor. Self and factor remain unchanged. See also  [`DotProductOps`](trait.DotProductOps.html).
     /// # Failures
     /// VecResult may report the following `ErrorReason` members:
     /// 
@@ -721,7 +721,7 @@ pub trait RealVectorOps<T> : DataVector<T>
     /// ```  
     fn real_dot_product(&self, factor: &Self) -> ScalarResult<T>;
     
-    /// Calculates the statistics of the data contained in the vector. See also: `StatisticsOps` trait.
+    /// Calculates the statistics of the data contained in the vector. See also  [`StatisticsOps`](trait.StatisticsOps.html).
     /// # Example
     ///
     /// ```
@@ -741,7 +741,7 @@ pub trait RealVectorOps<T> : DataVector<T>
     
     /// Calculates the statistics of the data contained in the vector as if the vector would
     /// have been split into `len` pieces. `self.len` should be devisable by `len` without a remainder,
-    /// but this isn't enforced by the implementation. . See also: `StatisticsOps` trait.
+    /// but this isn't enforced by the implementation. See also  [`StatisticsOps`](trait.StatisticsOps.html).
     /// # Example
     ///
     /// ```
@@ -764,7 +764,7 @@ pub trait ComplexVectorOps<T> : DataVector<T>
     /// Gets `self.data()` as complex array.
     fn complex_data(&self) -> &[Complex<T>];
     
-    /// Adds a scalar to the vector. See also: `OffsetOps` trait.
+    /// Adds a scalar to the vector. See also  [`OffsetOps`](trait.OffsetOps.html).
     /// # Example
     ///
     /// ```
@@ -780,7 +780,7 @@ pub trait ComplexVectorOps<T> : DataVector<T>
     /// ```
     fn complex_offset(self, offset: Complex<T>) -> VecResult<Self>;
     
-    /// Multiplies the vector with a scalar. See also: `ScaleOps` trait.
+    /// Multiplies the vector with a scalar. See also  [`ScaleOps`](trait.ScaleOps.html).
     /// # Example
     ///
     /// ```
@@ -973,7 +973,7 @@ pub trait ComplexVectorOps<T> : DataVector<T>
     /// ```
     fn get_phase(&self, destination: &mut Self::RealPartner) -> VoidResult;
     
-    /// Calculates the dot product of self and factor. Self and factor remain unchanged. See also: `DotProductOps` trait.
+    /// Calculates the dot product of self and factor. Self and factor remain unchanged. See also  [`DotProductOps`](trait.DotProductOps.html).
     /// # Failures
     /// VecResult may report the following `ErrorReason` members:
     /// 
@@ -995,7 +995,7 @@ pub trait ComplexVectorOps<T> : DataVector<T>
     /// ```  
     fn complex_dot_product(&self, factor: &Self) -> ScalarResult<Complex<T>>;
     
-    /// Calculates the statistics of the data contained in the vector. See also: `StatisticsOps` trait.
+    /// Calculates the statistics of the data contained in the vector. See also  [`StatisticsOps`](trait.StatisticsOps.html).
     /// # Example
     ///
     /// ```
@@ -1020,7 +1020,7 @@ pub trait ComplexVectorOps<T> : DataVector<T>
     
     /// Calculates the statistics of the data contained in the vector as if the vector would
     /// have been split into `len` pieces. `self.len` should be devisable by `len` without a remainder,
-    /// but this isn't enforced by the implementation. . See also: `StatisticsOps` trait.
+    /// but this isn't enforced by the implementation. See also  [`StatisticsOps`](trait.StatisticsOps.html).
     /// # Example
     ///
     /// ```
@@ -1038,13 +1038,13 @@ pub trait ComplexVectorOps<T> : DataVector<T>
     fn complex_statistics_splitted(&self, len: usize) -> Vec<Statistics<Complex<T>>>; 
     
     /// Gets the real and imaginary parts and stores them in the given vectors. 
-    /// See [`get_phase`](trait.ComplexVectorOps.html#tymethod.get_phase) and
+    /// See also  [`get_phase`](trait.ComplexVectorOps.html#tymethod.get_phase) and
     /// [`get_complex_abs`](trait.ComplexVectorOps.html#tymethod.get_complex_abs) for further
     /// information.
     fn get_real_imag(&self, real: &mut Self::RealPartner, imag: &mut Self::RealPartner) -> VoidResult;
     
     /// Gets the magnitude and phase and stores them in the given vectors.
-    /// See [`get_real`](trait.ComplexVectorOps.html#tymethod.get_real) and
+    /// See also [`get_real`](trait.ComplexVectorOps.html#tymethod.get_real) and
     /// [`get_imag`](trait.ComplexVectorOps.html#tymethod.get_imag) for further
     /// information.
     fn get_mag_phase(&self, mag: &mut Self::RealPartner, phase: &mut Self::RealPartner) -> VoidResult;

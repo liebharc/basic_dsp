@@ -46,64 +46,117 @@ pub trait Identifier<T> : Sized
     fn new_ops(ops: Vec<(u64, Operation<T>)>, arg: usize) -> Self;
 }
 
+/// Operations for complex vectors which can be used in combination 
+/// with multi ops or prepared ops. For a dcoumentation of the specific operations
+/// see [`ComplexVectorOps`](../trait.ComplexVectorOps.html).
 pub trait ComplexIdentifier<T> : Identifier<T>
     where T: RealNumber 
 {
     type RealPartner;
+    /// See [`ComplexVectorOps`](../trait.ComplexVectorOps.html#tymethod.complex_offset).
     fn complex_offset(self, offset: Complex<T>) -> Self;
+    /// See [`ComplexVectorOps`](../trait.ComplexVectorOps.html#tymethod.complex_scale).
     fn complex_scale(self, factor: Complex<T>) -> Self;
+    /// See [`ComplexVectorOps`](../trait.ComplexVectorOps.html#tymethod.magnitude).
     fn magnitude(self) -> Self::RealPartner;
+    /// See [`ComplexVectorOps`](../trait.ComplexVectorOps.html#tymethod.magnitude_squared).
     fn magnitude_squared(self) -> Self::RealPartner;
+    /// See [`ComplexVectorOps`](../trait.ComplexVectorOps.html#tymethod.conj).
     fn conj(self) -> Self;
+    /// See [`ComplexVectorOps`](../trait.ComplexVectorOps.html#tymethod.to_real).
     fn to_real(self) -> Self::RealPartner;
+    /// See [`ComplexVectorOps`](../trait.ComplexVectorOps.html#tymethod.to_imag).
     fn to_imag(self) -> Self::RealPartner;
+    /// See [`ComplexVectorOps`](../trait.ComplexVectorOps.html#tymethod.phase).
     fn phase(self) -> Self::RealPartner;
 }
 
+/// Operations for real vectors which can be used on combination 
+/// with multi ops or prepared ops. For a dcoumentation of the specific operations
+/// see [`RealVectorOps`](../trait.RealVectorOps.html).
 pub trait RealIdentifier<T> : Identifier<T>
     where T: RealNumber 
 {
     type ComplexPartner;
+    /// See [`RealVectorOps`](../trait.RealVectorOps.html#tymethod.real_offset).
     fn real_offset(self, offset: T) -> Self;
+    /// See [`RealVectorOps`](../trait.RealVectorOps.html#tymethod.real_scale).
     fn real_scale(self, factor: T) -> Self;
+    /// See [`RealVectorOps`](../trait.RealVectorOps.html#tymethod.abs).
     fn abs(self) -> Self;
+    /// See [`RealVectorOps`](../trait.RealVectorOps.html#tymethod.to_complex).
     fn to_complex(self) -> Self::ComplexPartner;
 }
 
+/// Operations for all kind of vectors which can be used in combination 
+/// with multi ops or prepared ops. For a dcoumentation of the specific operations
+/// see [`GenericVectorOps`](../trait.GenericVectorOps.html).
 pub trait GeneralIdentifier<T> : Identifier<T>
     where T: RealNumber 
 {
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.add_vector).
     fn add_vector(self, summand: &Self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.subtract_vector).
     fn subtract_vector(self, subtrahend: &Self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.multiply_vector).
     fn multiply_vector(self, factor: &Self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.divide_vector).
     fn divide_vector(self, divisor: &Self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.sqrt).
     fn sqrt(self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.square).
     fn square(self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.root).
     fn root(self, degree: T) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.powf).
     fn powf(self, exponent: T) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.ln).
     fn ln(self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.exp).
     fn exp(self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.log).;
     fn log(self, base: T) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.expf).
     fn expf(self, base: T) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.sin).
     fn sin(self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.cos).
     fn cos(self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.tan).
     fn tan(self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.asin).
     fn asin(self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.acos).
     fn acos(self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.atan).
     fn atan(self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.sinh).
     fn sinh(self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.cosh).
     fn cosh(self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.tanh).
     fn tanh(self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.asinh).
     fn asinh(self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.acosh).
     fn acosh(self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.atanh).
     fn atanh(self) -> Self;
 }
 
+/// Scale operations to vectors in combination 
+/// with multi ops or prepared ops. For a dcoumentation of the specific operations
+/// see [`Scale`](../trait.Scale.html).
 pub trait Scale<T>: Sized where T: Sized {
+    /// See [`Scale`](../trait.Scale.html#tymethod.scale).
     fn scale(self, factor: T) -> Self;
 }
 
+/// Offset operations to vectors in combination 
+/// with multi ops or prepared ops. For a dcoumentation of the specific operations
+/// see [`Offset`](../trait.Offset.html).
 pub trait Offset<T>: Sized where T: Sized {
+    /// See [`Offset`](../trait.Offset.html#tymethod.offset).
     fn offset(self, offset: T) -> Self;
 }
 
