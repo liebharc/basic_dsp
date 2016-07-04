@@ -515,12 +515,19 @@ macro_rules! add_multi_ops_impl {
     ($data_type:ident, $reg:ident)
      =>
      {     
+        /// An operation which can be prepared in advance and operates on two
+        /// inputs and produces two outputs
         impl<TI1, TI2, TO1, TO2> PreparedOperation2<$data_type, TI1, TI2, TO1, TO2>
             where TI1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
             TI2: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
             TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
             TO2: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>
         {
+            /// Adds new operations which will be executed with the next call to `exec`
+            /// 
+            /// As a background: The function `operation` will be executed immediatly. It only operated on `Identifier` types and these serve as
+            /// placeholder for vectors. Every operation done to an `Identifier`
+            /// is recorded and will be executed on vectors if `exec` is called.
             pub fn add_ops<F, TN1, TN2>(self, operation: F) 
                 -> PreparedOperation2<$data_type, TI1, TI2, TN1::Vector, TN2::Vector>
                 where F: Fn(TO1::Identifier, TO2::Identifier) -> (TN1, TN2),
@@ -559,6 +566,7 @@ macro_rules! add_multi_ops_impl {
                  }
             }
             
+            /// Executes all recorded operations on the input vectors.
             pub fn exec(&self, a: TI1, b: TI2) -> result::Result<(TO1, TO2), (ErrorReason, TO1, TO2)> {
                 // First "cast" the vectors to generic vectors. This is done with the
                 // the rededicate trait since in contrast to the to_gen method it 
@@ -598,10 +606,13 @@ macro_rules! add_multi_ops_impl {
             }
         }
 
+        /// An operation which can be prepared in advance and operates on one
+        /// input and produces one output
         impl<TI1, TO1> PreparedOperation1<$data_type, TI1, TO1>
             where TI1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>,
                   TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>> {
-                  
+               
+            /// Extends the operation to operate on one more vector.
             pub fn extend<TI2>(self) 
                 -> PreparedOperation2<$data_type, TI1, TI2, TO1, TI2>
                 where TI2: ToIdentifier<$data_type> {
@@ -616,6 +627,11 @@ macro_rules! add_multi_ops_impl {
                 }
             }
             
+            /// Adds new operations which will be executed with the next call to `exec`
+            /// 
+            /// As a background: The function `operation` will be executed immediatly. It only operated on `Identifier` types and these serve as
+            /// placeholder for vectors. Every operation done to an `Identifier`
+            /// is recorded and will be executed on vectors if `exec` is called.
             pub fn add_ops<F, TN>(self, operation: F) 
                 -> PreparedOperation1<$data_type, TI1, TN::Vector>
                 where F: Fn(TO1::Identifier) -> TN,
@@ -640,6 +656,7 @@ macro_rules! add_multi_ops_impl {
                  }
             }
             
+            /// Executes all recorded operations on the input vectors.
             pub fn exec(&self, a: TI1) -> result::Result<TO1, (ErrorReason, TO1)> {
                 // First "cast" the vectors to generic vectors. This is done with the
                 // the rededicate trait since in contrast to the to_gen method it 
@@ -683,13 +700,22 @@ macro_rules! add_multi_ops_impl {
         add_general_multi_ops_impl!($data_type, RealTimeIdentifier);
         add_general_multi_ops_impl!($data_type, RealFreqIdentifier);
 
+        /// Holds two vectors and records all operations which shall be done on the
+        /// vectors. A call to `get` then runs all recorded operations on the vectors
+        /// and returns them. See the modules description for why this can be beneficial.
         impl<TO1, TO2>  MultiOperation2<$data_type, TO1, TO2> 
             where TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
                   TO2: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>> {
+            /// Executes all recorded operations on the stored vector.
             pub fn get(self) -> result::Result<(TO1, TO2), (ErrorReason, TO1, TO2)> {
                 self.prepared_ops.exec(self.a, self.b)
             }
             
+            /// Adds new operations which will be executed with the next call to `get`
+            /// 
+            /// As a background: The function `operation` will be executed immediatly. It only operated on `Identifier` types and these serve as
+            /// placeholder for vectors. Every operation done to an `Identifier`
+            /// is recorded and will be executed on vectors if `get` is called.
             pub fn add_ops<F, TN1, TN2>(self, operation: F) 
                 -> MultiOperation2<$data_type, TN1::Vector, TN2::Vector>
                 where F: Fn(TO1::Identifier, TO2::Identifier) -> (TN1, TN2),
@@ -702,11 +728,22 @@ macro_rules! add_multi_ops_impl {
             }
         }
         
+        /// Holds a vector and records all operations which shall be done on the
+        /// vector. A call to `get` then runs all recorded operations on the vector
+        /// and returns it. See the modules description for why this can be beneficial.
         impl<TO>  MultiOperation1<$data_type, TO> 
             where TO: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>> {
+            
+            /// Executes all recorded operations on the stored vectors.
             pub fn get(self) -> result::Result<(TO), (ErrorReason, TO)> {
                 self.prepared_ops.exec(self.a)
             }
+            
+            /// Adds new operations which will be executed with the next call to `get`
+            /// 
+            /// As a background: The function `operation` will be executed immediatly. It only operated on `Identifier` types and these serve as
+            /// placeholder for vectors. Every operation done to an `Identifier`
+            /// is recorded and will be executed on vectors if `get` is called.
             
             pub fn add_ops<F, TN>(self, operation: F) 
                 -> MultiOperation1<$data_type, TN::Vector>
@@ -718,6 +755,7 @@ macro_rules! add_multi_ops_impl {
                 MultiOperation1 { a: self.a, prepared_ops: ops }
             }
             
+            /// Extends the operation to operate on one more vector.
             pub fn extend<TI2>(self, vector: TI2) 
                 -> MultiOperation2<$data_type, TO, TI2>
                 where TI2: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>  {
@@ -745,7 +783,7 @@ macro_rules! add_multi_ops_impl {
                 {
                     return Err((ErrorReason::InvalidNumberOfArgumentsForCombinedOp, vectors));
                 }
-            
+                           
                 let verifcation = Self::verify_ops(&vectors, operations);
                 if verifcation.is_err() {
                     return Err((verifcation.unwrap_err(), vectors));

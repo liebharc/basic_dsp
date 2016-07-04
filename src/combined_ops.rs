@@ -8,7 +8,7 @@
 //! With this approach we change how we operate on vectors. If you perform
 //! `M` operations on a vector with the length `N` you iterate wit hall other methods like this:
 //!
-//! ```
+//! ```no_run
 //! // pseudocode:
 //! // for m in M:
 //! //  for n in N:
@@ -17,7 +17,7 @@
 //!
 //! with this method the pattern is changed slighly:
 //!
-//! ```
+//! ```no_run
 //! // pseudocode:
 //! // for n in N:
 //! //  for m in M:
@@ -30,6 +30,34 @@
 //!
 //! Only operations can be combined where the result of every element in the vector
 //! is independent from any other element in the vector.
+//!
+//! # Examples
+//!
+//!```
+//! use std::f32::consts::PI;
+//! use basic_dsp::*;
+//! use basic_dsp::combined_ops::*;
+//! # fn close(left: &[f32], right: &[f32]) {
+//! #   assert_eq!(left.len(), right.len());
+//! #   for i in 0..left.len() {
+//! #       assert!((left[i] - right[i]) < 1e-2);
+//! #   }
+//! # }
+//! let a = RealTimeVector32::from_array(&[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]);
+//! let b = RealTimeVector32::from_array(&[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]);
+//! let ops = multi_ops2(a, b);
+//! let ops = ops.add_ops(|a, b| {
+//!     let a = a.scale(2.0 * PI).sin();
+//!     let b = b.scale(2.0 * PI).cos();
+//!     let a = a.multiply_vector(&b).abs();
+//!     let a_db = a.log(10.0).scale(10.0);
+//!     (a_db, b)
+//! });
+//! let (a, b) = ops.get().expect("Ignoring error handling in examples");
+//! close(&[0.80902, 0.30902, -0.30902, -0.80902, -1.00000, -0.80902, -0.30902, 0.30902], b.data());
+//! close(&[-3.2282, -5.3181, -5.3181, -3.2282, -159.1199, -3.2282, -5.3181, -5.3181], a.data());
+//!```
+//!
 
 // In this module we just export types from other modules with a deeper nesting
 // level. This makes the API as presented to the user flatter.

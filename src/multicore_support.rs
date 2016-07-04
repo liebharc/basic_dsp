@@ -90,7 +90,7 @@ impl Chunk
         if cores > settings.core_limit {
             cores = settings.core_limit;
         }
-        if complexity == Complexity::Large || cores == 1 {
+        if cores == 1 {
             cores
         }
         else if complexity == Complexity::Small  {
@@ -105,7 +105,7 @@ impl Chunk
                 }
             }
         }
-        else { // complexity == medium
+        else if complexity == Complexity::Medium {
             if array_length < 10000 {
                 1
             }
@@ -117,6 +117,13 @@ impl Chunk
                 }
             }
             else {
+                cores
+            }
+        }
+        else { // complexity == Complexity::Large
+            if array_length < 100 {
+                1
+            } else {
                 cores
             }
         }
@@ -245,7 +252,6 @@ impl Chunk
                 Chunk::partition_mut(a, array_length, step_size, number_of_chunks)
             }).collect();
             
-            
             let mut reorganized = Vec::with_capacity(number_of_chunks);
             for _ in 0..number_of_chunks {
                 reorganized.push(Vec::with_capacity(array_len));
@@ -267,10 +273,8 @@ impl Chunk
         }
         else
         {
-          let mut shortened = Vec::with_capacity(array_len);
-          for a in array.iter_mut() {
-            shortened.push(&mut a[0..array_length]);
-          }
+          let shortened: Vec<&mut [T]> = 
+            array.iter_mut().map(|a|&mut a[0..array_length]).collect();
           function(shortened, arguments);
         }
     }

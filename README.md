@@ -34,6 +34,11 @@ This crate brings vectors in different flavors.
 1. Single precision (`f32`) or double precision (`f64`) floating point numbers. This can be used to trade precision against performance. If in doubt then it's likely better to start with double precision floating numbers.
 2. Specialized or generic vectors. The specialized vectors track the meta data about the domain (Time/Frequency) and number space (real/complex) inside the vector in Rusts type system and therefore prevent certain errors. The generic vectors will instead throw exceptions at runtime if an operation is undefined. If in doubt then it's recommended to start with the specialized vector types.
 
+## Long term goal
+The long term vision for this lib is to allow GNU Octave/MATLAB scripts for DSP operations on large arrays/vectors to be relatively easily be rewritten in Rust. The Rust code should then perform much faster than the original code. At the same time a C interface should be available so that other programming languages can make use of this lib too. "Relatively easily be rewritten" implies that the API will not look like GNU Octave/MATLAB and that there is a learning curve involved from changing to this lib, however all necessary vector operations should be provided in some form and definitions should be close to GNU Octave/MATLAB. GNU Octave/MATLAB toolboxes are excluded from this goal since they are rather application specific and therefore should get an own Rust lib. There are already libs available for matrix operations so the aim for this lib will likely be to integrated well this those and not to implement its own matrix calculations.
+
+This is a very ambigious goal and it's likely that this lib will not make it there. Contributions are therefore highly appreciated.
+
 ## Design principals
 The main design goals are:
 
