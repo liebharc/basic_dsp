@@ -22,6 +22,7 @@ use super::operations_enum::{
 use multicore_support::{Chunk, Complexity};
 use simd_extensions::{Simd, Reg32, Reg64};
 use num::Complex;
+use std::sync::{Arc, Mutex};
 
 const ARGUMENT1: usize = 0;
 const ARGUMENT2: usize = 1;
@@ -42,8 +43,8 @@ pub trait Identifier<T> : Sized
     type Vector: DataVector<T> + ToIdentifier<T>;
     fn get_arg(&self) -> usize;
     fn get_ops(self) -> Vec<(u64, Operation<T>)>;
-    fn new(arg: usize) -> Self;
-    fn new_ops(ops: Vec<(u64, Operation<T>)>, arg: usize) -> Self;
+    fn new(arg: usize, counter: Arc<Mutex<u64>>) -> Self;
+    fn new_ops(ops: Vec<(u64, Operation<T>)>, arg: usize, counter: Arc<Mutex<u64>>) -> Self;
 }
 
 /// Operations for complex vectors which can be used in combination 
@@ -170,7 +171,8 @@ macro_rules! create_identfier {
                 where T: RealNumber 
             {
                 arg: usize,
-                ops: Vec<(u64, Operation<T>)>
+                ops: Vec<(u64, Operation<T>)>,
+                counter: Arc<Mutex<u64>>
             }
             
             impl<T> ToIdentifier<T> for $vector<T>
@@ -183,8 +185,8 @@ macro_rules! create_identfier {
                 type Vector = $vector<T>;
                 fn get_arg(&self) -> usize { self.arg }
                 fn get_ops(self) -> Vec<(u64, Operation<T>)> { self.ops }
-                fn new(arg: usize) -> Self { $name { ops: Vec::new(), arg: arg } }
-                fn new_ops(ops: Vec<(u64, Operation<T>)>, arg: usize) -> Self { $name { ops: ops, arg: arg } }
+                fn new(arg: usize, counter: Arc<Mutex<u64>>) -> Self { $name { ops: Vec::new(), arg: arg, counter: counter } }
+                fn new_ops(ops: Vec<(u64, Operation<T>)>, arg: usize, counter: Arc<Mutex<u64>>) -> Self { $name { ops: ops, arg: arg, counter: counter } }
             }
             
             impl<T> $name<T> 
@@ -192,19 +194,14 @@ macro_rules! create_identfier {
                 fn add_op<R>(self, op: Operation<T>) -> R 
                     where R: Identifier<T> {
                     let mut ops = self.ops;
-                    // TODO: Rethink if this unsafe is sound.
-                    // Quick thinking was that the actual value in the sequence
-                    // doesn't matter as long as repeated calls by the same thread
-                    // produce an increasing value (where the distance between two numbers
-                    // never matters). Even with race conditions between multiple threads
-                    // this should be okay (counter overflows - while unlikely - need to be 
-                    // handled during sorting).
-                    let seq = unsafe {
-                        OPERATION_SEQ_COUNTER += 1;
-                        OPERATION_SEQ_COUNTER
+                    let counter = self.counter;
+                    let seq = {
+                        let mut value = counter.lock().unwrap();
+                        *value += 1;
+                        *value
                     };
                     ops.push((seq, op));
-                    R::new_ops(ops, self.arg)
+                    R::new_ops(ops, self.arg, counter)
                 }
             }
         )*
@@ -217,8 +214,6 @@ create_identfier!(
     ComplexTimeVector, ComplexTimeIdentifier; 
     RealFreqVector, RealFreqIdentifier; 
     ComplexFreqVector, ComplexFreqIdentifier;);
-
-static mut OPERATION_SEQ_COUNTER : u64 = 0;
 
 /// An operation on one data vector which has been prepared in 
 /// advance.
@@ -539,8 +534,9 @@ macro_rules! add_multi_ops_impl {
                 let mut new_ops = Vec::new();
                 let swap = 
                     {
-                        let t1 = TO1::Identifier::new(if self.swap { ARGUMENT2 } else { ARGUMENT1 });
-                        let t2  = TO2::Identifier::new(if self.swap { ARGUMENT1 } else { ARGUMENT2 });
+                        let counter = Arc::new(Mutex::new(0));
+                        let t1 = TO1::Identifier::new(if self.swap { ARGUMENT2 } else { ARGUMENT1 }, counter.clone());
+                        let t2  = TO2::Identifier::new(if self.swap { ARGUMENT1 } else { ARGUMENT2 }, counter.clone());
                         let (r1, r2) = operation(t1, t2);
                         let r1arg = r1.get_arg();
                         new_ops.append(&mut r1.get_ops());
@@ -641,7 +637,8 @@ macro_rules! add_multi_ops_impl {
                 let mut ops = self.ops;
                 let new_ops =
                 {
-                    let t1 = TO1::Identifier::new(ARGUMENT1);
+                    let counter = Arc::new(Mutex::new(0));
+                    let t1 = TO1::Identifier::new(ARGUMENT1, counter);
                     let r1 = operation(t1);
                     r1.get_ops()
                 };

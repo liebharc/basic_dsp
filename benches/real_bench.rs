@@ -17,9 +17,7 @@ mod bench {
         DataVector32,
         RealTimeVector32,
         RealTimeVector64};
-    use basic_dsp::combined_ops::{
-        multi_ops1,
-        Operation};
+    use basic_dsp::combined_ops::*;
     use tools::{VectorBox, DEFAULT_DATA_SIZE, Size};
     
     #[inline(never)]
@@ -90,7 +88,7 @@ mod bench {
     }
     
     #[bench]
-    fn multi_operations_2ops_vector_32_benchmark(b: &mut Bencher)
+    fn multi_operations_2ops1_vector_32_benchmark(b: &mut Bencher)
     {
         let mut vector = VectorBox::<DataVector32>::new(Size::Small, false);
         b.iter(|| {
@@ -105,7 +103,7 @@ mod bench {
     }
     
     #[bench]
-    fn multi_operations_2ops_vector_32_reference(b: &mut Bencher)
+    fn multi_operations_2ops1_vector_32_reference(b: &mut Bencher)
     {
         let mut vector = VectorBox::<DataVector32>::new(Size::Small, true);
         b.iter(|| {
@@ -117,7 +115,7 @@ mod bench {
     }
     
     #[bench]
-    fn multi_operations_3ops_vector_32_benchmark(b: &mut Bencher)
+    fn multi_operations_3ops1_vector_32_benchmark(b: &mut Bencher)
     {
         let mut vector = VectorBox::<DataVector32>::new(Size::Small, false);
         b.iter(|| {
@@ -133,7 +131,7 @@ mod bench {
     }
     
     #[bench]
-    fn multi_operations_3ops_vector_32_reference(b: &mut Bencher)
+    fn multi_operations_3ops1_vector_32_reference(b: &mut Bencher)
     {
         let mut vector = VectorBox::<DataVector32>::new(Size::Small, true);
         b.iter(|| {
@@ -142,6 +140,74 @@ mod bench {
                     .and_then(|v| v.real_scale(10.0)) 
                     .and_then(|v| v.sqrt()) 
             } )
+        });
+    }
+    
+    #[bench]
+    fn multi_operations_3ops2_vector_32_benchmark(b: &mut Bencher)
+    {
+        let mut vector = VectorBox::<DataVector32>::new(Size::Small, false);
+        b.iter(|| {
+            vector.execute(|v|  
+                {
+                    let len = v.len(); 
+                    let operand = DataVector32::new(false, DataVectorDomain::Time, 2.0 * 3.0, len, 1.0);
+                    let ops = multi_ops2(v, operand);
+                    let ops = ops.add_ops(|v, o| {
+                        let v = v.abs()
+                         .multiply_vector(&o)
+                         .sin();
+                        (v, o)
+                    });
+                    let (v, _) = ops.get().unwrap();
+                    v
+                })
+        });
+    }
+    
+    #[bench]
+    fn multi_operations_6ops1_vector_32_benchmark(b: &mut Bencher)
+    {
+        let mut vector = VectorBox::<DataVector32>::new(Size::Small, false);
+        b.iter(|| {
+            vector.execute(|v|  
+                {
+                    let ops = multi_ops1(v);
+                    let ops = ops.add_ops(|v| {
+                        v.abs()
+                         .real_scale(2.0 * 3.0)
+                         .sin()
+                         .real_scale(10.0)
+                         .abs()
+                         .sqrt()
+                    });
+                    ops.get().unwrap()
+                })
+        });
+    }
+    
+    #[bench]
+    fn multi_operations_6ops2_vector_32_benchmark(b: &mut Bencher)
+    {
+        let mut vector = VectorBox::<DataVector32>::new(Size::Small, false);
+        b.iter(|| {
+            vector.execute(|v|  
+                {
+                    let len = v.len(); 
+                    let operand = DataVector32::new(false, DataVectorDomain::Time, 2.0 * 3.0, len, 1.0);
+                    let ops = multi_ops2(v, operand);
+                    let ops = ops.add_ops(|v, o| {
+                        let v = v.abs()
+                         .multiply_vector(&o)
+                         .sin()
+                         .real_scale(10.0)
+                         .abs()
+                         .sqrt();
+                        (v, o)
+                    });
+                    let (v, _) = ops.get().unwrap();
+                    v
+                })
         });
     }
     
