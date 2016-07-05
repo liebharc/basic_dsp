@@ -7,11 +7,14 @@ pub mod tools;
 mod slow_test {
     use basic_dsp::{
         DataVector,
+        DataVector32,
         RealTimeVector32,
         GenericVectorOps,
         ComplexVectorOps,
+        DataVectorDomain,
         ComplexTimeVector32};
     use num::complex::Complex32;
+    use basic_dsp::combined_ops::*;
     use tools::*;
        
     fn to_complex(a: &Vec<f32>) -> Vec<Complex32>
@@ -443,6 +446,656 @@ mod slow_test {
             let vector2 = ComplexTimeVector32::empty();
             let result = vector2.set_mag_phase(&mag, &phase).unwrap();
             assert_vector_eq_with_reason_and_tolerance(&a, result.data(), 1e-4, "Merge differs");
+        });
+    }
+    
+    #[test]
+    fn multi_ops_offset_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let b = create_data_with_len(201511141, iteration, 2);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.complex_offset(Complex32::new(b[0], b[1]));
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.complex_offset(Complex32::new(b[0], b[1])))
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_scale_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let b = create_data_with_len(201511141, iteration, 2);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.complex_scale(Complex32::new(b[0], b[1]));
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.complex_scale(Complex32::new(b[0], b[1])))
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_magnitude_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.magnitude();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.magnitude())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_magnitude_squared_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.magnitude_squared();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.magnitude_squared())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_conj_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.conj();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.conj())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_to_real_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.to_real();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.to_real())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_to_imag_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.to_imag();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.to_imag())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_phase_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.phase();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.phase())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_add_vector_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let b = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let b = DataVector32::from_array(true, DataVectorDomain::Time, &b);
+            let ops = multi_ops2(a.clone(), b.clone());
+            let ops = ops.add_ops(|a, b| {
+                let a = a.add_vector(&b);
+                (a, b)
+            });
+            let (a_actual, b_actual) = ops.get().unwrap();
+            let a_expected = a.add_vector(&b).unwrap();
+            let b_expected = b;
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&b_expected.data(), &b_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_subtract_vector_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let b = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let b = DataVector32::from_array(true, DataVectorDomain::Time, &b);
+            let ops = multi_ops2(a.clone(), b.clone());
+            let ops = ops.add_ops(|a, b| {
+                let a = a.subtract_vector(&b);
+                (a, b)
+            });
+            let (a_actual, b_actual) = ops.get().unwrap();
+            let a_expected = a.subtract_vector(&b).unwrap();
+            let b_expected = b;
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&b_expected.data(), &b_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_multiply_vector_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let b = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let b = DataVector32::from_array(true, DataVectorDomain::Time, &b);
+            let ops = multi_ops2(a.clone(), b.clone());
+            let ops = ops.add_ops(|a, b| {
+                let a = a.multiply_vector(&b);
+                (a, b)
+            });
+            let (a_actual, b_actual) = ops.get().unwrap();
+            let a_expected = a.multiply_vector(&b).unwrap();
+            let b_expected = b;
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&b_expected.data(), &b_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_divide_vector_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let b = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let b = DataVector32::from_array(true, DataVectorDomain::Time, &b);
+            let ops = multi_ops2(a.clone(), b.clone());
+            let ops = ops.add_ops(|a, b| {
+                let a = a.divide_vector(&b);
+                (a, b)
+            });
+            let (a_actual, b_actual) = ops.get().unwrap();
+            let a_expected = a.divide_vector(&b).unwrap();
+            let b_expected = b;
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&b_expected.data(), &b_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_sqrt_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.sqrt();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.sqrt())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_square_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.square();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.square())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_root_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let b = create_data_with_len(201511141, iteration, 1);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.root(b[0]);
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.root(b[0]))
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_powf_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let b = create_data_with_len(201511141, iteration, 1);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.powf(b[0]);
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.powf(b[0]))
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_ln_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.ln();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.ln())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_exp_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.exp();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.exp())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_log_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let b = create_data_with_len(201511141, iteration, 1);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.log(b[0]);
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.log(b[0]))
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_expf_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let b = create_data_with_len(201511141, iteration, 1);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.expf(b[0]);
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.expf(b[0]))
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_sin_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.sin();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.sin())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_cos_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.cos();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.cos())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_tan_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.tan();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.tan())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_asin_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.asin();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.asin())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_acos_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.acos();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.acos())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_atan_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.atan();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.atan())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_sinh_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.sinh();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.sinh())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_cosh_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.cosh();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.cosh())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_tanh_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.tanh();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.tanh())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_asinh_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.asinh();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.asinh())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_acosh_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.acosh();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.acosh())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_atanh_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.atanh();
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.atanh())
+                .unwrap();
+            assert_vector_eq(&a_expected.data(), &a_actual.data());
         });
     }
 }

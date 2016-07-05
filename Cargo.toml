@@ -9,7 +9,7 @@ documentation = "https://liebharc.github.io/basic_dsp/basic_dsp/"
 keywords = ["dsp", "vector", "interpolation", "convolution"]
 description = """
 Digital signal processing based on real or complex vectors in time or frequency domain.
-Vectors come with basic arithmetic, convolution, Fourier transformation and interpolation operations.
+Vectors come with basic arithmetic, convolution, Fourier transformation and interpolation operations. The vectors are optimized for sizes of a couple of thousand elements or more.
 """
 
 [profile.dev]

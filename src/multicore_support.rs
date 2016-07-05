@@ -32,7 +32,6 @@ pub struct MultiCoreSettings {
     /// Indicates whether the temp arrays of a vector should already be allocated during
     /// construction
     pub early_temp_allocation: bool
-    // TODO: Specify and use options such as core/thread limits
 }
 
 impl MultiCoreSettings {

@@ -297,7 +297,7 @@ macro_rules! add_perform_ops_impl {
                     Operation::Sqrt(idx) =>
                     {
                         let v = unsafe { vectors.get_unchecked_mut(idx) };
-                        *v = v.sqrt();
+                        *v = v.iter_over_complex_vector(|x|x.sqrt());
                     }
                     Operation::Square(idx) => 
                     {

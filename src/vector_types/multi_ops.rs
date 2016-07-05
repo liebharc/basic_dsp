@@ -689,7 +689,7 @@ macro_rules! add_multi_ops_impl {
         add_complex_multi_ops_impl!($data_type, GenericDataIdentifier, GenericDataIdentifier);
         add_real_multi_ops_impl!($data_type, RealTimeIdentifier, ComplexTimeIdentifier);
         add_real_multi_ops_impl!($data_type, RealFreqIdentifier, ComplexFreqIdentifier);
-        add_real_multi_ops_impl!($data_type, GenericDataIdentifier, RealTimeIdentifier);
+        add_real_multi_ops_impl!($data_type, GenericDataIdentifier, GenericDataIdentifier);
         
         add_general_multi_ops_impl!($data_type, ComplexTimeIdentifier);
         add_general_multi_ops_impl!($data_type, ComplexFreqIdentifier);
@@ -888,6 +888,7 @@ macro_rules! add_multi_ops_impl {
                     
                     vectors = correct_domain;
                 }
+                
                 Ok (vectors)
             }
             
