@@ -832,29 +832,20 @@ macro_rules! add_multi_ops_impl {
                     vectors = complex_vectors;
                 }
                 
-                let (vectorization_length, multicore_settings) =
+                let (vectorization_length, 
+                     multicore_settings,
+                     scalar_length) =
                     {
                         let first = &vectors[0];
                         let data_length = first.len();
                         let alloc_len = first.allocated_len();
                         let rounded_len = round_len(data_length);
                         if rounded_len <= alloc_len {
-                            (rounded_len, first.multicore_settings)
+                            (rounded_len, first.multicore_settings, 0)
                         }
                         else {
                             let scalar_length = data_length % $reg::len();
-                            if scalar_length > 0
-                            {
-                                panic!("perform_operations requires right now that the array length is dividable by {}", $reg::len())
-                            }
-                            // TODO We can possibly remove this restriction by copying
-                            // the last elements into a $eg
-                            // and then we can call perform_operation on it.
-                            // That's of course not optimal since it involves a copying operation
-                            // and in the worst case we don't care for $reg::len() -1 of the results
-                            // however it makes the implementation easy and the performance
-                            // loss seems to be tolerable
-                            (data_length - scalar_length, first.multicore_settings)
+                            (data_length - scalar_length, first.multicore_settings, scalar_length)
                         }
                     };
                 
@@ -876,7 +867,46 @@ macro_rules! add_multi_ops_impl {
                             complexity, &multicore_settings,
                             &mut array, vectorization_length, $reg::len(), 
                             operations, 
-                            Self::perform_real_operations_par);
+                            Self::perform_real_operations_par);   
+                    }
+                }
+                
+                if scalar_length > 0 {
+                    let mut last_elems = Vec::with_capacity(vectors.len());
+                    for j in 0..vectors.len() {
+                        let reg = $reg::splat(0.0);
+                        let mut reg_array = reg.to_array();
+                        for i in 0..scalar_length {
+                            reg_array[i] = vectors[j].data[vectorization_length + i];
+                        }
+                        
+                        last_elems.push($reg::from_array(reg_array));
+                    }
+                    
+                    if any_complex_ops {
+                        for operation in operations
+                        {
+                            PerformOperationSimd::<$data_type>::perform_complex_operation(
+                                &mut last_elems, 
+                                *operation);
+                        }
+                    }
+                    else {
+                        for operation in operations
+                        {
+                            PerformOperationSimd::<$data_type>::perform_real_operation(
+                                &mut last_elems, 
+                                *operation);
+                        }
+                    }
+                    
+                    let mut j = 0;
+                    for reg in last_elems {
+                        let reg_array = reg.to_array();
+                        for i in 0..scalar_length {
+                            vectors[j].data[vectorization_length + i] = reg_array[i];
+                        }
+                        j += 1;
                     }
                 }
                 

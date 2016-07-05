@@ -863,7 +863,7 @@ mod slow_test {
     #[test]
     fn multi_ops_offset_test() {
         parameterized_vector_test(|iteration, _| {
-            let len = 1000;
+            let len = 1031;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, 1);
             let a = DataVector32::from_array(false, DataVectorDomain::Time, &a);
