@@ -143,6 +143,8 @@ pub trait GeneralIdentifier<T> : Identifier<T>
     fn acosh(self) -> Self;
     /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.atanh).
     fn atanh(self) -> Self;
+    /// Copies data from another vector.
+    fn clone_from(self, &Self) -> Self;
 }
 
 /// Scale operations to vectors in combination 
@@ -500,6 +502,11 @@ macro_rules! add_general_multi_ops_impl {
             fn atanh(self) -> Self {
                 let arg = self.arg;
                 self.add_op(Operation::ATanh(arg))
+            }
+            
+            fn clone_from(self, source: &Self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::CloneFrom(arg, source.arg))
             }
         }
      }

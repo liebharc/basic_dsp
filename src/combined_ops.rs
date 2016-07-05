@@ -44,11 +44,13 @@
 //! #   }
 //! # }
 //! let a = RealTimeVector32::from_array(&[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]);
-//! let b = RealTimeVector32::from_array(&[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]);
+//! let b = RealTimeVector32::from_constant(0.0, 8);
 //! let ops = multi_ops2(a, b);
 //! let ops = ops.add_ops(|a, b| {
-//!     let a = a.scale(2.0 * PI).sin();
-//!     let b = b.scale(2.0 * PI).cos();
+//!     let a = a.scale(2.0 * PI);
+//!     let b = b.clone_from(&a);
+//!     let a = a.sin();
+//!     let b = b.cos();
 //!     let a = a.multiply_vector(&b).abs();
 //!     let a_db = a.log(10.0).scale(10.0);
 //!     (a_db, b)

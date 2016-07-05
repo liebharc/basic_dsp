@@ -52,7 +52,8 @@ pub enum Operation<T>
     Tanh(usize),
     ASinh(usize),
     ACosh(usize),
-    ATanh(usize)
+    ATanh(usize),
+    CloneFrom(usize, usize)
 }
 
 fn require_complex(is_complex: bool) -> Result<bool, ErrorReason> {
@@ -117,7 +118,8 @@ pub fn evaluate_number_space_transition<T>(is_complex: bool, operation: Operatio
         Operation::Tanh(_) => Ok(is_complex),
         Operation::ASinh(_) => Ok(is_complex),
         Operation::ACosh(_) => Ok(is_complex),
-        Operation::ATanh(_) => Ok(is_complex)
+        Operation::ATanh(_) => Ok(is_complex),
+        Operation::CloneFrom(_, _) => Ok(is_complex)
     }
 }
 
@@ -163,7 +165,8 @@ pub fn get_argument<T>(operation: Operation<T>) -> usize
         Operation::Tanh(arg) => arg,
         Operation::ASinh(arg) => arg,
         Operation::ACosh(arg) => arg,
-        Operation::ATanh(arg) => arg
+        Operation::ATanh(arg) => arg,
+        Operation::CloneFrom(arg, _) => arg
     }
 }
 
@@ -394,6 +397,12 @@ macro_rules! add_perform_ops_impl {
                         let v = unsafe { vectors.get_unchecked_mut(idx) };
                         *v = v.iter_over_complex_vector(|x|x.atanh());
                     }
+                    Operation::CloneFrom(idx1, idx2) => 
+                    {
+                        let v2 = unsafe { *vectors.get_unchecked(idx2) };
+                        let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
+                        *v1 = v2;
+                    }
                 }
             }
             
@@ -581,6 +590,12 @@ macro_rules! add_perform_ops_impl {
                     {
                         let v = unsafe { vectors.get_unchecked_mut(idx) };
                         *v = v.iter_over_vector(|x|x.atanh());
+                    }
+                    Operation::CloneFrom(idx1, idx2) => 
+                    {
+                        let v2 = unsafe { *vectors.get_unchecked(idx2) };
+                        let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
+                        *v1 = v2;
                     }
                 }
             }
