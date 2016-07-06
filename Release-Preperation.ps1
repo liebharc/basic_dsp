@@ -32,6 +32,24 @@ if ($age_difference_days -gt 3.0) {
     $all_okay = $false
 }
 
+$cwd = $(Get-Location)
+cd src\interop_facade
+$facade_status = $(perl facade32_check_completness.pl)
+$missing_ops_in_facade = $(echo $facade_status | Select-String -Pattern "missing:\s*(\d+)" -AllMatches | % { $_.Matches.Groups[1].Value })
+if ($missing_ops_in_facade -gt 0) {
+    $Host.UI.WriteErrorLine("There seem to be $missing_ops_in_facade operations missing in interop facade.")
+    $all_okay = $false
+}
+
+perl facade64_create.pl | Write-Verbose
+$facade64_diff = $(git diff .\facade64.rs)
+if ($facade64_diff -gt 0) {
+    $Host.UI.WriteErrorLine("facade64.rs seems to miss updates. Please review the changes and check them in.")
+    $all_okay = $false
+}
+
+cd $cwd
+
 if ($all_okay) {
     Write-Output "Everything seems to be okay, run ""cargo publish"" next"
 }

@@ -39,12 +39,13 @@ sub parse_definition {
 }
 
 sub parse_facade {
+    my ($type) = @_;
     open FACADE32, "<", "facade32.rs" or die $!;
     my @methods = ();
     while (<FACADE32>) {
         my $line = $_;
         chomp $line;
-        if ($line =~ /^(\/\/)?\s*pub extern fn (\w+)32/) {
+        if ($line =~ /^(\/\/)?\s*pub extern fn (\w+)32.*$type/) {
            push @methods, $2; 
         }
     }
@@ -52,12 +53,13 @@ sub parse_facade {
     return @methods;
 }
 
+# DataVector32
 my @definitions = parse_definition("../vector_types/definitions.rs", "GenericVectorOperations", "RealVectorOperations", "ComplexVectorOperations");
 push @definitions, parse_definition("../vector_types/time_freq_impl.rs", "TimeDomainOperations", "FrequencyDomainOperations", "SymmetricFrequencyDomainOperations", "SymmetricTimeDomainOperations");
 push @definitions, parse_definition("../vector_types/correlation_impl.rs", "CrossCorrelation");
 push @definitions, parse_definition("../vector_types/convolution_impl.rs", "Convolution", "VectorConvolution", "FrequencyMultiplication");
 push @definitions, parse_definition("../vector_types/interpolation_impl.rs", "Interpolation", "RealInterpolation");
-my @impl = parse_facade();
+my @impl = parse_facade("DataVector32");
 my $found = 0;
 my $missing = 0;
 for my $def (@definitions) {
@@ -65,7 +67,20 @@ for my $def (@definitions) {
         $found++;
     }
     else {
-        print "missing: $def\n";
+        print "missing for DataVector32: $def\n";
+        $missing++;
+    }
+}
+
+# multi-ops
+@definitions = parse_definition("../vector_types/multi_ops.rs", "ComplexIdentifier", "RealIdentfier", "GeneralIdentifier");
+@impl = parse_facade("GeneralIdentifier");
+for my $def (@definitions) {
+    if (grep(/^$def$/, @impl)) {
+        $found++;
+    }
+    else {
+        print "missing for GeneralIdentfier: $def\n";
         $missing++;
     }
 }
