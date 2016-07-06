@@ -20,6 +20,24 @@
 //! and CPU utilization. The library also avoids to allocate and free memory and it allocates memory for temporary allocation.
 //! so the library is likely not suitable for devices which are tight on memory. On normal desktop computers there is usually plenty of
 //! memory available so that the optimization focus is on decreasing the processing time for every (common) operation and to spent little time with memory allocations.  
+
+/// Like `try!` but for operations returning a vector.
+///
+/// Operations which return a vector on success even return an error reason 
+/// together with a vector on failure. So even if the operation has failed the
+/// vector can still be reused and thus memory allocation can be avoided. If
+/// this is undesired then this macro can be used instead of `try!` to just
+/// return the error reason.
+#[macro_export]
+macro_rules! try_vec {
+    ( $ expr : expr ) => { 
+        match $expr {
+            Ok(vec) => vec,
+            Err((reason, _)) => return Err(reason)
+        };
+    };
+}
+
 extern crate simd;
 extern crate num_cpus;
 extern crate crossbeam;
@@ -83,3 +101,46 @@ pub use vector_types::
  pub trait RealNumber : Float + Copy + Clone + Send + Sync { }
  impl<T> RealNumber for T
   where T: Float + Copy + Clone + Send + Sync {}
+  
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    fn void_try_method() -> Result<i32, ErrorReason> {
+        let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+        let vector = DataVector32::from_array(false, DataVectorDomain::Time, &array);
+        let mut dest = DataVector32::from_array(false, DataVectorDomain::Time, &array);
+        let _ = try!(vector.get_magnitude(&mut dest));
+        Ok(0)
+    }
+    
+    fn scalar_try_method() -> Result<i32, ErrorReason> {
+        let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+        let vector = DataVector32::from_array(false, DataVectorDomain::Time, &array);
+        let dest = DataVector32::from_array(false, DataVectorDomain::Time, &array);
+        let _ = try!(vector.complex_dot_product(&dest));
+        Ok(0)
+    }
+    
+    fn vec_try_method() -> Result<i32, ErrorReason> {
+        let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+        let vector = DataVector32::from_array(false, DataVectorDomain::Time, &array);
+        let array = [1.0, 2.0, 3.0, 4.0];
+        let dest = DataVector32::from_array(false, DataVectorDomain::Time, &array);
+        let _ = try_vec!(vector.add_vector(&dest));
+        Ok(0)
+    }
+
+    /// This test should make sure that there are convenient error handling 
+    /// methods available.
+    #[test]
+    fn construct_real_time_vector_32_test()
+    {
+        let res = void_try_method();
+        assert!(res.is_err());
+        let res = scalar_try_method();
+        assert!(res.is_err());
+        let res = vec_try_method();
+        assert!(res.is_err());
+    }
+}
