@@ -86,7 +86,7 @@ mod bench {
             return result.delta();;
             });
     }
-    
+       
     #[bench]
     fn multi_operations_2ops1_vector_32_benchmark(b: &mut Bencher)
     {
@@ -253,6 +253,29 @@ mod bench {
         let mut vector = VectorBox::<RealTimeVector32>::new(Size::Medium);
         b.iter(|| {
             vector.execute_res(|v|  { v.real_scale(2.0) } )
+        });
+    }
+    
+    #[bench]
+    fn real_scale_with_mapping_32m_benchmark(b: &mut Bencher)
+    {
+        let mut vector = VectorBox::<RealTimeVector32>::new(Size::Medium);
+        b.iter(|| {
+            vector.execute_res(|v|  { v.map_inplace_real((), |v,_,_| 2.0 * v) } )
+        });
+    }
+    
+    #[bench]
+    fn real_scale_with_multi_ops_mapping_32m_benchmark(b: &mut Bencher)
+    {
+        let mut vector = VectorBox::<RealTimeVector32>::new(Size::Medium);
+        b.iter(|| {
+            vector.execute_res(|vec|  
+                { 
+                    let ops = multi_ops1(vec);
+                    let ops = ops.add_ops(|vec| vec.map_inplace_real(|v, _| 2.0 * v));
+                    ops.get()
+                } )
         });
     }
     

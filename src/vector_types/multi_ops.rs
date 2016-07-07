@@ -73,6 +73,9 @@ pub trait ComplexIdentifier<T> : Identifier<T>
     fn phase(self) -> Self::RealPartner;
     /// See [`ComplexVectorOps`](../trait.ComplexVectorOps.html#tymethod.multiply_complex_exponential).
     fn multiply_complex_exponential(self, a: T, b: T) -> Self;
+    /// See [`ComplexVectorOps`](../trait.ComplexVectorOps.html#tymethod.map_inplace_complex).
+    fn map_inplace_complex<F>(self, f: F) -> Self
+        where F: Fn(Complex<T>, usize) -> Complex<T> + Send + Sync;
 }
 
 /// Operations for real vectors which can be used on combination 
@@ -90,6 +93,9 @@ pub trait RealIdentifier<T> : Identifier<T>
     fn abs(self) -> Self;
     /// See [`RealVectorOps`](../trait.RealVectorOps.html#tymethod.to_complex).
     fn to_complex(self) -> Self::ComplexPartner;
+    /// See [`RealVectorOps`](../trait.RealVectorOps.html#tymethod.map_inplace_real).
+    fn map_inplace_real<F>(self, f: F) -> Self
+        where F: Fn(T, usize) -> T + Send + Sync;
 }
 
 /// Operations for all kind of vectors which can be used in combination 
@@ -207,7 +213,7 @@ pub trait GeneralIdentifier<T> : Identifier<T>
 }
 
 /// Scale operations to vectors in combination 
-/// with multi ops or prepared ops. For a dcoumentation of the specific operations
+/// with multi ops or prepared ops. For a documentation of the specific operations
 /// see [`Scale`](../trait.Scale.html).
 pub trait Scale<T>: Sized where T: Sized {
     /// See [`Scale`](../trait.Scale.html#tymethod.scale).
@@ -215,11 +221,20 @@ pub trait Scale<T>: Sized where T: Sized {
 }
 
 /// Offset operations to vectors in combination 
-/// with multi ops or prepared ops. For a dcoumentation of the specific operations
+/// with multi ops or prepared ops. For a documentation of the specific operations
 /// see [`Offset`](../trait.Offset.html).
 pub trait Offset<T>: Sized where T: Sized {
     /// See [`Offset`](../trait.Offset.html#tymethod.offset).
     fn offset(self, offset: T) -> Self;
+}
+
+/// Allows to map every vector element.
+/// with multi ops or prepared ops. For a documentation of the specific operations
+/// see [`VectorIter`](../trait.VectorIter.html).
+pub trait IdentifierIter<T>: Sized where T: Sized {
+    /// See [`VectorIter`](../trait.VectorIter.html#tymethod.map_inplace).
+    fn map_inplace<F>(self, f: F) -> Self
+        where F: Fn(T, usize) -> T + Send + Sync + 'static ;
 }
 
 macro_rules! create_identfier {
@@ -380,6 +395,12 @@ macro_rules! add_complex_multi_ops_impl {
                 let arg = self.arg;
                 self.add_op(Operation::MultiplyComplexExponential(arg, a, b))
             }
+            
+            fn map_inplace_complex<F>(self, f: F) -> Self
+                where F: Fn(Complex<$data_type>, usize) -> Complex<$data_type> + Send + Sync + 'static {
+                let arg = self.arg;
+                self.add_op(Operation::MapComplex(arg, Arc::new(f)))
+            }
         }
         
         impl Scale<Complex<$data_type>> for $name<$data_type> {
@@ -393,6 +414,14 @@ macro_rules! add_complex_multi_ops_impl {
             fn offset(self, offset: Complex<$data_type>) -> Self {
                 let arg = self.arg;
                 self.add_op(Operation::AddComplex(arg, offset))
+            }
+        }
+        
+        impl IdentifierIter<Complex<$data_type>> for $name<$data_type> {
+            fn map_inplace<F>(self, f: F) -> Self
+                where F: Fn(Complex<$data_type>, usize) -> Complex<$data_type> + Send + Sync + 'static {
+                let arg = self.arg;
+                self.add_op(Operation::MapComplex(arg, Arc::new(f)))
             }
         }
      }
@@ -423,6 +452,12 @@ macro_rules! add_real_multi_ops_impl {
                 let arg = self.arg;
                 self.add_op(Operation::ToComplex(arg))
             }
+            
+            fn map_inplace_real<F>(self, f: F) -> Self
+                where F: Fn($data_type, usize) -> $data_type + Send + Sync + 'static {
+                let arg = self.arg;
+                self.add_op(Operation::MapReal(arg, Arc::new(f)))
+            }
         }
         
         impl Scale<$data_type> for $name<$data_type> {
@@ -436,6 +471,14 @@ macro_rules! add_real_multi_ops_impl {
             fn offset(self, offset: $data_type) -> Self {
                 let arg = self.arg;
                 self.add_op(Operation::AddReal(arg, offset))
+            }
+        }
+        
+        impl IdentifierIter<$data_type> for $name<$data_type> {
+            fn map_inplace<F>(self, f: F) -> Self
+                where F: Fn($data_type, usize) -> $data_type + Send + Sync + 'static {
+                let arg = self.arg;
+                self.add_op(Operation::MapReal(arg, Arc::new(f)))
             }
         }
      }
@@ -973,8 +1016,8 @@ macro_rules! add_multi_ops_impl {
                             PerformOperationSimd::<$data_type>::perform_complex_operation(
                                 &mut last_elems, 
                                 operation,
-                                (vectorization_length / $reg::len() * 2) as $data_type,
-                                first_vec_len as $data_type);
+                                (vectorization_length / $reg::len() * 2),
+                                first_vec_len);
                         }
                     }
                     else {
@@ -983,8 +1026,8 @@ macro_rules! add_multi_ops_impl {
                             PerformOperationSimd::<$data_type>::perform_real_operation(
                                 &mut last_elems, 
                                 operation,
-                                (vectorization_length / $reg::len()) as $data_type,
-                                first_vec_len as $data_type);
+                                (vectorization_length / $reg::len()),
+                                first_vec_len);
                         }
                     }
                     
@@ -1023,7 +1066,6 @@ macro_rules! add_multi_ops_impl {
                 arguments: (&[Operation<$data_type>], usize))
             {
                 let (operations, points) = arguments;
-                let points = points as $data_type;
                 let mut regs: Vec<&mut [$reg]> = 
                     array.iter_mut()
                         .map(|a|$reg::array_to_regs_mut(a))
@@ -1049,7 +1091,7 @@ macro_rules! add_multi_ops_impl {
                         PerformOperationSimd::<$data_type>::perform_complex_operation(
                             &mut vectors, 
                             operation,
-                            index as $data_type,
+                            index,
                             points);
                     }
                     
@@ -1070,7 +1112,6 @@ macro_rules! add_multi_ops_impl {
                 arguments: (&[Operation<$data_type>], usize))
             {
                 let (operations, points) = arguments;
-                let points = points as $data_type;
                 let mut regs: Vec<&mut [$reg]> = 
                     array.iter_mut()
                         .map(|a|$reg::array_to_regs_mut(a))
@@ -1096,7 +1137,7 @@ macro_rules! add_multi_ops_impl {
                         PerformOperationSimd::<$data_type>::perform_real_operation(
                             &mut vectors, 
                             operation,
-                            index as $data_type,
+                            index,
                             points);
                     }
                     
@@ -1266,8 +1307,8 @@ pub fn multi_ops2<T, A, B>(a: A, b: B)
 #[cfg(test)]
 mod tests {
     use super::super::*;
-    use super::super::operations_enum::*;
     use super::*;
+    use num::complex::Complex32;
 
     #[test]
     fn multi_ops_construction()
@@ -1353,18 +1394,6 @@ mod tests {
     }
     
     #[test]
-    fn argument_index_assignment()
-    {
-        let ops = prepare2::<f32, ComplexTimeVector32, RealTimeVector32>();
-        let ops = ops.add_ops(|a, b| (b.abs(), a));
-        let ops = ops.add_ops(|a, b| (b, a.abs()));
-        let mut exp_ops = Vec::new();
-        exp_ops.push(Operation::Abs(1));
-        exp_ops.push(Operation::Abs(1));
-        assert_eq!(ops.ops, exp_ops);
-    }
-    
-    #[test]
     fn complex_operation_on_real_vector()
     {
         let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
@@ -1422,5 +1451,47 @@ mod tests {
         assert_eq!(a.data(), &expected);   
         let expected = [11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0];
         assert_eq!(b.data(), &expected);            
+    }
+    
+    #[test]
+    fn map_inplace_real_test()
+    {
+        let array = [1.0, 2.0, 3.0, 4.0];
+        let a = RealTimeVector32::from_array(&array);
+        let ops = multi_ops1(a);
+        let ops = ops.add_ops(|a|a.map_inplace_real(|v,i|v * i as f32));
+        let a = ops.get().unwrap();
+        let expected = [0.0, 2.0, 6.0, 12.0];
+        assert_eq!(a.data(), &expected); 
+    }
+    
+    /// This test checks mainly if the closure we store in the Operation enum
+    /// can still reference its scope.
+    #[test]
+    fn multiply_linear_test()
+    {
+        let array = [1.0, 2.0, 3.0, 4.0];
+        let a = RealTimeVector32::from_array(&array);
+        let a = multiply_linear(a, 0.5);
+        let expected = [0.0, 1.0, 3.0, 6.0];
+        assert_eq!(a.data(), &expected); 
+    }
+    
+    fn multiply_linear(a: RealTimeVector32, fac: f32) -> RealTimeVector32 {
+        let ops = multi_ops1(a);
+        let ops = ops.add_ops(|a|a.map_inplace_real(|v,i|v * i as f32 * fac));
+        ops.get().unwrap()
+    }
+    
+    #[test]
+    fn map_inplace_complex_test()
+    {
+        let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
+        let a = ComplexTimeVector32::from_interleaved(&array);
+        let ops = multi_ops1(a);
+        let ops = ops.add_ops(|a|a.map_inplace_complex(|v,i|v * Complex32::new(i as f32, 0.0)));
+        let a = ops.get().unwrap();
+        let expected = [0.0, 0.0, 3.0, 4.0, 10.0, 12.0];
+        assert_eq!(a.data(), &expected); 
     }
 }
