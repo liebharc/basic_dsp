@@ -63,7 +63,7 @@ macro_rules! define_real_operations_forward {
                     aggregate: FAggr) -> ScalarResult<R>
                         where A: Sync + Copy + Send,
                               FMap: Fn($data_type, usize, A) -> R + 'static + Sync,
-                              FAggr: Fn(R, R) -> R + 'static + Sync,
+                              FAggr: Fn(R, R) -> R + 'static + Sync + Send,
                               R: Send {
                     self.to_gen_borrow().map_aggregate_real(argument, map, aggregate) 
                 }

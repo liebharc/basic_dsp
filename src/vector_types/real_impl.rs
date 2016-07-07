@@ -14,7 +14,7 @@ use super::definitions::{
 use super::GenericDataVector;    
 use super::stats_impl::Stats;
 use simd_extensions::{Simd, Reg32, Reg64};
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 macro_rules! add_real_impl {
     ($($data_type:ident, $reg:ident);*)
@@ -122,10 +122,11 @@ macro_rules! add_real_impl {
                     aggregate: FAggr) -> ScalarResult<R>
                         where A: Sync + Copy + Send,
                               FMap: Fn($data_type, usize, A) -> R + 'static + Sync,
-                              FAggr: Fn(R, R) -> R + 'static + Sync,
+                              FAggr: Fn(R, R) -> R + 'static + Sync + Send,
                               R: Send {
                     
-                    /*let mut result = {
+                    let aggregate = Arc::new(aggregate);
+                    let mut result = {
                         if self.is_complex {
                             return Err(ErrorReason::VectorMustBeReal);
                         }
@@ -135,11 +136,12 @@ macro_rules! add_real_impl {
                         if length == 0 {
                             return Err(ErrorReason::VectorMustNotBeEmpty);
                         }
+                        let aggregate  = aggregate.clone();
                         Chunk::map_on_array_chunks(
                             Complexity::Small, &self.multicore_settings,
                             &array, length, 1, argument,
                             move|array, range, argument| {
-                                let aggregate = arc.clone();
+                                let aggregate  = aggregate.clone();
                                 let mut i = range.start;
                                 let mut sum: Option<R> = None;
                                 for num in array {
@@ -153,6 +155,9 @@ macro_rules! add_real_impl {
                                 sum
                             })
                     };
+                    let aggregate  = aggregate.clone();
+                    // Would be nicer if we could use iter().fold(..) but we need
+                    // the value of R and not just a reference so we can't user an iter
                     let mut only_valid_options = Vec::with_capacity(result.len());
                     for _ in 0..result.len() {
                         let elem = result.pop().unwrap();
@@ -169,8 +174,7 @@ macro_rules! add_real_impl {
                     for _ in 0..only_valid_options.len() {
                         aggregated = aggregate(aggregated, only_valid_options.pop().unwrap());
                     }
-                    Ok(aggregated)*/
-                    panic!("Not implemented")
+                    Ok(aggregated)
                 }
                 
                 fn real_dot_product(&self, factor: &Self) -> ScalarResult<$data_type>

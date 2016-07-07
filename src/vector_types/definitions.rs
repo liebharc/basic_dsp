@@ -753,10 +753,36 @@ pub trait RealVectorOps<T> : DataVector<T>
     /// ```  
     fn real_statistics_splitted(&self, len: usize) -> Vec<Statistics<T>>;
     
+    /// Transforms all vector elements using the function `map`.
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::*;
+    /// let a = [1.0, 2.0, 3.0, 4.0, 5.0];
+    /// let c = RealTimeVector32::from_array(&a);
+    /// let r = c.map_inplace_real((), |v, i, _|v * i as f32).expect("Ignoring error handling in examples");
+    /// let expected = [0.0, 2.0, 6.0, 12.0, 20.0];
+    /// assert_eq!(r.data(), &expected);
+    /// ```  
     fn map_inplace_real<A, F>(self, argument: A, map: F) -> VecResult<Self>
         where A: Sync + Copy + Send,
               F: Fn(T, usize, A) -> T + 'static + Sync;
     
+    /// Transforms all vector elements using the function `map` and then aggregates 
+    /// all the results with `aggregate`. `aggregate` must be a commutativity and associativity;
+    /// that's because there is no guarantee that the numbers will be aggregated in any deterministic order. 
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::*;
+    /// let a = [1.0, 2.0, 3.0, 4.0, 5.0];
+    /// let c = RealTimeVector32::from_array(&a);
+    /// let r = c.map_aggregate_real(
+    ///      (), 
+    ///      |v, i, _|v as usize * i, 
+    ///      |a,b|a+b).unwrap();
+    /// assert_eq!(r, 40);
+    /// ```  
     fn map_aggregate_real<A, FMap, FAggr, R>(
             &self, 
             argument: A, 
@@ -764,7 +790,7 @@ pub trait RealVectorOps<T> : DataVector<T>
             aggregate: FAggr) -> ScalarResult<R>
         where A: Sync + Copy + Send,
               FMap: Fn(T, usize, A) -> R + 'static + Sync,
-              FAggr: Fn(R, R) -> R + 'static + Sync,
+              FAggr: Fn(R, R) -> R + 'static + Sync + Send,
               R: Send;
 }
 
