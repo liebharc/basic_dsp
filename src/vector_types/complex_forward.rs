@@ -75,6 +75,24 @@ macro_rules! define_complex_operations_forward {
                     self.to_gen_borrow().get_phase(destination.to_gen_mut_borrow())
                 }
                 
+                fn map_inplace_complex<A, F>(self, argument: A, f: F) -> VecResult<Self>
+                    where A: Sync + Copy + Send,
+                          F: Fn(Complex<$data_type>, usize, A) -> Complex<$data_type> + 'static + Sync {
+                    Self::from_genres(self.to_gen().map_inplace_complex(argument, f))
+                }
+                
+                fn map_aggregate_complex<A, FMap, FAggr, R>(
+                    &self, 
+                    argument: A, 
+                    map: FMap,
+                    aggregate: FAggr) -> ScalarResult<R>
+                        where A: Sync + Copy + Send,
+                              FMap: Fn(Complex<$data_type>, usize, A) -> R + 'static + Sync,
+                              FAggr: Fn(R, R) -> R + 'static + Sync + Send,
+                              R: Send {
+                    self.to_gen_borrow().map_aggregate_complex(argument, map, aggregate) 
+                }
+                
                 fn complex_dot_product(&self, factor: &Self) -> ScalarResult<Complex<$data_type>>
                 {
                     self.to_gen_borrow().complex_dot_product(&factor.to_gen_borrow())
@@ -156,6 +174,26 @@ macro_rules! define_complex_operations_forward {
                 
                 fn statistics_splitted(&self, len: usize) -> Vec<Statistics<Complex<$data_type>>> {
                     self.complex_statistics_splitted(len)
+                }
+            }
+            
+            impl VectorIter<Complex<$data_type>> for $name<$data_type> {
+                fn map_inplace<A, F>(self, argument: A, map: F) -> VecResult<Self>
+                    where A: Sync + Copy + Send,
+                          F: Fn(Complex<$data_type>, usize, A) -> Complex<$data_type> + 'static + Sync {
+                    self.map_inplace_complex(argument, map)
+                }
+                
+                fn map_aggregate<A, FMap, FAggr, R>(
+                    &self, 
+                    argument: A, 
+                    map: FMap,
+                    aggregate: FAggr) -> ScalarResult<R>
+                where A: Sync + Copy + Send,
+                      FMap: Fn(Complex<$data_type>, usize, A) -> R + 'static + Sync,
+                      FAggr: Fn(R, R) -> R + 'static + Sync + Send,
+                      R: Send {
+                    self.map_aggregate_complex(argument, map, aggregate)  
                 }
             }
         )*

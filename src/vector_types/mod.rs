@@ -103,7 +103,8 @@ pub use vector_types::definitions::{
         OffsetOps,
         DotProductOps,
         StatisticsOps,
-        PaddingOption
+        PaddingOption,
+        VectorIter
     };
 pub use vector_types::time_freq_impl::{
         TimeDomainOperations,

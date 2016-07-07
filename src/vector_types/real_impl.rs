@@ -10,7 +10,8 @@ use super::definitions::{
     DotProductOps,
     StatisticsOps,
     GenericVectorOps,
-    RealVectorOps};
+    RealVectorOps,
+    VectorIter};
 use super::GenericDataVector;    
 use super::stats_impl::Stats;
 use simd_extensions::{Simd, Reg32, Reg64};
@@ -294,6 +295,26 @@ macro_rules! add_real_impl {
                 
                 fn statistics_splitted(&self, len: usize) -> Vec<Statistics<$data_type>> {
                     self.real_statistics_splitted(len)
+                }
+            }
+            
+            impl VectorIter<$data_type> for GenericDataVector<$data_type> {
+                fn map_inplace<A, F>(self, argument: A, map: F) -> VecResult<Self>
+                    where A: Sync + Copy + Send,
+                          F: Fn($data_type, usize, A) -> $data_type + 'static + Sync {
+                    self.map_inplace_real(argument, map)
+                }
+                
+                fn map_aggregate<A, FMap, FAggr, R>(
+                    &self, 
+                    argument: A, 
+                    map: FMap,
+                    aggregate: FAggr) -> ScalarResult<R>
+                where A: Sync + Copy + Send,
+                      FMap: Fn($data_type, usize, A) -> R + 'static + Sync,
+                      FAggr: Fn(R, R) -> R + 'static + Sync + Send,
+                      R: Send {
+                    self.map_aggregate_real(argument, map, aggregate)  
                 }
             }
         )*

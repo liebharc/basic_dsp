@@ -92,7 +92,8 @@ pub use vector_types::
         CrossCorrelation,
         Interpolation,
         RealInterpolation,
-        PaddingOption
+        PaddingOption,
+        VectorIter
     };
  pub use multicore_support::MultiCoreSettings;
  use num::traits::Float;   

@@ -111,6 +111,29 @@ pub trait DotProductOps<T> : Sized
     fn dot_product(&self, factor: &Self) -> ScalarResult<T>;
 }
 
+/// Operations which allow to iterate over the vector and to derive results
+/// or to change the vector. 
+pub trait VectorIter<T> : Sized
+    where T: Sized {
+    /// Transforms all vector elements using the function `map`.
+    fn map_inplace<A, F>(self, argument: A, map: F) -> VecResult<Self>
+        where A: Sync + Copy + Send,
+              F: Fn(T, usize, A) -> T + 'static + Sync;
+    
+    /// Transforms all vector elements using the function `map` and then aggregates 
+    /// all the results with `aggregate`. `aggregate` must be a commutativity and associativity;
+    /// that's because there is no guarantee that the numbers will be aggregated in any deterministic order. 
+    fn map_aggregate<A, FMap, FAggr, R>(
+            &self, 
+            argument: A, 
+            map: FMap,
+            aggregate: FAggr) -> ScalarResult<R>
+        where A: Sync + Copy + Send,
+              FMap: Fn(T, usize, A) -> R + 'static + Sync,
+              FAggr: Fn(R, R) -> R + 'static + Sync + Send,
+              R: Send;
+}
+
 /// Calculates the statistics of the data contained in the vector.
 pub trait StatisticsOps<T> : Sized
     where T: Sized {
@@ -780,7 +803,7 @@ pub trait RealVectorOps<T> : DataVector<T>
     /// let r = c.map_aggregate_real(
     ///      (), 
     ///      |v, i, _|v as usize * i, 
-    ///      |a,b|a+b).unwrap();
+    ///      |a,b|a+b).expect("Ignoring error handling in examples");
     /// assert_eq!(r, 40);
     /// ```  
     fn map_aggregate_real<A, FMap, FAggr, R>(
@@ -1098,6 +1121,56 @@ pub trait ComplexVectorOps<T> : DataVector<T>
     /// of the complex numbers which is its default format. 
     /// `mag` and `phase` must have the same size.
     fn set_mag_phase(self, mag: &Self::RealPartner, phase: &Self::RealPartner) -> VecResult<Self>;
+    
+    /// Transforms all vector elements using the function `map`.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// # use num::complex::Complex32;
+    /// use basic_dsp::*;
+    /// # fn main() { 
+    /// let a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
+    /// let c = ComplexTimeVector32::from_interleaved(&a);
+    /// let r = c.map_inplace_complex((), |v, i, _|v * Complex32::new(i as f32, 0.0)).expect("Ignoring error handling in examples");
+    /// let expected = [0.0, 0.0, 3.0, 4.0, 10.0, 12.0];
+    /// assert_eq!(r.data(), &expected);
+    /// # }
+    /// ```  
+    fn map_inplace_complex<A, F>(self, argument: A, map: F) -> VecResult<Self>
+        where A: Sync + Copy + Send,
+              F: Fn(Complex<T>, usize, A) -> Complex<T> + 'static + Sync;
+    
+    /// Transforms all vector elements using the function `map` and then aggregates 
+    /// all the results with `aggregate`. `aggregate` must be a commutativity and associativity;
+    /// that's because there is no guarantee that the numbers will be aggregated in any deterministic order. 
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// # use num::complex::Complex32;
+    /// use basic_dsp::*;
+    /// # fn main() { 
+    /// let a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
+    /// let c = ComplexTimeVector32::from_interleaved(&a);
+    /// let r = c.map_aggregate_complex(
+    ///      (), 
+    ///      |v, i, _|v.re as usize * i, 
+    ///      |a,b|a+b).expect("Ignoring error handling in examples");
+    /// assert_eq!(r, 13);
+    /// # }
+    /// ```  
+    fn map_aggregate_complex<A, FMap, FAggr, R>(
+            &self, 
+            argument: A, 
+            map: FMap,
+            aggregate: FAggr) -> ScalarResult<R>
+        where A: Sync + Copy + Send,
+              FMap: Fn(Complex<T>, usize, A) -> R + 'static + Sync,
+              FAggr: Fn(R, R) -> R + 'static + Sync + Send,
+              R: Send;
 }
 
 /// Enumeration of all error reasons

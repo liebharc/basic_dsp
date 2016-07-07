@@ -7,6 +7,7 @@ use super::definitions::{
     ScalarResult,
     Statistics,
     ScaleOps,
+    VectorIter,
     OffsetOps,
     DotProductOps,
     StatisticsOps,
@@ -15,6 +16,7 @@ use super::GenericDataVector;
 use super::stats_impl::Stats;
 use simd_extensions::{Simd,Reg32,Reg64};
 use num::complex::Complex;
+use std::sync::Arc;
 
 macro_rules! add_complex_impl {
     ($($data_type:ident, $reg:ident);*)
@@ -227,6 +229,91 @@ macro_rules! add_complex_impl {
                     }
                     
                     self.pure_complex_into_real_target_operation(destination, |x,_arg|x.arg(), (), Complexity::Small)
+                }
+                
+                fn map_inplace_complex<A, F>(mut self, argument: A, f: F) -> VecResult<Self>
+                    where A: Sync + Copy + Send,
+                          F: Fn(Complex<$data_type>, usize, A) -> Complex<$data_type> + 'static + Sync {
+                    {
+                        assert_complex!(self);
+                        let mut array = &mut self.data;
+                        let length = array.len();
+                        Chunk::execute_with_range(
+                            Complexity::Small, &self.multicore_settings,
+                            &mut array, length, 2, argument,
+                            move|array, range, argument| {
+                                let mut i = range.start / 2;
+                                let array = Self::array_to_complex_mut(array);
+                                for num in array {
+                                    *num = f(*num, i, argument);
+                                    i += 1;
+                                }
+                            });
+                    }
+                    Ok(self)
+                }
+                
+                fn map_aggregate_complex<A, FMap, FAggr, R>(
+                    &self, 
+                    argument: A, 
+                    map: FMap,
+                    aggregate: FAggr) -> ScalarResult<R>
+                        where A: Sync + Copy + Send,
+                              FMap: Fn(Complex<$data_type>, usize, A) -> R + 'static + Sync,
+                              FAggr: Fn(R, R) -> R + 'static + Sync + Send,
+                              R: Send {
+                    
+                    let aggregate = Arc::new(aggregate);
+                    let mut result = {
+                        if !self.is_complex {
+                            return Err(ErrorReason::VectorMustBeComplex);
+                        }
+                        
+                        let array = &self.data;
+                        let length = array.len();
+                        if length == 0 {
+                            return Err(ErrorReason::VectorMustNotBeEmpty);
+                        }
+                        let aggregate  = aggregate.clone();
+                        Chunk::map_on_array_chunks(
+                            Complexity::Small, &self.multicore_settings,
+                            &array, length, 2, argument,
+                            move|array, range, argument| {
+                                let aggregate  = aggregate.clone();
+                                let array = Self::array_to_complex(array);
+                                let mut i = range.start / 2;
+                                let mut sum: Option<R> = None;
+                                for num in array {
+                                    let res = map(*num, i, argument);
+                                    sum = match sum {
+                                        None => Some(res),
+                                        Some(s) => Some(aggregate(s, res))
+                                    };
+                                    i += 1;
+                                }
+                                sum
+                            })
+                    };
+                    let aggregate  = aggregate.clone();
+                    // Would be nicer if we could use iter().fold(..) but we need
+                    // the value of R and not just a reference so we can't user an iter
+                    let mut only_valid_options = Vec::with_capacity(result.len());
+                    for _ in 0..result.len() {
+                        let elem = result.pop().unwrap();
+                        match elem {
+                            None => (),
+                            Some(e) => only_valid_options.push(e)
+                        };
+                    }
+                    
+                    if only_valid_options.len() == 0 {
+                        return Err(ErrorReason::VectorMustNotBeEmpty);
+                    }
+                    let mut aggregated = only_valid_options.pop().unwrap();
+                    for _ in 0..only_valid_options.len() {
+                        aggregated = aggregate(aggregated, only_valid_options.pop().unwrap());
+                    }
+                    Ok(aggregated)
                 }
                 
                 fn complex_dot_product(&self, factor: &Self) -> ScalarResult<Complex<$data_type>>
@@ -454,6 +541,26 @@ macro_rules! add_complex_impl {
                 
                 fn statistics_splitted(&self, len: usize) -> Vec<Statistics<Complex<$data_type>>> {
                     self.complex_statistics_splitted(len)
+                }
+            }
+            
+            impl VectorIter<Complex<$data_type>> for GenericDataVector<$data_type> {
+                fn map_inplace<A, F>(self, argument: A, map: F) -> VecResult<Self>
+                    where A: Sync + Copy + Send,
+                          F: Fn(Complex<$data_type>, usize, A) -> Complex<$data_type> + 'static + Sync {
+                    self.map_inplace_complex(argument, map)
+                }
+                
+                fn map_aggregate<A, FMap, FAggr, R>(
+                    &self, 
+                    argument: A, 
+                    map: FMap,
+                    aggregate: FAggr) -> ScalarResult<R>
+                where A: Sync + Copy + Send,
+                      FMap: Fn(Complex<$data_type>, usize, A) -> R + 'static + Sync,
+                      FAggr: Fn(R, R) -> R + 'static + Sync + Send,
+                      R: Send {
+                    self.map_aggregate_complex(argument, map, aggregate)  
                 }
             }
         )*
