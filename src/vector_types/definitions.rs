@@ -752,6 +752,20 @@ pub trait RealVectorOps<T> : DataVector<T>
     /// assert_eq!(result[1].sum, 6.0);
     /// ```  
     fn real_statistics_splitted(&self, len: usize) -> Vec<Statistics<T>>;
+    
+    fn map_inplace_real<A, F>(self, argument: A, map: F) -> VecResult<Self>
+        where A: Sync + Copy + Send,
+              F: Fn(T, usize, A) -> T + 'static + Sync;
+    
+    fn map_aggregate_real<A, FMap, FAggr, R>(
+            &self, 
+            argument: A, 
+            map: FMap,
+            aggregate: FAggr) -> ScalarResult<R>
+        where A: Sync + Copy + Send,
+              FMap: Fn(T, usize, A) -> R + 'static + Sync,
+              FAggr: Fn(R, R) -> R + 'static + Sync,
+              R: Send;
 }
 
 /// Defines all operations which are valid on `DataVectors` containing complex data.
@@ -1115,6 +1129,9 @@ pub enum ErrorReason {
     /// The number of arguments passed into a combined operation methods doesn't match
     /// with the number of arguments specified previously via the `add_op` methods.
     InvalidNumberOfArgumentsForCombinedOp,
+    
+    /// The operation isn't specified for an empty vector.
+    VectorMustNotBeEmpty,
 }
 
 /// Result contains on success the vector. On failure it contains an error reason and an vector with invalid data

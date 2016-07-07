@@ -153,7 +153,7 @@ mod slow_test {
         
         from_complex(&result)
     }
-    
+       
     #[test]
     fn complex_mul_vector_vector32() {
         parameterized_vector_test(|iteration, range| {
@@ -360,6 +360,38 @@ mod slow_test {
             let expected = complex_vector_cum_sum(&a);
             let result = vector.cum_sum().unwrap();
             assert_vector_eq(&expected, &result.data());
+            assert_eq!(result.is_complex(), true);
+            assert_eq!(result.delta(), delta);
+        });
+    }
+    
+    fn complex_exponential(vec: &Vec<f32>, a: f32, b: f32, delta: f32) -> Vec<f32>
+    {
+        let a = a * delta;
+        let mut exponential = Complex32::from_polar(&1.0, &b);
+        let increment = Complex32::from_polar(&1.0, &a);
+        let mut result = to_complex(vec);
+        for complex in &mut result {
+            *complex = (*complex) * exponential;
+            exponential = exponential * increment;
+        }
+        
+        from_complex(&result)
+    }
+    
+    #[test]
+    fn complex_exponential_vector32() {
+        parameterized_vector_test(|iteration, _| {
+            // With f32 the errors sums up quite a bit for large arrays
+            // in `complex_exponential` and therefore the length is limited
+            // in this test.
+            let a = create_data_with_len(201511210, iteration, 10000); 
+            let args = create_data_with_len(201511210, iteration, 2);
+            let delta = create_delta(3561159, iteration);
+            let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let expected = complex_exponential(&a, args[0], args[1], delta);
+            let result = vector.multiply_complex_exponential(args[0], args[1]).unwrap();
+            assert_vector_eq_with_reason_and_tolerance(&expected, &result.data(), 1e-2, "");
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);
         });
@@ -1096,6 +1128,27 @@ mod slow_test {
                 .and_then(|a|a.atanh())
                 .unwrap();
             assert_vector_eq(&a_expected.data(), &a_actual.data());
+        });
+    }
+    
+    #[test]
+    fn multi_ops_complex_exponential_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1030;
+            let a = create_data_with_len(201511141, iteration, len);
+            let args = create_data_with_len(201511141, iteration, 2);
+            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let ops = multi_ops1(a.clone());
+            let ops = ops.add_ops(|a| {
+                let a = a.multiply_complex_exponential(args[0], args[1]);
+                a
+            });
+            let a_actual = ops.get().unwrap();
+            let a_expected = 
+                Ok(a)
+                .and_then(|a|a.multiply_complex_exponential(args[0], args[1]))
+                .unwrap();
+            assert_vector_eq_with_reason_and_tolerance(&a_expected.data(), &a_actual.data(), 1e-2, "");
         });
     }
 }

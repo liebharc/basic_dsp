@@ -120,7 +120,7 @@ impl Chunk
             }
         }
         else { // complexity == Complexity::Large
-            if array_length < 100 {
+            if array_length < 30000 {
                 1
             } else {
                 cores
@@ -132,7 +132,7 @@ impl Chunk
     /// and so it will happen that some elements at the end of the array are not part of any chunk. 
     #[inline]
     fn partition<T>(array: &[T], array_length: usize, step_size: usize, number_of_chunks: usize) -> Chunks<T>
-        where T : Float + Copy + Clone + Send
+        where T: Copy + Clone + Send + Sync
     {
         let chunk_size = Chunk::calc_chunk_size(array_length, step_size, number_of_chunks);
         array[0 .. array_length].chunks(chunk_size)
@@ -208,14 +208,14 @@ impl Chunk
     }
     
     /// Executes the given function on the first `array_length` elements of the given list of arrays in parallel and passes
-    /// the argument to all function calls.
+    /// the argument to all function calls. 
     #[inline]
     pub fn execute_partial_multidim<T,S,F>(
             complexity: Complexity, 
             settings: &MultiCoreSettings, 
             array: &mut [&mut [T]], array_length: usize, step_size: usize, 
             arguments:S, ref function: F)
-        where F: Fn(Vec<&mut [T]>, S) + 'static + Sync, 
+        where F: Fn(&mut Vec<&mut [T]>, Range<usize>, S) + 'static + Sync, 
               T: RealNumber,
               S: Sync + Copy + Send
     {
@@ -223,6 +223,7 @@ impl Chunk
         let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity, settings);
         if number_of_chunks > 1
         {
+            let ranges = Chunk::partition_in_ranges(array_length, step_size, number_of_chunks);
             // As an example: If this function is called with 2 arrays,
             // and each array has 1000 elements and is splitted into 4 chunks then
             // this:
@@ -263,18 +264,18 @@ impl Chunk
             }
             
             crossbeam::scope(|scope| {
-                for chunk in reorganized {
+                for chunk in reorganized.iter_mut().zip(ranges) {
                     scope.spawn(move|| {
-                        function(chunk, arguments);
+                        function(chunk.0, chunk.1, arguments);
                     });
                 }
             });
         }
         else
         {
-          let shortened: Vec<&mut [T]> = 
+          let mut shortened: Vec<&mut [T]> = 
             array.iter_mut().map(|a|&mut a[0..array_length]).collect();
-          function(shortened, arguments);
+          function(&mut shortened, Range { start: 0, end: array_length }, arguments);
         }
     }
     
@@ -306,6 +307,45 @@ impl Chunk
         else
         {
             function(&mut array[0..array_length], Range { start: 0, end: array_length }, arguments);
+        }
+    }
+    
+    /// Executes the given function on an unspecified number and size of chunks on the array and
+    /// returns the result of each chunk.
+    #[inline]
+    pub fn map_on_array_chunks<T,S,F, R>(
+            complexity: Complexity, 
+            settings: &MultiCoreSettings, 
+            array: &[T], array_length: usize, step_size: usize, 
+            arguments: S, ref function: F) -> Vec<R>
+        where F: Fn(&[T], Range<usize>, S) -> R + 'static + Sync,
+              T : Copy + Clone + Send + Sync,
+              S: Sync + Copy + Send,
+              R: Send
+    {
+        let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity, settings);
+        if number_of_chunks > 1
+        {
+            let chunks = Chunk::partition(array, array_length, step_size, number_of_chunks);
+            let ranges = Chunk::partition_in_ranges(array_length, step_size, chunks.len());
+            let result = Vec::with_capacity(chunks.len());
+            let stack_array = Arc::new(Mutex::new(result));
+            crossbeam::scope(|scope| {
+                for chunk in chunks.zip(ranges) {
+                    let stack_array = stack_array.clone();
+                    scope.spawn(move|| {
+                        let r = function(chunk.0, chunk.1, arguments);
+                        stack_array.lock().unwrap().push(r);
+                    });
+                }
+            });
+            let mut guard = stack_array.lock().unwrap();
+            mem::replace(&mut guard, Vec::new())
+        }
+        else
+        {
+            let result = function(&array[0..array_length], Range { start: 0, end: array_length }, arguments);
+            vec![result]
         }
     }
     

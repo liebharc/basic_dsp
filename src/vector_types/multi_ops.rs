@@ -1,5 +1,6 @@
 use std::marker::PhantomData;
 use std::result;
+use std::ops::Range;
 use super::super::RealNumber;
 use super::{
     round_len,
@@ -70,6 +71,8 @@ pub trait ComplexIdentifier<T> : Identifier<T>
     fn to_imag(self) -> Self::RealPartner;
     /// See [`ComplexVectorOps`](../trait.ComplexVectorOps.html#tymethod.phase).
     fn phase(self) -> Self::RealPartner;
+    /// See [`ComplexVectorOps`](../trait.ComplexVectorOps.html#tymethod.multiply_complex_exponential).
+    fn multiply_complex_exponential(self, a: T, b: T) -> Self;
 }
 
 /// Operations for real vectors which can be used on combination 
@@ -145,6 +148,62 @@ pub trait GeneralIdentifier<T> : Identifier<T>
     fn atanh(self) -> Self;
     /// Copies data from another vector.
     fn clone_from(self, &Self) -> Self;
+    
+    /// Adds its length to the vector elements
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::*;
+    /// use basic_dsp::combined_ops::*;    
+    /// let complex = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+    /// let ops = multi_ops1(complex);
+    /// let ops = ops.add_ops(|v|v.add_points());
+    /// let complex = ops.get().expect("Ignoring error handling in examples");
+    /// assert_eq!([3.0, 2.0, 5.0, 4.0], complex.data());
+    /// ```
+    fn add_points(self) -> Self;
+    
+    /// Subtracts its length from the vector elements
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::*;
+    /// use basic_dsp::combined_ops::*;    
+    /// let complex = ComplexTimeVector32::from_interleaved(&[3.0, 2.0, 5.0, 4.0]);
+    /// let ops = multi_ops1(complex);
+    /// let ops = ops.add_ops(|v|v.sub_points());
+    /// let complex = ops.get().expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0], complex.data());
+    /// ```
+    fn sub_points(self) -> Self;
+    
+    /// divides the vector elements by its length
+    /// Subtracts its length from the vector elements
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::*;
+    /// use basic_dsp::combined_ops::*;    
+    /// let complex = ComplexTimeVector32::from_interleaved(&[2.0, 4.0, 6.0, 8.0]);
+    /// let ops = multi_ops1(complex);
+    /// let ops = ops.add_ops(|v|v.div_points());
+    /// let complex = ops.get().expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0], complex.data());
+    /// ```
+    fn div_points(self) -> Self;
+    
+    /// Multiplies the vector elements with its length
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::*;
+    /// use basic_dsp::combined_ops::*;    
+    /// let complex = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
+    /// let ops = multi_ops1(complex);
+    /// let ops = ops.add_ops(|v|v.mul_points());
+    /// let complex = ops.get().expect("Ignoring error handling in examples");
+    /// assert_eq!([2.0, 4.0, 6.0, 8.0], complex.data());
+    fn mul_points(self) -> Self;
 }
 
 /// Scale operations to vectors in combination 
@@ -315,6 +374,11 @@ macro_rules! add_complex_multi_ops_impl {
             fn phase(self) -> Self::RealPartner {
                 let arg = self.arg;
                 self.add_op(Operation::Phase(arg))
+            }
+            
+            fn multiply_complex_exponential(self, a: $data_type, b: $data_type) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::MultiplyComplexExponential(arg, a, b))
             }
         }
         
@@ -507,6 +571,26 @@ macro_rules! add_general_multi_ops_impl {
             fn clone_from(self, source: &Self) -> Self {
                 let arg = self.arg;
                 self.add_op(Operation::CloneFrom(arg, source.arg))
+            }
+            
+            fn add_points(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::AddPoints(arg))
+            }
+            
+            fn sub_points(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::SubPoints(arg))
+            }
+            
+            fn div_points(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::DivPoints(arg))
+            }
+            
+            fn mul_points(self) -> Self {
+                let arg = self.arg;
+                self.add_op(Operation::MulPoints(arg))
             }
         }
      }
@@ -859,14 +943,14 @@ macro_rules! add_multi_ops_impl {
                         Chunk::execute_partial_multidim(
                             complexity, &multicore_settings,
                             &mut array, vectorization_length, $reg::len(), 
-                            operations, 
+                            (operations, first_vec_len), 
                             Self::perform_complex_operations_par);
                     }
                     else {
                         Chunk::execute_partial_multidim(
                             complexity, &multicore_settings,
                             &mut array, vectorization_length, $reg::len(), 
-                            operations, 
+                            (operations, first_vec_len), 
                             Self::perform_real_operations_par);   
                     }
                 }
@@ -888,7 +972,9 @@ macro_rules! add_multi_ops_impl {
                         {
                             PerformOperationSimd::<$data_type>::perform_complex_operation(
                                 &mut last_elems, 
-                                *operation);
+                                *operation,
+                                (vectorization_length / $reg::len() * 2) as $data_type,
+                                first_vec_len as $data_type);
                         }
                     }
                     else {
@@ -896,7 +982,9 @@ macro_rules! add_multi_ops_impl {
                         {
                             PerformOperationSimd::<$data_type>::perform_real_operation(
                                 &mut last_elems, 
-                                *operation);
+                                *operation,
+                                (vectorization_length / $reg::len()) as $data_type,
+                                first_vec_len as $data_type);
                         }
                     }
                     
@@ -929,11 +1017,15 @@ macro_rules! add_multi_ops_impl {
                 Ok (vectors)
             }
             
-            fn perform_complex_operations_par(mut array: Vec<&mut [$data_type]>, operations: &[Operation<$data_type>])
+            fn perform_complex_operations_par(
+                array: &mut Vec<&mut [$data_type]>, 
+                range: Range<usize>,
+                arguments: (&[Operation<$data_type>], usize))
             {
+                let (operations, points) = arguments;
+                let points = points as $data_type;
                 let mut regs: Vec<&mut [$reg]> = 
-                    array
-                        .iter_mut()
+                    array.iter_mut()
                         .map(|a|$reg::array_to_regs_mut(a))
                         .collect();
                 let mut vectors = Vec::with_capacity(regs.len());
@@ -941,6 +1033,8 @@ macro_rules! add_multi_ops_impl {
                    vectors.push(regs[j][0]);
                 }
             
+                let reg_len = $reg::len() / 2;
+                let mut index = range.start / 2;
                 for i in 0..regs[0].len()
                 { 
                     for j in 0..regs.len() {
@@ -954,7 +1048,9 @@ macro_rules! add_multi_ops_impl {
                     {
                         PerformOperationSimd::<$data_type>::perform_complex_operation(
                             &mut vectors, 
-                            *operation);
+                            *operation,
+                            index as $data_type,
+                            points);
                     }
                     
                     for j in 0..regs.len() {
@@ -963,14 +1059,20 @@ macro_rules! add_multi_ops_impl {
                             *elem = *vectors.get_unchecked(j);
                         }
                     }
+                    
+                    index += reg_len;
                 }
             }
             
-            fn perform_real_operations_par(mut array: Vec<&mut [$data_type]>, operations: &[Operation<$data_type>])
+            fn perform_real_operations_par(
+                array: &mut Vec<&mut [$data_type]>,
+                range: Range<usize>,
+                arguments: (&[Operation<$data_type>], usize))
             {
+                let (operations, points) = arguments;
+                let points = points as $data_type;
                 let mut regs: Vec<&mut [$reg]> = 
-                    array
-                        .iter_mut()
+                    array.iter_mut()
                         .map(|a|$reg::array_to_regs_mut(a))
                         .collect();
                 let mut vectors = Vec::with_capacity(regs.len());
@@ -978,6 +1080,8 @@ macro_rules! add_multi_ops_impl {
                    vectors.push(regs[j][0]);
                 }
             
+                let reg_len = $reg::len();
+                let mut index = range.start;
                 for i in 0..regs[0].len()
                 { 
                     for j in 0..regs.len() {
@@ -991,7 +1095,9 @@ macro_rules! add_multi_ops_impl {
                     {
                         PerformOperationSimd::<$data_type>::perform_real_operation(
                             &mut vectors, 
-                            *operation);
+                            *operation,
+                            index as $data_type,
+                            points);
                     }
                     
                     for j in 0..regs.len() {
@@ -1000,6 +1106,8 @@ macro_rules! add_multi_ops_impl {
                             *elem = *vectors.get_unchecked(j);
                         }
                     }
+                    
+                    index += reg_len;
                 }
             }
             

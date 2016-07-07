@@ -27,7 +27,7 @@ pub enum Operation<T>
     ToReal(usize),
     ToImag(usize),
     Phase(usize),
-    
+    MultiplyComplexExponential(usize, T, T),
     // General Ops
     AddVector(usize, usize),
     SubVector(usize, usize),
@@ -53,7 +53,11 @@ pub enum Operation<T>
     ASinh(usize),
     ACosh(usize),
     ATanh(usize),
-    CloneFrom(usize, usize)
+    CloneFrom(usize, usize),
+    AddPoints(usize),
+    SubPoints(usize),
+    MulPoints(usize),
+    DivPoints(usize)
 }
 
 fn require_complex(is_complex: bool) -> Result<bool, ErrorReason> {
@@ -94,7 +98,12 @@ pub fn evaluate_number_space_transition<T>(is_complex: bool, operation: Operatio
         Operation::ToReal(_) => complex_to_real(is_complex),
         Operation::ToImag(_) => complex_to_real(is_complex),
         Operation::Phase(_) => complex_to_real(is_complex),
+        Operation::MultiplyComplexExponential(_, _, _) => require_complex(is_complex),
         // General Ops
+        Operation::AddPoints(_) => Ok(is_complex),
+        Operation::SubPoints(_) => Ok(is_complex),
+        Operation::MulPoints(_) => Ok(is_complex),
+        Operation::DivPoints(_) => Ok(is_complex),
         Operation::AddVector(_, _) => Ok(is_complex),
         Operation::SubVector(_, _) => Ok(is_complex),
         Operation::MulVector(_, _) => Ok(is_complex),
@@ -141,7 +150,12 @@ pub fn get_argument<T>(operation: Operation<T>) -> usize
         Operation::ToReal(arg) => arg,
         Operation::ToImag(arg) => arg,
         Operation::Phase(arg) => arg,
+        Operation::MultiplyComplexExponential(arg, _, _) => arg,
         // General Ops
+        Operation::AddPoints(arg) => arg,
+        Operation::SubPoints(arg) => arg,
+        Operation::MulPoints(arg) => arg,
+        Operation::DivPoints(arg) => arg,
         Operation::AddVector(arg, _) => arg,
         Operation::SubVector(arg, _) => arg,
         Operation::MulVector(arg, _) => arg,
@@ -176,11 +190,15 @@ pub trait PerformOperationSimd<T>
     #[inline]
     fn perform_real_operation(
         vectors: &mut [Self],
-        operation: Operation<T>);
+        operation: Operation<T>,
+        index: T,
+        points: T);
     #[inline]
     fn perform_complex_operation(
         vectors: &mut [Self],
-        operation: Operation<T>);
+        operation: Operation<T>,
+        index: T,
+        points: T);
         
     #[inline]
     fn iter_over_vector<F>(self, op: F) -> Self
@@ -199,7 +217,9 @@ macro_rules! add_perform_ops_impl {
             #[inline]
             fn perform_complex_operation(
                 vectors: &mut [Self],
-                operation: Operation<$data_type>)
+                operation: Operation<$data_type>,
+                index: $data_type,
+                points: $data_type)
             {
                 match operation
                 {
@@ -272,7 +292,41 @@ macro_rules! add_perform_ops_impl {
                         let v = unsafe { vectors.get_unchecked_mut(idx) };
                         *v = v.iter_over_complex_vector(|x|Complex::new(x.arg(), 0.0));
                     }
+                    Operation::MultiplyComplexExponential(idx, a, b) => 
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        let mut exponential = 
+                            Complex::<$data_type>::from_polar(&1.0, &b)
+                            * Complex::<$data_type>::from_polar(&1.0, &(a * index));
+                        let increment = Complex::<$data_type>::from_polar(&1.0, &a);
+                        let mut complex = v.to_complex_array();
+                        for c in &mut complex {
+                            *c = *c * exponential;
+                            exponential = exponential * increment;
+                        }
+                        *v = $reg::from_complex_array(complex);
+                    }
                     // General Ops
+                    Operation::AddPoints(idx) => 
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.add_complex(Complex::<$data_type>::new(points, 0.0));
+                    }
+                    Operation::SubPoints(idx) => 
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.add_complex(Complex::<$data_type>::new(-points, 0.0));
+                    }
+                    Operation::MulPoints(idx) => 
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.scale_complex(Complex::<$data_type>::new(points, 0.0));
+                    }
+                    Operation::DivPoints(idx) => 
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.scale_complex(Complex::<$data_type>::new(1.0 / points, 0.0));
+                    }
                     Operation::AddVector(idx1, idx2) => 
                     {
                         let v2 = unsafe { *vectors.get_unchecked(idx2) };
@@ -409,7 +463,9 @@ macro_rules! add_perform_ops_impl {
             #[inline]
             fn perform_real_operation(
                 vectors: &mut [Self],
-                operation: Operation<$data_type>)
+                operation: Operation<$data_type>,
+                _: $data_type,
+                points: $data_type)
             {
                 match operation
                 {
@@ -466,7 +522,31 @@ macro_rules! add_perform_ops_impl {
                     {
                         panic!("complex operation on real vector indicates a bug");
                     }
+                    Operation::MultiplyComplexExponential(_, _, _) => 
+                    {
+                        panic!("complex operation on real vector indicates a bug");
+                    }
                     // General Ops
+                    Operation::AddPoints(idx) => 
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.add_real(points);
+                    }
+                    Operation::SubPoints(idx) => 
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.add_real(-points);
+                    }
+                    Operation::MulPoints(idx) => 
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.scale_real(points);
+                    }
+                    Operation::DivPoints(idx) => 
+                    {
+                        let v = unsafe { vectors.get_unchecked_mut(idx) };
+                        *v = v.scale_real(1.0 / points);
+                    }
                     Operation::AddVector(idx1, idx2) => 
                     {
                         let v2 = unsafe { *vectors.get_unchecked(idx2) };

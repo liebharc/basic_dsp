@@ -49,6 +49,24 @@ macro_rules! define_real_operations_forward {
                 fn real_statistics_splitted(&self, len: usize) -> Vec<Statistics<$data_type>> {
                     self.to_gen_borrow().real_statistics_splitted(len)
                 }
+                
+                fn map_inplace_real<A, F>(self, argument: A, f: F) -> VecResult<Self>
+                    where A: Sync + Copy + Send,
+                          F: Fn($data_type, usize, A) -> $data_type + 'static + Sync {
+                    Self::from_genres(self.to_gen().map_inplace_real(argument, f))
+                }
+                
+                fn map_aggregate_real<A, FMap, FAggr, R>(
+                    &self, 
+                    argument: A, 
+                    map: FMap,
+                    aggregate: FAggr) -> ScalarResult<R>
+                        where A: Sync + Copy + Send,
+                              FMap: Fn($data_type, usize, A) -> R + 'static + Sync,
+                              FAggr: Fn(R, R) -> R + 'static + Sync,
+                              R: Send {
+                    self.to_gen_borrow().map_aggregate_real(argument, map, aggregate) 
+                }
             }
             
             impl $name<$data_type>

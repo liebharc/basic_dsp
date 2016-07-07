@@ -48,11 +48,31 @@ macro_rules! add_complex_impl {
                     assert_complex!(self);
                     {
                         let a = a * self.delta();
-                        let length = self.len();
-                        let array = &mut self.data;
-                        let array = Self::array_to_complex_mut(&mut array[0..length]);
-                        let mut exponential = Complex::<$data_type>::from_polar(&1.0, &b);
+                        let data_length = self.len();
+                        let scalar_length = data_length % $reg::len();
+                        let vectorization_length = data_length - scalar_length;
+                        let mut array = &mut self.data;
+                        Chunk::execute_with_range(
+                            Complexity::Small, &self.multicore_settings,
+                            &mut array, vectorization_length, $reg::len(), 
+                            (a, b),
+                            move |array, range, args| {
+                            let (a, b) = args;
+                            let mut exponential = 
+                                Complex::<$data_type>::from_polar(&1.0, &b) 
+                                * Complex::<$data_type>::from_polar(&1.0, &(a * range.start as $data_type / 2.0));
+                            let increment = Complex::<$data_type>::from_polar(&1.0, &a);
+                            let array = Self::array_to_complex_mut(array);
+                            for complex in array {
+                                *complex = (*complex) * exponential;
+                                exponential = exponential * increment;
+                            }
+                        });
+                        let mut exponential = 
+                            Complex::<$data_type>::from_polar(&1.0, &b) 
+                            * Complex::<$data_type>::from_polar(&1.0, &(a * vectorization_length as $data_type / 2.0));
                         let increment = Complex::<$data_type>::from_polar(&1.0, &a);
+                        let array = Self::array_to_complex_mut(&mut array[vectorization_length..data_length]);
                         for complex in array {
                             *complex = (*complex) * exponential;
                             exponential = exponential * increment;

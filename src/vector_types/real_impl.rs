@@ -14,6 +14,7 @@ use super::definitions::{
 use super::GenericDataVector;    
 use super::stats_impl::Stats;
 use simd_extensions::{Simd, Reg32, Reg64};
+use std::sync::{Arc, Mutex};
 
 macro_rules! add_real_impl {
     ($($data_type:ident, $reg:ident);*)
@@ -91,6 +92,85 @@ macro_rules! add_real_impl {
                         }
                     }
                     Ok(self)
+                }
+                
+                fn map_inplace_real<A, F>(mut self, argument: A, f: F) -> VecResult<Self>
+                    where A: Sync + Copy + Send,
+                          F: Fn($data_type, usize, A) -> $data_type + 'static + Sync {
+                    {
+                        assert_real!(self);
+                        let mut array = &mut self.data;
+                        let length = array.len();
+                        Chunk::execute_with_range(
+                            Complexity::Small, &self.multicore_settings,
+                            &mut array, length, 1, argument,
+                            move|array, range, argument| {
+                                let mut i = range.start;
+                                for num in array {
+                                    *num = f(*num, i, argument);
+                                    i += 1;
+                                }
+                            });
+                    }
+                    Ok(self)
+                }
+                
+                fn map_aggregate_real<A, FMap, FAggr, R>(
+                    &self, 
+                    argument: A, 
+                    map: FMap,
+                    aggregate: FAggr) -> ScalarResult<R>
+                        where A: Sync + Copy + Send,
+                              FMap: Fn($data_type, usize, A) -> R + 'static + Sync,
+                              FAggr: Fn(R, R) -> R + 'static + Sync,
+                              R: Send {
+                    
+                    /*let mut result = {
+                        if self.is_complex {
+                            return Err(ErrorReason::VectorMustBeReal);
+                        }
+                        
+                        let array = &self.data;
+                        let length = array.len();
+                        if length == 0 {
+                            return Err(ErrorReason::VectorMustNotBeEmpty);
+                        }
+                        Chunk::map_on_array_chunks(
+                            Complexity::Small, &self.multicore_settings,
+                            &array, length, 1, argument,
+                            move|array, range, argument| {
+                                let aggregate = arc.clone();
+                                let mut i = range.start;
+                                let mut sum: Option<R> = None;
+                                for num in array {
+                                    let res = map(*num, i, argument);
+                                    sum = match sum {
+                                        None => Some(res),
+                                        Some(s) => Some(aggregate(s, res))
+                                    };
+                                    i += 1;
+                                }
+                                sum
+                            })
+                    };
+                    let mut only_valid_options = Vec::with_capacity(result.len());
+                    for _ in 0..result.len() {
+                        let elem = result.pop().unwrap();
+                        match elem {
+                            None => (),
+                            Some(e) => only_valid_options.push(e)
+                        };
+                    }
+                    
+                    if only_valid_options.len() == 0 {
+                        return Err(ErrorReason::VectorMustNotBeEmpty);
+                    }
+                    let mut aggregated = only_valid_options.pop().unwrap();
+                    for _ in 0..only_valid_options.len() {
+                        aggregated = aggregate(aggregated, only_valid_options.pop().unwrap());
+                    }
+                    Ok(aggregated)*/
+                    panic!("Not implemented")
                 }
                 
                 fn real_dot_product(&self, factor: &Self) -> ScalarResult<$data_type>
