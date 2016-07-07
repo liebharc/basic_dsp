@@ -972,7 +972,7 @@ macro_rules! add_multi_ops_impl {
                         {
                             PerformOperationSimd::<$data_type>::perform_complex_operation(
                                 &mut last_elems, 
-                                *operation,
+                                operation,
                                 (vectorization_length / $reg::len() * 2) as $data_type,
                                 first_vec_len as $data_type);
                         }
@@ -982,7 +982,7 @@ macro_rules! add_multi_ops_impl {
                         {
                             PerformOperationSimd::<$data_type>::perform_real_operation(
                                 &mut last_elems, 
-                                *operation,
+                                operation,
                                 (vectorization_length / $reg::len()) as $data_type,
                                 first_vec_len as $data_type);
                         }
@@ -1048,7 +1048,7 @@ macro_rules! add_multi_ops_impl {
                     {
                         PerformOperationSimd::<$data_type>::perform_complex_operation(
                             &mut vectors, 
-                            *operation,
+                            operation,
                             index as $data_type,
                             points);
                     }
@@ -1095,7 +1095,7 @@ macro_rules! add_multi_ops_impl {
                     {
                         PerformOperationSimd::<$data_type>::perform_real_operation(
                             &mut vectors, 
-                            *operation,
+                            operation,
                             index as $data_type,
                             points);
                     }
@@ -1116,13 +1116,13 @@ macro_rules! add_multi_ops_impl {
                 let max_arg_num =  vectors.len();
                 let mut complex_at_any_moment = complex.clone();
                 for op in operations {
-                    let index = get_argument(*op);
+                    let index = get_argument(op);
                     
                     if index >= max_arg_num {
                         return Err(ErrorReason::InvalidNumberOfArgumentsForCombinedOp);
                     }
                     
-                    let eval = evaluate_number_space_transition(complex[index], *op);
+                    let eval = evaluate_number_space_transition(complex[index], op);
                     let complex_after_op = match eval {
                         Err(reason) => { return Err(reason) }
                         Ok(new_complex) => { new_complex }
