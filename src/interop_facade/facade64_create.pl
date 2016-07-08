@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 # Rust macros don't allow right now to concat strings to generate method names,
-# see https://github.com/rust-lang/rust/issues/12249 for more information.
+# see https://github.com/rust-lang/rust/issues/12249 and https://github.com/rust-lang/rust/issues/29599 for more information.
 # As long as there is no way to do that in Rust this Perl script does the copy&paste&replace work for us.
 # To keep the build simple facade64.rs is still checked in.
 

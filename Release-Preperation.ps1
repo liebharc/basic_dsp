@@ -20,6 +20,11 @@ else {
         $all_okay = $false
     }
 }
+# Release needs to in the changelog
+$changelog_matches =  $(Get-Content Changelog.md | Where { $_ -match "$current_version" } | Measure).Count
+if ($changelog_matches -eq 0) {
+    $Host.UI.WriteErrorLine("Version $current_version isn't mentioned in Changelog.md")
+}
 
 # Documentation needs to be up to date
 $last_doc_update = $(git show --format="%ci" "origin/gh-pages" | Select -First 1)
@@ -32,6 +37,7 @@ if ($age_difference_days -gt 3.0) {
     $all_okay = $false
 }
 
+# Interop facade32 (which is the "master") needs to be complete
 $cwd = $(Get-Location)
 cd src\interop_facade
 $facade_status = $(perl facade32_check_completness.pl)
@@ -41,6 +47,7 @@ if ($missing_ops_in_facade -gt 0) {
     $all_okay = $false
 }
 
+# Interop facade64 must be cloned from facade32
 perl facade64_create.pl | Write-Verbose
 $facade64_diff = $(git diff .\facade64.rs)
 if ($facade64_diff -gt 0) {

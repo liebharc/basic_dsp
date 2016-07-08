@@ -12,6 +12,18 @@ macro_rules! convert_vec {
     }
 }
 
+macro_rules! convert_bin_vec {
+    ($operation: expr) => {
+        {
+            let result = $operation;
+            match result {
+                Ok((vec1, vec2)) => BinaryVectorResult { result_code: 0, vector1: Box::new(vec1), vector2: Box::new(vec2) },
+                Err((res, vec1, vec2)) => BinaryVectorResult { result_code: translate_error(res), vector1: Box::new(vec1), vector2: Box::new(vec2) }
+            }
+        }
+    }
+}
+
 macro_rules! convert_void {
     ($operation: expr) => {
         {
@@ -45,6 +57,23 @@ use window_functions::*;
 use conv_types::*;
 use RealNumber;
 
+/// Error codes:
+///
+/// 1. VectorsMustHaveTheSameSize
+/// 2. VectorMetaDataMustAgree
+/// 3. VectorMustBeComplex
+/// 4. VectorMustBeReal
+/// 5. VectorMustBeInTimeDomain
+/// 6. VectorMustBeInFrquencyDomain
+/// 7. InvalidArgumentLength
+/// 8. VectorMustBeConjSymmetric
+/// 9. VectorMustHaveAnOddLength
+/// 10. ArgumentFunctionMustBeSymmetric
+/// 11. InvalidNumberOfArgumentsForCombinedOp
+/// 12. VectorMustNotBeEmpty
+/// 
+/// all other values are undefined. If you see a value which isn't listed here then
+/// please report a bug.
 pub fn translate_error(reason: ErrorReason) -> i32 {
     match reason {
         ErrorReason::VectorsMustHaveTheSameSize => 1,
@@ -101,10 +130,7 @@ pub fn translate_to_padding_option(value: i32) -> PaddingOption {
 #[repr(C)]
 pub struct VectorResult<T> {
     /// This value is zero in case of error. All other values mean that an error
-    /// occurred and the data in the vector might be unchanged or invalid. Error codes:
-    /// 1. Vectors must have the same size.
-    /// all other values are undefined. If you see a value which isn't listed here then
-    /// please report a bug.
+    /// occurred and the data in the vector might be unchanged or invalid. Error codes are described in `translate_error`.
     pub result_code: i32,
     
     /// A pointer to a data vector.
@@ -113,13 +139,24 @@ pub struct VectorResult<T> {
 
 /// Result of a vector operation. Check the ```result_code```.
 #[repr(C)]
+pub struct BinaryVectorResult<T> {
+    /// This value is zero in case of error. All other values mean that an error
+    /// occurred and the data in the vector might be unchanged or invalid. Error codes are described in `translate_error`.
+    pub result_code: i32,
+    
+    /// A pointer to a data vector.
+    pub vector1: Box<T>,
+    
+    /// A pointer to a data vector.
+    pub vector2: Box<T>
+}
+
+/// Result of a vector operation. Check the ```result_code```.
+#[repr(C)]
 pub struct ScalarResult<T> 
     where T: Sized {
     /// This value is zero in case of error. All other values mean that an error
-    /// occurred and the data in the vector might be unchanged or invalid. Error codes:
-    /// 1. Vectors must have the same size.
-    /// all other values are undefined. If you see a value which isn't listed here then
-    /// please report a bug.
+    /// occurred and the data in the vector might be unchanged or invalid. Error codes are described in `translate_error`.
     pub result_code: i32,
     
     /// The result

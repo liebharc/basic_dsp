@@ -2,7 +2,7 @@
 Changes:
 
 ## Version 0.3.0 (Breaking changes)
-Added a nicer interface for prepared operations/multi operations.
+Added prepared operations/multi operations, see [combined_ops](https://liebharc.github.io/basic_dsp/basic_dsp/combined_ops)
 
 - Breaking change: Renamed a lot of operations so that their names match (more closely) with the `num` crate. Also renamed traits so that all traits which mainly implement operations have similiar names.
 - Breaking change: RededicateVector trait now defines exactly one conversion. Vectors implement the trait several times so the same functionality is still available.
