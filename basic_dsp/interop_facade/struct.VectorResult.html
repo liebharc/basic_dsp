@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,24 +44,20 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>basic_dsp</a>::<wbr><a href='index.html'>interop_facade</a>::<wbr><a class='struct' href=''>VectorResult</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-10961' class='srclink' href='../../src/basic_dsp/src/interop_facade/mod.rs.html#100-110' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-15424' class='srclink' href='../../src/basic_dsp/src/interop_facade/mod.rs.html#131-138' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct VectorResult&lt;T&gt; {
     pub result_code: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>,
     pub vector: <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;T&gt;,
 }</pre><div class='docblock'><p>Result of a vector operation. Check the <code>result_code</code>.</p>
-</div><h2 class='fields'>Fields</h2>
-<table><tr class='stab '>
-                                  <td id='structfield.result_code'><code>result_code</code></td><td><div class='docblock'><p>This value is zero in case of error. All other values mean that an error
-occurred and the data in the vector might be unchanged or invalid. Error codes:
-1. Vectors must have the same size.
-all other values are undefined. If you see a value which isn&#39;t listed here then
-please report a bug.</p>
-</div></td></tr><tr class='stab '>
-                                  <td id='structfield.vector'><code>vector</code></td><td><div class='docblock'><p>A pointer to a data vector.</p>
-</div></td></tr></table></section>
+</div><h2 class='fields'>Fields</h2><span id='structfield.result_code'><code>result_code: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a></code></span>
+                           <span class='stab '></span><div class='docblock'><p>This value is zero in case of error. All other values mean that an error
+occurred and the data in the vector might be unchanged or invalid. Error codes are described in <code>translate_error</code>.</p>
+</div><span id='structfield.vector'><code>vector: <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;T&gt;</code></span>
+                           <span class='stab '></span><div class='docblock'><p>A pointer to a data vector.</p>
+</div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -83,6 +80,8 @@ please report a bug.</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

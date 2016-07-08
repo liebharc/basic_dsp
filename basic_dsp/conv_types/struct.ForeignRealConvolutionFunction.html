@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,33 +44,39 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>basic_dsp</a>::<wbr><a href='index.html'>conv_types</a>::<wbr><a class='struct' href=''>ForeignRealConvolutionFunction</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-9150' class='srclink' href='../../src/basic_dsp/src/conv_types.rs.html#442-456' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-12807' class='srclink' href='../../src/basic_dsp/src/conv_types.rs.html#442-456' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct ForeignRealConvolutionFunction&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
-    pub conv_function:  extern "C" fn(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const </a><a class='enum' href='https://doc.rust-lang.org/nightly/std/os/raw/enum.c_void.html' title='std::os::raw::c_void'>c_void</a>, T) -&gt; T,
+    pub conv_function: extern fn(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const </a><a class='enum' href='https://doc.rust-lang.org/nightly/std/os/raw/enum.c_void.html' title='std::os::raw::c_void'>c_void</a>, T) -&gt; T,
     pub conv_data: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>,
     pub is_symmetric: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
 }</pre><div class='docblock'><p>A real function which can be constructed outside this crate.</p>
-</div><h2 class='fields'>Fields</h2>
-<table><tr class='stab '>
-                                  <td id='structfield.conv_function'><code>conv_function</code></td><td><div class='docblock'><p>The function</p>
-</div></td></tr><tr class='stab '>
-                                  <td id='structfield.conv_data'><code>conv_data</code></td><td><div class='docblock'><p>The data which is passed to the function.</p>
+</div><h2 class='fields'>Fields</h2><span id='structfield.conv_function'><code>conv_function: extern fn(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const </a><a class='enum' href='https://doc.rust-lang.org/nightly/std/os/raw/enum.c_void.html' title='std::os::raw::c_void'>c_void</a>, T) -&gt; T</code></span>
+                           <span class='stab '></span><div class='docblock'><p>The function</p>
+</div><span id='structfield.conv_data'><code>conv_data: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></span>
+                           <span class='stab '></span><div class='docblock'><p>The data which is passed to the function.</p>
 
 <p>Actual data type is a const* c_void, but Rust doesn&#39;t allow that becaues it&#39;s usafe so we store
 it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.</p>
-</div></td></tr><tr class='stab '>
-                                  <td id='structfield.is_symmetric'><code>is_symmetric</code></td><td><div class='docblock'><p>Indicates whether this function is symmetric around 0 or not.
+</div><span id='structfield.is_symmetric'><code>is_symmetric: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></span>
+                           <span class='stab '></span><div class='docblock'><p>Indicates whether this function is symmetric around 0 or not.
 Symmetry is defined as <code>self.calc(x) == self.calc(-x)</code>.</p>
-</div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;T&gt; <a class='struct' href='../../basic_dsp/conv_types/struct.ForeignRealConvolutionFunction.html' title='basic_dsp::conv_types::ForeignRealConvolutionFunction'>ForeignRealConvolutionFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(function:  extern "C" fn(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const </a><a class='enum' href='https://doc.rust-lang.org/nightly/std/os/raw/enum.c_void.html' title='std::os::raw::c_void'>c_void</a>, T) -&gt; T, function_data: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const </a><a class='enum' href='https://doc.rust-lang.org/nightly/std/os/raw/enum.c_void.html' title='std::os::raw::c_void'>c_void</a>, is_symmetric: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; Self</code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;T&gt; <a class='struct' href='../../basic_dsp/conv_types/struct.ForeignRealConvolutionFunction.html' title='basic_dsp::conv_types::ForeignRealConvolutionFunction'>ForeignRealConvolutionFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-12814' class='srclink' href='../../src/basic_dsp/src/conv_types.rs.html#458-469' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(function: extern fn(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const </a><a class='enum' href='https://doc.rust-lang.org/nightly/std/os/raw/enum.c_void.html' title='std::os::raw::c_void'>c_void</a>, T) -&gt; T, function_data: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const </a><a class='enum' href='https://doc.rust-lang.org/nightly/std/os/raw/enum.c_void.html' title='std::os::raw::c_void'>c_void</a>, is_symmetric: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; Self</code></h4>
 <div class='docblock'><p>Creates a new real function</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;T&gt; <a class='trait' href='../../basic_dsp/conv_types/trait.RealImpulseResponse.html' title='basic_dsp::conv_types::RealImpulseResponse'>RealImpulseResponse</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.ForeignRealConvolutionFunction.html' title='basic_dsp::conv_types::ForeignRealConvolutionFunction'>ForeignRealConvolutionFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></h3><div class='impl-items'><h4 id='method.is_symmetric' class='method'><code>fn <a href='../../basic_dsp/conv_types/trait.RealImpulseResponse.html#method.is_symmetric' class='fnname'>is_symmetric</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
-<h4 id='method.calc' class='method'><code>fn <a href='../../basic_dsp/conv_types/trait.RealImpulseResponse.html#method.calc' class='fnname'>calc</a>(&amp;self, x: T) -&gt; T</code></h4>
-</div><h3 class='impl'><code>impl&lt;T&gt; <a class='trait' href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html' title='basic_dsp::conv_types::RealFrequencyResponse'>RealFrequencyResponse</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.ForeignRealConvolutionFunction.html' title='basic_dsp::conv_types::ForeignRealConvolutionFunction'>ForeignRealConvolutionFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></h3><div class='impl-items'><h4 id='method.is_symmetric-1' class='method'><code>fn <a href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html#method.is_symmetric' class='fnname'>is_symmetric</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
-<h4 id='method.calc-1' class='method'><code>fn <a href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html#method.calc' class='fnname'>calc</a>(&amp;self, x: T) -&gt; T</code></h4>
-</div></section>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl&lt;T&gt; <a class='trait' href='../../basic_dsp/conv_types/trait.RealImpulseResponse.html' title='basic_dsp::conv_types::RealImpulseResponse'>RealImpulseResponse</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.ForeignRealConvolutionFunction.html' title='basic_dsp::conv_types::ForeignRealConvolutionFunction'>ForeignRealConvolutionFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-12822' class='srclink' href='../../src/basic_dsp/src/conv_types.rs.html#471-481' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.is_symmetric' class='method'><code>fn <a href='../../basic_dsp/conv_types/trait.RealImpulseResponse.html#tymethod.is_symmetric' class='fnname'>is_symmetric</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Indicates whether this function is symmetric around 0 or not. Symmetry is defined as <code>self.calc(x) == self.calc(-x)</code>. <a href="../../basic_dsp/conv_types/trait.RealImpulseResponse.html#tymethod.is_symmetric">Read more</a></p>
+</div><h4 id='method.calc' class='method'><code>fn <a href='../../basic_dsp/conv_types/trait.RealImpulseResponse.html#tymethod.calc' class='fnname'>calc</a>(&amp;self, x: T) -&gt; T</code></h4>
+<div class='docblock'><p>Calculates the convolution for a data point</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T&gt; <a class='trait' href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html' title='basic_dsp::conv_types::RealFrequencyResponse'>RealFrequencyResponse</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.ForeignRealConvolutionFunction.html' title='basic_dsp::conv_types::ForeignRealConvolutionFunction'>ForeignRealConvolutionFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-12830' class='srclink' href='../../src/basic_dsp/src/conv_types.rs.html#483-493' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.is_symmetric-1' class='method'><code>fn <a href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html#tymethod.is_symmetric' class='fnname'>is_symmetric</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Indicates whether this function is symmetric around 0 or not. Symmetry is defined as <code>self.calc(x) == self.calc(-x)</code>. <a href="../../basic_dsp/conv_types/trait.RealFrequencyResponse.html#tymethod.is_symmetric">Read more</a></p>
+</div><h4 id='method.calc-1' class='method'><code>fn <a href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html#tymethod.calc' class='fnname'>calc</a>(&amp;self, x: T) -&gt; T</code></h4>
+<div class='docblock'><p>Calculates the convolution for a data point</p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -92,6 +99,8 @@ Symmetry is defined as <code>self.calc(x) == self.calc(-x)</code>.</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

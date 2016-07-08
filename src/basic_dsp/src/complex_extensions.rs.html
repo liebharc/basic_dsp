@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -182,24 +183,24 @@
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>ComplexExtensions</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>Float</span>
 {
-    <span class='kw'>fn</span> <span class='ident'>cos</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>sin</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>sqrt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>powf</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>value</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>ln</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>expn</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>log_base</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>value</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>exp_base</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>value</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>cos</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>sin</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>sqrt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>powf</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>value</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>ln</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>expn</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>log_base</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>value</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>exp_base</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>value</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
 }
 
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>add_complex_extensions</span> {
     ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>:<span class='ident'>ident</span>);<span class='op'>*</span>)
-	 <span class='op'>=&gt;</span>
-	 {	 
+     <span class='op'>=&gt;</span>
+     {     
         $(
             <span class='kw'>impl</span> <span class='ident'>ComplexExtensions</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>
             {   
-                <span class='kw'>fn</span> <span class='ident'>sin</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+                <span class='kw'>fn</span> <span class='ident'>sin</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                     <span class='kw'>let</span> <span class='ident'>re</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>re</span>;
                     <span class='kw'>let</span> <span class='ident'>im</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>im</span>;
                     <span class='ident'>Complex</span>::<span class='ident'>new</span>(
@@ -207,7 +208,7 @@
                         <span class='ident'>re</span>.<span class='ident'>cos</span>() <span class='op'>*</span> <span class='ident'>im</span>.<span class='ident'>sinh</span>())
                 }
                 
-                <span class='kw'>fn</span> <span class='ident'>cos</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+                <span class='kw'>fn</span> <span class='ident'>cos</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                     <span class='kw'>let</span> <span class='ident'>re</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>re</span>;
                     <span class='kw'>let</span> <span class='ident'>im</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>im</span>;
                     <span class='ident'>Complex</span>::<span class='ident'>new</span>(
@@ -215,22 +216,22 @@
                         <span class='op'>-</span><span class='ident'>re</span>.<span class='ident'>sin</span>() <span class='op'>*</span> <span class='ident'>im</span>.<span class='ident'>sinh</span>())
                 }
                    
-                <span class='kw'>fn</span> <span class='ident'>sqrt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+                <span class='kw'>fn</span> <span class='ident'>sqrt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                     <span class='kw'>let</span> (<span class='ident'>r</span>, <span class='ident'>theta</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>to_polar</span>();
                     <span class='ident'>Complex</span>::<span class='ident'>from_polar</span>(<span class='kw-2'>&amp;</span>(<span class='ident'>r</span>.<span class='ident'>sqrt</span>()), <span class='kw-2'>&amp;</span>(<span class='ident'>theta</span><span class='op'>/</span><span class='number'>2.0</span>))
                 }
                 
-                <span class='kw'>fn</span> <span class='ident'>powf</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>value</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+                <span class='kw'>fn</span> <span class='ident'>powf</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>value</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                     <span class='kw'>let</span> (<span class='ident'>r</span>, <span class='ident'>theta</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>to_polar</span>();
                     <span class='ident'>Complex</span>::<span class='ident'>from_polar</span>(<span class='kw-2'>&amp;</span>(<span class='ident'>r</span>.<span class='ident'>powf</span>(<span class='ident'>value</span>)), <span class='kw-2'>&amp;</span>(<span class='ident'>theta</span><span class='op'>*</span><span class='ident'>value</span>))
                 }
                 
-                <span class='kw'>fn</span> <span class='ident'>ln</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+                <span class='kw'>fn</span> <span class='ident'>ln</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                     <span class='kw'>let</span> (<span class='ident'>r</span>, <span class='ident'>theta</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>to_polar</span>();
                     <span class='ident'>Complex</span>::<span class='ident'>new</span>(<span class='ident'>r</span>.<span class='ident'>ln</span>(), <span class='ident'>theta</span>)
                 }
                 
-                <span class='kw'>fn</span> <span class='ident'>expn</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+                <span class='kw'>fn</span> <span class='ident'>expn</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                     <span class='kw'>let</span> <span class='ident'>re</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>re</span>;
                     <span class='kw'>let</span> <span class='ident'>im</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>im</span>;
                     <span class='kw'>let</span> <span class='ident'>exp</span> <span class='op'>=</span> <span class='ident'>re</span>.<span class='ident'>exp</span>();
@@ -238,7 +239,7 @@
                     <span class='ident'>Complex</span>::<span class='ident'>new</span>(<span class='ident'>exp</span> <span class='op'>*</span> <span class='ident'>im</span>.<span class='ident'>cos</span>(), <span class='ident'>exp</span> <span class='op'>*</span> <span class='ident'>im</span>.<span class='ident'>sin</span>())
                 }
                 
-                <span class='kw'>fn</span> <span class='ident'>log_base</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>value</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+                <span class='kw'>fn</span> <span class='ident'>log_base</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>value</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                     <span class='kw'>let</span> (<span class='ident'>r</span>, <span class='ident'>theta</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>to_polar</span>();
                     <span class='kw'>let</span> <span class='ident'>e</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>::<span class='ident'>consts</span>::<span class='ident'>E</span>;
                     <span class='ident'>Complex</span>::<span class='ident'>new</span>(<span class='ident'>r</span>.<span class='ident'>log</span>(<span class='ident'>value</span>), <span class='ident'>theta</span> <span class='op'>*</span> <span class='ident'>e</span>.<span class='ident'>log</span>(<span class='ident'>value</span>))
@@ -246,7 +247,7 @@
                 
                 <span class='comment'>// Same as value.powf(self) but I would prefer to have this version</span>
                 <span class='comment'>// around too</span>
-                <span class='kw'>fn</span> <span class='ident'>exp_base</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>value</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+                <span class='kw'>fn</span> <span class='ident'>exp_base</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>value</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                     <span class='kw'>let</span> <span class='ident'>ln</span> <span class='op'>=</span> <span class='ident'>value</span>.<span class='ident'>ln</span>();
                     <span class='kw'>let</span> <span class='ident'>exp</span> <span class='op'>=</span> (<span class='self'>self</span>.<span class='ident'>re</span> <span class='op'>*</span> <span class='ident'>ln</span>).<span class='ident'>exp</span>();
                     <span class='kw'>let</span> <span class='ident'>im</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>im</span> <span class='op'>*</span> <span class='ident'>ln</span>; 
@@ -260,53 +261,53 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
-	<span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
-	<span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>complex</span>::<span class='ident'>Complex32</span>;
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
+    <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>complex</span>::<span class='ident'>Complex32</span>;
     
     <span class='kw'>fn</span> <span class='ident'>assert_complex</span>(<span class='ident'>left</span>: <span class='ident'>Complex32</span>, <span class='ident'>right</span>: <span class='ident'>Complex32</span>) {
         <span class='macro'>assert</span><span class='macro'>!</span>((<span class='ident'>left</span>.<span class='ident'>re</span> <span class='op'>-</span> <span class='ident'>right</span>.<span class='ident'>re</span>).<span class='ident'>abs</span>() <span class='op'>&lt;</span> <span class='number'>1e-4</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>((<span class='ident'>left</span>.<span class='ident'>im</span> <span class='op'>-</span> <span class='ident'>right</span>.<span class='ident'>im</span>).<span class='ident'>abs</span>() <span class='op'>&lt;</span> <span class='number'>1e-4</span>);
     }
-	
+    
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-	<span class='kw'>fn</span> <span class='ident'>powf_test</span>()
-	{
-		<span class='kw'>let</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>2.0</span>, <span class='op'>-</span><span class='number'>1.0</span>);
+    <span class='kw'>fn</span> <span class='ident'>powf_test</span>()
+    {
+        <span class='kw'>let</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>2.0</span>, <span class='op'>-</span><span class='number'>1.0</span>);
         <span class='kw'>let</span> <span class='ident'>r</span> <span class='op'>=</span> <span class='ident'>c</span>.<span class='ident'>powf</span>(<span class='number'>3.5</span>);
         <span class='ident'>assert_complex</span>(<span class='ident'>r</span>, <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='op'>-</span><span class='number'>0.8684746</span>, <span class='op'>-</span><span class='number'>16.695934</span>));
-	}
+    }
     
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-	<span class='kw'>fn</span> <span class='ident'>logn_test</span>()
-	{
-		<span class='kw'>let</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>2.0</span>, <span class='op'>-</span><span class='number'>1.0</span>);
+    <span class='kw'>fn</span> <span class='ident'>logn_test</span>()
+    {
+        <span class='kw'>let</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>2.0</span>, <span class='op'>-</span><span class='number'>1.0</span>);
         <span class='kw'>let</span> <span class='ident'>r</span> <span class='op'>=</span> <span class='ident'>c</span>.<span class='ident'>ln</span>();
         <span class='ident'>assert_complex</span>(<span class='ident'>r</span>, <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>0.804719</span>, <span class='op'>-</span><span class='number'>0.4636476</span>));
-	}
+    }
     
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-	<span class='kw'>fn</span> <span class='ident'>expn_test</span>()
-	{
-		<span class='kw'>let</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>2.0</span>, <span class='op'>-</span><span class='number'>1.0</span>);
+    <span class='kw'>fn</span> <span class='ident'>expn_test</span>()
+    {
+        <span class='kw'>let</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>2.0</span>, <span class='op'>-</span><span class='number'>1.0</span>);
         <span class='kw'>let</span> <span class='ident'>r</span> <span class='op'>=</span> <span class='ident'>c</span>.<span class='ident'>expn</span>();
         <span class='ident'>assert_complex</span>(<span class='ident'>r</span>, <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>3.9923239</span>, <span class='op'>-</span><span class='number'>6.217676</span>));
-	}
+    }
     
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-	<span class='kw'>fn</span> <span class='ident'>log_test</span>()
-	{
-		<span class='kw'>let</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>2.0</span>, <span class='op'>-</span><span class='number'>1.0</span>);
+    <span class='kw'>fn</span> <span class='ident'>log_test</span>()
+    {
+        <span class='kw'>let</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>2.0</span>, <span class='op'>-</span><span class='number'>1.0</span>);
         <span class='kw'>let</span> <span class='ident'>r</span> <span class='op'>=</span> <span class='ident'>c</span>.<span class='ident'>log_base</span>(<span class='number'>10.0</span>);
         <span class='ident'>assert_complex</span>(<span class='ident'>r</span>, <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>0.349485</span>, <span class='op'>-</span><span class='number'>0.20135958</span>));
-	}
+    }
     
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-	<span class='kw'>fn</span> <span class='ident'>exp_test</span>()
-	{
-		<span class='kw'>let</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>2.0</span>, <span class='op'>-</span><span class='number'>1.0</span>);
+    <span class='kw'>fn</span> <span class='ident'>exp_test</span>()
+    {
+        <span class='kw'>let</span> <span class='ident'>c</span> <span class='op'>=</span> <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>2.0</span>, <span class='op'>-</span><span class='number'>1.0</span>);
         <span class='kw'>let</span> <span class='ident'>r</span> <span class='op'>=</span> <span class='ident'>c</span>.<span class='ident'>exp_base</span>(<span class='number'>10.0</span>);
         <span class='ident'>assert_complex</span>(<span class='ident'>r</span>, <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='op'>-</span><span class='number'>66.82015</span>, <span class='op'>-</span><span class='number'>74.39803</span>));
-	}
+    }
 }</pre>
 </section>
     <section id='search' class="content hidden"></section>
@@ -331,6 +332,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
+    
 
     
     
@@ -264,22 +265,22 @@
 <span id="221">221</span>
 <span id="222">222</span>
 </pre><pre class='rust '>
-<span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>definitions</span>::<span class='ident'>Statistics</span>;
+<span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>definitions</span>::<span class='ident'>Statistics</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::{<span class='ident'>f32</span>, <span class='ident'>f64</span>};
 <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>Complex</span>;
 
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Stats</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> : <span class='ident'>Sized</span> {
-    <span class='kw'>fn</span> <span class='ident'>empty</span>() <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>empty_vec</span>(<span class='ident'>len</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>;
-    <span class='kw'>fn</span> <span class='ident'>invalid</span>() <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>merge</span>(<span class='ident'>stats</span>: <span class='kw-2'>&amp;</span>[<span class='kw'>Self</span>]) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>merge_cols</span>(<span class='ident'>stats</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>Vec</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>;
+    <span class='kw'>fn</span> <span class='ident'>empty</span>() <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>empty_vec</span>(<span class='ident'>len</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>;
+    <span class='kw'>fn</span> <span class='ident'>invalid</span>() <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>merge</span>(<span class='ident'>stats</span>: <span class='kw-2'>&amp;</span>[<span class='self'>Self</span>]) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>merge_cols</span>(<span class='ident'>stats</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>Vec</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>;
     <span class='kw'>fn</span> <span class='ident'>add</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>elem</span>: <span class='ident'>T</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>);
 }
 
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>impl_common_stats</span> {
     () <span class='op'>=&gt;</span> {
-        <span class='kw'>fn</span> <span class='ident'>merge_cols</span>(<span class='ident'>stats</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>Vec</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span> {
+        <span class='kw'>fn</span> <span class='ident'>merge_cols</span>(<span class='ident'>stats</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>Vec</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span> {
             <span class='kw'>if</span> <span class='ident'>stats</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='number'>0</span> {
                 <span class='kw'>return</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
             }
@@ -299,7 +300,7 @@
             <span class='ident'>results</span>
         }
         
-        <span class='kw'>fn</span> <span class='ident'>empty_vec</span>(<span class='ident'>len</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span> {
+        <span class='kw'>fn</span> <span class='ident'>empty_vec</span>(<span class='ident'>len</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span> {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>results</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>len</span>);
             <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>len</span> {
                 <span class='ident'>results</span>.<span class='ident'>push</span>(<span class='ident'>Statistics</span>::<span class='ident'>empty</span>());
@@ -310,12 +311,12 @@
 }
 
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>impl_stat_trait</span> {
-	($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>:<span class='ident'>ident</span>),<span class='op'>*</span>)
-	 <span class='op'>=&gt;</span>
-	 {
+    ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>:<span class='ident'>ident</span>),<span class='op'>*</span>)
+     <span class='op'>=&gt;</span>
+     {
          $(
             <span class='kw'>impl</span> <span class='ident'>Stats</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Statistics</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> {
-                <span class='kw'>fn</span> <span class='ident'>empty</span>() <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+                <span class='kw'>fn</span> <span class='ident'>empty</span>() <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                     <span class='ident'>Statistics</span> {
                         <span class='ident'>sum</span>: <span class='number'>0.0</span>,
                         <span class='ident'>count</span>: <span class='number'>0</span>,
@@ -328,7 +329,7 @@
                     }
                 }
                 
-                <span class='kw'>fn</span> <span class='ident'>invalid</span>() <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+                <span class='kw'>fn</span> <span class='ident'>invalid</span>() <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                     <span class='ident'>Statistics</span> {
                         <span class='ident'>sum</span>: <span class='number'>0.0</span>,
                         <span class='ident'>count</span>: <span class='number'>0</span>,
@@ -397,7 +398,7 @@
             }
             
             <span class='kw'>impl</span> <span class='ident'>Stats</span><span class='op'>&lt;</span><span class='ident'>Complex</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Statistics</span><span class='op'>&lt;</span><span class='ident'>Complex</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;&gt;</span> {
-                <span class='kw'>fn</span> <span class='ident'>empty</span>() <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+                <span class='kw'>fn</span> <span class='ident'>empty</span>() <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                     <span class='ident'>Statistics</span> {
                         <span class='ident'>sum</span>: <span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='number'>0.0</span>, <span class='number'>0.0</span>),
                         <span class='ident'>count</span>: <span class='number'>0</span>,
@@ -410,7 +411,7 @@
                     }
                 }
                 
-                <span class='kw'>fn</span> <span class='ident'>invalid</span>() <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+                <span class='kw'>fn</span> <span class='ident'>invalid</span>() <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                     <span class='ident'>Statistics</span> {
                         <span class='ident'>sum</span>: <span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='number'>0.0</span>, <span class='number'>0.0</span>),
                         <span class='ident'>count</span>: <span class='number'>0</span>,
@@ -509,6 +510,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

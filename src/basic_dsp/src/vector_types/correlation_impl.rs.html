@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
+    
 
     
     
@@ -213,18 +214,18 @@
 <span id="170">170</span>
 <span id="171">171</span>
 </pre><pre class='rust '>
-<span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>definitions</span>::{
+<span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>definitions</span>::{
     <span class='ident'>DataVectorDomain</span>,
     <span class='ident'>ErrorReason</span>,
     <span class='ident'>DataVector</span>,
     <span class='ident'>VecResult</span>,
     <span class='ident'>PaddingOption</span>};
 <span class='kw'>use</span> <span class='ident'>RealNumber</span>;
-<span class='kw'>use</span> <span class='ident'>super</span>::{
+<span class='kw'>use</span> <span class='kw'>super</span>::{
     <span class='ident'>GenericDataVector</span>,
-    <span class='ident'>RealVectorOperations</span>,
-    <span class='ident'>GenericVectorOperations</span>,
-    <span class='ident'>ComplexVectorOperations</span>,
+    <span class='ident'>RealVectorOps</span>,
+    <span class='ident'>GenericVectorOps</span>,
+    <span class='ident'>ComplexVectorOps</span>,
     <span class='ident'>TimeDomainOperations</span>,
     <span class='ident'>FrequencyDomainOperations</span>,
     <span class='ident'>ComplexTimeVector</span>,
@@ -270,37 +271,37 @@
     <span class='doccomment'>/// </span>
     <span class='doccomment'>/// 1. Calculate the plain FFT</span>
     <span class='doccomment'>/// 2. Calculate the complex conjugate</span>
-    <span class='kw'>fn</span> <span class='ident'>prepare_argument</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span>;
+    <span class='kw'>fn</span> <span class='ident'>prepare_argument</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span>;
     
     <span class='doccomment'>/// Prepares an argument to be used for convolution. The argument is zero padded to length of `2 * self.points() - 1`</span>
     <span class='doccomment'>/// and then the same operations are performed as described for `prepare_argument`.</span>
-    <span class='kw'>fn</span> <span class='ident'>prepare_argument_padded</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span>;
+    <span class='kw'>fn</span> <span class='ident'>prepare_argument_padded</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span>;
      
     <span class='doccomment'>/// Calculates the correlation between `self` and `other`. `other` needs to be a time vector which</span>
     <span class='doccomment'>/// went through one of the prepare functions `prepare_argument` or `prepare_argument_padded`. See also the </span>
     <span class='doccomment'>/// trait description for more details.</span>
-    <span class='kw'>fn</span> <span class='ident'>correlate</span>(<span class='self'>self</span>, <span class='ident'>other</span>: <span class='kw-2'>&amp;</span><span class='ident'>Self</span>::<span class='ident'>FreqPartner</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>;
+    <span class='kw'>fn</span> <span class='ident'>correlate</span>(<span class='self'>self</span>, <span class='ident'>other</span>: <span class='kw-2'>&amp;</span><span class='self'>Self</span>::<span class='ident'>FreqPartner</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>;
 }
 
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>define_correlation_impl</span> {
     ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>:<span class='ident'>ident</span>,<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>:<span class='ident'>ident</span>);<span class='op'>*</span>) <span class='op'>=&gt;</span> {
         $( 
             <span class='kw'>impl</span> <span class='ident'>CrossCorrelation</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>GenericDataVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> {
-                <span class='kw'>type</span> <span class='ident'>FreqPartner</span> <span class='op'>=</span> <span class='kw'>Self</span>;
+                <span class='kw'>type</span> <span class='ident'>FreqPartner</span> <span class='op'>=</span> <span class='self'>Self</span>;
                 
-                <span class='kw'>fn</span> <span class='ident'>prepare_argument</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span> {
+                <span class='kw'>fn</span> <span class='ident'>prepare_argument</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span> {
                     <span class='self'>self</span>.<span class='ident'>plain_fft</span>()
-                    .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>complex_conj</span>())
+                    .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>conj</span>())
                 }
     
-                <span class='kw'>fn</span> <span class='ident'>prepare_argument_padded</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span> {
+                <span class='kw'>fn</span> <span class='ident'>prepare_argument_padded</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span> {
                     <span class='kw'>let</span> <span class='ident'>points</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>points</span>();
                     <span class='self'>self</span>.<span class='ident'>zero_pad</span>(<span class='number'>2</span> <span class='op'>*</span> <span class='ident'>points</span> <span class='op'>-</span> <span class='number'>1</span>, <span class='ident'>PaddingOption</span>::<span class='ident'>Surround</span>)
                     .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>plain_fft</span>())
-                    .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>complex_conj</span>())
+                    .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>conj</span>())
                 }
                 
-                <span class='kw'>fn</span> <span class='ident'>correlate</span>(<span class='self'>self</span>, <span class='ident'>other</span>: <span class='kw-2'>&amp;</span><span class='ident'>Self</span>::<span class='ident'>FreqPartner</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span> {
+                <span class='kw'>fn</span> <span class='ident'>correlate</span>(<span class='self'>self</span>, <span class='ident'>other</span>: <span class='kw-2'>&amp;</span><span class='self'>Self</span>::<span class='ident'>FreqPartner</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span> {
                     <span class='macro'>assert_complex</span><span class='macro'>!</span>(<span class='self'>self</span>);
                     <span class='macro'>assert_time</span><span class='macro'>!</span>(<span class='self'>self</span>);
                     <span class='kw'>let</span> <span class='ident'>points</span> <span class='op'>=</span> <span class='ident'>other</span>.<span class='ident'>points</span>();
@@ -326,16 +327,16 @@
         $( 
             <span class='kw'>impl</span> <span class='ident'>CrossCorrelation</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> {
                 <span class='kw'>type</span> <span class='ident'>FreqPartner</span> <span class='op'>=</span> <span class='ident'>ComplexFreqVector</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>;
-                <span class='kw'>fn</span> <span class='ident'>prepare_argument</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span> {
-                    <span class='ident'>Self</span>::<span class='ident'>FreqPartner</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>prepare_argument</span>())
+                <span class='kw'>fn</span> <span class='ident'>prepare_argument</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span> {
+                    <span class='self'>Self</span>::<span class='ident'>FreqPartner</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>prepare_argument</span>())
                 }
     
-                <span class='kw'>fn</span> <span class='ident'>prepare_argument_padded</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span> {
-                    <span class='ident'>Self</span>::<span class='ident'>FreqPartner</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>prepare_argument_padded</span>())
+                <span class='kw'>fn</span> <span class='ident'>prepare_argument_padded</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>FreqPartner</span><span class='op'>&gt;</span> {
+                    <span class='self'>Self</span>::<span class='ident'>FreqPartner</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>prepare_argument_padded</span>())
                 }
                 
-                <span class='kw'>fn</span> <span class='ident'>correlate</span>(<span class='self'>self</span>, <span class='ident'>other</span>: <span class='kw-2'>&amp;</span><span class='ident'>Self</span>::<span class='ident'>FreqPartner</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span> {
-                    <span class='ident'>Self</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>correlate</span>(<span class='ident'>other</span>.<span class='ident'>to_gen_borrow</span>()))
+                <span class='kw'>fn</span> <span class='ident'>correlate</span>(<span class='self'>self</span>, <span class='ident'>other</span>: <span class='kw-2'>&amp;</span><span class='self'>Self</span>::<span class='ident'>FreqPartner</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span> {
+                    <span class='self'>Self</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>correlate</span>(<span class='ident'>other</span>.<span class='ident'>to_gen_borrow</span>()))
                 }
             }
         )<span class='op'>*</span>
@@ -407,6 +408,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

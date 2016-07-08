@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -475,15 +476,141 @@
 <span id="432">432</span>
 <span id="433">433</span>
 <span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>num_cpus</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>::{<span class='ident'>Chunks</span>, <span class='ident'>ChunksMut</span>};
 <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>traits</span>::<span class='ident'>Float</span>;
-<span class='kw'>use</span> <span class='ident'>simple_parallel</span>::<span class='ident'>Pool</span>;
+<span class='kw'>use</span> <span class='ident'>crossbeam</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Range</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>Mutex</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::{<span class='ident'>Mutex</span>, <span class='ident'>Arc</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
-<span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>RealNumber</span>;
+<span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>RealNumber</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>Iterator</span>;
 
 <span class='doccomment'>/// Indicates how complex an operation is and determines how many cores </span>
@@ -494,7 +621,7 @@
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>)]</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Complexity</span> {
-	<span class='ident'>Small</span>,
+    <span class='ident'>Small</span>,
     <span class='ident'>Medium</span>,
     <span class='ident'>Large</span>
 }
@@ -510,7 +637,6 @@
     <span class='doccomment'>/// Indicates whether the temp arrays of a vector should already be allocated during</span>
     <span class='doccomment'>/// construction</span>
     <span class='kw'>pub</span> <span class='ident'>early_temp_allocation</span>: <span class='ident'>bool</span>
-    <span class='comment'>// TODO: Specify and use options such as core/thread limits</span>
 }
 
 <span class='kw'>impl</span> <span class='ident'>MultiCoreSettings</span> {
@@ -518,7 +644,7 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='ident'>MultiCoreSettings</span> {
         <span class='comment'>// Half because we assume hyper threading and that we will keep a core so busy</span>
         <span class='comment'>// that hyper threading isn&#39;t of any use</span>
-        <span class='ident'>Self</span>::<span class='ident'>new</span>(<span class='ident'>num_cpus</span>::<span class='ident'>get</span>() <span class='op'>/</span> <span class='number'>2</span>, <span class='boolval'>false</span>)
+        <span class='self'>Self</span>::<span class='ident'>new</span>(<span class='ident'>num_cpus</span>::<span class='ident'>get</span>() <span class='op'>/</span> <span class='number'>2</span>, <span class='boolvalue'>false</span>)
     }
     
     <span class='doccomment'>/// Creates multi core settings with the given values.</span>
@@ -531,14 +657,14 @@
 }
 
 <span class='kw'>impl</span> <span class='ident'>Clone</span> <span class='kw'>for</span> <span class='ident'>MultiCoreSettings</span> {
-    <span class='kw'>fn</span> <span class='ident'>clone</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+    <span class='kw'>fn</span> <span class='ident'>clone</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='ident'>MultiCoreSettings</span> {
             <span class='ident'>core_limit</span>: <span class='self'>self</span>.<span class='ident'>core_limit</span>,
             <span class='ident'>early_temp_allocation</span>: <span class='self'>self</span>.<span class='ident'>early_temp_allocation</span>
         }
     }
 
-    <span class='kw'>fn</span> <span class='ident'>clone_from</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>source</span>: <span class='kw-2'>&amp;</span><span class='kw'>Self</span>) {
+    <span class='kw'>fn</span> <span class='ident'>clone_from</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>source</span>: <span class='kw-2'>&amp;</span><span class='self'>Self</span>) {
         <span class='self'>self</span>.<span class='ident'>core_limit</span> <span class='op'>=</span> <span class='ident'>source</span>.<span class='ident'>core_limit</span>;
     }
 }
@@ -548,12 +674,6 @@
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Chunk</span>;
 <span class='kw'>impl</span> <span class='ident'>Chunk</span>
 {  
-    <span class='doccomment'>/// Gives access to the thread pool singleton</span>
-	<span class='kw'>fn</span> <span class='ident'>get_pool</span>() <span class='op'>-&gt;</span> <span class='ident'>Pool</span>
-	{
-		<span class='ident'>Pool</span>::<span class='ident'>new</span>(<span class='ident'>num_cpus</span>::<span class='ident'>get</span>())
-	}
-
     <span class='doccomment'>/// Figures out how many threads make use for the an operation with the given complexity on </span>
     <span class='doccomment'>/// an array with the given size. </span>
     <span class='doccomment'>///</span>
@@ -567,14 +687,14 @@
     <span class='doccomment'>///    The memory bus speed is limited (20GB/s in case of a typical 2015 consumer laptop in the price range of $1000) and</span>
     <span class='doccomment'>///    for operations which only require a few CPU cycles already one or two cores will process data faster than the </span>
     <span class='doccomment'>///    memory bus is able to provide and to transport back. Using more cores then only creates heat but no performance benefit.</span>
-	<span class='attribute'>#[<span class='ident'>inline</span>]</span>
-	<span class='kw'>fn</span> <span class='ident'>determine_number_of_chunks</span>(<span class='ident'>array_length</span>: <span class='ident'>usize</span>, <span class='ident'>complexity</span>: <span class='ident'>Complexity</span>, <span class='ident'>settings</span>: <span class='kw-2'>&amp;</span><span class='ident'>MultiCoreSettings</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span>
-	{
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>determine_number_of_chunks</span>(<span class='ident'>array_length</span>: <span class='ident'>usize</span>, <span class='ident'>complexity</span>: <span class='ident'>Complexity</span>, <span class='ident'>settings</span>: <span class='kw-2'>&amp;</span><span class='ident'>MultiCoreSettings</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span>
+    {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>cores</span> <span class='op'>=</span> <span class='ident'>num_cpus</span>::<span class='ident'>get</span>();
         <span class='kw'>if</span> <span class='ident'>cores</span> <span class='op'>&gt;</span> <span class='ident'>settings</span>.<span class='ident'>core_limit</span> {
             <span class='ident'>cores</span> <span class='op'>=</span> <span class='ident'>settings</span>.<span class='ident'>core_limit</span>;
         }
-        <span class='kw'>if</span> <span class='ident'>complexity</span> <span class='op'>==</span> <span class='ident'>Complexity</span>::<span class='ident'>Large</span> <span class='op'>||</span> <span class='ident'>cores</span> <span class='op'>==</span> <span class='number'>1</span> {
+        <span class='kw'>if</span> <span class='ident'>cores</span> <span class='op'>==</span> <span class='number'>1</span> {
             <span class='ident'>cores</span>
         }
         <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>complexity</span> <span class='op'>==</span> <span class='ident'>Complexity</span>::<span class='ident'>Small</span>  {
@@ -589,7 +709,7 @@
                 }
             }
         }
-        <span class='kw'>else</span> { <span class='comment'>// complexity == medium</span>
+        <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>complexity</span> <span class='op'>==</span> <span class='ident'>Complexity</span>::<span class='ident'>Medium</span> {
             <span class='kw'>if</span> <span class='ident'>array_length</span> <span class='op'>&lt;</span> <span class='number'>10000</span> {
                 <span class='number'>1</span>
             }
@@ -604,113 +724,235 @@
                 <span class='ident'>cores</span>
             }
         }
-	}
+        <span class='kw'>else</span> { <span class='comment'>// complexity == Complexity::Large</span>
+            <span class='kw'>if</span> <span class='ident'>array_length</span> <span class='op'>&lt;</span> <span class='number'>30000</span> {
+                <span class='number'>1</span>
+            } <span class='kw'>else</span> {
+                <span class='ident'>cores</span>
+            }
+        }
+    }
     
     <span class='doccomment'>/// Partitions an array into the given number of chunks. It makes sure that all chunks have the same size</span>
     <span class='doccomment'>/// and so it will happen that some elements at the end of the array are not part of any chunk. </span>
-	<span class='attribute'>#[<span class='ident'>inline</span>]</span>
-	<span class='kw'>fn</span> <span class='ident'>partition</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>array</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>T</span>], <span class='ident'>array_length</span>: <span class='ident'>usize</span>, <span class='ident'>step_size</span>: <span class='ident'>usize</span>, <span class='ident'>number_of_chunks</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Chunks</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
-		<span class='kw'>where</span> <span class='ident'>T</span> : <span class='ident'>Float</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Send</span>
-	{
-		<span class='kw'>let</span> <span class='ident'>chunk_size</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>calc_chunk_size</span>(<span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
-		<span class='ident'>array</span>[<span class='number'>0</span> .. <span class='ident'>array_length</span>].<span class='ident'>chunks</span>(<span class='ident'>chunk_size</span>)
-	}
-	
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>partition</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>array</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>T</span>], <span class='ident'>array_length</span>: <span class='ident'>usize</span>, <span class='ident'>step_size</span>: <span class='ident'>usize</span>, <span class='ident'>number_of_chunks</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Chunks</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span>
+    {
+        <span class='kw'>let</span> <span class='ident'>chunk_size</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>calc_chunk_size</span>(<span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
+        <span class='ident'>array</span>[<span class='number'>0</span> .. <span class='ident'>array_length</span>].<span class='ident'>chunks</span>(<span class='ident'>chunk_size</span>)
+    }
+    
     <span class='doccomment'>/// Partitions an array into the given number of chunks. It makes sure that all chunks have the same size</span>
     <span class='doccomment'>/// and so it will happen that some elements at the end of the array are not part of any chunk. </span>
-	<span class='attribute'>#[<span class='ident'>inline</span>]</span>
-	<span class='kw'>fn</span> <span class='ident'>partition_mut</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>array</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='ident'>array_length</span>: <span class='ident'>usize</span>, <span class='ident'>step_size</span>: <span class='ident'>usize</span>, <span class='ident'>number_of_chunks</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>ChunksMut</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
-		<span class='kw'>where</span> <span class='ident'>T</span> : <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Send</span>
-	{
-		<span class='kw'>let</span> <span class='ident'>chunk_size</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>calc_chunk_size</span>(<span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
-		<span class='ident'>array</span>[<span class='number'>0</span> .. <span class='ident'>array_length</span>].<span class='ident'>chunks_mut</span>(<span class='ident'>chunk_size</span>)
-	}
-	
-	<span class='attribute'>#[<span class='ident'>inline</span>]</span>
-	<span class='kw'>fn</span> <span class='ident'>calc_chunk_size</span>(<span class='ident'>array_length</span>: <span class='ident'>usize</span>, <span class='ident'>step_size</span>: <span class='ident'>usize</span>, <span class='ident'>number_of_chunks</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span>
-	{
-		<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chunk_size</span> <span class='op'>=</span> (<span class='ident'>array_length</span> <span class='kw'>as</span> <span class='ident'>f64</span><span class='op'>/</span> <span class='ident'>number_of_chunks</span> <span class='kw'>as</span> <span class='ident'>f64</span>).<span class='ident'>ceil</span>() <span class='kw'>as</span> <span class='ident'>usize</span>;
-		<span class='kw'>let</span> <span class='ident'>remainder</span> <span class='op'>=</span> <span class='ident'>chunk_size</span> <span class='op'>%</span> <span class='ident'>step_size</span>;
-		<span class='kw'>if</span> <span class='ident'>remainder</span> <span class='op'>&gt;</span> <span class='number'>0</span>
-		{
-			<span class='ident'>chunk_size</span> <span class='op'>+=</span> <span class='ident'>step_size</span> <span class='op'>-</span> <span class='ident'>chunk_size</span> <span class='op'>%</span> <span class='ident'>step_size</span>;
-		}
-		
-		<span class='ident'>chunk_size</span>
-	}
-	
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>partition_mut</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>array</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='ident'>array_length</span>: <span class='ident'>usize</span>, <span class='ident'>step_size</span>: <span class='ident'>usize</span>, <span class='ident'>number_of_chunks</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>ChunksMut</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>T</span> : <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Send</span>
+    {
+        <span class='kw'>let</span> <span class='ident'>chunk_size</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>calc_chunk_size</span>(<span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
+        <span class='ident'>array</span>[<span class='number'>0</span> .. <span class='ident'>array_length</span>].<span class='ident'>chunks_mut</span>(<span class='ident'>chunk_size</span>)
+    }
+    
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>calc_chunk_size</span>(<span class='ident'>array_length</span>: <span class='ident'>usize</span>, <span class='ident'>step_size</span>: <span class='ident'>usize</span>, <span class='ident'>number_of_chunks</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span>
+    {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chunk_size</span> <span class='op'>=</span> (<span class='ident'>array_length</span> <span class='kw'>as</span> <span class='ident'>f64</span><span class='op'>/</span> <span class='ident'>number_of_chunks</span> <span class='kw'>as</span> <span class='ident'>f64</span>).<span class='ident'>ceil</span>() <span class='kw'>as</span> <span class='ident'>usize</span>;
+        <span class='kw'>let</span> <span class='ident'>remainder</span> <span class='op'>=</span> <span class='ident'>chunk_size</span> <span class='op'>%</span> <span class='ident'>step_size</span>;
+        <span class='kw'>if</span> <span class='ident'>remainder</span> <span class='op'>&gt;</span> <span class='number'>0</span>
+        {
+            <span class='ident'>chunk_size</span> <span class='op'>+=</span> <span class='ident'>step_size</span> <span class='op'>-</span> <span class='ident'>chunk_size</span> <span class='op'>%</span> <span class='ident'>step_size</span>;
+        }
+        
+        <span class='ident'>chunk_size</span>
+    }
+    
     <span class='doccomment'>/// This function returns the ranges which correspond to the chunks generated by `partition_in_number`. </span>
-	<span class='attribute'>#[<span class='ident'>inline</span>]</span>
-	<span class='kw'>fn</span> <span class='ident'>partition_in_ranges</span>(<span class='ident'>array_length</span>: <span class='ident'>usize</span>, <span class='ident'>step_size</span>: <span class='ident'>usize</span>, <span class='ident'>number_of_chunks</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;&gt;</span>
-	{
-		<span class='kw'>let</span> <span class='ident'>chunk_size</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>calc_chunk_size</span>(<span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
-		<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>number_of_chunks</span>);
-		<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sum</span> <span class='op'>=</span> <span class='number'>0</span>;
-		<span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>number_of_chunks</span> {
-			<span class='kw'>let</span> <span class='ident'>new_sum</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&lt;</span> <span class='ident'>number_of_chunks</span> <span class='op'>-</span> <span class='number'>1</span> { <span class='ident'>sum</span> <span class='op'>+</span> <span class='ident'>chunk_size</span> } <span class='kw'>else</span> { <span class='ident'>array_length</span> };
-			<span class='ident'>ranges</span>.<span class='ident'>push</span>(<span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='ident'>sum</span>, <span class='ident'>end</span>: <span class='ident'>new_sum</span> });
-			<span class='ident'>sum</span> <span class='op'>=</span> <span class='ident'>new_sum</span>;
-		} 
-		
-		<span class='ident'>ranges</span>
-	}
-	
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>partition_in_ranges</span>(<span class='ident'>array_length</span>: <span class='ident'>usize</span>, <span class='ident'>step_size</span>: <span class='ident'>usize</span>, <span class='ident'>number_of_chunks</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;&gt;</span>
+    {
+        <span class='kw'>let</span> <span class='ident'>chunk_size</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>calc_chunk_size</span>(<span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>number_of_chunks</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sum</span> <span class='op'>=</span> <span class='number'>0</span>;
+        <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>number_of_chunks</span> {
+            <span class='kw'>let</span> <span class='ident'>new_sum</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&lt;</span> <span class='ident'>number_of_chunks</span> <span class='op'>-</span> <span class='number'>1</span> { <span class='ident'>sum</span> <span class='op'>+</span> <span class='ident'>chunk_size</span> } <span class='kw'>else</span> { <span class='ident'>array_length</span> };
+            <span class='ident'>ranges</span>.<span class='ident'>push</span>(<span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='ident'>sum</span>, <span class='ident'>end</span>: <span class='ident'>new_sum</span> });
+            <span class='ident'>sum</span> <span class='op'>=</span> <span class='ident'>new_sum</span>;
+        } 
+        
+        <span class='ident'>ranges</span>
+    }
+    
     <span class='doccomment'>/// Executes the given function on the first `array_length` elements of the given array in parallel and passes</span>
     <span class='doccomment'>/// the argument to all function calls.</span>
-	<span class='attribute'>#[<span class='ident'>inline</span>]</span>
-	<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execute_partial</span><span class='op'>&lt;</span><span class='ident'>T</span>,<span class='ident'>S</span>,<span class='ident'>F</span><span class='op'>&gt;</span>(
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execute_partial</span><span class='op'>&lt;</span><span class='ident'>T</span>,<span class='ident'>S</span>,<span class='ident'>F</span><span class='op'>&gt;</span>(
             <span class='ident'>complexity</span>: <span class='ident'>Complexity</span>, 
             <span class='ident'>settings</span>: <span class='kw-2'>&amp;</span><span class='ident'>MultiCoreSettings</span>, 
             <span class='ident'>array</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='ident'>array_length</span>: <span class='ident'>usize</span>, <span class='ident'>step_size</span>: <span class='ident'>usize</span>, 
             <span class='ident'>arguments</span>:<span class='ident'>S</span>, <span class='kw-2'>ref</span> <span class='ident'>function</span>: <span class='ident'>F</span>)
-		<span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='ident'>S</span>) <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span>, 
-			  <span class='ident'>T</span>: <span class='ident'>RealNumber</span>,
-			  <span class='ident'>S</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span>
-	{
-		<span class='kw'>let</span> <span class='ident'>number_of_chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>determine_number_of_chunks</span>(<span class='ident'>array_length</span>, <span class='ident'>complexity</span>, <span class='ident'>settings</span>);
-		<span class='kw'>if</span> <span class='ident'>number_of_chunks</span> <span class='op'>&gt;</span> <span class='number'>1</span>
-		{
-			<span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='ident'>array</span>, <span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
-			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_pool</span>();
-			<span class='ident'>pool</span>.<span class='ident'>for_</span>(<span class='ident'>chunks</span>, <span class='op'>|</span><span class='ident'>chunk</span><span class='op'>|</span>
-				{
-					<span class='ident'>function</span>(<span class='ident'>chunk</span>, <span class='ident'>arguments</span>);
-				});
-		}
-		<span class='kw'>else</span>
-		{
-			<span class='ident'>function</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>array</span>[<span class='number'>0</span>..<span class='ident'>array_length</span>], <span class='ident'>arguments</span>);
-		}
-	}
+        <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='ident'>S</span>) <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span>, 
+              <span class='ident'>T</span>: <span class='ident'>RealNumber</span>,
+              <span class='ident'>S</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Send</span>
+    {
+        <span class='kw'>let</span> <span class='ident'>number_of_chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>determine_number_of_chunks</span>(<span class='ident'>array_length</span>, <span class='ident'>complexity</span>, <span class='ident'>settings</span>);
+        <span class='kw'>if</span> <span class='ident'>number_of_chunks</span> <span class='op'>&gt;</span> <span class='number'>1</span>
+        {
+            <span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='ident'>array</span>, <span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
+            <span class='ident'>crossbeam</span>::<span class='ident'>scope</span>(<span class='op'>|</span><span class='ident'>scope</span><span class='op'>|</span> {
+                <span class='kw'>for</span> <span class='ident'>chunk</span> <span class='kw'>in</span> <span class='ident'>chunks</span> {
+                    <span class='ident'>scope</span>.<span class='ident'>spawn</span>(<span class='kw'>move</span><span class='op'>||</span> {
+                        <span class='ident'>function</span>(<span class='ident'>chunk</span>, <span class='ident'>arguments</span>);
+                    });
+                }
+            });
+        }
+        <span class='kw'>else</span>
+        {
+            <span class='ident'>function</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>array</span>[<span class='number'>0</span>..<span class='ident'>array_length</span>], <span class='ident'>arguments</span>);
+        }
+    }
+    
+    <span class='doccomment'>/// Executes the given function on the first `array_length` elements of the given list of arrays in parallel and passes</span>
+    <span class='doccomment'>/// the argument to all function calls. </span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execute_partial_multidim</span><span class='op'>&lt;</span><span class='ident'>T</span>,<span class='ident'>S</span>,<span class='ident'>F</span><span class='op'>&gt;</span>(
+            <span class='ident'>complexity</span>: <span class='ident'>Complexity</span>, 
+            <span class='ident'>settings</span>: <span class='kw-2'>&amp;</span><span class='ident'>MultiCoreSettings</span>, 
+            <span class='ident'>array</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>]], <span class='ident'>array_length</span>: <span class='ident'>usize</span>, <span class='ident'>step_size</span>: <span class='ident'>usize</span>, 
+            <span class='ident'>arguments</span>:<span class='ident'>S</span>, <span class='kw-2'>ref</span> <span class='ident'>function</span>: <span class='ident'>F</span>)
+        <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>]<span class='op'>&gt;</span>, <span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='ident'>S</span>) <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span>, 
+              <span class='ident'>T</span>: <span class='ident'>RealNumber</span>,
+              <span class='ident'>S</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Send</span>
+    {
+        <span class='kw'>let</span> <span class='ident'>array_len</span> <span class='op'>=</span> <span class='ident'>array</span>.<span class='ident'>len</span>();
+        <span class='kw'>let</span> <span class='ident'>number_of_chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>determine_number_of_chunks</span>(<span class='ident'>array_length</span>, <span class='ident'>complexity</span>, <span class='ident'>settings</span>);
+        <span class='kw'>if</span> <span class='ident'>number_of_chunks</span> <span class='op'>&gt;</span> <span class='number'>1</span>
+        {
+            <span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
+            <span class='comment'>// As an example: If this function is called with 2 arrays,</span>
+            <span class='comment'>// and each array has 1000 elements and is splitted into 4 chunks then</span>
+            <span class='comment'>// this:</span>
+            <span class='comment'>// let matrix = array.iter_mut().map(|a| {</span>
+            <span class='comment'>//    Chunk::partition_mut(a, array_length, step_size, number_of_chunks)</span>
+            <span class='comment'>//}).collect();</span>
+            <span class='comment'>// would give us a layout like this:</span>
+            <span class='comment'>// Vector with 2 elements * 4 chunks * each chunk with 250 elements (mutable)</span>
+            <span class='comment'>//</span>
+            <span class='comment'>// But what we want to have is:</span>
+            <span class='comment'>// 4 chunks * a vector of 2 elements * 250 elements in each vector (mutable)</span>
+            <span class='comment'>//</span>
+            <span class='comment'>// We achieve this by a) flatten the structure (flat_map) so that we get:</span>
+            <span class='comment'>// array1 chunk1</span>
+            <span class='comment'>// array1 chunk2</span>
+            <span class='comment'>// array1 chunk3</span>
+            <span class='comment'>// array1 chunk4</span>
+            <span class='comment'>// array2 chunk1</span>
+            <span class='comment'>// array2 chunk2</span>
+            <span class='comment'>// array2 chunk3</span>
+            <span class='comment'>// array2 chunk4</span>
+            <span class='comment'>//</span>
+            <span class='comment'>// and b) creating a nested vector structure so that we can push</span>
+            <span class='comment'>// the elements on it in the correct order</span>
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>flat_layout</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>]<span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>array</span>.<span class='ident'>iter_mut</span>().<span class='ident'>flat_map</span>(<span class='op'>|</span><span class='ident'>a</span><span class='op'>|</span> {
+                <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='ident'>a</span>, <span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>)
+            }).<span class='ident'>collect</span>();
+            
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>reorganized</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>number_of_chunks</span>);
+            <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>number_of_chunks</span> {
+                <span class='ident'>reorganized</span>.<span class='ident'>push</span>(<span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>array_len</span>));
+            }
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='ident'>flat_layout</span>.<span class='ident'>len</span>();
+            <span class='kw'>while</span> <span class='ident'>i</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
+                <span class='kw'>let</span> <span class='ident'>elem</span> <span class='op'>=</span> <span class='ident'>flat_layout</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='ident'>reorganized</span>[<span class='ident'>i</span> <span class='op'>%</span> <span class='ident'>number_of_chunks</span>].<span class='ident'>push</span>(<span class='ident'>elem</span>);
+                <span class='ident'>i</span><span class='op'>-=</span><span class='number'>1</span>;
+            }
+            
+            <span class='ident'>crossbeam</span>::<span class='ident'>scope</span>(<span class='op'>|</span><span class='ident'>scope</span><span class='op'>|</span> {
+                <span class='kw'>for</span> <span class='ident'>chunk</span> <span class='kw'>in</span> <span class='ident'>reorganized</span>.<span class='ident'>iter_mut</span>().<span class='ident'>zip</span>(<span class='ident'>ranges</span>) {
+                    <span class='ident'>scope</span>.<span class='ident'>spawn</span>(<span class='kw'>move</span><span class='op'>||</span> {
+                        <span class='ident'>function</span>(<span class='ident'>chunk</span>.<span class='number'>0</span>, <span class='ident'>chunk</span>.<span class='number'>1</span>, <span class='ident'>arguments</span>);
+                    });
+                }
+            });
+        }
+        <span class='kw'>else</span>
+        {
+          <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>shortened</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>]<span class='op'>&gt;</span> <span class='op'>=</span> 
+            <span class='ident'>array</span>.<span class='ident'>iter_mut</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>a</span><span class='op'>|</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>a</span>[<span class='number'>0</span>..<span class='ident'>array_length</span>]).<span class='ident'>collect</span>();
+          <span class='ident'>function</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>shortened</span>, <span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='number'>0</span>, <span class='ident'>end</span>: <span class='ident'>array_length</span> }, <span class='ident'>arguments</span>);
+        }
+    }
     
     <span class='doccomment'>/// Executes the given function on the all elements of the array and also tells the function on which range/chunk</span>
     <span class='doccomment'>/// it operates on.</span>
-	<span class='attribute'>#[<span class='ident'>inline</span>]</span>
-	<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execute_with_range</span><span class='op'>&lt;</span><span class='ident'>T</span>,<span class='ident'>S</span>,<span class='ident'>F</span><span class='op'>&gt;</span>(
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execute_with_range</span><span class='op'>&lt;</span><span class='ident'>T</span>,<span class='ident'>S</span>,<span class='ident'>F</span><span class='op'>&gt;</span>(
             <span class='ident'>complexity</span>: <span class='ident'>Complexity</span>, 
             <span class='ident'>settings</span>: <span class='kw-2'>&amp;</span><span class='ident'>MultiCoreSettings</span>, 
             <span class='ident'>array</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='ident'>array_length</span>: <span class='ident'>usize</span>, <span class='ident'>step_size</span>: <span class='ident'>usize</span>, 
             <span class='ident'>arguments</span>: <span class='ident'>S</span>, <span class='kw-2'>ref</span> <span class='ident'>function</span>: <span class='ident'>F</span>)
-		<span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='ident'>S</span>) <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
-			  <span class='ident'>T</span> : <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
-			  <span class='ident'>S</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span>
-	{
-		<span class='kw'>let</span> <span class='ident'>number_of_chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>determine_number_of_chunks</span>(<span class='ident'>array_length</span>, <span class='ident'>complexity</span>, <span class='ident'>settings</span>);
-		<span class='kw'>if</span> <span class='ident'>number_of_chunks</span> <span class='op'>&gt;</span> <span class='number'>1</span>
-		{
-			<span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='ident'>array</span>, <span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
-			<span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>chunks</span>.<span class='ident'>len</span>());
-			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_pool</span>();
-			<span class='ident'>pool</span>.<span class='ident'>for_</span>(<span class='ident'>chunks</span>.<span class='ident'>zip</span>(<span class='ident'>ranges</span>), <span class='op'>|</span><span class='ident'>chunk</span><span class='op'>|</span>
-				{
-					<span class='ident'>function</span>(<span class='ident'>chunk</span>.<span class='number'>0</span>, <span class='ident'>chunk</span>.<span class='number'>1</span>, <span class='ident'>arguments</span>);
-				});
-		}
-		<span class='kw'>else</span>
-		{
-			<span class='ident'>function</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>array</span>[<span class='number'>0</span>..<span class='ident'>array_length</span>], <span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='number'>0</span>, <span class='ident'>end</span>: <span class='ident'>array_length</span> }, <span class='ident'>arguments</span>);
-		}
-	}
+        <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='ident'>S</span>) <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+              <span class='ident'>T</span> : <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+              <span class='ident'>S</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Send</span>
+    {
+        <span class='kw'>let</span> <span class='ident'>number_of_chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>determine_number_of_chunks</span>(<span class='ident'>array_length</span>, <span class='ident'>complexity</span>, <span class='ident'>settings</span>);
+        <span class='kw'>if</span> <span class='ident'>number_of_chunks</span> <span class='op'>&gt;</span> <span class='number'>1</span>
+        {
+            <span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='ident'>array</span>, <span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
+            <span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>chunks</span>.<span class='ident'>len</span>());
+            <span class='ident'>crossbeam</span>::<span class='ident'>scope</span>(<span class='op'>|</span><span class='ident'>scope</span><span class='op'>|</span> {
+                <span class='kw'>for</span> <span class='ident'>chunk</span> <span class='kw'>in</span> <span class='ident'>chunks</span>.<span class='ident'>zip</span>(<span class='ident'>ranges</span>) {
+                    <span class='ident'>scope</span>.<span class='ident'>spawn</span>(<span class='kw'>move</span><span class='op'>||</span> {
+                        <span class='ident'>function</span>(<span class='ident'>chunk</span>.<span class='number'>0</span>, <span class='ident'>chunk</span>.<span class='number'>1</span>, <span class='ident'>arguments</span>);
+                    });
+                }
+            });
+        }
+        <span class='kw'>else</span>
+        {
+            <span class='ident'>function</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>array</span>[<span class='number'>0</span>..<span class='ident'>array_length</span>], <span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='number'>0</span>, <span class='ident'>end</span>: <span class='ident'>array_length</span> }, <span class='ident'>arguments</span>);
+        }
+    }
+    
+    <span class='doccomment'>/// Executes the given function on an unspecified number and size of chunks on the array and</span>
+    <span class='doccomment'>/// returns the result of each chunk.</span>
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>map_on_array_chunks</span><span class='op'>&lt;</span><span class='ident'>T</span>,<span class='ident'>S</span>,<span class='ident'>F</span>, <span class='ident'>R</span><span class='op'>&gt;</span>(
+            <span class='ident'>complexity</span>: <span class='ident'>Complexity</span>, 
+            <span class='ident'>settings</span>: <span class='kw-2'>&amp;</span><span class='ident'>MultiCoreSettings</span>, 
+            <span class='ident'>array</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>T</span>], <span class='ident'>array_length</span>: <span class='ident'>usize</span>, <span class='ident'>step_size</span>: <span class='ident'>usize</span>, 
+            <span class='ident'>arguments</span>: <span class='ident'>S</span>, <span class='kw-2'>ref</span> <span class='ident'>function</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>T</span>], <span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='ident'>S</span>) <span class='op'>-&gt;</span> <span class='ident'>R</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+              <span class='ident'>T</span> : <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+              <span class='ident'>S</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Send</span>,
+              <span class='ident'>R</span>: <span class='ident'>Send</span>
+    {
+        <span class='kw'>let</span> <span class='ident'>number_of_chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>determine_number_of_chunks</span>(<span class='ident'>array_length</span>, <span class='ident'>complexity</span>, <span class='ident'>settings</span>);
+        <span class='kw'>if</span> <span class='ident'>number_of_chunks</span> <span class='op'>&gt;</span> <span class='number'>1</span>
+        {
+            <span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition</span>(<span class='ident'>array</span>, <span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
+            <span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>chunks</span>.<span class='ident'>len</span>());
+            <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>chunks</span>.<span class='ident'>len</span>());
+            <span class='kw'>let</span> <span class='ident'>stack_array</span> <span class='op'>=</span> <span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>Mutex</span>::<span class='ident'>new</span>(<span class='ident'>result</span>));
+            <span class='ident'>crossbeam</span>::<span class='ident'>scope</span>(<span class='op'>|</span><span class='ident'>scope</span><span class='op'>|</span> {
+                <span class='kw'>for</span> <span class='ident'>chunk</span> <span class='kw'>in</span> <span class='ident'>chunks</span>.<span class='ident'>zip</span>(<span class='ident'>ranges</span>) {
+                    <span class='kw'>let</span> <span class='ident'>stack_array</span> <span class='op'>=</span> <span class='ident'>stack_array</span>.<span class='ident'>clone</span>();
+                    <span class='ident'>scope</span>.<span class='ident'>spawn</span>(<span class='kw'>move</span><span class='op'>||</span> {
+                        <span class='kw'>let</span> <span class='ident'>r</span> <span class='op'>=</span> <span class='ident'>function</span>(<span class='ident'>chunk</span>.<span class='number'>0</span>, <span class='ident'>chunk</span>.<span class='number'>1</span>, <span class='ident'>arguments</span>);
+                        <span class='ident'>stack_array</span>.<span class='ident'>lock</span>().<span class='ident'>unwrap</span>().<span class='ident'>push</span>(<span class='ident'>r</span>);
+                    });
+                }
+            });
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>guard</span> <span class='op'>=</span> <span class='ident'>stack_array</span>.<span class='ident'>lock</span>().<span class='ident'>unwrap</span>();
+            <span class='ident'>mem</span>::<span class='ident'>replace</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>guard</span>, <span class='ident'>Vec</span>::<span class='ident'>new</span>())
+        }
+        <span class='kw'>else</span>
+        {
+            <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>function</span>(<span class='kw-2'>&amp;</span><span class='ident'>array</span>[<span class='number'>0</span>..<span class='ident'>array_length</span>], <span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='number'>0</span>, <span class='ident'>end</span>: <span class='ident'>array_length</span> }, <span class='ident'>arguments</span>);
+            <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>result</span>]
+        }
+    }
     
     <span class='doccomment'>/// Executes the given function on the all elements of the array and also tells the function on which range/chunk</span>
     <span class='doccomment'>/// it operates on.</span>
@@ -719,22 +961,21 @@
     <span class='doccomment'>/// call to `function` two chunks. The two chunks will always be symmetric </span>
     <span class='doccomment'>/// around 0. This allos `function` to make use of symmetry properties of the</span>
     <span class='doccomment'>/// underlying data or the argument.</span>
-	<span class='attribute'>#[<span class='ident'>inline</span>]</span>
-	<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execute_sym_pairs_with_range</span><span class='op'>&lt;</span><span class='ident'>T</span>,<span class='ident'>S</span>,<span class='ident'>F</span><span class='op'>&gt;</span>(
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>execute_sym_pairs_with_range</span><span class='op'>&lt;</span><span class='ident'>T</span>,<span class='ident'>S</span>,<span class='ident'>F</span><span class='op'>&gt;</span>(
             <span class='ident'>complexity</span>: <span class='ident'>Complexity</span>, 
             <span class='ident'>settings</span>: <span class='kw-2'>&amp;</span><span class='ident'>MultiCoreSettings</span>, 
             <span class='ident'>array</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='ident'>array_length</span>: <span class='ident'>usize</span>, <span class='ident'>step_size</span>: <span class='ident'>usize</span>, 
             <span class='ident'>arguments</span>: <span class='ident'>S</span>, <span class='kw-2'>ref</span> <span class='ident'>function</span>: <span class='ident'>F</span>)
-		<span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='kw-2'>&amp;</span><span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='kw-2'>&amp;</span><span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='ident'>S</span>) <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
-			  <span class='ident'>T</span> : <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
-			  <span class='ident'>S</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span>
-	{
-		<span class='kw'>let</span> <span class='ident'>number_of_chunks</span> <span class='op'>=</span> <span class='number'>2</span> <span class='op'>*</span> <span class='ident'>Chunk</span>::<span class='ident'>determine_number_of_chunks</span>(<span class='ident'>array_length</span>, <span class='ident'>complexity</span>, <span class='ident'>settings</span>);
-		<span class='kw'>if</span> <span class='ident'>number_of_chunks</span> <span class='op'>&gt;</span> <span class='number'>2</span>
-		{
-			<span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='ident'>array</span>, <span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
-			<span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>chunks</span>.<span class='ident'>len</span>());
-			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_pool</span>();
+        <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='kw-2'>&amp;</span><span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='kw-2'>&amp;</span><span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='ident'>S</span>) <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+              <span class='ident'>T</span>: <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+              <span class='ident'>S</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Send</span>
+    {
+        <span class='kw'>let</span> <span class='ident'>number_of_chunks</span> <span class='op'>=</span> <span class='number'>2</span> <span class='op'>*</span> <span class='ident'>Chunk</span>::<span class='ident'>determine_number_of_chunks</span>(<span class='ident'>array_length</span>, <span class='ident'>complexity</span>, <span class='ident'>settings</span>);
+        <span class='kw'>if</span> <span class='ident'>number_of_chunks</span> <span class='op'>&gt;</span> <span class='number'>2</span>
+        {
+            <span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='ident'>array</span>, <span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
+            <span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>chunks</span>.<span class='ident'>len</span>());
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='number'>0</span>;
             <span class='kw'>let</span> (<span class='kw-2'>mut</span> <span class='ident'>chunks1</span>, <span class='kw-2'>mut</span> <span class='ident'>chunks2</span>): (<span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;</span>) <span class='op'>=</span> 
                 <span class='ident'>chunks</span>.<span class='ident'>partition</span>(<span class='op'>|</span><span class='ident'>_c</span><span class='op'>|</span> { <span class='ident'>i</span> <span class='op'>+=</span> <span class='number'>1</span>; <span class='ident'>i</span> <span class='op'>&lt;=</span> <span class='ident'>number_of_chunks</span> <span class='op'>/</span> <span class='number'>2</span> });
@@ -745,170 +986,182 @@
             <span class='kw'>let</span> <span class='ident'>ranges2</span> <span class='op'>=</span> <span class='ident'>ranges2</span>.<span class='ident'>iter</span>().<span class='ident'>rev</span>();
             <span class='kw'>let</span> <span class='ident'>zipped1</span> <span class='op'>=</span> <span class='ident'>chunks1</span>.<span class='ident'>iter_mut</span>().<span class='ident'>zip</span>(<span class='ident'>ranges1</span>);
             <span class='kw'>let</span> <span class='ident'>zipped2</span> <span class='op'>=</span> <span class='ident'>chunks2</span>.<span class='ident'>zip</span>(<span class='ident'>ranges2</span>);
-			<span class='ident'>pool</span>.<span class='ident'>for_</span>(<span class='ident'>zipped1</span>.<span class='ident'>zip</span>(<span class='ident'>zipped2</span>), <span class='op'>|</span><span class='ident'>chunk</span><span class='op'>|</span>
-				{
-                    <span class='kw'>let</span> (<span class='ident'>pair1</span>, <span class='ident'>pair2</span>) <span class='op'>=</span> <span class='ident'>chunk</span>;
-					<span class='ident'>function</span>(<span class='ident'>pair1</span>.<span class='number'>0</span>, <span class='ident'>pair1</span>.<span class='number'>1</span>, <span class='ident'>pair2</span>.<span class='number'>0</span>, <span class='ident'>pair2</span>.<span class='number'>1</span>, <span class='ident'>arguments</span>);
-				});
-		}
-		<span class='kw'>else</span>
-		{
+            <span class='ident'>crossbeam</span>::<span class='ident'>scope</span>(<span class='op'>|</span><span class='ident'>scope</span><span class='op'>|</span> {
+                <span class='kw'>for</span> <span class='ident'>chunk</span> <span class='kw'>in</span> <span class='ident'>zipped1</span>.<span class='ident'>zip</span>(<span class='ident'>zipped2</span>) {
+                    <span class='ident'>scope</span>.<span class='ident'>spawn</span>(<span class='kw'>move</span><span class='op'>||</span> {
+                        <span class='kw'>let</span> (<span class='ident'>pair1</span>, <span class='ident'>pair2</span>) <span class='op'>=</span> <span class='ident'>chunk</span>;
+                        <span class='ident'>function</span>(<span class='ident'>pair1</span>.<span class='number'>0</span>, <span class='ident'>pair1</span>.<span class='number'>1</span>, <span class='ident'>pair2</span>.<span class='number'>0</span>, <span class='ident'>pair2</span>.<span class='number'>1</span>, <span class='ident'>arguments</span>);
+                    });
+                }
+            });
+        }
+        <span class='kw'>else</span>
+        {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='ident'>array</span>, <span class='ident'>array_length</span>, <span class='ident'>step_size</span>, <span class='ident'>number_of_chunks</span>);
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chunks1</span> <span class='op'>=</span> <span class='ident'>chunks</span>.<span class='ident'>next</span>().<span class='ident'>unwrap</span>();
             <span class='kw'>let</span> <span class='ident'>len1</span> <span class='op'>=</span> <span class='ident'>chunks1</span>.<span class='ident'>len</span>();
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chunks2</span> <span class='op'>=</span> <span class='ident'>chunks</span>.<span class='ident'>next</span>().<span class='ident'>unwrap</span>();
-			<span class='ident'>function</span>(
+            <span class='ident'>function</span>(
                 <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>chunks1</span>, 
                 <span class='kw-2'>&amp;</span><span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='number'>0</span>, <span class='ident'>end</span>: <span class='ident'>len1</span> }, 
                 <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>chunks2</span>, 
                 <span class='kw-2'>&amp;</span><span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='ident'>len1</span>, <span class='ident'>end</span>: <span class='ident'>array_length</span> }, 
                 <span class='ident'>arguments</span>);
-		}
-	}
+        }
+    }
     
     <span class='doccomment'>/// Executes the given function on the all elements of the array in parallel. A result is</span>
     <span class='doccomment'>/// returned for each chunk.</span>
-	<span class='attribute'>#[<span class='ident'>inline</span>]</span>
-	<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_a_fold_b</span><span class='op'>&lt;</span><span class='ident'>F</span>, <span class='ident'>T</span>, <span class='ident'>R</span><span class='op'>&gt;</span>(
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_a_fold_b</span><span class='op'>&lt;</span><span class='ident'>F</span>, <span class='ident'>T</span>, <span class='ident'>R</span><span class='op'>&gt;</span>(
             <span class='ident'>complexity</span>: <span class='ident'>Complexity</span>, 
             <span class='ident'>settings</span>: <span class='kw-2'>&amp;</span><span class='ident'>MultiCoreSettings</span>, 
             <span class='ident'>a</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>T</span>], <span class='ident'>a_len</span>: <span class='ident'>usize</span>, <span class='ident'>a_step</span>: <span class='ident'>usize</span>, 
             <span class='ident'>b</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>T</span>], <span class='ident'>b_len</span>: <span class='ident'>usize</span>, <span class='ident'>b_step</span>: <span class='ident'>usize</span>, 
-            <span class='ident'>function</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span>
-		<span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>T</span>], <span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='kw-2'>&amp;</span>[<span class='ident'>T</span>]) <span class='op'>-&gt;</span> <span class='ident'>R</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
-			  <span class='ident'>T</span>: <span class='ident'>Float</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+            <span class='kw-2'>ref</span> <span class='ident'>function</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>T</span>], <span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='kw-2'>&amp;</span>[<span class='ident'>T</span>]) <span class='op'>-&gt;</span> <span class='ident'>R</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+              <span class='ident'>T</span>: <span class='ident'>Float</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
               <span class='ident'>R</span>: <span class='ident'>Send</span>
-	{
-		<span class='kw'>let</span> <span class='ident'>number_of_chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>determine_number_of_chunks</span>(<span class='ident'>a_len</span>, <span class='ident'>complexity</span>, <span class='ident'>settings</span>);
-		<span class='kw'>if</span> <span class='ident'>number_of_chunks</span> <span class='op'>&gt;</span> <span class='number'>1</span>
-		{
-			<span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition</span>(<span class='ident'>b</span>, <span class='ident'>b_len</span>, <span class='ident'>b_step</span>, <span class='ident'>number_of_chunks</span>);
-			<span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='ident'>a_len</span>, <span class='ident'>a_step</span>, <span class='ident'>chunks</span>.<span class='ident'>len</span>());
-			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_pool</span>();
+    {
+        <span class='kw'>let</span> <span class='ident'>number_of_chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>determine_number_of_chunks</span>(<span class='ident'>a_len</span>, <span class='ident'>complexity</span>, <span class='ident'>settings</span>);
+        <span class='kw'>if</span> <span class='ident'>number_of_chunks</span> <span class='op'>&gt;</span> <span class='number'>1</span>
+        {
+            <span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition</span>(<span class='ident'>b</span>, <span class='ident'>b_len</span>, <span class='ident'>b_step</span>, <span class='ident'>number_of_chunks</span>);
+            <span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='ident'>a_len</span>, <span class='ident'>a_step</span>, <span class='ident'>chunks</span>.<span class='ident'>len</span>());
             <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>chunks</span>.<span class='ident'>len</span>());
-            <span class='kw'>let</span> <span class='ident'>stack_array</span> <span class='op'>=</span> <span class='ident'>Mutex</span>::<span class='ident'>new</span>(<span class='ident'>result</span>);
-            <span class='ident'>pool</span>.<span class='ident'>for_</span>(<span class='ident'>chunks</span>.<span class='ident'>zip</span>(<span class='ident'>ranges</span>), <span class='op'>|</span><span class='ident'>chunk</span><span class='op'>|</span>
-                {   
-                    <span class='kw'>let</span> <span class='ident'>r</span> <span class='op'>=</span> <span class='ident'>function</span>(<span class='ident'>a</span>, <span class='ident'>chunk</span>.<span class='number'>1</span>, <span class='ident'>chunk</span>.<span class='number'>0</span>);
-                    <span class='ident'>stack_array</span>.<span class='ident'>lock</span>().<span class='ident'>unwrap</span>().<span class='ident'>push</span>(<span class='ident'>r</span>);
-                });
+            <span class='kw'>let</span> <span class='ident'>stack_array</span> <span class='op'>=</span> <span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>Mutex</span>::<span class='ident'>new</span>(<span class='ident'>result</span>));
+            <span class='ident'>crossbeam</span>::<span class='ident'>scope</span>(<span class='op'>|</span><span class='ident'>scope</span><span class='op'>|</span> {
+                <span class='kw'>for</span> <span class='ident'>chunk</span> <span class='kw'>in</span> <span class='ident'>chunks</span>.<span class='ident'>zip</span>(<span class='ident'>ranges</span>) {
+                    <span class='kw'>let</span> <span class='ident'>stack_array</span> <span class='op'>=</span> <span class='ident'>stack_array</span>.<span class='ident'>clone</span>();
+                    <span class='ident'>scope</span>.<span class='ident'>spawn</span>(<span class='kw'>move</span><span class='op'>||</span> {
+                        <span class='kw'>let</span> <span class='ident'>r</span> <span class='op'>=</span> <span class='ident'>function</span>(<span class='ident'>a</span>, <span class='ident'>chunk</span>.<span class='number'>1</span>, <span class='ident'>chunk</span>.<span class='number'>0</span>);
+                        <span class='ident'>stack_array</span>.<span class='ident'>lock</span>().<span class='ident'>unwrap</span>().<span class='ident'>push</span>(<span class='ident'>r</span>);
+                    });
+                }
+            });
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>guard</span> <span class='op'>=</span> <span class='ident'>stack_array</span>.<span class='ident'>lock</span>().<span class='ident'>unwrap</span>();
             <span class='ident'>mem</span>::<span class='ident'>replace</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>guard</span>, <span class='ident'>Vec</span>::<span class='ident'>new</span>())
-		}
-		<span class='kw'>else</span>
-		{
-			<span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>function</span>(<span class='ident'>a</span>, <span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='number'>0</span>, <span class='ident'>end</span>: <span class='ident'>a_len</span> }, <span class='kw-2'>&amp;</span><span class='ident'>b</span>[<span class='number'>0</span>..<span class='ident'>b_len</span>]);
+        }
+        <span class='kw'>else</span>
+        {
+            <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>function</span>(<span class='ident'>a</span>, <span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='number'>0</span>, <span class='ident'>end</span>: <span class='ident'>a_len</span> }, <span class='kw-2'>&amp;</span><span class='ident'>b</span>[<span class='number'>0</span>..<span class='ident'>b_len</span>]);
             <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>result</span>]
-		}
-	}
+        }
+    }
     
     <span class='doccomment'>/// Executes the given function on the all elements of the array in parallel. A result is</span>
     <span class='doccomment'>/// returned for each chunk.</span>
-	<span class='attribute'>#[<span class='ident'>inline</span>]</span>
-	<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_chunked_results</span><span class='op'>&lt;</span><span class='ident'>F</span>, <span class='ident'>S</span>, <span class='ident'>T</span>, <span class='ident'>R</span><span class='op'>&gt;</span>(
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_chunked_results</span><span class='op'>&lt;</span><span class='ident'>F</span>, <span class='ident'>S</span>, <span class='ident'>T</span>, <span class='ident'>R</span><span class='op'>&gt;</span>(
             <span class='ident'>complexity</span>: <span class='ident'>Complexity</span>, 
             <span class='ident'>settings</span>: <span class='kw-2'>&amp;</span><span class='ident'>MultiCoreSettings</span>, 
             <span class='ident'>a</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>T</span>], <span class='ident'>a_len</span>: <span class='ident'>usize</span>, <span class='ident'>a_step</span>: <span class='ident'>usize</span>, 
-            <span class='ident'>arguments</span>:<span class='ident'>S</span>, <span class='ident'>function</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span>
-		<span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>T</span>], <span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='ident'>S</span>) <span class='op'>-&gt;</span> <span class='ident'>R</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
-			  <span class='ident'>T</span>: <span class='ident'>Float</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+            <span class='ident'>arguments</span>:<span class='ident'>S</span>, <span class='kw-2'>ref</span> <span class='ident'>function</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>T</span>], <span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='ident'>S</span>) <span class='op'>-&gt;</span> <span class='ident'>R</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+              <span class='ident'>T</span>: <span class='ident'>Float</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
               <span class='ident'>R</span>: <span class='ident'>Send</span>,
-              <span class='ident'>S</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span>
-	{
-		<span class='kw'>let</span> <span class='ident'>number_of_chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>determine_number_of_chunks</span>(<span class='ident'>a_len</span>, <span class='ident'>complexity</span>, <span class='ident'>settings</span>);
-		<span class='kw'>if</span> <span class='ident'>number_of_chunks</span> <span class='op'>&gt;</span> <span class='number'>1</span>
-		{
-			<span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition</span>(<span class='ident'>a</span>, <span class='ident'>a_len</span>, <span class='ident'>a_step</span>, <span class='ident'>number_of_chunks</span>);
+              <span class='ident'>S</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Send</span>
+    {
+        <span class='kw'>let</span> <span class='ident'>number_of_chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>determine_number_of_chunks</span>(<span class='ident'>a_len</span>, <span class='ident'>complexity</span>, <span class='ident'>settings</span>);
+        <span class='kw'>if</span> <span class='ident'>number_of_chunks</span> <span class='op'>&gt;</span> <span class='number'>1</span>
+        {
+            <span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition</span>(<span class='ident'>a</span>, <span class='ident'>a_len</span>, <span class='ident'>a_step</span>, <span class='ident'>number_of_chunks</span>);
             <span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='ident'>a_len</span>, <span class='ident'>a_step</span>, <span class='ident'>chunks</span>.<span class='ident'>len</span>());
-			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_pool</span>();
             <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='ident'>chunks</span>.<span class='ident'>len</span>());
-            <span class='kw'>let</span> <span class='ident'>stack_array</span> <span class='op'>=</span> <span class='ident'>Mutex</span>::<span class='ident'>new</span>(<span class='ident'>result</span>);
-            <span class='ident'>pool</span>.<span class='ident'>for_</span>(<span class='ident'>chunks</span>.<span class='ident'>zip</span>(<span class='ident'>ranges</span>), <span class='op'>|</span><span class='ident'>chunk</span><span class='op'>|</span>
-                {   
-                    <span class='kw'>let</span> <span class='ident'>r</span> <span class='op'>=</span> <span class='ident'>function</span>(<span class='ident'>chunk</span>.<span class='number'>0</span>, <span class='ident'>chunk</span>.<span class='number'>1</span>, <span class='ident'>arguments</span>);
-                    <span class='ident'>stack_array</span>.<span class='ident'>lock</span>().<span class='ident'>unwrap</span>().<span class='ident'>push</span>(<span class='ident'>r</span>);
-                });
+            <span class='kw'>let</span> <span class='ident'>stack_array</span> <span class='op'>=</span> <span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>Mutex</span>::<span class='ident'>new</span>(<span class='ident'>result</span>));
+            <span class='ident'>crossbeam</span>::<span class='ident'>scope</span>(<span class='op'>|</span><span class='ident'>scope</span><span class='op'>|</span> {
+                <span class='kw'>for</span> <span class='ident'>chunk</span> <span class='kw'>in</span> <span class='ident'>chunks</span>.<span class='ident'>zip</span>(<span class='ident'>ranges</span>) {
+                    <span class='kw'>let</span> <span class='ident'>stack_array</span> <span class='op'>=</span> <span class='ident'>stack_array</span>.<span class='ident'>clone</span>();
+                    <span class='ident'>scope</span>.<span class='ident'>spawn</span>(<span class='kw'>move</span><span class='op'>||</span> {
+                        <span class='kw'>let</span> <span class='ident'>r</span> <span class='op'>=</span> <span class='ident'>function</span>(<span class='ident'>chunk</span>.<span class='number'>0</span>, <span class='ident'>chunk</span>.<span class='number'>1</span>, <span class='ident'>arguments</span>);
+                        <span class='ident'>stack_array</span>.<span class='ident'>lock</span>().<span class='ident'>unwrap</span>().<span class='ident'>push</span>(<span class='ident'>r</span>);
+                    });
+                }
+            });
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>guard</span> <span class='op'>=</span> <span class='ident'>stack_array</span>.<span class='ident'>lock</span>().<span class='ident'>unwrap</span>();
             <span class='ident'>mem</span>::<span class='ident'>replace</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>guard</span>, <span class='ident'>Vec</span>::<span class='ident'>new</span>())
-		}
-		<span class='kw'>else</span>
-		{
-			<span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>function</span>(<span class='kw-2'>&amp;</span><span class='ident'>a</span>[<span class='number'>0</span>..<span class='ident'>a_len</span>], <span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='number'>0</span>, <span class='ident'>end</span>: <span class='ident'>a_len</span> }, <span class='ident'>arguments</span>);
+        }
+        <span class='kw'>else</span>
+        {
+            <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>function</span>(<span class='kw-2'>&amp;</span><span class='ident'>a</span>[<span class='number'>0</span>..<span class='ident'>a_len</span>], <span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='number'>0</span>, <span class='ident'>end</span>: <span class='ident'>a_len</span> }, <span class='ident'>arguments</span>);
             <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>result</span>]
-		}
-	}
+        }
+    }
     
     <span class='doccomment'>/// Executes the given function on the all elements of the array in parallel and passes</span>
     <span class='doccomment'>/// the argument to all function calls.. Results are intended to be stored in the target array.</span>
-	<span class='attribute'>#[<span class='ident'>inline</span>]</span>
-	<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_src_to_dest</span><span class='op'>&lt;</span><span class='ident'>T</span>,<span class='ident'>S</span>,<span class='ident'>F</span><span class='op'>&gt;</span>(
+    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_src_to_dest</span><span class='op'>&lt;</span><span class='ident'>T</span>,<span class='ident'>S</span>,<span class='ident'>F</span><span class='op'>&gt;</span>(
             <span class='ident'>complexity</span>: <span class='ident'>Complexity</span>, 
             <span class='ident'>settings</span>: <span class='kw-2'>&amp;</span><span class='ident'>MultiCoreSettings</span>, 
             <span class='ident'>original</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>T</span>], <span class='ident'>original_length</span>: <span class='ident'>usize</span>, <span class='ident'>original_step</span>: <span class='ident'>usize</span>, 
             <span class='ident'>target</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='ident'>target_length</span>: <span class='ident'>usize</span>, <span class='ident'>target_step</span>: <span class='ident'>usize</span>, 
             <span class='ident'>arguments</span>: <span class='ident'>S</span>, <span class='kw-2'>ref</span> <span class='ident'>function</span>: <span class='ident'>F</span>)
-		<span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>T</span>], <span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='ident'>S</span>) <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
-			  <span class='ident'>T</span> : <span class='ident'>Float</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
-			  <span class='ident'>S</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span>
-	{
-		<span class='kw'>let</span> <span class='ident'>number_of_chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>determine_number_of_chunks</span>(<span class='ident'>original_length</span>, <span class='ident'>complexity</span>, <span class='ident'>settings</span>);
-		<span class='kw'>if</span> <span class='ident'>number_of_chunks</span> <span class='op'>&gt;</span> <span class='number'>1</span>
-		{
-			<span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='ident'>target</span>, <span class='ident'>target_length</span>, <span class='ident'>target_step</span>, <span class='ident'>number_of_chunks</span>);
-			<span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='ident'>original_length</span>, <span class='ident'>original_step</span>, <span class='ident'>chunks</span>.<span class='ident'>len</span>());
-			<span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>pool</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>get_pool</span>();
-			<span class='ident'>pool</span>.<span class='ident'>for_</span>(<span class='ident'>chunks</span>.<span class='ident'>zip</span>(<span class='ident'>ranges</span>), <span class='op'>|</span><span class='ident'>chunk</span><span class='op'>|</span>
-				{
-					<span class='ident'>function</span>(<span class='ident'>original</span>, <span class='ident'>chunk</span>.<span class='number'>1</span>, <span class='ident'>chunk</span>.<span class='number'>0</span>, <span class='ident'>arguments</span>);
-				});
-		}
-		<span class='kw'>else</span>
-		{
-			<span class='ident'>function</span>(<span class='ident'>original</span>, <span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='number'>0</span>, <span class='ident'>end</span>: <span class='ident'>original_length</span> }, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>target</span>[<span class='number'>0</span>..<span class='ident'>target_length</span>], <span class='ident'>arguments</span>);
-		}
-	}
+        <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span>[<span class='ident'>T</span>], <span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='ident'>S</span>) <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+              <span class='ident'>T</span>: <span class='ident'>Float</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+              <span class='ident'>S</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Send</span>
+    {
+        <span class='kw'>let</span> <span class='ident'>number_of_chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>determine_number_of_chunks</span>(<span class='ident'>original_length</span>, <span class='ident'>complexity</span>, <span class='ident'>settings</span>);
+        <span class='kw'>if</span> <span class='ident'>number_of_chunks</span> <span class='op'>&gt;</span> <span class='number'>1</span>
+        {
+            <span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='ident'>target</span>, <span class='ident'>target_length</span>, <span class='ident'>target_step</span>, <span class='ident'>number_of_chunks</span>);
+            <span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='ident'>original_length</span>, <span class='ident'>original_step</span>, <span class='ident'>chunks</span>.<span class='ident'>len</span>());
+            
+            <span class='ident'>crossbeam</span>::<span class='ident'>scope</span>(<span class='op'>|</span><span class='ident'>scope</span><span class='op'>|</span> {
+                <span class='kw'>for</span> <span class='ident'>chunk</span> <span class='kw'>in</span> <span class='ident'>chunks</span>.<span class='ident'>zip</span>(<span class='ident'>ranges</span>) {
+                    <span class='ident'>scope</span>.<span class='ident'>spawn</span>(<span class='kw'>move</span><span class='op'>||</span> {
+                        <span class='ident'>function</span>(<span class='ident'>original</span>, <span class='ident'>chunk</span>.<span class='number'>1</span>, <span class='ident'>chunk</span>.<span class='number'>0</span>, <span class='ident'>arguments</span>);
+                    });
+                }
+            });
+        }
+        <span class='kw'>else</span>
+        {
+            <span class='ident'>function</span>(<span class='ident'>original</span>, <span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='number'>0</span>, <span class='ident'>end</span>: <span class='ident'>original_length</span> }, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>target</span>[<span class='number'>0</span>..<span class='ident'>target_length</span>], <span class='ident'>arguments</span>);
+        }
+    }
 }
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
-	<span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
-	<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Range</span>;
-	
-	<span class='attribute'>#[<span class='ident'>test</span>]</span>
-	<span class='kw'>fn</span> <span class='ident'>partition_array</span>()
-	{
-		<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>array</span> <span class='op'>=</span> [<span class='number'>0.0</span>; <span class='number'>256</span>];
-		<span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>array</span>, <span class='number'>256</span>, <span class='number'>4</span>, <span class='number'>2</span>);
-		<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chunks</span>.<span class='ident'>len</span>(), <span class='number'>2</span>);
-		<span class='kw'>for</span> <span class='ident'>chunk</span> <span class='kw'>in</span> <span class='ident'>chunks</span>
-		{
-			<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chunk</span>.<span class='ident'>len</span>(), <span class='number'>128</span>);
-		}
-	}
-	
-	<span class='attribute'>#[<span class='ident'>test</span>]</span>
-	<span class='kw'>fn</span> <span class='ident'>partition_array_8_cores</span>()
-	{
-		<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>array</span> <span class='op'>=</span> [<span class='number'>0.0</span>; <span class='number'>1023</span>];
-		<span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>array</span>, <span class='number'>1023</span>, <span class='number'>4</span>, <span class='number'>8</span>);
-		<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chunks</span>.<span class='ident'>len</span>(), <span class='number'>8</span>);
-		<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='number'>0</span>;
-		<span class='kw'>for</span> <span class='ident'>chunk</span> <span class='kw'>in</span> <span class='ident'>chunks</span>
-		{
-			<span class='kw'>let</span> <span class='ident'>expected</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&gt;=</span> <span class='number'>7</span> { <span class='number'>127</span> } <span class='kw'>else</span> { <span class='number'>128</span> };
-			<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chunk</span>.<span class='ident'>len</span>(), <span class='ident'>expected</span>);
-			<span class='ident'>i</span> <span class='op'>+=</span> <span class='number'>1</span>;
-		}
-	}
-	
-	<span class='attribute'>#[<span class='ident'>test</span>]</span>
-	<span class='kw'>fn</span> <span class='ident'>partitionin_ranges</span>()
-	{
-		<span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='number'>1023</span>, <span class='number'>4</span>, <span class='number'>2</span>);
-		<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>ranges</span>.<span class='ident'>len</span>(), <span class='number'>2</span>);
-		<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>ranges</span>[<span class='number'>0</span>], <span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='number'>0</span>, <span class='ident'>end</span>: <span class='number'>512</span> });
-		<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>ranges</span>[<span class='number'>1</span>], <span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='number'>512</span>, <span class='ident'>end</span>: <span class='number'>1023</span> });
-	}
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
+    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Range</span>;
+    
+    <span class='attribute'>#[<span class='ident'>test</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>partition_array</span>()
+    {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>array</span> <span class='op'>=</span> [<span class='number'>0.0</span>; <span class='number'>256</span>];
+        <span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>array</span>, <span class='number'>256</span>, <span class='number'>4</span>, <span class='number'>2</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chunks</span>.<span class='ident'>len</span>(), <span class='number'>2</span>);
+        <span class='kw'>for</span> <span class='ident'>chunk</span> <span class='kw'>in</span> <span class='ident'>chunks</span>
+        {
+            <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chunk</span>.<span class='ident'>len</span>(), <span class='number'>128</span>);
+        }
+    }
+    
+    <span class='attribute'>#[<span class='ident'>test</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>partition_array_8_cores</span>()
+    {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>array</span> <span class='op'>=</span> [<span class='number'>0.0</span>; <span class='number'>1023</span>];
+        <span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>array</span>, <span class='number'>1023</span>, <span class='number'>4</span>, <span class='number'>8</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chunks</span>.<span class='ident'>len</span>(), <span class='number'>8</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='number'>0</span>;
+        <span class='kw'>for</span> <span class='ident'>chunk</span> <span class='kw'>in</span> <span class='ident'>chunks</span>
+        {
+            <span class='kw'>let</span> <span class='ident'>expected</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&gt;=</span> <span class='number'>7</span> { <span class='number'>127</span> } <span class='kw'>else</span> { <span class='number'>128</span> };
+            <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chunk</span>.<span class='ident'>len</span>(), <span class='ident'>expected</span>);
+            <span class='ident'>i</span> <span class='op'>+=</span> <span class='number'>1</span>;
+        }
+    }
+    
+    <span class='attribute'>#[<span class='ident'>test</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>partitionin_ranges</span>()
+    {
+        <span class='kw'>let</span> <span class='ident'>ranges</span> <span class='op'>=</span> <span class='ident'>Chunk</span>::<span class='ident'>partition_in_ranges</span>(<span class='number'>1023</span>, <span class='number'>4</span>, <span class='number'>2</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>ranges</span>.<span class='ident'>len</span>(), <span class='number'>2</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>ranges</span>[<span class='number'>0</span>], <span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='number'>0</span>, <span class='ident'>end</span>: <span class='number'>512</span> });
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>ranges</span>[<span class='number'>1</span>], <span class='ident'>Range</span> { <span class='ident'>start</span>: <span class='number'>512</span>, <span class='ident'>end</span>: <span class='number'>1023</span> });
+    }
 }
 </pre>
 </section>
@@ -934,6 +1187,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

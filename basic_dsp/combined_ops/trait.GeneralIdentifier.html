@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `GeneralIdentifier` trait in crate `basic_dsp`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, GeneralIdentifier">
+
+    <title>basic_dsp::combined_ops::GeneralIdentifier - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>basic_dsp</a>::<wbr><a href='index.html'>combined_ops</a></p><script>window.sidebarCurrent = {name: 'GeneralIdentifier', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>basic_dsp</a>::<wbr><a href='index.html'>combined_ops</a>::<wbr><a class='trait' href=''>GeneralIdentifier</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-5313' class='srclink' href='../../src/basic_dsp/src/vector_types/multi_ops.rs.html#104-213' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait GeneralIdentifier&lt;T&gt;: <a class='trait' href='../../basic_dsp/combined_ops/trait.Identifier.html' title='basic_dsp::combined_ops::Identifier'>Identifier</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
+    fn <a href='#tymethod.add_vector' class='fnname'>add_vector</a>(self, summand: &amp;Self) -&gt; Self;
+    fn <a href='#tymethod.subtract_vector' class='fnname'>subtract_vector</a>(self, subtrahend: &amp;Self) -&gt; Self;
+    fn <a href='#tymethod.multiply_vector' class='fnname'>multiply_vector</a>(self, factor: &amp;Self) -&gt; Self;
+    fn <a href='#tymethod.divide_vector' class='fnname'>divide_vector</a>(self, divisor: &amp;Self) -&gt; Self;
+    fn <a href='#tymethod.sqrt' class='fnname'>sqrt</a>(self) -&gt; Self;
+    fn <a href='#tymethod.square' class='fnname'>square</a>(self) -&gt; Self;
+    fn <a href='#tymethod.root' class='fnname'>root</a>(self, degree: T) -&gt; Self;
+    fn <a href='#tymethod.powf' class='fnname'>powf</a>(self, exponent: T) -&gt; Self;
+    fn <a href='#tymethod.ln' class='fnname'>ln</a>(self) -&gt; Self;
+    fn <a href='#tymethod.exp' class='fnname'>exp</a>(self) -&gt; Self;
+    fn <a href='#tymethod.log' class='fnname'>log</a>(self, base: T) -&gt; Self;
+    fn <a href='#tymethod.expf' class='fnname'>expf</a>(self, base: T) -&gt; Self;
+    fn <a href='#tymethod.sin' class='fnname'>sin</a>(self) -&gt; Self;
+    fn <a href='#tymethod.cos' class='fnname'>cos</a>(self) -&gt; Self;
+    fn <a href='#tymethod.tan' class='fnname'>tan</a>(self) -&gt; Self;
+    fn <a href='#tymethod.asin' class='fnname'>asin</a>(self) -&gt; Self;
+    fn <a href='#tymethod.acos' class='fnname'>acos</a>(self) -&gt; Self;
+    fn <a href='#tymethod.atan' class='fnname'>atan</a>(self) -&gt; Self;
+    fn <a href='#tymethod.sinh' class='fnname'>sinh</a>(self) -&gt; Self;
+    fn <a href='#tymethod.cosh' class='fnname'>cosh</a>(self) -&gt; Self;
+    fn <a href='#tymethod.tanh' class='fnname'>tanh</a>(self) -&gt; Self;
+    fn <a href='#tymethod.asinh' class='fnname'>asinh</a>(self) -&gt; Self;
+    fn <a href='#tymethod.acosh' class='fnname'>acosh</a>(self) -&gt; Self;
+    fn <a href='#tymethod.atanh' class='fnname'>atanh</a>(self) -&gt; Self;
+    fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(self, &amp;Self) -&gt; Self;
+    fn <a href='#tymethod.add_points' class='fnname'>add_points</a>(self) -&gt; Self;
+    fn <a href='#tymethod.sub_points' class='fnname'>sub_points</a>(self) -&gt; Self;
+    fn <a href='#tymethod.div_points' class='fnname'>div_points</a>(self) -&gt; Self;
+    fn <a href='#tymethod.mul_points' class='fnname'>mul_points</a>(self) -&gt; Self;
+}</pre><div class='docblock'><p>Operations for all kind of vectors which can be used in combination
+with multi ops or prepared ops. For a dcoumentation of the specific operations
+see <a href="../trait.GenericVectorOps.html"><code>GenericVectorOps</code></a>.</p>
+</div>
+            <h2 id='required-methods'>Required Methods</h2>
+            <div class='methods'>
+        <h3 id='tymethod.add_vector' class='method stab '><code>fn <a href='#tymethod.add_vector' class='fnname'>add_vector</a>(self, summand: &amp;Self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.add_vector"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.subtract_vector' class='method stab '><code>fn <a href='#tymethod.subtract_vector' class='fnname'>subtract_vector</a>(self, subtrahend: &amp;Self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.subtract_vector"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.multiply_vector' class='method stab '><code>fn <a href='#tymethod.multiply_vector' class='fnname'>multiply_vector</a>(self, factor: &amp;Self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.multiply_vector"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.divide_vector' class='method stab '><code>fn <a href='#tymethod.divide_vector' class='fnname'>divide_vector</a>(self, divisor: &amp;Self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.divide_vector"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.sqrt' class='method stab '><code>fn <a href='#tymethod.sqrt' class='fnname'>sqrt</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.sqrt"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.square' class='method stab '><code>fn <a href='#tymethod.square' class='fnname'>square</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.square"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.root' class='method stab '><code>fn <a href='#tymethod.root' class='fnname'>root</a>(self, degree: T) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.root"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.powf' class='method stab '><code>fn <a href='#tymethod.powf' class='fnname'>powf</a>(self, exponent: T) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.powf"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.ln' class='method stab '><code>fn <a href='#tymethod.ln' class='fnname'>ln</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.ln"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.exp' class='method stab '><code>fn <a href='#tymethod.exp' class='fnname'>exp</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.exp"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.log' class='method stab '><code>fn <a href='#tymethod.log' class='fnname'>log</a>(self, base: T) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.log"><code>GenericVectorOps</code></a>.;</p>
+</div><h3 id='tymethod.expf' class='method stab '><code>fn <a href='#tymethod.expf' class='fnname'>expf</a>(self, base: T) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.expf"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.sin' class='method stab '><code>fn <a href='#tymethod.sin' class='fnname'>sin</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.sin"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.cos' class='method stab '><code>fn <a href='#tymethod.cos' class='fnname'>cos</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.cos"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.tan' class='method stab '><code>fn <a href='#tymethod.tan' class='fnname'>tan</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.tan"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.asin' class='method stab '><code>fn <a href='#tymethod.asin' class='fnname'>asin</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.asin"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.acos' class='method stab '><code>fn <a href='#tymethod.acos' class='fnname'>acos</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.acos"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.atan' class='method stab '><code>fn <a href='#tymethod.atan' class='fnname'>atan</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.atan"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.sinh' class='method stab '><code>fn <a href='#tymethod.sinh' class='fnname'>sinh</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.sinh"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.cosh' class='method stab '><code>fn <a href='#tymethod.cosh' class='fnname'>cosh</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.cosh"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.tanh' class='method stab '><code>fn <a href='#tymethod.tanh' class='fnname'>tanh</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.tanh"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.asinh' class='method stab '><code>fn <a href='#tymethod.asinh' class='fnname'>asinh</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.asinh"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.acosh' class='method stab '><code>fn <a href='#tymethod.acosh' class='fnname'>acosh</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.acosh"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.atanh' class='method stab '><code>fn <a href='#tymethod.atanh' class='fnname'>atanh</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.GenericVectorOps.html#tymethod.atanh"><code>GenericVectorOps</code></a>.</p>
+</div><h3 id='tymethod.clone_from' class='method stab '><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(self, &amp;Self) -&gt; Self</code></h3><div class='docblock'><p>Copies data from another vector.</p>
+</div><h3 id='tymethod.add_points' class='method stab '><code>fn <a href='#tymethod.add_points' class='fnname'>add_points</a>(self) -&gt; Self</code></h3><div class='docblock'><p>Adds its length to the vector elements</p>
+
+<h1 id='example' class='section-header'><a href='#example'>Example</a></h1>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>basic_dsp</span>::<span class='op'>*</span>;
+<span class='kw'>use</span> <span class='ident'>basic_dsp</span>::<span class='ident'>combined_ops</span>::<span class='op'>*</span>;    
+<span class='kw'>let</span> <span class='ident'>complex</span> <span class='op'>=</span> <span class='ident'>ComplexTimeVector32</span>::<span class='ident'>from_interleaved</span>(<span class='kw-2'>&amp;</span>[<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>]);
+<span class='kw'>let</span> <span class='ident'>ops</span> <span class='op'>=</span> <span class='ident'>multi_ops1</span>(<span class='ident'>complex</span>);
+<span class='kw'>let</span> <span class='ident'>ops</span> <span class='op'>=</span> <span class='ident'>ops</span>.<span class='ident'>add_ops</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>add_points</span>());
+<span class='kw'>let</span> <span class='ident'>complex</span> <span class='op'>=</span> <span class='ident'>ops</span>.<span class='ident'>get</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>3.0</span>, <span class='number'>2.0</span>, <span class='number'>5.0</span>, <span class='number'>4.0</span>], <span class='ident'>complex</span>.<span class='ident'>data</span>());</pre>
+</div><h3 id='tymethod.sub_points' class='method stab '><code>fn <a href='#tymethod.sub_points' class='fnname'>sub_points</a>(self) -&gt; Self</code></h3><div class='docblock'><p>Subtracts its length from the vector elements</p>
+
+<h1 id='example-1' class='section-header'><a href='#example-1'>Example</a></h1>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>basic_dsp</span>::<span class='op'>*</span>;
+<span class='kw'>use</span> <span class='ident'>basic_dsp</span>::<span class='ident'>combined_ops</span>::<span class='op'>*</span>;    
+<span class='kw'>let</span> <span class='ident'>complex</span> <span class='op'>=</span> <span class='ident'>ComplexTimeVector32</span>::<span class='ident'>from_interleaved</span>(<span class='kw-2'>&amp;</span>[<span class='number'>3.0</span>, <span class='number'>2.0</span>, <span class='number'>5.0</span>, <span class='number'>4.0</span>]);
+<span class='kw'>let</span> <span class='ident'>ops</span> <span class='op'>=</span> <span class='ident'>multi_ops1</span>(<span class='ident'>complex</span>);
+<span class='kw'>let</span> <span class='ident'>ops</span> <span class='op'>=</span> <span class='ident'>ops</span>.<span class='ident'>add_ops</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>sub_points</span>());
+<span class='kw'>let</span> <span class='ident'>complex</span> <span class='op'>=</span> <span class='ident'>ops</span>.<span class='ident'>get</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>], <span class='ident'>complex</span>.<span class='ident'>data</span>());</pre>
+</div><h3 id='tymethod.div_points' class='method stab '><code>fn <a href='#tymethod.div_points' class='fnname'>div_points</a>(self) -&gt; Self</code></h3><div class='docblock'><p>divides the vector elements by its length
+Subtracts its length from the vector elements</p>
+
+<h1 id='example-2' class='section-header'><a href='#example-2'>Example</a></h1>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>basic_dsp</span>::<span class='op'>*</span>;
+<span class='kw'>use</span> <span class='ident'>basic_dsp</span>::<span class='ident'>combined_ops</span>::<span class='op'>*</span>;    
+<span class='kw'>let</span> <span class='ident'>complex</span> <span class='op'>=</span> <span class='ident'>ComplexTimeVector32</span>::<span class='ident'>from_interleaved</span>(<span class='kw-2'>&amp;</span>[<span class='number'>2.0</span>, <span class='number'>4.0</span>, <span class='number'>6.0</span>, <span class='number'>8.0</span>]);
+<span class='kw'>let</span> <span class='ident'>ops</span> <span class='op'>=</span> <span class='ident'>multi_ops1</span>(<span class='ident'>complex</span>);
+<span class='kw'>let</span> <span class='ident'>ops</span> <span class='op'>=</span> <span class='ident'>ops</span>.<span class='ident'>add_ops</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>div_points</span>());
+<span class='kw'>let</span> <span class='ident'>complex</span> <span class='op'>=</span> <span class='ident'>ops</span>.<span class='ident'>get</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>], <span class='ident'>complex</span>.<span class='ident'>data</span>());</pre>
+</div><h3 id='tymethod.mul_points' class='method stab '><code>fn <a href='#tymethod.mul_points' class='fnname'>mul_points</a>(self) -&gt; Self</code></h3><div class='docblock'><p>Multiplies the vector elements with its length</p>
+
+<h1 id='example-3' class='section-header'><a href='#example-3'>Example</a></h1>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>basic_dsp</span>::<span class='op'>*</span>;
+<span class='kw'>use</span> <span class='ident'>basic_dsp</span>::<span class='ident'>combined_ops</span>::<span class='op'>*</span>;    
+<span class='kw'>let</span> <span class='ident'>complex</span> <span class='op'>=</span> <span class='ident'>ComplexTimeVector32</span>::<span class='ident'>from_interleaved</span>(<span class='kw-2'>&amp;</span>[<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>]);
+<span class='kw'>let</span> <span class='ident'>ops</span> <span class='op'>=</span> <span class='ident'>multi_ops1</span>(<span class='ident'>complex</span>);
+<span class='kw'>let</span> <span class='ident'>ops</span> <span class='op'>=</span> <span class='ident'>ops</span>.<span class='ident'>add_ops</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span><span class='ident'>v</span>.<span class='ident'>mul_points</span>());
+<span class='kw'>let</span> <span class='ident'>complex</span> <span class='op'>=</span> <span class='ident'>ops</span>.<span class='ident'>get</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>2.0</span>, <span class='number'>4.0</span>, <span class='number'>6.0</span>, <span class='number'>8.0</span>], <span class='ident'>complex</span>.<span class='ident'>data</span>());</pre>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><code>impl GeneralIdentifier&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../../basic_dsp/combined_ops/struct.ComplexTimeIdentifier.html' title='basic_dsp::combined_ops::ComplexTimeIdentifier'>ComplexTimeIdentifier</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; <span class='where'>where <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
+<li><code>impl GeneralIdentifier&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../../basic_dsp/combined_ops/struct.ComplexFreqIdentifier.html' title='basic_dsp::combined_ops::ComplexFreqIdentifier'>ComplexFreqIdentifier</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; <span class='where'>where <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
+<li><code>impl GeneralIdentifier&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../../basic_dsp/combined_ops/struct.GenericDataIdentifier.html' title='basic_dsp::combined_ops::GenericDataIdentifier'>GenericDataIdentifier</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; <span class='where'>where <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
+<li><code>impl GeneralIdentifier&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../../basic_dsp/combined_ops/struct.RealTimeIdentifier.html' title='basic_dsp::combined_ops::RealTimeIdentifier'>RealTimeIdentifier</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; <span class='where'>where <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
+<li><code>impl GeneralIdentifier&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../../basic_dsp/combined_ops/struct.RealFreqIdentifier.html' title='basic_dsp::combined_ops::RealFreqIdentifier'>RealFreqIdentifier</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; <span class='where'>where <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
+<li><code>impl GeneralIdentifier&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../../basic_dsp/combined_ops/struct.ComplexTimeIdentifier.html' title='basic_dsp::combined_ops::ComplexTimeIdentifier'>ComplexTimeIdentifier</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; <span class='where'>where <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
+<li><code>impl GeneralIdentifier&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../../basic_dsp/combined_ops/struct.ComplexFreqIdentifier.html' title='basic_dsp::combined_ops::ComplexFreqIdentifier'>ComplexFreqIdentifier</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; <span class='where'>where <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
+<li><code>impl GeneralIdentifier&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../../basic_dsp/combined_ops/struct.GenericDataIdentifier.html' title='basic_dsp::combined_ops::GenericDataIdentifier'>GenericDataIdentifier</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; <span class='where'>where <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
+<li><code>impl GeneralIdentifier&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../../basic_dsp/combined_ops/struct.RealTimeIdentifier.html' title='basic_dsp::combined_ops::RealTimeIdentifier'>RealTimeIdentifier</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; <span class='where'>where <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
+<li><code>impl GeneralIdentifier&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../../basic_dsp/combined_ops/struct.RealFreqIdentifier.html' title='basic_dsp::combined_ops::RealFreqIdentifier'>RealFreqIdentifier</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; <span class='where'>where <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
+</ul><script type="text/javascript" async
+                         src="../../implementors/basic_dsp/combined_ops/trait.GeneralIdentifier.js">
+                 </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "basic_dsp";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

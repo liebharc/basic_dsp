@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,20 +44,27 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>basic_dsp</a>::<wbr><a href='index.html'>conv_types</a>::<wbr><a class='struct' href=''>RaisedCosineFunction</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-9094' class='srclink' href='../../src/basic_dsp/src/conv_types.rs.html#328-331' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-12751' class='srclink' href='../../src/basic_dsp/src/conv_types.rs.html#328-331' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct RaisedCosineFunction&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
     // some fields omitted
 }</pre><div class='docblock'><p>Raised cosine function according to <a href="https://en.wikipedia.org/wiki/Raised-cosine_filter">https://en.wikipedia.org/wiki/Raised-cosine_filter</a></p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;T&gt; <a class='struct' href='../../basic_dsp/conv_types/struct.RaisedCosineFunction.html' title='basic_dsp::conv_types::RaisedCosineFunction'>RaisedCosineFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(rolloff: T) -&gt; Self</code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;T&gt; <a class='struct' href='../../basic_dsp/conv_types/struct.RaisedCosineFunction.html' title='basic_dsp::conv_types::RaisedCosineFunction'>RaisedCosineFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-12778' class='srclink' href='../../src/basic_dsp/src/conv_types.rs.html#384-390' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(rolloff: T) -&gt; Self</code></h4>
 <div class='docblock'><p>Creates a raised cosine function.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;T&gt; <a class='trait' href='../../basic_dsp/conv_types/trait.RealImpulseResponse.html' title='basic_dsp::conv_types::RealImpulseResponse'>RealImpulseResponse</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.RaisedCosineFunction.html' title='basic_dsp::conv_types::RaisedCosineFunction'>RaisedCosineFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></h3><div class='impl-items'><h4 id='method.is_symmetric' class='method'><code>fn <a href='../../basic_dsp/conv_types/trait.RealImpulseResponse.html#method.is_symmetric' class='fnname'>is_symmetric</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
-<h4 id='method.calc' class='method'><code>fn <a href='../../basic_dsp/conv_types/trait.RealImpulseResponse.html#method.calc' class='fnname'>calc</a>(&amp;self, x: T) -&gt; T</code></h4>
-</div><h3 class='impl'><code>impl&lt;T&gt; <a class='trait' href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html' title='basic_dsp::conv_types::RealFrequencyResponse'>RealFrequencyResponse</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.RaisedCosineFunction.html' title='basic_dsp::conv_types::RaisedCosineFunction'>RaisedCosineFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></h3><div class='impl-items'><h4 id='method.is_symmetric-1' class='method'><code>fn <a href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html#method.is_symmetric' class='fnname'>is_symmetric</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
-<h4 id='method.calc-1' class='method'><code>fn <a href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html#method.calc' class='fnname'>calc</a>(&amp;self, x: T) -&gt; T</code></h4>
-</div></section>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl&lt;T&gt; <a class='trait' href='../../basic_dsp/conv_types/trait.RealImpulseResponse.html' title='basic_dsp::conv_types::RealImpulseResponse'>RealImpulseResponse</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.RaisedCosineFunction.html' title='basic_dsp::conv_types::RaisedCosineFunction'>RaisedCosineFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-12754' class='srclink' href='../../src/basic_dsp/src/conv_types.rs.html#333-357' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.is_symmetric' class='method'><code>fn <a href='../../basic_dsp/conv_types/trait.RealImpulseResponse.html#tymethod.is_symmetric' class='fnname'>is_symmetric</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Indicates whether this function is symmetric around 0 or not. Symmetry is defined as <code>self.calc(x) == self.calc(-x)</code>. <a href="../../basic_dsp/conv_types/trait.RealImpulseResponse.html#tymethod.is_symmetric">Read more</a></p>
+</div><h4 id='method.calc' class='method'><code>fn <a href='../../basic_dsp/conv_types/trait.RealImpulseResponse.html#tymethod.calc' class='fnname'>calc</a>(&amp;self, x: T) -&gt; T</code></h4>
+<div class='docblock'><p>Calculates the convolution for a data point</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T&gt; <a class='trait' href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html' title='basic_dsp::conv_types::RealFrequencyResponse'>RealFrequencyResponse</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.RaisedCosineFunction.html' title='basic_dsp::conv_types::RaisedCosineFunction'>RaisedCosineFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-12768' class='srclink' href='../../src/basic_dsp/src/conv_types.rs.html#359-382' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.is_symmetric-1' class='method'><code>fn <a href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html#tymethod.is_symmetric' class='fnname'>is_symmetric</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Indicates whether this function is symmetric around 0 or not. Symmetry is defined as <code>self.calc(x) == self.calc(-x)</code>. <a href="../../basic_dsp/conv_types/trait.RealFrequencyResponse.html#tymethod.is_symmetric">Read more</a></p>
+</div><h4 id='method.calc-1' class='method'><code>fn <a href='../../basic_dsp/conv_types/trait.RealFrequencyResponse.html#tymethod.calc' class='fnname'>calc</a>(&amp;self, x: T) -&gt; T</code></h4>
+<div class='docblock'><p>Calculates the convolution for a data point</p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -79,6 +87,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

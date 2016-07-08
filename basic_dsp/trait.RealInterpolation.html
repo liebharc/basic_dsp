@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
+    
 
     
     
@@ -43,10 +44,10 @@
 
     <section id='main' class="content trait">
 <h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp</a>::<wbr><a class='trait' href=''>RealInterpolation</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-3991' class='srclink' href='../src/basic_dsp/src/vector_types/interpolation_impl.rs.html#68-81' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-4236' class='srclink' href='../src/basic_dsp/src/vector_types/interpolation_impl.rs.html#68-81' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait RealInterpolation&lt;T&gt;: <a class='trait' href='../basic_dsp/trait.DataVector.html' title='basic_dsp::DataVector'>DataVector</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
     fn <a href='#tymethod.interpolate_hermite' class='fnname'>interpolate_hermite</a>(self, interpolation_factor: T, delay: T) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;;
     fn <a href='#tymethod.interpolate_lin' class='fnname'>interpolate_lin</a>(self, interpolation_factor: T, delay: T) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;;
@@ -69,15 +70,15 @@ This operation and <code>interpolate_lin</code> might be merged into one functio
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl <a class='trait' href='../basic_dsp/trait.RealInterpolation.html' title='basic_dsp::RealInterpolation'>RealInterpolation</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../basic_dsp/struct.GenericDataVector.html' title='basic_dsp::GenericDataVector'>GenericDataVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></li>
-<li><code>impl <a class='trait' href='../basic_dsp/trait.RealInterpolation.html' title='basic_dsp::RealInterpolation'>RealInterpolation</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../basic_dsp/struct.GenericDataVector.html' title='basic_dsp::GenericDataVector'>GenericDataVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
-<li><code>impl <a class='trait' href='../basic_dsp/trait.RealInterpolation.html' title='basic_dsp::RealInterpolation'>RealInterpolation</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../basic_dsp/struct.RealTimeVector.html' title='basic_dsp::RealTimeVector'>RealTimeVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></li>
-<li><code>impl <a class='trait' href='../basic_dsp/trait.RealInterpolation.html' title='basic_dsp::RealInterpolation'>RealInterpolation</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../basic_dsp/struct.RealTimeVector.html' title='basic_dsp::RealTimeVector'>RealTimeVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
-<li><code>impl <a class='trait' href='../basic_dsp/trait.RealInterpolation.html' title='basic_dsp::RealInterpolation'>RealInterpolation</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../basic_dsp/struct.RealFreqVector.html' title='basic_dsp::RealFreqVector'>RealFreqVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></li>
-<li><code>impl <a class='trait' href='../basic_dsp/trait.RealInterpolation.html' title='basic_dsp::RealInterpolation'>RealInterpolation</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../basic_dsp/struct.RealFreqVector.html' title='basic_dsp::RealFreqVector'>RealFreqVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
+    <li><code>impl RealInterpolation&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../basic_dsp/struct.GenericDataVector.html' title='basic_dsp::GenericDataVector'>GenericDataVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></li>
+<li><code>impl RealInterpolation&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../basic_dsp/struct.GenericDataVector.html' title='basic_dsp::GenericDataVector'>GenericDataVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
+<li><code>impl RealInterpolation&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../basic_dsp/struct.RealTimeVector.html' title='basic_dsp::RealTimeVector'>RealTimeVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></li>
+<li><code>impl RealInterpolation&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../basic_dsp/struct.RealTimeVector.html' title='basic_dsp::RealTimeVector'>RealTimeVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
+<li><code>impl RealInterpolation&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../basic_dsp/struct.RealFreqVector.html' title='basic_dsp::RealFreqVector'>RealFreqVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></li>
+<li><code>impl RealInterpolation&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../basic_dsp/struct.RealFreqVector.html' title='basic_dsp::RealFreqVector'>RealFreqVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
 </ul><script type="text/javascript" async
-                              src="../implementors/basic_dsp/trait.RealInterpolation.js">
-                      </script></section>
+                         src="../implementors/basic_dsp/trait.RealInterpolation.js">
+                 </script></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -100,6 +101,8 @@ This operation and <code>interpolate_lin</code> might be merged into one functio
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-88ac128001ac3a9a\libc-0.2.7\src\windows.rs`.">
+    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-1ecc6299db9ec823\libc-0.2.11\src\windows.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>windows.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     <link rel="shortcut icon" href="https://doc.rust-lang.org/favicon.ico">
     
@@ -219,6 +220,10 @@
 <span id="176">176</span>
 <span id="177">177</span>
 <span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Windows CRT definitions</span>
 
@@ -294,9 +299,11 @@
     <span class='kw'>if</span> <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>all</span>(<span class='ident'>target_env</span> <span class='op'>=</span> <span class='string'>&quot;gnu&quot;</span>))]</span> {
         <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>L_tmpnam</span>: ::<span class='ident'>c_uint</span> <span class='op'>=</span> <span class='number'>14</span>;
         <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>TMP_MAX</span>: ::<span class='ident'>c_uint</span> <span class='op'>=</span> <span class='number'>0x7fff</span>;
-    } <span class='kw'>else</span> {
+    } <span class='kw'>else</span> <span class='kw'>if</span> <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>all</span>(<span class='ident'>target_env</span> <span class='op'>=</span> <span class='string'>&quot;msvc&quot;</span>))]</span> {
         <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>L_tmpnam</span>: ::<span class='ident'>c_uint</span> <span class='op'>=</span> <span class='number'>260</span>;
         <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>TMP_MAX</span>: ::<span class='ident'>c_uint</span> <span class='op'>=</span> <span class='number'>0x7fff_ffff</span>;
+    } <span class='kw'>else</span> {
+        <span class='comment'>// Unknown target_env</span>
     }
 }
 
@@ -318,7 +325,7 @@
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>S_IWRITE</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>128</span>;
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>S_IREAD</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>256</span>;
 
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>target_env</span> <span class='op'>=</span> <span class='string'>&quot;msvc&quot;</span>)]</span>
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>target_env</span> <span class='op'>=</span> <span class='string'>&quot;msvc&quot;</span>)]</span> <span class='comment'>// &quot; if &quot; -- appease style checker</span>
 <span class='attribute'>#[<span class='ident'>link</span>(<span class='ident'>name</span> <span class='op'>=</span> <span class='string'>&quot;msvcrt&quot;</span>)]</span>
 <span class='kw'>extern</span> {}
 
@@ -382,7 +389,9 @@
     <span class='attribute'>#[<span class='ident'>link_name</span> <span class='op'>=</span> <span class='string'>&quot;_lseek&quot;</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>lseek</span>(<span class='ident'>fd</span>: ::<span class='ident'>c_int</span>, <span class='ident'>offset</span>: <span class='ident'>c_long</span>, <span class='ident'>origin</span>: ::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> <span class='ident'>c_long</span>;
     <span class='attribute'>#[<span class='ident'>link_name</span> <span class='op'>=</span> <span class='string'>&quot;_pipe&quot;</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>pipe</span>(<span class='ident'>fds</span>: <span class='op'>*</span><span class='kw-2'>mut</span> ::<span class='ident'>c_int</span>, <span class='ident'>psize</span>: ::<span class='ident'>c_uint</span>, <span class='ident'>textmode</span>: ::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>pipe</span>(<span class='ident'>fds</span>: <span class='op'>*</span><span class='kw-2'>mut</span> ::<span class='ident'>c_int</span>,
+                <span class='ident'>psize</span>: ::<span class='ident'>c_uint</span>,
+                <span class='ident'>textmode</span>: ::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
     <span class='attribute'>#[<span class='ident'>link_name</span> <span class='op'>=</span> <span class='string'>&quot;_read&quot;</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>read</span>(<span class='ident'>fd</span>: ::<span class='ident'>c_int</span>, <span class='ident'>buf</span>: <span class='op'>*</span><span class='kw-2'>mut</span> ::<span class='ident'>c_void</span>, <span class='ident'>count</span>: ::<span class='ident'>c_uint</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
     <span class='attribute'>#[<span class='ident'>link_name</span> <span class='op'>=</span> <span class='string'>&quot;_rmdir&quot;</span>]</span>
@@ -422,6 +431,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

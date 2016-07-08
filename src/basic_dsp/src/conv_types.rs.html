@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -745,8 +746,8 @@
 };
 <span class='kw'>use</span> <span class='ident'>vector_types</span>::<span class='ident'>definitions</span>::{
     <span class='ident'>DataVector</span>,
-    <span class='ident'>RealVectorOperations</span>,
-    <span class='ident'>ComplexVectorOperations</span>
+    <span class='ident'>RealVectorOps</span>,
+    <span class='ident'>ComplexVectorOps</span>
 };
 
 <span class='kw'>use</span> <span class='ident'>vector_types</span>::<span class='ident'>time_freq_impl</span>::{
@@ -899,7 +900,7 @@
 
                 <span class='kw'>impl</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> {
                     <span class='doccomment'>/// Creates a lookup table by putting the pieces together.             </span>
-                    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_raw_parts</span>(<span class='ident'>table</span>: <span class='kw-2'>&amp;</span>[<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>result_type</span>], <span class='ident'>delta</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>, <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+                    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_raw_parts</span>(<span class='ident'>table</span>: <span class='kw-2'>&amp;</span>[<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>result_type</span>], <span class='ident'>delta</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>, <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                         <span class='kw'>let</span> <span class='ident'>owned_table</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>from</span>(<span class='ident'>table</span>);
                         <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> { <span class='ident'>table</span>: <span class='ident'>owned_table</span>, <span class='ident'>delta</span>: <span class='ident'>delta</span>, <span class='ident'>is_symmetric</span>: <span class='ident'>is_symmetric</span> }
                     }
@@ -907,7 +908,7 @@
                     
                     <span class='doccomment'>/// Creates a lookup table from another convolution function. The `delta` argument</span>
                     <span class='doccomment'>/// can be used to balance performance vs. accuracy.</span>
-                    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_conv_function</span>(<span class='ident'>other</span>: <span class='kw-2'>&amp;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>conv_type</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>, <span class='ident'>delta</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>, <span class='ident'>len</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+                    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_conv_function</span>(<span class='ident'>other</span>: <span class='kw-2'>&amp;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>conv_type</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span>, <span class='ident'>delta</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>, <span class='ident'>len</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                         <span class='kw'>let</span> <span class='ident'>center</span> <span class='op'>=</span> <span class='ident'>len</span> <span class='kw'>as</span> <span class='ident'>isize</span>;
                         <span class='kw'>let</span> <span class='ident'>len</span> <span class='op'>=</span> <span class='number'>2</span> <span class='op'>*</span> <span class='ident'>len</span> <span class='op'>+</span> <span class='number'>1</span>;
                         <span class='kw'>let</span> <span class='ident'>is_symmetric</span> <span class='op'>=</span> <span class='ident'>other</span>.<span class='ident'>is_symmetric</span>();
@@ -1062,7 +1063,7 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>RealImpulseResponse</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>RaisedCosineFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> 
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
     <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='boolval'>true</span>
+        <span class='boolvalue'>true</span>
     }
     
     <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
@@ -1088,7 +1089,7 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>RealFrequencyResponse</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>RaisedCosineFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> 
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
     <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='boolval'>true</span>
+        <span class='boolvalue'>true</span>
     }
     
     <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
@@ -1113,7 +1114,7 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>RaisedCosineFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
     <span class='doccomment'>/// Creates a raised cosine function.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>rolloff</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>rolloff</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='ident'>RaisedCosineFunction</span> { <span class='ident'>rolloff</span>: <span class='ident'>rolloff</span> }
     }
 }
@@ -1127,7 +1128,7 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>RealImpulseResponse</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>SincFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
     <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='boolval'>true</span>
+        <span class='boolvalue'>true</span>
     }
     
     <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
@@ -1146,7 +1147,7 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>RealFrequencyResponse</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>SincFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
     <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='boolval'>true</span>
+        <span class='boolvalue'>true</span>
     }
     
     <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
@@ -1162,7 +1163,7 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>SincFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> 
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
     <span class='doccomment'>/// Creates a sinc function.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='ident'>SincFunction</span> { <span class='ident'>_ghost</span>: <span class='ident'>PhantomData</span> }
     }
 }
@@ -1190,7 +1191,7 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(
         <span class='ident'>function</span>: <span class='kw'>extern</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span>, 
         <span class='ident'>function_data</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>,
-        <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+        <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='kw'>unsafe</span> {
             <span class='ident'>ForeignRealConvolutionFunction</span> { <span class='ident'>conv_function</span>: <span class='ident'>function</span>, <span class='ident'>conv_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>function_data</span>), <span class='ident'>is_symmetric</span>: <span class='ident'>is_symmetric</span> }
         }
@@ -1244,7 +1245,7 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(
         <span class='ident'>function</span>: <span class='kw'>extern</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>, 
         <span class='ident'>function_data</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>,
-        <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+        <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='kw'>unsafe</span> {
             <span class='ident'>ForeignComplexConvolutionFunction</span> { <span class='ident'>conv_function</span>: <span class='ident'>function</span>, <span class='ident'>conv_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>function_data</span>), <span class='ident'>is_symmetric</span>: <span class='ident'>is_symmetric</span> }
         }
@@ -1279,7 +1280,7 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
-	<span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>RealNumber</span>;
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::<span class='ident'>Debug</span>;
     <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>complex</span>::<span class='ident'>Complex</span>;
@@ -1336,15 +1337,15 @@
         }
     }
 
-	<span class='attribute'>#[<span class='ident'>test</span>]</span>
-	<span class='kw'>fn</span> <span class='ident'>raised_cosine_test</span>()
-	{
+    <span class='attribute'>#[<span class='ident'>test</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>raised_cosine_test</span>()
+    {
         <span class='kw'>let</span> <span class='ident'>rc</span> <span class='op'>=</span> <span class='ident'>RaisedCosineFunction</span>::<span class='ident'>new</span>(<span class='number'>0.35</span>);
         <span class='kw'>let</span> <span class='ident'>expected</span> <span class='op'>=</span> 
             [<span class='number'>0.0</span>, <span class='number'>0.2171850639713355</span>, <span class='number'>0.4840621929215732</span>, <span class='number'>0.7430526238101408</span>, <span class='number'>0.9312114164253432</span>, 
              <span class='number'>1.0</span>, <span class='number'>0.9312114164253432</span>, <span class='number'>0.7430526238101408</span>, <span class='number'>0.4840621929215732</span>, <span class='number'>0.2171850639713355</span>];
         <span class='ident'>conv_test</span>(<span class='ident'>rc</span>, <span class='kw-2'>&amp;</span><span class='ident'>expected</span>, <span class='number'>0.2</span>, <span class='number'>1e-4</span>);
-	}
+    }
     
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>sinc_test</span>() {
@@ -1435,6 +1436,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

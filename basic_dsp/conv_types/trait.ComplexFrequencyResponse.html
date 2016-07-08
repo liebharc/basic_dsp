@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,29 +44,29 @@
 
     <section id='main' class="content trait">
 <h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>basic_dsp</a>::<wbr><a href='index.html'>conv_types</a>::<wbr><a class='trait' href=''>ComplexFrequencyResponse</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-8569' class='srclink' href='../../src/basic_dsp/src/conv_types.rs.html#50-58' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-12270' class='srclink' href='../../src/basic_dsp/src/conv_types.rs.html#50-58' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait ComplexFrequencyResponse&lt;T&gt;: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
     fn <a href='#tymethod.is_symmetric' class='fnname'>is_symmetric</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
-    fn <a href='#tymethod.calc' class='fnname'>calc</a>(&amp;self, x: T) -&gt; <a class='struct' href='../../num/complex/struct.Complex.html' title='num::complex::Complex'>Complex</a>&lt;T&gt;;
+    fn <a href='#tymethod.calc' class='fnname'>calc</a>(&amp;self, x: T) -&gt; <a class='struct' href='../../num_complex/struct.Complex.html' title='num_complex::Complex'>Complex</a>&lt;T&gt;;
 }</pre><div class='docblock'><p>A convolution function in $domain_comment domain and complex number space</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
         <h3 id='tymethod.is_symmetric' class='method stab '><code>fn <a href='#tymethod.is_symmetric' class='fnname'>is_symmetric</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h3><div class='docblock'><p>Indicates whether this function is symmetric around 0 or not.
 Symmetry is defined as <code>self.calc(x) == self.calc(-x)</code>.</p>
-</div><h3 id='tymethod.calc' class='method stab '><code>fn <a href='#tymethod.calc' class='fnname'>calc</a>(&amp;self, x: T) -&gt; <a class='struct' href='../../num/complex/struct.Complex.html' title='num::complex::Complex'>Complex</a>&lt;T&gt;</code></h3><div class='docblock'><p>Calculates the convolution for a data point</p>
+</div><h3 id='tymethod.calc' class='method stab '><code>fn <a href='#tymethod.calc' class='fnname'>calc</a>(&amp;self, x: T) -&gt; <a class='struct' href='../../num_complex/struct.Complex.html' title='num_complex::Complex'>Complex</a>&lt;T&gt;</code></h3><div class='docblock'><p>Calculates the convolution for a data point</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl <a class='trait' href='../../basic_dsp/conv_types/trait.ComplexFrequencyResponse.html' title='basic_dsp::conv_types::ComplexFrequencyResponse'>ComplexFrequencyResponse</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.ComplexFrequencyLinearTableLookup.html' title='basic_dsp::conv_types::ComplexFrequencyLinearTableLookup'>ComplexFrequencyLinearTableLookup</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></li>
-<li><code>impl <a class='trait' href='../../basic_dsp/conv_types/trait.ComplexFrequencyResponse.html' title='basic_dsp::conv_types::ComplexFrequencyResponse'>ComplexFrequencyResponse</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.ComplexFrequencyLinearTableLookup.html' title='basic_dsp::conv_types::ComplexFrequencyLinearTableLookup'>ComplexFrequencyLinearTableLookup</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
-<li><code>impl&lt;T&gt; <a class='trait' href='../../basic_dsp/conv_types/trait.ComplexFrequencyResponse.html' title='basic_dsp::conv_types::ComplexFrequencyResponse'>ComplexFrequencyResponse</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.ForeignComplexConvolutionFunction.html' title='basic_dsp::conv_types::ForeignComplexConvolutionFunction'>ForeignComplexConvolutionFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
+    <li><code>impl ComplexFrequencyResponse&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.ComplexFrequencyLinearTableLookup.html' title='basic_dsp::conv_types::ComplexFrequencyLinearTableLookup'>ComplexFrequencyLinearTableLookup</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></li>
+<li><code>impl ComplexFrequencyResponse&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.ComplexFrequencyLinearTableLookup.html' title='basic_dsp::conv_types::ComplexFrequencyLinearTableLookup'>ComplexFrequencyLinearTableLookup</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
+<li><code>impl&lt;T&gt; ComplexFrequencyResponse&lt;T&gt; for <a class='struct' href='../../basic_dsp/conv_types/struct.ForeignComplexConvolutionFunction.html' title='basic_dsp::conv_types::ForeignComplexConvolutionFunction'>ForeignComplexConvolutionFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span></code></li>
 </ul><script type="text/javascript" async
-                              src="../../implementors/basic_dsp/conv_types/trait.ComplexFrequencyResponse.js">
-                      </script></section>
+                         src="../../implementors/basic_dsp/conv_types/trait.ComplexFrequencyResponse.js">
+                 </script></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -88,6 +89,8 @@ Symmetry is defined as <code>self.calc(x) == self.calc(-x)</code>.</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

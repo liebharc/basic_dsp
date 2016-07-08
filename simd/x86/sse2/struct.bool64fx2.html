@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -43,12 +44,13 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../../index.html'>simd</a>::<wbr><a href='../index.html'>x86</a>::<wbr><a href='index.html'>sse2</a>::<wbr><a class='struct' href=''>bool64fx2</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-2544' class='srclink' href='../../../src/simd/sixty_four.rs.html#49' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-2548' class='srclink' href='../../../src/simd/sixty_four.rs.html#49' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct bool64fx2(_, _);</pre><div class='docblock'><p>A SIMD boolean vector for length-2 vectors of 64-bit floats.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></h3><div class='impl-items'><h4 id='method.to_repr' class='method'><code>fn <a href='#method.to_repr' class='fnname'>to_repr</a>(self) -&gt; <a class='struct' href='../../../simd/x86/sse2/struct.i64x2.html' title='simd::x86::sse2::i64x2'>i64x2</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-2782' class='srclink' href='../../../src/simd/common.rs.html#163-268' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.to_repr' class='method'><code>fn <a href='#method.to_repr' class='fnname'>to_repr</a>(self) -&gt; <a class='struct' href='../../../simd/x86/sse2/struct.i64x2.html' title='simd::x86::sse2::i64x2'>i64x2</a></code></h4>
 <div class='docblock'><p>Convert to integer representation.</p>
 </div><h4 id='method.from_repr' class='method'><code>fn <a href='#method.from_repr' class='fnname'>from_repr</a>(x: <a class='struct' href='../../../simd/x86/sse2/struct.i64x2.html' title='simd::x86::sse2::i64x2'>i64x2</a>) -&gt; Self</code></h4>
 <div class='docblock'><p>Convert from integer representation.</p>
@@ -67,7 +69,7 @@ by <code>elem</code>.</p>
 
 <h1 id='panics-1' class='section-header'><a href='#panics-1'>Panics</a></h1>
 <p><code>replace</code> will panic if <code>idx</code> is out of bounds.</p>
-</div><h4 id='method.select' class='method'><code>fn <a href='#method.select' class='fnname'>select</a>&lt;T: <a class='trait' href='../../../simd/trait.Simd.html' title='simd::Simd'>Simd</a>&lt;Bool=<a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a>&gt;&gt;(self, then: T, else_: T) -&gt; T</code></h4>
+</div><h4 id='method.select' class='method'><code>fn <a href='#method.select' class='fnname'>select</a>&lt;T:&nbsp;<a class='trait' href='../../../simd/trait.Simd.html' title='simd::Simd'>Simd</a>&lt;Bool=<a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a>&gt;&gt;(self, then: T, else_: T) -&gt; T</code></h4>
 <div class='docblock'><p>Select between elements of <code>then</code> and <code>else_</code>, based on
 the corresponding element of <code>self</code>.</p>
 
@@ -96,21 +98,43 @@ more efficient:</p>
 <span class='self'>self</span>.<span class='ident'>extract</span>(<span class='number'>0</span>) <span class='op'>||</span> <span class='self'>self</span>.<span class='ident'>extract</span>(<span class='number'>1</span>) <span class='op'>||</span> ...</pre>
 </div><h4 id='method.to_i' class='method'><code>fn <a href='#method.to_i' class='fnname'>to_i</a>(self) -&gt; <a class='struct' href='../../../simd/x86/sse2/struct.bool64ix2.html' title='simd::x86::sse2::bool64ix2'>bool64ix2</a></code></h4>
 <div class='docblock'><p>Convert <code>self</code> to a boolean vector for interacting with integer vectors.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='../../../simd/trait.Simd.html' title='simd::Simd'>Simd</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></h3><div class='impl-items'><h4 id='associatedtype.Bool' class='type'><code>type Bool = <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></h4>
-<h4 id='associatedtype.Elem' class='type'><code>type Elem = bool64f</code></h4>
-</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; Self</code></h4>
-<h4 id='method.clone_from' class='method'><span class="since">1.0.0</span><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
-</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Not.html' title='core::ops::Not'>Not</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></h3><div class='impl-items'><h4 id='associatedtype.Output' class='type'><code>type Output = Self</code></h4>
-<h4 id='method.not' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Not.html#method.not' class='fnname'>not</a>(self) -&gt; Self</code></h4>
-</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitAnd.html' title='core::ops::BitAnd'>BitAnd</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></h3><div class='impl-items'><h4 id='associatedtype.Output-1' class='type'><code>type Output = Self</code></h4>
-<h4 id='method.bitand' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.BitAnd.html#method.bitand' class='fnname'>bitand</a>(self, x: Self) -&gt; Self</code></h4>
-</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitOr.html' title='core::ops::BitOr'>BitOr</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></h3><div class='impl-items'><h4 id='associatedtype.Output-2' class='type'><code>type Output = Self</code></h4>
-<h4 id='method.bitor' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.BitOr.html#method.bitor' class='fnname'>bitor</a>(self, x: Self) -&gt; Self</code></h4>
-</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitXor.html' title='core::ops::BitXor'>BitXor</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></h3><div class='impl-items'><h4 id='associatedtype.Output-3' class='type'><code>type Output = Self</code></h4>
-<h4 id='method.bitxor' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.BitXor.html#method.bitxor' class='fnname'>bitxor</a>(self, x: Self) -&gt; Self</code></h4>
-</div><h3 class='impl'><code>impl <a class='trait' href='../../../simd/x86/sse2/trait.Sse2Bool64fx2.html' title='simd::x86::sse2::Sse2Bool64fx2'>Sse2Bool64fx2</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></h3><div class='impl-items'><h4 id='method.move_mask' class='method'><code>fn <a href='../../../simd/x86/sse2/trait.Sse2Bool64fx2.html#method.move_mask' class='fnname'>move_mask</a>(self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h4>
-</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></h3><div class='impl-items'></div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
-</div></section>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='../../../simd/trait.Simd.html' title='simd::Simd'>Simd</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-2584' class='srclink' href='../../../src/simd/lib.rs.html#168-171' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='associatedtype.Bool' class='type'><code>type <a href='../../../simd/trait.Simd.html#associatedtype.Bool' class='type'>Bool</a> = <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></h4>
+<div class='docblock'><p>The corresponding boolean vector type.</p>
+</div><h4 id='associatedtype.Elem' class='type'><code>type <a href='../../../simd/trait.Simd.html#associatedtype.Elem' class='type'>Elem</a> = bool64f</code></h4>
+<div class='docblock'><p>The element that this vector stores.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-2587' class='srclink' href='../../../src/simd/lib.rs.html#172' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; Self</code></h4>
+<div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
+</div><h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></h4>
+<div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Not.html' title='core::ops::Not'>Not</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-2818' class='srclink' href='../../../src/simd/common.rs.html#269-276' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='associatedtype.Output' class='type'><code>type <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Not.html#associatedtype.Output' class='type'>Output</a> = Self</code></h4>
+<div class='docblock'><p>The resulting type after applying the <code>!</code> operator</p>
+</div><h4 id='method.not' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Not.html#tymethod.not' class='fnname'>not</a>(self) -&gt; Self</code></h4>
+<div class='docblock'><p>The method for the unary <code>!</code> operator</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitAnd.html' title='core::ops::BitAnd'>BitAnd</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-2921' class='srclink' href='../../../src/simd/sixty_four.rs.html#162-168' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='associatedtype.Output-1' class='type'><code>type <a href='https://doc.rust-lang.org/nightly/core/ops/trait.BitAnd.html#associatedtype.Output' class='type'>Output</a> = Self</code></h4>
+<div class='docblock'><p>The resulting type after applying the <code>&amp;</code> operator</p>
+</div><h4 id='method.bitand' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.BitAnd.html#tymethod.bitand' class='fnname'>bitand</a>(self, x: Self) -&gt; Self</code></h4>
+<div class='docblock'><p>The method for the <code>&amp;</code> operator</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitOr.html' title='core::ops::BitOr'>BitOr</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-2941' class='srclink' href='../../../src/simd/sixty_four.rs.html#162-168' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='associatedtype.Output-2' class='type'><code>type <a href='https://doc.rust-lang.org/nightly/core/ops/trait.BitOr.html#associatedtype.Output' class='type'>Output</a> = Self</code></h4>
+<div class='docblock'><p>The resulting type after applying the <code>|</code> operator</p>
+</div><h4 id='method.bitor' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.BitOr.html#tymethod.bitor' class='fnname'>bitor</a>(self, x: Self) -&gt; Self</code></h4>
+<div class='docblock'><p>The method for the <code>|</code> operator</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitXor.html' title='core::ops::BitXor'>BitXor</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-2961' class='srclink' href='../../../src/simd/sixty_four.rs.html#162-168' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='associatedtype.Output-3' class='type'><code>type <a href='https://doc.rust-lang.org/nightly/core/ops/trait.BitXor.html#associatedtype.Output' class='type'>Output</a> = Self</code></h4>
+<div class='docblock'><p>The resulting type after applying the <code>^</code> operator</p>
+</div><h4 id='method.bitxor' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.BitXor.html#tymethod.bitxor' class='fnname'>bitxor</a>(self, x: Self) -&gt; Self</code></h4>
+<div class='docblock'><p>The method for the <code>^</code> operator</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='../../../simd/x86/sse2/trait.Sse2Bool64fx2.html' title='simd::x86::sse2::Sse2Bool64fx2'>Sse2Bool64fx2</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-6517' class='srclink' href='../../../src/simd/x86/sse2.rs.html#160-165' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.move_mask' class='method'><code>fn <a href='../../../simd/x86/sse2/trait.Sse2Bool64fx2.html#tymethod.move_mask' class='fnname'>move_mask</a>(self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-2552' class='srclink' href='../../../src/simd/sixty_four.rs.html#48' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../../simd/x86/sse2/struct.bool64fx2.html' title='simd::x86::sse2::bool64fx2'>bool64fx2</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-2553' class='srclink' href='../../../src/simd/sixty_four.rs.html#48' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+<div class='docblock'><p>Formats the value using the given formatter.</p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -133,6 +157,8 @@ more efficient:</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

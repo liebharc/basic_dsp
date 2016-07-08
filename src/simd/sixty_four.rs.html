@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-88ac128001ac3a9a\simd-0.1.1\src\sixty_four.rs`.">
+    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-1ecc6299db9ec823\simd-0.1.1\src\sixty_four.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>sixty_four.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -272,9 +273,9 @@
 <span id="229">229</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>allow</span>(<span class='ident'>dead_code</span>)]</span>
-<span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
+<span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
 <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused_imports</span>)]</span>
-<span class='kw'>use</span> <span class='ident'>super</span>::{
+<span class='kw'>use</span> <span class='kw'>super</span>::{
     <span class='ident'>f32x2</span>,
     <span class='ident'>simd_eq</span>, <span class='ident'>simd_ne</span>, <span class='ident'>simd_lt</span>, <span class='ident'>simd_le</span>, <span class='ident'>simd_gt</span>, <span class='ident'>simd_ge</span>,
     <span class='ident'>simd_shuffle2</span>, <span class='ident'>simd_shuffle4</span>, <span class='ident'>simd_shuffle8</span>, <span class='ident'>simd_shuffle16</span>,
@@ -332,7 +333,7 @@
 }
 
 <span class='kw'>mod</span> <span class='ident'>common</span> {
-    <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
     <span class='comment'>// naive for now</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>bool64ix2_all</span>(<span class='ident'>x</span>: <span class='ident'>bool64ix2</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
@@ -417,8 +418,8 @@
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>not_impls</span> {
     ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>: <span class='ident'>ident</span>,)<span class='op'>*</span>) <span class='op'>=&gt;</span> {
         $(<span class='kw'>impl</span> <span class='ident'>ops</span>::<span class='ident'>Not</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span> {
-            <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='kw'>Self</span>;
-            <span class='kw'>fn</span> <span class='ident'>not</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+            <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='self'>Self</span>;
+            <span class='kw'>fn</span> <span class='ident'>not</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                 <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>::<span class='ident'>splat</span>(<span class='op'>!</span><span class='number'>0</span>) <span class='op'>^</span> <span class='self'>self</span>
             }
         })<span class='op'>*</span>
@@ -433,9 +434,9 @@
     ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trayt</span>: <span class='ident'>ident</span> (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func</span>: <span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>method</span>: <span class='ident'>ident</span>): $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>: <span class='ident'>ty</span>),<span class='op'>*</span>;)<span class='op'>*</span>) <span class='op'>=&gt;</span> {
         $(
             $(<span class='kw'>impl</span> <span class='ident'>ops</span>::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trayt</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span> {
-                <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='kw'>Self</span>;
+                <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='self'>Self</span>;
                 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-                <span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>method</span>(<span class='self'>self</span>, <span class='ident'>x</span>: <span class='kw'>Self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+                <span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>method</span>(<span class='self'>self</span>, <span class='ident'>x</span>: <span class='self'>Self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                     <span class='kw'>unsafe</span> {<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func</span>(<span class='self'>self</span>, <span class='ident'>x</span>)}
                 }
             })<span class='op'>*</span>
@@ -471,16 +472,16 @@
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>shift_one</span> { (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>: <span class='ident'>ident</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>by</span>: <span class='ident'>ident</span>),<span class='op'>*</span>) <span class='op'>=&gt;</span> {
         $(
         <span class='kw'>impl</span> <span class='ident'>ops</span>::<span class='ident'>Shl</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>by</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span> {
-            <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='kw'>Self</span>;
+            <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='self'>Self</span>;
             <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-            <span class='kw'>fn</span> <span class='ident'>shl</span>(<span class='self'>self</span>, <span class='ident'>other</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>by</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+            <span class='kw'>fn</span> <span class='ident'>shl</span>(<span class='self'>self</span>, <span class='ident'>other</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>by</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                 <span class='kw'>unsafe</span> { <span class='ident'>simd_shl</span>(<span class='self'>self</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>::<span class='ident'>splat</span>(<span class='ident'>other</span> <span class='kw'>as</span> <span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span> <span class='kw'>as</span> <span class='ident'>Simd</span><span class='op'>&gt;</span>::<span class='ident'>Elem</span>)) }
             }
         }
         <span class='kw'>impl</span> <span class='ident'>ops</span>::<span class='ident'>Shr</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>by</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span> {
-            <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='kw'>Self</span>;
+            <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='self'>Self</span>;
             <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-            <span class='kw'>fn</span> <span class='ident'>shr</span>(<span class='self'>self</span>, <span class='ident'>other</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>by</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+            <span class='kw'>fn</span> <span class='ident'>shr</span>(<span class='self'>self</span>, <span class='ident'>other</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>by</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
                 <span class='kw'>unsafe</span> {<span class='ident'>simd_shr</span>(<span class='self'>self</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>::<span class='ident'>splat</span>(<span class='ident'>other</span> <span class='kw'>as</span> <span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span> <span class='kw'>as</span> <span class='ident'>Simd</span><span class='op'>&gt;</span>::<span class='ident'>Elem</span>))}
             }
         }
@@ -524,6 +525,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

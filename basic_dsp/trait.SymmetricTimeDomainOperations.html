@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
+    
 
     
     
@@ -43,12 +44,12 @@
 
     <section id='main' class="content trait">
 <h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp</a>::<wbr><a class='trait' href=''>SymmetricTimeDomainOperations</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-2749' class='srclink' href='../src/basic_dsp/src/vector_types/time_freq_impl.rs.html#82-127' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-3034' class='srclink' href='../src/basic_dsp/src/vector_types/time_freq_impl.rs.html#82-127' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait SymmetricTimeDomainOperations&lt;T&gt;: <a class='trait' href='../basic_dsp/trait.DataVector.html' title='basic_dsp::DataVector'>DataVector</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
-    type FreqPartner;
+    type <a href='#associatedtype.FreqPartner' class='type'>FreqPartner</a>;
     fn <a href='#tymethod.plain_sfft' class='fnname'>plain_sfft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>FreqPartner</a>&gt;;
     fn <a href='#tymethod.sfft' class='fnname'>sfft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>FreqPartner</a>&gt;;
     fn <a href='#tymethod.windowed_sfft' class='fnname'>windowed_sfft</a>(self, window: &amp;<a class='trait' href='../basic_dsp/window_functions/trait.WindowFunction.html' title='basic_dsp::window_functions::WindowFunction'>WindowFunction</a>&lt;T&gt;) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>FreqPartner</a>&gt;;
@@ -60,7 +61,7 @@ with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#3
 </div>
             <h2 id='associated-types'>Associated Types</h2>
             <div class='methods'>
-        <h3 id='associatedtype.FreqPartner' class='method stab '><code>type FreqPartner</code></h3></div>
+        <h3 id='associatedtype.FreqPartner' class='method stab '><code>type <a href='#associatedtype.FreqPartner' class='type'>FreqPartner</a></code></h3></div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
         <h3 id='tymethod.plain_sfft' class='method stab '><code>fn <a href='#tymethod.plain_sfft' class='fnname'>plain_sfft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>FreqPartner</a>&gt;</code></h3><div class='docblock'><p>Performs a Symmetric Fast Fourier Transformation under the assumption that <code>self</code>
@@ -111,13 +112,13 @@ isn&#39;t verified and no error is raised if the vector isn&#39;t symmetric.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl <a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>SymmetricTimeDomainOperations</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../basic_dsp/struct.GenericDataVector.html' title='basic_dsp::GenericDataVector'>GenericDataVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></li>
-<li><code>impl <a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>SymmetricTimeDomainOperations</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../basic_dsp/struct.RealTimeVector.html' title='basic_dsp::RealTimeVector'>RealTimeVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></li>
-<li><code>impl <a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>SymmetricTimeDomainOperations</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../basic_dsp/struct.GenericDataVector.html' title='basic_dsp::GenericDataVector'>GenericDataVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
-<li><code>impl <a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>SymmetricTimeDomainOperations</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../basic_dsp/struct.RealTimeVector.html' title='basic_dsp::RealTimeVector'>RealTimeVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
+    <li><code>impl SymmetricTimeDomainOperations&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../basic_dsp/struct.GenericDataVector.html' title='basic_dsp::GenericDataVector'>GenericDataVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></li>
+<li><code>impl SymmetricTimeDomainOperations&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt; for <a class='struct' href='../basic_dsp/struct.RealTimeVector.html' title='basic_dsp::RealTimeVector'>RealTimeVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a>&gt;</code></li>
+<li><code>impl SymmetricTimeDomainOperations&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../basic_dsp/struct.GenericDataVector.html' title='basic_dsp::GenericDataVector'>GenericDataVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
+<li><code>impl SymmetricTimeDomainOperations&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt; for <a class='struct' href='../basic_dsp/struct.RealTimeVector.html' title='basic_dsp::RealTimeVector'>RealTimeVector</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></li>
 </ul><script type="text/javascript" async
-                              src="../implementors/basic_dsp/trait.SymmetricTimeDomainOperations.js">
-                      </script></section>
+                         src="../implementors/basic_dsp/trait.SymmetricTimeDomainOperations.js">
+                 </script></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -140,6 +141,8 @@ isn&#39;t verified and no error is raised if the vector isn&#39;t symmetric.</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

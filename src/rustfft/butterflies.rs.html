@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-88ac128001ac3a9a\rustfft-1.0.1\src\butterflies.rs`.">
+    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-1ecc6299db9ec823\rustfft-1.0.1\src\butterflies.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>butterflies.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -425,7 +426,7 @@
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>repeat</span>;
     <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>test</span>::<span class='ident'>Bencher</span>;
     <span class='kw'>use</span> <span class='ident'>num</span>::{<span class='ident'>Complex</span>, <span class='ident'>Zero</span>};
-    <span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>butterfly_2</span>, <span class='ident'>butterfly_3</span>, <span class='ident'>butterfly_4</span>, <span class='ident'>butterfly_5</span>};
+    <span class='kw'>use</span> <span class='kw'>super</span>::{<span class='ident'>butterfly_2</span>, <span class='ident'>butterfly_3</span>, <span class='ident'>butterfly_4</span>, <span class='ident'>butterfly_5</span>};
 
     <span class='kw'>fn</span> <span class='ident'>set_up_bench</span>(<span class='ident'>butterfly_len</span>: <span class='ident'>usize</span>, <span class='ident'>stride</span>: <span class='ident'>usize</span>, <span class='ident'>num_ffts</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> (<span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>) {
         <span class='kw'>let</span> <span class='ident'>len</span> <span class='op'>=</span> <span class='ident'>butterfly_len</span> <span class='op'>*</span> <span class='ident'>stride</span> <span class='op'>*</span> <span class='ident'>num_ffts</span>;
@@ -467,7 +468,7 @@
         <span class='kw'>let</span> (<span class='kw-2'>mut</span> <span class='ident'>data</span>, <span class='ident'>twiddles</span>) <span class='op'>=</span> <span class='ident'>set_up_bench</span>(<span class='number'>4</span>, <span class='ident'>stride</span>, <span class='ident'>num_ffts</span>);
 
         <span class='ident'>b</span>.<span class='ident'>iter</span>(<span class='op'>||</span> <span class='kw'>unsafe</span> {
-            <span class='ident'>butterfly_4</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>data</span>, <span class='ident'>stride</span>, <span class='kw-2'>&amp;</span><span class='ident'>twiddles</span>, <span class='ident'>num_ffts</span>, <span class='boolval'>false</span>)
+            <span class='ident'>butterfly_4</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>data</span>, <span class='ident'>stride</span>, <span class='kw-2'>&amp;</span><span class='ident'>twiddles</span>, <span class='ident'>num_ffts</span>, <span class='boolvalue'>false</span>)
         });
     }
 
@@ -506,6 +507,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

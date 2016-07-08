@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-88ac128001ac3a9a\rustfft-1.0.1\src\lib.rs`.">
+    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-1ecc6299db9ec823\rustfft-1.0.1\src\lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -225,7 +226,7 @@
     <span class='doccomment'>/// FFTs. This implementation of the FFT doesn&#39;t do any scaling on both</span>
     <span class='doccomment'>/// the forward and backward transforms, so doing a forward then backward</span>
     <span class='doccomment'>/// FFT on a signal will scale the signal by its length.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>len</span>: <span class='ident'>usize</span>, <span class='ident'>inverse</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>len</span>: <span class='ident'>usize</span>, <span class='ident'>inverse</span>: <span class='ident'>bool</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='kw'>let</span> <span class='ident'>dir</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>inverse</span> { <span class='number'>1</span> } <span class='kw'>else</span> { <span class='op'>-</span><span class='number'>1</span> };
         <span class='kw'>let</span> <span class='ident'>factors</span> <span class='op'>=</span> <span class='ident'>factor</span>(<span class='ident'>len</span>);
         <span class='kw'>let</span> <span class='ident'>max_fft_len</span> <span class='op'>=</span> <span class='ident'>factors</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span>(<span class='ident'>a</span>, _)<span class='op'>|</span> <span class='ident'>a</span>).<span class='ident'>max</span>();
@@ -382,6 +383,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
