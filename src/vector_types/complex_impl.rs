@@ -56,7 +56,7 @@ macro_rules! add_complex_impl {
                         let mut array = &mut self.data;
                         Chunk::execute_with_range(
                             Complexity::Small, &self.multicore_settings,
-                            &mut array, vectorization_length, $reg::len(), 
+                            &mut array[0..vectorization_length], $reg::len(), 
                             (a, b),
                             move |array, range, args| {
                             let (a, b) = args;
@@ -104,8 +104,8 @@ macro_rules! add_complex_impl {
                     let mut temp = &mut destination.data;
                     Chunk::from_src_to_dest(
                         Complexity::Small, &self.multicore_settings,
-                        &array, vectorization_length, $reg::len(), 
-                        &mut temp, vectorization_length / 2, $reg::len() / 2, (),
+                        &array[0..vectorization_length], $reg::len(), 
+                        &mut temp[0..vectorization_length/2], $reg::len() / 2, (),
                         move |array, range, target, _arg| {
                             let mut i = 0;
                             let mut j = range.start;
@@ -151,7 +151,7 @@ macro_rules! add_complex_impl {
                         let mut array = &mut self.data;
                         Chunk::execute_partial(
                             Complexity::Small, &self.multicore_settings,
-                            &mut array, unrolled_length, unroll_len, (), 
+                            &mut array[0..unrolled_length], unroll_len, (), 
                             move |array, _| {
                                 unsafe {
                                     let array_len = array.len();
@@ -240,7 +240,7 @@ macro_rules! add_complex_impl {
                         let length = array.len();
                         Chunk::execute_with_range(
                             Complexity::Small, &self.multicore_settings,
-                            &mut array, length, 2, argument,
+                            &mut array[0..length], 2, argument,
                             move|array, range, argument| {
                                 let mut i = range.start / 2;
                                 let array = Self::array_to_complex_mut(array);
@@ -277,7 +277,7 @@ macro_rules! add_complex_impl {
                         let aggregate  = aggregate.clone();
                         Chunk::map_on_array_chunks(
                             Complexity::Small, &self.multicore_settings,
-                            &array, length, 2, argument,
+                            &array[0..length], 2, argument,
                             move|array, range, argument| {
                                 let aggregate  = aggregate.clone();
                                 let array = Self::array_to_complex(array);
@@ -334,8 +334,8 @@ macro_rules! add_complex_impl {
                     let other = &factor.data;
                     let chunks = Chunk::get_a_fold_b(
                         Complexity::Small, &self.multicore_settings,
-                        &other, vectorization_length, $reg::len(), 
-                        &array, vectorization_length, $reg::len(), 
+                        &other[0..vectorization_length], $reg::len(), 
+                        &array[0..vectorization_length], $reg::len(), 
                         |original, range, target| {
                             let mut i = 0;
                             let mut j = range.start;
@@ -370,7 +370,7 @@ macro_rules! add_complex_impl {
                     let array = &self.data;
                     let chunks = Chunk::get_chunked_results(
                         Complexity::Small, &self.multicore_settings,
-                        &array, data_length, 2, (),
+                        &array[0..data_length], 2, (),
                         |array, range, _arg| {
                             let mut stat = Statistics::<Complex<$data_type>>::empty();
                             let mut i = 0;
@@ -397,7 +397,7 @@ macro_rules! add_complex_impl {
                     let array = &self.data;
                     let chunks = Chunk::get_chunked_results (
                         Complexity::Small, &self.multicore_settings,
-                        &array, data_length, 2, len,
+                        &array[0..data_length], 2, len,
                         |array, range, len| {
                             let mut results = Statistics::<Complex<$data_type>>::empty_vec(len);
                             let mut i = 0;
@@ -499,8 +499,8 @@ macro_rules! add_complex_impl {
                     let source = &self.data;
                     Chunk::from_src_to_dest(
                         complexity, &self.multicore_settings,
-                        &source, len, 2, 
-                        &mut array, len / 2, 1, argument,
+                        &source[0..len], 2, 
+                        &mut array[0..len/2], 1, argument,
                         move|original, range, target, argument| {
                             let mut i = range.start;
                             let mut j = 0;

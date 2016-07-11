@@ -9,10 +9,9 @@ macro_rules! add_basic_private_impl {
                         F: Fn($data_type, A) -> $data_type + 'static + Sync {
                     {
                         let mut array = &mut self.data;
-                        let length = array.len();
                         Chunk::execute_partial(
                             complexity, &self.multicore_settings,
-                            &mut array, length, 1, argument,
+                            &mut array, 1, argument,
                             move|array, argument| {
                                 for num in array {
                                     *num = op(*num, argument);
@@ -34,7 +33,7 @@ macro_rules! add_basic_private_impl {
                         let mut array = &mut self.data;
                         Chunk::execute_partial(
                             complexity, &self.multicore_settings,
-                            &mut array, vectorization_length, $reg::len(), argument, 
+                            &mut array[0..vectorization_length], $reg::len(), argument, 
                             move |array, argument| {
                                 let array = $reg::array_to_regs_mut(array);
                                 for reg in array {
@@ -54,11 +53,10 @@ macro_rules! add_basic_private_impl {
                     where A: Sync + Copy + Send,
                         F: Fn(Complex<$data_type>, A) -> Complex<$data_type> + 'static + Sync {
                     {
-                        let length = self.len();
                         let mut array = &mut self.data;
                         Chunk::execute_partial(
                             complexity, &self.multicore_settings,
-                            &mut array, length, 2, argument,
+                            array, 2, argument,
                             move|array, argument| {
                                 let array = Self::array_to_complex_mut(array);
                                 for num in array {
@@ -79,8 +77,8 @@ macro_rules! add_basic_private_impl {
                         let mut temp = temp_mut!(self, data_length / 2);
                         Chunk::from_src_to_dest(
                             complexity, &self.multicore_settings,
-                            &mut array, data_length, 2, 
-                            &mut temp, data_length / 2, 1, argument,
+                            &mut array[0..data_length], 2, 
+                            &mut temp[0..data_length / 2], 1, argument,
                             move |array, range, target, argument| {
                                 let array = Self::array_to_complex(&array[range.start..range.end]);
                                 for pair in array.iter().zip(target) {
@@ -106,7 +104,7 @@ macro_rules! add_basic_private_impl {
                         let mut array = &mut self.data;
                         Chunk::execute_partial(
                             complexity, &self.multicore_settings,
-                            &mut array, vectorization_length, $reg::len(), argument, 
+                            &mut array[0..vectorization_length], $reg::len(), argument, 
                             move |array, argument| {
                                 let array = $reg::array_to_regs_mut(array);
                                 for reg in array {
@@ -134,8 +132,8 @@ macro_rules! add_basic_private_impl {
                         let mut temp = temp_mut!(self, data_length);
                         Chunk::from_src_to_dest(
                             complexity, &self.multicore_settings,
-                            &mut array, vectorization_length, $reg::len(), 
-                            &mut temp, vectorization_length / 2, $reg::len() / 2, argument,
+                            &mut array[0..vectorization_length], $reg::len(), 
+                            &mut temp[0..vectorization_length], $reg::len() / 2, argument,
                             move |array, range, target, argument| {
                                 let array = $reg::array_to_regs(&array[range.start..range.end]);
                                 let mut j = 0;
@@ -214,7 +212,7 @@ macro_rules! add_basic_private_impl {
                             let converted = convert_mut(&mut self.data[0..len]);
                             Chunk::execute_with_range(
                                 Complexity::Medium, &self.multicore_settings,
-                                converted, points, 1, function_arg,
+                                converted, 1, function_arg,
                                 move |array, range, arg| {
                                     let scale = T::from(ratio);
                                     let offset = if points % 2 != 0 { 1 } else { 0 };
@@ -234,7 +232,7 @@ macro_rules! add_basic_private_impl {
                             let converted = convert_mut(&mut self.data[0..len]);
                             Chunk::execute_sym_pairs_with_range(
                                 Complexity::Medium, &self.multicore_settings,
-                                converted, points, 1, function_arg,
+                                converted, 1, function_arg,
                                 move |array1, range1, array2, range2, arg| {
                                     assert!(array1.len() >= array2.len());
                                     assert!(range1.end <= range2.start);let scale = T::from(ratio);
@@ -310,7 +308,7 @@ macro_rules! add_basic_private_impl {
                             let converted = convert_mut(&mut self.data[0..len]);
                             Chunk::execute_with_range(
                                 Complexity::Medium, &self.multicore_settings,
-                                converted, points, 1, function_arg,
+                                converted, 1, function_arg,
                                 move |array, range, arg| {
                                     let mut j = range.start;
                                     for num in array {
@@ -327,7 +325,7 @@ macro_rules! add_basic_private_impl {
                             let converted = convert_mut(&mut self.data[0..len]);
                             Chunk::execute_sym_pairs_with_range(
                                 Complexity::Medium, &self.multicore_settings,
-                                converted, points, 1, function_arg,
+                                converted, 1, function_arg,
                                 move |array1, range, array2, _, arg| {
                                     assert!(array1.len() >= array2.len());
                                     let mut j = range.start;

@@ -104,7 +104,7 @@ macro_rules! add_real_impl {
                         let length = array.len();
                         Chunk::execute_with_range(
                             Complexity::Small, &self.multicore_settings,
-                            &mut array, length, 1, argument,
+                            &mut array[0..length], 1, argument,
                             move|array, range, argument| {
                                 let mut i = range.start;
                                 for num in array {
@@ -140,7 +140,7 @@ macro_rules! add_real_impl {
                         let aggregate  = aggregate.clone();
                         Chunk::map_on_array_chunks(
                             Complexity::Small, &self.multicore_settings,
-                            &array, length, 1, argument,
+                            &array[0..length], 1, argument,
                             move|array, range, argument| {
                                 let aggregate  = aggregate.clone();
                                 let mut i = range.start;
@@ -191,8 +191,8 @@ macro_rules! add_real_impl {
                     let other = &factor.data;
                     let chunks = Chunk::get_a_fold_b(
                         Complexity::Small, &self.multicore_settings,
-                        &other, vectorization_length, $reg::len(), 
-                        &array, vectorization_length, $reg::len(), 
+                        &other[0..vectorization_length], $reg::len(), 
+                        &array[0..vectorization_length], $reg::len(), 
                         |original, range, target| {
                             let mut i = 0;
                             let mut j = range.start;
@@ -225,7 +225,7 @@ macro_rules! add_real_impl {
                     let array = &self.data;
                     let chunks = Chunk::get_chunked_results(
                         Complexity::Small, &self.multicore_settings,
-                        &array, data_length, 1, (),
+                        &array[0..data_length], 1, (),
                         |array, range, _arg| {
                             let mut stats = Statistics::empty();
                             let mut i = 0;
@@ -251,7 +251,7 @@ macro_rules! add_real_impl {
                     let array = &self.data;
                     let chunks = Chunk::get_chunked_results(
                         Complexity::Small, &self.multicore_settings,
-                        &array, data_length, 1, len,
+                        &array[0..data_length], 1, len,
                         |array, range, len| {
                             let mut results = Statistics::empty_vec(len);
                             let mut i = 0;

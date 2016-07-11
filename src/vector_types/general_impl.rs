@@ -91,8 +91,8 @@ macro_rules! impl_binary_vector_operation {
                 let other = &$arg_name.data;
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
-                    &other, vectorization_length, $reg::len(), 
-                    &mut array, vectorization_length, $reg::len(), (), 
+                    &other[0..vectorization_length], $reg::len(), 
+                    &mut array[0..vectorization_length], $reg::len(), (), 
                     |original, range, target, _arg| {
                         let mut i = 0;
                         let mut j = range.start;
@@ -135,8 +135,8 @@ macro_rules! impl_binary_complex_vector_operation {
                 let other = &$arg_name.data;
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
-                    &other, vectorization_length, $reg::len(), 
-                    &mut array, vectorization_length, $reg::len(), (),
+                    &other[0..vectorization_length], $reg::len(), 
+                    &mut array[0..vectorization_length], $reg::len(), (),
                     |original, range, target, _arg| {
                         let mut i = 0;
                         let mut j = range.start;
@@ -183,8 +183,8 @@ macro_rules! impl_binary_smaller_vector_operation {
                 let other = &$arg_name.data;
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
-                    &other, vectorization_length, $reg::len(), 
-                    &mut array, vectorization_length, $reg::len(), (),
+                    &other, $reg::len(), 
+                    &mut array[0..vectorization_length], $reg::len(), (),
                     |original, range, target, _arg| {
                         // This parallelization likely doesn't make sense for the use 
                         // case which we have in mind with this implementation
@@ -235,8 +235,8 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
                 let other = &$arg_name.data;
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
-                    &other, vectorization_length, $reg::len(), 
-                    &mut array, vectorization_length, $reg::len(), (),
+                    &other, $reg::len(), 
+                    &mut array[0..vectorization_length], $reg::len(), (),
                     |original, range, target, _arg| {
                         // This parallelization likely doesn't make sense for the use 
                         // case which we have in mind with this implementation
@@ -282,8 +282,8 @@ macro_rules! vector_diff_par {
         }
         Chunk::from_src_to_dest(
             Complexity::Small, &$self_.multicore_settings,
-            &$org, $data_length, $step, 
-            &mut $target, $data_length, $step, (),
+            &$org[0..$data_length], $step, 
+            &mut $target[0..$data_length], $step, (),
             |original, range, target, _arg| {
                 let mut i = 0;
                 let mut j = range.start;
@@ -346,8 +346,8 @@ macro_rules! zero_interleave {
                 let source = &$self_.data;
                 Chunk::from_src_to_dest(
                     Complexity::Small, &$self_.multicore_settings,
-                    &source, old_len, $tuple, 
-                    &mut target, new_len, $tuple * step, (),
+                    &source[0..old_len], $tuple, 
+                    &mut target[0..new_len], $tuple * step, (),
                     move|original, range, target, _arg| {
                          // Zero target
                         let ptr = &mut target[0] as *mut $data_type;

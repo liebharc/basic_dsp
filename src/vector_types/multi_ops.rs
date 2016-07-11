@@ -982,17 +982,18 @@ macro_rules! add_multi_ops_impl {
                         let len = v.len();
                         &mut v.data[0..len]
                     }).collect();
+                    let range = Range { start: 0, end: vectorization_length };
                     if any_complex_ops {
                         Chunk::execute_partial_multidim(
                             complexity, &multicore_settings,
-                            &mut array, vectorization_length, $reg::len(), 
+                            &mut array, range, $reg::len(), 
                             (operations, first_vec_len), 
                             Self::perform_complex_operations_par);
                     }
                     else {
                         Chunk::execute_partial_multidim(
                             complexity, &multicore_settings,
-                            &mut array, vectorization_length, $reg::len(), 
+                            &mut array, range, $reg::len(), 
                             (operations, first_vec_len), 
                             Self::perform_real_operations_par);   
                     }

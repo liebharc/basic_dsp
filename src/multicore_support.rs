@@ -131,21 +131,21 @@ impl Chunk
     /// Partitions an array into the given number of chunks. It makes sure that all chunks have the same size
     /// and so it will happen that some elements at the end of the array are not part of any chunk. 
     #[inline]
-    fn partition<T>(array: &[T], array_length: usize, step_size: usize, number_of_chunks: usize) -> Chunks<T>
+    fn partition<T>(array: &[T], step_size: usize, number_of_chunks: usize) -> Chunks<T>
         where T: Copy + Clone + Send + Sync
     {
-        let chunk_size = Chunk::calc_chunk_size(array_length, step_size, number_of_chunks);
-        array[0 .. array_length].chunks(chunk_size)
+        let chunk_size = Chunk::calc_chunk_size(array.len(), step_size, number_of_chunks);
+        array[0 .. array.len()].chunks(chunk_size)
     }
     
     /// Partitions an array into the given number of chunks. It makes sure that all chunks have the same size
     /// and so it will happen that some elements at the end of the array are not part of any chunk. 
     #[inline]
-    fn partition_mut<T>(array: &mut [T], array_length: usize, step_size: usize, number_of_chunks: usize) -> ChunksMut<T>
+    fn partition_mut<T>(array: &mut [T],  step_size: usize, number_of_chunks: usize) -> ChunksMut<T>
         where T : Copy + Clone + Send
     {
-        let chunk_size = Chunk::calc_chunk_size(array_length, step_size, number_of_chunks);
-        array[0 .. array_length].chunks_mut(chunk_size)
+        let chunk_size = Chunk::calc_chunk_size(array.len(), step_size, number_of_chunks);
+        array.chunks_mut(chunk_size)
     }
     
     #[inline]
@@ -183,16 +183,16 @@ impl Chunk
     pub fn execute_partial<T,S,F>(
             complexity: Complexity, 
             settings: &MultiCoreSettings, 
-            array: &mut [T], array_length: usize, step_size: usize, 
+            array: &mut [T], step_size: usize, 
             arguments:S, ref function: F)
         where F: Fn(&mut [T], S) + 'static + Sync, 
               T: RealNumber,
               S: Sync + Copy + Send
-    {
+    {   let array_length = array.len();
         let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity, settings);
         if number_of_chunks > 1
         {
-            let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
+            let chunks = Chunk::partition_mut(array, step_size, number_of_chunks);
             crossbeam::scope(|scope| {
                 for chunk in chunks {
                     scope.spawn(move|| {
@@ -203,7 +203,7 @@ impl Chunk
         }
         else
         {
-            function(&mut array[0..array_length], arguments);
+            function(array, arguments);
         }
     }
     
@@ -213,17 +213,17 @@ impl Chunk
     pub fn execute_partial_multidim<T,S,F>(
             complexity: Complexity, 
             settings: &MultiCoreSettings, 
-            array: &mut [&mut [T]], array_length: usize, step_size: usize, 
+            array: &mut [&mut [T]], range: Range<usize>, step_size: usize, 
             arguments:S, ref function: F)
         where F: Fn(&mut Vec<&mut [T]>, Range<usize>, S) + 'static + Sync, 
               T: RealNumber,
               S: Sync + Copy + Send
     {
-        let array_len = array.len();
-        let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity, settings);
+        let dimensions = array.len();
+        let number_of_chunks = Chunk::determine_number_of_chunks(range.end - range.start, complexity, settings);
         if number_of_chunks > 1
         {
-            let ranges = Chunk::partition_in_ranges(array_length, step_size, number_of_chunks);
+            let ranges = Chunk::partition_in_ranges(range.end - range.start, step_size, number_of_chunks);
             // As an example: If this function is called with 2 arrays,
             // and each array has 1000 elements and is splitted into 4 chunks then
             // this:
@@ -249,12 +249,12 @@ impl Chunk
             // and b) creating a nested vector structure so that we can push
             // the elements on it in the correct order
             let mut flat_layout: Vec<&mut [T]> = array.iter_mut().flat_map(|a| {
-                Chunk::partition_mut(a, array_length, step_size, number_of_chunks)
+                Chunk::partition_mut(&mut a[range.start .. range.end], step_size, number_of_chunks)
             }).collect();
             
             let mut reorganized = Vec::with_capacity(number_of_chunks);
             for _ in 0..number_of_chunks {
-                reorganized.push(Vec::with_capacity(array_len));
+                reorganized.push(Vec::with_capacity(dimensions));
             }
             let mut i = flat_layout.len();
             while i > 0 {
@@ -274,8 +274,8 @@ impl Chunk
         else
         {
           let mut shortened: Vec<&mut [T]> = 
-            array.iter_mut().map(|a|&mut a[0..array_length]).collect();
-          function(&mut shortened, Range { start: 0, end: array_length }, arguments);
+            array.iter_mut().map(|a|&mut a[range.start..range.end]).collect();
+          function(&mut shortened, range, arguments);
         }
     }
     
@@ -285,16 +285,17 @@ impl Chunk
     pub fn execute_with_range<T,S,F>(
             complexity: Complexity, 
             settings: &MultiCoreSettings, 
-            array: &mut [T], array_length: usize, step_size: usize, 
+            array: &mut [T], step_size: usize, 
             arguments: S, ref function: F)
         where F: Fn(&mut [T], Range<usize>, S) + 'static + Sync,
               T : Copy + Clone + Send + Sync,
               S: Sync + Copy + Send
     {
+        let array_length = array.len();
         let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity, settings);
         if number_of_chunks > 1
         {
-            let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
+            let chunks = Chunk::partition_mut(array, step_size, number_of_chunks);
             let ranges = Chunk::partition_in_ranges(array_length, step_size, chunks.len());
             crossbeam::scope(|scope| {
                 for chunk in chunks.zip(ranges) {
@@ -306,7 +307,7 @@ impl Chunk
         }
         else
         {
-            function(&mut array[0..array_length], Range { start: 0, end: array_length }, arguments);
+            function(array, Range { start: 0, end: array_length }, arguments);
         }
     }
     
@@ -316,18 +317,19 @@ impl Chunk
     pub fn map_on_array_chunks<T,S,F, R>(
             complexity: Complexity, 
             settings: &MultiCoreSettings, 
-            array: &[T], array_length: usize, step_size: usize, 
+            array: &[T], step_size: usize, 
             arguments: S, ref function: F) -> Vec<R>
         where F: Fn(&[T], Range<usize>, S) -> R + 'static + Sync,
               T : Copy + Clone + Send + Sync,
               S: Sync + Copy + Send,
               R: Send
     {
-        let number_of_chunks = Chunk::determine_number_of_chunks(array_length, complexity, settings);
+        let array_len = array.len();
+        let number_of_chunks = Chunk::determine_number_of_chunks(array.len(), complexity, settings);
         if number_of_chunks > 1
         {
-            let chunks = Chunk::partition(array, array_length, step_size, number_of_chunks);
-            let ranges = Chunk::partition_in_ranges(array_length, step_size, chunks.len());
+            let chunks = Chunk::partition(array, step_size, number_of_chunks);
+            let ranges = Chunk::partition_in_ranges(array_len, step_size, chunks.len());
             let result = Vec::with_capacity(chunks.len());
             let stack_array = Arc::new(Mutex::new(result));
             crossbeam::scope(|scope| {
@@ -344,7 +346,7 @@ impl Chunk
         }
         else
         {
-            let result = function(&array[0..array_length], Range { start: 0, end: array_length }, arguments);
+            let result = function(array, Range { start: 0, end: array_len }, arguments);
             vec![result]
         }
     }
@@ -360,16 +362,17 @@ impl Chunk
     pub fn execute_sym_pairs_with_range<T,S,F>(
             complexity: Complexity, 
             settings: &MultiCoreSettings, 
-            array: &mut [T], array_length: usize, step_size: usize, 
+            array: &mut [T], step_size: usize, 
             arguments: S, ref function: F)
         where F: Fn(&mut &mut [T], &Range<usize>, &mut &mut [T], &Range<usize>, S) + 'static + Sync,
               T: Copy + Clone + Send + Sync,
               S: Sync + Copy + Send
     {
+        let array_length = array.len();
         let number_of_chunks = 2 * Chunk::determine_number_of_chunks(array_length, complexity, settings);
         if number_of_chunks > 2
         {
-            let chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
+            let chunks = Chunk::partition_mut(array, step_size, number_of_chunks);
             let ranges = Chunk::partition_in_ranges(array_length, step_size, chunks.len());
             let mut i = 0;
             let (mut chunks1, mut chunks2): (Vec<_>, Vec<_>) = 
@@ -392,7 +395,7 @@ impl Chunk
         }
         else
         {
-            let mut chunks = Chunk::partition_mut(array, array_length, step_size, number_of_chunks);
+            let mut chunks = Chunk::partition_mut(array, step_size, number_of_chunks);
             let mut chunks1 = chunks.next().unwrap();
             let len1 = chunks1.len();
             let mut chunks2 = chunks.next().unwrap();
@@ -411,17 +414,19 @@ impl Chunk
     pub fn get_a_fold_b<F, T, R>(
             complexity: Complexity, 
             settings: &MultiCoreSettings, 
-            a: &[T], a_len: usize, a_step: usize, 
-            b: &[T], b_len: usize, b_step: usize, 
+            a: &[T], a_step: usize, 
+            b: &[T], b_step: usize, 
             ref function: F) -> Vec<R>
         where F: Fn(&[T], Range<usize>, &[T]) -> R + 'static + Sync,
               T: Float + Copy + Clone + Send + Sync,
               R: Send
     {
+        let a_len = a.len();
+        let b_len = b.len();
         let number_of_chunks = Chunk::determine_number_of_chunks(a_len, complexity, settings);
         if number_of_chunks > 1
         {
-            let chunks = Chunk::partition(b, b_len, b_step, number_of_chunks);
+            let chunks = Chunk::partition(b, b_step, number_of_chunks);
             let ranges = Chunk::partition_in_ranges(a_len, a_step, chunks.len());
             let result = Vec::with_capacity(chunks.len());
             let stack_array = Arc::new(Mutex::new(result));
@@ -450,17 +455,18 @@ impl Chunk
     pub fn get_chunked_results<F, S, T, R>(
             complexity: Complexity, 
             settings: &MultiCoreSettings, 
-            a: &[T], a_len: usize, a_step: usize, 
+            a: &[T], a_step: usize, 
             arguments:S, ref function: F) -> Vec<R>
         where F: Fn(&[T], Range<usize>, S) -> R + 'static + Sync,
               T: Float + Copy + Clone + Send + Sync,
               R: Send,
               S: Sync + Copy + Send
     {
+        let a_len = a.len();
         let number_of_chunks = Chunk::determine_number_of_chunks(a_len, complexity, settings);
         if number_of_chunks > 1
         {
-            let chunks = Chunk::partition(a, a_len, a_step, number_of_chunks);
+            let chunks = Chunk::partition(a, a_step, number_of_chunks);
             let ranges = Chunk::partition_in_ranges(a_len, a_step, chunks.len());
             let result = Vec::with_capacity(chunks.len());
             let stack_array = Arc::new(Mutex::new(result));
@@ -489,17 +495,18 @@ impl Chunk
     pub fn from_src_to_dest<T,S,F>(
             complexity: Complexity, 
             settings: &MultiCoreSettings, 
-            original: &[T], original_length: usize, original_step: usize, 
-            target: &mut [T], target_length: usize, target_step: usize, 
+            original: &[T], original_step: usize, 
+            target: &mut [T], target_step: usize, 
             arguments: S, ref function: F)
         where F: Fn(&[T], Range<usize>, &mut [T], S) + 'static + Sync,
               T: Float + Copy + Clone + Send + Sync,
               S: Sync + Copy + Send
     {
+        let original_length = original.len();
         let number_of_chunks = Chunk::determine_number_of_chunks(original_length, complexity, settings);
         if number_of_chunks > 1
         {
-            let chunks = Chunk::partition_mut(target, target_length, target_step, number_of_chunks);
+            let chunks = Chunk::partition_mut(target, target_step, number_of_chunks);
             let ranges = Chunk::partition_in_ranges(original_length, original_step, chunks.len());
             
             crossbeam::scope(|scope| {
@@ -512,7 +519,7 @@ impl Chunk
         }
         else
         {
-            function(original, Range { start: 0, end: original_length }, &mut target[0..target_length], arguments);
+            function(original, Range { start: 0, end: original_length }, target, arguments);
         }
     }
 }
@@ -526,7 +533,7 @@ mod tests {
     fn partition_array()
     {
         let mut array = [0.0; 256];
-        let chunks = Chunk::partition_mut(&mut array, 256, 4, 2);
+        let chunks = Chunk::partition_mut(&mut array, 4, 2);
         assert_eq!(chunks.len(), 2);
         for chunk in chunks
         {
@@ -538,7 +545,7 @@ mod tests {
     fn partition_array_8_cores()
     {
         let mut array = [0.0; 1023];
-        let chunks = Chunk::partition_mut(&mut array, 1023, 4, 8);
+        let chunks = Chunk::partition_mut(&mut array, 4, 8);
         assert_eq!(chunks.len(), 8);
         let mut i = 0;
         for chunk in chunks
