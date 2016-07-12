@@ -976,26 +976,28 @@ macro_rules! add_multi_ops_impl {
                         }
                     };
                 
-                let complexity = if operations.len() > 5 { Complexity::Large } else { Complexity::Medium };
-                {
-                    let mut array: Vec<&mut [$data_type]> = vectors.iter_mut().map(|v| {
-                        let len = v.len();
-                        &mut v.data[0..len]
-                    }).collect();
-                    let range = Range { start: 0, end: vectorization_length };
-                    if any_complex_ops {
-                        Chunk::execute_partial_multidim(
-                            complexity, &multicore_settings,
-                            &mut array, range, $reg::len(), 
-                            (operations, first_vec_len), 
-                            Self::perform_complex_operations_par);
-                    }
-                    else {
-                        Chunk::execute_partial_multidim(
-                            complexity, &multicore_settings,
-                            &mut array, range, $reg::len(), 
-                            (operations, first_vec_len), 
-                            Self::perform_real_operations_par);   
+                if vectorization_length > 0 {
+                    let complexity = if operations.len() > 5 { Complexity::Large } else { Complexity::Medium };
+                    {
+                        let mut array: Vec<&mut [$data_type]> = vectors.iter_mut().map(|v| {
+                            let len = v.len();
+                            &mut v.data[0..len]
+                        }).collect();
+                        let range = Range { start: 0, end: vectorization_length };
+                        if any_complex_ops {
+                            Chunk::execute_partial_multidim(
+                                complexity, &multicore_settings,
+                                &mut array, range, $reg::len(), 
+                                (operations, first_vec_len), 
+                                Self::perform_complex_operations_par);
+                        }
+                        else {
+                            Chunk::execute_partial_multidim(
+                                complexity, &multicore_settings,
+                                &mut array, range, $reg::len(), 
+                                (operations, first_vec_len), 
+                                Self::perform_real_operations_par);   
+                        }
                     }
                 }
                 
