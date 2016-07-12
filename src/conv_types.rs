@@ -65,7 +65,7 @@ macro_rules! define_real_lookup_table {
     ($($name: ident);*) => {
         $(
             /// Allows to create a lookup table with linear interpolation between table points.
-            /// This usually speeds up a convolution and sacrifies accuracy.
+            /// This usually speeds up a convolution and sacrifices accuracy.
             pub struct $name<T>
                 where T: RealNumber {
                 table: Vec<T>,
@@ -95,7 +95,7 @@ macro_rules! define_complex_lookup_table {
     ($($name: ident);*) => {
         $(
             /// Allows to create a lookup table with linear interpolation between table points.
-            /// This usually speeds up a convolution and sacrifies accuracy.
+            /// This usually speeds up a convolution and sacrifices accuracy.
             pub struct $name<T>
                 where T: RealNumber {
                 table: Vec<Complex<T>>,
@@ -260,7 +260,7 @@ macro_rules! add_complex_time_linear_table_impl {
                 /// Convert the lookup table into frequency domain
                 pub fn fft(self) -> ComplexFrequencyLinearTableLookup<$data_type> {
                     let vector = ComplexTimeVector::from_complex_with_delta(&self.table, self.delta);
-                    let freq = vector.fft().expect("vector fft shouldn't fail");
+                    let freq = vector.fft().expect("vector FFT shouldn't fail");
                     let delta = freq.delta();
                     let freq = freq.complex_data();
                     let is_symmetric = self.is_symmetric;
@@ -283,7 +283,7 @@ macro_rules! add_real_time_linear_table_impl {
                 /// Convert the lookup table into a magnitude spectrum
                 pub fn fft(self) -> RealFrequencyLinearTableLookup<$data_type> {
                     let vector = RealTimeVector::from_array_with_delta(&self.table, self.delta);
-                    let freq = vector.fft().expect("vector fft shouldn't fail");
+                    let freq = vector.fft().expect("vector FFT shouldn't fail");
                     let freq = freq.magnitude().expect("vector magnitude shouldn't fail");
                     let is_symmetric = self.is_symmetric;
                     let delta = freq.delta();
@@ -308,7 +308,7 @@ macro_rules! add_complex_frequency_linear_table_impl {
                 /// Convert the lookup table into time domain
                 pub fn ifft(self) -> ComplexTimeLinearTableLookup<$data_type> {
                     let vector = ComplexFreqVector::from_complex_with_delta(&self.table, self.delta);
-                    let time = vector.ifft().expect("vector ifft shouldn't fail");
+                    let time = vector.ifft().expect("vector IFFT shouldn't fail");
                     let delta = time.delta();
                     let time = time.complex_data();
                     let is_symmetric = self.is_symmetric;
@@ -446,8 +446,8 @@ pub struct ForeignRealConvolutionFunction<T>
     
     /// The data which is passed to the function.
     ///
-    /// Actual data type is a const* c_void, but Rust doesn't allow that becaues it's usafe so we store
-    /// it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.
+    /// Actual data type is a `const* c_void`, but Rust doesn't allow that because it's unsafe so we store
+    /// it as `usize` and transmute it when necessary. Callers should make very sure safety is guaranteed.
     pub conv_data: usize,
     
     /// Indicates whether this function is symmetric around 0 or not.
@@ -500,8 +500,8 @@ pub struct ForeignComplexConvolutionFunction<T>
     
     /// The data which is passed to the window function
     ///
-    /// Actual data type is a const* c_void, but Rust doesn't allow that becaues it's usafe so we store
-    /// it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.
+    /// Actual data type is a `const* c_void`, but Rust doesn't allow that because it's unsafe so we store
+    /// it as `usize` and transmute it when necessary. Callers should make very sure safety is guaranteed.
     pub conv_data: usize,
     
     /// Indicates whether this function is symmetric around 0 or not.

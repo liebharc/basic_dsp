@@ -49,7 +49,7 @@ pub trait Identifier<T> : Sized
 }
 
 /// Operations for complex vectors which can be used in combination 
-/// with multi ops or prepared ops. For a dcoumentation of the specific operations
+/// with multi ops or prepared ops. For a documentation of the specific operations
 /// see [`ComplexVectorOps`](../trait.ComplexVectorOps.html).
 pub trait ComplexIdentifier<T> : Identifier<T>
     where T: RealNumber 
@@ -79,7 +79,7 @@ pub trait ComplexIdentifier<T> : Identifier<T>
 }
 
 /// Operations for real vectors which can be used on combination 
-/// with multi ops or prepared ops. For a dcoumentation of the specific operations
+/// with multi ops or prepared ops. For a documentation of the specific operations
 /// see [`RealVectorOps`](../trait.RealVectorOps.html).
 pub trait RealIdentifier<T> : Identifier<T>
     where T: RealNumber 
@@ -99,7 +99,7 @@ pub trait RealIdentifier<T> : Identifier<T>
 }
 
 /// Operations for all kind of vectors which can be used in combination 
-/// with multi ops or prepared ops. For a dcoumentation of the specific operations
+/// with multi ops or prepared ops. For a documentation of the specific operations
 /// see [`GenericVectorOps`](../trait.GenericVectorOps.html).
 pub trait GeneralIdentifier<T> : Identifier<T>
     where T: RealNumber 
@@ -323,7 +323,7 @@ pub struct PreparedOperation2<T, TI1, TI2, TO1, TO2>
 }
 
 /// A multi operation which holds a vector and records all changes
-/// which need to be done to the vectos. By calling `get` on the struct
+/// which need to be done to the vectors. By calling `get` on the struct
 /// all operations will be executed in one run.
 pub struct MultiOperation1<T, TO> 
     where T: RealNumber,
@@ -654,7 +654,7 @@ macro_rules! add_multi_ops_impl {
         {
             /// Adds new operations which will be executed with the next call to `exec`
             /// 
-            /// As a background: The function `operation` will be executed immediatly. It only operated on `Identifier` types and these serve as
+            /// As a background: The function `operation` will be executed immediately. It only operated on `Identifier` types and these serve as
             /// placeholder for vectors. Every operation done to an `Identifier`
             /// is recorded and will be executed on vectors if `exec` is called.
             pub fn add_ops<F, TN1, TN2>(self, operation: F) 
@@ -759,7 +759,7 @@ macro_rules! add_multi_ops_impl {
             
             /// Adds new operations which will be executed with the next call to `exec`
             /// 
-            /// As a background: The function `operation` will be executed immediatly. It only operated on `Identifier` types and these serve as
+            /// As a background: The function `operation` will be executed immediately. It only operated on `Identifier` types and these serve as
             /// placeholder for vectors. Every operation done to an `Identifier`
             /// is recorded and will be executed on vectors if `exec` is called.
             pub fn add_ops<F, TN>(self, operation: F) 
@@ -844,7 +844,7 @@ macro_rules! add_multi_ops_impl {
             
             /// Adds new operations which will be executed with the next call to `get`
             /// 
-            /// As a background: The function `operation` will be executed immediatly. It only operated on `Identifier` types and these serve as
+            /// As a background: The function `operation` will be executed immediately. It only operated on `Identifier` types and these serve as
             /// placeholder for vectors. Every operation done to an `Identifier`
             /// is recorded and will be executed on vectors if `get` is called.
             pub fn add_ops<F, TN1, TN2>(self, operation: F) 
@@ -872,7 +872,7 @@ macro_rules! add_multi_ops_impl {
             
             /// Adds new operations which will be executed with the next call to `get`
             /// 
-            /// As a background: The function `operation` will be executed immediatly. It only operated on `Identifier` types and these serve as
+            /// As a background: The function `operation` will be executed immediately. It only operated on `Identifier` types and these serve as
             /// placeholder for vectors. Every operation done to an `Identifier`
             /// is recorded and will be executed on vectors if `get` is called.
             

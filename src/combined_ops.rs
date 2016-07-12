@@ -15,7 +15,7 @@
 //! //    execute m on n
 //! ```
 //!
-//! with this method the pattern is changed slighly:
+//! with this method the pattern is changed slightly:
 //!
 //! ```no_run
 //! // pseudocode:
@@ -24,7 +24,7 @@
 //! //    execute m on n
 //! ```
 //!
-//! Both variants have the same complexity however the second one is benificial since we
+//! Both variants have the same complexity however the second one is beneficial since we
 //! have increased locality this way. This should help us by making better use of registers and 
 //! CPU caches.
 //!

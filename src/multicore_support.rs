@@ -21,7 +21,7 @@ pub enum Complexity {
     Large
 }
 
-/// Holds parameters which specifiy how multiple cores are used
+/// Holds parameters which specify how multiple cores are used
 /// to execute an operation.
 #[derive(Debug, Copy)] 
 #[repr(C)]  
@@ -225,7 +225,7 @@ impl Chunk
         {
             let ranges = Chunk::partition_in_ranges(range.end - range.start, step_size, number_of_chunks);
             // As an example: If this function is called with 2 arrays,
-            // and each array has 1000 elements and is splitted into 4 chunks then
+            // and each array has 1000 elements and is split into 4 chunks then
             // this:
             // let matrix = array.iter_mut().map(|a| {
             //    Chunk::partition_mut(a, array_length, step_size, number_of_chunks)
@@ -356,7 +356,7 @@ impl Chunk
     ///
     /// This function will chunk the array into an even number and pass every
     /// call to `function` two chunks. The two chunks will always be symmetric 
-    /// around 0. This allos `function` to make use of symmetry properties of the
+    /// around 0. This allows `function` to make use of symmetry properties of the
     /// underlying data or the argument.
     #[inline]
     pub fn execute_sym_pairs_with_range<T,S,F>(

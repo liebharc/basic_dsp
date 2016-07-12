@@ -33,7 +33,7 @@ use std::fmt::{Display, Debug};
 pub trait Interpolation<T> : DataVector<T> 
     where T : RealNumber {
     /// Interpolates `self` with the convolution function `function` by the real value `interpolation_factor`.
-    /// Interpolation is done in in time domain and the argument `conv_len` can be used to balance accuracy 
+    /// Interpolation is done in time domain and the argument `conv_len` can be used to balance accuracy 
     /// and computational performance. 
     /// A `delay` can be used to delay or phase shift the vector. The `delay` considers `self.delta()`.
     ///

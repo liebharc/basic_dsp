@@ -51,12 +51,12 @@ pub trait VectorConvolution<T> : DataVector<T>
 /// Provides a frequency response multiplication operation for data vectors.
 pub trait FrequencyMultiplication<T, C> : DataVector<T> 
     where T : RealNumber {
-    /// Mutiplies `self` with the frequency response function `frequency_response`.
+    /// Multiplies `self` with the frequency response function `frequency_response`.
     /// 
     /// In order to multiply a vector with another vector in frequency response use `multiply_vector`.
     /// # Assumptions
     /// The operation assumes that the vector contains a full spectrum centered at 0 Hz. If half a spectrum
-    /// or a fft shifted spectrum is provided the operation will come back with invalid results.
+    /// or a FFT shifted spectrum is provided the operation will come back with invalid results.
     /// # Failures
     /// VecResult may report the following `ErrorReason` members:
     /// 

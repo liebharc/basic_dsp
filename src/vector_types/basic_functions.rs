@@ -367,7 +367,7 @@ macro_rules! add_basic_private_impl {
                 }
                 
                 /// Creates shifted and reversed copies of the given data vector. 
-                /// This function is especially desgined for convolutions.
+                /// This function is especially designed for convolutions.
                 fn create_shifted_copies(vector: &GenericDataVector<$data_type>) -> Vec<Vec<$data_type>>{
                     let step = if vector.is_complex { 2 } else { 1 };
                     let number_of_shifts = $reg::len() / step;

@@ -155,7 +155,7 @@ pub trait FrequencyDomainOperations<T> : DataVector<T>
     fn plain_ifft(self) -> VecResult<Self::ComplexTimePartner>;
         
     /// This function mirrors the spectrum vector to transform a symmetric spectrum
-    /// into a full spectrum with the DC element at index 0 (no fft shift/swap halves).
+    /// into a full spectrum with the DC element at index 0 (no FFT shift/swap halves).
     ///
     /// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1` points.
     ///
@@ -198,7 +198,7 @@ pub trait FrequencyDomainOperations<T> : DataVector<T>
 }
 
 /// Defines all operations which are valid on `DataVectors` containing frequency domain data and
-/// the data is assumed to half of complex conjungate symmetric spectrum round 0 Hz where 
+/// the data is assumed to half of complex conjugate symmetric spectrum round 0 Hz where 
 /// the 0 Hz element itself is real.
 /// # Failures
 /// All operations in this trait fail with `VectorMustBeInFrquencyDomain`

@@ -48,7 +48,7 @@ pub struct HammingWindow<T>
 
 impl<T> HammingWindow<T>
     where T: RealNumber {
-    /// Createa a new Hamming window
+    /// Creates a new Hamming window
     pub fn new(alpha: T) -> Self {
         HammingWindow { alpha: alpha, beta: (T::one() - alpha) }
     }
@@ -83,8 +83,8 @@ pub struct ForeignWindowFunction<T>
     
     /// The data which is passed to the window function
     ///
-    /// Actual data type is a const* c_void, but Rust doesn't allow that becaues it's usafe so we store
-    /// it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.
+    /// Actual data type is a `const* c_void`, but Rust doesn't allow that because it's unsafe so we store
+    /// it as `usize` and transmute it when necessary. Callers should make very sure safety is guaranteed.
     pub window_data: usize,
     
     /// Indicates whether this function is symmetric around 0 or not.

@@ -25,7 +25,7 @@ pub trait DataVector<T> : Sized
     /// on this vector.
     fn is_complex(&self) -> bool;
     
-    /// The number of valid elements in the the vector.
+    /// The number of valid elements in the vector.
     fn len(&self) -> usize;
     
     /// Sets the vector length to the given length. 
@@ -50,7 +50,7 @@ pub trait DataVector<T> : Sized
 pub enum DataVectorDomain {
     /// Time domain, the x-axis is in [s]
     Time,
-    /// Frequency domain, the x-axis in in [Hz]
+    /// Frequency domain, the x-axis in [Hz]
     Frequency
 }
 
@@ -161,7 +161,7 @@ pub trait StatisticsOps<T> : Sized
     fn statistics(&self) -> Statistics<T>;
     
     /// Calculates the statistics of the data contained in the vector as if the vector would
-    /// have been split into `len` pieces. `self.len` should be devisable by `len` without a remainder,
+    /// have been split into `len` pieces. `self.len` should be dividable by `len` without a remainder,
     /// but this isn't enforced by the implementation.
     /// # Example
     ///
@@ -359,7 +359,7 @@ pub trait GenericVectorOps<T>: DataVector<T>
     /// Reverses the data inside the vector.
     fn reverse(self) -> VecResult<Self>;
     
-    /// Ineterleaves zeros `factor - 1`times after every vector element, so that the resulting
+    /// Interleaves zeros `factor - 1`times after every vector element, so that the resulting
     /// vector will have a length of `self.len() * factor`.
     ///
     /// Note: Remember that each complex number consists of two floating points and interleaving 
@@ -581,7 +581,7 @@ pub trait GenericVectorOps<T>: DataVector<T>
     /// Calculates the principal value of the inverse hyperbolic tangent of each element in radians.
     fn atanh(self) -> VecResult<Self>;
     
-    /// This function swaps both halves of the vector. This operation is also called fft shift
+    /// This function swaps both halves of the vector. This operation is also called FFT shift
     /// Use it after a `plain_fft` to get a spectrum which is centered at `0 Hz`.
     ///
     /// # Example
@@ -595,7 +595,7 @@ pub trait GenericVectorOps<T>: DataVector<T>
     fn swap_halves(self) -> VecResult<Self>;
     
     /// Splits the vector into several smaller vectors. `self.len()` must be dividable by
-    /// `targets.len()` without a remainder and this conidition must be true too `targets.len() > 0`.
+    /// `targets.len()` without a remainder and this condition must be true too `targets.len() > 0`.
     /// # Failures
     /// VecResult may report the following `ErrorReason` members:
     /// 
@@ -701,7 +701,7 @@ pub trait RealVectorOps<T> : DataVector<T>
     /// ```
     fn to_complex(self) -> VecResult<Self::ComplexPartner>;
     
-    /// Each value in the vector is devided by the divisor and the remainder is stored in the resulting 
+    /// Each value in the vector is dividable by the divisor and the remainder is stored in the resulting 
     /// vector. This the same a modulo operation or to phase wrapping.
     ///
     /// # Example
@@ -763,7 +763,7 @@ pub trait RealVectorOps<T> : DataVector<T>
     fn real_statistics(&self) -> Statistics<T>;
     
     /// Calculates the statistics of the data contained in the vector as if the vector would
-    /// have been split into `len` pieces. `self.len` should be devisable by `len` without a remainder,
+    /// have been split into `len` pieces. `self.len` should be dividable by `len` without a remainder,
     /// but this isn't enforced by the implementation. See also  [`StatisticsOps`](trait.StatisticsOps.html).
     /// # Example
     ///
@@ -1082,7 +1082,7 @@ pub trait ComplexVectorOps<T> : DataVector<T>
     fn complex_statistics(&self) -> Statistics<Complex<T>>;
     
     /// Calculates the statistics of the data contained in the vector as if the vector would
-    /// have been split into `len` pieces. `self.len` should be devisable by `len` without a remainder,
+    /// have been split into `len` pieces. `self.len` should be dividable by `len` without a remainder,
     /// but this isn't enforced by the implementation. See also  [`StatisticsOps`](trait.StatisticsOps.html).
     /// # Example
     ///
@@ -1189,7 +1189,7 @@ pub enum ErrorReason {
     /// `self.is_complex()` == `argument.is_complex()` &&
     /// `self.domain()` == `argument.domain()` &&
     /// `self.delta()`== `argument.domain()`;
-    /// Consider to convert one of the vectors so that this conidition is true.
+    /// Consider to convert one of the vectors so that this condition is true.
     /// The necessary operations may include FFT/IFFT, complex/real conversion and resampling.
     VectorMetaDataMustAgree,
     
@@ -1214,9 +1214,9 @@ pub enum ErrorReason {
     /// The symmetry definition follows soon however more important is that the element at 0 Hz
     /// which happens to be the first vector element must be real. This is actually violated 
     /// if this error message appears and the rest of the definition is only listed here for
-    /// completness.
+    /// completeness.
     /// The required symmetry is that for every point `vector[x].conj() == vector[-x]`(pseudocode)
-    /// where `x` is the x-axis position relativ to 0Hz and `conj` is the complex conjungate.
+    /// where `x` is the x-axis position relative to 0 Hz and `conj` is the complex conjugate.
     VectorMustBeConjSymmetric,
     
     /// `self.points()` must be an odd number.
