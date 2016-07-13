@@ -3,6 +3,11 @@ use num::complex::Complex;
 pub trait Simd<T> : Sized
     where T: Sized + Sync + Send
 {
+    /// On some CPU architectures memory access needs to be aligned or otherwise
+    /// the process will crash. This method takes a vector an divides it in three ranges:
+    /// beginning, center, end. Beginning and end may not be loaded directly as SIMD registers.
+    /// Center will contain most of the data.
+    fn calc_data_alignment_reqs(array: &[T]) -> (usize, usize, usize);
     type Array;
     fn to_array(self) -> Self::Array;
     fn from_array(array: Self::Array) -> Self;
