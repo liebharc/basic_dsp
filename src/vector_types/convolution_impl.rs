@@ -360,12 +360,7 @@ macro_rules! add_conv_impl{
                         let dest = convert_mut(&mut temp[0..len]);
                         let other_iter = &other[other_start .. other_end];
 
-                        let shifted_copies = Self::create_shifted_copies(vector);
-                        let mut shifts = Vec::with_capacity(shifted_copies.len());
-                        for shift in 0..shifted_copies.len() {
-                            let simd = $reg::array_to_regs(&shifted_copies[shift]);
-                            shifts.push(simd);
-                        }
+                        let shifts = Self::create_shifted_copies(vector);
 
                         let scalar_len = conv_len + $reg::len(); // + $reg::len() due to rounding of odd numbers
                         let conv_len = conv_len as isize;
@@ -375,14 +370,14 @@ macro_rules! add_conv_impl{
                             i += 1;
                         }
 
-                        let len_rounded = (len / $reg::len()) * $reg::len(); // The exact value is of no importance here
-                        let simd = $reg::array_to_regs(&self.data[0..len_rounded]);
+                        let (scalar_left, _, vectorization_length) = $reg::calc_data_alignment_reqs(&self.data[0..len]);
+                        let simd = $reg::array_to_regs(&self.data[scalar_left..vectorization_length]);
                         for num in &mut dest[scalar_len .. points - scalar_len] {
                             let end = (i + conv_len) as usize;
                             let shift = end % shifts.len();
                             let end = (end + shifts.len() - 1) / shifts.len();
                             let mut sum = $reg::splat(0.0);
-                            let shifted = shifts[shift];
+                            let shifted = &shifts[shift];
                             let simd_iter = simd[end - shifted.len() .. end].iter(); 
                             let iteration = 
                                 simd_iter

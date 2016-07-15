@@ -1069,23 +1069,19 @@ macro_rules! add_multi_ops_impl {
                 arguments: (&[Operation<$data_type>], usize))
             {
                 let (operations, points) = arguments;
-                let mut regs: Vec<&mut [$reg]> = 
-                    array.iter_mut()
-                        .map(|a|$reg::array_to_regs_mut(a))
-                        .collect();
-                let mut vectors = Vec::with_capacity(regs.len());
-                for j in 0..regs.len() {
-                   vectors.push(regs[j][0]);
+                let mut vectors = Vec::with_capacity(array.len());
+                for _ in 0..array.len() {
+                   vectors.push($reg::splat(0.0));
                 }
             
                 let reg_len = $reg::len() / 2;
                 let mut index = range.start / 2;
-                for i in 0..regs[0].len()
-                { 
-                    for j in 0..regs.len() {
+                let mut i =0;
+                while i < array[0].len() {
+                    for j in 0..array.len() {
                         unsafe {
                             let elem = vectors.get_unchecked_mut(j);
-                            *elem = *regs.get_unchecked(j).get_unchecked(i);
+                            *elem = $reg::load(array.get_unchecked(j), i)
                         }
                     }
                 
@@ -1098,14 +1094,14 @@ macro_rules! add_multi_ops_impl {
                             points);
                     }
                     
-                    for j in 0..regs.len() {
+                    for j in 0..array.len() {
                         unsafe {
-                            let elem = regs.get_unchecked_mut(j).get_unchecked_mut(i);
-                            *elem = *vectors.get_unchecked(j);
+                            vectors.get_unchecked(j).store(array.get_unchecked_mut(j), i);
                         }
                     }
                     
                     index += reg_len;
+                    i += $reg::len();
                 }
             }
             
@@ -1115,23 +1111,19 @@ macro_rules! add_multi_ops_impl {
                 arguments: (&[Operation<$data_type>], usize))
             {
                 let (operations, points) = arguments;
-                let mut regs: Vec<&mut [$reg]> = 
-                    array.iter_mut()
-                        .map(|a|$reg::array_to_regs_mut(a))
-                        .collect();
-                let mut vectors = Vec::with_capacity(regs.len());
-                for j in 0..regs.len() {
-                   vectors.push(regs[j][0]);
+                let mut vectors = Vec::with_capacity(array.len());
+                for _ in 0..array.len() {
+                   vectors.push($reg::splat(0.0));
                 }
             
                 let reg_len = $reg::len();
                 let mut index = range.start;
-                for i in 0..regs[0].len()
-                { 
-                    for j in 0..regs.len() {
+                let mut i =0;
+                while i < array[0].len() {
+                for j in 0..array.len() {
                         unsafe {
                             let elem = vectors.get_unchecked_mut(j);
-                            *elem = *regs.get_unchecked(j).get_unchecked(i);
+                            *elem = $reg::load(array.get_unchecked(j), i)
                         }
                     }
                 
@@ -1144,14 +1136,14 @@ macro_rules! add_multi_ops_impl {
                             points);
                     }
                     
-                    for j in 0..regs.len() {
+                    for j in 0..array.len() {
                         unsafe {
-                            let elem = regs.get_unchecked_mut(j).get_unchecked_mut(i);
-                            *elem = *vectors.get_unchecked(j);
+                            vectors.get_unchecked(j).store(array.get_unchecked_mut(j), i);
                         }
                     }
                     
                     index += reg_len;
+                    i += $reg::len();
                 }
             }
             

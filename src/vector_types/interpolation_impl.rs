@@ -177,17 +177,12 @@ macro_rules! define_interpolation_impl {
                             self.is_complex,
                             interpolation_factor,
                             delay);
-                        let mut shifts_as_float = Vec::with_capacity(vectors.len() * number_of_shifts);
+                        let mut shifts = Vec::with_capacity(vectors.len() * number_of_shifts);
                         for vector in &vectors {
                             let shifted_copies = Self::create_shifted_copies(&vector);
                             for shift in shifted_copies {
-                                shifts_as_float.push(shift);
+                                shifts.push(shift);
                             }
-                        }
-                        let mut shifts = Vec::with_capacity(shifts_as_float.len());
-                        for shift in 0..shifts_as_float.len() {
-                            let simd = $reg::array_to_regs(&shifts_as_float[shift]);
-                            shifts.push(simd);
                         }
                         
                         let len = self.len();
@@ -196,7 +191,7 @@ macro_rules! define_interpolation_impl {
                         let dest = convert_mut(&mut temp[0..new_len]);
                         
                         let len = dest.len();
-                        let scalar_len = vectors[0].points() * interpolation_factor; // + 1 due to rounding of odd numbers
+                        let scalar_len = vectors[0].points() * interpolation_factor;
                                                 
                         let mut i = 0;
                         for num in &mut dest[0..scalar_len] {
@@ -207,8 +202,8 @@ macro_rules! define_interpolation_impl {
                             i += 1;
                         }
                         
-                        let len_rounded = (self.data.len() / $reg::len()) * $reg::len(); // The exact value is of no importance here
-                        let simd = $reg::array_to_regs(&self.data[0..len_rounded]);
+                        let (scalar_left, _, vectorization_length) = $reg::calc_data_alignment_reqs(&self.data[0..self.data.len()]);
+                        let simd = $reg::array_to_regs(&self.data[scalar_left..vectorization_length]);
                         // Length of a SIMD reg relative to the length of type T 
                         // which is 1 for real numbers or 2 for complex numbers
                         let simd_len_in_t = $reg::len() / step; 
@@ -226,7 +221,7 @@ macro_rules! define_interpolation_impl {
                                 x => interpolation_factor - x
                             };
                             let selection = factor_shift * simd_len_in_t + simd_shift;
-                            let shifted = shifts[selection];
+                            let shifted = &shifts[selection];
                             let mut sum = $reg::splat(0.0);
                             let simd_iter = simd[simd_end - shifted.len() .. simd_end].iter();
                             let iteration = 

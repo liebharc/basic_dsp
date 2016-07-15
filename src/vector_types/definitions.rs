@@ -343,6 +343,9 @@ pub trait GenericVectorOps<T>: DataVector<T>
     /// If `points` smaller than the `self.len()` then this operation won't do anything.
     ///
     /// Note: Each point is two floating point numbers if the vector is complex.
+    /// Note2: Adding zeros to the signal changes its power. If this function is used to zero pad to a power
+    /// of 2 in order to speed up FFT calculation then it might be necessary to multiply it with `len_after/len_before`\
+    /// so that the spectrum shows the expected power. Of course this is depending on the application.
     /// # Example
     ///
     /// ```

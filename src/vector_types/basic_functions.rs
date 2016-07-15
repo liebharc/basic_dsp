@@ -149,7 +149,7 @@ macro_rules! add_basic_private_impl {
                             Chunk::from_src_to_dest(
                             complexity, &self.multicore_settings,
                             &mut array[scalar_left..vectorization_length], $reg::len(), 
-                            &mut temp[scalar_left..vectorization_length], $reg::len() / 2, argument,
+                            &mut temp[scalar_left/2..vectorization_length/2], $reg::len() / 2, argument,
                             move |array, range, target, argument| {
                                 let array = $reg::array_to_regs(&array[range.start..range.end]);
                                 let mut j = 0;
@@ -395,7 +395,7 @@ macro_rules! add_basic_private_impl {
                 
                 /// Creates shifted and reversed copies of the given data vector. 
                 /// This function is especially designed for convolutions.
-                fn create_shifted_copies(vector: &GenericDataVector<$data_type>) -> Vec<Vec<$data_type>>{
+                fn create_shifted_copies(vector: &GenericDataVector<$data_type>) -> Vec<Vec<$reg>>{
                     let step = if vector.is_complex { 2 } else { 1 };
                     let number_of_shifts = $reg::len() / step;
                     let mut shifted_copies = Vec::with_capacity(number_of_shifts);
@@ -416,30 +416,58 @@ macro_rules! add_basic_private_impl {
                             x => (number_of_shifts - x) * step
                         };
                         let min_len = vector.len() + shift;
-                        let len =  (min_len + $reg::len() - 1) / $reg::len() * $reg::len();
-                        let mut copy = Vec::with_capacity(len);
+                        let len =  (min_len + $reg::len() - 1) / $reg::len();
+                        let mut copy: Vec<$reg> = Vec::with_capacity(len);
                         
-                        let mut j = len;
+                        let mut j = len  * $reg::len();;
+                        let mut k = 0;
+                        let mut current = $reg::splat(0.0).to_array();
                         while j > 0 {
                             j -= step;
                             if j < shift || j >= min_len {
-                                copy.push(0.0);
+                                current[k] = 0.0;
+                                k += 1;
+                                if k >= current.len() {
+                                    copy.push($reg::load(&current, 0));
+                                    k = 0;
+                                }
                                 if step > 1 {
-                                    copy.push(0.0);
+                                    current[k] = 0.0;
+                                    k += 1;
+                                    if k >= current.len() {
+                                        copy.push($reg::load(&current, 0));
+                                        k = 0;
+                                    }
                                 }
                             } else {
                                 if step > 1 {
                                     let im = *data.next().unwrap();
                                     let re = *data.next().unwrap();
-                                    copy.push(re);
-                                    copy.push(im);
+                                    current[k] = re;
+                                    k += 1;
+                                    if k >= current.len() {
+                                        copy.push($reg::load(&current, 0));
+                                        k = 0;
+                                    }
+                                    current[k] = im;
+                                    k += 1;
+                                    if k >= current.len() {
+                                        copy.push($reg::load(&current, 0));
+                                        k = 0;
+                                    }
                                 }
                                 else {
-                                    copy.push(*data.next().unwrap());
+                                    current[k] = *data.next().unwrap();
+                                    k += 1;
+                                    if k >= current.len() {
+                                        copy.push($reg::load(&current, 0));
+                                        k = 0;
+                                    }
                                 }
                             }
                         }
                         
+                        assert_eq!(k, 0);
                         assert_eq!(copy.len(), len);
                         shifted_copies.push(copy);
                         i += 1;
