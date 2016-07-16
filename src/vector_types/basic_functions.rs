@@ -155,7 +155,7 @@ macro_rules! add_basic_private_impl {
                                 let mut j = 0;
                                 for reg in array {
                                     let result = simd_op(*reg, argument);
-                                    result.store_half(target, j);
+                                    result.store_half_unchecked(target, j);
                                     j += $reg::len() / 2;
                                 }
                             });

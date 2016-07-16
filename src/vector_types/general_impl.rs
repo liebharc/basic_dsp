@@ -197,7 +197,7 @@ macro_rules! impl_binary_smaller_vector_operation {
                                 if j + $reg::len() < original.len() { 
                                     $reg::load_unchecked(original, j)
                                 } else {
-                                    $reg::load_wrap(original, j)
+                                    $reg::load_wrap_unchecked(original, j)
                                 };
                             let vector2 = $reg::load_unchecked(target, i);
                             let result = vector2.$simd_op(vector1);
@@ -249,7 +249,7 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
                                 if j + $reg::len() < original.len() { 
                                     $reg::load_unchecked(original, j)
                                 } else {
-                                    $reg::load_wrap(original, j)
+                                    $reg::load_wrap_unchecked(original, j)
                                 };
                             let vector2 = $reg::load_unchecked(target, i);
                             let result = vector2.$simd_op(vector1);

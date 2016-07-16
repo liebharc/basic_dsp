@@ -25,10 +25,10 @@ impl Simd<f32> for f32x8
     }
     
     #[inline]
-    fn load_wrap(array: &[f32], idx: usize) -> f32x8 {
+    fn load_wrap_unchecked(array: &[f32], idx: usize) -> f32x8 {
         let mut temp = [0.0; 8];
         for i in 0..temp.len() {
-            temp[i] = array[(idx + i) % array.len()];
+            temp[i] = unsafe {*array.get_unchecked((idx + i) % array.len())};
         }
         f32x8::load(&temp, 0)
     }
@@ -142,14 +142,16 @@ impl Simd<f32> for f32x8
     }
     
     #[inline]
-    fn store_half(self, target: &mut [f32], index: usize)
+    fn store_half_unchecked(self, target: &mut [f32], index: usize)
     {
         let mut temp = [0.0; 8];
         self.store(&mut temp, 0);
-        target[index] = temp[0];
-        target[index + 1] = temp[1];
-        target[index + 2] = temp[4];
-        target[index + 3] = temp[5];
+        unsafe {
+            *target.get_unchecked_mut(index) = temp[0];
+            *target.get_unchecked_mut(index+ 1) = temp[1];
+            *target.get_unchecked_mut(index + 2) = temp[4];
+            *target.get_unchecked_mut(index + 3) = temp[5];
+        }
     }
     
     #[inline]
@@ -190,10 +192,10 @@ impl Simd<f64> for f64x4
     }
     
     #[inline]
-    fn load_wrap(array: &[f64], idx: usize) -> f64x4 {
+    fn load_wrap_unchecked(array: &[f64], idx: usize) -> f64x4 {
         let mut temp = [0.0; 4];
         for i in 0..temp.len() {
-            temp[i] = array[(idx + i) % array.len()];
+            temp[i] = unsafe { *array.get_unchecked((idx + i) % array.len()) };
         }
         f64x4::load(&temp, 0)
     }
@@ -297,12 +299,14 @@ impl Simd<f64> for f64x4
     }
     
     #[inline]
-    fn store_half(self, target: &mut [f64], index: usize)
+    fn store_half_unchecked(self, target: &mut [f64], index: usize)
     {
         let mut temp = [0.0; 4];
         self.store(&mut temp, 0);
-        target[index] = temp[0];
-        target[index + 1] = temp[2];
+        unsafe {
+            *target.get_unchecked_mut(index) = temp[0];
+            *target.get_unchecked_mut(index + 1) = temp[2];
+        }
     }
     
     #[inline]

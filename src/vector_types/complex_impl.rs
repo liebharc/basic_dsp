@@ -113,7 +113,7 @@ macro_rules! add_complex_impl {
                             { 
                                 let vector = $reg::load_unchecked(array, j);
                                 let result = vector.complex_abs();
-                                result.store_half(target, i);
+                                result.store_half_unchecked(target, i);
                                 j += $reg::len();
                                 i += $reg::len() / 2;
                             }
