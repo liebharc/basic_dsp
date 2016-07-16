@@ -8,7 +8,6 @@ pub trait Simd<T> : Sized
     fn to_array(self) -> Self::Array;
     type ComplexArray;
     fn len() -> usize;
-    fn load(array: &[T], idx: usize) -> Self;
     fn load_wrap(array: &[T], idx: usize) -> Self;
     fn from_complex(value: Complex<T>) -> Self;
     fn add_real(self, value: T) -> Self;
@@ -24,7 +23,6 @@ pub trait Simd<T> : Sized
     /// as complex number
     fn complex_abs2(self) -> Self;
     fn sqrt(self) -> Self;
-    fn store(self, target: &mut [T], index: usize);
     fn store_half(self, target: &mut [T], index: usize);
     fn mul_complex(self, value: Self) -> Self;
     fn div_complex(self, value: Self) -> Self;

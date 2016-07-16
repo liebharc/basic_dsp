@@ -25,11 +25,6 @@ impl Simd<f32> for f32x8
     }
     
     #[inline]
-    fn load(array: &[f32], idx: usize) -> f32x8 {
-        f32x8::load(array, idx)
-    }
-    
-    #[inline]
     fn load_wrap(array: &[f32], idx: usize) -> f32x8 {
         let mut temp = [0.0; 8];
         for i in 0..temp.len() {
@@ -147,12 +142,6 @@ impl Simd<f32> for f32x8
     }
     
     #[inline]
-    fn store(self, target: &mut [f32], index: usize)
-    {
-        self.store(target, index);
-    }
-    
-    #[inline]
     fn store_half(self, target: &mut [f32], index: usize)
     {
         let mut temp = [0.0; 8];
@@ -198,11 +187,6 @@ impl Simd<f64> for f64x4
     #[inline]
     fn len() -> usize {
         4
-    }
-    
-    #[inline]
-    fn load(array: &[f64], idx: usize) -> f64x4 {
-        f64x4::load(array, idx)
     }
     
     #[inline]
@@ -311,12 +295,6 @@ impl Simd<f64> for f64x4
     fn sqrt(self) -> f64x4 {
         f64x4::new(self.extract(0).sqrt(), self.extract(1).sqrt(), self.extract(2).sqrt(), self.extract(3).sqrt())
     }
-    
-    #[inline]
-    fn store(self, target: &mut [f64], index: usize)
-    {
-        self.store(target, index);
-    } 
     
     #[inline]
     fn store_half(self, target: &mut [f64], index: usize)
