@@ -364,7 +364,7 @@ pub extern fn map_inplace_complex32(vector: Box<DataVector32>, map: extern fn(Co
 /// Warning: This function interface heavily works around the Rust type system and the safety
 /// it provides. Use with great care!
 #[no_mangle]
-pub extern fn map_aggregate_complex32(vector: Box<DataVector32>, map: extern fn(Complex32, usize) -> *const c_void, aggregate: extern fn(*const c_void, *const c_void) -> *const c_void) -> ScalarResult<*const c_void> {
+pub extern fn map_aggregate_complex32(vector: &DataVector32, map: extern fn(Complex32, usize) -> *const c_void, aggregate: extern fn(*const c_void, *const c_void) -> *const c_void) -> ScalarResult<*const c_void> {
     unsafe 
     {
         let result = convert_scalar!(
@@ -940,7 +940,7 @@ pub extern fn map_inplace_real32(vector: Box<DataVector32>, map: extern fn(f32, 
 /// Warning: This function interface heavily works around the Rust type system and the safety
 /// it provides. Use with great care!
 #[no_mangle]
-pub extern fn map_aggregate_real32(vector: Box<DataVector32>, map: extern fn(f32, usize) -> *const c_void, aggregate: extern fn(*const c_void, *const c_void) -> *const c_void) -> ScalarResult<*const c_void> {
+pub extern fn map_aggregate_real32(vector: &DataVector32, map: extern fn(f32, usize) -> *const c_void, aggregate: extern fn(*const c_void, *const c_void) -> *const c_void) -> ScalarResult<*const c_void> {
     unsafe 
     {
         let result = convert_scalar!(
@@ -1152,6 +1152,11 @@ pub extern fn map_real_ops1_f32(ops: &mut PreparedOp1F32, arg: usize, map: exter
 #[no_mangle]
 pub extern fn map_complex_ops1_f32(ops: &mut PreparedOp1F32, arg: usize, map: extern fn(Complex32, usize) -> Complex32) {
     ops.add_enum_op(Operation::MapComplex(arg, Arc::new(move|v, i|map(v, i))))
+}
+
+#[no_mangle]
+pub extern fn delete_ops1_f32(vector: Box<PreparedOp1F32>) {
+    drop(vector);
 }
 
 //----------------------------------------------
@@ -1375,4 +1380,9 @@ pub extern fn map_real_ops2_f32(ops: &mut PreparedOp2F32, arg: usize, map: exter
 #[no_mangle]
 pub extern fn map_complex_ops2_f32(ops: &mut PreparedOp2F32, arg: usize, map: extern fn(Complex32, usize) -> Complex32) {
     ops.add_enum_op(Operation::MapComplex(arg, Arc::new(move|v, i|map(v, i))))
+}
+
+#[no_mangle]
+pub extern fn delete_ops2_f32(vector: Box<PreparedOp2F32>) {
+    drop(vector);
 }
