@@ -12,9 +12,9 @@ if ($tag_matches -eq 0) {
     $all_okay = $false
 }
 else {
-    $tag_date = $(git show --format="%ci" "$current_tag" | Select -Skip 4 -First 1);
+    $tag_date = $(git show --format="%ci" "$current_tag" | Select -First 1);
     $tag_date = $(Get-Date $tag_date)
-    $age_difference_days = ($last_master_update - $tag_date).TotalDays
+        $age_difference_days = ($last_master_update - $tag_date).TotalDays
     if ($age_difference_days -gt 3.0) {
         $Host.UI.WriteErrorLine("Tag $current_tag is $age_difference_days days older than the latest master commit, did you forget to update the lib version?")
         $all_okay = $false
