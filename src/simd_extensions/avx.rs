@@ -10,6 +10,7 @@ impl Simd<f32> for f32x8
 {
     type Array = [f32; 8];
 
+    #[inline]
     fn to_array(self) -> Self::Array {
         let mut target = [0.0; 8];
         self.store(&mut target, 0);
@@ -18,14 +19,17 @@ impl Simd<f32> for f32x8
     
     type ComplexArray = [Complex<f32>; 4];
     
+    #[inline]
     fn len() -> usize {
         8
     }
     
+    #[inline]
     fn load(array: &[f32], idx: usize) -> f32x8 {
         f32x8::load(array, idx)
     }
     
+    #[inline]
     fn load_wrap(array: &[f32], idx: usize) -> f32x8 {
         let mut temp = [0.0; 8];
         for i in 0..temp.len() {
@@ -34,29 +38,34 @@ impl Simd<f32> for f32x8
         f32x8::load(&temp, 0)
     }
     
+    #[inline]
     fn from_complex(value: Complex<f32>) -> f32x8 {
         f32x8::new(value.re, value.im, value.re, value.im,
                    value.re, value.im, value.re, value.im)
     }
     
+    #[inline]
     fn add_real(self, value: f32) -> f32x8
     {
         let increment = f32x8::splat(value);
         self + increment
     }
     
+    #[inline]
     fn add_complex(self, value: Complex<f32>) -> f32x8
     {
         let increment = f32x8::from_complex(value);
         self + increment
     }
     
+    #[inline]
     fn scale_real(self, value: f32) -> f32x8
     {
         let scale_vector = f32x8::splat(value); 
         self * scale_vector
     }
     
+    #[inline]
     fn scale_complex(self, value: Complex<f32>) -> f32x8
     {
         let scaling_real = f32x8::splat(value.re);
@@ -69,6 +78,7 @@ impl Simd<f32> for f32x8
         parallel.addsub(cross)
     }
     
+    #[inline]
     fn mul_complex(self, value: f32x8) -> f32x8
     {
         let scaling_real = f32x8::new(value.extract(0), value.extract(0), value.extract(2), value.extract(2),
@@ -83,6 +93,7 @@ impl Simd<f32> for f32x8
         parallel.addsub(cross)
     }
     
+    #[inline]
     fn div_complex(self, value: f32x8) -> f32x8
     {
                 let scaling_imag = f32x8::new(self.extract(0), self.extract(0), self.extract(2), self.extract(2),
@@ -104,37 +115,44 @@ impl Simd<f32> for f32x8
                    div.extract(5), div.extract(4), div.extract(7), div.extract(6))
     }
     
+    #[inline]
     fn complex_abs_squared(self) -> f32x8
     {
         let squared = self * self;
         squared.hadd(squared)
     }
     
+    #[inline]
     fn complex_abs(self) -> f32x8
     {
         let squared_sum = self.complex_abs_squared();
         AvxF32x8::sqrt(squared_sum)
     }
     
+    #[inline]
     fn complex_abs_squared2(self) -> f32x8
     {
         self.complex_abs_squared()
     }
     
+    #[inline]
     fn complex_abs2(self) -> f32x8
     {
         self.complex_abs()
     }
-        
+     
+    #[inline]   
     fn sqrt(self) -> f32x8 {
         AvxF32x8::sqrt(self)
     }
     
+    #[inline]
     fn store(self, target: &mut [f32], index: usize)
     {
         self.store(target, index);
     }
     
+    #[inline]
     fn store_half(self, target: &mut [f32], index: usize)
     {
         let mut temp = [0.0; 8];
@@ -145,6 +163,7 @@ impl Simd<f32> for f32x8
         target[index + 3] = temp[5];
     }
     
+    #[inline]
     fn sum_real(&self) -> f32 {
         self.extract(0) +
         self.extract(1) +
@@ -156,6 +175,7 @@ impl Simd<f32> for f32x8
         self.extract(7)
     }
     
+    #[inline]
     fn sum_complex(&self) -> Complex<f32> {
         Complex::<f32>::new(self.extract(0) + self.extract(2) + self.extract(4) + self.extract(6),
                             self.extract(1) + self.extract(3) + self.extract(5) + self.extract(7))
@@ -166,6 +186,7 @@ impl Simd<f64> for f64x4
 {
     type Array = [f64; 4];
 
+    #[inline]
     fn to_array(self) -> Self::Array {
         let mut target = [0.0; 4];
         self.store(&mut target, 0);
@@ -174,14 +195,17 @@ impl Simd<f64> for f64x4
     
     type ComplexArray = [Complex<f64>; 2];
     
+    #[inline]
     fn len() -> usize {
         4
     }
     
+    #[inline]
     fn load(array: &[f64], idx: usize) -> f64x4 {
         f64x4::load(array, idx)
     }
     
+    #[inline]
     fn load_wrap(array: &[f64], idx: usize) -> f64x4 {
         let mut temp = [0.0; 4];
         for i in 0..temp.len() {
@@ -190,28 +214,33 @@ impl Simd<f64> for f64x4
         f64x4::load(&temp, 0)
     }
     
+    #[inline]
     fn from_complex(value: Complex<f64>) -> f64x4 {
         f64x4::new(value.re, value.im, value.re, value.im)
     }
     
+    #[inline]
     fn add_real(self, value: f64) -> f64x4
     {
         let increment = f64x4::splat(value);
         self + increment
     }
     
+    #[inline]
     fn add_complex(self, value: Complex<f64>) -> f64x4
     {
         let increment = f64x4::new(value.re, value.im, value.re, value.im);
         self + increment
     }
     
+    #[inline]
     fn scale_real(self, value: f64) -> f64x4
     {
         let scale_vector = f64x4::splat(value); 
         self * scale_vector
     }
     
+    #[inline]
     fn scale_complex(self, value: Complex<f64>) -> f64x4
     {
         let scaling_real = f64x4::splat(value.re);
@@ -223,6 +252,7 @@ impl Simd<f64> for f64x4
         parallel.addsub(cross)
     }
     
+    #[inline]
     fn mul_complex(self, value: f64x4) -> f64x4
     {
         let scaling_real = f64x4::new(value.extract(0), value.extract(0), value.extract(2), value.extract(2));
@@ -234,6 +264,7 @@ impl Simd<f64> for f64x4
         parallel.addsub(cross)
     }
     
+    #[inline]
     fn div_complex(self, value: f64x4) -> f64x4
     {
         let scaling_imag = f64x4::new(self.extract(0), self.extract(0), self.extract(2), self.extract(2));
@@ -250,37 +281,44 @@ impl Simd<f64> for f64x4
         f64x4::new(div.extract(1), div.extract(0), div.extract(3), div.extract(2))
     }
     
+    #[inline]
     fn complex_abs_squared(self) -> f64x4
     {
         let squared = self * self;
         squared.hadd(squared)
     }
     
+    #[inline]
     fn complex_abs(self) -> f64x4
     {
         let squared_sum = self.complex_abs_squared();
         AvxF64x4::sqrt(squared_sum)
     }
     
+    #[inline]
     fn complex_abs_squared2(self) -> f64x4
     {
         self.complex_abs_squared()
     }
     
+    #[inline]
     fn complex_abs2(self) -> f64x4
     {
         self.complex_abs()
     }
     
+    #[inline]
     fn sqrt(self) -> f64x4 {
         f64x4::new(self.extract(0).sqrt(), self.extract(1).sqrt(), self.extract(2).sqrt(), self.extract(3).sqrt())
     }
     
+    #[inline]
     fn store(self, target: &mut [f64], index: usize)
     {
         self.store(target, index);
     } 
     
+    #[inline]
     fn store_half(self, target: &mut [f64], index: usize)
     {
         let mut temp = [0.0; 4];
@@ -289,6 +327,7 @@ impl Simd<f64> for f64x4
         target[index + 1] = temp[2];
     }
     
+    #[inline]
     fn sum_real(&self) -> f64 {
         self.extract(0) +
         self.extract(1) +
@@ -296,6 +335,7 @@ impl Simd<f64> for f64x4
         self.extract(3)
     }
     
+    #[inline]
     fn sum_complex(&self) -> Complex<f64> {
         Complex::<f64>::new(self.extract(0) + self.extract(2), self.extract(1) + self.extract(3))
     }
