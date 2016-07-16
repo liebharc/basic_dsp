@@ -47,12 +47,12 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-3034' class='srclink' href='../src/basic_dsp/src/vector_types/time_freq_impl.rs.html#82-127' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-3010' class='srclink' href='../src/basic_dsp/vector_types/time_freq_impl.rs.html#82-127' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait SymmetricTimeDomainOperations&lt;T&gt;: <a class='trait' href='../basic_dsp/trait.DataVector.html' title='basic_dsp::DataVector'>DataVector</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
     type <a href='#associatedtype.FreqPartner' class='type'>FreqPartner</a>;
-    fn <a href='#tymethod.plain_sfft' class='fnname'>plain_sfft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>FreqPartner</a>&gt;;
-    fn <a href='#tymethod.sfft' class='fnname'>sfft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>FreqPartner</a>&gt;;
-    fn <a href='#tymethod.windowed_sfft' class='fnname'>windowed_sfft</a>(self, window: &amp;<a class='trait' href='../basic_dsp/window_functions/trait.WindowFunction.html' title='basic_dsp::window_functions::WindowFunction'>WindowFunction</a>&lt;T&gt;) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>FreqPartner</a>&gt;;
+    fn <a href='#tymethod.plain_sfft' class='fnname'>plain_sfft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::FreqPartner&gt;;
+    fn <a href='#tymethod.sfft' class='fnname'>sfft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::FreqPartner&gt;;
+    fn <a href='#tymethod.windowed_sfft' class='fnname'>windowed_sfft</a>(self, window: &amp;<a class='trait' href='../basic_dsp/window_functions/trait.WindowFunction.html' title='basic_dsp::window_functions::WindowFunction'>WindowFunction</a>&lt;T&gt;) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::FreqPartner&gt;;
 }</pre><div class='docblock'><p>Defines all operations which are valid on <code>DataVectors</code> containing real time domain data.</p>
 
 <h1 id='failures' class='section-header'><a href='#failures'>Failures</a></h1>
@@ -64,7 +64,7 @@ with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#3
         <h3 id='associatedtype.FreqPartner' class='method stab '><code>type <a href='#associatedtype.FreqPartner' class='type'>FreqPartner</a></code></h3></div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.plain_sfft' class='method stab '><code>fn <a href='#tymethod.plain_sfft' class='fnname'>plain_sfft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>FreqPartner</a>&gt;</code></h3><div class='docblock'><p>Performs a Symmetric Fast Fourier Transformation under the assumption that <code>self</code>
+        <h3 id='tymethod.plain_sfft' class='method stab '><code>fn <a href='#tymethod.plain_sfft' class='fnname'>plain_sfft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::FreqPartner&gt;</code></h3><div class='docblock'><p>Performs a Symmetric Fast Fourier Transformation under the assumption that <code>self</code>
 is symmetric around the center. This assumption
 isn&#39;t verified and no error is raised if the vector isn&#39;t symmetric.</p>
 
@@ -81,7 +81,7 @@ vector.</p>
 
 <h1 id='unstable' class='section-header'><a href='#unstable'>Unstable</a></h1>
 <p>Symmetric IFFTs are unstable and may only work under certain conditions.</p>
-</div><h3 id='tymethod.sfft' class='method stab '><code>fn <a href='#tymethod.sfft' class='fnname'>sfft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>FreqPartner</a>&gt;</code></h3><div class='docblock'><p>Performs a Symmetric Fast Fourier Transformation under the assumption that <code>self</code>
+</div><h3 id='tymethod.sfft' class='method stab '><code>fn <a href='#tymethod.sfft' class='fnname'>sfft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::FreqPartner&gt;</code></h3><div class='docblock'><p>Performs a Symmetric Fast Fourier Transformation under the assumption that <code>self</code>
 is symmetric around the center. This assumption
 isn&#39;t verified and no error is raised if the vector isn&#39;t symmetric.</p>
 
@@ -95,7 +95,7 @@ isn&#39;t verified and no error is raised if the vector isn&#39;t symmetric.</p>
 
 <h1 id='unstable-1' class='section-header'><a href='#unstable-1'>Unstable</a></h1>
 <p>Symmetric IFFTs are unstable and may only work under certain conditions.</p>
-</div><h3 id='tymethod.windowed_sfft' class='method stab '><code>fn <a href='#tymethod.windowed_sfft' class='fnname'>windowed_sfft</a>(self, window: &amp;<a class='trait' href='../basic_dsp/window_functions/trait.WindowFunction.html' title='basic_dsp::window_functions::WindowFunction'>WindowFunction</a>&lt;T&gt;) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricTimeDomainOperations.html' title='basic_dsp::SymmetricTimeDomainOperations'>FreqPartner</a>&gt;</code></h3><div class='docblock'><p>Performs a Symmetric Fast Fourier Transformation under the assumption that <code>self</code>
+</div><h3 id='tymethod.windowed_sfft' class='method stab '><code>fn <a href='#tymethod.windowed_sfft' class='fnname'>windowed_sfft</a>(self, window: &amp;<a class='trait' href='../basic_dsp/window_functions/trait.WindowFunction.html' title='basic_dsp::window_functions::WindowFunction'>WindowFunction</a>&lt;T&gt;) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::FreqPartner&gt;</code></h3><div class='docblock'><p>Performs a Symmetric Fast Fourier Transformation under the assumption that <code>self</code>
 is symmetric around the center. This assumption
 isn&#39;t verified and no error is raised if the vector isn&#39;t symmetric.</p>
 

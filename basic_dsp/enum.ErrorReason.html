@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-325' class='srclink' href='../src/basic_dsp/src/vector_types/definitions.rs.html#1181-1234' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-344' class='srclink' href='../src/basic_dsp/vector_types/definitions.rs.html#1184-1237' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum ErrorReason {
     VectorsMustHaveTheSameSize,
     VectorMetaDataMustAgree,
@@ -71,7 +71,7 @@ in most cases this means that the following must be true:
 <code>self.is_complex()</code> == <code>argument.is_complex()</code> &amp;&amp;
 <code>self.domain()</code> == <code>argument.domain()</code> &amp;&amp;
 <code>self.delta()</code>== <code>argument.domain()</code>;
-Consider to convert one of the vectors so that this conidition is true.
+Consider to convert one of the vectors so that this condition is true.
 The necessary operations may include FFT/IFFT, complex/real conversion and resampling.</p>
 </div><span id='variant.VectorMustBeComplex' class='variant'><code>VectorMustBeComplex</code></span><div class='docblock'><p>The operation requires the vector to be complex.</p>
 </div><span id='variant.VectorMustBeReal' class='variant'><code>VectorMustBeReal</code></span><div class='docblock'><p>The operation requires the vector to be real.</p>
@@ -84,26 +84,26 @@ Please open a defect if this isn&#39;t the case.</p>
 The symmetry definition follows soon however more important is that the element at 0 Hz
 which happens to be the first vector element must be real. This is actually violated 
 if this error message appears and the rest of the definition is only listed here for
-completness.
+completeness.
 The required symmetry is that for every point <code>vector[x].conj() == vector[-x]</code>(pseudocode)
-where <code>x</code> is the x-axis position relativ to 0Hz and <code>conj</code> is the complex conjungate.</p>
+where <code>x</code> is the x-axis position relative to 0 Hz and <code>conj</code> is the complex conjugate.</p>
 </div><span id='variant.VectorMustHaveAnOddLength' class='variant'><code>VectorMustHaveAnOddLength</code></span><div class='docblock'><p><code>self.points()</code> must be an odd number.</p>
 </div><span id='variant.ArgumentFunctionMustBeSymmetric' class='variant'><code>ArgumentFunctionMustBeSymmetric</code></span><div class='docblock'><p>The function passed as argument must be symmetric</p>
 </div><span id='variant.InvalidNumberOfArgumentsForCombinedOp' class='variant'><code>InvalidNumberOfArgumentsForCombinedOp</code></span><div class='docblock'><p>The number of arguments passed into a combined operation methods doesn&#39;t match
 with the number of arguments specified previously via the <code>add_op</code> methods.</p>
 </div><span id='variant.VectorMustNotBeEmpty' class='variant'><code>VectorMustNotBeEmpty</code></span><div class='docblock'><p>The operation isn&#39;t specified for an empty vector.</p>
-</div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='enum' href='../basic_dsp/enum.ErrorReason.html' title='basic_dsp::ErrorReason'>ErrorReason</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-338' class='srclink' href='../src/basic_dsp/src/vector_types/definitions.rs.html#1177' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='enum' href='../basic_dsp/enum.ErrorReason.html' title='basic_dsp::ErrorReason'>ErrorReason</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-339' class='srclink' href='../src/basic_dsp/src/vector_types/definitions.rs.html#1178' title='goto source code'>[src]</a></span></h3>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='enum' href='../basic_dsp/enum.ErrorReason.html' title='basic_dsp::ErrorReason'>ErrorReason</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-318' class='srclink' href='../src/basic_dsp/vector_types/definitions.rs.html#1180' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='enum' href='../basic_dsp/enum.ErrorReason.html' title='basic_dsp::ErrorReason'>ErrorReason</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-319' class='srclink' href='../src/basic_dsp/vector_types/definitions.rs.html#1181' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='enum' href='../basic_dsp/enum.ErrorReason.html' title='basic_dsp::ErrorReason'>ErrorReason</a></code></h4>
 <div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
 </div><h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></h4>
 <div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
-</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='enum' href='../basic_dsp/enum.ErrorReason.html' title='basic_dsp::ErrorReason'>ErrorReason</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-342' class='srclink' href='../src/basic_dsp/src/vector_types/definitions.rs.html#1179' title='goto source code'>[src]</a></span></h3>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='enum' href='../basic_dsp/enum.ErrorReason.html' title='basic_dsp::ErrorReason'>ErrorReason</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-322' class='srclink' href='../src/basic_dsp/vector_types/definitions.rs.html#1182' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.eq' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class='enum' href='../basic_dsp/enum.ErrorReason.html' title='basic_dsp::ErrorReason'>ErrorReason</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>This method tests for <code>self</code> and <code>other</code> values to be equal, and is used by <code>==</code>. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq">Read more</a></p>
 </div><h4 id='method.ne' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, other: &amp;Rhs) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></h4>
 <div class='docblock'><p>This method tests for <code>!=</code>.</p>
-</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='enum' href='../basic_dsp/enum.ErrorReason.html' title='basic_dsp::ErrorReason'>ErrorReason</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-348' class='srclink' href='../src/basic_dsp/src/vector_types/definitions.rs.html#1180' title='goto source code'>[src]</a></span></h3>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='enum' href='../basic_dsp/enum.ErrorReason.html' title='basic_dsp::ErrorReason'>ErrorReason</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-328' class='srclink' href='../src/basic_dsp/vector_types/definitions.rs.html#1183' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
 <div class='docblock'><p>Formats the value using the given formatter.</p>
 </div></div></section>

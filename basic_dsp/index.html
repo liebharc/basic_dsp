@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-0' class='srclink' href='../src/basic_dsp/src/lib.rs.html#1-147' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-0' class='srclink' href='../src/basic_dsp/lib.rs.html#1-146' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Basic digital signal processing (DSP) operations</p>
 
 <p>Digital signal processing based on real or complex vectors in time or frequency domain. Vectors are expected to typically have a size which is at least in the order
@@ -64,7 +64,7 @@ The reason for this decision is that it seems to be more practical to ignore the
 
 <p>Right now the library uses pretty aggressive parallelization. So this means that it will keep all CPU cores busy
 even if the performance gain is minimal e.g. because the multi core overhead is nearly as large as the performance boost
-of multiple cores. In future there will be likely an option which tells the library how it should balance betweeen processing time
+of multiple cores. In future there will be likely an option which tells the library how it should balance between processing time
 and CPU utilization. The library also avoids to allocate and free memory and it allocates memory for temporary allocation.
 so the library is likely not suitable for devices which are tight on memory. On normal desktop computers there is usually plenty of
 memory available so that the optimization focus is on decreasing the processing time for every (common) operation and to spent little time with memory allocations.  </p>
@@ -145,7 +145,7 @@ must not be accessed again.</p>
                            <td><a class='struct' href='struct.MultiCoreSettings.html'
                                   title='basic_dsp::MultiCoreSettings'>MultiCoreSettings</a></td>
                            <td class='docblock short'>
-                                <p>Holds parameters which specifiy how multiple cores are used
+                                <p>Holds parameters which specify how multiple cores are used
 to execute an operation.</p>
                            </td>
                        </tr>
@@ -317,7 +317,7 @@ is to allow to reuse the memory of a vector for different operations.</p>
                                   title='basic_dsp::SymmetricFrequencyDomainOperations'>SymmetricFrequencyDomainOperations</a></td>
                            <td class='docblock short'>
                                 <p>Defines all operations which are valid on <code>DataVectors</code> containing frequency domain data and
-the data is assumed to half of complex conjungate symmetric spectrum round 0 Hz where 
+the data is assumed to half of complex conjugate symmetric spectrum round 0 Hz where 
 the 0 Hz element itself is real.</p>
                            </td>
                        </tr>

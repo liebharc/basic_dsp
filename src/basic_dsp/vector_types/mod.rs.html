@@ -507,6 +507,7 @@
 <span id="463">463</span>
 <span id="464">464</span>
 <span id="465">465</span>
+<span id="466">466</span>
 </pre><pre class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>reject_if</span> {
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>self_</span>: <span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>condition</span>: <span class='ident'>expr</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>message</span>: <span class='ident'>expr</span>) <span class='op'>=&gt;</span> {
@@ -613,7 +614,8 @@
         <span class='ident'>OffsetOps</span>,
         <span class='ident'>DotProductOps</span>,
         <span class='ident'>StatisticsOps</span>,
-        <span class='ident'>PaddingOption</span>
+        <span class='ident'>PaddingOption</span>,
+        <span class='ident'>VectorIter</span>
     };
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>vector_types</span>::<span class='ident'>time_freq_impl</span>::{
         <span class='ident'>TimeDomainOperations</span>,
@@ -634,7 +636,7 @@
 <span class='kw'>use</span> <span class='ident'>multicore_support</span>::{<span class='ident'>Chunk</span>, <span class='ident'>Complexity</span>, <span class='ident'>MultiCoreSettings</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ptr</span>;
-<span class='kw'>use</span> <span class='ident'>simd_extensions</span>::{<span class='ident'>Simd</span>, <span class='ident'>Reg32</span>, <span class='ident'>Reg64</span>};
+<span class='kw'>use</span> <span class='ident'>simd_extensions</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::{<span class='ident'>Index</span>, <span class='ident'>IndexMut</span>, <span class='ident'>Range</span>, <span class='ident'>RangeTo</span>, <span class='ident'>RangeFrom</span>, <span class='ident'>RangeFull</span>};
 <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>traits</span>::<span class='ident'>Zero</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Mul</span>;

@@ -468,7 +468,7 @@
         <span class='kw'>let</span> (<span class='kw-2'>mut</span> <span class='ident'>data</span>, <span class='ident'>twiddles</span>) <span class='op'>=</span> <span class='ident'>set_up_bench</span>(<span class='number'>4</span>, <span class='ident'>stride</span>, <span class='ident'>num_ffts</span>);
 
         <span class='ident'>b</span>.<span class='ident'>iter</span>(<span class='op'>||</span> <span class='kw'>unsafe</span> {
-            <span class='ident'>butterfly_4</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>data</span>, <span class='ident'>stride</span>, <span class='kw-2'>&amp;</span><span class='ident'>twiddles</span>, <span class='ident'>num_ffts</span>, <span class='boolvalue'>false</span>)
+            <span class='ident'>butterfly_4</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>data</span>, <span class='ident'>stride</span>, <span class='kw-2'>&amp;</span><span class='ident'>twiddles</span>, <span class='ident'>num_ffts</span>, <span class='bool-val'>false</span>)
         });
     }
 

@@ -47,14 +47,14 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-3060' class='srclink' href='../src/basic_dsp/src/vector_types/time_freq_impl.rs.html#207-237' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-3036' class='srclink' href='../src/basic_dsp/vector_types/time_freq_impl.rs.html#207-237' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait SymmetricFrequencyDomainOperations&lt;T&gt;: <a class='trait' href='../basic_dsp/trait.DataVector.html' title='basic_dsp::DataVector'>DataVector</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
     type <a href='#associatedtype.RealTimePartner' class='type'>RealTimePartner</a>;
-    fn <a href='#tymethod.plain_sifft' class='fnname'>plain_sifft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricFrequencyDomainOperations.html' title='basic_dsp::SymmetricFrequencyDomainOperations'>RealTimePartner</a>&gt;;
-    fn <a href='#tymethod.sifft' class='fnname'>sifft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricFrequencyDomainOperations.html' title='basic_dsp::SymmetricFrequencyDomainOperations'>RealTimePartner</a>&gt;;
-    fn <a href='#tymethod.windowed_sifft' class='fnname'>windowed_sifft</a>(self, window: &amp;<a class='trait' href='../basic_dsp/window_functions/trait.WindowFunction.html' title='basic_dsp::window_functions::WindowFunction'>WindowFunction</a>&lt;T&gt;) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricFrequencyDomainOperations.html' title='basic_dsp::SymmetricFrequencyDomainOperations'>RealTimePartner</a>&gt;;
+    fn <a href='#tymethod.plain_sifft' class='fnname'>plain_sifft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::RealTimePartner&gt;;
+    fn <a href='#tymethod.sifft' class='fnname'>sifft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::RealTimePartner&gt;;
+    fn <a href='#tymethod.windowed_sifft' class='fnname'>windowed_sifft</a>(self, window: &amp;<a class='trait' href='../basic_dsp/window_functions/trait.WindowFunction.html' title='basic_dsp::window_functions::WindowFunction'>WindowFunction</a>&lt;T&gt;) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::RealTimePartner&gt;;
 }</pre><div class='docblock'><p>Defines all operations which are valid on <code>DataVectors</code> containing frequency domain data and
-the data is assumed to half of complex conjungate symmetric spectrum round 0 Hz where 
+the data is assumed to half of complex conjugate symmetric spectrum round 0 Hz where 
 the 0 Hz element itself is real.</p>
 
 <h1 id='failures' class='section-header'><a href='#failures'>Failures</a></h1>
@@ -67,7 +67,7 @@ isn&#39;t real.</p>
         <h3 id='associatedtype.RealTimePartner' class='method stab '><code>type <a href='#associatedtype.RealTimePartner' class='type'>RealTimePartner</a></code></h3></div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.plain_sifft' class='method stab '><code>fn <a href='#tymethod.plain_sifft' class='fnname'>plain_sifft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricFrequencyDomainOperations.html' title='basic_dsp::SymmetricFrequencyDomainOperations'>RealTimePartner</a>&gt;</code></h3><div class='docblock'><p>Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that <code>self</code>
+        <h3 id='tymethod.plain_sifft' class='method stab '><code>fn <a href='#tymethod.plain_sifft' class='fnname'>plain_sifft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::RealTimePartner&gt;</code></h3><div class='docblock'><p>Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that <code>self</code>
 contains half of a symmetric spectrum starting from 0 Hz. This assumption
 isn&#39;t verified and no error is raised if the spectrum isn&#39;t symmetric. The reason
 for this is that there is no robust verification possible.</p>
@@ -76,13 +76,13 @@ for this is that there is no robust verification possible.</p>
 
 <p>This version of the IFFT neither applies a window nor does it scale the 
 vector.</p>
-</div><h3 id='tymethod.sifft' class='method stab '><code>fn <a href='#tymethod.sifft' class='fnname'>sifft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricFrequencyDomainOperations.html' title='basic_dsp::SymmetricFrequencyDomainOperations'>RealTimePartner</a>&gt;</code></h3><div class='docblock'><p>Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that <code>self</code>
+</div><h3 id='tymethod.sifft' class='method stab '><code>fn <a href='#tymethod.sifft' class='fnname'>sifft</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::RealTimePartner&gt;</code></h3><div class='docblock'><p>Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that <code>self</code>
 contains half of a symmetric spectrum starting from 0 Hz. This assumption
 isn&#39;t verified and no error is raised if the spectrum isn&#39;t symmetric. The reason
 for this is that there is no robust verification possible.</p>
 
 <p>The argument indicates whether the resulting real vector should have <code>2*N</code> or <code>2*N-1</code> points.</p>
-</div><h3 id='tymethod.windowed_sifft' class='method stab '><code>fn <a href='#tymethod.windowed_sifft' class='fnname'>windowed_sifft</a>(self, window: &amp;<a class='trait' href='../basic_dsp/window_functions/trait.WindowFunction.html' title='basic_dsp::window_functions::WindowFunction'>WindowFunction</a>&lt;T&gt;) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.SymmetricFrequencyDomainOperations.html' title='basic_dsp::SymmetricFrequencyDomainOperations'>RealTimePartner</a>&gt;</code></h3><div class='docblock'><p>Performs a Symmetric Inverse Fast Fourier Transformation (SIFFT) and removes the FFT window.
+</div><h3 id='tymethod.windowed_sifft' class='method stab '><code>fn <a href='#tymethod.windowed_sifft' class='fnname'>windowed_sifft</a>(self, window: &amp;<a class='trait' href='../basic_dsp/window_functions/trait.WindowFunction.html' title='basic_dsp::window_functions::WindowFunction'>WindowFunction</a>&lt;T&gt;) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::RealTimePartner&gt;</code></h3><div class='docblock'><p>Performs a Symmetric Inverse Fast Fourier Transformation (SIFFT) and removes the FFT window.
 The SIFFT is performed under the assumption that <code>self</code>
 contains half of a symmetric spectrum starting from 0 Hz. This assumption
 isn&#39;t verified and no error is raised if the spectrum isn&#39;t symmetric. The reason

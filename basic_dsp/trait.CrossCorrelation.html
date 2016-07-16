@@ -47,12 +47,12 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-4120' class='srclink' href='../src/basic_dsp/src/vector_types/correlation_impl.rs.html#51-68' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-4090' class='srclink' href='../src/basic_dsp/vector_types/correlation_impl.rs.html#51-68' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait CrossCorrelation&lt;T&gt;: <a class='trait' href='../basic_dsp/trait.DataVector.html' title='basic_dsp::DataVector'>DataVector</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
     type <a href='#associatedtype.FreqPartner' class='type'>FreqPartner</a>;
-    fn <a href='#tymethod.prepare_argument' class='fnname'>prepare_argument</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.CrossCorrelation.html' title='basic_dsp::CrossCorrelation'>FreqPartner</a>&gt;;
-    fn <a href='#tymethod.prepare_argument_padded' class='fnname'>prepare_argument_padded</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.CrossCorrelation.html' title='basic_dsp::CrossCorrelation'>FreqPartner</a>&gt;;
-    fn <a href='#tymethod.correlate' class='fnname'>correlate</a>(self, other: &amp;Self::<a class='trait' href='../basic_dsp/trait.CrossCorrelation.html' title='basic_dsp::CrossCorrelation'>FreqPartner</a>) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;;
+    fn <a href='#tymethod.prepare_argument' class='fnname'>prepare_argument</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::FreqPartner&gt;;
+    fn <a href='#tymethod.prepare_argument_padded' class='fnname'>prepare_argument_padded</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::FreqPartner&gt;;
+    fn <a href='#tymethod.correlate' class='fnname'>correlate</a>(self, other: &amp;Self::FreqPartner) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;;
 }</pre><div class='docblock'><p>Cross-correlation of data vectors. See also <a href="https://en.wikipedia.org/wiki/Cross-correlation">https://en.wikipedia.org/wiki/Cross-correlation</a></p>
 
 <p>The correlation is calculated in two steps. This is done to give you more control over two things:</p>
@@ -97,15 +97,15 @@ However the actual implementation is lacking tests.</p>
         <h3 id='associatedtype.FreqPartner' class='method stab '><code>type <a href='#associatedtype.FreqPartner' class='type'>FreqPartner</a></code></h3></div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.prepare_argument' class='method stab '><code>fn <a href='#tymethod.prepare_argument' class='fnname'>prepare_argument</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.CrossCorrelation.html' title='basic_dsp::CrossCorrelation'>FreqPartner</a>&gt;</code></h3><div class='docblock'><p>Prepares an argument to be used for convolution. Preparing an argument includes two steps:</p>
+        <h3 id='tymethod.prepare_argument' class='method stab '><code>fn <a href='#tymethod.prepare_argument' class='fnname'>prepare_argument</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::FreqPartner&gt;</code></h3><div class='docblock'><p>Prepares an argument to be used for convolution. Preparing an argument includes two steps:</p>
 
 <ol>
 <li>Calculate the plain FFT</li>
 <li>Calculate the complex conjugate</li>
 </ol>
-</div><h3 id='tymethod.prepare_argument_padded' class='method stab '><code>fn <a href='#tymethod.prepare_argument_padded' class='fnname'>prepare_argument_padded</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::<a class='trait' href='../basic_dsp/trait.CrossCorrelation.html' title='basic_dsp::CrossCorrelation'>FreqPartner</a>&gt;</code></h3><div class='docblock'><p>Prepares an argument to be used for convolution. The argument is zero padded to length of <code>2 * self.points() - 1</code>
+</div><h3 id='tymethod.prepare_argument_padded' class='method stab '><code>fn <a href='#tymethod.prepare_argument_padded' class='fnname'>prepare_argument_padded</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self::FreqPartner&gt;</code></h3><div class='docblock'><p>Prepares an argument to be used for convolution. The argument is zero padded to length of <code>2 * self.points() - 1</code>
 and then the same operations are performed as described for <code>prepare_argument</code>.</p>
-</div><h3 id='tymethod.correlate' class='method stab '><code>fn <a href='#tymethod.correlate' class='fnname'>correlate</a>(self, other: &amp;Self::<a class='trait' href='../basic_dsp/trait.CrossCorrelation.html' title='basic_dsp::CrossCorrelation'>FreqPartner</a>) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Calculates the correlation between <code>self</code> and <code>other</code>. <code>other</code> needs to be a time vector which
+</div><h3 id='tymethod.correlate' class='method stab '><code>fn <a href='#tymethod.correlate' class='fnname'>correlate</a>(self, other: &amp;Self::FreqPartner) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Calculates the correlation between <code>self</code> and <code>other</code>. <code>other</code> needs to be a time vector which
 went through one of the prepare functions <code>prepare_argument</code> or <code>prepare_argument_padded</code>. See also the 
 trait description for more details.</p>
 </div></div>

@@ -795,7 +795,7 @@
     ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>: <span class='ident'>ident</span>);<span class='op'>*</span>) <span class='op'>=&gt;</span> {
         $(
             <span class='doccomment'>/// Allows to create a lookup table with linear interpolation between table points.</span>
-            <span class='doccomment'>/// This usually speeds up a convolution and sacrifies accuracy.</span>
+            <span class='doccomment'>/// This usually speeds up a convolution and sacrifices accuracy.</span>
             <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
                 <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
                 <span class='ident'>table</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
@@ -825,7 +825,7 @@
     ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>: <span class='ident'>ident</span>);<span class='op'>*</span>) <span class='op'>=&gt;</span> {
         $(
             <span class='doccomment'>/// Allows to create a lookup table with linear interpolation between table points.</span>
-            <span class='doccomment'>/// This usually speeds up a convolution and sacrifies accuracy.</span>
+            <span class='doccomment'>/// This usually speeds up a convolution and sacrifices accuracy.</span>
             <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
                 <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
                 <span class='ident'>table</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>,
@@ -990,7 +990,7 @@
                 <span class='doccomment'>/// Convert the lookup table into frequency domain</span>
                 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>fft</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>ComplexFrequencyLinearTableLookup</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> {
                     <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='ident'>ComplexTimeVector</span>::<span class='ident'>from_complex_with_delta</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>table</span>, <span class='self'>self</span>.<span class='ident'>delta</span>);
-                    <span class='kw'>let</span> <span class='ident'>freq</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>fft</span>().<span class='ident'>expect</span>(<span class='string'>&quot;vector fft shouldn&#39;t fail&quot;</span>);
+                    <span class='kw'>let</span> <span class='ident'>freq</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>fft</span>().<span class='ident'>expect</span>(<span class='string'>&quot;vector FFT shouldn&#39;t fail&quot;</span>);
                     <span class='kw'>let</span> <span class='ident'>delta</span> <span class='op'>=</span> <span class='ident'>freq</span>.<span class='ident'>delta</span>();
                     <span class='kw'>let</span> <span class='ident'>freq</span> <span class='op'>=</span> <span class='ident'>freq</span>.<span class='ident'>complex_data</span>();
                     <span class='kw'>let</span> <span class='ident'>is_symmetric</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>is_symmetric</span>;
@@ -1013,7 +1013,7 @@
                 <span class='doccomment'>/// Convert the lookup table into a magnitude spectrum</span>
                 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>fft</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>RealFrequencyLinearTableLookup</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> {
                     <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='ident'>RealTimeVector</span>::<span class='ident'>from_array_with_delta</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>table</span>, <span class='self'>self</span>.<span class='ident'>delta</span>);
-                    <span class='kw'>let</span> <span class='ident'>freq</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>fft</span>().<span class='ident'>expect</span>(<span class='string'>&quot;vector fft shouldn&#39;t fail&quot;</span>);
+                    <span class='kw'>let</span> <span class='ident'>freq</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>fft</span>().<span class='ident'>expect</span>(<span class='string'>&quot;vector FFT shouldn&#39;t fail&quot;</span>);
                     <span class='kw'>let</span> <span class='ident'>freq</span> <span class='op'>=</span> <span class='ident'>freq</span>.<span class='ident'>magnitude</span>().<span class='ident'>expect</span>(<span class='string'>&quot;vector magnitude shouldn&#39;t fail&quot;</span>);
                     <span class='kw'>let</span> <span class='ident'>is_symmetric</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>is_symmetric</span>;
                     <span class='kw'>let</span> <span class='ident'>delta</span> <span class='op'>=</span> <span class='ident'>freq</span>.<span class='ident'>delta</span>();
@@ -1038,7 +1038,7 @@
                 <span class='doccomment'>/// Convert the lookup table into time domain</span>
                 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ifft</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>ComplexTimeLinearTableLookup</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> {
                     <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='ident'>ComplexFreqVector</span>::<span class='ident'>from_complex_with_delta</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>table</span>, <span class='self'>self</span>.<span class='ident'>delta</span>);
-                    <span class='kw'>let</span> <span class='ident'>time</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>ifft</span>().<span class='ident'>expect</span>(<span class='string'>&quot;vector ifft shouldn&#39;t fail&quot;</span>);
+                    <span class='kw'>let</span> <span class='ident'>time</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>ifft</span>().<span class='ident'>expect</span>(<span class='string'>&quot;vector IFFT shouldn&#39;t fail&quot;</span>);
                     <span class='kw'>let</span> <span class='ident'>delta</span> <span class='op'>=</span> <span class='ident'>time</span>.<span class='ident'>delta</span>();
                     <span class='kw'>let</span> <span class='ident'>time</span> <span class='op'>=</span> <span class='ident'>time</span>.<span class='ident'>complex_data</span>();
                     <span class='kw'>let</span> <span class='ident'>is_symmetric</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>is_symmetric</span>;
@@ -1063,7 +1063,7 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>RealImpulseResponse</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>RaisedCosineFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> 
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
     <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='boolvalue'>true</span>
+        <span class='bool-val'>true</span>
     }
     
     <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
@@ -1089,7 +1089,7 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>RealFrequencyResponse</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>RaisedCosineFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> 
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
     <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='boolvalue'>true</span>
+        <span class='bool-val'>true</span>
     }
     
     <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
@@ -1128,7 +1128,7 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>RealImpulseResponse</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>SincFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
     <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='boolvalue'>true</span>
+        <span class='bool-val'>true</span>
     }
     
     <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
@@ -1147,7 +1147,7 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>RealFrequencyResponse</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>SincFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
     <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='boolvalue'>true</span>
+        <span class='bool-val'>true</span>
     }
     
     <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
@@ -1176,8 +1176,8 @@
     
     <span class='doccomment'>/// The data which is passed to the function.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Actual data type is a const* c_void, but Rust doesn&#39;t allow that becaues it&#39;s usafe so we store</span>
-    <span class='doccomment'>/// it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.</span>
+    <span class='doccomment'>/// Actual data type is a `const* c_void`, but Rust doesn&#39;t allow that because it&#39;s unsafe so we store</span>
+    <span class='doccomment'>/// it as `usize` and transmute it when necessary. Callers should make very sure safety is guaranteed.</span>
     <span class='kw'>pub</span> <span class='ident'>conv_data</span>: <span class='ident'>usize</span>,
     
     <span class='doccomment'>/// Indicates whether this function is symmetric around 0 or not.</span>
@@ -1230,8 +1230,8 @@
     
     <span class='doccomment'>/// The data which is passed to the window function</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Actual data type is a const* c_void, but Rust doesn&#39;t allow that becaues it&#39;s usafe so we store</span>
-    <span class='doccomment'>/// it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.</span>
+    <span class='doccomment'>/// Actual data type is a `const* c_void`, but Rust doesn&#39;t allow that because it&#39;s unsafe so we store</span>
+    <span class='doccomment'>/// it as `usize` and transmute it when necessary. Callers should make very sure safety is guaranteed.</span>
     <span class='kw'>pub</span> <span class='ident'>conv_data</span>: <span class='ident'>usize</span>,
     
     <span class='doccomment'>/// Indicates whether this function is symmetric around 0 or not.</span>

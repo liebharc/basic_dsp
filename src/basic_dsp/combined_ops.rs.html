@@ -79,6 +79,36 @@
 <span id="35">35</span>
 <span id="36">36</span>
 <span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! This module allows to combine certain operations into one operation. Since one</span>
 <span class='doccomment'>//! many machines the speed of many DSP operations is limited by the memory bus speed</span>
@@ -90,28 +120,58 @@
 <span class='doccomment'>//! With this approach we change how we operate on vectors. If you perform</span>
 <span class='doccomment'>//! `M` operations on a vector with the length `N` you iterate wit hall other methods like this:</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//! ```no_run</span>
 <span class='doccomment'>//! // pseudocode:</span>
 <span class='doccomment'>//! // for m in M:</span>
 <span class='doccomment'>//! //  for n in N:</span>
 <span class='doccomment'>//! //    execute m on n</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! with this method the pattern is changed slighly:</span>
+<span class='doccomment'>//! with this method the pattern is changed slightly:</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//! ```no_run</span>
 <span class='doccomment'>//! // pseudocode:</span>
 <span class='doccomment'>//! // for n in N:</span>
 <span class='doccomment'>//! //  for m in M:</span>
 <span class='doccomment'>//! //    execute m on n</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! Both variants have the same complexity however the second one is benificial since we</span>
+<span class='doccomment'>//! Both variants have the same complexity however the second one is beneficial since we</span>
 <span class='doccomment'>//! have increased locality this way. This should help us by making better use of registers and </span>
 <span class='doccomment'>//! CPU caches.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! Only operations can be combined where the result of every element in the vector</span>
 <span class='doccomment'>//! is independent from any other element in the vector.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! # Examples</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//!```</span>
+<span class='doccomment'>//! use std::f32::consts::PI;</span>
+<span class='doccomment'>//! use basic_dsp::*;</span>
+<span class='doccomment'>//! use basic_dsp::combined_ops::*;</span>
+<span class='doccomment'>//! # fn close(left: &amp;[f32], right: &amp;[f32]) {</span>
+<span class='doccomment'>//! #   assert_eq!(left.len(), right.len());</span>
+<span class='doccomment'>//! #   for i in 0..left.len() {</span>
+<span class='doccomment'>//! #       assert!((left[i] - right[i]) &lt; 1e-2);</span>
+<span class='doccomment'>//! #   }</span>
+<span class='doccomment'>//! # }</span>
+<span class='doccomment'>//! let a = RealTimeVector32::from_array(&amp;[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]);</span>
+<span class='doccomment'>//! let b = RealTimeVector32::from_constant(0.0, 8);</span>
+<span class='doccomment'>//! let ops = multi_ops2(a, b);</span>
+<span class='doccomment'>//! let ops = ops.add_ops(|a, b| {</span>
+<span class='doccomment'>//!     let a = a.scale(2.0 * PI);</span>
+<span class='doccomment'>//!     let b = b.clone_from(&amp;a);</span>
+<span class='doccomment'>//!     let a = a.sin();</span>
+<span class='doccomment'>//!     let b = b.cos();</span>
+<span class='doccomment'>//!     let a = a.multiply_vector(&amp;b).abs();</span>
+<span class='doccomment'>//!     let a_db = a.log(10.0).scale(10.0);</span>
+<span class='doccomment'>//!     (a_db, b)</span>
+<span class='doccomment'>//! });</span>
+<span class='doccomment'>//! let (a, b) = ops.get().expect(&quot;Ignoring error handling in examples&quot;);</span>
+<span class='doccomment'>//! close(&amp;[0.80902, 0.30902, -0.30902, -0.80902, -1.00000, -0.80902, -0.30902, 0.30902], b.data());</span>
+<span class='doccomment'>//! close(&amp;[-3.2282, -5.3181, -5.3181, -3.2282, -159.1199, -3.2282, -5.3181, -5.3181], a.data());</span>
+<span class='doccomment'>//!```</span>
+<span class='doccomment'>//!</span>
 
 <span class='comment'>// In this module we just export types from other modules with a deeper nesting</span>
 <span class='comment'>// level. This makes the API as presented to the user flatter.</span>

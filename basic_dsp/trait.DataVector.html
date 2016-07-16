@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-26' class='srclink' href='../src/basic_dsp/src/vector_types/definitions.rs.html#9-43' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-19' class='srclink' href='../src/basic_dsp/vector_types/definitions.rs.html#9-43' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait DataVector&lt;T&gt;: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> <span class='where'>where T: <a class='trait' href='../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
     fn <a href='#tymethod.data' class='fnname'>data</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a>T<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>;
     fn <a href='#tymethod.delta' class='fnname'>delta</a>(&amp;self) -&gt; T;
@@ -72,7 +72,7 @@ since the vector may decide at any operation to invalidate the array. </p>
 are valid on this vector.</p>
 </div><h3 id='tymethod.is_complex' class='method stab '><code>fn <a href='#tymethod.is_complex' class='fnname'>is_complex</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h3><div class='docblock'><p>Indicates whether the vector contains complex data. This also specifies the type of operations which are valid
 on this vector.</p>
-</div><h3 id='tymethod.len' class='method stab '><code>fn <a href='#tymethod.len' class='fnname'>len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h3><div class='docblock'><p>The number of valid elements in the the vector.</p>
+</div><h3 id='tymethod.len' class='method stab '><code>fn <a href='#tymethod.len' class='fnname'>len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h3><div class='docblock'><p>The number of valid elements in the vector.</p>
 </div><h3 id='tymethod.set_len' class='method stab '><code>fn <a href='#tymethod.set_len' class='fnname'>set_len</a>(&amp;mut self, len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>)</code></h3><div class='docblock'><p>Sets the vector length to the given length.
 If <code>self.len() &lt; len</code> then the value of the new elements is undefined.</p>
 </div><h3 id='tymethod.points' class='method stab '><code>fn <a href='#tymethod.points' class='fnname'>points</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h3><div class='docblock'><p>The number of valid points. If the vector is complex then every valid point consists of two floating point numbers,

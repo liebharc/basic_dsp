@@ -47,16 +47,16 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-5296' class='srclink' href='../../src/basic_dsp/src/vector_types/multi_ops.rs.html#84-99' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-5258' class='srclink' href='../../src/basic_dsp/vector_types/multi_ops.rs.html#84-99' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait RealIdentifier&lt;T&gt;: <a class='trait' href='../../basic_dsp/combined_ops/trait.Identifier.html' title='basic_dsp::combined_ops::Identifier'>Identifier</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
     type <a href='#associatedtype.ComplexPartner' class='type'>ComplexPartner</a>;
     fn <a href='#tymethod.real_offset' class='fnname'>real_offset</a>(self, offset: T) -&gt; Self;
     fn <a href='#tymethod.real_scale' class='fnname'>real_scale</a>(self, factor: T) -&gt; Self;
     fn <a href='#tymethod.abs' class='fnname'>abs</a>(self) -&gt; Self;
-    fn <a href='#tymethod.to_complex' class='fnname'>to_complex</a>(self) -&gt; Self::<a class='trait' href='../../basic_dsp/combined_ops/trait.RealIdentifier.html' title='basic_dsp::combined_ops::RealIdentifier'>ComplexPartner</a>;
+    fn <a href='#tymethod.to_complex' class='fnname'>to_complex</a>(self) -&gt; Self::ComplexPartner;
     fn <a href='#tymethod.map_inplace_real' class='fnname'>map_inplace_real</a>&lt;F&gt;(self, f: F) -&gt; Self <span class='where'>where F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Fn.html' title='core::ops::Fn'>Fn</a>(T, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; T + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a></span>;
 }</pre><div class='docblock'><p>Operations for real vectors which can be used on combination
-with multi ops or prepared ops. For a dcoumentation of the specific operations
+with multi ops or prepared ops. For a documentation of the specific operations
 see <a href="../trait.RealVectorOps.html"><code>RealVectorOps</code></a>.</p>
 </div>
             <h2 id='associated-types'>Associated Types</h2>
@@ -67,7 +67,7 @@ see <a href="../trait.RealVectorOps.html"><code>RealVectorOps</code></a>.</p>
         <h3 id='tymethod.real_offset' class='method stab '><code>fn <a href='#tymethod.real_offset' class='fnname'>real_offset</a>(self, offset: T) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.RealVectorOps.html#tymethod.real_offset"><code>RealVectorOps</code></a>.</p>
 </div><h3 id='tymethod.real_scale' class='method stab '><code>fn <a href='#tymethod.real_scale' class='fnname'>real_scale</a>(self, factor: T) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.RealVectorOps.html#tymethod.real_scale"><code>RealVectorOps</code></a>.</p>
 </div><h3 id='tymethod.abs' class='method stab '><code>fn <a href='#tymethod.abs' class='fnname'>abs</a>(self) -&gt; Self</code></h3><div class='docblock'><p>See <a href="../trait.RealVectorOps.html#tymethod.abs"><code>RealVectorOps</code></a>.</p>
-</div><h3 id='tymethod.to_complex' class='method stab '><code>fn <a href='#tymethod.to_complex' class='fnname'>to_complex</a>(self) -&gt; Self::<a class='trait' href='../../basic_dsp/combined_ops/trait.RealIdentifier.html' title='basic_dsp::combined_ops::RealIdentifier'>ComplexPartner</a></code></h3><div class='docblock'><p>See <a href="../trait.RealVectorOps.html#tymethod.to_complex"><code>RealVectorOps</code></a>.</p>
+</div><h3 id='tymethod.to_complex' class='method stab '><code>fn <a href='#tymethod.to_complex' class='fnname'>to_complex</a>(self) -&gt; Self::ComplexPartner</code></h3><div class='docblock'><p>See <a href="../trait.RealVectorOps.html#tymethod.to_complex"><code>RealVectorOps</code></a>.</p>
 </div><h3 id='tymethod.map_inplace_real' class='method stab '><code>fn <a href='#tymethod.map_inplace_real' class='fnname'>map_inplace_real</a>&lt;F&gt;(self, f: F) -&gt; Self <span class='where'>where F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Fn.html' title='core::ops::Fn'>Fn</a>(T, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; T + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a></span></code></h3><div class='docblock'><p>See <a href="../trait.RealVectorOps.html#tymethod.map_inplace_real"><code>RealVectorOps</code></a>.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>

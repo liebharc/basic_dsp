@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-102' class='srclink' href='../src/basic_dsp/src/vector_types/definitions.rs.html#138-181' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-95' class='srclink' href='../src/basic_dsp/vector_types/definitions.rs.html#138-181' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait StatisticsOps&lt;T&gt;: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> <span class='where'>where T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span> {
     fn <a href='#tymethod.statistics' class='fnname'>statistics</a>(&amp;self) -&gt; <a class='struct' href='../basic_dsp/struct.Statistics.html' title='basic_dsp::Statistics'>Statistics</a>&lt;T&gt;;
     fn <a href='#tymethod.statistics_splitted' class='fnname'>statistics_splitted</a>(&amp;self, len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../basic_dsp/struct.Statistics.html' title='basic_dsp::Statistics'>Statistics</a>&lt;T&gt;&gt;;
@@ -72,7 +72,7 @@
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>result</span>.<span class='ident'>max_index</span>, <span class='number'>2</span>);
 }</pre>
 </div><h3 id='tymethod.statistics_splitted' class='method stab '><code>fn <a href='#tymethod.statistics_splitted' class='fnname'>statistics_splitted</a>(&amp;self, len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../basic_dsp/struct.Statistics.html' title='basic_dsp::Statistics'>Statistics</a>&lt;T&gt;&gt;</code></h3><div class='docblock'><p>Calculates the statistics of the data contained in the vector as if the vector would
-have been split into <code>len</code> pieces. <code>self.len</code> should be devisable by <code>len</code> without a remainder,
+have been split into <code>len</code> pieces. <code>self.len</code> should be dividable by <code>len</code> without a remainder,
 but this isn&#39;t enforced by the implementation.</p>
 
 <h1 id='example-1' class='section-header'><a href='#example-1'>Example</a></h1>

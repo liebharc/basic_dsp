@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["Operation","An alternative way to define operations on a vector."]]});

@@ -744,7 +744,7 @@
             <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>first</span>: <span class='ident'>bool</span>),<span class='op'>*</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>last</span>: <span class='ident'>bool</span>),<span class='op'>*</span>) <span class='op'>-&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> {
                 <span class='kw'>unsafe</span> {
                     <span class='comment'>// negate everything together</span>
-                    <span class='ident'>simd_sub</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>::<span class='ident'>splat</span>(<span class='boolvalue'>false</span>),
+                    <span class='ident'>simd_sub</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>::<span class='ident'>splat</span>(<span class='bool-val'>false</span>),
                              <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>($( (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>first</span> <span class='kw'>as</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>repr_elem</span>) ),<span class='op'>*</span>,
                                    $( (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>last</span> <span class='kw'>as</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>repr_elem</span>) ),<span class='op'>*</span>))
                 }

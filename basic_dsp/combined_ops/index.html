@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-15437' class='srclink' href='../../src/basic_dsp/src/combined_ops.rs.html#1-67' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-15346' class='srclink' href='../../src/basic_dsp/combined_ops.rs.html#1-67' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>This module allows to combine certain operations into one operation. Since one
  many machines the speed of many DSP operations is limited by the memory bus speed
  this approach may result in better register and cache usage and thus decrease
@@ -64,7 +64,7 @@
  <span class='comment'>//  for n in N:</span>
  <span class='comment'>//    execute m on n</span></pre>
 
-<p>with this method the pattern is changed slighly:</p>
+<p>with this method the pattern is changed slightly:</p>
 
 <pre class='rust rust-example-rendered'>
  <span class='comment'>// pseudocode:</span>
@@ -72,7 +72,7 @@
  <span class='comment'>//  for m in M:</span>
  <span class='comment'>//    execute m on n</span></pre>
 
-<p>Both variants have the same complexity however the second one is benificial since we
+<p>Both variants have the same complexity however the second one is beneficial since we
  have increased locality this way. This should help us by making better use of registers and 
  CPU caches.</p>
 
@@ -128,7 +128,7 @@
                                   title='basic_dsp::combined_ops::MultiOperation1'>MultiOperation1</a></td>
                            <td class='docblock short'>
                                 <p>A multi operation which holds a vector and records all changes
-which need to be done to the vectos. By calling <code>get</code> on the struct
+which need to be done to the vectors. By calling <code>get</code> on the struct
 all operations will be executed in one run.</p>
                            </td>
                        </tr>
@@ -185,7 +185,7 @@ advance.</p>
                                   title='basic_dsp::combined_ops::ComplexIdentifier'>ComplexIdentifier</a></td>
                            <td class='docblock short'>
                                 <p>Operations for complex vectors which can be used in combination
-with multi ops or prepared ops. For a dcoumentation of the specific operations
+with multi ops or prepared ops. For a documentation of the specific operations
 see <a href="../trait.ComplexVectorOps.html"><code>ComplexVectorOps</code></a>.</p>
                            </td>
                        </tr>
@@ -194,7 +194,7 @@ see <a href="../trait.ComplexVectorOps.html"><code>ComplexVectorOps</code></a>.<
                                   title='basic_dsp::combined_ops::GeneralIdentifier'>GeneralIdentifier</a></td>
                            <td class='docblock short'>
                                 <p>Operations for all kind of vectors which can be used in combination
-with multi ops or prepared ops. For a dcoumentation of the specific operations
+with multi ops or prepared ops. For a documentation of the specific operations
 see <a href="../trait.GenericVectorOps.html"><code>GenericVectorOps</code></a>.</p>
                            </td>
                        </tr>
@@ -229,7 +229,7 @@ see <a href="../trait.Offset.html"><code>Offset</code></a>.</p>
                                   title='basic_dsp::combined_ops::RealIdentifier'>RealIdentifier</a></td>
                            <td class='docblock short'>
                                 <p>Operations for real vectors which can be used on combination
-with multi ops or prepared ops. For a dcoumentation of the specific operations
+with multi ops or prepared ops. For a documentation of the specific operations
 see <a href="../trait.RealVectorOps.html"><code>RealVectorOps</code></a>.</p>
                            </td>
                        </tr>

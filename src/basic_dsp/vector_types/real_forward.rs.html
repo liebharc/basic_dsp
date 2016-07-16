@@ -157,6 +157,44 @@
 <span id="113">113</span>
 <span id="114">114</span>
 <span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
 </pre><pre class='rust '>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>define_real_operations_forward</span> {
     (<span class='ident'>from</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>, <span class='ident'>to</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>gen_type</span>:<span class='ident'>ident</span>, <span class='ident'>complex_partner</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>complex_partner</span>:<span class='ident'>ident</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>:<span class='ident'>ident</span>),<span class='op'>*</span>)
@@ -208,6 +246,24 @@
                 
                 <span class='kw'>fn</span> <span class='ident'>real_statistics_splitted</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>len</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Statistics</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;&gt;</span> {
                     <span class='self'>self</span>.<span class='ident'>to_gen_borrow</span>().<span class='ident'>real_statistics_splitted</span>(<span class='ident'>len</span>)
+                }
+                
+                <span class='kw'>fn</span> <span class='ident'>map_inplace_real</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>F</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>argument</span>: <span class='ident'>A</span>, <span class='ident'>f</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>
+                    <span class='kw'>where</span> <span class='ident'>A</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Send</span>,
+                          <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>, <span class='ident'>usize</span>, <span class='ident'>A</span>) <span class='op'>-&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span> {
+                    <span class='self'>Self</span>::<span class='ident'>from_genres</span>(<span class='self'>self</span>.<span class='ident'>to_gen</span>().<span class='ident'>map_inplace_real</span>(<span class='ident'>argument</span>, <span class='ident'>f</span>))
+                }
+                
+                <span class='kw'>fn</span> <span class='ident'>map_aggregate_real</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>FMap</span>, <span class='ident'>FAggr</span>, <span class='ident'>R</span><span class='op'>&gt;</span>(
+                    <span class='kw-2'>&amp;</span><span class='self'>self</span>, 
+                    <span class='ident'>argument</span>: <span class='ident'>A</span>, 
+                    <span class='ident'>map</span>: <span class='ident'>FMap</span>,
+                    <span class='ident'>aggregate</span>: <span class='ident'>FAggr</span>) <span class='op'>-&gt;</span> <span class='ident'>ScalarResult</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span>
+                        <span class='kw'>where</span> <span class='ident'>A</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Send</span>,
+                              <span class='ident'>FMap</span>: <span class='ident'>Fn</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>, <span class='ident'>usize</span>, <span class='ident'>A</span>) <span class='op'>-&gt;</span> <span class='ident'>R</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+                              <span class='ident'>FAggr</span>: <span class='ident'>Fn</span>(<span class='ident'>R</span>, <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='ident'>R</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Send</span>,
+                              <span class='ident'>R</span>: <span class='ident'>Send</span> {
+                    <span class='self'>self</span>.<span class='ident'>to_gen_borrow</span>().<span class='ident'>map_aggregate_real</span>(<span class='ident'>argument</span>, <span class='ident'>map</span>, <span class='ident'>aggregate</span>) 
                 }
             }
             
@@ -268,6 +324,26 @@
                 
                 <span class='kw'>fn</span> <span class='ident'>statistics_splitted</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>len</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Statistics</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;&gt;</span> {
                     <span class='self'>self</span>.<span class='ident'>real_statistics_splitted</span>(<span class='ident'>len</span>)
+                }
+            }
+            
+            <span class='kw'>impl</span> <span class='ident'>VectorIter</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> {
+                <span class='kw'>fn</span> <span class='ident'>map_inplace</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>F</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>argument</span>: <span class='ident'>A</span>, <span class='ident'>map</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>
+                    <span class='kw'>where</span> <span class='ident'>A</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Send</span>,
+                          <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>, <span class='ident'>usize</span>, <span class='ident'>A</span>) <span class='op'>-&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span> {
+                    <span class='self'>self</span>.<span class='ident'>map_inplace_real</span>(<span class='ident'>argument</span>, <span class='ident'>map</span>)
+                }
+                
+                <span class='kw'>fn</span> <span class='ident'>map_aggregate</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>FMap</span>, <span class='ident'>FAggr</span>, <span class='ident'>R</span><span class='op'>&gt;</span>(
+                    <span class='kw-2'>&amp;</span><span class='self'>self</span>, 
+                    <span class='ident'>argument</span>: <span class='ident'>A</span>, 
+                    <span class='ident'>map</span>: <span class='ident'>FMap</span>,
+                    <span class='ident'>aggregate</span>: <span class='ident'>FAggr</span>) <span class='op'>-&gt;</span> <span class='ident'>ScalarResult</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span>
+                <span class='kw'>where</span> <span class='ident'>A</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Copy</span> <span class='op'>+</span> <span class='ident'>Send</span>,
+                      <span class='ident'>FMap</span>: <span class='ident'>Fn</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>, <span class='ident'>usize</span>, <span class='ident'>A</span>) <span class='op'>-&gt;</span> <span class='ident'>R</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+                      <span class='ident'>FAggr</span>: <span class='ident'>Fn</span>(<span class='ident'>R</span>, <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='ident'>R</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Send</span>,
+                      <span class='ident'>R</span>: <span class='ident'>Send</span> {
+                    <span class='self'>self</span>.<span class='ident'>map_aggregate_real</span>(<span class='ident'>argument</span>, <span class='ident'>map</span>, <span class='ident'>aggregate</span>)  
                 }
             }
         )<span class='op'>*</span>

@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-378' class='srclink' href='../num_traits/ops/checked/trait.CheckedMul.html?gotosrc=378' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-388' class='srclink' href='../num_traits/ops/checked/trait.CheckedMul.html?gotosrc=388' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait CheckedMul: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Mul.html' title='core::ops::Mul'>Mul</a>&lt;Self,&nbsp;Output=Self&gt; {
     fn <a href='#tymethod.checked_mul' class='fnname'>checked_mul</a>(&amp;self, v: &amp;Self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;Self&gt;;
 }</pre><div class='docblock'><p>Performs multiplication that returns <code>None</code> instead of wrapping around on underflow or
@@ -60,8 +60,8 @@ or overflow happens, <code>None</code> is returned.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl CheckedMul for <a class='struct' href='../num/bigint/struct.BigUint.html' title='num::bigint::BigUint'>BigUint</a></code></li>
-<li><code>impl CheckedMul for <a class='struct' href='../num/bigint/struct.BigInt.html' title='num::bigint::BigInt'>BigInt</a></code></li>
+    <li><code>impl CheckedMul for <a class='struct' href='../num/struct.BigUint.html' title='num::BigUint'>BigUint</a></code></li>
+<li><code>impl CheckedMul for <a class='struct' href='../num/struct.BigInt.html' title='num::BigInt'>BigInt</a></code></li>
 <li><code>impl CheckedMul for <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a></code></li>
 <li><code>impl CheckedMul for <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a></code></li>
 <li><code>impl CheckedMul for <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></li>

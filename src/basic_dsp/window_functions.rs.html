@@ -228,7 +228,7 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>TriangularWindow</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
     <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='boolvalue'>true</span>
+        <span class='bool-val'>true</span>
     }
     
     <span class='kw'>fn</span> <span class='ident'>window</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>n</span>: <span class='ident'>usize</span>, <span class='ident'>length</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
@@ -249,7 +249,7 @@
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>HammingWindow</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
-    <span class='doccomment'>/// Createa a new Hamming window</span>
+    <span class='doccomment'>/// Creates a new Hamming window</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>alpha</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='ident'>HammingWindow</span> { <span class='ident'>alpha</span>: <span class='ident'>alpha</span>, <span class='ident'>beta</span>: (<span class='ident'>T</span>::<span class='ident'>one</span>() <span class='op'>-</span> <span class='ident'>alpha</span>) }
     }
@@ -263,7 +263,7 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>HammingWindow</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> 
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
     <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='boolvalue'>true</span>
+        <span class='bool-val'>true</span>
     }
     
     <span class='kw'>fn</span> <span class='ident'>window</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>n</span>: <span class='ident'>usize</span>, <span class='ident'>length</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
@@ -284,8 +284,8 @@
     
     <span class='doccomment'>/// The data which is passed to the window function</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Actual data type is a const* c_void, but Rust doesn&#39;t allow that becaues it&#39;s usafe so we store</span>
-    <span class='doccomment'>/// it as usize and transmute it when necessary. Callers shoulds make very sure safety is guaranteed.</span>
+    <span class='doccomment'>/// Actual data type is a `const* c_void`, but Rust doesn&#39;t allow that because it&#39;s unsafe so we store</span>
+    <span class='doccomment'>/// it as `usize` and transmute it when necessary. Callers should make very sure safety is guaranteed.</span>
     <span class='kw'>pub</span> <span class='ident'>window_data</span>: <span class='ident'>usize</span>,
     
     <span class='doccomment'>/// Indicates whether this function is symmetric around 0 or not.</span>

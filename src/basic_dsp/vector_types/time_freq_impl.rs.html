@@ -883,7 +883,7 @@
     <span class='kw'>fn</span> <span class='ident'>plain_ifft</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>ComplexTimePartner</span><span class='op'>&gt;</span>;
         
     <span class='doccomment'>/// This function mirrors the spectrum vector to transform a symmetric spectrum</span>
-    <span class='doccomment'>/// into a full spectrum with the DC element at index 0 (no fft shift/swap halves).</span>
+    <span class='doccomment'>/// into a full spectrum with the DC element at index 0 (no FFT shift/swap halves).</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1` points.</span>
     <span class='doccomment'>///</span>
@@ -926,7 +926,7 @@
 }
 
 <span class='doccomment'>/// Defines all operations which are valid on `DataVectors` containing frequency domain data and</span>
-<span class='doccomment'>/// the data is assumed to half of complex conjungate symmetric spectrum round 0 Hz where </span>
+<span class='doccomment'>/// the data is assumed to half of complex conjugate symmetric spectrum round 0 Hz where </span>
 <span class='doccomment'>/// the 0 Hz element itself is real.</span>
 <span class='doccomment'>/// # Failures</span>
 <span class='doccomment'>/// All operations in this trait fail with `VectorMustBeInFrquencyDomain`</span>
@@ -1030,7 +1030,7 @@
                             <span class='kw'>let</span> <span class='ident'>points</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>points</span>();
                             <span class='kw'>let</span> <span class='ident'>rbw</span> <span class='op'>=</span> (<span class='ident'>points</span> <span class='kw'>as</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>) <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>delta</span>;
                             <span class='self'>self</span>.<span class='ident'>delta</span> <span class='op'>=</span> <span class='ident'>rbw</span>;
-                            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fft</span> <span class='op'>=</span> <span class='ident'>FFT</span>::<span class='ident'>new</span>(<span class='ident'>points</span>, <span class='boolvalue'>false</span>);
+                            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fft</span> <span class='op'>=</span> <span class='ident'>FFT</span>::<span class='ident'>new</span>(<span class='ident'>points</span>, <span class='bool-val'>false</span>);
                             <span class='kw'>let</span> <span class='ident'>signal</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>;
                             <span class='kw'>let</span> <span class='ident'>spectrum</span> <span class='op'>=</span> <span class='macro'>temp_mut</span><span class='macro'>!</span>(<span class='self'>self</span>, <span class='ident'>signal</span>.<span class='ident'>len</span>());
                             <span class='kw'>let</span> <span class='ident'>signal</span> <span class='op'>=</span> <span class='self'>Self</span>::<span class='ident'>array_to_complex</span>(<span class='ident'>signal</span>);
@@ -1117,7 +1117,7 @@
                         <span class='macro'>assert_complex</span><span class='macro'>!</span>(<span class='self'>self</span>);
                         <span class='macro'>assert_freq</span><span class='macro'>!</span>(<span class='self'>self</span>);
                         <span class='kw'>let</span> <span class='ident'>points</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>points</span>();
-                        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fft</span> <span class='op'>=</span> <span class='ident'>FFT</span>::<span class='ident'>new</span>(<span class='ident'>points</span>, <span class='boolvalue'>true</span>);
+                        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fft</span> <span class='op'>=</span> <span class='ident'>FFT</span>::<span class='ident'>new</span>(<span class='ident'>points</span>, <span class='bool-val'>true</span>);
                         <span class='kw'>let</span> <span class='ident'>delta</span> <span class='op'>=</span> (<span class='ident'>points</span> <span class='kw'>as</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>)  <span class='op'>/</span> <span class='self'>self</span>.<span class='ident'>delta</span>;
                         <span class='self'>self</span>.<span class='ident'>delta</span> <span class='op'>=</span> <span class='ident'>delta</span>;
                         <span class='kw'>let</span> <span class='ident'>signal</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>;
@@ -1184,11 +1184,11 @@
                 }
                 
                 <span class='kw'>fn</span> <span class='ident'>fft_shift</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span> {
-                    <span class='self'>self</span>.<span class='ident'>swap_halves_priv</span>(<span class='boolvalue'>true</span>)
+                    <span class='self'>self</span>.<span class='ident'>swap_halves_priv</span>(<span class='bool-val'>true</span>)
                 }
                 
                 <span class='kw'>fn</span> <span class='ident'>ifft_shift</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>VecResult</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span> {
-                    <span class='self'>self</span>.<span class='ident'>swap_halves_priv</span>(<span class='boolvalue'>false</span>)
+                    <span class='self'>self</span>.<span class='ident'>swap_halves_priv</span>(<span class='bool-val'>false</span>)
                 }
             }
             
@@ -1339,7 +1339,7 @@
         <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='ident'>ComplexFreqVector32</span>::<span class='ident'>from_interleaved</span>(<span class='kw-2'>&amp;</span>[<span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>1.5</span>, <span class='number'>0.0</span>]);
         <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>plain_sifft</span>().<span class='ident'>unwrap</span>();
         <span class='kw'>let</span> <span class='ident'>expected</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span>[<span class='number'>3.0</span>, <span class='op'>-</span><span class='number'>1.5</span>, <span class='op'>-</span><span class='number'>1.5</span>];
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>result</span>.<span class='ident'>is_complex</span>(), <span class='boolvalue'>false</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>result</span>.<span class='ident'>is_complex</span>(), <span class='bool-val'>false</span>);
         <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>result</span>.<span class='ident'>data</span>();
         <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>result</span>.<span class='ident'>len</span>() {
             <span class='macro'>assert</span><span class='macro'>!</span>((<span class='ident'>result</span>[<span class='ident'>i</span>] <span class='op'>-</span> <span class='ident'>expected</span>[<span class='ident'>i</span>]).<span class='ident'>abs</span>() <span class='op'>&lt;</span> <span class='number'>1e-4</span>);

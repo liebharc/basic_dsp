@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-109' class='srclink' href='../src/basic_dsp/src/vector_types/definitions.rs.html#184-650' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-102' class='srclink' href='../src/basic_dsp/vector_types/definitions.rs.html#184-653' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait GenericVectorOps&lt;T&gt;: <a class='trait' href='../basic_dsp/trait.DataVector.html' title='basic_dsp::DataVector'>DataVector</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp/trait.RealNumber.html' title='basic_dsp::RealNumber'>RealNumber</a></span> {
     fn <a href='#tymethod.add_vector' class='fnname'>add_vector</a>(self, summand: &amp;Self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;;
     fn <a href='#tymethod.add_smaller_vector' class='fnname'>add_smaller_vector</a>(self, summand: &amp;Self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;;
@@ -242,7 +242,10 @@ It consumes self and returns the result.</p>
 </div><h3 id='tymethod.zero_pad' class='method stab '><code>fn <a href='#tymethod.zero_pad' class='fnname'>zero_pad</a>(self, points: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, option: <a class='enum' href='../basic_dsp/enum.PaddingOption.html' title='basic_dsp::PaddingOption'>PaddingOption</a>) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Appends zeros add the end of the vector until the vector has the size given in the points argument.
 If <code>points</code> smaller than the <code>self.len()</code> then this operation won&#39;t do anything.</p>
 
-<p>Note: Each point is two floating point numbers if the vector is complex.</p>
+<p>Note: Each point is two floating point numbers if the vector is complex.
+Note2: Adding zeros to the signal changes its power. If this function is used to zero pad to a power
+of 2 in order to speed up FFT calculation then it might be necessary to multiply it with <code>len_after/len_before</code>\
+so that the spectrum shows the expected power. Of course this is depending on the application.</p>
 
 <h1 id='example-8' class='section-header'><a href='#example-8'>Example</a></h1>
 <pre class='rust rust-example-rendered'>
@@ -254,7 +257,7 @@ If <code>points</code> smaller than the <code>self.len()</code> then this operat
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>zero_pad</span>(<span class='number'>2</span>, <span class='ident'>PaddingOption</span>::<span class='ident'>End</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
 <span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>], <span class='ident'>result</span>.<span class='ident'>data</span>());</pre>
 </div><h3 id='tymethod.reverse' class='method stab '><code>fn <a href='#tymethod.reverse' class='fnname'>reverse</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Reverses the data inside the vector.</p>
-</div><h3 id='tymethod.zero_interleave' class='method stab '><code>fn <a href='#tymethod.zero_interleave' class='fnname'>zero_interleave</a>(self, factor: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Ineterleaves zeros <code>factor - 1</code>times after every vector element, so that the resulting
+</div><h3 id='tymethod.zero_interleave' class='method stab '><code>fn <a href='#tymethod.zero_interleave' class='fnname'>zero_interleave</a>(self, factor: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Interleaves zeros <code>factor - 1</code>times after every vector element, so that the resulting
 vector will have a length of <code>self.len() * factor</code>.</p>
 
 <p>Note: Remember that each complex number consists of two floating points and interleaving 
@@ -401,7 +404,7 @@ will never convert itself to a complex vector during this operation.</p>
 </div><h3 id='tymethod.asinh' class='method stab '><code>fn <a href='#tymethod.asinh' class='fnname'>asinh</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Calculates the principal value of the inverse hyperbolic sine of each element in radians.</p>
 </div><h3 id='tymethod.acosh' class='method stab '><code>fn <a href='#tymethod.acosh' class='fnname'>acosh</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Calculates the principal value of the inverse hyperbolic cosine of each element in radians.</p>
 </div><h3 id='tymethod.atanh' class='method stab '><code>fn <a href='#tymethod.atanh' class='fnname'>atanh</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>Calculates the principal value of the inverse hyperbolic tangent of each element in radians.</p>
-</div><h3 id='tymethod.swap_halves' class='method stab '><code>fn <a href='#tymethod.swap_halves' class='fnname'>swap_halves</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>This function swaps both halves of the vector. This operation is also called fft shift
+</div><h3 id='tymethod.swap_halves' class='method stab '><code>fn <a href='#tymethod.swap_halves' class='fnname'>swap_halves</a>(self) -&gt; <a class='type' href='../basic_dsp/type.VecResult.html' title='basic_dsp::VecResult'>VecResult</a>&lt;Self&gt;</code></h3><div class='docblock'><p>This function swaps both halves of the vector. This operation is also called FFT shift
 Use it after a <code>plain_fft</code> to get a spectrum which is centered at <code>0 Hz</code>.</p>
 
 <h1 id='example-23' class='section-header'><a href='#example-23'>Example</a></h1>
@@ -411,7 +414,7 @@ Use it after a <code>plain_fft</code> to get a spectrum which is centered at <co
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>swap_halves</span>().<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
 <span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>5.0</span>, <span class='number'>6.0</span>, <span class='number'>7.0</span>, <span class='number'>8.0</span>, <span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>], <span class='ident'>result</span>.<span class='ident'>data</span>());</pre>
 </div><h3 id='tymethod.split_into' class='method stab '><code>fn <a href='#tymethod.split_into' class='fnname'>split_into</a>(&amp;self, targets: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;mut [</a><a class='struct' href='https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;Self&gt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='type' href='../basic_dsp/type.VoidResult.html' title='basic_dsp::VoidResult'>VoidResult</a></code></h3><div class='docblock'><p>Splits the vector into several smaller vectors. <code>self.len()</code> must be dividable by
-<code>targets.len()</code> without a remainder and this conidition must be true too <code>targets.len() &gt; 0</code>.</p>
+<code>targets.len()</code> without a remainder and this condition must be true too <code>targets.len() &gt; 0</code>.</p>
 
 <h1 id='failures-8' class='section-header'><a href='#failures-8'>Failures</a></h1>
 <p>VecResult may report the following <code>ErrorReason</code> members:</p>
