@@ -11,7 +11,6 @@ use super::{
     GenericDataVector,
     round_len};
 use num::complex::Complex;
-use complex_extensions::ComplexExtensions;
 use simd_extensions::*;
 use multicore_support::MultiCoreSettings;
 use std::ops::{Add, Sub, Mul, Div};
@@ -679,11 +678,11 @@ macro_rules! add_general_impl {
                 impl_real_complex_dispatch!(fn sqrt, real_sqrt, complex_sqrt);
                 impl_real_complex_dispatch!(fn square, real_square, complex_square);
                 impl_real_complex_arg_dispatch!(fn root, $data_type, degree, real_root, complex_root);
-                impl_real_complex_arg_dispatch!(fn powf, $data_type, exponent, real_power, complex_power);
-                impl_real_complex_dispatch!(fn ln, real_logn, complex_logn);
-                impl_real_complex_dispatch!(fn exp, real_expn, complex_expn);
-                impl_real_complex_arg_dispatch!(fn log, $data_type, base, real_log_base, complex_log_base);
-                impl_real_complex_arg_dispatch!(fn expf, $data_type, base, real_exp_base, complex_exp_base);
+                impl_real_complex_arg_dispatch!(fn powf, $data_type, exponent, real_powf, complex_powf);
+                impl_real_complex_dispatch!(fn ln, real_ln, complex_ln);
+                impl_real_complex_dispatch!(fn exp, real_exp, complex_exp);
+                impl_real_complex_arg_dispatch!(fn log, $data_type, base, real_log, complex_log);
+                impl_real_complex_arg_dispatch!(fn expf, $data_type, base, real_expf, complex_expf);
                 impl_real_complex_dispatch!(fn sin, real_sin, complex_sin);
                 impl_real_complex_dispatch!(fn cos, real_cos, complex_cos);
                 impl_real_complex_dispatch!(fn tan, real_tan, complex_tan);
@@ -827,19 +826,19 @@ macro_rules! add_general_impl {
                     self.pure_complex_operation(|x,y|x.powf(1.0 / y), base, Complexity::Medium)
                 }
                 
-                impl_function_call_real_arg_complex!($data_type; fn real_power, powf; fn complex_power, powf);
-                impl_function_call_real_complex!($data_type; fn real_logn, ln; fn complex_logn, ln);
-                impl_function_call_real_complex!($data_type; fn real_expn, exp; fn complex_expn, expn);
-                impl_function_call_real_arg_complex!($data_type; fn real_log_base, log; fn complex_log_base, log_base);
+                impl_function_call_real_arg_complex!($data_type; fn real_powf, powf; fn complex_powf, powf);
+                impl_function_call_real_complex!($data_type; fn real_ln, ln; fn complex_ln, ln);
+                impl_function_call_real_complex!($data_type; fn real_exp, exp; fn complex_exp, exp);
+                impl_function_call_real_arg_complex!($data_type; fn real_log, log; fn complex_log, log);
                 
-                fn real_exp_base(self, base: $data_type) -> VecResult<Self>
+                fn real_expf(self, base: $data_type) -> VecResult<Self>
                 {
                     self.pure_real_operation(|x,y|y.powf(x), base, Complexity::Medium)
                 }
                 
-                fn complex_exp_base(self, base: $data_type) -> VecResult<Self>
+                fn complex_expf(self, base: $data_type) -> VecResult<Self>
                 {
-                    self.pure_complex_operation(|x,y|x.exp_base(y), base, Complexity::Medium)
+                    self.pure_complex_operation(|x,y|x.expf(y), base, Complexity::Medium)
                 }
                                
                 impl_function_call_real_complex!($data_type; fn real_sin, sin; fn complex_sin, sin);

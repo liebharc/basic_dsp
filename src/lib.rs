@@ -46,7 +46,6 @@ extern crate rustfft;
 mod vector_types;
 mod multicore_support;
 mod simd_extensions;
-mod complex_extensions;
 pub mod window_functions;
 pub mod conv_types;
 pub mod interop_facade;

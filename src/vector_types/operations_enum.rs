@@ -1,7 +1,6 @@
 use super::super::RealNumber;
 use super::ErrorReason;
 use num::complex::Complex;
-use complex_extensions::ComplexExtensions;
 use simd_extensions::*;
 use std::ops::{Add, Sub, Mul, Div};
 use std::sync::Arc;
@@ -402,12 +401,12 @@ macro_rules! add_perform_ops_impl {
                     &Operation::Log(idx, value) =>
                     {
                         let v = unsafe { vectors.get_unchecked_mut(idx) };
-                        *v = v.iter_over_complex_vector(|x|x.log_base(value));
+                        *v = v.iter_over_complex_vector(|x|x.log(value));
                     }
                     &Operation::Expf(idx, value) => 
                     {
                         let v = unsafe { vectors.get_unchecked_mut(idx) };
-                        *v = v.iter_over_complex_vector(|x|x.exp_base(value));
+                        *v = v.iter_over_complex_vector(|x|x.expf(value));
                     }
                     &Operation::Sin(idx) => 
                     {
