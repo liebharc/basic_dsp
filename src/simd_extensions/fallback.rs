@@ -2,7 +2,6 @@ use simd::f32x4;
 use num::complex::Complex;
 use super::Simd;
 use simd::x86::sse2::f64x2;
-use std::mem;
 
 pub type Reg32 = f32x4;
 
@@ -10,18 +9,6 @@ pub type Reg64 = f64x2;
 
 impl Simd<f32> for f32x4
 {
-    fn calc_data_alignment_reqs(array: &[f32]) -> (usize, usize, usize) {
-        let data_length = array.len();
-        let addr = array.as_ptr();
-        let scalar_left = (addr as usize % mem::size_of::<Self>()) / mem::size_of::<f32>(); 
-        if scalar_left > data_length { 
-            (data_length, data_length, 0) 
-        } else { 
-            let right = (data_length - scalar_left) % Self::len();
-            (scalar_left, data_length - right, data_length - right)
-        }
-    }
-
     type Array = [f32; 4];
 
     fn to_array(self) -> Self::Array {
@@ -30,43 +17,7 @@ impl Simd<f32> for f32x4
         target
     }
     
-    fn from_array(array: Self::Array) -> Self {
-        Self::load(&array, 0)
-    }
-    
     type ComplexArray = [Complex<f32>; 2];
-
-    fn to_complex_array(self) -> Self::ComplexArray {
-        unsafe { mem::transmute(self.to_array()) }
-    }
-    
-    fn from_complex_array(array: Self::ComplexArray) -> Self {
-        Self::from_array(unsafe { mem::transmute(array) })
-    }
-
-    fn array_to_regs(array: &[f32]) -> &[Self] {
-        unsafe { 
-            let len = array.len();
-            let reg_len = Self::len();
-            if len % reg_len != 0 {
-                panic!("Argument must be dividable by {}", reg_len);
-            }
-            let trans: &[Self] = mem::transmute(array);
-            &trans[0 .. len / reg_len]
-        }
-    }
-    
-    fn array_to_regs_mut(array: &mut [f32]) -> &mut [Self] {
-        unsafe { 
-            let len = array.len();
-            let reg_len = Self::len();
-            if len % reg_len != 0 {
-                panic!("Argument must be dividable by {}", reg_len);
-            }
-            let trans: &mut [Self] = mem::transmute(array);
-            &mut trans[0 .. len / reg_len]
-        }
-    }
     
     fn len() -> usize {
         4
@@ -192,18 +143,6 @@ impl Simd<f32> for f32x4
 
 impl Simd<f64> for f64x2
 {
-    fn calc_data_alignment_reqs(array: &[f64]) -> (usize, usize, usize) {
-        let data_length = array.len();
-        let addr = array.as_ptr();
-        let scalar_left = (addr as usize % mem::size_of::<Self>()) / mem::size_of::<f64>(); 
-        if scalar_left > data_length { 
-            (data_length, data_length, 0) 
-        } else { 
-            let right = (data_length - scalar_left) % Self::len();
-            (scalar_left, data_length - right, data_length - right)
-        }
-    }
-
     type Array = [f64; 2];
 
     fn to_array(self) -> Self::Array {
@@ -212,43 +151,7 @@ impl Simd<f64> for f64x2
         target
     }
     
-    fn from_array(array: Self::Array) -> Self {
-        Self::load(&array, 0)
-    }
-    
     type ComplexArray = [Complex<f64>; 1];
-
-    fn to_complex_array(self) -> Self::ComplexArray {
-        unsafe { mem::transmute(self.to_array()) }
-    }
-    
-    fn from_complex_array(array: Self::ComplexArray) -> Self {
-        Self::from_array(unsafe { mem::transmute(array) })
-    }
-
-    fn array_to_regs(array: &[f64]) -> &[Self] {
-        unsafe { 
-            let len = array.len();
-            let reg_len = Self::len();
-            if len % reg_len != 0 {
-                panic!("Argument must be dividable by {}", reg_len);
-            }
-            let trans: &[Self] = mem::transmute(array);
-            &trans[0 .. len / reg_len]
-        }
-    }
-    
-    fn array_to_regs_mut(array: &mut [f64]) -> &mut [Self] {
-        unsafe { 
-            let len = array.len();
-            let reg_len = Self::len();
-            if len % reg_len != 0 {
-                panic!("Argument must be dividable by {}", reg_len);
-            }
-            let trans: &mut [Self] = mem::transmute(array);
-            &mut trans[0 .. len / reg_len]
-        }
-    }
     
     fn len() -> usize {
         2

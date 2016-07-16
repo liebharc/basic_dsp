@@ -3,7 +3,6 @@ use simd::x86::sse3::Sse3F32x4;
 use num::complex::Complex;
 use super::Simd;
 use simd::x86::sse2::f64x2;
-use std::mem;
 
 pub type Reg32 = f32x4;
 
@@ -11,18 +10,6 @@ pub type Reg64 = f64x2;
 
 impl Simd<f32> for f32x4
 {
-    fn calc_data_alignment_reqs(array: &[f32]) -> (usize, usize, usize) {
-        let data_length = array.len();
-        let addr = array.as_ptr();
-        let scalar_left = (addr as usize % mem::size_of::<Self>()) / mem::size_of::<f32>(); 
-        if scalar_left > data_length { 
-            (data_length, data_length, 0) 
-        } else { 
-            let right = (data_length - scalar_left) % Self::len();
-            (scalar_left, data_length - right, data_length - right)
-        }
-    }
-
     type Array = [f32; 4];
 
     fn to_array(self) -> Self::Array {
@@ -31,43 +18,7 @@ impl Simd<f32> for f32x4
         target
     }
     
-    fn from_array(array: Self::Array) -> Self {
-        Self::load(&array, 0)
-    }
-    
     type ComplexArray = [Complex<f32>; 2];
-
-    fn to_complex_array(self) -> Self::ComplexArray {
-        unsafe { mem::transmute(self.to_array()) }
-    }
-    
-    fn from_complex_array(array: Self::ComplexArray) -> Self {
-        Self::from_array(unsafe { mem::transmute(array) })
-    }
-
-    fn array_to_regs(array: &[f32]) -> &[Self] {
-        unsafe { 
-            let len = array.len();
-            let reg_len = Self::len();
-            if len % reg_len != 0 {
-                panic!("Argument must be dividable by {}", reg_len);
-            }
-            let trans: &[Self] = mem::transmute(array);
-            &trans[0 .. len / reg_len]
-        }
-    }
-    
-    fn array_to_regs_mut(array: &mut [f32]) -> &mut [Self] {
-        unsafe { 
-            let len = array.len();
-            let reg_len = Self::len();
-            if len % reg_len != 0 {
-                panic!("Argument must be dividable by {}", reg_len);
-            }
-            let trans: &mut [Self] = mem::transmute(array);
-            &mut trans[0 .. len / reg_len]
-        }
-    }
     
     fn len() -> usize {
         4
@@ -109,6 +60,10 @@ impl Simd<f32> for f32x4
     
     fn scale_complex(self, value: Complex<f32>) -> f32x4
     {
+
+
+
+
         let scaling_real = f32x4::splat(value.re);
         let scaling_imag = f32x4::splat(value.im);
         let parallel = scaling_real * self;
@@ -121,10 +76,14 @@ impl Simd<f32> for f32x4
     fn mul_complex(self, value: f32x4) -> f32x4
     {
         let scaling_real = f32x4::new(value.extract(0), value.extract(0), value.extract(2), value.extract(2));
+
         let scaling_imag = f32x4::new(value.extract(1), value.extract(1), value.extract(3), value.extract(3));
+
         let parallel = scaling_real * self;
         // There should be a shufps operation which shuffles the vector self
         let shuffled = f32x4::new(self.extract(1), self.extract(0), self.extract(3), self.extract(2)); 
+
+
         let cross = scaling_imag * shuffled;
         parallel.addsub(cross)
     }
@@ -136,10 +95,12 @@ impl Simd<f32> for f32x4
         let parallel = scaling_real * value;
         // There should be a shufps operation which shuffles the vector self
         let shuffled = f32x4::new(value.extract(1), value.extract(0), value.extract(3), value.extract(2)); 
+
         let cross = scaling_imag * shuffled;
         let mul = parallel.addsub(cross);
         let square = shuffled * shuffled;
         let square_shuffled = f32x4::new(square.extract(1), square.extract(0), square.extract(3), square.extract(2));
+
         let sum = square + square_shuffled;
         let div = mul / sum;
         f32x4::new(div.extract(1), div.extract(0), div.extract(3), div.extract(2))
@@ -148,24 +109,28 @@ impl Simd<f32> for f32x4
     fn complex_abs_squared(self) -> f32x4
     {
         let squared = self * self;
+
         squared.hadd(squared)
     }
     
     fn complex_abs(self) -> f32x4
     {
         let squared = self * self;
+
         let squared_sum = squared.hadd(squared);
         squared_sum.sqrt()
     }
     
     fn complex_abs_squared2(self) -> f32x4
     {
+
         let abs = self.complex_abs_squared();
         f32x4::new(abs.extract(0), abs.extract(2), abs.extract(1), abs.extract(3))
     }
     
     fn complex_abs2(self) -> f32x4
     {
+
         let abs = self.complex_abs();
         f32x4::new(abs.extract(0), abs.extract(2), abs.extract(1), abs.extract(3))
     }
@@ -201,18 +166,6 @@ impl Simd<f32> for f32x4
 
 impl Simd<f64> for f64x2
 {
-    fn calc_data_alignment_reqs(array: &[f64]) -> (usize, usize, usize) {
-        let data_length = array.len();
-        let addr = array.as_ptr();
-        let scalar_left = (addr as usize % mem::size_of::<Self>()) / mem::size_of::<f64>(); 
-        if scalar_left > data_length { 
-            (data_length, data_length, 0) 
-        } else { 
-            let right = (data_length - scalar_left) % Self::len();
-            (scalar_left, data_length - right, data_length - right)
-        }
-    }
-
     type Array = [f64; 2];
 
     fn to_array(self) -> Self::Array {
@@ -221,43 +174,7 @@ impl Simd<f64> for f64x2
         target
     }
     
-    fn from_array(array: Self::Array) -> Self {
-        Self::load(&array, 0)
-    }
-    
     type ComplexArray = [Complex<f64>; 1];
-
-    fn to_complex_array(self) -> Self::ComplexArray {
-        unsafe { mem::transmute(self.to_array()) }
-    }
-    
-    fn from_complex_array(array: Self::ComplexArray) -> Self {
-        Self::from_array(unsafe { mem::transmute(array) })
-    }
-
-    fn array_to_regs(array: &[f64]) -> &[Self] {
-        unsafe { 
-            let len = array.len();
-            let reg_len = Self::len();
-            if len % reg_len != 0 {
-                panic!("Argument must be dividable by {}", reg_len);
-            }
-            let trans: &[Self] = mem::transmute(array);
-            &trans[0 .. len / reg_len]
-        }
-    }
-    
-    fn array_to_regs_mut(array: &mut [f64]) -> &mut [Self] {
-        unsafe { 
-            let len = array.len();
-            let reg_len = Self::len();
-            if len % reg_len != 0 {
-                panic!("Argument must be dividable by {}", reg_len);
-            }
-            let trans: &mut [Self] = mem::transmute(array);
-            &mut trans[0 .. len / reg_len]
-        }
-    }
     
     fn len() -> usize {
         2
@@ -339,11 +256,19 @@ impl Simd<f64> for f64x2
     
     fn complex_abs_squared2(self) -> f64x2
     {
+
+
+
+
         self.complex_abs_squared()
     }
     
     fn complex_abs2(self) -> f64x2
     {
+
+
+
+
         self.complex_abs()
     }
     

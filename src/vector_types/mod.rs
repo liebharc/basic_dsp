@@ -125,7 +125,7 @@ use RealNumber;
 use multicore_support::{Chunk, Complexity, MultiCoreSettings};
 use std::mem;
 use std::ptr;
-use simd_extensions::{Simd, Reg32, Reg64};
+use simd_extensions::*;
 use std::ops::{Index, IndexMut, Range, RangeTo, RangeFrom, RangeFull};
 use num::traits::Zero;
 use std::ops::Mul;

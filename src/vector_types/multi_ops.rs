@@ -21,7 +21,7 @@ use super::operations_enum::{
     get_argument,
     PerformOperationSimd};
 use multicore_support::{Chunk, Complexity};
-use simd_extensions::{Simd, Reg32, Reg64};
+use simd_extensions::*;
 use num::Complex;
 use std::sync::{Arc, Mutex};
 

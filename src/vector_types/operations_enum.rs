@@ -2,7 +2,7 @@ use super::super::RealNumber;
 use super::ErrorReason;
 use num::complex::Complex;
 use complex_extensions::ComplexExtensions;
-use simd_extensions::{Simd, Reg32, Reg64};
+use simd_extensions::*;
 use std::ops::{Add, Sub, Mul, Div};
 use std::sync::Arc;
 
