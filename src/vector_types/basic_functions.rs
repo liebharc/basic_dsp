@@ -428,14 +428,14 @@ macro_rules! add_basic_private_impl {
                                 current[k] = 0.0;
                                 k += 1;
                                 if k >= current.len() {
-                                    copy.push($reg::load(&current, 0));
+                                    copy.push($reg::load_unchecked(&current, 0));
                                     k = 0;
                                 }
                                 if step > 1 {
                                     current[k] = 0.0;
                                     k += 1;
                                     if k >= current.len() {
-                                        copy.push($reg::load(&current, 0));
+                                        copy.push($reg::load_unchecked(&current, 0));
                                         k = 0;
                                     }
                                 }
@@ -446,13 +446,13 @@ macro_rules! add_basic_private_impl {
                                     current[k] = re;
                                     k += 1;
                                     if k >= current.len() {
-                                        copy.push($reg::load(&current, 0));
+                                        copy.push($reg::load_unchecked(&current, 0));
                                         k = 0;
                                     }
                                     current[k] = im;
                                     k += 1;
                                     if k >= current.len() {
-                                        copy.push($reg::load(&current, 0));
+                                        copy.push($reg::load_unchecked(&current, 0));
                                         k = 0;
                                     }
                                 }
@@ -460,7 +460,7 @@ macro_rules! add_basic_private_impl {
                                     current[k] = *data.next().unwrap();
                                     k += 1;
                                     if k >= current.len() {
-                                        copy.push($reg::load(&current, 0));
+                                        copy.push($reg::load_unchecked(&current, 0));
                                         k = 0;
                                     }
                                 }

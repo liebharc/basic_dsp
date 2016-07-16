@@ -1081,7 +1081,7 @@ macro_rules! add_multi_ops_impl {
                     for j in 0..array.len() {
                         unsafe {
                             let elem = vectors.get_unchecked_mut(j);
-                            *elem = $reg::load(array.get_unchecked(j), i)
+                            *elem = $reg::load_unchecked(array.get_unchecked(j), i)
                         }
                     }
                 
@@ -1096,7 +1096,7 @@ macro_rules! add_multi_ops_impl {
                     
                     for j in 0..array.len() {
                         unsafe {
-                            vectors.get_unchecked(j).store(array.get_unchecked_mut(j), i);
+                            vectors.get_unchecked(j).store_unchecked(array.get_unchecked_mut(j), i);
                         }
                     }
                     
@@ -1123,7 +1123,7 @@ macro_rules! add_multi_ops_impl {
                 for j in 0..array.len() {
                         unsafe {
                             let elem = vectors.get_unchecked_mut(j);
-                            *elem = $reg::load(array.get_unchecked(j), i)
+                            *elem = $reg::load_unchecked(array.get_unchecked(j), i)
                         }
                     }
                 

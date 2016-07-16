@@ -14,7 +14,7 @@ use super::definitions::{
     ComplexVectorOps};
 use super::GenericDataVector;
 use super::stats_impl::Stats;
-use simd_extensions::{Simd,Reg32,Reg64};
+use simd_extensions::*;
 use num::complex::Complex;
 use std::sync::Arc;
 
@@ -111,7 +111,7 @@ macro_rules! add_complex_impl {
                             let mut j = range.start;
                             while i < target.len()
                             { 
-                                let vector = $reg::load(array, j);
+                                let vector = $reg::load_unchecked(array, j);
                                 let result = vector.complex_abs();
                                 result.store_half(target, i);
                                 j += $reg::len();
@@ -299,8 +299,8 @@ macro_rules! add_complex_impl {
                             let mut result = $reg::splat(0.0);
                             while i < target.len()
                             { 
-                                let vector1 = $reg::load(original, j);
-                                let vector2 = $reg::load(target, i);
+                                let vector1 = $reg::load_unchecked(original, j);
+                                let vector2 = $reg::load_unchecked(target, i);
                                 result = result + (vector2.mul_complex(vector1));
                                 i += $reg::len();
                                 j += $reg::len();

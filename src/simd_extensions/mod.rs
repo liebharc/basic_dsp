@@ -50,13 +50,22 @@ pub trait SimdGeneric<T> : Simd<T>
     fn array_to_regs(array: &[T]) -> &[Self];
     
     fn array_to_regs_mut(array: &mut [T]) -> &mut [Self];
+    
+    fn load_unchecked(array: &[T], idx: usize) -> Self;
+    
+    fn store_unchecked(self, target: &mut [T], index: usize);
 }
+
+#[repr(packed)]
+#[derive(Debug, Copy, Clone)]
+struct Unalign<T>(T);
 
 macro_rules! simd_generic_impl {
     ($data_type:ident, $reg:ident)
     =>
     {  
         impl SimdGeneric<$data_type> for $reg {
+            #[inline]
             fn calc_data_alignment_reqs(array: &[$data_type]) -> (usize, usize, usize) {
                 let data_length = array.len();
                 let addr = array.as_ptr();
@@ -69,18 +78,22 @@ macro_rules! simd_generic_impl {
                 }
             }
             
+            #[inline]
             fn from_array(array: Self::Array) -> Self {
                 Self::load(&array, 0)
             }
             
+            #[inline]
             fn to_complex_array(self) -> Self::ComplexArray {
                 unsafe { mem::transmute(self.to_array()) }
             }
             
+            #[inline]
             fn from_complex_array(array: Self::ComplexArray) -> Self {
                 Self::from_array(unsafe { mem::transmute(array) })
             }
             
+            #[inline]
             fn array_to_regs(array: &[$data_type]) -> &[Self] {
                 unsafe { 
                     let len = array.len();
@@ -93,6 +106,7 @@ macro_rules! simd_generic_impl {
                 }
             }
             
+            #[inline]
             fn array_to_regs_mut(array: &mut [$data_type]) -> &mut [Self] {
                 unsafe { 
                     let len = array.len();
@@ -102,6 +116,23 @@ macro_rules! simd_generic_impl {
                     }
                     let trans: &mut [Self] = mem::transmute(array);
                     &mut trans[0 .. len / reg_len]
+                }
+            }
+            
+            #[inline]
+            fn load_unchecked(array: &[$data_type], idx: usize) -> Self {
+                let loaded = unsafe {
+                    let data = array.as_ptr();
+                    *(data.offset(idx as isize) as *const Unalign<Self>)
+                };
+                loaded.0
+            }
+    
+            #[inline]
+            fn store_unchecked(self, array: &mut [$data_type], idx: usize) {
+                unsafe {
+                    let place = array.as_mut_ptr();
+                    *(place.offset(idx as isize) as *mut Unalign<Self>) = Unalign(self)
                 }
             }
         }

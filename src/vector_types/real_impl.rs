@@ -14,7 +14,7 @@ use super::definitions::{
     VectorIter};
 use super::GenericDataVector;    
 use super::stats_impl::Stats;
-use simd_extensions::{Simd, Reg32, Reg64};
+use simd_extensions::*;
 use std::sync::Arc;
 
 macro_rules! add_real_impl {
@@ -199,8 +199,8 @@ macro_rules! add_real_impl {
                             let mut result = $reg::splat(0.0);
                             while i < target.len()
                             { 
-                                let vector1 = $reg::load(original, j);
-                                let vector2 = $reg::load(target, i);
+                                let vector1 = $reg::load_unchecked(original, j);
+                                let vector2 = $reg::load_unchecked(target, i);
                                 result = result + (vector2 * vector1);
                                 i += $reg::len();
                                 j += $reg::len();

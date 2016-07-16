@@ -12,7 +12,7 @@ use super::{
     round_len};
 use num::complex::Complex;
 use complex_extensions::ComplexExtensions;
-use simd_extensions::{Simd, Reg32, Reg64};
+use simd_extensions::*;
 use multicore_support::MultiCoreSettings;
 use std::ops::{Add, Sub, Mul, Div};
 use std::ptr;
@@ -98,10 +98,10 @@ macro_rules! impl_binary_vector_operation {
                         let mut j = range.start;
                         while i < target.len()
                         { 
-                            let vector1 = $reg::load(original, j);
-                            let vector2 = $reg::load(target, i);
+                            let vector1 = $reg::load_unchecked(original, j);
+                            let vector2 = $reg::load_unchecked(target, i);
                             let result = vector2.$simd_op(vector1);
-                            result.store(target, i);
+                            result.store_unchecked(target, i);
                             i += $reg::len();
                             j += $reg::len();
                         }
@@ -142,10 +142,10 @@ macro_rules! impl_binary_complex_vector_operation {
                         let mut j = range.start;
                         while i < target.len()
                         { 
-                            let vector1 = $reg::load(original, j);
-                            let vector2 = $reg::load(target, i);
+                            let vector1 = $reg::load_unchecked(original, j);
+                            let vector2 = $reg::load_unchecked(target, i);
                             let result = vector2.$simd_op(vector1);
-                            result.store(target, i);
+                            result.store_unchecked(target, i);
                             i += $reg::len();
                             j += $reg::len();
                         }
@@ -195,13 +195,13 @@ macro_rules! impl_binary_smaller_vector_operation {
                         { 
                             let vector1 = 
                                 if j + $reg::len() < original.len() { 
-                                    $reg::load(original, j)
+                                    $reg::load_unchecked(original, j)
                                 } else {
                                     $reg::load_wrap(original, j)
                                 };
-                            let vector2 = $reg::load(target, i);
+                            let vector2 = $reg::load_unchecked(target, i);
                             let result = vector2.$simd_op(vector1);
-                            result.store(target, i);
+                            result.store_unchecked(target, i);
                             i += $reg::len();
                             j = (j + $reg::len()) % original.len();
                         }
@@ -247,13 +247,13 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
                         { 
                             let vector1 = 
                                 if j + $reg::len() < original.len() { 
-                                    $reg::load(original, j)
+                                    $reg::load_unchecked(original, j)
                                 } else {
                                     $reg::load_wrap(original, j)
                                 };
-                            let vector2 = $reg::load(target, i);
+                            let vector2 = $reg::load_unchecked(target, i);
                             let result = vector2.$simd_op(vector1);
-                            result.store(target, i);
+                            result.store_unchecked(target, i);
                             i += $reg::len();
                             j = (j + $reg::len()) % original.len();
                         }
