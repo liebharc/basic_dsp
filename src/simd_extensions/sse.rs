@@ -190,11 +190,6 @@ impl Simd<f64> for f64x2
     }
     
     #[inline]
-    fn load(array: &[f64], idx: usize) -> f64x2 {
-        f64x2::load(array, idx)
-    }
-    
-    #[inline]
     fn load_wrap_unchecked(array: &[f64], idx: usize) -> f64x2 {
         let mut temp = [0.0; 2];
         for i in 0..temp.len() {
