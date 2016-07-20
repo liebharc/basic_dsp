@@ -533,6 +533,21 @@ mod slow_test {
     }
     
     #[test]
+    fn statistics_vs_sum_test32() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data(201511210, iteration, range.start, range.end);
+            let delta = create_delta(3561159, iteration);
+            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
+            let sum: f32 = vector.real_sum();
+            let sum_sq: f32 = vector.real_sum_sq();
+            let rms = (sum_sq / a.len() as f32).sqrt();
+            let result = vector.real_statistics();
+            assert_in_tolerance(result.sum, sum, 1e-1);
+            assert_in_tolerance(result.rms, rms, 1e-1);
+        });
+    }
+    
+    #[test]
     fn split_merge_test32() {
         let a = create_data(201511210, 0, 1000, 1000);
         let vector = RealTimeVector32::from_array(&a);

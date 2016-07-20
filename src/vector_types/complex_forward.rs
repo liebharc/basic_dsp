@@ -106,6 +106,14 @@ macro_rules! define_complex_operations_forward {
                     self.to_gen_borrow().complex_statistics_splitted(len)
                 }
                 
+                fn complex_sum(&self) -> Complex<$data_type> {
+                    self.to_gen_borrow().complex_sum()
+                }
+                
+                fn complex_sum_sq(&self) -> Complex<$data_type> {
+                    self.to_gen_borrow().complex_sum_sq()
+                }
+                
                 fn get_real_imag(&self, real: &mut Self::RealPartner, imag: &mut Self::RealPartner) -> VoidResult {
                     self.to_gen_borrow().get_real_imag(real.to_gen_mut_borrow(), imag.to_gen_mut_borrow())
                 }
@@ -174,6 +182,14 @@ macro_rules! define_complex_operations_forward {
                 
                 fn statistics_splitted(&self, len: usize) -> Vec<Statistics<Complex<$data_type>>> {
                     self.complex_statistics_splitted(len)
+                }
+                
+                fn sum(&self) -> Complex<$data_type> {
+                    self.complex_sum()
+                }
+                
+                fn sum_sq(&self) -> Complex<$data_type> {
+                    self.complex_sum_sq()
                 }
             }
             

@@ -146,6 +146,26 @@ pub extern fn complex_statistics64(vector: &DataVector64) -> Statistics<Complex6
     vector.complex_statistics()
 }
 
+#[no_mangle]
+pub extern fn real_sum64(vector: &DataVector64) -> f64 {
+    vector.real_sum()
+}
+
+#[no_mangle]
+pub extern fn real_sum_sq64(vector: &DataVector64) -> f64 {
+    vector.real_sum_sq()
+}
+
+#[no_mangle]
+pub extern fn complex_sum64(vector: &DataVector64) -> Complex64 {
+    vector.complex_sum()
+}
+
+#[no_mangle]
+pub extern fn complex_sum_sq64(vector: &DataVector64) -> Complex64 {
+    vector.complex_sum_sq()
+}
+
 /// `padding_option` argument is translated to:
 /// Returns the vector domain as integer:
 ///

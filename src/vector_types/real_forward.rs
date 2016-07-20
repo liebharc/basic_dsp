@@ -50,6 +50,14 @@ macro_rules! define_real_operations_forward {
                     self.to_gen_borrow().real_statistics_splitted(len)
                 }
                 
+                fn real_sum(&self) -> $data_type {
+                    self.to_gen_borrow().real_sum()
+                }
+                
+                fn real_sum_sq(&self) -> $data_type {
+                    self.to_gen_borrow().real_sum_sq()
+                }
+                
                 fn map_inplace_real<A, F>(self, argument: A, f: F) -> VecResult<Self>
                     where A: Sync + Copy + Send,
                           F: Fn($data_type, usize, A) -> $data_type + 'static + Sync {
@@ -126,6 +134,14 @@ macro_rules! define_real_operations_forward {
                 
                 fn statistics_splitted(&self, len: usize) -> Vec<Statistics<$data_type>> {
                     self.real_statistics_splitted(len)
+                }
+                
+                fn sum(&self) -> $data_type {
+                    self.real_sum()
+                }
+                
+                fn sum_sq(&self) -> $data_type {
+                    self.real_sum_sq()
                 }
             }
             

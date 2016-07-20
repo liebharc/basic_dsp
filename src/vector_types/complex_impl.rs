@@ -436,6 +436,76 @@ macro_rules! add_complex_impl {
                     
                     Ok(self)
                 }
+                
+                fn complex_sum(&self) -> Complex<$data_type> {
+                    let data_length = self.len();
+                    let (scalar_left, scalar_right, vectorization_length) = $reg::calc_data_alignment_reqs(&self.data[0..data_length]);
+                    let array = &self.data;
+                    let mut sum = 
+                        if vectorization_length > 0 {
+                            let chunks = Chunk::get_chunked_results(
+                                Complexity::Small, &self.multicore_settings,
+                                &array[scalar_left..vectorization_length], $reg::len(), (), 
+                                move |array, _, _| {
+                                let array = $reg::array_to_regs(array);
+                                let mut sum = $reg::splat(0.0);
+                                for reg in array {
+                                    sum = sum + *reg;
+                                }
+                                sum
+                            });
+                            chunks.iter()
+                                .map(|v|v.sum_complex())
+                                .fold(Complex::<$data_type>::new(0.0, 0.0), |acc, x| acc + x)
+                        } 
+                        else {
+                            Complex::<$data_type>::new(0.0, 0.0)
+                        };
+                    for num in Self::array_to_complex(&array[0..scalar_left])
+                    {
+                        sum = sum + *num;
+                    }
+                    for num in Self::array_to_complex(&array[scalar_right..data_length])
+                    {
+                        sum = sum + *num;
+                    }
+                    sum
+                }
+                
+                fn complex_sum_sq(&self) -> Complex<$data_type> {
+                    let data_length = self.len();
+                    let (scalar_left, scalar_right, vectorization_length) = $reg::calc_data_alignment_reqs(&self.data[0..data_length]);
+                    let array = &self.data;
+                    let mut sum = 
+                        if vectorization_length > 0 {
+                            let chunks = Chunk::get_chunked_results(
+                                Complexity::Small, &self.multicore_settings,
+                                &array[scalar_left..vectorization_length], $reg::len(), (), 
+                                move |array, _, _| {
+                                let array = $reg::array_to_regs(array);
+                                let mut sum = $reg::splat(0.0);
+                                for reg in array {
+                                    sum = sum + reg.mul_complex(*reg);
+                                }
+                                sum
+                            });
+                            chunks.iter()
+                                .map(|v|v.sum_complex())
+                                .fold(Complex::<$data_type>::new(0.0, 0.0), |acc, x| acc + x)
+                        } 
+                        else {
+                            Complex::<$data_type>::new(0.0, 0.0)
+                        };
+                    for num in Self::array_to_complex(&array[0..scalar_left])
+                    {
+                        sum = sum + *num * *num;
+                    }
+                    for num in Self::array_to_complex(&array[scalar_right..data_length])
+                    {
+                        sum = sum + *num * *num;
+                    }
+                    sum
+                }
             }
             
             impl GenericDataVector<$data_type> {
@@ -492,6 +562,14 @@ macro_rules! add_complex_impl {
                 
                 fn statistics_splitted(&self, len: usize) -> Vec<Statistics<Complex<$data_type>>> {
                     self.complex_statistics_splitted(len)
+                }
+                
+                fn sum(&self) -> Complex<$data_type> {
+                    self.complex_sum()
+                }
+                
+                fn sum_sq(&self) -> Complex<$data_type> {
+                    self.complex_sum_sq()
                 }
             }
             

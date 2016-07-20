@@ -11,6 +11,7 @@ mod slow_test {
         RealTimeVector32,
         GenericVectorOps,
         ComplexVectorOps,
+        StatisticsOps,
         DataVectorDomain,
         ComplexTimeVector32};
     use num::complex::Complex32;
@@ -406,6 +407,21 @@ mod slow_test {
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let sum = c.iter().fold(Complex32::new(0.0, 0.0), |a,b| a + b);
             let sum_sq = c.iter().map(|v| v * v).fold(Complex32::new(0.0, 0.0), |a,b| a + b);
+            let rms = (sum_sq / a.len() as f32).sqrt();
+            let result = vector.complex_statistics();
+            assert_complex_in_tolerance(result.sum, sum, 0.5);
+            assert_complex_in_tolerance(result.rms, rms, 0.5);
+        });
+    }
+    
+    #[test]
+    fn statistics_vs_sum_test32() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data_even(201511210, iteration, range.start, range.end);
+            let delta = create_delta(3561159, iteration);
+            let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let sum = vector.sum();
+            let sum_sq = vector.sum_sq();
             let rms = (sum_sq / a.len() as f32).sqrt();
             let result = vector.complex_statistics();
             assert_complex_in_tolerance(result.sum, sum, 0.5);

@@ -263,6 +263,76 @@ macro_rules! add_real_impl {
                     
                     Statistics::merge_cols(&chunks)
                 }
+                
+                fn real_sum(&self) -> $data_type {
+                    let data_length = self.len();
+                    let (scalar_left, scalar_right, vectorization_length) = $reg::calc_data_alignment_reqs(&self.data[0..data_length]);
+                    let array = &self.data;
+                    let mut sum = 
+                        if vectorization_length > 0 {
+                            let chunks = Chunk::get_chunked_results(
+                                Complexity::Small, &self.multicore_settings,
+                                &array[scalar_left..vectorization_length], $reg::len(), (), 
+                                move |array, _, _| {
+                                let array = $reg::array_to_regs(array);
+                                let mut sum = $reg::splat(0.0);
+                                for reg in array {
+                                    sum = sum + *reg;
+                                }
+                                sum
+                            });
+                            chunks.iter()
+                                .map(|v|v.sum_real())
+                                .sum()
+                        } 
+                        else {
+                            0.0
+                        };
+                    for num in &array[0..scalar_left]
+                    {
+                        sum = sum + *num;
+                    }
+                    for num in &array[scalar_right..data_length]
+                    {
+                        sum = sum + *num;
+                    }
+                    sum
+                }
+                
+                fn real_sum_sq(&self) -> $data_type {
+                    let data_length = self.len();
+                    let (scalar_left, scalar_right, vectorization_length) = $reg::calc_data_alignment_reqs(&self.data[0..data_length]);
+                    let array = &self.data;
+                    let mut sum = 
+                        if vectorization_length > 0 {
+                            let chunks = Chunk::get_chunked_results(
+                                Complexity::Small, &self.multicore_settings,
+                                &array[scalar_left..vectorization_length], $reg::len(), (), 
+                                move |array, _, _| {
+                                let array = $reg::array_to_regs(array);
+                                let mut sum = $reg::splat(0.0);
+                                for reg in array {
+                                    sum = sum + *reg * *reg;
+                                }
+                                sum
+                            });
+                            chunks.iter()
+                                .map(|v|v.sum_real())
+                                .sum()
+                        } 
+                        else {
+                            0.0
+                        };
+                    for num in &array[0..scalar_left]
+                    {
+                        sum = sum + *num * *num;
+                    }
+                    for num in &array[scalar_right..data_length]
+                    {
+                        sum = sum + *num * *num;
+                    }
+                    sum
+                }
             }
             
             impl ScaleOps<$data_type> for GenericDataVector<$data_type> {
@@ -290,6 +360,14 @@ macro_rules! add_real_impl {
                 
                 fn statistics_splitted(&self, len: usize) -> Vec<Statistics<$data_type>> {
                     self.real_statistics_splitted(len)
+                }
+                
+                fn sum(&self) -> $data_type {
+                    self.real_sum()
+                }
+                
+                fn sum_sq(&self) -> $data_type {
+                    self.real_sum_sq()
                 }
             }
             

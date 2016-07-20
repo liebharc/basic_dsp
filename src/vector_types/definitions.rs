@@ -178,6 +178,38 @@ pub trait StatisticsOps<T> : Sized
     /// }
     /// ```  
     fn statistics_splitted(&self, len: usize) -> Vec<Statistics<T>>;     
+    
+    /// Calculates the sum of the data contained in the vector.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// # use num::complex::Complex32;
+    /// use basic_dsp::{ComplexTimeVector32, StatisticsOps};
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+    /// let result = vector.sum();
+    /// assert_eq!(result, Complex32::new(9.0, 12.0));
+    /// }
+    /// ```  
+    fn sum(&self) -> T;
+    
+    /// Calculates the sum of the squared data contained in the vector.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// # use num::complex::Complex32;
+    /// use basic_dsp::{ComplexTimeVector32, StatisticsOps};
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+    /// let result = vector.sum_sq();
+    /// assert_eq!(result, Complex32::new(-21.0, 88.0));
+    /// }
+    /// ```  
+    fn sum_sq(&self) -> T;
 }
 
 /// Defines all operations which are valid on all `DataVectors`.
@@ -779,6 +811,28 @@ pub trait RealVectorOps<T> : DataVector<T>
     /// ```  
     fn real_statistics_splitted(&self, len: usize) -> Vec<Statistics<T>>;
     
+    /// Calculates the sum of the data contained in the vector. See also  [`StatisticsOps`](trait.StatisticsOps.html).
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, RealVectorOps};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0]);
+    /// let result = vector.real_sum();
+    /// assert_eq!(result, 15.0);
+    /// ```  
+    fn real_sum(&self) -> T;
+    
+    /// Calculates the sum of the data contained in the vector. See also  [`StatisticsOps`](trait.StatisticsOps.html).
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp::{RealTimeVector32, RealVectorOps};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0]);
+    /// let result = vector.real_sum_sq();
+    /// assert_eq!(result, 55.0);
+    /// ```  
+    fn real_sum_sq(&self) -> T;
+    
     /// Transforms all vector elements using the function `map`.
     /// # Example
     ///
@@ -1102,6 +1156,38 @@ pub trait ComplexVectorOps<T> : DataVector<T>
     /// }
     /// ```  
     fn complex_statistics_splitted(&self, len: usize) -> Vec<Statistics<Complex<T>>>; 
+    
+    /// Calculates the sum of the data contained in the vector. See also  [`StatisticsOps`](trait.StatisticsOps.html).
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// # use num::complex::Complex32;
+    /// use basic_dsp::{ComplexTimeVector32, ComplexVectorOps};
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+    /// let result = vector.complex_sum();
+    /// assert_eq!(result, Complex32::new(9.0, 12.0));
+    /// }
+    /// ```  
+    fn complex_sum(&self) -> Complex<T>;
+    
+    /// Calculates the sum of the data contained in the vector. See also  [`StatisticsOps`](trait.StatisticsOps.html).
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp;
+    /// # use num::complex::Complex32;
+    /// use basic_dsp::{ComplexTimeVector32, ComplexVectorOps};
+    /// # fn main() { 
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+    /// let result = vector.complex_sum_sq();
+    /// assert_eq!(result, Complex32::new(-21.0, 88.0));
+    /// }
+    /// ``` 
+    fn complex_sum_sq(&self) -> Complex<T>;
     
     /// Gets the real and imaginary parts and stores them in the given vectors. 
     /// See also  [`get_phase`](trait.ComplexVectorOps.html#tymethod.get_phase) and

@@ -145,6 +145,26 @@ pub extern fn complex_statistics32(vector: &DataVector32) -> Statistics<Complex3
     vector.complex_statistics()
 }
 
+#[no_mangle]
+pub extern fn real_sum32(vector: &DataVector32) -> f32 {
+    vector.real_sum()
+}
+
+#[no_mangle]
+pub extern fn real_sum_sq32(vector: &DataVector32) -> f32 {
+    vector.real_sum_sq()
+}
+
+#[no_mangle]
+pub extern fn complex_sum32(vector: &DataVector32) -> Complex32 {
+    vector.complex_sum()
+}
+
+#[no_mangle]
+pub extern fn complex_sum_sq32(vector: &DataVector32) -> Complex32 {
+    vector.complex_sum_sq()
+}
+
 /// `padding_option` argument is translated to:
 /// Returns the vector domain as integer:
 ///
