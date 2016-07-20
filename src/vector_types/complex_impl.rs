@@ -330,13 +330,10 @@ macro_rules! add_complex_impl {
                         &array[0..data_length], 2, (),
                         |array, range, _arg| {
                             let mut stat = Statistics::<Complex<$data_type>>::empty();
-                            let mut i = 0;
                             let mut j = range.start / 2;
-                            while i < array.len()
-                            { 
-                                let value = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                stat.add(value, j);
-                                i += 2;
+                            let array = Self::array_to_complex(array);
+                            for num in array { 
+                                stat.add(*num, j);
                                 j += 1;
                             }
                             stat
@@ -357,14 +354,11 @@ macro_rules! add_complex_impl {
                         &array[0..data_length], 2, len,
                         |array, range, len| {
                             let mut results = Statistics::<Complex<$data_type>>::empty_vec(len);
-                            let mut i = 0;
                             let mut j = range.start / 2;
-                            while i < array.len()
-                            { 
-                                let stat = &mut results[(i / 2) % len];
-                                let value = Complex::<$data_type>::new(array[i], array[i + 1]);
-                                stat.add(value, j / len);
-                                i += 2;
+                            let array = Self::array_to_complex(array);
+                            for num in array { 
+                                let stat = &mut results[j % len];
+                                stat.add(*num, j / len);
                                 j += 1;
                             }
                             

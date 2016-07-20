@@ -115,6 +115,7 @@ macro_rules! impl_stat_trait {
                 
                 impl_common_stats!();
                 
+                #[inline]
                 fn add(&mut self, elem: $data_type, index: usize) {
                     self.sum += elem;
                     self.count += 1;
@@ -201,6 +202,7 @@ macro_rules! impl_stat_trait {
                 
                 impl_common_stats!();
                 
+                #[inline]
                 fn add(&mut self, elem: Complex<$data_type>, index: usize) {
                     self.sum = self.sum + elem;
                     self.count += 1;

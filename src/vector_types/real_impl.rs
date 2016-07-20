@@ -228,12 +228,9 @@ macro_rules! add_real_impl {
                         &array[0..data_length], 1, (),
                         |array, range, _arg| {
                             let mut stats = Statistics::empty();
-                            let mut i = 0;
                             let mut j = range.start;
-                            while i < array.len()
-                            { 
-                                stats.add(array[i], j);
-                                i += 1;
+                            for num in array { 
+                                stats.add(*num, j);
                                 j += 1;
                             }
                             stats
@@ -254,12 +251,10 @@ macro_rules! add_real_impl {
                         &array[0..data_length], 1, len,
                         |array, range, len| {
                             let mut results = Statistics::empty_vec(len);
-                            let mut i = 0;
                             let mut j = range.start;
-                            while i < array.len() {
-                                let stats = &mut results[i % len];
-                                stats.add(array[i], j / len);
-                                i += 1;
+                            for num in array {
+                                let stats = &mut results[j % len];
+                                stats.add(*num, j / len);
                                 j += 1;
                             }
                             
