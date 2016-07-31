@@ -39,7 +39,7 @@ if ($age_difference_days -gt 3.0) {
 
 # Interop facade32 (which is the "master") needs to be complete
 $cwd = $(Get-Location)
-cd src\interop_facade
+cd vector\src\interop_facade
 $facade_status = $(perl facade32_check_completness.pl)
 $missing_ops_in_facade = $(echo $facade_status | Select-String -Pattern "missing:\s*(\d+)" -AllMatches | % { $_.Matches.Groups[1].Value })
 if ($missing_ops_in_facade -gt 0) {
