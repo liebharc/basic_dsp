@@ -1,6 +1,11 @@
 # `basic_dsp`
 Changes:
 
+## Version 0.3.1
+Minor enhancements
+
+- New feature: Added `sum` and `sum_sq` operations.
+
 ## Version 0.3.0 (Breaking changes)
 Added prepared operations/multi operations, see [combined_ops](https://liebharc.github.io/basic_dsp/basic_dsp/combined_ops)
 
