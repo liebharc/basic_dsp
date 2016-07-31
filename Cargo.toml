@@ -1,6 +1,6 @@
 [package]
 name = "basic_dsp"
-version = "0.3.1"
+version = "0.4.0"
 authors = ["Christian Liebhardt"]
 license = "MIT/Apache-2.0"
 homepage = "https://github.com/liebharc/basic_dsp"
@@ -12,12 +12,6 @@ Digital signal processing based on real or complex vectors in time or frequency 
 Vectors come with basic arithmetic, convolution, Fourier transformation and interpolation operations. The vectors are optimized for sizes of a couple of thousand elements or more.
 """
 
-[profile.dev]
-codegen-units = 4
-
-[profile.test]
-codegen-units = 4
-
 [lib]
 name = "basic_dsp"
 crate-type = ["dylib", "rlib"]
@@ -26,12 +20,17 @@ crate-type = ["dylib", "rlib"]
 [dependencies.basic_dsp_vector]
 optional = false
 path = "vector"
-version = "0.3.1"
+version = "0.4.0"
 
 [dependencies.basic_dsp_matrix]
 optional = true
 path = "matrix"
-version = "0.3.1"
+version = "0.4.0"
+
+[dependencies.basic_dsp_interop]
+optional = true
+path = "interop"
+version = "0.4.0"
 
 [dev-dependencies]
 hamcrest = "^0.1.0"
@@ -39,6 +38,6 @@ rand = "^0.3.12"
 num = "^0.1.34"
 
 [features]
-slow_test = []
 matrix = ["basic_dsp_matrix"]
+interop= ["basic_dsp_interop"]
 default = ["matrix"]

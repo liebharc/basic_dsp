@@ -159,8 +159,8 @@ pub trait GeneralIdentifier<T> : Identifier<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp::*;
-    /// use basic_dsp::combined_ops::*;    
+    /// use basic_dsp_vector::*;
+    /// use basic_dsp_vector::combined_ops::*;    
     /// let complex = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
     /// let ops = multi_ops1(complex);
     /// let ops = ops.add_ops(|v|v.add_points());
@@ -173,8 +173,8 @@ pub trait GeneralIdentifier<T> : Identifier<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp::*;
-    /// use basic_dsp::combined_ops::*;    
+    /// use basic_dsp_vector::*;
+    /// use basic_dsp_vector::combined_ops::*;    
     /// let complex = ComplexTimeVector32::from_interleaved(&[3.0, 2.0, 5.0, 4.0]);
     /// let ops = multi_ops1(complex);
     /// let ops = ops.add_ops(|v|v.sub_points());
@@ -188,8 +188,8 @@ pub trait GeneralIdentifier<T> : Identifier<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp::*;
-    /// use basic_dsp::combined_ops::*;    
+    /// use basic_dsp_vector::*;
+    /// use basic_dsp_vector::combined_ops::*;    
     /// let complex = ComplexTimeVector32::from_interleaved(&[2.0, 4.0, 6.0, 8.0]);
     /// let ops = multi_ops1(complex);
     /// let ops = ops.add_ops(|v|v.div_points());
@@ -202,8 +202,8 @@ pub trait GeneralIdentifier<T> : Identifier<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp::*;
-    /// use basic_dsp::combined_ops::*;    
+    /// use basic_dsp_vector::*;
+    /// use basic_dsp_vector::combined_ops::*;    
     /// let complex = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
     /// let ops = multi_ops1(complex);
     /// let ops = ops.add_ops(|v|v.mul_points());

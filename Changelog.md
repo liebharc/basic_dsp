@@ -1,5 +1,9 @@
 # `basic_dsp`
 Changes:
+## Version 0.4.0 (Breaking changes)
+Added support for matrix operations.
+
+- Breaking change: Interop facade is now only compiled with `--features interop`
 
 ## Version 0.3.1
 Minor enhancements

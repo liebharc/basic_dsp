@@ -48,14 +48,17 @@ macro_rules! convert_scalar {
     }
 }
 
+extern crate basic_dsp_vector;
+extern crate num;
+
 pub mod facade32;
 pub mod facade64;
-use vector_types::{
+use basic_dsp_vector::{
     PaddingOption,
     ErrorReason};
-use window_functions::*;
-use conv_types::*;
-use RealNumber;
+use basic_dsp_vector::window_functions::*;
+use basic_dsp_vector::conv_types::*;
+use basic_dsp_vector::RealNumber;
 
 /// Error codes:
 ///

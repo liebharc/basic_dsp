@@ -48,7 +48,6 @@ mod multicore_support;
 mod simd_extensions;
 pub mod window_functions;
 pub mod conv_types;
-pub mod interop_facade;
 pub mod combined_ops;
 pub use vector_types::
     {

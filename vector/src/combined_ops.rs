@@ -35,8 +35,8 @@
 //!
 //!```
 //! use std::f32::consts::PI;
-//! use basic_dsp::*;
-//! use basic_dsp::combined_ops::*;
+//! use basic_dsp_vector::*;
+//! use basic_dsp_vector::combined_ops::*;
 //! # fn close(left: &[f32], right: &[f32]) {
 //! #   assert_eq!(left.len(), right.len());
 //! #   for i in 0..left.len() {

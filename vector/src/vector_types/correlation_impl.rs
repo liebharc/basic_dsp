@@ -30,7 +30,7 @@ use super::{
 /// # Example
 ///
 /// ```
-/// use basic_dsp::{ComplexTimeVector32, CrossCorrelation, DataVector};
+/// use basic_dsp_vector::{ComplexTimeVector32, CrossCorrelation, DataVector};
 /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 1.0, 2.0, 2.0, 3.0, 3.0]);
 /// let argument = ComplexTimeVector32::from_interleaved(&[3.0, 3.0, 2.0, 2.0, 1.0, 1.0]);
 /// let argument = argument.prepare_argument_padded().expect("Ignoring error handling in examples");

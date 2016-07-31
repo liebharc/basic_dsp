@@ -33,7 +33,7 @@ pub trait TimeDomainOperations<T> : DataVector<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp::{ComplexTimeVector32, TimeDomainOperations, DataVector};
+    /// use basic_dsp_vector::{ComplexTimeVector32, TimeDomainOperations, DataVector};
     /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254]);
     /// let result = vector.plain_fft().expect("Ignoring error handling in examples");
     /// let actual = result.data();
@@ -52,7 +52,7 @@ pub trait TimeDomainOperations<T> : DataVector<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp::{ComplexTimeVector32, TimeDomainOperations, DataVector};
+    /// use basic_dsp_vector::{ComplexTimeVector32, TimeDomainOperations, DataVector};
     /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254]);
     /// let result = vector.fft().expect("Ignoring error handling in examples");
     /// let actual = result.data();
@@ -142,7 +142,7 @@ pub trait FrequencyDomainOperations<T> : DataVector<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp::{ComplexFreqVector32, FrequencyDomainOperations, DataVector};
+    /// use basic_dsp_vector::{ComplexFreqVector32, FrequencyDomainOperations, DataVector};
     /// let vector = ComplexFreqVector32::from_interleaved(&[0.0, 0.0, 1.0, 0.0, 0.0, 0.0]);
     /// let result = vector.plain_ifft().expect("Ignoring error handling in examples");
     /// let actual = result.data();
@@ -162,7 +162,7 @@ pub trait FrequencyDomainOperations<T> : DataVector<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp::{ComplexFreqVector32, FrequencyDomainOperations, DataVector};
+    /// use basic_dsp_vector::{ComplexFreqVector32, FrequencyDomainOperations, DataVector};
     /// let vector = ComplexFreqVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
     /// let result = vector.mirror().expect("Ignoring error handling in examples");
     /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, -6.0, 3.0, -4.0], result.data());
@@ -174,7 +174,7 @@ pub trait FrequencyDomainOperations<T> : DataVector<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp::{ComplexFreqVector32, FrequencyDomainOperations, DataVector};
+    /// use basic_dsp_vector::{ComplexFreqVector32, FrequencyDomainOperations, DataVector};
     /// let vector = ComplexFreqVector32::from_interleaved(&[0.0, 0.0, 0.0, 0.0, 3.0, 0.0]);
     /// let result = vector.ifft().expect("Ignoring error handling in examples");
     /// let actual = result.data();

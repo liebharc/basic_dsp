@@ -3,7 +3,6 @@ extern crate rand;
 extern crate num;
 pub mod tools;
 
-#[cfg(feature = "slow_test")]
 mod slow_test {
     use basic_dsp::*;
     use num::complex::Complex32;
