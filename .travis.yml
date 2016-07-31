@@ -3,29 +3,15 @@ sudo: false
 
 # we you unstable issues and need Rust nightly
 # however we of course hope that we will be able to use stable at some point
+# `cfg_target_feature` and `simd` are the main reasons why Rust nightly is required.
 rust:
 - nightly
 
-before_script:
-  - |
-      pip install 'travis-cargo<0.2' --user &&
-      export PATH=$HOME/.local/bin:$PATH
-
-# compile, test all, benchmark and create documentation
-# see https://github.com/huonw/travis-cargo for travis-cargo documentation
+# Run the makefile to test all tests and doc tests for every sub module
+# and then test and bench the the top level crate.
 script:
 - |
-  travis-cargo build &&
-  travis-cargo test &&
-  travis-cargo bench &&
-  travis-cargo doc
-
-after_success:
-  - travis-cargo --only nightly doc-upload
-
-env:
-  global:
-  # Add certain compiler flags with the rustc wrapper script
-  - RUSTC="$TRAVIS_BUILD_DIR/rustc.sh"
-  - TRAVIS_CARGO_NIGHTLY_FEATURE=""
-  - secure: "fvuzBOsJ1PRRpXpx8JclbtCNoS4vm9CEzHg5wE7HJZRfGcdNPGChEU8Lid1WNnLFmsYO3KRJLL1blsrCigaCrNOKebpHWF9n8uldJ+XlXkL9IR1pfgCqlZ4Wm5el7C2zx0/F99HnVvhGw5NpItzW+Dna99U2I61ltS2FmL0SWDKPklIAYJt4GlMIX8cOnUlmFncaKxSnDwVDPpBq3C33di3QJMp4Rp9kQrU/1FxuPYTWPf7Wgx1QmTjZEwWtQ45k/uetNOkvwlSPR5bDI7EJoP2s1BKqzFQU5cseYqDg16iXQmWOVQyIv5rw7YRzZ3cBO346pXkDpj+QNMexCUhBlz4OtufCmcReZsMZev3a+8pmEDTuxQnfJdO5yxHl0VC7Kq3J1rSWAm7fLaJlzXVCXKqd7j658TPaFHOxsLqms73hF7LluazybhF1Z4bLAnPwF6hA3kaeefrQsolRzxP0qaquwyqF7rRMFMxU6UFg2YGEc4evEpmJ8Si9aCqKVYQW4uF7pDmf9eCRrGJ/Db+I/O/HIrnc+oIzbGZbaZTyiVtEUnJ/L/0VZpf6yx1MUFGXZYbgC2RtlRncnLxCHCAoSBL7vy/+dKO7vw6pzW4lo8XLgIgeONvOOwNEUODqqQLBTQG/6qelcgovHUUIpoijuM/iHCqCLEJAsK/ZxOCZc9k="
+  make test &&
+  cargo test &&
+  cargo bench &&
+  cargo doc
