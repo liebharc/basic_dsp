@@ -9,6 +9,7 @@ Added support for matrix operations.
 Minor enhancements
 
 - New feature: Added `sum` and `sum_sq` operations.
+- Bugfix: SEGVAULT in complex magnitude op with recent versions of Rust nightly
 
 ## Version 0.3.0 (Breaking changes)
 Added prepared operations/multi operations, see [combined_ops](https://liebharc.github.io/basic_dsp/basic_dsp/combined_ops)

@@ -144,13 +144,11 @@ impl Simd<f32> for f32x8
     #[inline]
     fn store_half_unchecked(self, target: &mut [f32], index: usize)
     {
-        let mut temp = [0.0; 8];
-        self.store(&mut temp, 0);
         unsafe {
-            *target.get_unchecked_mut(index) = temp[0];
-            *target.get_unchecked_mut(index+ 1) = temp[1];
-            *target.get_unchecked_mut(index + 2) = temp[4];
-            *target.get_unchecked_mut(index + 3) = temp[5];
+            *target.get_unchecked_mut(index) = self.extract(0);
+            *target.get_unchecked_mut(index+ 1) = self.extract(1);
+            *target.get_unchecked_mut(index + 2) = self.extract(2);
+            *target.get_unchecked_mut(index + 3) = self.extract(3);
         }
     }
     
