@@ -2,7 +2,7 @@
 Changes:
 
 ## Version 0.3.1
-Minor enhancements
+Bugfix release with a minor enhancement:
 
 - New feature: Added `sum` and `sum_sq` operations.
 - Bugfix: SEGVAULT in complex magnitude op with recent versions of Rust nightly
