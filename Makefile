@@ -6,7 +6,7 @@ test:
 	$(MAKE) run-all TASK="test"	
 
 run-all: $(packages)
-	$(CARGO_CMD) $(TASK)
+	$(CARGO_CMD) $(TASK) --verbose
 
 $(packages):
 	$(CARGO_CMD) $(TASK) --manifest-path $@/Cargo.toml
