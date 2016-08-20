@@ -8,7 +8,7 @@ $current_version = $(Get-Content Cargo.toml | Select-String -Pattern "version\s+
 $current_tag = "v$current_version"
 $tag_matches =  $(git tag | Where { $_ -eq "$current_tag" } | Measure).Count
 if ($tag_matches -eq 0) {
-    $Host.UI.WriteErrorLine("Tag $current_tag is missing")
+    $Host.UI.WriteErrorLine("Tag $current_tag is missing. Run ""git tag $current_tag; git push --tags""")
     $all_okay = $false
 }
 else {
@@ -58,5 +58,5 @@ if ($facade64_diff -gt 0) {
 cd $cwd
 
 if ($all_okay) {
-    Write-Output "Everything seems to be okay, run ""cargo publish"" next"
+    Write-Output "Everything seems to be okay, run ""cargo publish"" next. And double check if you did run ""git push --tags"""
 }
