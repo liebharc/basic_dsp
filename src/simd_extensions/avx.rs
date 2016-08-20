@@ -147,7 +147,7 @@ impl Simd<f32> for f32x8
         unsafe {
             *target.get_unchecked_mut(index) = self.extract(0);
             *target.get_unchecked_mut(index+ 1) = self.extract(1);
-            *target.get_unchecked_mut(index + 2) = self.estract(2);
+            *target.get_unchecked_mut(index + 2) = self.extract(2);
             *target.get_unchecked_mut(index + 3) = self.extract(3);
         }
     }
