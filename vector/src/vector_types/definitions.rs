@@ -683,7 +683,7 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// ```
     fn merge(self, sources: &[Box<Self>]) -> TransRes<Self>;
 
-    /// Overrides the data in the vector with the given data. This may also change
+    /// Overwrites the data in the vector with the given data. This may also change
     /// the vectors length (however not the allocated length).
     ///
     /// # Example
@@ -691,10 +691,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// ```
     /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
     /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0]);
-    /// let result = vector.override_data(&[5.0, 7.0]).expect("Ignoring error handling in examples");
+    /// let result = vector.overwrite_data(&[5.0, 7.0]).expect("Ignoring error handling in examples");
     /// assert_eq!(&[5.0, 7.0], result.data());
     /// ```
-    fn override_data(self, data: &[T]) -> TransRes<Self>;
+    fn overwrite_data(self, data: &[T]) -> TransRes<Self>;
 }
 
 /// Defines all operations which are valid on `DataVecs` containing real data.

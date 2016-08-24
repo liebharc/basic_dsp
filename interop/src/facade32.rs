@@ -500,9 +500,9 @@ pub extern fn merge32(vector: Box<DataVec32>, sources: *const Box<DataVec32>, le
 }
 
 #[no_mangle]
-pub extern fn override_data32(vector: Box<DataVec32>, data: *const f32, len: usize) -> VectorResult<DataVec32> {
+pub extern fn overwrite_data32(vector: Box<DataVec32>, data: *const f32, len: usize) -> VectorResult<DataVec32> {
     let data = unsafe { slice::from_raw_parts(data, len) };
-    convert_vec!(vector.override_data(data))
+    convert_vec!(vector.overwrite_data(data))
 }
 
 #[no_mangle]

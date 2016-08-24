@@ -701,7 +701,7 @@ macro_rules! add_general_impl {
                    self.swap_halves_priv(true)
                 }
                 
-                fn override_data(mut self, data: &[$data_type]) -> TransRes<Self> {
+                fn overwrite_data(mut self, data: &[$data_type]) -> TransRes<Self> {
                     {
                         self.reallocate(data.len());
                         let target = &mut self.data[0] as *mut $data_type;

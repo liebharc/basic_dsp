@@ -501,9 +501,9 @@ pub extern fn merge64(vector: Box<DataVec64>, sources: *const Box<DataVec64>, le
 }
 
 #[no_mangle]
-pub extern fn override_data64(vector: Box<DataVec64>, data: *const f64, len: usize) -> VectorResult<DataVec64> {
+pub extern fn overwrite_data64(vector: Box<DataVec64>, data: *const f64, len: usize) -> VectorResult<DataVec64> {
     let data = unsafe { slice::from_raw_parts(data, len) };
-    convert_vec!(vector.override_data(data))
+    convert_vec!(vector.overwrite_data(data))
 }
 
 #[no_mangle]

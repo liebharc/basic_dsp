@@ -169,8 +169,8 @@ macro_rules! define_generic_operations_forward {
                     Self::from_genres(self.to_gen().expf(base)) 
                 }
                 
-                fn override_data(self, data: &[$data_type]) -> TransRes<Self> {
-                    Self::from_genres(self.to_gen().override_data(data))
+                fn overwrite_data(self, data: &[$data_type]) -> TransRes<Self> {
+                    Self::from_genres(self.to_gen().overwrite_data(data))
                 }
                 
                 fn split_into(&self, targets: &mut [Box<Self>]) -> VoidResult {
