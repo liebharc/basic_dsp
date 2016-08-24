@@ -87,7 +87,7 @@ pub use vector_types::
         Convolution,
         VectorConvolution,
         FrequencyMultiplication,
-        CrossCorrelation,
+        CrossCorrelationOps,
         Interpolation,
         RealInterpolation,
         PaddingOption,
