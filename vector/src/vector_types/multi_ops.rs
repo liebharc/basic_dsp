@@ -14,7 +14,7 @@ use super::{
     RealVectorOps,
     ComplexVectorOps,
     GenericDataVec,
-    RededicateVector};  
+    RededicateOps};  
 use super::operations_enum::{
     Operation,
     evaluate_number_space_transition,
@@ -647,10 +647,10 @@ macro_rules! add_multi_ops_impl {
         /// An operation which can be prepared in advance and operates on two
         /// inputs and produces two outputs
         impl<TI1, TI2, TO1, TO2> PreparedOperation2<$data_type, TI1, TI2, TO1, TO2>
-            where TI1: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>>, 
-            TI2: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>>, 
-            TO1: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>>, 
-            TO2: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>>
+            where TI1: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateOps<GenericDataVec<$data_type>>, 
+            TI2: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateOps<GenericDataVec<$data_type>>, 
+            TO1: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateOps<GenericDataVec<$data_type>>, 
+            TO2: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateOps<GenericDataVec<$data_type>>
         {
             /// Adds new operations which will be executed with the next call to `exec`
             /// 
@@ -739,8 +739,8 @@ macro_rules! add_multi_ops_impl {
         /// An operation which can be prepared in advance and operates on one
         /// input and produces one output
         impl<TI1, TO1> PreparedOperation1<$data_type, TI1, TO1>
-            where TI1: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>>,
-                  TO1: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>> {
+            where TI1: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateOps<GenericDataVec<$data_type>>,
+                  TO1: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateOps<GenericDataVec<$data_type>> {
                
             /// Extends the operation to operate on one more vector.
             pub fn extend<TI2>(self) 
@@ -835,8 +835,8 @@ macro_rules! add_multi_ops_impl {
         /// vectors. A call to `get` then runs all recorded operations on the vectors
         /// and returns them. See the modules description for why this can be beneficial.
         impl<TO1, TO2>  MultiOperation2<$data_type, TO1, TO2> 
-            where TO1: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>>, 
-                  TO2: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>> {
+            where TO1: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateOps<GenericDataVec<$data_type>>, 
+                  TO2: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateOps<GenericDataVec<$data_type>> {
             /// Executes all recorded operations on the stored vector.
             pub fn get(self) -> result::Result<(TO1, TO2), (ErrorReason, TO1, TO2)> {
                 self.prepared_ops.exec(self.a, self.b)
@@ -863,7 +863,7 @@ macro_rules! add_multi_ops_impl {
         /// vector. A call to `get` then runs all recorded operations on the vector
         /// and returns it. See the modules description for why this can be beneficial.
         impl<TO>  MultiOperation1<$data_type, TO> 
-            where TO: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>> {
+            where TO: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateOps<GenericDataVec<$data_type>> {
             
             /// Executes all recorded operations on the stored vectors.
             pub fn get(self) -> result::Result<(TO), (ErrorReason, TO)> {
@@ -889,7 +889,7 @@ macro_rules! add_multi_ops_impl {
             /// Extends the operation to operate on one more vector.
             pub fn extend<TI2>(self, vector: TI2) 
                 -> MultiOperation2<$data_type, TO, TI2>
-                where TI2: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>>  {
+                where TI2: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateOps<GenericDataVec<$data_type>>  {
                 let ops: PreparedOperation2<$data_type, GenericDataVec<$data_type>, GenericDataVec<$data_type>, TO, TI2> =           
                      PreparedOperation2 
                      { 
@@ -1264,7 +1264,7 @@ pub fn multi_ops1<T, A>(a: A)
     -> MultiOperation1<T, A>
     where 
         T: RealNumber,
-        A: ToIdentifier<T> + DataVec<T> + RededicateVector<GenericDataVec<T>> {
+        A: ToIdentifier<T> + DataVec<T> + RededicateOps<GenericDataVec<T>> {
     let ops: PreparedOperation1<T, GenericDataVec<T>, A> =           
          PreparedOperation1 
          { 
@@ -1282,8 +1282,8 @@ pub fn multi_ops2<T, A, B>(a: A, b: B)
     -> MultiOperation2<T, A, B>
     where 
         T: RealNumber,
-        A: ToIdentifier<T> + DataVec<T> + RededicateVector<GenericDataVec<T>>, 
-        B: ToIdentifier<T> + DataVec<T> + RededicateVector<GenericDataVec<T>> {
+        A: ToIdentifier<T> + DataVec<T> + RededicateOps<GenericDataVec<T>>, 
+        B: ToIdentifier<T> + DataVec<T> + RededicateOps<GenericDataVec<T>> {
     let ops: PreparedOperation2<T, GenericDataVec<T>, GenericDataVec<T>, A, B> =           
          PreparedOperation2 
          { 

@@ -98,7 +98,7 @@ pub use vector_types::definitions::{
         RealVectorOps,
         ComplexVectorOps,    
         Statistics,
-        RededicateVector,
+        RededicateOps,
         ScaleOps,
         OffsetOps,
         DotProductOps,

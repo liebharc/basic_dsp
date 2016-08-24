@@ -70,12 +70,12 @@ pub enum DataVecDomain {
 /// convert a vector to a different type and set `self.len()` to zero.
 /// However `self.allocated_len()` will remain unchanged. The use case for this
 /// is to allow to reuse the memory of a vector for different operations.
-pub trait RededicateVector<Other> {
+pub trait RededicateOps<Other> {
     /// Make `self` a `Other`.
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{ComplexFreqVector32, ComplexTimeVector32, ComplexVectorOps, RededicateVector, DataVec, DataVecDomain};
+    /// use basic_dsp_vector::{ComplexFreqVector32, ComplexTimeVector32, ComplexVectorOps, RededicateOps, DataVec, DataVecDomain};
     /// let complex = ComplexFreqVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
     /// let real = complex.phase().expect("Ignoring error handling in examples");
     /// let complex: ComplexTimeVector32 = real.rededicate();
@@ -90,7 +90,7 @@ pub trait RededicateVector<Other> {
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{ComplexFreqVector32, ComplexTimeVector32, ComplexVectorOps, RededicateVector, DataVec, DataVecDomain};
+    /// use basic_dsp_vector::{ComplexFreqVector32, ComplexTimeVector32, ComplexVectorOps, RededicateOps, DataVec, DataVecDomain};
     /// let complex = ComplexFreqVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
     /// let real = complex.phase().expect("Ignoring error handling in examples");
     /// let complex = ComplexTimeVector32::rededicate_from(real);

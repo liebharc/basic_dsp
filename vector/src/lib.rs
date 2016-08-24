@@ -79,7 +79,7 @@ pub use vector_types::
         RealFreqVector64,
         ComplexFreqVector64,
         Statistics,
-        RededicateVector,
+        RededicateOps,
         ScaleOps,
         OffsetOps,
         DotProductOps,

@@ -19,7 +19,7 @@ mod slow_test {
         GenericVectorOps,
         RealVectorOps,
         ComplexVectorOps,
-        RededicateVector};
+        RededicateOps};
     use basic_dsp::combined_ops::*;
     use tools::*;
        

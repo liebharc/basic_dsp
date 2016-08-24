@@ -1,5 +1,5 @@
 use super::definitions::{
-    RededicateVector,
+    RededicateOps,
     DataVecDomain};
 use vector_types::{
     GenericDataVec,
@@ -12,7 +12,7 @@ use RealNumber;
 macro_rules! add_rededicate_impl {
     ($(struct $name:ident, $is_complex:ident, $domain:expr);*) => {
     $(
-        impl<T> RededicateVector<ComplexTimeVector<T>> for $name<T>
+        impl<T> RededicateOps<ComplexTimeVector<T>> for $name<T>
             where T: RealNumber {
             fn rededicate(self) -> ComplexTimeVector<T> {
                 ComplexTimeVector {
@@ -31,7 +31,7 @@ macro_rules! add_rededicate_impl {
             }
         }
 
-        impl<T> RededicateVector<ComplexFreqVector<T>> for $name<T>
+        impl<T> RededicateOps<ComplexFreqVector<T>> for $name<T>
             where T: RealNumber {
             fn rededicate(self) -> ComplexFreqVector<T> {
                 ComplexFreqVector {
@@ -50,7 +50,7 @@ macro_rules! add_rededicate_impl {
             }
         }
 
-        impl<T> RededicateVector<RealTimeVector<T>> for $name<T>
+        impl<T> RededicateOps<RealTimeVector<T>> for $name<T>
             where T: RealNumber {
             fn rededicate(self) -> RealTimeVector<T> {
                 RealTimeVector {
@@ -69,7 +69,7 @@ macro_rules! add_rededicate_impl {
             }
         }
 
-        impl<T> RededicateVector<RealFreqVector<T>> for $name<T>
+        impl<T> RededicateOps<RealFreqVector<T>> for $name<T>
             where T: RealNumber {
             fn rededicate(self) -> RealFreqVector<T> {
                 RealFreqVector {
@@ -88,7 +88,7 @@ macro_rules! add_rededicate_impl {
             }
         }
 
-        impl<T> RededicateVector<GenericDataVec<T>> for $name<T>
+        impl<T> RededicateOps<GenericDataVec<T>> for $name<T>
             where T: RealNumber {
             fn rededicate(self) -> GenericDataVec<T> {
                 GenericDataVec {
@@ -116,9 +116,9 @@ add_rededicate_impl!(struct RealFreqVector, false, DataVecDomain::Frequency);
 add_rededicate_impl!(struct ComplexFreqVector, true, DataVecDomain::Frequency);
 
 // Conversions to `GenericDataVec` are always valid therefore `GenericDataVec`
-// needs to have a specific `RededicateVector` implementation
+// needs to have a specific `RededicateOps` implementation
 
-impl<T> RededicateVector<ComplexTimeVector<T>> for GenericDataVec<T>
+impl<T> RededicateOps<ComplexTimeVector<T>> for GenericDataVec<T>
         where T: RealNumber {
     fn rededicate(self) -> ComplexTimeVector<T> {
         let valid_len = 
@@ -153,7 +153,7 @@ impl<T> RededicateVector<ComplexTimeVector<T>> for GenericDataVec<T>
     }
 }
 
-impl<T> RededicateVector<ComplexFreqVector<T>> for GenericDataVec<T>
+impl<T> RededicateOps<ComplexFreqVector<T>> for GenericDataVec<T>
     where T: RealNumber {
     fn rededicate(self) -> ComplexFreqVector<T> {
         let valid_len = 
@@ -188,7 +188,7 @@ impl<T> RededicateVector<ComplexFreqVector<T>> for GenericDataVec<T>
     }
 }
 
-impl<T> RededicateVector<RealTimeVector<T>> for GenericDataVec<T>
+impl<T> RededicateOps<RealTimeVector<T>> for GenericDataVec<T>
     where T: RealNumber {
     fn rededicate(self) -> RealTimeVector<T> {
         let valid_len = 
@@ -223,7 +223,7 @@ impl<T> RededicateVector<RealTimeVector<T>> for GenericDataVec<T>
     }
 }
 
-impl<T> RededicateVector<RealFreqVector<T>> for GenericDataVec<T>
+impl<T> RededicateOps<RealFreqVector<T>> for GenericDataVec<T>
     where T: RealNumber {
     fn rededicate(self) -> RealFreqVector<T> {
         let valid_len = 
@@ -258,7 +258,7 @@ impl<T> RededicateVector<RealFreqVector<T>> for GenericDataVec<T>
     }
 }
 
-impl<T> RededicateVector<GenericDataVec<T>> for GenericDataVec<T>
+impl<T> RededicateOps<GenericDataVec<T>> for GenericDataVec<T>
     where T: RealNumber {
     fn rededicate(self) -> GenericDataVec<T> {
         self
