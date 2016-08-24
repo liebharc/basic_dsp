@@ -1,12 +1,12 @@
 use rand::*;
 use basic_dsp::{
-    DataVector,
+    DataVec,
     RealTimeVector,
     RealFreqVector,
     ComplexTimeVector,
     ComplexFreqVector,
     RealNumber,
-    DataVectorDomain};
+    DataVecDomain};
 use std::ops::Range;
 use num::complex::Complex32;
 use std::panic;
@@ -160,7 +160,7 @@ impl<T> AssertMetaData for RealTimeVector<T>
     where T: RealNumber {
     fn assert_meta_data(&self) {
         assert_eq!(self.is_complex(), false);
-        assert_eq!(self.domain(), DataVectorDomain::Time);
+        assert_eq!(self.domain(), DataVecDomain::Time);
     }
 }
 
@@ -168,7 +168,7 @@ impl<T> AssertMetaData for RealFreqVector<T>
     where T: RealNumber {
     fn assert_meta_data(&self) {
         assert_eq!(self.is_complex(), false);
-        assert_eq!(self.domain(), DataVectorDomain::Frequency);
+        assert_eq!(self.domain(), DataVecDomain::Frequency);
     }
 }
 
@@ -176,7 +176,7 @@ impl<T> AssertMetaData for ComplexTimeVector<T>
     where T: RealNumber {
     fn assert_meta_data(&self) {
         assert_eq!(self.is_complex(), true);
-        assert_eq!(self.domain(), DataVectorDomain::Time);
+        assert_eq!(self.domain(), DataVecDomain::Time);
     }
 }
 
@@ -184,7 +184,7 @@ impl<T> AssertMetaData for ComplexFreqVector<T>
     where T: RealNumber {
     fn assert_meta_data(&self) {
         assert_eq!(self.is_complex(), true);
-        assert_eq!(self.domain(), DataVectorDomain::Frequency);
+        assert_eq!(self.domain(), DataVecDomain::Frequency);
     }
 }
 

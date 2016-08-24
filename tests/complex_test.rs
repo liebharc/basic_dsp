@@ -5,13 +5,13 @@ pub mod tools;
 
 mod slow_test {
     use basic_dsp::{
-        DataVector,
-        DataVector32,
+        DataVec,
+        DataVec32,
         RealTimeVector32,
         GenericVectorOps,
         ComplexVectorOps,
         StatisticsOps,
-        DataVectorDomain,
+        DataVecDomain,
         ComplexTimeVector32};
     use num::complex::Complex32;
     use basic_dsp::combined_ops::*;
@@ -502,7 +502,7 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, 2);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.complex_offset(Complex32::new(b[0], b[1]));
@@ -523,7 +523,7 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, 2);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.complex_scale(Complex32::new(b[0], b[1]));
@@ -543,7 +543,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.magnitude();
@@ -563,7 +563,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.magnitude_squared();
@@ -583,7 +583,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.conj();
@@ -603,7 +603,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.to_real();
@@ -623,7 +623,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.to_imag();
@@ -643,7 +643,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.phase();
@@ -664,8 +664,8 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
-            let b = DataVector32::from_array(true, DataVectorDomain::Time, &b);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
+            let b = DataVec32::from_array(true, DataVecDomain::Time, &b);
             let ops = multi_ops2(a.clone(), b.clone());
             let ops = ops.add_ops(|a, b| {
                 let a = a.add_vector(&b);
@@ -685,8 +685,8 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
-            let b = DataVector32::from_array(true, DataVectorDomain::Time, &b);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
+            let b = DataVec32::from_array(true, DataVecDomain::Time, &b);
             let ops = multi_ops2(a.clone(), b.clone());
             let ops = ops.add_ops(|a, b| {
                 let a = a.subtract_vector(&b);
@@ -706,8 +706,8 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
-            let b = DataVector32::from_array(true, DataVectorDomain::Time, &b);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
+            let b = DataVec32::from_array(true, DataVecDomain::Time, &b);
             let ops = multi_ops2(a.clone(), b.clone());
             let ops = ops.add_ops(|a, b| {
                 let a = a.multiply_vector(&b);
@@ -727,8 +727,8 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
-            let b = DataVector32::from_array(true, DataVectorDomain::Time, &b);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
+            let b = DataVec32::from_array(true, DataVecDomain::Time, &b);
             let ops = multi_ops2(a.clone(), b.clone());
             let ops = ops.add_ops(|a, b| {
                 let a = a.divide_vector(&b);
@@ -747,7 +747,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.sqrt();
@@ -767,7 +767,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.square();
@@ -788,7 +788,7 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, 1);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.root(b[0]);
@@ -809,7 +809,7 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, 1);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.powf(b[0]);
@@ -829,7 +829,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.ln();
@@ -849,7 +849,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.exp();
@@ -870,7 +870,7 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, 1);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.log(b[0]);
@@ -891,7 +891,7 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, 1);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.expf(b[0]);
@@ -911,7 +911,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.sin();
@@ -931,7 +931,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.cos();
@@ -951,7 +951,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.tan();
@@ -971,7 +971,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.asin();
@@ -991,7 +991,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.acos();
@@ -1011,7 +1011,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.atan();
@@ -1031,7 +1031,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.sinh();
@@ -1051,7 +1051,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.cosh();
@@ -1071,7 +1071,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.tanh();
@@ -1091,7 +1091,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.asinh();
@@ -1111,7 +1111,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.acosh();
@@ -1131,7 +1131,7 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.atanh();
@@ -1152,7 +1152,7 @@ mod slow_test {
             let len = 1030;
             let a = create_data_with_len(201511141, iteration, len);
             let args = create_data_with_len(201511141, iteration, 2);
-            let a = DataVector32::from_array(true, DataVectorDomain::Time, &a);
+            let a = DataVec32::from_array(true, DataVecDomain::Time, &a);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
                 let a = a.multiply_complex_exponential(args[0], args[1]);

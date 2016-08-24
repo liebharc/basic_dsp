@@ -10,11 +10,11 @@ pub mod tools;
 mod bench {
     use test::Bencher;
     use basic_dsp::{
-        DataVector,
-        DataVectorDomain,
+        DataVec,
+        DataVecDomain,
         GenericVectorOps,
         RealVectorOps,
-        DataVector32,
+        DataVec32,
         RealTimeVector32,
         RealTimeVector64};
     use basic_dsp::combined_ops::*;
@@ -82,7 +82,7 @@ mod bench {
     {
         b.iter(|| {
             let data = vec![0.0; DEFAULT_DATA_SIZE];
-            let result = DataVector32::from_array_no_copy(false, DataVectorDomain::Time, data);
+            let result = DataVec32::from_array_no_copy(false, DataVecDomain::Time, data);
             return result.delta();;
             });
     }
@@ -90,7 +90,7 @@ mod bench {
     #[bench]
     fn multi_operations_2ops1_vector_32_benchmark(b: &mut Bencher)
     {
-        let mut vector = VectorBox::<DataVector32>::new(Size::Small, false);
+        let mut vector = VectorBox::<DataVec32>::new(Size::Small, false);
         b.iter(|| {
             vector.execute(|v|  
                 {
@@ -105,7 +105,7 @@ mod bench {
     #[bench]
     fn multi_operations_2ops1_vector_32_reference(b: &mut Bencher)
     {
-        let mut vector = VectorBox::<DataVector32>::new(Size::Small, true);
+        let mut vector = VectorBox::<DataVec32>::new(Size::Small, true);
         b.iter(|| {
             vector.execute_res(|v|  { 
                 v.log(10.0)
@@ -117,7 +117,7 @@ mod bench {
     #[bench]
     fn multi_operations_3ops1_vector_32_benchmark(b: &mut Bencher)
     {
-        let mut vector = VectorBox::<DataVector32>::new(Size::Small, false);
+        let mut vector = VectorBox::<DataVec32>::new(Size::Small, false);
         b.iter(|| {
             vector.execute(|v|  
                 {
@@ -133,7 +133,7 @@ mod bench {
     #[bench]
     fn multi_operations_3ops1_vector_32_reference(b: &mut Bencher)
     {
-        let mut vector = VectorBox::<DataVector32>::new(Size::Small, true);
+        let mut vector = VectorBox::<DataVec32>::new(Size::Small, true);
         b.iter(|| {
             vector.execute_res(|v|  { 
                 v.log(10.0)
@@ -146,12 +146,12 @@ mod bench {
     #[bench]
     fn multi_operations_3ops2_vector_32_benchmark(b: &mut Bencher)
     {
-        let mut vector = VectorBox::<DataVector32>::new(Size::Small, false);
+        let mut vector = VectorBox::<DataVec32>::new(Size::Small, false);
         b.iter(|| {
             vector.execute(|v|  
                 {
                     let len = v.len(); 
-                    let operand = DataVector32::new(false, DataVectorDomain::Time, 2.0 * 3.0, len, 1.0);
+                    let operand = DataVec32::new(false, DataVecDomain::Time, 2.0 * 3.0, len, 1.0);
                     let ops = multi_ops2(v, operand);
                     let ops = ops.add_ops(|v, o| {
                         let v = v.abs()
@@ -168,7 +168,7 @@ mod bench {
     #[bench]
     fn multi_operations_6ops1_vector_32_benchmark(b: &mut Bencher)
     {
-        let mut vector = VectorBox::<DataVector32>::new(Size::Small, false);
+        let mut vector = VectorBox::<DataVec32>::new(Size::Small, false);
         b.iter(|| {
             vector.execute(|v|  
                 {
@@ -189,12 +189,12 @@ mod bench {
     #[bench]
     fn multi_operations_6ops2_vector_32_benchmark(b: &mut Bencher)
     {
-        let mut vector = VectorBox::<DataVector32>::new(Size::Small, false);
+        let mut vector = VectorBox::<DataVec32>::new(Size::Small, false);
         b.iter(|| {
             vector.execute(|v|  
                 {
                     let len = v.len(); 
-                    let operand = DataVector32::new(false, DataVectorDomain::Time, 2.0 * 3.0, len, 1.0);
+                    let operand = DataVec32::new(false, DataVecDomain::Time, 2.0 * 3.0, len, 1.0);
                     let ops = multi_ops2(v, operand);
                     let ops = ops.add_ops(|v, o| {
                         let v = v.abs()

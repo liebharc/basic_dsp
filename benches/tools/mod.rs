@@ -1,12 +1,12 @@
 use basic_dsp::{
     RealNumber,
-    DataVector,
-    DataVector32, 
-    VecResult,
+    DataVec,
+    DataVec32, 
+    TransRes,
     RealTimeVector32,
     RealTimeVector64,
     ComplexTimeVector32,
-    DataVectorDomain};
+    DataVecDomain};
 use std::boxed::Box;
 use std::fmt::Debug;
 
@@ -64,12 +64,12 @@ impl VectorBox<Vec<f64>> {
     }
 }
 
-impl VectorBox<DataVector32>
+impl VectorBox<DataVec32>
 {
-    pub fn with_size(is_complex: bool, size: usize) -> VectorBox<DataVector32>
+    pub fn with_size(is_complex: bool, size: usize) -> VectorBox<DataVec32>
     {
         let data = vec![0.0; size];
-        let vector = DataVector32::from_array_no_copy(is_complex, DataVectorDomain::Time, data);
+        let vector = DataVec32::from_array_no_copy(is_complex, DataVecDomain::Time, data);
         VectorBox
         {
             vector: Box::into_raw(Box::new(vector)),
@@ -77,11 +77,11 @@ impl VectorBox<DataVector32>
         }
     }
     
-    pub fn new(size: Size, is_complex: bool) -> VectorBox<DataVector32>
+    pub fn new(size: Size, is_complex: bool) -> VectorBox<DataVec32>
     {
         let size = translate_size(size);
         let data = vec![0.0; size];
-        let vector = DataVector32::from_array_no_copy(is_complex, DataVectorDomain::Time, data);
+        let vector = DataVec32::from_array_no_copy(is_complex, DataVecDomain::Time, data);
         VectorBox
         {
             vector: Box::into_raw(Box::new(vector)),
@@ -155,8 +155,8 @@ impl<T> VectorBox<T>
     }
     
     pub fn execute_res<F, U>(&mut self, function: F) -> bool
-        where F: Fn(T) -> VecResult<T> + 'static + Sync,
-        T: DataVector<U> + Debug,
+        where F: Fn(T) -> TransRes<T> + 'static + Sync,
+        T: DataVec<U> + Debug,
         U: RealNumber
     {
         unsafe {

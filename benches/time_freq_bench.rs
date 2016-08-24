@@ -10,22 +10,22 @@ pub mod tools;
 mod bench {
     use test::Bencher;
     use basic_dsp::{
-        DataVector,
+        DataVec,
         TimeDomainOperations,
         FrequencyDomainOperations,
-        DataVector32,
-        DataVectorDomain};
+        DataVec32,
+        DataVecDomain};
     use tools::VectorBox;
     use basic_dsp::window_functions::TriangularWindow;
     
     #[bench]
     fn plain_fft_ifft_32t_benchmark(b: &mut Bencher)
     {
-        let mut vector = VectorBox::<DataVector32>::with_size(true, 2000);
+        let mut vector = VectorBox::<DataVec32>::with_size(true, 2000);
         b.iter(|| {
             vector.execute_res(|v|  
             { 
-                if v.domain() == DataVectorDomain::Time {
+                if v.domain() == DataVecDomain::Time {
                     v.plain_fft()
                 } else {
                     v.plain_ifft()
@@ -37,7 +37,7 @@ mod bench {
     #[bench]
     fn window_32t_benchmark(b: &mut Bencher)
     {
-        let mut vector = VectorBox::<DataVector32>::with_size(true, 2000);
+        let mut vector = VectorBox::<DataVec32>::with_size(true, 2000);
         b.iter(|| {
             vector.execute_res(|v|  
             { 
@@ -50,11 +50,11 @@ mod bench {
     #[bench]
     fn fft_ifft_32t_benchmark(b: &mut Bencher)
     {
-        let mut vector = VectorBox::<DataVector32>::with_size(true, 2000);
+        let mut vector = VectorBox::<DataVec32>::with_size(true, 2000);
         b.iter(|| {
             vector.execute_res(|v|  
             { 
-                if v.domain() == DataVectorDomain::Time {
+                if v.domain() == DataVecDomain::Time {
                     v.fft()
                 } else {
                     v.ifft()
