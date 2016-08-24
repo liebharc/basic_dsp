@@ -35,7 +35,7 @@ pub trait Convolution<T, C> : DataVec<T>
 }
 
 /// Provides a convolution operation for data vectors with data vectors.
-pub trait VectorConvolution<T> : DataVec<T> 
+pub trait ConvolutionOps<T> : DataVec<T> 
     where T : RealNumber {
     /// Convolves `self` with the convolution function `impulse_response`. For performance it's recommended 
     /// to use multiply both vectors in frequency domain instead of this operation.
@@ -235,7 +235,7 @@ macro_rules! add_conv_impl{
                 }
             }
             
-            impl VectorConvolution<$data_type> for GenericDataVec<$data_type> {
+            impl ConvolutionOps<$data_type> for GenericDataVec<$data_type> {
                 fn convolve_vector(self, vector: &Self) -> TransRes<Self> {
                     assert_meta_data!(self, vector);
                     assert_time!(self);
@@ -449,7 +449,7 @@ macro_rules! add_conv_vector_forward{
     ($($name:ident, $($data_type:ident),*);*) => {
         $(
             $(
-                impl VectorConvolution<$data_type> for $name<$data_type> {
+                impl ConvolutionOps<$data_type> for $name<$data_type> {
                     fn convolve_vector(self, other: &Self) -> TransRes<Self> {
                         Self::from_genres(self.to_gen().convolve_vector(other.to_gen_borrow()))
                     }

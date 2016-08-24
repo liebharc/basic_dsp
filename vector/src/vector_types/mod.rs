@@ -114,7 +114,7 @@ pub use vector_types::time_freq_impl::{
     };
 pub use vector_types::convolution_impl::{
     Convolution,
-    VectorConvolution,
+    ConvolutionOps,
     FrequencyMultiplication};
 pub use vector_types::correlation_impl::CrossCorrelationOps;
 pub use vector_types::interpolation_impl::{

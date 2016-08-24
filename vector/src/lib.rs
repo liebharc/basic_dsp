@@ -85,7 +85,7 @@ pub use vector_types::
         DotProductOps,
         StatisticsOps,
         Convolution,
-        VectorConvolution,
+        ConvolutionOps,
         FrequencyMultiplication,
         CrossCorrelationOps,
         Interpolation,
