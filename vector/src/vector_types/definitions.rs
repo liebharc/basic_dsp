@@ -1280,48 +1280,48 @@ pub trait ComplexVectorOps<T> : DataVec<T>
 #[derive(PartialEq)]
 #[derive(Debug)]
 pub enum ErrorReason {
-    /// The operations requires all vectors to have the same size,
+    /// The operations requires all inputs to have the same size,
     /// in most cases this means that the following must be true:
     /// `self.len()` == `argument.len()`
-    VectorsMustHaveTheSameSize,
+    InputMustHaveTheSameSize,
 
-    /// The operations requires all vectors to have the same meta data
-    /// in most cases this means that the following must be true:
+    /// The operations requires all inputs to have the same meta data.
+    /// For a vector this means that the following must be true:
     /// `self.is_complex()` == `argument.is_complex()` &&
     /// `self.domain()` == `argument.domain()` &&
     /// `self.delta()`== `argument.domain()`;
-    /// Consider to convert one of the vectors so that this condition is true.
+    /// Consider to convert one of the inputs so that this condition is true.
     /// The necessary operations may include FFT/IFFT, complex/real conversion and resampling.
-    VectorMetaDataMustAgree,
+    InputMetaDataMustAgree,
 
-    /// The operation requires the vector to be complex.
-    VectorMustBeComplex,
+    /// The operation requires the input to be complex.
+    InputMustBeComplex,
 
-    /// The operation requires the vector to be real.
-    VectorMustBeReal,
+    /// The operation requires the input to be real.
+    InputMustBeReal,
 
-    /// The operation requires the vector to be in time domain.
-    VectorMustBeInTimeDomain,
+    /// The operation requires the input to be in time domain.
+    InputMustBeInTimeDomain,
 
-    /// The operation requires the vector to be in frequency domain.
-    VectorMustBeInFrquencyDomain,
+    /// The operation requires the input to be in frequency domain.
+    InputMustBeInFrquencyDomain,
 
     /// The arguments have an invalid length to perform the operation. The
     /// operations documentation should have more information about the requirements.
     /// Please open a defect if this isn't the case.
     InvalidArgumentLength,
 
-    /// The operations is only valid if the data vector contains half of a symmetric spectrum.
+    /// The operations is only valid if the data input contains half of a symmetric spectrum.
     /// The symmetry definition follows soon however more important is that the element at 0 Hz
-    /// which happens to be the first vector element must be real. This is actually violated
-    /// if this error message appears and the rest of the definition is only listed here for
-    /// completeness.
-    /// The required symmetry is that for every point `vector[x].conj() == vector[-x]`(pseudocode)
+    /// which happens to be the first vector element must be real. The error message is raised if this
+    /// is violated, the rest of the definition is only listed here for completeness snce it can't
+    /// be checked.
+    /// The required symmetry for a vector is that for every point `vector[x].conj() == vector[-x]`(pseudocode)
     /// where `x` is the x-axis position relative to 0 Hz and `conj` is the complex conjugate.
-    VectorMustBeConjSymmetric,
+    InputMustBeConjSymmetric,
 
     /// `self.points()` must be an odd number.
-    VectorMustHaveAnOddLength,
+    InputMustHaveAnOddLength,
 
     /// The function passed as argument must be symmetric
     ArgumentFunctionMustBeSymmetric,
@@ -1331,7 +1331,7 @@ pub enum ErrorReason {
     InvalidNumberOfArgumentsForCombinedOp,
 
     /// The operation isn't specified for an empty vector.
-    VectorMustNotBeEmpty,
+    InputMustNotBeEmpty,
 }
 
 /// Statistics about the data in a vector

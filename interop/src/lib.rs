@@ -79,18 +79,18 @@ use basic_dsp_vector::RealNumber;
 /// please report a bug.
 pub fn translate_error(reason: ErrorReason) -> i32 {
     match reason {
-        ErrorReason::VectorsMustHaveTheSameSize => 1,
-        ErrorReason::VectorMetaDataMustAgree => 2,
-        ErrorReason::VectorMustBeComplex => 3,
-        ErrorReason::VectorMustBeReal => 4,
-        ErrorReason::VectorMustBeInTimeDomain => 5,
-        ErrorReason::VectorMustBeInFrquencyDomain => 6,
+        ErrorReason::InputMustHaveTheSameSize => 1,
+        ErrorReason::InputMetaDataMustAgree => 2,
+        ErrorReason::InputMustBeComplex => 3,
+        ErrorReason::InputMustBeReal => 4,
+        ErrorReason::InputMustBeInTimeDomain => 5,
+        ErrorReason::InputMustBeInFrquencyDomain => 6,
         ErrorReason::InvalidArgumentLength => 7,
-        ErrorReason::VectorMustBeConjSymmetric => 8,
-        ErrorReason::VectorMustHaveAnOddLength => 9,
+        ErrorReason::InputMustBeConjSymmetric => 8,
+        ErrorReason::InputMustHaveAnOddLength => 9,
         ErrorReason::ArgumentFunctionMustBeSymmetric => 10,
         ErrorReason::InvalidNumberOfArgumentsForCombinedOp => 11,
-        ErrorReason::VectorMustNotBeEmpty => 12,
+        ErrorReason::InputMustNotBeEmpty => 12,
     }
 }
 

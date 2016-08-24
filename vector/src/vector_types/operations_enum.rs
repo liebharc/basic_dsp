@@ -60,21 +60,21 @@ pub enum Operation<T>
 
 fn require_complex(is_complex: bool) -> Result<bool, ErrorReason> {
     if is_complex { Ok(is_complex) }
-    else { Err(ErrorReason::VectorMustBeComplex) }
+    else { Err(ErrorReason::InputMustBeComplex) }
 }
 
 fn complex_to_real(is_complex: bool) -> Result<bool, ErrorReason> {
     if is_complex { Ok(false) }
-    else { Err(ErrorReason::VectorMustBeComplex) }
+    else { Err(ErrorReason::InputMustBeComplex) }
 }
 
 fn real_to_complex(is_complex: bool) -> Result<bool, ErrorReason> {
-    if is_complex { Err(ErrorReason::VectorMustBeReal) }
+    if is_complex { Err(ErrorReason::InputMustBeReal) }
     else { Ok(true) }
 }
 
 fn require_real(is_complex: bool) -> Result<bool, ErrorReason> {
-    if is_complex { Err(ErrorReason::VectorMustBeReal) }
+    if is_complex { Err(ErrorReason::InputMustBeReal) }
     else { Ok(is_complex) }
 }
 

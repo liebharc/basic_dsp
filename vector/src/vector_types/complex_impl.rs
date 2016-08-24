@@ -93,7 +93,7 @@ macro_rules! add_complex_impl {
                 fn get_magnitude(&self, destination: &mut Self) -> VoidResult
                 {
                     if !self.is_complex {
-                        return Err(ErrorReason::VectorMustBeComplex);
+                        return Err(ErrorReason::InputMustBeComplex);
                     }
                     
                     let data_length = self.len();
@@ -158,7 +158,7 @@ macro_rules! add_complex_impl {
                 fn get_real(&self, destination: &mut Self) -> VoidResult
                 {
                     if !self.is_complex {
-                        return Err(ErrorReason::VectorMustBeComplex);
+                        return Err(ErrorReason::InputMustBeComplex);
                     }
                     
                     self.pure_complex_into_real_target_operation(destination, |x,_arg|x.re, (), Complexity::Small)
@@ -167,7 +167,7 @@ macro_rules! add_complex_impl {
                 fn get_imag(&self, destination: &mut Self) -> VoidResult
                 {
                     if !self.is_complex {
-                        return Err(ErrorReason::VectorMustBeComplex);
+                        return Err(ErrorReason::InputMustBeComplex);
                     }
                     
                     self.pure_complex_into_real_target_operation(destination, |x,_arg|x.im, (), Complexity::Small)
@@ -182,7 +182,7 @@ macro_rules! add_complex_impl {
                 fn get_phase(&self, destination: &mut Self) -> VoidResult
                 {
                     if !self.is_complex {
-                        return Err(ErrorReason::VectorMustBeComplex);
+                        return Err(ErrorReason::InputMustBeComplex);
                     }
                     
                     self.pure_complex_into_real_target_operation(destination, |x,_arg|x.arg(), (), Complexity::Small)
@@ -223,13 +223,13 @@ macro_rules! add_complex_impl {
                     let aggregate = Arc::new(aggregate);
                     let mut result = {
                         if !self.is_complex {
-                            return Err(ErrorReason::VectorMustBeComplex);
+                            return Err(ErrorReason::InputMustBeComplex);
                         }
                         
                         let array = &self.data;
                         let length = array.len();
                         if length == 0 {
-                            return Err(ErrorReason::VectorMustNotBeEmpty);
+                            return Err(ErrorReason::InputMustNotBeEmpty);
                         }
                         let aggregate  = aggregate.clone();
                         Chunk::map_on_array_chunks(
@@ -264,7 +264,7 @@ macro_rules! add_complex_impl {
                     }
                     
                     if only_valid_options.len() == 0 {
-                        return Err(ErrorReason::VectorMustNotBeEmpty);
+                        return Err(ErrorReason::InputMustNotBeEmpty);
                     }
                     let mut aggregated = only_valid_options.pop().unwrap();
                     for _ in 0..only_valid_options.len() {
@@ -276,12 +276,12 @@ macro_rules! add_complex_impl {
                 fn complex_dot_product(&self, factor: &Self) -> ScalarResult<Complex<$data_type>>
                 {
                     if !self.is_complex {
-                        return Err(ErrorReason::VectorMustBeComplex);
+                        return Err(ErrorReason::InputMustBeComplex);
                     }
                     
                     if !factor.is_complex ||
                         self.domain != factor.domain {
-                        return Err(ErrorReason::VectorMetaDataMustAgree);
+                        return Err(ErrorReason::InputMetaDataMustAgree);
                     }
                     
                     let data_length = self.len();

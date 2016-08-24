@@ -334,21 +334,21 @@ macro_rules! add_time_freq_impl {
             impl SymmetricTimeDomainOperations<$data_type> for GenericDataVec<$data_type> {
                 type FreqPartner = GenericDataVec<$data_type>;
                 fn plain_sfft(self) -> TransRes<GenericDataVec<$data_type>> {
-                    reject_if!(self, self.points() % 2 == 0, ErrorReason::VectorMustHaveAnOddLength);
+                    reject_if!(self, self.points() % 2 == 0, ErrorReason::InputMustHaveAnOddLength);
                     self.to_complex()
                     .and_then(|v|v.plain_fft())
                     .and_then(|v|v.unmirror())
                 }
                 
                 fn sfft(self) -> TransRes<GenericDataVec<$data_type>> {
-                    reject_if!(self, self.points() % 2 == 0, ErrorReason::VectorMustHaveAnOddLength);
+                    reject_if!(self, self.points() % 2 == 0, ErrorReason::InputMustHaveAnOddLength);
                     self.to_complex()
                     .and_then(|v|v.plain_fft())
                     .and_then(|v|v.unmirror())
                 }
                 
                 fn windowed_sfft(self, window: &WindowFunction<$data_type>) -> TransRes<GenericDataVec<$data_type>> {
-                    reject_if!(self, self.points() % 2 == 0, ErrorReason::VectorMustHaveAnOddLength);
+                    reject_if!(self, self.points() % 2 == 0, ErrorReason::InputMustHaveAnOddLength);
                     self.to_complex()
                     .and_then(|v|v.apply_window(window))
                     .and_then(|v|v.plain_fft())
@@ -470,7 +470,7 @@ macro_rules! add_time_freq_impl {
                 fn plain_sifft(self) -> TransRes<GenericDataVec<$data_type>> {
                     assert_complex!(self);
                     assert_freq!(self);
-                    reject_if!(self, self.points() > 0 && self.data[1].abs() > 1e-10, ErrorReason::VectorMustBeConjSymmetric);
+                    reject_if!(self, self.points() > 0 && self.data[1].abs() > 1e-10, ErrorReason::InputMustBeConjSymmetric);
                     self.mirror()
                         .and_then(|v|v.plain_ifft())
                         .and_then(|v|v.to_real())

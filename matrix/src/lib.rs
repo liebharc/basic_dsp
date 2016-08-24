@@ -93,15 +93,15 @@ impl<V, T> MatrixMxN<V, T>
         let first_domain = rows[0].domain();
         for v in &rows[1..rows.len()] {
             if v.len() != first_len {
-                return Err(ErrorReason::VectorsMustHaveTheSameSize);
+                return Err(ErrorReason::InputMustHaveTheSameSize);
             }
 
             if v.is_complex() != first_complex {
-                return Err(ErrorReason::VectorMetaDataMustAgree);
+                return Err(ErrorReason::InputMetaDataMustAgree);
             }
 
             if v.domain() != first_domain {
-                return Err(ErrorReason::VectorMetaDataMustAgree);
+                return Err(ErrorReason::InputMetaDataMustAgree);
             }
         }
 
@@ -122,15 +122,15 @@ impl<V, T> Matrix2xN<V, T>
         let first_domain = rows[0].domain();
         for v in &rows[1..rows.len()] {
             if v.len() != first_len {
-                return Err(ErrorReason::VectorsMustHaveTheSameSize);
+                return Err(ErrorReason::InputMustHaveTheSameSize);
             }
 
             if v.is_complex() != first_complex {
-                return Err(ErrorReason::VectorMetaDataMustAgree);
+                return Err(ErrorReason::InputMetaDataMustAgree);
             }
 
             if v.domain() != first_domain {
-                return Err(ErrorReason::VectorMetaDataMustAgree);
+                return Err(ErrorReason::InputMetaDataMustAgree);
             }
         }
 
@@ -151,15 +151,15 @@ impl<V, T> Matrix3xN<V, T>
         let first_domain = rows[0].domain();
         for v in &rows[1..rows.len()] {
             if v.len() != first_len {
-                return Err(ErrorReason::VectorsMustHaveTheSameSize);
+                return Err(ErrorReason::InputMustHaveTheSameSize);
             }
 
             if v.is_complex() != first_complex {
-                return Err(ErrorReason::VectorMetaDataMustAgree);
+                return Err(ErrorReason::InputMetaDataMustAgree);
             }
 
             if v.domain() != first_domain {
-                return Err(ErrorReason::VectorMetaDataMustAgree);
+                return Err(ErrorReason::InputMetaDataMustAgree);
             }
         }
 
@@ -180,15 +180,15 @@ impl<V, T> Matrix4xN<V, T>
         let first_domain = rows[0].domain();
         for v in &rows[1..rows.len()] {
             if v.len() != first_len {
-                return Err(ErrorReason::VectorsMustHaveTheSameSize);
+                return Err(ErrorReason::InputMustHaveTheSameSize);
             }
 
             if v.is_complex() != first_complex {
-                return Err(ErrorReason::VectorMetaDataMustAgree);
+                return Err(ErrorReason::InputMetaDataMustAgree);
             }
 
             if v.domain() != first_domain {
-                return Err(ErrorReason::VectorMetaDataMustAgree);
+                return Err(ErrorReason::InputMetaDataMustAgree);
             }
         }
 

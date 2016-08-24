@@ -80,7 +80,7 @@ macro_rules! impl_binary_vector_operation {
         {
             {
                 let len = self.len();
-                reject_if!(self, len != $arg_name.len(), ErrorReason::VectorsMustHaveTheSameSize);
+                reject_if!(self, len != $arg_name.len(), ErrorReason::InputMustHaveTheSameSize);
                 assert_meta_data!(self, $arg_name);
                 
                 let data_length = self.len();
@@ -124,7 +124,7 @@ macro_rules! impl_binary_complex_vector_operation {
         {
             {
                 let len = self.len();
-                reject_if!(self, len != $arg_name.len(), ErrorReason::VectorsMustHaveTheSameSize);
+                reject_if!(self, len != $arg_name.len(), ErrorReason::InputMustHaveTheSameSize);
                 assert_meta_data!(self, $arg_name);
                 
                 let data_length = self.len();
@@ -488,7 +488,7 @@ macro_rules! add_general_impl {
                 fn multiply_vector(self, factor: &Self) -> TransRes<Self>
                 {
                     let len = self.len();
-                    reject_if!(self, len != factor.len(), ErrorReason::VectorsMustHaveTheSameSize);
+                    reject_if!(self, len != factor.len(), ErrorReason::InputMustHaveTheSameSize);
                     assert_meta_data!(self, factor);
                     
                     if self.is_complex
@@ -520,7 +520,7 @@ macro_rules! add_general_impl {
                 fn divide_vector(self, divisor: &Self) -> TransRes<Self>
                 {
                     let len = self.len();
-                    reject_if!(self, len != divisor.len(), ErrorReason::VectorsMustHaveTheSameSize);
+                    reject_if!(self, len != divisor.len(), ErrorReason::InputMustHaveTheSameSize);
                     assert_meta_data!(self, divisor);
                     
                     if self.is_complex

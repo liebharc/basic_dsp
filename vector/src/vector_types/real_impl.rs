@@ -129,13 +129,13 @@ macro_rules! add_real_impl {
                     let aggregate = Arc::new(aggregate);
                     let mut result = {
                         if self.is_complex {
-                            return Err(ErrorReason::VectorMustBeReal);
+                            return Err(ErrorReason::InputMustBeReal);
                         }
                         
                         let array = &self.data;
                         let length = array.len();
                         if length == 0 {
-                            return Err(ErrorReason::VectorMustNotBeEmpty);
+                            return Err(ErrorReason::InputMustNotBeEmpty);
                         }
                         let aggregate  = aggregate.clone();
                         Chunk::map_on_array_chunks(
@@ -169,7 +169,7 @@ macro_rules! add_real_impl {
                     }
                     
                     if only_valid_options.len() == 0 {
-                        return Err(ErrorReason::VectorMustNotBeEmpty);
+                        return Err(ErrorReason::InputMustNotBeEmpty);
                     }
                     let mut aggregated = only_valid_options.pop().unwrap();
                     for _ in 0..only_valid_options.len() {
@@ -181,7 +181,7 @@ macro_rules! add_real_impl {
                 fn real_dot_product(&self, factor: &Self) -> ScalarResult<$data_type>
                 {
                     if self.is_complex {
-                        return Err(ErrorReason::VectorMustBeReal);
+                        return Err(ErrorReason::InputMustBeReal);
                     }
                     
                     let data_length = self.len();

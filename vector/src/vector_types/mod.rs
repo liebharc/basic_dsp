@@ -13,7 +13,7 @@ macro_rules! assert_meta_data {
             if $self_.is_complex != $other.is_complex ||
                 $self_.domain != $other.domain ||
                 delta_ratio > 1.1 || delta_ratio < 0.9 {
-                return Err((ErrorReason::VectorMetaDataMustAgree, $self_));
+                return Err((ErrorReason::InputMetaDataMustAgree, $self_));
             }
          }
     }
@@ -22,7 +22,7 @@ macro_rules! assert_meta_data {
 macro_rules! assert_real {
     ($self_: ident) => {
         if $self_.is_complex {
-            return Err((ErrorReason::VectorMustBeReal, $self_));
+            return Err((ErrorReason::InputMustBeReal, $self_));
         }
     }
 }
@@ -30,7 +30,7 @@ macro_rules! assert_real {
 macro_rules! assert_complex {
     ($self_: ident) => {
         if !$self_.is_complex {
-            return Err((ErrorReason::VectorMustBeComplex, $self_));
+            return Err((ErrorReason::InputMustBeComplex, $self_));
         }
     }
 }
@@ -38,7 +38,7 @@ macro_rules! assert_complex {
 macro_rules! assert_time {
     ($self_: ident) => {
         if $self_.domain != DataVecDomain::Time {
-            return Err((ErrorReason::VectorMustBeInTimeDomain, $self_));
+            return Err((ErrorReason::InputMustBeInTimeDomain, $self_));
         }
     }
 }
@@ -46,7 +46,7 @@ macro_rules! assert_time {
 macro_rules! assert_freq {
     ($self_: ident) => {
         if $self_.domain != DataVecDomain::Frequency {
-            return Err((ErrorReason::VectorMustBeInFrquencyDomain, $self_));
+            return Err((ErrorReason::InputMustBeInFrquencyDomain, $self_));
         }
     }
 }

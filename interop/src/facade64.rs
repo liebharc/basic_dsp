@@ -12,48 +12,48 @@ use std::mem;
 use std::sync::Arc;
 
 #[no_mangle]
-pub extern fn delete_vector64(vector: Box<DataVector64>) {
+pub extern fn delete_vector64(vector: Box<DataVec64>) {
     drop(vector);
 }
  
 #[no_mangle]
-pub extern fn new64(is_complex: i32, domain: i32, init_value: f64, length: usize, delta: f64) -> Box<DataVector64> {
+pub extern fn new64(is_complex: i32, domain: i32, init_value: f64, length: usize, delta: f64) -> Box<DataVec64> {
     let domain = if domain == 0 {
-            DataVectorDomain::Time
+            DataVecDomain::Time
         }
         else {
-            DataVectorDomain::Frequency
+            DataVecDomain::Frequency
         };
         
-    let vector = Box::new(DataVector64::new(is_complex != 0, domain, init_value, length, delta));
+    let vector = Box::new(DataVec64::new(is_complex != 0, domain, init_value, length, delta));
     vector
 }
 
 #[no_mangle]
-pub extern fn new_with_performance_options64(is_complex: i32, domain: i32, init_value: f64, length: usize, delta: f64, core_limit: usize, early_temp_allocation: bool) -> Box<DataVector64> {
+pub extern fn new_with_performance_options64(is_complex: i32, domain: i32, init_value: f64, length: usize, delta: f64, core_limit: usize, early_temp_allocation: bool) -> Box<DataVec64> {
     let domain = if domain == 0 {
-            DataVectorDomain::Time
+            DataVecDomain::Time
         }
         else {
-            DataVectorDomain::Frequency
+            DataVecDomain::Frequency
         };
         
-    let vector = Box::new(DataVector64::new_with_options(is_complex != 0, domain, init_value, length, delta, MultiCoreSettings::new(core_limit, early_temp_allocation)));
+    let vector = Box::new(DataVec64::new_with_options(is_complex != 0, domain, init_value, length, delta, MultiCoreSettings::new(core_limit, early_temp_allocation)));
     vector
 }
 
 #[no_mangle]
-pub extern fn get_value64(vector: &DataVector64, index: usize) -> f64 {
+pub extern fn get_value64(vector: &DataVec64, index: usize) -> f64 {
     vector[index]
 }
 
 #[no_mangle]
-pub extern fn set_value64(vector: &mut DataVector64, index: usize, value : f64) {
+pub extern fn set_value64(vector: &mut DataVec64, index: usize, value : f64) {
     vector[index] = value;
 }
 
 #[no_mangle]
-pub extern fn is_complex64(vector: &DataVector64) -> i32 {
+pub extern fn is_complex64(vector: &DataVec64) -> i32 {
     if vector.is_complex() {
         1
     } 
@@ -64,105 +64,105 @@ pub extern fn is_complex64(vector: &DataVector64) -> i32 {
 
 /// Returns the vector domain as integer:
 ///
-/// 1. `0` for [`DataVectorDomain::Time`](../../enum.DataVectorDomain.html) 
-/// 2. `1` for [`DataVectorDomain::Frequency`](../../enum.DataVectorDomain.html)
+/// 1. `0` for [`DataVecDomain::Time`](../../enum.DataVecDomain.html) 
+/// 2. `1` for [`DataVecDomain::Frequency`](../../enum.DataVecDomain.html)
 /// 
 /// if the function returns another value then please report a bug.
 #[no_mangle]
-pub extern fn get_domain64(vector: &DataVector64) -> i32 {
+pub extern fn get_domain64(vector: &DataVec64) -> i32 {
     match vector.domain() {
-        DataVectorDomain::Time => 0,
-        DataVectorDomain::Frequency => 1,
+        DataVecDomain::Time => 0,
+        DataVecDomain::Frequency => 1,
     }
 }
 
 #[no_mangle]
-pub extern fn get_len64(vector: &DataVector64) -> usize {
+pub extern fn get_len64(vector: &DataVec64) -> usize {
     vector.len()
 }
 
 #[no_mangle]
-pub extern fn set_len64(vector: &mut DataVector64, len: usize) {
+pub extern fn set_len64(vector: &mut DataVec64, len: usize) {
     vector.set_len(len)
 }
 
 #[no_mangle]
-pub extern fn get_points64(vector: &DataVector64) -> usize {
+pub extern fn get_points64(vector: &DataVec64) -> usize {
     vector.points()
 }
 
 #[no_mangle]
-pub extern fn get_delta64(vector: &DataVector64) -> f64 {
+pub extern fn get_delta64(vector: &DataVec64) -> f64 {
     vector.delta()
 }
 
 #[no_mangle]
-pub extern fn complex_data64(vector: &DataVector64) -> &[Complex64] {
+pub extern fn complex_data64(vector: &DataVec64) -> &[Complex64] {
     vector.complex_data()
 }
 
 #[no_mangle]
-pub extern fn get_allocated_len64(vector: &DataVector64) -> usize {
+pub extern fn get_allocated_len64(vector: &DataVec64) -> usize {
     vector.allocated_len()
 }
 
 #[no_mangle]
-pub extern fn add_vector64(vector: Box<DataVector64>, operand: &DataVector64) -> VectorResult<DataVector64> {
+pub extern fn add_vector64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
     convert_vec!(vector.add_vector(operand))
 }
 
 #[no_mangle]
-pub extern fn subtract_vector64(vector: Box<DataVector64>, operand: &DataVector64) -> VectorResult<DataVector64> {
+pub extern fn subtract_vector64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
     convert_vec!(vector.subtract_vector(operand))
 }
 
 #[no_mangle]
-pub extern fn divide_vector64(vector: Box<DataVector64>, operand: &DataVector64) -> VectorResult<DataVector64> {
+pub extern fn divide_vector64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
     convert_vec!(vector.divide_vector(operand))
 }
 
 #[no_mangle]
-pub extern fn multiply_vector64(vector: Box<DataVector64>, operand: &DataVector64) -> VectorResult<DataVector64> {
+pub extern fn multiply_vector64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
     convert_vec!(vector.multiply_vector(operand))
 }
 
 #[no_mangle]
-pub extern fn real_dot_product64(vector: &DataVector64, operand: &DataVector64) -> ScalarResult<f64> {
+pub extern fn real_dot_product64(vector: &DataVec64, operand: &DataVec64) -> ScalarResult<f64> {
     convert_scalar!(vector.real_dot_product(operand), 0.0)
 }
 
 #[no_mangle]
-pub extern fn complex_dot_product64(vector: &DataVector64, operand: &DataVector64) -> ScalarResult<Complex64> {
+pub extern fn complex_dot_product64(vector: &DataVec64, operand: &DataVec64) -> ScalarResult<Complex64> {
     convert_scalar!(vector.complex_dot_product(operand), Complex64::new(0.0, 0.0))
 }
 
 #[no_mangle]
-pub extern fn real_statistics64(vector: &DataVector64) -> Statistics<f64> {
+pub extern fn real_statistics64(vector: &DataVec64) -> Statistics<f64> {
     vector.real_statistics()
 }
 
 #[no_mangle]
-pub extern fn complex_statistics64(vector: &DataVector64) -> Statistics<Complex64> {
+pub extern fn complex_statistics64(vector: &DataVec64) -> Statistics<Complex64> {
     vector.complex_statistics()
 }
 
 #[no_mangle]
-pub extern fn real_sum64(vector: &DataVector64) -> f64 {
+pub extern fn real_sum64(vector: &DataVec64) -> f64 {
     vector.real_sum()
 }
 
 #[no_mangle]
-pub extern fn real_sum_sq64(vector: &DataVector64) -> f64 {
+pub extern fn real_sum_sq64(vector: &DataVec64) -> f64 {
     vector.real_sum_sq()
 }
 
 #[no_mangle]
-pub extern fn complex_sum64(vector: &DataVector64) -> Complex64 {
+pub extern fn complex_sum64(vector: &DataVec64) -> Complex64 {
     vector.complex_sum()
 }
 
 #[no_mangle]
-pub extern fn complex_sum_sq64(vector: &DataVector64) -> Complex64 {
+pub extern fn complex_sum_sq64(vector: &DataVec64) -> Complex64 {
     vector.complex_sum_sq()
 }
 
@@ -173,219 +173,219 @@ pub extern fn complex_sum_sq64(vector: &DataVector64) -> Complex64 {
 /// 2. `1` for [`PaddingOption::Surround`](../../enum.PaddingOption.html)
 /// 2. `2` for [`PaddingOption::Center`](../../enum.PaddingOption.html)
 #[no_mangle]
-pub extern fn zero_pad64(vector: Box<DataVector64>, points: usize, padding_option: i32) -> VectorResult<DataVector64> {
+pub extern fn zero_pad64(vector: Box<DataVec64>, points: usize, padding_option: i32) -> VectorResult<DataVec64> {
     let padding_option = translate_to_padding_option(padding_option);
     convert_vec!(vector.zero_pad(points, padding_option))
 }
 
 #[no_mangle]
-pub extern fn zero_interleave64(vector: Box<DataVector64>, factor: i32) -> VectorResult<DataVector64> {
+pub extern fn zero_interleave64(vector: Box<DataVec64>, factor: i32) -> VectorResult<DataVec64> {
     convert_vec!(vector.zero_interleave(factor as u32))
 }
 
 #[no_mangle]
-pub extern fn diff64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn diff64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.diff())
 }
 
 #[no_mangle]
-pub extern fn diff_with_start64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn diff_with_start64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.diff_with_start())
 }
 
 #[no_mangle]
-pub extern fn cum_sum64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn cum_sum64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.cum_sum())
 }
 
 #[no_mangle]
-pub extern fn real_offset64(vector: Box<DataVector64>, value: f64) -> VectorResult<DataVector64> {
+pub extern fn real_offset64(vector: Box<DataVec64>, value: f64) -> VectorResult<DataVec64> {
     convert_vec!(vector.real_offset(value))
 }
 
 #[no_mangle]
-pub extern fn real_scale64(vector: Box<DataVector64>, value: f64) -> VectorResult<DataVector64> {
+pub extern fn real_scale64(vector: Box<DataVec64>, value: f64) -> VectorResult<DataVec64> {
     convert_vec!(vector.real_scale(value))
 }
 
 #[no_mangle]
-pub extern fn abs64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn abs64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.abs())
 }
 
 #[no_mangle]
-pub extern fn sqrt64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn sqrt64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.sqrt())
 }
 
 #[no_mangle]
-pub extern fn square64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn square64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.square())
 }
 
 #[no_mangle]
-pub extern fn root64(vector: Box<DataVector64>, value: f64) -> VectorResult<DataVector64> {
+pub extern fn root64(vector: Box<DataVec64>, value: f64) -> VectorResult<DataVec64> {
     convert_vec!(vector.root(value))
 }
 
 #[no_mangle]
-pub extern fn powf64(vector: Box<DataVector64>, value: f64) -> VectorResult<DataVector64> {
+pub extern fn powf64(vector: Box<DataVec64>, value: f64) -> VectorResult<DataVec64> {
     convert_vec!(vector.powf(value))
 }
 
 #[no_mangle]
-pub extern fn ln64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn ln64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.ln())
 }
 
 #[no_mangle]
-pub extern fn exp64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn exp64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.exp())
 }
 
 #[no_mangle]
-pub extern fn log64(vector: Box<DataVector64>, value: f64) -> VectorResult<DataVector64> {
+pub extern fn log64(vector: Box<DataVec64>, value: f64) -> VectorResult<DataVec64> {
     convert_vec!(vector.log(value))
 }
 
 #[no_mangle]
-pub extern fn expf64(vector: Box<DataVector64>, value: f64) -> VectorResult<DataVector64> {
+pub extern fn expf64(vector: Box<DataVec64>, value: f64) -> VectorResult<DataVec64> {
     convert_vec!(vector.expf(value))
 }
 
 #[no_mangle]
-pub extern fn to_complex64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn to_complex64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.to_complex())
 }
 
 #[no_mangle]
-pub extern fn sin64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn sin64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.sin())
 }
 
 #[no_mangle]
-pub extern fn cos64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn cos64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.cos())
 }
 
 #[no_mangle]
-pub extern fn tan64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn tan64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.tan())
 }
 
 #[no_mangle]
-pub extern fn asin64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn asin64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.asin())
 }
 
 #[no_mangle]
-pub extern fn acos64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn acos64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.acos())
 }
 
 #[no_mangle]
-pub extern fn atan64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn atan64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.tan())
 }
 
 #[no_mangle]
-pub extern fn sinh64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn sinh64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.sinh())
 }
 #[no_mangle]
-pub extern fn cosh64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn cosh64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.cosh())
 }
 
 #[no_mangle]
-pub extern fn tanh64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn tanh64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.tanh())
 }
 
 #[no_mangle]
-pub extern fn asinh64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn asinh64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.asinh())
 }
 
 #[no_mangle]
-pub extern fn acosh64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn acosh64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.acosh())
 }
 
 #[no_mangle]
-pub extern fn atanh64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn atanh64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.atanh())
 }
 
 #[no_mangle]
-pub extern fn wrap64(vector: Box<DataVector64>, value: f64) -> VectorResult<DataVector64> {
+pub extern fn wrap64(vector: Box<DataVec64>, value: f64) -> VectorResult<DataVec64> {
     convert_vec!(vector.wrap(value))
 }
 
 #[no_mangle]
-pub extern fn unwrap64(vector: Box<DataVector64>, value: f64) -> VectorResult<DataVector64> {
+pub extern fn unwrap64(vector: Box<DataVec64>, value: f64) -> VectorResult<DataVec64> {
     convert_vec!(vector.unwrap(value))
 }
 
 #[no_mangle]
-pub extern fn swap_halves64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn swap_halves64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.swap_halves())
 }
 
 #[no_mangle]
-pub extern fn complex_offset64(vector: Box<DataVector64>, real: f64, imag: f64) -> VectorResult<DataVector64> {
+pub extern fn complex_offset64(vector: Box<DataVec64>, real: f64, imag: f64) -> VectorResult<DataVec64> {
     convert_vec!(vector.complex_offset(Complex64::new(real, imag)))
 }
 
 #[no_mangle]
-pub extern fn complex_scale64(vector: Box<DataVector64>, real: f64, imag: f64) -> VectorResult<DataVector64> {
+pub extern fn complex_scale64(vector: Box<DataVec64>, real: f64, imag: f64) -> VectorResult<DataVec64> {
     convert_vec!(vector.complex_scale(Complex64::new(real, imag)))
 }
 
 #[no_mangle]
-pub extern fn complex_divide64(vector: Box<DataVector64>, real: f64, imag: f64) -> VectorResult<DataVector64> {
+pub extern fn complex_divide64(vector: Box<DataVec64>, real: f64, imag: f64) -> VectorResult<DataVec64> {
     convert_vec!(vector.complex_scale(Complex64::new(1.0, 0.0) / Complex64::new(real, imag)))
 }
 
 #[no_mangle]
-pub extern fn magnitude64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn magnitude64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.magnitude())
 }
 
 #[no_mangle]
-pub extern fn get_magnitude64(vector: Box<DataVector64>, destination: &mut DataVector64) -> i32 {
+pub extern fn get_magnitude64(vector: Box<DataVec64>, destination: &mut DataVec64) -> i32 {
     convert_void!(vector.get_magnitude(destination))
 }
 
 #[no_mangle]
-pub extern fn magnitude_squared64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn magnitude_squared64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.magnitude_squared())
 }
 
 #[no_mangle]
-pub extern fn conj64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn conj64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.conj())
 }
 
 #[no_mangle]
-pub extern fn to_real64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn to_real64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.to_real())
 }
 
 #[no_mangle]
-pub extern fn to_imag64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn to_imag64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.to_imag())
 }
 
 #[no_mangle]
-pub extern fn map_inplace_complex64(vector: Box<DataVector64>, map: extern fn(Complex64, usize) -> Complex64) -> VectorResult<DataVector64> {
+pub extern fn map_inplace_complex64(vector: Box<DataVec64>, map: extern fn(Complex64, usize) -> Complex64) -> VectorResult<DataVec64> {
     convert_vec!(vector.map_inplace_complex((), move|v, i, _|map(v, i)))
 }
 
 /// Warning: This function interface heavily works around the Rust type system and the safety
 /// it provides. Use with great care!
 #[no_mangle]
-pub extern fn map_aggregate_complex64(vector: &DataVector64, map: extern fn(Complex64, usize) -> *const c_void, aggregate: extern fn(*const c_void, *const c_void) -> *const c_void) -> ScalarResult<*const c_void> {
+pub extern fn map_aggregate_complex64(vector: &DataVec64, map: extern fn(Complex64, usize) -> *const c_void, aggregate: extern fn(*const c_void, *const c_void) -> *const c_void) -> ScalarResult<*const c_void> {
     unsafe 
     {
         let result = convert_scalar!(
@@ -400,92 +400,92 @@ pub extern fn map_aggregate_complex64(vector: &DataVector64, map: extern fn(Comp
 }
 
 #[no_mangle]
-pub extern fn get_real64(vector: Box<DataVector64>, destination: &mut DataVector64) -> i32 {
+pub extern fn get_real64(vector: Box<DataVec64>, destination: &mut DataVec64) -> i32 {
     convert_void!(vector.get_real(destination))
 }
 
 #[no_mangle]
-pub extern fn get_imag64(vector: Box<DataVector64>, destination: &mut DataVector64) -> i32 {
+pub extern fn get_imag64(vector: Box<DataVec64>, destination: &mut DataVec64) -> i32 {
     convert_void!(vector.get_imag(destination))
 }
 
 #[no_mangle]
-pub extern fn phase64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn phase64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.phase())
 }
 
 #[no_mangle]
-pub extern fn get_phase64(vector: Box<DataVector64>, destination: &mut DataVector64) -> i32 {
+pub extern fn get_phase64(vector: Box<DataVec64>, destination: &mut DataVec64) -> i32 {
     convert_void!(vector.get_phase(destination))
 }
 
 #[no_mangle]
-pub extern fn plain_fft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn plain_fft64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.plain_fft())
 }
 
 #[no_mangle]
-pub extern fn plain_sfft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn plain_sfft64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.plain_sfft())
 }
 
 #[no_mangle]
-pub extern fn plain_ifft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn plain_ifft64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.plain_ifft())
 }
 
 #[no_mangle]
-pub extern fn clone64(vector: Box<DataVector64>) -> Box<DataVector64> {
+pub extern fn clone64(vector: Box<DataVec64>) -> Box<DataVec64> {
     vector.clone()
 }
 
 #[no_mangle]
-pub extern fn multiply_complex_exponential64(vector: Box<DataVector64>, a: f64, b: f64) -> VectorResult<DataVector64> {
+pub extern fn multiply_complex_exponential64(vector: Box<DataVec64>, a: f64, b: f64) -> VectorResult<DataVec64> {
     convert_vec!(vector.multiply_complex_exponential(a, b))
 }
 
 #[no_mangle]
-pub extern fn add_smaller_vector64(vector: Box<DataVector64>, operand: &DataVector64) -> VectorResult<DataVector64> {
+pub extern fn add_smaller_vector64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
     convert_vec!(vector.add_smaller_vector(operand))
 }
 
 #[no_mangle]
-pub extern fn subtract_smaller_vector64(vector: Box<DataVector64>, operand: &DataVector64) -> VectorResult<DataVector64> {
+pub extern fn subtract_smaller_vector64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
     convert_vec!(vector.subtract_smaller_vector(operand))
 }
 
 #[no_mangle]
-pub extern fn divide_smaller_vector64(vector: Box<DataVector64>, operand: &DataVector64) -> VectorResult<DataVector64> {
+pub extern fn divide_smaller_vector64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
     convert_vec!(vector.divide_smaller_vector(operand))
 }
 
 #[no_mangle]
-pub extern fn multiply_smaller_vector64(vector: Box<DataVector64>, operand: &DataVector64) -> VectorResult<DataVector64> {
+pub extern fn multiply_smaller_vector64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
     convert_vec!(vector.multiply_smaller_vector(operand))
 }
 
 #[no_mangle]
-pub extern fn get_real_imag64(vector: Box<DataVector64>, real: &mut DataVector64, imag: &mut DataVector64) -> i32 {
+pub extern fn get_real_imag64(vector: Box<DataVec64>, real: &mut DataVec64, imag: &mut DataVec64) -> i32 {
     convert_void!(vector.get_real_imag(real, imag))
 }
 
 #[no_mangle]
-pub extern fn get_mag_phase64(vector: Box<DataVector64>, mag: &mut DataVector64, phase: &mut DataVector64) -> i32 {
+pub extern fn get_mag_phase64(vector: Box<DataVec64>, mag: &mut DataVec64, phase: &mut DataVec64) -> i32 {
     convert_void!(vector.get_mag_phase(mag, phase))
 }
 
 #[no_mangle]
-pub extern fn set_real_imag64(vector: Box<DataVector64>, real: &DataVector64, imag: &DataVector64) -> VectorResult<DataVector64> {
+pub extern fn set_real_imag64(vector: Box<DataVec64>, real: &DataVec64, imag: &DataVec64) -> VectorResult<DataVec64> {
     convert_vec!(vector.set_real_imag(real, imag))
 }
 
 #[no_mangle]
-pub extern fn set_mag_phase64(vector: Box<DataVector64>, mag: &DataVector64, phase: &DataVector64) -> VectorResult<DataVector64> {
+pub extern fn set_mag_phase64(vector: Box<DataVec64>, mag: &DataVec64, phase: &DataVec64) -> VectorResult<DataVec64> {
     convert_vec!(vector.set_mag_phase(mag, phase))
 }
 
 #[no_mangle]
-pub extern fn split_into64(vector: &DataVector64, targets: *mut Box<DataVector64>, len: usize) -> i32 {
+pub extern fn split_into64(vector: &DataVec64, targets: *mut Box<DataVec64>, len: usize) -> i32 {
     unsafe {
         let targets = slice::from_raw_parts_mut(targets, len);
         convert_void!(vector.split_into(targets))
@@ -493,7 +493,7 @@ pub extern fn split_into64(vector: &DataVector64, targets: *mut Box<DataVector64
 }
 
 #[no_mangle]
-pub extern fn merge64(vector: Box<DataVector64>, sources: *const Box<DataVector64>, len: usize) -> VectorResult<DataVector64> {
+pub extern fn merge64(vector: Box<DataVec64>, sources: *const Box<DataVec64>, len: usize) -> VectorResult<DataVec64> {
     unsafe {
         let sources = slice::from_raw_parts(sources, len);
         convert_vec!(vector.merge(sources))
@@ -501,13 +501,13 @@ pub extern fn merge64(vector: Box<DataVector64>, sources: *const Box<DataVector6
 }
 
 #[no_mangle]
-pub extern fn override_data64(vector: Box<DataVector64>, data: *const f64, len: usize) -> VectorResult<DataVector64> {
+pub extern fn override_data64(vector: Box<DataVec64>, data: *const f64, len: usize) -> VectorResult<DataVec64> {
     let data = unsafe { slice::from_raw_parts(data, len) };
     convert_vec!(vector.override_data(data))
 }
 
 #[no_mangle]
-pub extern fn real_statistics_splitted64(vector: &DataVector64, data: *mut Statistics<f64>, len: usize) -> i32 {
+pub extern fn real_statistics_splitted64(vector: &DataVec64, data: *mut Statistics<f64>, len: usize) -> i32 {
     let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
     let stats = vector.real_statistics_splitted(data.len());
     for i in 0..stats.len() {
@@ -518,7 +518,7 @@ pub extern fn real_statistics_splitted64(vector: &DataVector64, data: *mut Stati
 }
 
 #[no_mangle]
-pub extern fn complex_statistics_splitted64(vector: &DataVector64, data: *mut Statistics<Complex64>, len: usize) -> i32 {
+pub extern fn complex_statistics_splitted64(vector: &DataVec64, data: *mut Statistics<Complex64>, len: usize) -> i32 {
     let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
     let stats = vector.complex_statistics_splitted(data.len());
     for i in 0..stats.len() {
@@ -529,40 +529,40 @@ pub extern fn complex_statistics_splitted64(vector: &DataVector64, data: *mut St
 }
 
 #[no_mangle]
-pub extern fn fft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn fft64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.fft())
 }
 
 #[no_mangle]
-pub extern fn sfft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn sfft64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.sfft())
 }
 
 #[no_mangle]
-pub extern fn ifft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn ifft64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.ifft())
 }
 
 #[no_mangle]
-pub extern fn plain_sifft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn plain_sifft64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.plain_sifft())
 }
 
 #[no_mangle]
-pub extern fn sifft64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn sifft64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.sifft())
 }
 
 #[no_mangle]
-pub extern fn mirror64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn mirror64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.mirror())
 }
 
-pub extern fn fft_shift64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn fft_shift64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.fft_shift())
 }
 
-pub extern fn ifft_shift64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn ifft_shift64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.ifft_shift())
 }
 
@@ -571,42 +571,42 @@ pub extern fn ifft_shift64(vector: Box<DataVector64>) -> VectorResult<DataVector
 /// 1. `0` to [`TriangularWindow`](../../window_functions/struct.TriangularWindow.html)
 /// 2. `1` to [`HammingWindow`](../../window_functions/struct.TriangularWindow.html)
 #[no_mangle]
-pub extern fn apply_window64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
+pub extern fn apply_window64(vector: Box<DataVec64>, window: i32) -> VectorResult<DataVec64> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.apply_window(window.as_ref()))
 }
 
 /// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
 #[no_mangle]
-pub extern fn unapply_window64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
+pub extern fn unapply_window64(vector: Box<DataVec64>, window: i32) -> VectorResult<DataVec64> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.unapply_window(window.as_ref()))
 }
 
 /// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
 #[no_mangle]
-pub extern fn windowed_fft64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
+pub extern fn windowed_fft64(vector: Box<DataVec64>, window: i32) -> VectorResult<DataVec64> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.windowed_fft(window.as_ref()))
 }
 
 /// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
 #[no_mangle]
-pub extern fn windowed_sfft64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
+pub extern fn windowed_sfft64(vector: Box<DataVec64>, window: i32) -> VectorResult<DataVec64> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.windowed_sfft(window.as_ref()))
 }
 
 /// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
 #[no_mangle]
-pub extern fn windowed_ifft64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
+pub extern fn windowed_ifft64(vector: Box<DataVec64>, window: i32) -> VectorResult<DataVec64> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.windowed_ifft(window.as_ref()))
 }
 
 /// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
 #[no_mangle]
-pub extern fn windowed_sifft64(vector: Box<DataVector64>, window: i32) -> VectorResult<DataVector64> {
+pub extern fn windowed_sifft64(vector: Box<DataVec64>, window: i32) -> VectorResult<DataVec64> {
     let window = translate_to_window_function(window);
     convert_vec!(vector.windowed_sifft(window.as_ref()))
 }
@@ -615,10 +615,10 @@ pub extern fn windowed_sifft64(vector: Box<DataVector64>, window: i32) -> Vector
 /// function at every call and can be used to store parameters.
 #[no_mangle]
 pub extern fn apply_custom_window64(
-    vector: Box<DataVector64>, 
+    vector: Box<DataVec64>, 
     window: extern fn(*const c_void, usize, usize) -> f64, 
     window_data: *const c_void,
-    is_symmetric: bool) -> VectorResult<DataVector64> {
+    is_symmetric: bool) -> VectorResult<DataVec64> {
     unsafe {
         let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data), is_symmetric: is_symmetric };
         convert_vec!(vector.apply_window(&window))
@@ -628,10 +628,10 @@ pub extern fn apply_custom_window64(
 /// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
 pub extern fn unapply_custom_window64(
-    vector: Box<DataVector64>, 
+    vector: Box<DataVec64>, 
     window: extern fn(*const c_void, usize, usize) -> f64, 
     window_data: *const c_void,
-    is_symmetric: bool) -> VectorResult<DataVector64> {
+    is_symmetric: bool) -> VectorResult<DataVec64> {
     unsafe {
         let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data), is_symmetric: is_symmetric };
         convert_vec!(vector.unapply_window(&window))
@@ -641,10 +641,10 @@ pub extern fn unapply_custom_window64(
 /// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
 pub extern fn windowed_custom_fft64(
-    vector: Box<DataVector64>, 
+    vector: Box<DataVec64>, 
     window: extern fn(*const c_void, usize, usize) -> f64, 
     window_data: *const c_void,
-    is_symmetric: bool) -> VectorResult<DataVector64> {
+    is_symmetric: bool) -> VectorResult<DataVec64> {
     unsafe {
         let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data), is_symmetric: is_symmetric };
         convert_vec!(vector.windowed_fft(&window))
@@ -654,10 +654,10 @@ pub extern fn windowed_custom_fft64(
 /// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
 pub extern fn windowed_custom_sfft64(
-    vector: Box<DataVector64>, 
+    vector: Box<DataVec64>, 
     window: extern fn(*const c_void, usize, usize) -> f64, 
     window_data: *const c_void,
-    is_symmetric: bool) -> VectorResult<DataVector64> {
+    is_symmetric: bool) -> VectorResult<DataVec64> {
     unsafe {
         let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data), is_symmetric: is_symmetric };
         convert_vec!(vector.windowed_sfft(&window))
@@ -667,10 +667,10 @@ pub extern fn windowed_custom_sfft64(
 /// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
 pub extern fn windowed_custom_ifft64(
-    vector: Box<DataVector64>, 
+    vector: Box<DataVec64>, 
     window: extern fn(*const c_void, usize, usize) -> f64, 
     window_data: *const c_void,
-    is_symmetric: bool) -> VectorResult<DataVector64> {
+    is_symmetric: bool) -> VectorResult<DataVec64> {
     unsafe {
         let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data), is_symmetric: is_symmetric };
         convert_vec!(vector.windowed_ifft(&window))
@@ -680,10 +680,10 @@ pub extern fn windowed_custom_ifft64(
 /// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
 #[no_mangle]
 pub extern fn windowed_custom_sifft64(
-    vector: Box<DataVector64>, 
+    vector: Box<DataVec64>, 
     window: extern fn(*const c_void, usize, usize) -> f64, 
     window_data: *const c_void,
-    is_symmetric: bool) -> VectorResult<DataVector64> {
+    is_symmetric: bool) -> VectorResult<DataVec64> {
     unsafe {
         let window = ForeignWindowFunction { window_function: window, window_data: mem::transmute(window_data), is_symmetric: is_symmetric };
         convert_vec!(vector.windowed_sifft(&window))
@@ -691,32 +691,32 @@ pub extern fn windowed_custom_sifft64(
 }
 
 #[no_mangle]
-pub extern fn reverse64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn reverse64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.reverse())
 }
 
 #[no_mangle]
-pub extern fn decimatei64(vector: Box<DataVector64>, decimation_factor: u32, delay: u32) -> VectorResult<DataVector64> {
+pub extern fn decimatei64(vector: Box<DataVec64>, decimation_factor: u32, delay: u32) -> VectorResult<DataVec64> {
     convert_vec!(vector.decimatei(decimation_factor, delay))
 }
 
 #[no_mangle]
-pub extern fn prepare_argument64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn prepare_argument64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.prepare_argument())
 }
 
 #[no_mangle]
-pub extern fn prepare_argument_padded64(vector: Box<DataVector64>) -> VectorResult<DataVector64> {
+pub extern fn prepare_argument_padded64(vector: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(vector.prepare_argument_padded())
 }
 
 #[no_mangle]
-pub extern fn correlate64(vector: Box<DataVector64>, other: &DataVector64) -> VectorResult<DataVector64> {
+pub extern fn correlate64(vector: Box<DataVec64>, other: &DataVec64) -> VectorResult<DataVec64> {
     convert_vec!(vector.correlate(other))
 }
 
 #[no_mangle]
-pub extern fn convolve_vector64(vector: Box<DataVector64>, impulse_response: &DataVector64) -> VectorResult<DataVector64> {
+pub extern fn convolve_vector64(vector: Box<DataVec64>, impulse_response: &DataVec64) -> VectorResult<DataVec64> {
     convert_vec!(vector.convolve_vector(impulse_response))
 }
 
@@ -724,12 +724,12 @@ pub extern fn convolve_vector64(vector: Box<DataVector64>, impulse_response: &Da
 /// The `impulse_response_data` pointer is passed to the `impulse_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
-pub extern fn convolve_real64(vector: Box<DataVector64>, 
+pub extern fn convolve_real64(vector: Box<DataVec64>, 
     impulse_response: extern fn(*const c_void, f64) -> f64, 
     impulse_response_data: *const c_void,
     is_symmetric: bool,
     ratio: f64,
-    len: usize) -> VectorResult<DataVector64> {
+    len: usize) -> VectorResult<DataVec64> {
     unsafe {
         let function: &RealImpulseResponse<f64> = &ForeignRealConvolutionFunction { conv_function: impulse_response, conv_data: mem::transmute(impulse_response_data), is_symmetric: is_symmetric };
         convert_vec!(vector.convolve(function, ratio, len))
@@ -740,12 +740,12 @@ pub extern fn convolve_real64(vector: Box<DataVector64>,
 /// The `impulse_response_data` pointer is passed to the `impulse_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
-pub extern fn convolve_complex64(vector: Box<DataVector64>, 
+pub extern fn convolve_complex64(vector: Box<DataVec64>, 
     impulse_response: extern fn(*const c_void, f64) -> Complex64, 
     impulse_response_data: *const c_void,
     is_symmetric: bool,
     ratio: f64,
-    len: usize) -> VectorResult<DataVector64> {
+    len: usize) -> VectorResult<DataVec64> {
     unsafe {
         let function: &ComplexImpulseResponse<f64> = &ForeignComplexConvolutionFunction { conv_function: impulse_response, conv_data: mem::transmute(impulse_response_data), is_symmetric: is_symmetric };
         convert_vec!(vector.convolve(function, ratio, len))
@@ -759,11 +759,11 @@ pub extern fn convolve_complex64(vector: Box<DataVector64>,
 ///
 /// `rolloff` is only used if this is a valid parameter for the selected `impulse_response`
 #[no_mangle]    
-pub extern fn convolve64(vector: Box<DataVector64>, 
+pub extern fn convolve64(vector: Box<DataVec64>, 
     impulse_response: i32,
     rolloff: f64,
     ratio: f64,
-    len: usize) -> VectorResult<DataVector64> {
+    len: usize) -> VectorResult<DataVec64> {
     let function = translate_to_real_convolution_function(impulse_response, rolloff);
     convert_vec!(vector.convolve(function.as_ref(), ratio, len))
 }
@@ -772,11 +772,11 @@ pub extern fn convolve64(vector: Box<DataVector64>,
 /// The `frequency_response_data` pointer is passed to the `frequency_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
-pub extern fn multiply_frequency_response_real64(vector: Box<DataVector64>, 
+pub extern fn multiply_frequency_response_real64(vector: Box<DataVec64>, 
     frequency_response: extern fn(*const c_void, f64) -> f64, 
     frequency_response_data: *const c_void,
     is_symmetric: bool,
-    ratio: f64) -> VectorResult<DataVector64> {
+    ratio: f64) -> VectorResult<DataVec64> {
     unsafe {
         let function: &RealFrequencyResponse<f64> = &ForeignRealConvolutionFunction { conv_function: frequency_response, conv_data: mem::transmute(frequency_response_data), is_symmetric: is_symmetric };
         convert_vec!(vector.multiply_frequency_response(function, ratio))
@@ -787,11 +787,11 @@ pub extern fn multiply_frequency_response_real64(vector: Box<DataVector64>,
 /// The `frequency_response` pointer is passed to the `frequency_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
-pub extern fn multiply_frequency_response_complex64(vector: Box<DataVector64>, 
+pub extern fn multiply_frequency_response_complex64(vector: Box<DataVec64>, 
     frequency_response: extern fn(*const c_void, f64) -> Complex64, 
     frequency_response_data: *const c_void,
     is_symmetric: bool,
-    ratio: f64) -> VectorResult<DataVector64> {
+    ratio: f64) -> VectorResult<DataVec64> {
     unsafe {
         let function: &ComplexFrequencyResponse<f64> = &ForeignComplexConvolutionFunction { conv_function: frequency_response, conv_data: mem::transmute(frequency_response_data), is_symmetric: is_symmetric };
         convert_vec!(vector.multiply_frequency_response(function, ratio))
@@ -805,10 +805,10 @@ pub extern fn multiply_frequency_response_complex64(vector: Box<DataVector64>,
 ///
 /// `rolloff` is only used if this is a valid parameter for the selected `frequency_response`
 #[no_mangle]    
-pub extern fn multiply_frequency_response64(vector: Box<DataVector64>, 
+pub extern fn multiply_frequency_response64(vector: Box<DataVec64>, 
     frequency_response: i32,
     rolloff: f64,
-    ratio: f64) -> VectorResult<DataVector64> {
+    ratio: f64) -> VectorResult<DataVec64> {
     let function = translate_to_real_frequency_response(frequency_response, rolloff);
     convert_vec!(vector.multiply_frequency_response(function.as_ref(), ratio))
 }
@@ -817,13 +817,13 @@ pub extern fn multiply_frequency_response64(vector: Box<DataVector64>,
 /// The `impulse_response_data` pointer is passed to the `impulse_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
-pub extern fn interpolatef_custom64(vector: Box<DataVector64>, 
+pub extern fn interpolatef_custom64(vector: Box<DataVec64>, 
     impulse_response: extern fn(*const c_void, f64) -> f64, 
     impulse_response_data: *const c_void,
     is_symmetric: bool,
     interpolation_factor: f64,
     delay: f64,
-    len: usize) -> VectorResult<DataVector64> {
+    len: usize) -> VectorResult<DataVec64> {
     unsafe {
         let function: &RealImpulseResponse<f64> = &ForeignRealConvolutionFunction { conv_function: impulse_response, conv_data: mem::transmute(impulse_response_data), is_symmetric: is_symmetric };
         convert_vec!(vector.interpolatef(function, interpolation_factor, delay, len))
@@ -837,12 +837,12 @@ pub extern fn interpolatef_custom64(vector: Box<DataVector64>,
 ///
 /// `rolloff` is only used if this is a valid parameter for the selected `impulse_response`
 #[no_mangle]    
-pub extern fn interpolatef64(vector: Box<DataVector64>, 
+pub extern fn interpolatef64(vector: Box<DataVec64>, 
     impulse_response: i32,
     rolloff: f64,
     interpolation_factor: f64,
     delay: f64,
-    len: usize) -> VectorResult<DataVector64> {
+    len: usize) -> VectorResult<DataVec64> {
     let function = translate_to_real_convolution_function(impulse_response, rolloff);
     convert_vec!(vector.interpolatef(function.as_ref(), interpolation_factor, delay, len))
 }
@@ -851,11 +851,11 @@ pub extern fn interpolatef64(vector: Box<DataVector64>,
 /// The `frequency_response_data` pointer is passed to the `frequency_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
-pub extern fn interpolatei_custom64(vector: Box<DataVector64>, 
+pub extern fn interpolatei_custom64(vector: Box<DataVec64>, 
     frequency_response: extern fn(*const c_void, f64) -> f64, 
     frequency_response_data: *const c_void,
     is_symmetric: bool,
-    interpolation_factor: i32) -> VectorResult<DataVector64> {
+    interpolation_factor: i32) -> VectorResult<DataVec64> {
     unsafe {
         let function: &RealFrequencyResponse<f64> = &ForeignRealConvolutionFunction { conv_function: frequency_response, conv_data: mem::transmute(frequency_response_data), is_symmetric: is_symmetric };
         convert_vec!(vector.interpolatei(function, interpolation_factor as u32))
@@ -869,34 +869,34 @@ pub extern fn interpolatei_custom64(vector: Box<DataVector64>,
 ///
 /// `rolloff` is only used if this is a valid parameter for the selected `frequency_response`
 #[no_mangle]    
-pub extern fn interpolatei64(vector: Box<DataVector64>, 
+pub extern fn interpolatei64(vector: Box<DataVec64>, 
     frequency_response: i32,
     rolloff: f64,
-    interpolation_factor: i32) -> VectorResult<DataVector64> {
+    interpolation_factor: i32) -> VectorResult<DataVec64> {
     let function = translate_to_real_frequency_response(frequency_response, rolloff);
     convert_vec!(vector.interpolatei(function.as_ref(), interpolation_factor as u32))
 }
 
 #[no_mangle]    
-pub extern fn interpolate_lin64(vector: Box<DataVector64>, interpolation_factor: f64, delay: f64) -> VectorResult<DataVector64> {
+pub extern fn interpolate_lin64(vector: Box<DataVec64>, interpolation_factor: f64, delay: f64) -> VectorResult<DataVec64> {
     convert_vec!(vector.interpolate_lin(interpolation_factor, delay))
 }
 
 #[no_mangle]    
-pub extern fn interpolate_hermite64(vector: Box<DataVector64>, interpolation_factor: f64, delay: f64) -> VectorResult<DataVector64> {
+pub extern fn interpolate_hermite64(vector: Box<DataVec64>, interpolation_factor: f64, delay: f64) -> VectorResult<DataVec64> {
     convert_vec!(vector.interpolate_hermite(interpolation_factor, delay))
 }  
 
-pub type PreparedOp1F32 = PreparedOperation1<f64, DataVector64, DataVector64>;
+pub type PreparedOp1F32 = PreparedOperation1<f64, DataVec64, DataVec64>;
 
-pub type PreparedOp2F32 = PreparedOperation2<f64, DataVector64, DataVector64, DataVector64, DataVector64>;
+pub type PreparedOp2F32 = PreparedOperation2<f64, DataVec64, DataVec64, DataVec64, DataVec64>;
 
 /// Prepares an operation.
 /// multi_ops1 will not be made available in for interop since the same functionality 
 /// can be created with prepared ops, and internally this is what this lib does too.
 #[no_mangle]
 pub extern fn prepared_ops1_f64() -> Box<PreparedOp1F32> {
-    Box::new(prepare1::<f64, DataVector64>())
+    Box::new(prepare1::<f64, DataVec64>())
 }
 
 /// Prepares an operation.
@@ -904,7 +904,7 @@ pub extern fn prepared_ops1_f64() -> Box<PreparedOp1F32> {
 /// can be created with prepared ops, and internally this is what this lib does too.
 #[no_mangle]
 pub extern fn prepared_ops2_f64() -> Box<PreparedOp2F32> {
-    Box::new(prepare2::<f64, DataVector64, DataVector64>())
+    Box::new(prepare2::<f64, DataVec64, DataVec64>())
 }
 
 /// Prepares an operation.
@@ -912,21 +912,21 @@ pub extern fn prepared_ops2_f64() -> Box<PreparedOp2F32> {
 /// can be created with prepared ops, and internally this is what this lib does too.
 #[no_mangle]
 pub extern fn extend_prepared_ops1_f64(ops: Box<PreparedOp1F32>) -> Box<PreparedOp2F32> {
-    Box::new(ops.extend::<DataVector64>())
+    Box::new(ops.extend::<DataVec64>())
 }
 
 #[no_mangle]
 pub extern fn exec_prepared_ops1_f64(
     ops: &PreparedOp1F32,
-    v: Box<DataVector64>) -> VectorResult<DataVector64> {
+    v: Box<DataVec64>) -> VectorResult<DataVec64> {
     convert_vec!(ops.exec(*v))
 }
 
 #[no_mangle]
 pub extern fn exec_prepared_ops2_f64(
     ops: &PreparedOp2F32, 
-    v1: Box<DataVector64>, 
-    v2: Box<DataVector64>) -> BinaryVectorResult<DataVector64> {
+    v1: Box<DataVec64>, 
+    v2: Box<DataVec64>) -> BinaryVectorResult<DataVec64> {
     convert_bin_vec!(ops.exec(*v1, *v2))
 }
 
@@ -954,14 +954,14 @@ pub extern fn to_complex_ops1_f64(ops: &mut PreparedOp1F32, arg: usize) {
 }
 
 #[no_mangle]
-pub extern fn map_inplace_real64(vector: Box<DataVector64>, map: extern fn(f64, usize) -> f64) -> VectorResult<DataVector64> {
+pub extern fn map_inplace_real64(vector: Box<DataVec64>, map: extern fn(f64, usize) -> f64) -> VectorResult<DataVec64> {
     convert_vec!(vector.map_inplace_real((), move|v, i, _|map(v, i)))
 }
 
 /// Warning: This function interface heavily works around the Rust type system and the safety
 /// it provides. Use with great care!
 #[no_mangle]
-pub extern fn map_aggregate_real64(vector: &DataVector64, map: extern fn(f64, usize) -> *const c_void, aggregate: extern fn(*const c_void, *const c_void) -> *const c_void) -> ScalarResult<*const c_void> {
+pub extern fn map_aggregate_real64(vector: &DataVec64, map: extern fn(f64, usize) -> *const c_void, aggregate: extern fn(*const c_void, *const c_void) -> *const c_void) -> ScalarResult<*const c_void> {
     unsafe 
     {
         let result = convert_scalar!(
