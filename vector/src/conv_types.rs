@@ -15,7 +15,7 @@ use vector_types::{
     ComplexFreqVector
 };
 use vector_types::definitions::{
-    DataVector,
+    DataVec,
     RealVectorOps,
     ComplexVectorOps
 };

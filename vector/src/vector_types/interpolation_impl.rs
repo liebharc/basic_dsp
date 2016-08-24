@@ -1,13 +1,13 @@
 use super::definitions::{
-    DataVector,
+    DataVec,
     TransRes};
 use RealNumber;
 use conv_types::{
     RealImpulseResponse,
     RealFrequencyResponse};
 use super::{
-    GenericDataVector,
-    DataVectorDomain,
+    GenericDataVec,
+    DataVecDomain,
     RealVectorOps,
     ComplexVectorOps,
     GenericVectorOps,
@@ -30,7 +30,7 @@ use std::fmt::{Display, Debug};
 /// # Unstable
 /// This functionality has been recently added in order to find out if the definitions are consistent.
 /// However the actual implementation is lacking tests.
-pub trait Interpolation<T> : DataVector<T> 
+pub trait Interpolation<T> : DataVec<T> 
     where T : RealNumber {
     /// Interpolates `self` with the convolution function `function` by the real value `interpolation_factor`.
     /// Interpolation is done in time domain and the argument `conv_len` can be used to balance accuracy 
@@ -65,7 +65,7 @@ pub trait Interpolation<T> : DataVector<T>
 /// Provides interpolation operations which are only applicable for real data vectors.
 /// # Failures
 /// All operations in this trait fail with `VectorMustBeReal` if the vector isn't in the real number space.
-pub trait RealInterpolation<T> : DataVector<T>
+pub trait RealInterpolation<T> : DataVec<T>
     where T: RealNumber {
     
     /// Piecewise cubic hermite interpolation between samples.
@@ -83,7 +83,7 @@ pub trait RealInterpolation<T> : DataVector<T>
 macro_rules! define_interpolation_impl {
     ($($data_type:ident,$reg:ident);*) => {
         $( 
-            impl GenericDataVector<$data_type> {
+            impl GenericDataVec<$data_type> {
                 fn interpolate_priv_scalar<T>(
                     temp: &mut [T], data: &[T], 
                     function: &RealImpulseResponse<$data_type>, 
@@ -111,7 +111,7 @@ macro_rules! define_interpolation_impl {
                     conv_len: usize, 
                     complex_result: bool,
                     interpolation_factor: usize,
-                    delay: $data_type) -> Vec<GenericDataVector<$data_type>> {
+                    delay: $data_type) -> Vec<GenericDataVec<$data_type>> {
                     let mut result = Vec::with_capacity(interpolation_factor);
                     for shift in 0..interpolation_factor {
                         let offset = shift as $data_type / interpolation_factor as $data_type;
@@ -131,12 +131,12 @@ macro_rules! define_interpolation_impl {
                     conv_len: usize, 
                     complex_result: bool,
                     offset: $data_type,
-                    delay: $data_type) -> GenericDataVector<$data_type> {
+                    delay: $data_type) -> GenericDataVec<$data_type> {
                     let step = if complex_result { 2 } else { 1 };
                     let data_len = step * (2 * conv_len + 1);
-                    let mut imp_resp = GenericDataVector::<$data_type>::new(
+                    let mut imp_resp = GenericDataVec::<$data_type>::new(
                         complex_result,
-                        DataVectorDomain::Time,
+                        DataVecDomain::Time,
                         0.0, 
                         data_len,
                         1.0);
@@ -253,7 +253,7 @@ macro_rules! define_interpolation_impl {
                     interpolation_factor: usize, 
                     conv_len: usize,
                     data: &[T],
-                    vectors: &Vec<GenericDataVector<$data_type>>) -> T
+                    vectors: &Vec<GenericDataVec<$data_type>>) -> T
                         where 
                             T: Zero + Clone + From<$data_type> + Copy + Add<Output=T> + Mul<Output=T> {
                     let rounded = i / interpolation_factor;
@@ -270,7 +270,7 @@ macro_rules! define_interpolation_impl {
                 }
             }
             
-            impl Interpolation<$data_type> for GenericDataVector<$data_type> {
+            impl Interpolation<$data_type> for GenericDataVec<$data_type> {
                 fn interpolatef(mut self, function: &RealImpulseResponse<$data_type>, interpolation_factor: $data_type, delay: $data_type, conv_len: usize) -> TransRes<Self> {
                     {
                         let delay = delay / self.delta;
@@ -398,7 +398,7 @@ macro_rules! define_interpolation_impl {
                 }
             }
             
-            impl RealInterpolation<$data_type> for GenericDataVector<$data_type> {
+            impl RealInterpolation<$data_type> for GenericDataVec<$data_type> {
                 fn interpolate_lin(mut self, interpolation_factor: $data_type, delay: $data_type) -> TransRes<Self> {
                     {
                         assert_real!(self);

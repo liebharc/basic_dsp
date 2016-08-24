@@ -1,8 +1,8 @@
 use super::definitions::{
-    DataVector,
+    DataVec,
     TransRes,
     ErrorReason,
-    DataVectorDomain};
+    DataVecDomain};
 use conv_types::*;
 use RealNumber;
 use num::traits::Zero;
@@ -11,7 +11,7 @@ use std::fmt::Display;
 use num::complex::Complex;
 use simd_extensions::*;
 use super::{
-    GenericDataVector,
+    GenericDataVec,
     RealFreqVector,
     RealTimeVector,
     ComplexFreqVector,
@@ -19,7 +19,7 @@ use super::{
     round_len};
 
 /// Provides a convolution operation for data vectors. 
-pub trait Convolution<T, C> : DataVector<T> 
+pub trait Convolution<T, C> : DataVec<T> 
     where T : RealNumber {
     /// Convolves `self` with the convolution function `impulse_response`. For performance consider to 
     /// to use `FrequencyMultiplication` instead of this operation depending on `len`.
@@ -35,7 +35,7 @@ pub trait Convolution<T, C> : DataVector<T>
 }
 
 /// Provides a convolution operation for data vectors with data vectors.
-pub trait VectorConvolution<T> : DataVector<T> 
+pub trait VectorConvolution<T> : DataVec<T> 
     where T : RealNumber {
     /// Convolves `self` with the convolution function `impulse_response`. For performance it's recommended 
     /// to use multiply both vectors in frequency domain instead of this operation.
@@ -49,7 +49,7 @@ pub trait VectorConvolution<T> : DataVector<T>
 }
 
 /// Provides a frequency response multiplication operation for data vectors.
-pub trait FrequencyMultiplication<T, C> : DataVector<T> 
+pub trait FrequencyMultiplication<T, C> : DataVec<T> 
     where T : RealNumber {
     /// Multiplies `self` with the frequency response function `frequency_response`.
     /// 
@@ -68,7 +68,7 @@ pub trait FrequencyMultiplication<T, C> : DataVector<T>
 macro_rules! add_conv_impl{
     ($($data_type:ident, $reg:ident);*) => {
         $(
-            impl<'a> Convolution<$data_type, &'a RealImpulseResponse<$data_type>> for GenericDataVector<$data_type> {
+            impl<'a> Convolution<$data_type, &'a RealImpulseResponse<$data_type>> for GenericDataVec<$data_type> {
                 fn convolve(self, function: &RealImpulseResponse<$data_type>, ratio: $data_type, len: usize) -> TransRes<Self> {
                     assert_time!(self);
                     if !self.is_complex {
@@ -124,7 +124,7 @@ macro_rules! add_conv_impl{
                 }
             }
 
-            impl<'a> Convolution<$data_type, &'a ComplexImpulseResponse<$data_type>> for GenericDataVector<$data_type> {
+            impl<'a> Convolution<$data_type, &'a ComplexImpulseResponse<$data_type>> for GenericDataVec<$data_type> {
                 fn convolve(self, function: &ComplexImpulseResponse<$data_type>, ratio: $data_type, len: usize) -> TransRes<Self> {
                     assert_complex!(self);
                     assert_time!(self);
@@ -156,7 +156,7 @@ macro_rules! add_conv_impl{
                 }
             }
             
-            impl GenericDataVector<$data_type> {
+            impl GenericDataVec<$data_type> {
                 fn convolve_function_priv<T,C,CMut,F>(
                     mut self, 
                     ratio: $data_type,
@@ -200,7 +200,7 @@ macro_rules! add_conv_impl{
                 }
             }
 
-            impl<'a> FrequencyMultiplication<$data_type, &'a ComplexFrequencyResponse<$data_type>> for GenericDataVector<$data_type> {
+            impl<'a> FrequencyMultiplication<$data_type, &'a ComplexFrequencyResponse<$data_type>> for GenericDataVec<$data_type> {
                 fn multiply_frequency_response(self, function: &ComplexFrequencyResponse<$data_type>, ratio: $data_type) -> TransRes<Self> {
                     assert_complex!(self);
                     assert_freq!(self);
@@ -213,7 +213,7 @@ macro_rules! add_conv_impl{
                 }
             }
             
-            impl<'a> FrequencyMultiplication<$data_type, &'a RealFrequencyResponse<$data_type>> for GenericDataVector<$data_type> {
+            impl<'a> FrequencyMultiplication<$data_type, &'a RealFrequencyResponse<$data_type>> for GenericDataVec<$data_type> {
                 fn multiply_frequency_response(self, function: &RealFrequencyResponse<$data_type>, ratio: $data_type) -> TransRes<Self> {
                     assert_freq!(self);
                     if self.is_complex {
@@ -235,7 +235,7 @@ macro_rules! add_conv_impl{
                 }
             }
             
-            impl VectorConvolution<$data_type> for GenericDataVector<$data_type> {
+            impl VectorConvolution<$data_type> for GenericDataVec<$data_type> {
                 fn convolve_vector(self, vector: &Self) -> TransRes<Self> {
                     assert_meta_data!(self, vector);
                     assert_time!(self);
@@ -254,7 +254,7 @@ macro_rules! add_conv_impl{
                 }
             }
             
-            impl GenericDataVector<$data_type> {
+            impl GenericDataVec<$data_type> {
                 fn convolve_vector_scalar(mut self, vector: &Self) -> TransRes<Self> {
                     let points = self.points();
                     let other_points = vector.points();

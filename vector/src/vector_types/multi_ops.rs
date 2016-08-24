@@ -4,7 +4,7 @@ use std::ops::Range;
 use super::super::RealNumber;
 use super::{
     round_len,
-    DataVector,
+    DataVec,
     TransRes,
     ErrorReason,
     RealTimeVector,
@@ -13,7 +13,7 @@ use super::{
     ComplexFreqVector,
     RealVectorOps,
     ComplexVectorOps,
-    GenericDataVector,
+    GenericDataVec,
     RededicateVector};  
 use super::operations_enum::{
     Operation,
@@ -41,7 +41,7 @@ pub trait ToIdentifier<T>
 pub trait Identifier<T> : Sized
     where T: RealNumber 
 {
-    type Vector: DataVector<T> + ToIdentifier<T>;
+    type Vector: DataVec<T> + ToIdentifier<T>;
     fn get_arg(&self) -> usize;
     fn get_ops(self) -> Vec<(u64, Operation<T>)>;
     fn new(arg: usize, counter: Arc<Mutex<u64>>) -> Self;
@@ -285,7 +285,7 @@ macro_rules! create_identfier {
 }
 
 create_identfier!(
-    GenericDataVector, GenericDataIdentifier; 
+    GenericDataVec, GenericDataIdentifier; 
     RealTimeVector, RealTimeIdentifier; 
     ComplexTimeVector, ComplexTimeIdentifier; 
     RealFreqVector, RealFreqIdentifier; 
@@ -328,8 +328,8 @@ pub struct PreparedOperation2<T, TI1, TI2, TO1, TO2>
 pub struct MultiOperation1<T, TO> 
     where T: RealNumber,
         TO: ToIdentifier<T> {
-    a: GenericDataVector<T>,
-    prepared_ops: PreparedOperation1<T, GenericDataVector<T>, TO>
+    a: GenericDataVec<T>,
+    prepared_ops: PreparedOperation1<T, GenericDataVec<T>, TO>
 }
 
 /// A multi operation which holds two vectors and records all changes
@@ -339,9 +339,9 @@ pub struct MultiOperation2<T, TO1, TO2>
     where T: RealNumber,
         TO1: ToIdentifier<T>, 
         TO2: ToIdentifier<T> {
-    a: GenericDataVector<T>,
-    b: GenericDataVector<T>,
-    prepared_ops: PreparedOperation2<T, GenericDataVector<T>, GenericDataVector<T>, TO1, TO2>
+    a: GenericDataVec<T>,
+    b: GenericDataVec<T>,
+    prepared_ops: PreparedOperation2<T, GenericDataVec<T>, GenericDataVec<T>, TO1, TO2>
 }
 
 macro_rules! add_complex_multi_ops_impl {
@@ -647,10 +647,10 @@ macro_rules! add_multi_ops_impl {
         /// An operation which can be prepared in advance and operates on two
         /// inputs and produces two outputs
         impl<TI1, TI2, TO1, TO2> PreparedOperation2<$data_type, TI1, TI2, TO1, TO2>
-            where TI1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
-            TI2: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
-            TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
-            TO2: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>
+            where TI1: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>>, 
+            TI2: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>>, 
+            TO1: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>>, 
+            TO2: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>>
         {
             /// Adds new operations which will be executed with the next call to `exec`
             /// 
@@ -702,14 +702,14 @@ macro_rules! add_multi_ops_impl {
                 // the rededicate trait since in contrast to the to_gen method it 
                 // can be used in a generic context.
                 
-                let a: GenericDataVector<$data_type> = a.rededicate();
-                let b: GenericDataVector<$data_type> = b.rededicate();
+                let a: GenericDataVec<$data_type> = a.rededicate();
+                let b: GenericDataVec<$data_type> = b.rededicate();
                 let mut vec = Vec::new();
                 vec.push(a);
                 vec.push(b);
                 
                 // at this point we would execute all ops and cast the result to the right types
-                let result = GenericDataVector::<$data_type>::perform_operations(vec, &self.ops);
+                let result = GenericDataVec::<$data_type>::perform_operations(vec, &self.ops);
                 
                 if result.is_err() {
                     let err = result.unwrap_err();
@@ -739,8 +739,8 @@ macro_rules! add_multi_ops_impl {
         /// An operation which can be prepared in advance and operates on one
         /// input and produces one output
         impl<TI1, TO1> PreparedOperation1<$data_type, TI1, TO1>
-            where TI1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>,
-                  TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>> {
+            where TI1: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>>,
+                  TO1: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>> {
                
             /// Extends the operation to operate on one more vector.
             pub fn extend<TI2>(self) 
@@ -793,13 +793,13 @@ macro_rules! add_multi_ops_impl {
                 // the rededicate trait since in contrast to the to_gen method it 
                 // can be used in a generic context.
                                    
-                let a: GenericDataVector<$data_type> = a.rededicate();
+                let a: GenericDataVec<$data_type> = a.rededicate();
                 
                 let mut vec = Vec::new();
                 vec.push(a);
                 
                 // at this point we would execute all ops and cast the result to the right types
-                let result = GenericDataVector::<$data_type>::perform_operations(vec, &self.ops);
+                let result = GenericDataVec::<$data_type>::perform_operations(vec, &self.ops);
                 
                 if result.is_err() {
                     let err = result.unwrap_err();
@@ -835,8 +835,8 @@ macro_rules! add_multi_ops_impl {
         /// vectors. A call to `get` then runs all recorded operations on the vectors
         /// and returns them. See the modules description for why this can be beneficial.
         impl<TO1, TO2>  MultiOperation2<$data_type, TO1, TO2> 
-            where TO1: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>, 
-                  TO2: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>> {
+            where TO1: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>>, 
+                  TO2: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>> {
             /// Executes all recorded operations on the stored vector.
             pub fn get(self) -> result::Result<(TO1, TO2), (ErrorReason, TO1, TO2)> {
                 self.prepared_ops.exec(self.a, self.b)
@@ -863,7 +863,7 @@ macro_rules! add_multi_ops_impl {
         /// vector. A call to `get` then runs all recorded operations on the vector
         /// and returns it. See the modules description for why this can be beneficial.
         impl<TO>  MultiOperation1<$data_type, TO> 
-            where TO: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>> {
+            where TO: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>> {
             
             /// Executes all recorded operations on the stored vectors.
             pub fn get(self) -> result::Result<(TO), (ErrorReason, TO)> {
@@ -889,8 +889,8 @@ macro_rules! add_multi_ops_impl {
             /// Extends the operation to operate on one more vector.
             pub fn extend<TI2>(self, vector: TI2) 
                 -> MultiOperation2<$data_type, TO, TI2>
-                where TI2: ToIdentifier<$data_type> + DataVector<$data_type> + RededicateVector<GenericDataVector<$data_type>>  {
-                let ops: PreparedOperation2<$data_type, GenericDataVector<$data_type>, GenericDataVector<$data_type>, TO, TI2> =           
+                where TI2: ToIdentifier<$data_type> + DataVec<$data_type> + RededicateVector<GenericDataVec<$data_type>>  {
+                let ops: PreparedOperation2<$data_type, GenericDataVec<$data_type>, GenericDataVec<$data_type>, TO, TI2> =           
                      PreparedOperation2 
                      { 
                         a: PhantomData,
@@ -900,13 +900,13 @@ macro_rules! add_multi_ops_impl {
                         ops: self.prepared_ops.ops, 
                         swap: false
                      };
-                let a: GenericDataVector<$data_type> = self.a;
-                let b: GenericDataVector<$data_type> = vector.rededicate();
+                let a: GenericDataVec<$data_type> = self.a;
+                let b: GenericDataVec<$data_type> = vector.rededicate();
                 MultiOperation2 { a: a, b: b, prepared_ops: ops }
             }
         }
         
-        impl GenericDataVector<$data_type> {
+        impl GenericDataVec<$data_type> {
             fn perform_operations(mut vectors: Vec<Self>, operations: &[Operation<$data_type>])
                 -> TransRes<Vec<Self>>
             {
@@ -1180,7 +1180,7 @@ add_multi_ops_impl!(f64, Reg64);
 
 impl<T> PreparedOperation1<
     T, 
-    GenericDataVector<T>, GenericDataVector<T>>
+    GenericDataVec<T>, GenericDataVec<T>>
             where T: RealNumber
 {
     /// Allows to directly push an `Operation` enum to a `PreparedOperation1`.
@@ -1192,8 +1192,8 @@ impl<T> PreparedOperation1<
 
 impl<T> PreparedOperation2<
     T, 
-    GenericDataVector<T>, GenericDataVector<T>, 
-    GenericDataVector<T>, GenericDataVector<T>>
+    GenericDataVec<T>, GenericDataVec<T>, 
+    GenericDataVec<T>, GenericDataVec<T>>
             where T: RealNumber
 {
     /// Allows to directly push an `Operation` enum to a `PreparedOperation2`.
@@ -1205,7 +1205,7 @@ impl<T> PreparedOperation2<
 
 impl<T> MultiOperation2<
     T, 
-    GenericDataVector<T>, GenericDataVector<T>>
+    GenericDataVec<T>, GenericDataVec<T>>
             where T: RealNumber
 {
     /// Allows to directly push an `Operation` enum to a `MultiOperation2`.
@@ -1217,7 +1217,7 @@ impl<T> MultiOperation2<
 
 impl<T> MultiOperation1<
     T, 
-    GenericDataVector<T>>
+    GenericDataVec<T>>
             where T: RealNumber
 {
     /// Allows to directly push an `Operation` enum to a `MultiOperation1`.
@@ -1264,15 +1264,15 @@ pub fn multi_ops1<T, A>(a: A)
     -> MultiOperation1<T, A>
     where 
         T: RealNumber,
-        A: ToIdentifier<T> + DataVector<T> + RededicateVector<GenericDataVector<T>> {
-    let ops: PreparedOperation1<T, GenericDataVector<T>, A> =           
+        A: ToIdentifier<T> + DataVec<T> + RededicateVector<GenericDataVec<T>> {
+    let ops: PreparedOperation1<T, GenericDataVec<T>, A> =           
          PreparedOperation1 
          { 
             a: PhantomData,
             b: PhantomData, 
             ops: Vec::new()
          };
-    let a: GenericDataVector<T> = a.rededicate();
+    let a: GenericDataVec<T> = a.rededicate();
     MultiOperation1 { a: a, prepared_ops: ops }
 }
 
@@ -1282,9 +1282,9 @@ pub fn multi_ops2<T, A, B>(a: A, b: B)
     -> MultiOperation2<T, A, B>
     where 
         T: RealNumber,
-        A: ToIdentifier<T> + DataVector<T> + RededicateVector<GenericDataVector<T>>, 
-        B: ToIdentifier<T> + DataVector<T> + RededicateVector<GenericDataVector<T>> {
-    let ops: PreparedOperation2<T, GenericDataVector<T>, GenericDataVector<T>, A, B> =           
+        A: ToIdentifier<T> + DataVec<T> + RededicateVector<GenericDataVec<T>>, 
+        B: ToIdentifier<T> + DataVec<T> + RededicateVector<GenericDataVec<T>> {
+    let ops: PreparedOperation2<T, GenericDataVec<T>, GenericDataVec<T>, A, B> =           
          PreparedOperation2 
          { 
             a: PhantomData,
@@ -1294,8 +1294,8 @@ pub fn multi_ops2<T, A, B>(a: A, b: B)
             ops: Vec::new(), 
             swap: false
          };
-    let a: GenericDataVector<T> = a.rededicate();
-    let b: GenericDataVector<T> = b.rededicate();
+    let a: GenericDataVec<T> = a.rededicate();
+    let b: GenericDataVec<T> = b.rededicate();
     MultiOperation2 { a: a, b: b, prepared_ops: ops }
 }
 
@@ -1392,8 +1392,8 @@ mod tests {
     fn complex_operation_on_real_vector()
     {
         let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-        let a = DataVector32::from_array(false, DataVectorDomain::Time, &array);
-        let b = DataVector32::from_array(false, DataVectorDomain::Time, &array);
+        let a = DataVec32::from_array(false, DataVecDomain::Time, &array);
+        let b = DataVec32::from_array(false, DataVecDomain::Time, &array);
         
         let ops = multi_ops2(a, b);
         let ops = ops.add_ops(|a, b| (b.magnitude(), a));

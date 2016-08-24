@@ -1,12 +1,12 @@
 use super::definitions::{
-    DataVectorDomain,
+    DataVecDomain,
     ErrorReason,
-    DataVector,
+    DataVec,
     TransRes,
     PaddingOption};
 use RealNumber;
 use super::{
-    GenericDataVector,
+    GenericDataVec,
     RealVectorOps,
     GenericVectorOps,
     ComplexVectorOps,
@@ -30,7 +30,7 @@ use super::{
 /// # Example
 ///
 /// ```
-/// use basic_dsp_vector::{ComplexTimeVector32, CrossCorrelation, DataVector};
+/// use basic_dsp_vector::{ComplexTimeVector32, CrossCorrelation, DataVec};
 /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 1.0, 2.0, 2.0, 3.0, 3.0]);
 /// let argument = ComplexTimeVector32::from_interleaved(&[3.0, 3.0, 2.0, 2.0, 1.0, 1.0]);
 /// let argument = argument.prepare_argument_padded().expect("Ignoring error handling in examples");
@@ -48,7 +48,7 @@ use super::{
 /// 
 /// 1. `VectorMustBeComplex`: if `self` is in real number space.
 /// 3. `VectorMetaDataMustAgree`: in case `self` and `function` are not in the same number space and same domain.
-pub trait CrossCorrelation<T> : DataVector<T> 
+pub trait CrossCorrelation<T> : DataVec<T> 
     where T : RealNumber {
     type FreqPartner;
     /// Prepares an argument to be used for convolution. Preparing an argument includes two steps:
@@ -70,7 +70,7 @@ pub trait CrossCorrelation<T> : DataVector<T>
 macro_rules! define_correlation_impl {
     ($($data_type:ident,$reg:ident);*) => {
         $( 
-            impl CrossCorrelation<$data_type> for GenericDataVector<$data_type> {
+            impl CrossCorrelation<$data_type> for GenericDataVec<$data_type> {
                 type FreqPartner = Self;
                 
                 fn prepare_argument(self) -> TransRes<Self::FreqPartner> {

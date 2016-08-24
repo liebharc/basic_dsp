@@ -16,7 +16,7 @@ macro_rules! define_vector_struct {
         /// The first two flavors define meta information about the vector and provide compile time information what
         /// operations are available with the given vector and how this will transform the vector. This makes sure that
         /// some invalid operations are already discovered at compile time. In case that this isn't desired or the information
-        /// about the vector isn't known at compile time there are the generic [`DataVector32`](type.DataVector32.html) and [`DataVector64`](type.DataVector64.html) vectors
+        /// about the vector isn't known at compile time there are the generic [`DataVec32`](type.DataVec32.html) and [`DataVec64`](type.DataVec64.html) vectors
         /// available.
         ///
         /// 32bit and 64bit flavors trade performance and memory consumption against accuracy. 32bit vectors are roughly
@@ -29,7 +29,7 @@ macro_rules! define_vector_struct {
             data: Vec<T>,
             temp: Vec<T>,
             delta: T,
-            domain: DataVectorDomain,
+            domain: DataVecDomain,
             is_complex: bool,
             valid_len: usize,
             multicore_settings: MultiCoreSettings 
@@ -37,7 +37,7 @@ macro_rules! define_vector_struct {
             // - A view for complex data types with transmute
         }
         
-        impl<T> DataVector<T> for $name<T>
+        impl<T> DataVec<T> for $name<T>
             where T: RealNumber
         {
             fn len(&self) -> usize 
@@ -78,7 +78,7 @@ macro_rules! define_vector_struct {
                 self.delta
             }
             
-            fn domain(&self) -> DataVectorDomain
+            fn domain(&self) -> DataVecDomain
             {
                 self.domain
             }
@@ -242,7 +242,7 @@ macro_rules! define_vector_struct_type_alias {
 }
 
 macro_rules! define_real_basic_struct_members {
-    (impl $name:ident, DataVectorDomain::$domain:ident)
+    (impl $name:ident, DataVecDomain::$domain:ident)
      =>
      {
         impl<T> $name<T> 
@@ -262,7 +262,7 @@ macro_rules! define_real_basic_struct_members {
                   data: data, 
                   temp: vec![T::zero(); temp_length],
                   delta: T::one(),
-                  domain: DataVectorDomain::$domain,
+                  domain: DataVecDomain::$domain,
                   is_complex: false,
                   valid_len: data_length,
                   multicore_settings: options
@@ -295,7 +295,7 @@ macro_rules! define_real_basic_struct_members {
                   data: rounded_copy, 
                   temp: vec![T::zero(); temp_length],
                   delta: delta,
-                  domain: DataVectorDomain::$domain,
+                  domain: DataVecDomain::$domain,
                   is_complex: false,
                   valid_len: data.len(),
                   multicore_settings: options
@@ -309,7 +309,7 @@ macro_rules! define_real_basic_struct_members {
                   data: vec![T::zero(); 0], 
                   temp: vec![T::zero(); 0],
                   delta: T::one(),
-                  domain: DataVectorDomain::$domain,
+                  domain: DataVecDomain::$domain,
                   is_complex: false,
                   valid_len: 0,
                   multicore_settings: options
@@ -323,7 +323,7 @@ macro_rules! define_real_basic_struct_members {
                   data: vec![T::zero(); 0], 
                   temp: vec![T::zero(); 0],
                   delta: delta,
-                  domain: DataVectorDomain::$domain,
+                  domain: DataVecDomain::$domain,
                   is_complex: false,
                   valid_len: 0,
                   multicore_settings: options
@@ -349,14 +349,14 @@ macro_rules! define_real_basic_struct_members {
                   data: vec![constant; data_length],
                   temp: vec![T::zero(); temp_length],
                   delta: delta,
-                  domain: DataVectorDomain::$domain,
+                  domain: DataVecDomain::$domain,
                   is_complex: false,
                   valid_len: length,
                   multicore_settings: options
                 }
             }
             
-            /// Creates a real `DataVector` by consuming a `Vec`. 
+            /// Creates a real `DataVec` by consuming a `Vec`. 
             ///
             /// This operation is more memory efficient than the other options to create a vector,
             /// however if used outside of Rust then it holds the risk that the user will access 
@@ -366,37 +366,37 @@ macro_rules! define_real_basic_struct_members {
                 Self::from_array_no_copy_with_options(data, MultiCoreSettings::default())
             }
         
-            /// Creates a real `DataVector` from an array or sequence. `delta` is defaulted to `1`.
+            /// Creates a real `DataVec` from an array or sequence. `delta` is defaulted to `1`.
             pub fn from_array(data: &[T]) -> Self
             {
                 Self::from_array_with_delta_and_options(data, T::one(), MultiCoreSettings::default())
             }
             
-            /// Creates a real `DataVector` from an array or sequence and sets `delta` to the given value.
+            /// Creates a real `DataVec` from an array or sequence and sets `delta` to the given value.
             pub fn from_array_with_delta(data: &[T], delta: T) -> Self
             {
                 Self::from_array_with_delta_and_options(data, delta, MultiCoreSettings::default())
             }
             
-            /// Creates a real and empty `DataVector` and sets `delta` to 1.0 value.
+            /// Creates a real and empty `DataVec` and sets `delta` to 1.0 value.
             pub fn empty() -> Self
             {
                 Self::empty_with_options(MultiCoreSettings::default())
             }
             
-            /// Creates a real and empty `DataVector` and sets `delta` to the given value.
+            /// Creates a real and empty `DataVec` and sets `delta` to the given value.
             pub fn empty_with_delta(delta: T) -> Self
             {
                 Self::empty_with_delta_and_options(delta, MultiCoreSettings::default())
             }
             
-            /// Creates a real `DataVector` with `length` elements all set to the value of `constant`. `delta` is defaulted to `1`.
+            /// Creates a real `DataVec` with `length` elements all set to the value of `constant`. `delta` is defaulted to `1`.
             pub fn from_constant(constant: T, length: usize) -> Self
             {
                 Self::from_constant_with_options(constant, length, MultiCoreSettings::default())
             }
             
-            /// Creates a real `DataVector` with `length` elements all set to the value of `constant` and sets `delta` to the given value.
+            /// Creates a real `DataVec` with `length` elements all set to the value of `constant` and sets `delta` to the given value.
             pub fn from_constant_with_delta(constant: T, length: usize, delta: T) -> Self
             {
                 Self::from_constant_with_delta_and_options(constant, length, delta, MultiCoreSettings::default())
@@ -406,7 +406,7 @@ macro_rules! define_real_basic_struct_members {
 }
 
 macro_rules! define_complex_basic_struct_members {
-    (impl $name:ident, DataVectorDomain::$domain:ident)
+    (impl $name:ident, DataVecDomain::$domain:ident)
      =>
      {
         impl<T> $name<T>
@@ -426,7 +426,7 @@ macro_rules! define_complex_basic_struct_members {
                   data: data,
                   temp: vec![T::zero(); temp_length],
                   delta: T::one(),
-                  domain: DataVectorDomain::$domain,
+                  domain: DataVecDomain::$domain,
                   is_complex: true,
                   valid_len: data_length,
                   multicore_settings: options
@@ -459,7 +459,7 @@ macro_rules! define_complex_basic_struct_members {
                   data: rounded_copy, 
                   temp: vec![T::zero(); temp_length],
                   delta: delta,
-                  domain: DataVectorDomain::$domain,
+                  domain: DataVecDomain::$domain,
                   is_complex: true,
                   valid_len: data.len(),
                   multicore_settings: options
@@ -473,7 +473,7 @@ macro_rules! define_complex_basic_struct_members {
                   data: vec![T::zero(); 0], 
                   temp: vec![T::zero(); 0],
                   delta: T::one(),
-                  domain: DataVectorDomain::$domain,
+                  domain: DataVecDomain::$domain,
                   is_complex: true,
                   valid_len: 0,
                   multicore_settings: options
@@ -487,7 +487,7 @@ macro_rules! define_complex_basic_struct_members {
                   data: vec![T::zero(); 0], 
                   temp: vec![T::zero(); 0],
                   delta: delta,
-                  domain: DataVectorDomain::$domain,
+                  domain: DataVecDomain::$domain,
                   is_complex: true,
                   valid_len: 0,
                   multicore_settings: options
@@ -520,7 +520,7 @@ macro_rules! define_complex_basic_struct_members {
                   data: data,
                   temp: vec![T::zero(); temp_length],
                   delta: delta,
-                  domain: DataVectorDomain::$domain,
+                  domain: DataVecDomain::$domain,
                   is_complex: true,
                   valid_len: 2 * length,
                   multicore_settings: options
@@ -559,7 +559,7 @@ macro_rules! define_complex_basic_struct_members {
                   data: data, 
                   temp: vec![T::zero(); temp_length],
                   delta: delta,
-                  domain: DataVectorDomain::$domain,
+                  domain: DataVecDomain::$domain,
                   is_complex: true,
                   valid_len: data_length,
                   multicore_settings: options
@@ -599,14 +599,14 @@ macro_rules! define_complex_basic_struct_members {
                   data: data, 
                   temp: vec![T::zero(); temp_length],
                   delta: delta,
-                  domain: DataVectorDomain::$domain,
+                  domain: DataVecDomain::$domain,
                   is_complex: true,
                   valid_len: data_length,
                   multicore_settings: options
                 }
             }
             
-            /// Creates a complex `DataVector` by consuming a `Vec`. Data is in interleaved format: `i0, q0, i1, q1, ...`. 
+            /// Creates a complex `DataVec` by consuming a `Vec`. Data is in interleaved format: `i0, q0, i1, q1, ...`. 
             ///
             /// This operation is more memory efficient than the other options to create a vector,
             /// however if used outside of Rust then it holds the risk that the user will access 
@@ -616,43 +616,43 @@ macro_rules! define_complex_basic_struct_members {
                 Self::from_interleaved_no_copy_with_options(data, MultiCoreSettings::default())
             }
             
-            /// Creates a complex `DataVector` from an array or sequence. Data is in interleaved format: `i0, q0, i1, q1, ...`. `delta` is defaulted to `1`.
+            /// Creates a complex `DataVec` from an array or sequence. Data is in interleaved format: `i0, q0, i1, q1, ...`. `delta` is defaulted to `1`.
             pub fn from_interleaved(data: &[T]) -> Self
             {
                 Self::from_interleaved_with_options(data, MultiCoreSettings::default())
             }
             
-            /// Creates a complex `DataVector` from an array or sequence. Data is in interleaved format: `i0, q0, i1, q1, ...`. `delta` is set to the given value.
+            /// Creates a complex `DataVec` from an array or sequence. Data is in interleaved format: `i0, q0, i1, q1, ...`. `delta` is set to the given value.
             pub fn from_interleaved_with_delta(data: &[T], delta: T) -> Self
             {
                 Self::from_interleaved_with_delta_and_options(data, delta, MultiCoreSettings::default())
             }
             
-            /// Creates a complex and empty `DataVector` and sets `delta` to 1.0 value.
+            /// Creates a complex and empty `DataVec` and sets `delta` to 1.0 value.
             pub fn empty() -> Self
             {
                 Self::empty_with_options(MultiCoreSettings::default())
             }
             
-            /// Creates a complex and empty `DataVector` and sets `delta` to the given value.
+            /// Creates a complex and empty `DataVec` and sets `delta` to the given value.
             pub fn empty_with_delta(delta: T) -> Self
             {
                 Self::empty_with_delta_and_options(delta, MultiCoreSettings::default())
             }
             
-            /// Creates a complex `DataVector` with `length` elements all set to the value of `constant`. `delta` is defaulted to `1`.
+            /// Creates a complex `DataVec` with `length` elements all set to the value of `constant`. `delta` is defaulted to `1`.
             pub fn from_constant(constant: Complex<T>, length: usize) -> Self
             {
                 Self::from_constant_with_options(constant, length, MultiCoreSettings::default())
             }
             
-            /// Creates a complex `DataVector` with `length` elements all set to the value of `constant` and sets `delta` to the given value.
+            /// Creates a complex `DataVec` with `length` elements all set to the value of `constant` and sets `delta` to the given value.
             pub fn from_constant_with_delta(constant: Complex<T>, length: usize, delta: T) -> Self
             {
                 Self::from_constant_with_delta_and_options(constant, length, delta, MultiCoreSettings::default())
             }
             
-            /// Creates a complex  `DataVector` from an array with real and an array imaginary data. `delta` is set to 1.
+            /// Creates a complex  `DataVec` from an array with real and an array imaginary data. `delta` is set to 1.
             ///
             /// Arrays must have the same length.
             pub fn from_real_imag(real: &[T], imag: &[T])
@@ -661,7 +661,7 @@ macro_rules! define_complex_basic_struct_members {
                 Self::from_real_imag_with_options(real, imag, MultiCoreSettings::default())
             }
             
-            /// Creates a complex  `DataVector` from an array with real and an array imaginary data. `delta` is set to the given value.
+            /// Creates a complex  `DataVec` from an array with real and an array imaginary data. `delta` is set to the given value.
             ///
             /// Arrays must have the same length.
             pub fn from_real_imag_with_delta(real: &[T], imag: &[T], delta: T)
@@ -670,7 +670,7 @@ macro_rules! define_complex_basic_struct_members {
                 Self::from_real_imag_with_delta_and_options(real, imag, delta, MultiCoreSettings::default())
             }
             
-            /// Creates a complex  `DataVector` from an array with magnitude and an array with phase data. `delta` is set to 1.
+            /// Creates a complex  `DataVec` from an array with magnitude and an array with phase data. `delta` is set to 1.
             ///
             /// Arrays must have the same length. Phase must be in [rad].
             pub fn from_mag_phase(magnitude: &[T], phase: &[T])
@@ -679,7 +679,7 @@ macro_rules! define_complex_basic_struct_members {
                 Self::from_mag_phase_with_options(magnitude, phase, MultiCoreSettings::default())
             }
             
-            /// Creates a complex  `DataVector` from an array with magnitude and an array with phase data. `delta` is set to the given value.
+            /// Creates a complex  `DataVec` from an array with magnitude and an array with phase data. `delta` is set to the given value.
             ///
             /// Arrays must have the same length. Phase must be in [rad].
             pub fn from_mag_phase_with_delta(magnitude: &[T], phase: &[T], delta: T)
@@ -688,17 +688,17 @@ macro_rules! define_complex_basic_struct_members {
                 Self::from_mag_phase_with_delta_and_options(magnitude, phase, delta, MultiCoreSettings::default())
             }
             
-            /// Creates a complex `DataVector` from an array of complex numbers. `delta` is set to 1.
+            /// Creates a complex `DataVec` from an array of complex numbers. `delta` is set to 1.
             pub fn from_complex(complex: &[Complex<T>]) -> Self {
                 Self::from_complex_with_delta(complex, T::one())
             }
             
-            /// Creates a complex `DataVector` from an array of complex numbers. `delta` is set to the given value.
+            /// Creates a complex `DataVec` from an array of complex numbers. `delta` is set to the given value.
             pub fn from_complex_with_delta(complex: &[Complex<T>], delta: T) -> Self {
                 Self::from_complex_with_delta_and_options(complex, delta, MultiCoreSettings::default())
             }
             
-            /// Creates a complex `DataVector` from an array of complex numbers.
+            /// Creates a complex `DataVec` from an array of complex numbers.
             pub fn from_complex_with_delta_and_options(complex: &[Complex<T>], delta: T, options: MultiCoreSettings) -> Self {
                 use std::slice;
                 let data = unsafe {

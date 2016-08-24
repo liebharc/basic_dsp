@@ -2,7 +2,7 @@ macro_rules! add_basic_private_impl {
     ($($data_type:ident, $reg:ident);*)
     => {
         $(
-            impl GenericDataVector<$data_type> {
+            impl GenericDataVec<$data_type> {
                 #[inline]
                 fn pure_real_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> TransRes<Self> 
                     where A: Sync + Copy + Send,
@@ -395,7 +395,7 @@ macro_rules! add_basic_private_impl {
                 
                 /// Creates shifted and reversed copies of the given data vector. 
                 /// This function is especially designed for convolutions.
-                fn create_shifted_copies(vector: &GenericDataVector<$data_type>) -> Vec<Vec<$reg>>{
+                fn create_shifted_copies(vector: &GenericDataVec<$data_type>) -> Vec<Vec<$reg>>{
                     let step = if vector.is_complex { 2 } else { 1 };
                     let number_of_shifts = $reg::len() / step;
                     let mut shifted_copies = Vec::with_capacity(number_of_shifts);

@@ -1,14 +1,14 @@
 use multicore_support::{Chunk, Complexity};
 use super::definitions::{
-    DataVector,
-    DataVectorDomain,
+    DataVec,
+    DataVecDomain,
     GenericVectorOps,
     TransRes,
     VoidResult,
     ErrorReason,
     PaddingOption};
 use super::{
-    GenericDataVector,
+    GenericDataVec,
     round_len};
 use num::complex::Complex;
 use simd_extensions::*;
@@ -378,10 +378,10 @@ macro_rules! add_general_impl {
      =>
      {     
         $(
-            impl GenericDataVector<$data_type> {
+            impl GenericDataVec<$data_type> {
                 /// Same as `new` but also allows to set multicore options.
-                pub fn new_with_options(is_complex: bool, domain: DataVectorDomain, init_value: $data_type, length: usize, delta: $data_type, options: MultiCoreSettings) -> Self {
-                    GenericDataVector
+                pub fn new_with_options(is_complex: bool, domain: DataVecDomain, init_value: $data_type, length: usize, delta: $data_type, options: MultiCoreSettings) -> Self {
+                    GenericDataVec
                      {
                         data: vec![init_value; length],
                         temp: if options.early_temp_allocation { vec![0.0; length] } else { Vec::new() },
@@ -394,9 +394,9 @@ macro_rules! add_general_impl {
                 }
                 
                 /// Same as `from_array` but also allows to set multicore options.
-                pub fn from_array_with_options(is_complex: bool, domain: DataVectorDomain, data: &[$data_type], options: MultiCoreSettings) -> Self {
+                pub fn from_array_with_options(is_complex: bool, domain: DataVecDomain, data: &[$data_type], options: MultiCoreSettings) -> Self {
                     let length = data.len();
-                    GenericDataVector
+                    GenericDataVec
                     { 
                         data: data.to_vec(),
                         temp: if options.early_temp_allocation { vec![0.0; length] } else { Vec::new() },
@@ -409,9 +409,9 @@ macro_rules! add_general_impl {
                 }
                 
                 /// Same as `from_array_no_copy` but also allows to set multicore options.
-                pub fn from_array_no_copy_with_options(is_complex: bool, domain: DataVectorDomain, data: Vec<$data_type>, options: MultiCoreSettings) -> Self {
+                pub fn from_array_no_copy_with_options(is_complex: bool, domain: DataVecDomain, data: Vec<$data_type>, options: MultiCoreSettings) -> Self {
                     let length = data.len();
-                    GenericDataVector
+                    GenericDataVec
                     { 
                         data: data,
                         temp: if options.early_temp_allocation { vec![0.0; length] } else { Vec::new() },
@@ -424,9 +424,9 @@ macro_rules! add_general_impl {
                 }
                 
                 /// Same as `from_array_with_delta` but also allows to set multicore options.
-                pub fn from_array_with_delta_and_options(is_complex: bool, domain: DataVectorDomain, data: &[$data_type], delta: $data_type, options: MultiCoreSettings) -> Self {
+                pub fn from_array_with_delta_and_options(is_complex: bool, domain: DataVecDomain, data: &[$data_type], delta: $data_type, options: MultiCoreSettings) -> Self {
                     let length = data.len();
-                    GenericDataVector
+                    GenericDataVec
                     { 
                         data: data.to_vec(),
                         temp: if options.early_temp_allocation { vec![0.0; length] } else { Vec::new() },
@@ -439,9 +439,9 @@ macro_rules! add_general_impl {
                 }
                 
                 /// Same as `from_array_no_copy_with_delta` but also allows to set multicore options.
-                pub fn from_array_no_copy_with_delta_and_options(is_complex: bool, domain: DataVectorDomain, data: Vec<$data_type>, delta: $data_type, options: MultiCoreSettings) -> Self {
+                pub fn from_array_no_copy_with_delta_and_options(is_complex: bool, domain: DataVecDomain, data: Vec<$data_type>, delta: $data_type, options: MultiCoreSettings) -> Self {
                     let length = data.len();
-                    GenericDataVector
+                    GenericDataVec
                     { 
                         data: data,
                         temp: if options.early_temp_allocation { vec![0.0; length] } else { Vec::new() },
@@ -454,32 +454,32 @@ macro_rules! add_general_impl {
                 }
                 
                 /// Creates a new generic data vector from the given arguments.
-                pub fn new(is_complex: bool, domain: DataVectorDomain, init_value: $data_type, length: usize, delta: $data_type) -> Self {
+                pub fn new(is_complex: bool, domain: DataVecDomain, init_value: $data_type, length: usize, delta: $data_type) -> Self {
                     Self::new_with_options(is_complex, domain, init_value, length, delta, MultiCoreSettings::default())
                 }
                 
                 /// Creates a new generic data vector from the given arguments.
-                pub fn from_array(is_complex: bool, domain: DataVectorDomain, data: &[$data_type]) -> Self {
+                pub fn from_array(is_complex: bool, domain: DataVecDomain, data: &[$data_type]) -> Self {
                     Self::from_array_with_options(is_complex, domain, data, MultiCoreSettings::default())
                 }
                 
                 /// Creates a new generic data vector from the given arguments.
-                pub fn from_array_no_copy(is_complex: bool, domain: DataVectorDomain, data: Vec<$data_type>) -> Self {
+                pub fn from_array_no_copy(is_complex: bool, domain: DataVecDomain, data: Vec<$data_type>) -> Self {
                     Self::from_array_no_copy_with_options(is_complex, domain, data, MultiCoreSettings::default())
                 }
                 
                 /// Creates a new generic data vector from the given arguments.
-                pub fn from_array_with_delta(is_complex: bool, domain: DataVectorDomain, data: &[$data_type], delta: $data_type) -> Self {
+                pub fn from_array_with_delta(is_complex: bool, domain: DataVecDomain, data: &[$data_type], delta: $data_type) -> Self {
                     Self::from_array_with_delta_and_options(is_complex, domain, data, delta, MultiCoreSettings::default())
                 }
                 
                 /// Creates a new generic data vector from the given arguments.
-                pub fn from_array_no_copy_with_delta(is_complex: bool, domain: DataVectorDomain, data: Vec<$data_type>, delta: $data_type) -> Self {
+                pub fn from_array_no_copy_with_delta(is_complex: bool, domain: DataVecDomain, data: Vec<$data_type>, delta: $data_type) -> Self {
                     Self::from_array_no_copy_with_delta_and_options(is_complex, domain, data, delta, MultiCoreSettings::default())
                 }
             }
             
-            impl GenericVectorOps<$data_type> for GenericDataVector<$data_type> {
+            impl GenericVectorOps<$data_type> for GenericDataVec<$data_type> {
                 impl_binary_vector_operation!($data_type, $reg, fn add_vector, summand, add, add);
                 impl_binary_smaller_vector_operation!($data_type, $reg, fn add_smaller_vector, summand, add, add);
                 impl_binary_vector_operation!($data_type, $reg, fn subtract_vector, summand, sub, sub);
@@ -776,7 +776,7 @@ macro_rules! add_general_impl {
                 }
             }
             
-            impl GenericDataVector<$data_type> {       
+            impl GenericDataVec<$data_type> {       
                 impl_binary_complex_vector_operation!($data_type, $reg, fn multiply_vector_complex, factor, mul_complex, mul);
                 impl_binary_smaller_complex_vector_operation!($data_type, $reg, fn multiply_smaller_vector_complex, factor, mul_complex, mul);  
                 impl_binary_vector_operation!($data_type, $reg, fn multiply_vector_real, factor, mul, mul);

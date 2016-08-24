@@ -1,6 +1,6 @@
 use multicore_support::{Chunk, Complexity};
 use super::definitions::{
-    DataVector,
+    DataVec,
     TransRes,
     VoidResult,
     ErrorReason,
@@ -12,7 +12,7 @@ use super::definitions::{
     DotProductOps,
     StatisticsOps,
     ComplexVectorOps};
-use super::GenericDataVector;
+use super::GenericDataVec;
 use super::stats_impl::Stats;
 use simd_extensions::*;
 use num::complex::Complex;
@@ -23,9 +23,9 @@ macro_rules! add_complex_impl {
      =>
      {     
         $(
-            impl ComplexVectorOps<$data_type> for GenericDataVector<$data_type>
+            impl ComplexVectorOps<$data_type> for GenericDataVec<$data_type>
             {
-                type RealPartner = GenericDataVector<$data_type>;
+                type RealPartner = GenericDataVec<$data_type>;
                 
                 fn complex_data(&self) -> &[Complex<$data_type>] {
                     let len = self.len();
@@ -508,7 +508,7 @@ macro_rules! add_complex_impl {
                 }
             }
             
-            impl GenericDataVector<$data_type> {
+            impl GenericDataVec<$data_type> {
                 fn pure_complex_into_real_target_operation<A, F>(&self, destination: &mut Self, op: F, argument: A, complexity: Complexity) -> VoidResult 
                     where A: Sync + Copy + Send,
                           F: Fn(Complex<$data_type>, A) -> $data_type + 'static + Sync {
@@ -537,25 +537,25 @@ macro_rules! add_complex_impl {
                 }
             }
             
-            impl ScaleOps<Complex<$data_type>> for GenericDataVector<$data_type> {
+            impl ScaleOps<Complex<$data_type>> for GenericDataVec<$data_type> {
                 fn scale(self, offset: Complex<$data_type>) -> TransRes<Self> {
                     self.complex_scale(offset)
                 }
             }
             
-            impl OffsetOps<Complex<$data_type>> for GenericDataVector<$data_type> {
+            impl OffsetOps<Complex<$data_type>> for GenericDataVec<$data_type> {
                 fn offset(self, offset: Complex<$data_type>) -> TransRes<Self> {
                     self.complex_offset(offset)
                 }
             }
             
-            impl DotProductOps<Complex<$data_type>> for GenericDataVector<$data_type> {
+            impl DotProductOps<Complex<$data_type>> for GenericDataVec<$data_type> {
                 fn dot_product(&self, factor: &Self) -> ScalarResult<Complex<$data_type>> {
                     self.complex_dot_product(factor)
                 }
             }
             
-            impl StatisticsOps<Complex<$data_type>> for GenericDataVector<$data_type> {
+            impl StatisticsOps<Complex<$data_type>> for GenericDataVec<$data_type> {
                 fn statistics(&self) -> Statistics<Complex<$data_type>> {
                     self.complex_statistics()
                 }
@@ -573,7 +573,7 @@ macro_rules! add_complex_impl {
                 }
             }
             
-            impl VectorIter<Complex<$data_type>> for GenericDataVector<$data_type> {
+            impl VectorIter<Complex<$data_type>> for GenericDataVec<$data_type> {
                 fn map_inplace<A, F>(self, argument: A, map: F) -> TransRes<Self>
                     where A: Sync + Copy + Send,
                           F: Fn(Complex<$data_type>, usize, A) -> Complex<$data_type> + 'static + Sync {

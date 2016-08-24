@@ -1,8 +1,8 @@
 use super::definitions::{
     RededicateVector,
-    DataVectorDomain};
+    DataVecDomain};
 use vector_types::{
-    GenericDataVector,
+    GenericDataVec,
     RealTimeVector,
     ComplexTimeVector,
     RealFreqVector,
@@ -19,7 +19,7 @@ macro_rules! add_rededicate_impl {
                     delta: self.delta,
                     is_complex: true,
                     valid_len: 0,
-                    domain: DataVectorDomain::Time,
+                    domain: DataVecDomain::Time,
                     data: self.data,
                     temp: self.temp,
                     multicore_settings: self.multicore_settings
@@ -38,7 +38,7 @@ macro_rules! add_rededicate_impl {
                     delta: self.delta,
                     is_complex: true,
                     valid_len: 0,
-                    domain: DataVectorDomain::Frequency,
+                    domain: DataVecDomain::Frequency,
                     data: self.data,
                     temp: self.temp,
                     multicore_settings: self.multicore_settings
@@ -57,7 +57,7 @@ macro_rules! add_rededicate_impl {
                     delta: self.delta,
                     is_complex: false,
                     valid_len: 0,
-                    domain: DataVectorDomain::Time,
+                    domain: DataVecDomain::Time,
                     data: self.data,
                     temp: self.temp,
                     multicore_settings: self.multicore_settings
@@ -76,7 +76,7 @@ macro_rules! add_rededicate_impl {
                     delta: self.delta,
                     is_complex: false,
                     valid_len: 0,
-                    domain: DataVectorDomain::Frequency,
+                    domain: DataVecDomain::Frequency,
                     data: self.data,
                     temp: self.temp,
                     multicore_settings: self.multicore_settings
@@ -88,10 +88,10 @@ macro_rules! add_rededicate_impl {
             }
         }
 
-        impl<T> RededicateVector<GenericDataVector<T>> for $name<T>
+        impl<T> RededicateVector<GenericDataVec<T>> for $name<T>
             where T: RealNumber {
-            fn rededicate(self) -> GenericDataVector<T> {
-                GenericDataVector {
+            fn rededicate(self) -> GenericDataVec<T> {
+                GenericDataVec {
                     delta: self.delta,
                     is_complex: self.is_complex,
                     valid_len: self.valid_len,
@@ -102,7 +102,7 @@ macro_rules! add_rededicate_impl {
                 }
             }
 
-            fn rededicate_from(other: GenericDataVector<T>) -> Self {
+            fn rededicate_from(other: GenericDataVec<T>) -> Self {
                 other.rededicate()
             }
         }
@@ -110,20 +110,20 @@ macro_rules! add_rededicate_impl {
     }
 }
 
-add_rededicate_impl!(struct RealTimeVector, false, DataVectorDomain::Time);
-add_rededicate_impl!(struct ComplexTimeVector, true, DataVectorDomain::Time);
-add_rededicate_impl!(struct RealFreqVector, false, DataVectorDomain::Frequency);
-add_rededicate_impl!(struct ComplexFreqVector, true, DataVectorDomain::Frequency);
+add_rededicate_impl!(struct RealTimeVector, false, DataVecDomain::Time);
+add_rededicate_impl!(struct ComplexTimeVector, true, DataVecDomain::Time);
+add_rededicate_impl!(struct RealFreqVector, false, DataVecDomain::Frequency);
+add_rededicate_impl!(struct ComplexFreqVector, true, DataVecDomain::Frequency);
 
-// Conversions to `GenericDataVector` are always valid therefore `GenericDataVector`
+// Conversions to `GenericDataVec` are always valid therefore `GenericDataVec`
 // needs to have a specific `RededicateVector` implementation
 
-impl<T> RededicateVector<ComplexTimeVector<T>> for GenericDataVector<T>
+impl<T> RededicateVector<ComplexTimeVector<T>> for GenericDataVec<T>
         where T: RealNumber {
     fn rededicate(self) -> ComplexTimeVector<T> {
         let valid_len = 
             if self.is_complex == true
-                && self.domain == DataVectorDomain::Time {
+                && self.domain == DataVecDomain::Time {
                 self.valid_len
             } else {
                 0
@@ -133,7 +133,7 @@ impl<T> RededicateVector<ComplexTimeVector<T>> for GenericDataVector<T>
             delta: self.delta,
             is_complex: true,
             valid_len: valid_len,
-            domain: DataVectorDomain::Time,
+            domain: DataVecDomain::Time,
             data: self.data,
             temp: self.temp,
             multicore_settings: self.multicore_settings
@@ -141,7 +141,7 @@ impl<T> RededicateVector<ComplexTimeVector<T>> for GenericDataVector<T>
     }
 
     fn rededicate_from(other: ComplexTimeVector<T>) -> Self {
-        GenericDataVector {
+        GenericDataVec {
             delta: other.delta,
             is_complex: other.is_complex,
             valid_len: other.valid_len,
@@ -153,12 +153,12 @@ impl<T> RededicateVector<ComplexTimeVector<T>> for GenericDataVector<T>
     }
 }
 
-impl<T> RededicateVector<ComplexFreqVector<T>> for GenericDataVector<T>
+impl<T> RededicateVector<ComplexFreqVector<T>> for GenericDataVec<T>
     where T: RealNumber {
     fn rededicate(self) -> ComplexFreqVector<T> {
         let valid_len = 
             if self.is_complex == true
-                && self.domain == DataVectorDomain::Frequency {
+                && self.domain == DataVecDomain::Frequency {
                 self.valid_len
             } else {
                 0
@@ -168,7 +168,7 @@ impl<T> RededicateVector<ComplexFreqVector<T>> for GenericDataVector<T>
             delta: self.delta,
             is_complex: true,
             valid_len: valid_len,
-            domain: DataVectorDomain::Frequency,
+            domain: DataVecDomain::Frequency,
             data: self.data,
             temp: self.temp,
             multicore_settings: self.multicore_settings
@@ -176,7 +176,7 @@ impl<T> RededicateVector<ComplexFreqVector<T>> for GenericDataVector<T>
     }
 
     fn rededicate_from(other: ComplexFreqVector<T>) -> Self {
-        GenericDataVector {
+        GenericDataVec {
             delta: other.delta,
             is_complex: other.is_complex,
             valid_len: other.valid_len,
@@ -188,12 +188,12 @@ impl<T> RededicateVector<ComplexFreqVector<T>> for GenericDataVector<T>
     }
 }
 
-impl<T> RededicateVector<RealTimeVector<T>> for GenericDataVector<T>
+impl<T> RededicateVector<RealTimeVector<T>> for GenericDataVec<T>
     where T: RealNumber {
     fn rededicate(self) -> RealTimeVector<T> {
         let valid_len = 
             if self.is_complex == false
-                && self.domain == DataVectorDomain::Time {
+                && self.domain == DataVecDomain::Time {
                 self.valid_len
             } else {
                 0
@@ -203,7 +203,7 @@ impl<T> RededicateVector<RealTimeVector<T>> for GenericDataVector<T>
             delta: self.delta,
             is_complex: false,
             valid_len: valid_len,
-            domain: DataVectorDomain::Time,
+            domain: DataVecDomain::Time,
             data: self.data,
             temp: self.temp,
             multicore_settings: self.multicore_settings
@@ -211,7 +211,7 @@ impl<T> RededicateVector<RealTimeVector<T>> for GenericDataVector<T>
     }
 
     fn rededicate_from(other: RealTimeVector<T>) -> Self {
-        GenericDataVector {
+        GenericDataVec {
             delta: other.delta,
             is_complex: other.is_complex,
             valid_len: other.valid_len,
@@ -223,12 +223,12 @@ impl<T> RededicateVector<RealTimeVector<T>> for GenericDataVector<T>
     }
 }
 
-impl<T> RededicateVector<RealFreqVector<T>> for GenericDataVector<T>
+impl<T> RededicateVector<RealFreqVector<T>> for GenericDataVec<T>
     where T: RealNumber {
     fn rededicate(self) -> RealFreqVector<T> {
         let valid_len = 
             if self.is_complex == false
-                && self.domain == DataVectorDomain::Frequency {
+                && self.domain == DataVecDomain::Frequency {
                 self.valid_len
             } else {
                 0
@@ -238,7 +238,7 @@ impl<T> RededicateVector<RealFreqVector<T>> for GenericDataVector<T>
             delta: self.delta,
             is_complex: false,
             valid_len: valid_len,
-            domain: DataVectorDomain::Frequency,
+            domain: DataVecDomain::Frequency,
             data: self.data,
             temp: self.temp,
             multicore_settings: self.multicore_settings
@@ -246,7 +246,7 @@ impl<T> RededicateVector<RealFreqVector<T>> for GenericDataVector<T>
     }
 
     fn rededicate_from(other: RealFreqVector<T>) -> Self {
-        GenericDataVector {
+        GenericDataVec {
             delta: other.delta,
             is_complex: other.is_complex,
             valid_len: other.valid_len,
@@ -258,13 +258,13 @@ impl<T> RededicateVector<RealFreqVector<T>> for GenericDataVector<T>
     }
 }
 
-impl<T> RededicateVector<GenericDataVector<T>> for GenericDataVector<T>
+impl<T> RededicateVector<GenericDataVec<T>> for GenericDataVec<T>
     where T: RealNumber {
-    fn rededicate(self) -> GenericDataVector<T> {
+    fn rededicate(self) -> GenericDataVec<T> {
         self
     }
 
-    fn rededicate_from(other: GenericDataVector<T>) -> Self {
+    fn rededicate_from(other: GenericDataVec<T>) -> Self {
         other
     }
 }

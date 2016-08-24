@@ -37,7 +37,7 @@ macro_rules! assert_complex {
 
 macro_rules! assert_time {
     ($self_: ident) => {
-        if $self_.domain != DataVectorDomain::Time {
+        if $self_.domain != DataVecDomain::Time {
             return Err((ErrorReason::VectorMustBeInTimeDomain, $self_));
         }
     }
@@ -45,7 +45,7 @@ macro_rules! assert_time {
 
 macro_rules! assert_freq {
     ($self_: ident) => {
-        if $self_.domain != DataVectorDomain::Frequency {
+        if $self_.domain != DataVecDomain::Frequency {
             return Err((ErrorReason::VectorMustBeInFrquencyDomain, $self_));
         }
     }
@@ -88,8 +88,8 @@ pub mod multi_ops;
 pub mod operations_enum;
 
 pub use vector_types::definitions::{
-        DataVectorDomain,
-        DataVector,
+        DataVecDomain,
+        DataVec,
         TransRes,
         VoidResult,
         ScalarResult,
@@ -135,41 +135,41 @@ fn round_len(len: usize) -> usize {
     ((len + Reg32::len() - 1) / Reg32::len()) * Reg32::len()
 }
     
-define_vector_struct!(struct GenericDataVector);
+define_vector_struct!(struct GenericDataVec);
 add_basic_private_impl!(f32, Reg32; f64, Reg64);
 
 define_vector_struct!(struct RealTimeVector);
-define_real_basic_struct_members!(impl RealTimeVector, DataVectorDomain::Time);
-define_generic_operations_forward!(from: RealTimeVector, to: GenericDataVector, f32, f64);
-define_real_operations_forward!(from: RealTimeVector, to: GenericDataVector, complex_partner: ComplexTimeVector, f32, f64);
+define_real_basic_struct_members!(impl RealTimeVector, DataVecDomain::Time);
+define_generic_operations_forward!(from: RealTimeVector, to: GenericDataVec, f32, f64);
+define_real_operations_forward!(from: RealTimeVector, to: GenericDataVec, complex_partner: ComplexTimeVector, f32, f64);
 
 define_vector_struct!(struct RealFreqVector);
-define_real_basic_struct_members!(impl RealFreqVector, DataVectorDomain::Frequency);
-define_generic_operations_forward!(from: RealFreqVector, to: GenericDataVector, f32, f64);
-define_real_operations_forward!(from: RealFreqVector, to: GenericDataVector, complex_partner: ComplexFreqVector, f32, f64);
+define_real_basic_struct_members!(impl RealFreqVector, DataVecDomain::Frequency);
+define_generic_operations_forward!(from: RealFreqVector, to: GenericDataVec, f32, f64);
+define_real_operations_forward!(from: RealFreqVector, to: GenericDataVec, complex_partner: ComplexFreqVector, f32, f64);
 
 define_vector_struct!(struct ComplexTimeVector);
-define_complex_basic_struct_members!(impl ComplexTimeVector, DataVectorDomain::Time);
-define_generic_operations_forward!(from: ComplexTimeVector, to: GenericDataVector, f32, f64);
-define_complex_operations_forward!(from: ComplexTimeVector, to: GenericDataVector, complex: Complex, real_partner: RealTimeVector, f32, f64);
+define_complex_basic_struct_members!(impl ComplexTimeVector, DataVecDomain::Time);
+define_generic_operations_forward!(from: ComplexTimeVector, to: GenericDataVec, f32, f64);
+define_complex_operations_forward!(from: ComplexTimeVector, to: GenericDataVec, complex: Complex, real_partner: RealTimeVector, f32, f64);
 
 define_vector_struct!(struct ComplexFreqVector);
-define_complex_basic_struct_members!(impl ComplexFreqVector, DataVectorDomain::Frequency);
-define_generic_operations_forward!(from: ComplexFreqVector, to: GenericDataVector, f32, f64);
-define_complex_operations_forward!(from: ComplexFreqVector, to: GenericDataVector, complex: Complex, real_partner: RealTimeVector, f32, f64);
+define_complex_basic_struct_members!(impl ComplexFreqVector, DataVecDomain::Frequency);
+define_generic_operations_forward!(from: ComplexFreqVector, to: GenericDataVec, f32, f64);
+define_complex_operations_forward!(from: ComplexFreqVector, to: GenericDataVec, complex: Complex, real_partner: RealTimeVector, f32, f64);
 
-define_vector_struct_type_alias!(struct DataVector32, based_on: GenericDataVector, f32);
+define_vector_struct_type_alias!(struct DataVec32, based_on: GenericDataVec, f32);
 define_vector_struct_type_alias!(struct RealTimeVector32, based_on: RealTimeVector, f32);
 define_vector_struct_type_alias!(struct RealFreqVector32, based_on: RealFreqVector, f32);
 define_vector_struct_type_alias!(struct ComplexTimeVector32, based_on: ComplexTimeVector, f32);
 define_vector_struct_type_alias!(struct ComplexFreqVector32, based_on: ComplexFreqVector, f32);
-define_vector_struct_type_alias!(struct DataVector64, based_on: GenericDataVector, f64);
+define_vector_struct_type_alias!(struct DataVec64, based_on: GenericDataVec, f64);
 define_vector_struct_type_alias!(struct RealTimeVector64, based_on: RealTimeVector, f64);
 define_vector_struct_type_alias!(struct RealFreqVector64, based_on: RealFreqVector, f64);
 define_vector_struct_type_alias!(struct ComplexTimeVector64, based_on: ComplexTimeVector, f64);
 define_vector_struct_type_alias!(struct ComplexFreqVector64, based_on: ComplexFreqVector, f64);
 
-impl<T> GenericDataVector<T> 
+impl<T> GenericDataVec<T> 
     where T: RealNumber
 {  
     fn swap_data_temp(mut self) -> Self
@@ -215,7 +215,7 @@ mod tests {
         let vector = RealTimeVector32::from_array(&array);
         assert_eq!(vector.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
         assert_eq!(vector.delta(), 1.0);
-        assert_eq!(vector.domain(), DataVectorDomain::Time);
+        assert_eq!(vector.domain(), DataVecDomain::Time);
     }
     
     #[test]
@@ -364,7 +364,7 @@ mod tests {
     fn array_to_complex_test()
     {
         let a = [1.0; 10];
-        let c = DataVector32::array_to_complex(&a);
+        let c = DataVec32::array_to_complex(&a);
         let expected = [Complex32::new(1.0, 1.0); 5];
         assert_eq!(&expected, c);
     }
@@ -373,7 +373,7 @@ mod tests {
     fn array_to_complex_mut_test()
     {
         let mut a = [1.0; 10];
-        let c = DataVector32::array_to_complex_mut(&mut a);
+        let c = DataVec32::array_to_complex_mut(&mut a);
         let expected = [Complex32::new(1.0, 1.0); 5];
         assert_eq!(&expected, c);
     }

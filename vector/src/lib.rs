@@ -51,8 +51,8 @@ pub mod conv_types;
 pub mod combined_ops;
 pub use vector_types::
     {
-        DataVectorDomain,
-        DataVector,
+        DataVecDomain,
+        DataVec,
         TransRes,
         VoidResult,
         ErrorReason,
@@ -63,17 +63,17 @@ pub use vector_types::
         FrequencyDomainOperations,
         SymmetricFrequencyDomainOperations,
         SymmetricTimeDomainOperations,
-        GenericDataVector,
+        GenericDataVec,
         ComplexFreqVector,
         ComplexTimeVector,
         RealTimeVector,
         RealFreqVector,
-        DataVector32, 
+        DataVec32, 
         RealTimeVector32,
         ComplexTimeVector32, 
         RealFreqVector32,
         ComplexFreqVector32,
-        DataVector64, 
+        DataVec64, 
         RealTimeVector64,
         ComplexTimeVector64, 
         RealFreqVector64,
@@ -107,25 +107,25 @@ mod tests {
     
     fn void_try_method() -> Result<i32, ErrorReason> {
         let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-        let vector = DataVector32::from_array(false, DataVectorDomain::Time, &array);
-        let mut dest = DataVector32::from_array(false, DataVectorDomain::Time, &array);
+        let vector = DataVec32::from_array(false, DataVecDomain::Time, &array);
+        let mut dest = DataVec32::from_array(false, DataVecDomain::Time, &array);
         let _ = try!(vector.get_magnitude(&mut dest));
         Ok(0)
     }
     
     fn scalar_try_method() -> Result<i32, ErrorReason> {
         let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-        let vector = DataVector32::from_array(false, DataVectorDomain::Time, &array);
-        let dest = DataVector32::from_array(false, DataVectorDomain::Time, &array);
+        let vector = DataVec32::from_array(false, DataVecDomain::Time, &array);
+        let dest = DataVec32::from_array(false, DataVecDomain::Time, &array);
         let _ = try!(vector.complex_dot_product(&dest));
         Ok(0)
     }
     
     fn vec_try_method() -> Result<i32, ErrorReason> {
         let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-        let vector = DataVector32::from_array(false, DataVectorDomain::Time, &array);
+        let vector = DataVec32::from_array(false, DataVecDomain::Time, &array);
         let array = [1.0, 2.0, 3.0, 4.0];
-        let dest = DataVector32::from_array(false, DataVectorDomain::Time, &array);
+        let dest = DataVec32::from_array(false, DataVecDomain::Time, &array);
         let _ = try_vec!(vector.add_vector(&dest));
         Ok(0)
     }

@@ -1,6 +1,6 @@
 use multicore_support::{Chunk, Complexity};
 use super::definitions::{
-    DataVector,
+    DataVec,
     TransRes,
     ErrorReason,
     ScalarResult,
@@ -12,7 +12,7 @@ use super::definitions::{
     GenericVectorOps,
     RealVectorOps,
     VectorIter};
-use super::GenericDataVector;    
+use super::GenericDataVec;    
 use super::stats_impl::Stats;
 use simd_extensions::*;
 use std::sync::Arc;
@@ -22,7 +22,7 @@ macro_rules! add_real_impl {
      =>
      {     
         $(
-            impl RealVectorOps<$data_type> for GenericDataVector<$data_type>
+            impl RealVectorOps<$data_type> for GenericDataVec<$data_type>
             {
                 type ComplexPartner = Self;
                 
@@ -335,25 +335,25 @@ macro_rules! add_real_impl {
                 }
             }
             
-            impl ScaleOps<$data_type> for GenericDataVector<$data_type> {
+            impl ScaleOps<$data_type> for GenericDataVec<$data_type> {
                 fn scale(self, offset: $data_type) -> TransRes<Self> {
                     self.real_scale(offset)
                 }
             }
             
-            impl OffsetOps<$data_type> for GenericDataVector<$data_type> {
+            impl OffsetOps<$data_type> for GenericDataVec<$data_type> {
                 fn offset(self, offset: $data_type) -> TransRes<Self> {
                     self.real_offset(offset)
                 }
             }
             
-            impl DotProductOps<$data_type> for GenericDataVector<$data_type> {
+            impl DotProductOps<$data_type> for GenericDataVec<$data_type> {
                 fn dot_product(&self, factor: &Self) -> ScalarResult<$data_type> {
                     self.real_dot_product(factor)
                 }
             }
             
-            impl StatisticsOps<$data_type> for GenericDataVector<$data_type> {
+            impl StatisticsOps<$data_type> for GenericDataVec<$data_type> {
                 fn statistics(&self) -> Statistics<$data_type> {
                     self.real_statistics()
                 }
@@ -371,7 +371,7 @@ macro_rules! add_real_impl {
                 }
             }
             
-            impl VectorIter<$data_type> for GenericDataVector<$data_type> {
+            impl VectorIter<$data_type> for GenericDataVec<$data_type> {
                 fn map_inplace<A, F>(self, argument: A, map: F) -> TransRes<Self>
                     where A: Sync + Copy + Send,
                           F: Fn($data_type, usize, A) -> $data_type + 'static + Sync {
