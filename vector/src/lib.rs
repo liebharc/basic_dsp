@@ -17,8 +17,8 @@
 //! Right now the library uses pretty aggressive parallelization. So this means that it will keep all CPU cores busy
 //! even if the performance gain is minimal e.g. because the multi core overhead is nearly as large as the performance boost
 //! of multiple cores. In future there will be likely an option which tells the library how it should balance between processing time
-//! and CPU utilization. The library also avoids to allocate and free memory and it allocates memory for temporary allocation.
-//! so the library is likely not suitable for devices which are tight on memory. On normal desktop computers there is usually plenty of
+//! and CPU utilization. The library also avoids to allocate and free memory so it allocates all of the required temporary memory when a new vector
+//! is constructed. Therefore the library is likely not suitable for devices which are tight on memory. On normal desktop computers there is usually plenty of
 //! memory available so that the optimization focus is on decreasing the processing time for every (common) operation and to spent little time with memory allocations.  
 
 /// Like `try!` but for operations returning a vector.
