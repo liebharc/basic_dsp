@@ -267,3 +267,21 @@ macro_rules! add_basic_impl {
 }
 
 add_basic_impl!(MatrixMxN; Matrix2xN; Matrix3xN; Matrix4xN);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use basic_dsp_vector::*;
+
+    #[test]
+    fn new_decompose() {
+        let array1 = [1.0, 2.0, 3.0, 4.0];
+        let vector1 = DataVector32::from_array(false, DataVectorDomain::Time, &array1);
+        let array2 = [4.0, 3.0, 2.0, 5.0];
+        let vector2 = DataVector32::from_array(false, DataVectorDomain::Time, &array2);
+        let mat = Matrix2xN::new([vector1, vector2]).unwrap();
+        let pair = mat.decompose();
+        assert_eq!(pair[0].data(), array1);
+        assert_eq!(pair[1].data(), array2);
+    }
+}
