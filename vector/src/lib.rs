@@ -88,8 +88,8 @@ pub use vector_types::
         ConvolutionOps,
         FrequencyMultiplication,
         CrossCorrelationOps,
-        Interpolation,
-        RealInterpolation,
+        InterpolationOps,
+        RealInterpolationOps,
         PaddingOption,
         VectorIter
     };

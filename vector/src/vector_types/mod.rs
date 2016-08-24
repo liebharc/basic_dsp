@@ -118,8 +118,8 @@ pub use vector_types::convolution_impl::{
     FrequencyMultiplication};
 pub use vector_types::correlation_impl::CrossCorrelationOps;
 pub use vector_types::interpolation_impl::{
-    Interpolation,
-    RealInterpolation};  
+    InterpolationOps,
+    RealInterpolationOps};  
 use num::complex::Complex;
 use RealNumber;
 use multicore_support::{Chunk, Complexity, MultiCoreSettings};
