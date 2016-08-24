@@ -4,7 +4,7 @@ macro_rules! add_basic_private_impl {
         $(
             impl GenericDataVector<$data_type> {
                 #[inline]
-                fn pure_real_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> VecResult<Self> 
+                fn pure_real_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> TransRes<Self> 
                     where A: Sync + Copy + Send,
                         F: Fn($data_type, A) -> $data_type + 'static + Sync {
                     {
@@ -22,7 +22,7 @@ macro_rules! add_basic_private_impl {
                 }
                 
                 #[inline]
-                fn simd_real_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> VecResult<Self> 
+                fn simd_real_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> TransRes<Self> 
                     where A: Sync + Copy + Send,
                             F: Fn($reg, A) -> $reg + 'static + Sync,
                             G: Fn($data_type, A) -> $data_type + 'static + Sync {
@@ -54,7 +54,7 @@ macro_rules! add_basic_private_impl {
                 }
                 
                 #[inline]
-                fn pure_complex_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> VecResult<Self> 
+                fn pure_complex_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> TransRes<Self> 
                     where A: Sync + Copy + Send,
                         F: Fn(Complex<$data_type>, A) -> Complex<$data_type> + 'static + Sync {
                     {
@@ -73,7 +73,7 @@ macro_rules! add_basic_private_impl {
                 }
                 
                 #[inline]
-                fn pure_complex_to_real_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> VecResult<Self> 
+                fn pure_complex_to_real_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> TransRes<Self> 
                     where A: Sync + Copy + Send,
                         F: Fn(Complex<$data_type>, A) -> $data_type + 'static + Sync {
                     {
@@ -98,7 +98,7 @@ macro_rules! add_basic_private_impl {
                 }
                 
                 #[inline]
-                fn simd_complex_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> VecResult<Self> 
+                fn simd_complex_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> TransRes<Self> 
                     where A: Sync + Copy + Send,
                             F: Fn($reg, A) -> $reg + 'static + Sync,
                             G: Fn(Complex<$data_type>, A) -> Complex<$data_type> + 'static + Sync {
@@ -136,7 +136,7 @@ macro_rules! add_basic_private_impl {
                 }
                 
                 #[inline]
-                fn simd_complex_to_real_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> VecResult<Self> 
+                fn simd_complex_to_real_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> TransRes<Self> 
                     where A: Sync + Copy + Send,
                           F: Fn($reg, A) -> $reg + 'static + Sync,
                           G: Fn(Complex<$data_type>, A) -> $data_type + 'static + Sync {
@@ -182,7 +182,7 @@ macro_rules! add_basic_private_impl {
                 }
                 
                 #[inline]
-                fn swap_halves_priv(mut self, forward: bool) -> VecResult<Self>
+                fn swap_halves_priv(mut self, forward: bool) -> TransRes<Self>
                 {
                    {
                         let data_length = self.len();

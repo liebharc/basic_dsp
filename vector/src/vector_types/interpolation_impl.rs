@@ -1,6 +1,6 @@
 use super::definitions::{
     DataVector,
-    VecResult};
+    TransRes};
 use RealNumber;
 use conv_types::{
     RealImpulseResponse,
@@ -44,22 +44,22 @@ pub trait Interpolation<T> : DataVector<T>
     /// run to compare the speed of `interpolatef` and `interpolatei`. Together with the information that 
     /// changing the vectors size change `log(self.points()` but not `conv_len` gives the indication that `interpolatef`
     /// performs faster for larger vectors while `interpolatei` performs faster for smaller vectors.
-    fn interpolatef(self, function: &RealImpulseResponse<T>, interpolation_factor: T, delay: T, conv_len: usize) -> VecResult<Self>;
+    fn interpolatef(self, function: &RealImpulseResponse<T>, interpolation_factor: T, delay: T, conv_len: usize) -> TransRes<Self>;
     
     /// Interpolates `self` with the convolution function `function` by the interger value `interpolation_factor`.
     /// Interpolation is done in in frequency domain.
     ///
     /// See the description of `interpolatef` for some basic performance considerations.
     /// # Failures
-    /// VecResult may report the following `ErrorReason` members:
+    /// TransRes may report the following `ErrorReason` members:
     /// 
     /// 1. `ArgumentFunctionMustBeSymmetric`: if `!self.is_complex() && !function.is_symmetric()` or in words if `self` is a real
     ///    vector and `function` is asymmetric. Converting the vector into a complex vector before the interpolation is one way
     ///    to resolve this error. 
-    fn interpolatei(self, function: &RealFrequencyResponse<T>, interpolation_factor: u32) -> VecResult<Self>;
+    fn interpolatei(self, function: &RealFrequencyResponse<T>, interpolation_factor: u32) -> TransRes<Self>;
     
     /// Decimates or downsamples `self`. `decimatei` is the inverse function to `interpolatei`.
-    fn decimatei(self, decimation_factor: u32, delay: u32) -> VecResult<Self>;
+    fn decimatei(self, decimation_factor: u32, delay: u32) -> TransRes<Self>;
 }
 
 /// Provides interpolation operations which are only applicable for real data vectors.
@@ -72,12 +72,12 @@ pub trait RealInterpolation<T> : DataVector<T>
     /// # Unstable
     /// Algorithm might need to be revised.
     /// This operation and `interpolate_lin` might be merged into one function with an additional argument in future.
-    fn interpolate_hermite(self, interpolation_factor: T, delay: T) -> VecResult<Self>;
+    fn interpolate_hermite(self, interpolation_factor: T, delay: T) -> TransRes<Self>;
     
     /// Linear interpolation between samples.
     /// # Unstable
     /// This operation and `interpolate_hermite` might be merged into one function with an additional argument in future.
-    fn interpolate_lin(self, interpolation_factor: T, delay: T) -> VecResult<Self>;
+    fn interpolate_lin(self, interpolation_factor: T, delay: T) -> TransRes<Self>;
 }
 
 macro_rules! define_interpolation_impl {
@@ -161,7 +161,7 @@ macro_rules! define_interpolation_impl {
                     convert: C,
                     convert_mut: CMut,
                     simd_mul: RMul,
-                    simd_sum: RSum) -> VecResult<Self> 
+                    simd_sum: RSum) -> TransRes<Self> 
                         where 
                             T: Zero + Clone + From<$data_type> + Copy + Add<Output=T> + Mul<Output=T>,
                             C: Fn(&[$data_type]) -> &[T],
@@ -271,7 +271,7 @@ macro_rules! define_interpolation_impl {
             }
             
             impl Interpolation<$data_type> for GenericDataVector<$data_type> {
-                fn interpolatef(mut self, function: &RealImpulseResponse<$data_type>, interpolation_factor: $data_type, delay: $data_type, conv_len: usize) -> VecResult<Self> {
+                fn interpolatef(mut self, function: &RealImpulseResponse<$data_type>, interpolation_factor: $data_type, delay: $data_type, conv_len: usize) -> TransRes<Self> {
                     {
                         let delay = delay / self.delta;
                         let len = self.len();
@@ -336,7 +336,7 @@ macro_rules! define_interpolation_impl {
                     Ok(self.swap_data_temp())
                 }
                 
-                fn interpolatei(self, function: &RealFrequencyResponse<$data_type>, interpolation_factor: u32) -> VecResult<Self> {
+                fn interpolatei(self, function: &RealFrequencyResponse<$data_type>, interpolation_factor: u32) -> TransRes<Self> {
                     if interpolation_factor <= 1 {
                         return Ok(self);
                     }
@@ -366,7 +366,7 @@ macro_rules! define_interpolation_impl {
                     })
                 }
                 
-                fn decimatei(mut self, decimation_factor: u32, delay: u32) -> VecResult<Self> {
+                fn decimatei(mut self, decimation_factor: u32, delay: u32) -> TransRes<Self> {
                     {
                         let mut i = delay as usize;
                         let mut j = 0;
@@ -399,7 +399,7 @@ macro_rules! define_interpolation_impl {
             }
             
             impl RealInterpolation<$data_type> for GenericDataVector<$data_type> {
-                fn interpolate_lin(mut self, interpolation_factor: $data_type, delay: $data_type) -> VecResult<Self> {
+                fn interpolate_lin(mut self, interpolation_factor: $data_type, delay: $data_type) -> TransRes<Self> {
                     {
                         assert_real!(self);
                         let data_len = self.len();
@@ -426,7 +426,7 @@ macro_rules! define_interpolation_impl {
                     Ok(self.swap_data_temp())
                 }
                 
-                fn interpolate_hermite(mut self, interpolation_factor: $data_type, delay: $data_type) -> VecResult<Self> {
+                fn interpolate_hermite(mut self, interpolation_factor: $data_type, delay: $data_type) -> TransRes<Self> {
                     {
                         assert_real!(self);
                         // Literature: http://paulbourke.net/miscellaneous/interpolation/
@@ -515,15 +515,15 @@ macro_rules! define_interpolation_forward {
     ($($name:ident, $data_type:ident);*) => {
         $( 
             impl Interpolation<$data_type> for $name<$data_type> {
-                fn interpolatef(self, function: &RealImpulseResponse<$data_type>, interpolation_factor: $data_type, delay: $data_type, len: usize) -> VecResult<Self> {
+                fn interpolatef(self, function: &RealImpulseResponse<$data_type>, interpolation_factor: $data_type, delay: $data_type, len: usize) -> TransRes<Self> {
                     Self::from_genres(self.to_gen().interpolatef(function, interpolation_factor, delay, len))
                 }
                 
-                fn interpolatei(self, function: &RealFrequencyResponse<$data_type>, interpolation_factor: u32) -> VecResult<Self> {
+                fn interpolatei(self, function: &RealFrequencyResponse<$data_type>, interpolation_factor: u32) -> TransRes<Self> {
                     Self::from_genres(self.to_gen().interpolatei(function, interpolation_factor))
                 }
                 
-                fn decimatei(self, decimation_factor: u32, delay: u32) -> VecResult<Self> {
+                fn decimatei(self, decimation_factor: u32, delay: u32) -> TransRes<Self> {
                     Self::from_genres(self.to_gen().decimatei(decimation_factor, delay))
                 }
             }
@@ -535,11 +535,11 @@ macro_rules! define_real_only_interpolation_forward {
     ($($name:ident, $data_type:ident);*) => {
         $( 
             impl RealInterpolation<$data_type> for $name<$data_type> {
-                fn interpolate_lin(self, interpolation_factor: $data_type, delay: $data_type) -> VecResult<Self> {
+                fn interpolate_lin(self, interpolation_factor: $data_type, delay: $data_type) -> TransRes<Self> {
                     Self::from_genres(self.to_gen().interpolate_lin(interpolation_factor, delay))
                 }
                 
-                fn interpolate_hermite(self, interpolation_factor: $data_type, delay: $data_type) -> VecResult<Self> {
+                fn interpolate_hermite(self, interpolation_factor: $data_type, delay: $data_type) -> TransRes<Self> {
                     Self::from_genres(self.to_gen().interpolate_hermite(interpolation_factor, delay))
                 }
             }

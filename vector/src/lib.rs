@@ -53,7 +53,7 @@ pub use vector_types::
     {
         DataVectorDomain,
         DataVector,
-        VecResult,
+        TransRes,
         VoidResult,
         ErrorReason,
         GenericVectorOps,

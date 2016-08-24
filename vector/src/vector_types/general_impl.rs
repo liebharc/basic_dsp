@@ -3,7 +3,7 @@ use super::definitions::{
     DataVector,
     DataVectorDomain,
     GenericVectorOps,
-    VecResult,
+    TransRes,
     VoidResult,
     ErrorReason,
     PaddingOption};
@@ -19,7 +19,7 @@ use std::ptr;
 macro_rules! impl_real_complex_dispatch {
     (fn $function_name: ident, $real_op: ident, $complex_op: ident)
     => {
-        fn $function_name(self) -> VecResult<Self>
+        fn $function_name(self) -> TransRes<Self>
         {
             if self.is_complex() {
                 Self::$complex_op(self)  
@@ -34,7 +34,7 @@ macro_rules! impl_real_complex_dispatch {
 macro_rules! impl_real_complex_arg_dispatch {
     (fn $function_name: ident, $arg_type: ident, $arg: ident, $real_op: ident, $complex_op: ident)
     => {
-        fn $function_name(self, $arg: $arg_type) -> VecResult<Self>
+        fn $function_name(self, $arg: $arg_type) -> TransRes<Self>
         {
             if self.is_complex() {
                 Self::$complex_op(self, $arg)  
@@ -48,12 +48,12 @@ macro_rules! impl_real_complex_arg_dispatch {
 
 macro_rules! impl_function_call_real_complex {
     ($data_type: ident; fn $real_name: ident, $real_op: ident; fn $complex_name: ident, $complex_op: ident) => {
-        fn $real_name(self) -> VecResult<Self>
+        fn $real_name(self) -> TransRes<Self>
         {
             self.pure_real_operation(|v, _arg| v.$real_op(), (), Complexity::Small)
         }
         
-        fn $complex_name(self) -> VecResult<Self>
+        fn $complex_name(self) -> TransRes<Self>
         {
             self.pure_complex_operation(|v, _arg| v.$complex_op(), (), Complexity::Small)
         }
@@ -62,12 +62,12 @@ macro_rules! impl_function_call_real_complex {
 
 macro_rules! impl_function_call_real_arg_complex {
     ($data_type: ident; fn $real_name: ident, $real_op: ident; fn $complex_name: ident, $complex_op: ident) => {
-        fn $real_name(self, value: $data_type) -> VecResult<Self>
+        fn $real_name(self, value: $data_type) -> TransRes<Self>
         {
             self.pure_real_operation(|v, arg| v.$real_op(arg), value, Complexity::Medium)
         }
         
-        fn $complex_name(self, value: $data_type) -> VecResult<Self>
+        fn $complex_name(self, value: $data_type) -> TransRes<Self>
         {
             self.pure_complex_operation(|v, arg| v.$complex_op(arg), value, Complexity::Medium)
         }
@@ -76,7 +76,7 @@ macro_rules! impl_function_call_real_arg_complex {
 
 macro_rules! impl_binary_vector_operation {
     ($data_type: ident, $reg: ident, fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method(mut self, $arg_name: &Self) -> VecResult<Self>
+        fn $method(mut self, $arg_name: &Self) -> TransRes<Self>
         {
             {
                 let len = self.len();
@@ -120,7 +120,7 @@ macro_rules! impl_binary_vector_operation {
 
 macro_rules! impl_binary_complex_vector_operation {
     ($data_type: ident, $reg: ident, fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method(mut self, $arg_name: &Self) -> VecResult<Self>
+        fn $method(mut self, $arg_name: &Self) -> TransRes<Self>
         {
             {
                 let len = self.len();
@@ -168,7 +168,7 @@ macro_rules! impl_binary_complex_vector_operation {
 
 macro_rules! impl_binary_smaller_vector_operation {
     ($data_type: ident, $reg: ident, fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method(mut self, $arg_name: &Self) -> VecResult<Self>
+        fn $method(mut self, $arg_name: &Self) -> TransRes<Self>
         {
             {
                 let len = self.len();
@@ -220,7 +220,7 @@ macro_rules! impl_binary_smaller_vector_operation {
 
 macro_rules! impl_binary_smaller_complex_vector_operation {
     ($data_type: ident, $reg: ident, fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method(mut self, $arg_name: &Self) -> VecResult<Self>
+        fn $method(mut self, $arg_name: &Self) -> TransRes<Self>
         {
             {
                 let len = self.len();
@@ -485,7 +485,7 @@ macro_rules! add_general_impl {
                 impl_binary_vector_operation!($data_type, $reg, fn subtract_vector, summand, sub, sub);
                 impl_binary_smaller_vector_operation!($data_type, $reg, fn subtract_smaller_vector, summand, sub, sub);
 
-                fn multiply_vector(self, factor: &Self) -> VecResult<Self>
+                fn multiply_vector(self, factor: &Self) -> TransRes<Self>
                 {
                     let len = self.len();
                     reject_if!(self, len != factor.len(), ErrorReason::VectorsMustHaveTheSameSize);
@@ -501,7 +501,7 @@ macro_rules! add_general_impl {
                     }
                 }
                 
-                fn multiply_smaller_vector(self, factor: &Self) -> VecResult<Self>
+                fn multiply_smaller_vector(self, factor: &Self) -> TransRes<Self>
                 {
                     let len = self.len();
                     reject_if!(self, len % factor.len() != 0, ErrorReason::InvalidArgumentLength);
@@ -517,7 +517,7 @@ macro_rules! add_general_impl {
                     }
                 }
                 
-                fn divide_vector(self, divisor: &Self) -> VecResult<Self>
+                fn divide_vector(self, divisor: &Self) -> TransRes<Self>
                 {
                     let len = self.len();
                     reject_if!(self, len != divisor.len(), ErrorReason::VectorsMustHaveTheSameSize);
@@ -533,7 +533,7 @@ macro_rules! add_general_impl {
                     }
                 }
                 
-                fn divide_smaller_vector(self, divisor: &Self) -> VecResult<Self>
+                fn divide_smaller_vector(self, divisor: &Self) -> TransRes<Self>
                 {
                     let len = self.len();
                     reject_if!(self, len % divisor.len() != 0, ErrorReason::InvalidArgumentLength);
@@ -549,7 +549,7 @@ macro_rules! add_general_impl {
                     }
                 }
                 
-                fn zero_pad(mut self, points: usize, option: PaddingOption) -> VecResult<Self>
+                fn zero_pad(mut self, points: usize, option: PaddingOption) -> TransRes<Self>
                 {
                     {
                         let len_before = self.len();
@@ -615,7 +615,7 @@ macro_rules! add_general_impl {
                     Ok(self)
                 }
                 
-                fn reverse(mut self) -> VecResult<Self> {
+                fn reverse(mut self) -> TransRes<Self> {
                     {
                         let len = self.len();
                         let is_complex = self.is_complex;
@@ -637,7 +637,7 @@ macro_rules! add_general_impl {
                     Ok(self.swap_data_temp())
                 }
                 
-                fn zero_interleave(self, factor: u32) -> VecResult<Self> {
+                fn zero_interleave(self, factor: u32) -> TransRes<Self> {
                     if self.is_complex {
                         self.zero_interleave_complex(factor)
                     } else {
@@ -645,17 +645,17 @@ macro_rules! add_general_impl {
                     }
                 }
                 
-                fn diff(mut self) -> VecResult<Self>
+                fn diff(mut self) -> TransRes<Self>
                 {
                     vector_diff!(self, false)
                 }
                 
-                fn diff_with_start(mut self) -> VecResult<Self>
+                fn diff_with_start(mut self) -> TransRes<Self>
                 {
                     vector_diff!(self, true)
                 }
                 
-                fn cum_sum(mut self) -> VecResult<Self>
+                fn cum_sum(mut self) -> TransRes<Self>
                 {
                     {
                         let data_length = self.len();
@@ -696,12 +696,12 @@ macro_rules! add_general_impl {
                 impl_real_complex_dispatch!(fn acosh, real_acosh, complex_acosh);
                 impl_real_complex_dispatch!(fn atanh, real_atanh, complex_atanh);
                 
-                fn swap_halves(self) -> VecResult<Self>
+                fn swap_halves(self) -> TransRes<Self>
                 {
                    self.swap_halves_priv(true)
                 }
                 
-                fn override_data(mut self, data: &[$data_type]) -> VecResult<Self> {
+                fn override_data(mut self, data: &[$data_type]) -> TransRes<Self> {
                     {
                         self.reallocate(data.len());
                         let target = &mut self.data[0] as *mut $data_type;
@@ -744,7 +744,7 @@ macro_rules! add_general_impl {
                     Ok(())
                 }
                 
-                fn merge(mut self, sources: &[Box<Self>]) -> VecResult<Self> {
+                fn merge(mut self, sources: &[Box<Self>]) -> TransRes<Self> {
                     {
                         let num_sources = sources.len();
                         reject_if!(self, num_sources == 0, ErrorReason::InvalidArgumentLength);
@@ -786,42 +786,42 @@ macro_rules! add_general_impl {
                 impl_binary_vector_operation!($data_type, $reg, fn divide_vector_real, divisor, div, div);
                 impl_binary_smaller_vector_operation!($data_type, $reg, fn divide_smaller_vector_real, divisor, div, div);
                 
-                fn zero_interleave_complex(mut self, factor: u32) -> VecResult<Self>
+                fn zero_interleave_complex(mut self, factor: u32) -> TransRes<Self>
                 {
                     zero_interleave!(self, $data_type, factor, 2)
                 }
                 
-                fn zero_interleave_real(mut self, factor: u32) -> VecResult<Self>
+                fn zero_interleave_real(mut self, factor: u32) -> TransRes<Self>
                 {
                     zero_interleave!(self, $data_type, factor, 1)
                 }
                 
-                fn real_sqrt(self) -> VecResult<Self>
+                fn real_sqrt(self) -> TransRes<Self>
                 {
                     self.simd_real_operation(|x,_arg|x.sqrt(), |x,_arg|x.sqrt(), (), Complexity::Small)
                 }
                 
-                fn complex_sqrt(self) -> VecResult<Self>
+                fn complex_sqrt(self) -> TransRes<Self>
                 {
                     self.pure_complex_operation(|x,_arg|x.sqrt(), (), Complexity::Small)
                 }
                 
-                fn real_square(self) -> VecResult<Self>
+                fn real_square(self) -> TransRes<Self>
                 {
                     self.simd_real_operation(|x,_arg|x * x, |x,_arg|x * x, (), Complexity::Small)
                 }
                 
-                fn complex_square(self) -> VecResult<Self>
+                fn complex_square(self) -> TransRes<Self>
                 {
                     self.pure_complex_operation(|x,_arg|x * x, (), Complexity::Small)
                 }
                 
-                fn real_root(self, degree: $data_type) -> VecResult<Self>
+                fn real_root(self, degree: $data_type) -> TransRes<Self>
                 {
                     self.pure_real_operation(|x,y|x.powf(1.0 / y), degree, Complexity::Medium)
                 }
                 
-                fn complex_root(self, base: $data_type) -> VecResult<Self>
+                fn complex_root(self, base: $data_type) -> TransRes<Self>
                 {
                     self.pure_complex_operation(|x,y|x.powf(1.0 / y), base, Complexity::Medium)
                 }
@@ -831,12 +831,12 @@ macro_rules! add_general_impl {
                 impl_function_call_real_complex!($data_type; fn real_exp, exp; fn complex_exp, exp);
                 impl_function_call_real_arg_complex!($data_type; fn real_log, log; fn complex_log, log);
                 
-                fn real_expf(self, base: $data_type) -> VecResult<Self>
+                fn real_expf(self, base: $data_type) -> TransRes<Self>
                 {
                     self.pure_real_operation(|x,y|y.powf(x), base, Complexity::Medium)
                 }
                 
-                fn complex_expf(self, base: $data_type) -> VecResult<Self>
+                fn complex_expf(self, base: $data_type) -> TransRes<Self>
                 {
                     self.pure_complex_operation(|x,y|x.expf(y), base, Complexity::Medium)
                 }

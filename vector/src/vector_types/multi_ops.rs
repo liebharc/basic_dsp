@@ -5,7 +5,7 @@ use super::super::RealNumber;
 use super::{
     round_len,
     DataVector,
-    VecResult,
+    TransRes,
     ErrorReason,
     RealTimeVector,
     ComplexTimeVector,
@@ -908,7 +908,7 @@ macro_rules! add_multi_ops_impl {
         
         impl GenericDataVector<$data_type> {
             fn perform_operations(mut vectors: Vec<Self>, operations: &[Operation<$data_type>])
-                -> VecResult<Vec<Self>>
+                -> TransRes<Vec<Self>>
             {
                 if vectors.len() == 0
                 {

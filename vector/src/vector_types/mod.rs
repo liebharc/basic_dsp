@@ -90,7 +90,7 @@ pub mod operations_enum;
 pub use vector_types::definitions::{
         DataVectorDomain,
         DataVector,
-        VecResult,
+        TransRes,
         VoidResult,
         ScalarResult,
         ErrorReason,

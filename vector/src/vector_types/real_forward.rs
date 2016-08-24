@@ -7,32 +7,32 @@ macro_rules! define_real_operations_forward {
             {
                 type ComplexPartner = $complex_partner<$data_type>; 
                 
-                fn real_offset(self, offset: $data_type) -> VecResult<Self>
+                fn real_offset(self, offset: $data_type) -> TransRes<Self>
                 {
                     Self::from_genres(self.to_gen().real_offset(offset))
                 }
                 
-                fn real_scale(self, factor: $data_type) -> VecResult<Self>
+                fn real_scale(self, factor: $data_type) -> TransRes<Self>
                 {
                     Self::from_genres(self.to_gen().real_scale(factor))
                 }
                         
-                fn abs(self) -> VecResult<Self>
+                fn abs(self) -> TransRes<Self>
                 {
                     Self::from_genres(self.to_gen().abs()) 
                 }
                             
-                fn to_complex(self) -> VecResult<Self::ComplexPartner>
+                fn to_complex(self) -> TransRes<Self::ComplexPartner>
                 {
                     Self::ComplexPartner::from_genres(self.to_gen().to_complex()) 
                 }
                 
-                fn wrap(self, divisor: $data_type) -> VecResult<Self>
+                fn wrap(self, divisor: $data_type) -> TransRes<Self>
                 {
                     Self::from_genres(self.to_gen().wrap(divisor))
                 }
                 
-                fn unwrap(self, divisor: $data_type) -> VecResult<Self>
+                fn unwrap(self, divisor: $data_type) -> TransRes<Self>
                 {
                     Self::from_genres(self.to_gen().unwrap(divisor))
                 }
@@ -58,7 +58,7 @@ macro_rules! define_real_operations_forward {
                     self.to_gen_borrow().real_sum_sq()
                 }
                 
-                fn map_inplace_real<A, F>(self, argument: A, f: F) -> VecResult<Self>
+                fn map_inplace_real<A, F>(self, argument: A, f: F) -> TransRes<Self>
                     where A: Sync + Copy + Send,
                           F: Fn($data_type, usize, A) -> $data_type + 'static + Sync {
                     Self::from_genres(self.to_gen().map_inplace_real(argument, f))
@@ -100,7 +100,7 @@ macro_rules! define_real_operations_forward {
                     unsafe { mem::transmute(other) }
                 }
                 
-                fn from_genres(other: VecResult<$gen_type<$data_type>>) -> VecResult<$name<$data_type>>
+                fn from_genres(other: TransRes<$gen_type<$data_type>>) -> TransRes<$name<$data_type>>
                 {
                     match other {
                         Ok(v) => Ok($name::<$data_type>::from_gen(v)),
@@ -110,13 +110,13 @@ macro_rules! define_real_operations_forward {
             }
             
             impl ScaleOps<$data_type> for $name<$data_type> {
-                fn scale(self, offset: $data_type) -> VecResult<Self> {
+                fn scale(self, offset: $data_type) -> TransRes<Self> {
                     self.real_scale(offset)
                 }
             }
             
             impl OffsetOps<$data_type> for $name<$data_type> {
-                fn offset(self, offset: $data_type) -> VecResult<Self> {
+                fn offset(self, offset: $data_type) -> TransRes<Self> {
                     self.real_offset(offset)
                 }
             }
@@ -146,7 +146,7 @@ macro_rules! define_real_operations_forward {
             }
             
             impl VectorIter<$data_type> for $name<$data_type> {
-                fn map_inplace<A, F>(self, argument: A, map: F) -> VecResult<Self>
+                fn map_inplace<A, F>(self, argument: A, map: F) -> TransRes<Self>
                     where A: Sync + Copy + Send,
                           F: Fn($data_type, usize, A) -> $data_type + 'static + Sync {
                     self.map_inplace_real(argument, map)

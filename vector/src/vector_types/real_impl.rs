@@ -1,7 +1,7 @@
 use multicore_support::{Chunk, Complexity};
 use super::definitions::{
     DataVector,
-    VecResult,
+    TransRes,
     ErrorReason,
     ScalarResult,
     Statistics,
@@ -26,25 +26,25 @@ macro_rules! add_real_impl {
             {
                 type ComplexPartner = Self;
                 
-                fn real_offset(self, offset: $data_type) -> VecResult<Self>
+                fn real_offset(self, offset: $data_type) -> TransRes<Self>
                 {
                     assert_real!(self);
                     self.simd_real_operation(|x, y| x.add_real(y), |x, y| x + y, offset, Complexity::Small)
                 }
                 
-                fn real_scale(self, factor: $data_type) -> VecResult<Self>
+                fn real_scale(self, factor: $data_type) -> TransRes<Self>
                 {
                     // This operation actually also works for complex vectors so we allow that
                     self.simd_real_operation(|x, y| x.scale_real(y), |x, y| x * y, factor, Complexity::Small)
                 }
                 
-                fn abs(self) -> VecResult<Self>
+                fn abs(self) -> TransRes<Self>
                 {
                     assert_real!(self);
                     self.simd_real_operation(|x, _arg| (x * x).sqrt(), |x, _arg| x.abs(), (), Complexity::Small)
                 }
                 
-                fn to_complex(self) -> VecResult<Self>
+                fn to_complex(self) -> TransRes<Self>
                 {
                     assert_real!(self);
                     let result = self.zero_interleave(2);
@@ -60,13 +60,13 @@ macro_rules! add_real_impl {
                     }
                 }
                 
-                fn wrap(self, divisor: $data_type) -> VecResult<Self>
+                fn wrap(self, divisor: $data_type) -> TransRes<Self>
                 {
                     assert_real!(self);
                     self.pure_real_operation(|x, y| x % y, divisor, Complexity::Small)
                 }
                 
-                fn unwrap(mut self, divisor: $data_type) -> VecResult<Self>
+                fn unwrap(mut self, divisor: $data_type) -> TransRes<Self>
                 {
                     {
                         assert_real!(self);
@@ -95,7 +95,7 @@ macro_rules! add_real_impl {
                     Ok(self)
                 }
                 
-                fn map_inplace_real<A, F>(mut self, argument: A, f: F) -> VecResult<Self>
+                fn map_inplace_real<A, F>(mut self, argument: A, f: F) -> TransRes<Self>
                     where A: Sync + Copy + Send,
                           F: Fn($data_type, usize, A) -> $data_type + 'static + Sync {
                     {
@@ -336,13 +336,13 @@ macro_rules! add_real_impl {
             }
             
             impl ScaleOps<$data_type> for GenericDataVector<$data_type> {
-                fn scale(self, offset: $data_type) -> VecResult<Self> {
+                fn scale(self, offset: $data_type) -> TransRes<Self> {
                     self.real_scale(offset)
                 }
             }
             
             impl OffsetOps<$data_type> for GenericDataVector<$data_type> {
-                fn offset(self, offset: $data_type) -> VecResult<Self> {
+                fn offset(self, offset: $data_type) -> TransRes<Self> {
                     self.real_offset(offset)
                 }
             }
@@ -372,7 +372,7 @@ macro_rules! add_real_impl {
             }
             
             impl VectorIter<$data_type> for GenericDataVector<$data_type> {
-                fn map_inplace<A, F>(self, argument: A, map: F) -> VecResult<Self>
+                fn map_inplace<A, F>(self, argument: A, map: F) -> TransRes<Self>
                     where A: Sync + Copy + Send,
                           F: Fn($data_type, usize, A) -> $data_type + 'static + Sync {
                     self.map_inplace_real(argument, map)

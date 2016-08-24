@@ -11,21 +11,21 @@ macro_rules! define_complex_operations_forward {
                     self.to_gen_borrow().complex_data()
                 }
                 
-                fn complex_offset(self, offset: Complex<$data_type>) -> VecResult<Self>
+                fn complex_offset(self, offset: Complex<$data_type>) -> TransRes<Self>
                 {
                     Self::from_genres(self.to_gen().complex_offset(offset))
                 }
                     
-                fn complex_scale(self, factor: Complex<$data_type>) -> VecResult<Self>
+                fn complex_scale(self, factor: Complex<$data_type>) -> TransRes<Self>
                 {
                     Self::from_genres(self.to_gen().complex_scale(factor))
                 }
                 
-                fn multiply_complex_exponential(self, a: $data_type, b: $data_type) -> VecResult<Self> {
+                fn multiply_complex_exponential(self, a: $data_type, b: $data_type) -> TransRes<Self> {
                     Self::from_genres(self.to_gen().multiply_complex_exponential(a, b))
                 }
                 
-                fn magnitude(self) -> VecResult<Self::RealPartner>
+                fn magnitude(self) -> TransRes<Self::RealPartner>
                 {
                     Self::RealPartner::from_genres(self.to_gen().magnitude())
                 }
@@ -35,22 +35,22 @@ macro_rules! define_complex_operations_forward {
                     self.to_gen_borrow().get_magnitude(destination.to_gen_mut_borrow())
                 }
                 
-                fn magnitude_squared(self) -> VecResult<Self::RealPartner>
+                fn magnitude_squared(self) -> TransRes<Self::RealPartner>
                 {
                     Self::RealPartner::from_genres(self.to_gen().magnitude_squared())
                 }
                 
-                fn conj(self) -> VecResult<Self>
+                fn conj(self) -> TransRes<Self>
                 {
                     Self::from_genres(self.to_gen().conj())
                 }
                 
-                fn to_real(self) -> VecResult<Self::RealPartner>
+                fn to_real(self) -> TransRes<Self::RealPartner>
                 {
                     Self::RealPartner::from_genres(self.to_gen().to_real())
                 }
         
-                fn to_imag(self) -> VecResult<Self::RealPartner>
+                fn to_imag(self) -> TransRes<Self::RealPartner>
                 {
                     Self::RealPartner::from_genres(self.to_gen().to_imag())
                 }    
@@ -65,7 +65,7 @@ macro_rules! define_complex_operations_forward {
                     self.to_gen_borrow().get_imag(destination.to_gen_mut_borrow())
                 }
                 
-                fn phase(self) -> VecResult<Self::RealPartner>
+                fn phase(self) -> TransRes<Self::RealPartner>
                 {
                     Self::RealPartner::from_genres(self.to_gen().phase())
                 }
@@ -75,7 +75,7 @@ macro_rules! define_complex_operations_forward {
                     self.to_gen_borrow().get_phase(destination.to_gen_mut_borrow())
                 }
                 
-                fn map_inplace_complex<A, F>(self, argument: A, f: F) -> VecResult<Self>
+                fn map_inplace_complex<A, F>(self, argument: A, f: F) -> TransRes<Self>
                     where A: Sync + Copy + Send,
                           F: Fn(Complex<$data_type>, usize, A) -> Complex<$data_type> + 'static + Sync {
                     Self::from_genres(self.to_gen().map_inplace_complex(argument, f))
@@ -122,11 +122,11 @@ macro_rules! define_complex_operations_forward {
                     self.to_gen_borrow().get_mag_phase(mag.to_gen_mut_borrow(), phase.to_gen_mut_borrow())
                 }
                 
-                fn set_real_imag(self, real: &Self::RealPartner, imag: &Self::RealPartner) -> VecResult<Self> {
+                fn set_real_imag(self, real: &Self::RealPartner, imag: &Self::RealPartner) -> TransRes<Self> {
                     Self::from_genres(self.to_gen().set_real_imag(real.to_gen_borrow(), imag.to_gen_borrow()))
                 }
                 
-                fn set_mag_phase(self, mag: &Self::RealPartner, phase: &Self::RealPartner) -> VecResult<Self> {
+                fn set_mag_phase(self, mag: &Self::RealPartner, phase: &Self::RealPartner) -> TransRes<Self> {
                     Self::from_genres(self.to_gen().set_mag_phase(mag.to_gen_borrow(), phase.to_gen_borrow()))
                 }
             }
@@ -148,7 +148,7 @@ macro_rules! define_complex_operations_forward {
                     unsafe { mem::transmute(other) }
                 }
                 
-                fn from_genres(other: VecResult<$gen_type<$data_type>>) -> VecResult<Self>
+                fn from_genres(other: TransRes<$gen_type<$data_type>>) -> TransRes<Self>
                 {
                     match other {
                         Ok(v) => Ok($name::<$data_type>::from_gen(v)),
@@ -158,13 +158,13 @@ macro_rules! define_complex_operations_forward {
             }
             
             impl ScaleOps<Complex<$data_type>> for $name<$data_type> {
-                fn scale(self, offset: Complex<$data_type>) -> VecResult<Self> {
+                fn scale(self, offset: Complex<$data_type>) -> TransRes<Self> {
                     self.complex_scale(offset)
                 }
             }
             
             impl OffsetOps<Complex<$data_type>> for $name<$data_type> {
-                fn offset(self, offset: Complex<$data_type>) -> VecResult<Self> {
+                fn offset(self, offset: Complex<$data_type>) -> TransRes<Self> {
                     self.complex_offset(offset)
                 }
             }
@@ -194,7 +194,7 @@ macro_rules! define_complex_operations_forward {
             }
             
             impl VectorIter<Complex<$data_type>> for $name<$data_type> {
-                fn map_inplace<A, F>(self, argument: A, map: F) -> VecResult<Self>
+                fn map_inplace<A, F>(self, argument: A, map: F) -> TransRes<Self>
                     where A: Sync + Copy + Send,
                           F: Fn(Complex<$data_type>, usize, A) -> Complex<$data_type> + 'static + Sync {
                     self.map_inplace_complex(argument, map)

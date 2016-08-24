@@ -1,7 +1,7 @@
 use multicore_support::{Chunk, Complexity};
 use super::definitions::{
     DataVector,
-    VecResult,
+    TransRes,
     VoidResult,
     ErrorReason,
     ScalarResult,
@@ -32,20 +32,20 @@ macro_rules! add_complex_impl {
                     Self::array_to_complex(&self.data[0..len])
                 }
                 
-                fn complex_offset(self, offset: Complex<$data_type>)  -> VecResult<Self>
+                fn complex_offset(self, offset: Complex<$data_type>)  -> TransRes<Self>
                 {
                     assert_complex!(self);
                     let vector_offset = $reg::from_complex(offset);
                     self.simd_complex_operation(|x,y| x + y, |x,y| x + Complex::<$data_type>::new(y.extract(0), y.extract(1)), vector_offset, Complexity::Small)
                 }
                 
-                fn complex_scale(self, factor: Complex<$data_type>) -> VecResult<Self>
+                fn complex_scale(self, factor: Complex<$data_type>) -> TransRes<Self>
                 {
                     assert_complex!(self);
                     self.simd_complex_operation(|x,y| x.scale_complex(y), |x,y| x * y, factor, Complexity::Small)
                 }
                 
-                fn multiply_complex_exponential(mut self, a: $data_type, b: $data_type) -> VecResult<Self>
+                fn multiply_complex_exponential(mut self, a: $data_type, b: $data_type) -> TransRes<Self>
                 {
                     assert_complex!(self);
                     {
@@ -84,7 +84,7 @@ macro_rules! add_complex_impl {
                     Ok(self)
                 }
                 
-                fn magnitude(self) -> VecResult<Self>
+                fn magnitude(self) -> TransRes<Self>
                 {
                     assert_complex!(self);
                     self.simd_complex_to_real_operation(|x,_arg| x.complex_abs(), |x,_arg| x.norm(), (), Complexity::Small)
@@ -130,26 +130,26 @@ macro_rules! add_complex_impl {
                     Ok(())
                 }
                 
-                fn magnitude_squared(self) -> VecResult<Self>
+                fn magnitude_squared(self) -> TransRes<Self>
                 {
                     assert_complex!(self);
                     self.simd_complex_to_real_operation(|x,_arg| x.complex_abs_squared(), |x,_arg| x.re * x.re + x.im * x.im, (), Complexity::Small)
                 }
                 
-                fn conj(self) -> VecResult<Self>
+                fn conj(self) -> TransRes<Self>
                 {
                     assert_complex!(self);
                     let factor = $reg::from_complex(Complex::<$data_type>::new(1.0, -1.0));
                     self.simd_complex_operation(|x,y| x * y, |x,_| x.conj(), factor, Complexity::Small)
                 }
                 
-                fn to_real(self) -> VecResult<Self>
+                fn to_real(self) -> TransRes<Self>
                 {
                     assert_complex!(self);
                     self.pure_complex_to_real_operation(|x,_arg|x.re, (), Complexity::Small)
                 }
             
-                fn to_imag(self) -> VecResult<Self>
+                fn to_imag(self) -> TransRes<Self>
                 {
                     assert_complex!(self);
                     self.pure_complex_to_real_operation(|x,_arg|x.im, (), Complexity::Small)
@@ -173,7 +173,7 @@ macro_rules! add_complex_impl {
                     self.pure_complex_into_real_target_operation(destination, |x,_arg|x.im, (), Complexity::Small)
                 }
                 
-                fn phase(self) -> VecResult<Self>
+                fn phase(self) -> TransRes<Self>
                 {
                     assert_complex!(self);
                     self.pure_complex_to_real_operation(|x,_arg|x.arg(), (), Complexity::Small)
@@ -188,7 +188,7 @@ macro_rules! add_complex_impl {
                     self.pure_complex_into_real_target_operation(destination, |x,_arg|x.arg(), (), Complexity::Small)
                 }
                 
-                fn map_inplace_complex<A, F>(mut self, argument: A, f: F) -> VecResult<Self>
+                fn map_inplace_complex<A, F>(mut self, argument: A, f: F) -> TransRes<Self>
                     where A: Sync + Copy + Send,
                           F: Fn(Complex<$data_type>, usize, A) -> Complex<$data_type> + 'static + Sync {
                     {
@@ -401,7 +401,7 @@ macro_rules! add_complex_impl {
                     Ok(())
                 }
                 
-                fn set_real_imag(mut self, real: &Self::RealPartner, imag: &Self::RealPartner) -> VecResult<Self> {
+                fn set_real_imag(mut self, real: &Self::RealPartner, imag: &Self::RealPartner) -> TransRes<Self> {
                     {
                         reject_if!(self, real.len() != imag.len(), ErrorReason::InvalidArgumentLength);
                         self.reallocate(2 * real.len());
@@ -419,7 +419,7 @@ macro_rules! add_complex_impl {
                     Ok(self)
                 }
                 
-                fn set_mag_phase(mut self, mag: &Self::RealPartner, phase: &Self::RealPartner) -> VecResult<Self> {
+                fn set_mag_phase(mut self, mag: &Self::RealPartner, phase: &Self::RealPartner) -> TransRes<Self> {
                     {
                         reject_if!(self, mag.len() != phase.len(), ErrorReason::InvalidArgumentLength);
                         self.reallocate(2 * mag.len());
@@ -538,13 +538,13 @@ macro_rules! add_complex_impl {
             }
             
             impl ScaleOps<Complex<$data_type>> for GenericDataVector<$data_type> {
-                fn scale(self, offset: Complex<$data_type>) -> VecResult<Self> {
+                fn scale(self, offset: Complex<$data_type>) -> TransRes<Self> {
                     self.complex_scale(offset)
                 }
             }
             
             impl OffsetOps<Complex<$data_type>> for GenericDataVector<$data_type> {
-                fn offset(self, offset: Complex<$data_type>) -> VecResult<Self> {
+                fn offset(self, offset: Complex<$data_type>) -> TransRes<Self> {
                     self.complex_offset(offset)
                 }
             }
@@ -574,7 +574,7 @@ macro_rules! add_complex_impl {
             }
             
             impl VectorIter<Complex<$data_type>> for GenericDataVector<$data_type> {
-                fn map_inplace<A, F>(self, argument: A, map: F) -> VecResult<Self>
+                fn map_inplace<A, F>(self, argument: A, map: F) -> TransRes<Self>
                     where A: Sync + Copy + Send,
                           F: Fn(Complex<$data_type>, usize, A) -> Complex<$data_type> + 'static + Sync {
                     self.map_inplace_complex(argument, map)

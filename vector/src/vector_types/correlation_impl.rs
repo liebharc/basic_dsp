@@ -2,7 +2,7 @@ use super::definitions::{
     DataVectorDomain,
     ErrorReason,
     DataVector,
-    VecResult,
+    TransRes,
     PaddingOption};
 use RealNumber;
 use super::{
@@ -44,7 +44,7 @@ use super::{
 /// This functionality has been recently added in order to find out if the definitions are consistent.
 /// However the actual implementation is lacking tests.
 /// # Failures
-/// VecResult may report the following `ErrorReason` members:
+/// TransRes may report the following `ErrorReason` members:
 /// 
 /// 1. `VectorMustBeComplex`: if `self` is in real number space.
 /// 3. `VectorMetaDataMustAgree`: in case `self` and `function` are not in the same number space and same domain.
@@ -55,16 +55,16 @@ pub trait CrossCorrelation<T> : DataVector<T>
     /// 
     /// 1. Calculate the plain FFT
     /// 2. Calculate the complex conjugate
-    fn prepare_argument(self) -> VecResult<Self::FreqPartner>;
+    fn prepare_argument(self) -> TransRes<Self::FreqPartner>;
     
     /// Prepares an argument to be used for convolution. The argument is zero padded to length of `2 * self.points() - 1`
     /// and then the same operations are performed as described for `prepare_argument`.
-    fn prepare_argument_padded(self) -> VecResult<Self::FreqPartner>;
+    fn prepare_argument_padded(self) -> TransRes<Self::FreqPartner>;
      
     /// Calculates the correlation between `self` and `other`. `other` needs to be a time vector which
     /// went through one of the prepare functions `prepare_argument` or `prepare_argument_padded`. See also the 
     /// trait description for more details.
-    fn correlate(self, other: &Self::FreqPartner) -> VecResult<Self>;
+    fn correlate(self, other: &Self::FreqPartner) -> TransRes<Self>;
 }
 
 macro_rules! define_correlation_impl {
@@ -73,19 +73,19 @@ macro_rules! define_correlation_impl {
             impl CrossCorrelation<$data_type> for GenericDataVector<$data_type> {
                 type FreqPartner = Self;
                 
-                fn prepare_argument(self) -> VecResult<Self::FreqPartner> {
+                fn prepare_argument(self) -> TransRes<Self::FreqPartner> {
                     self.plain_fft()
                     .and_then(|v|v.conj())
                 }
     
-                fn prepare_argument_padded(self) -> VecResult<Self::FreqPartner> {
+                fn prepare_argument_padded(self) -> TransRes<Self::FreqPartner> {
                     let points = self.points();
                     self.zero_pad(2 * points - 1, PaddingOption::Surround)
                     .and_then(|v|v.plain_fft())
                     .and_then(|v|v.conj())
                 }
                 
-                fn correlate(self, other: &Self::FreqPartner) -> VecResult<Self> {
+                fn correlate(self, other: &Self::FreqPartner) -> TransRes<Self> {
                     assert_complex!(self);
                     assert_time!(self);
                     let points = other.points();
@@ -111,15 +111,15 @@ macro_rules! define_correlation_forward {
         $( 
             impl CrossCorrelation<$data_type> for $name<$data_type> {
                 type FreqPartner = ComplexFreqVector<$data_type>;
-                fn prepare_argument(self) -> VecResult<Self::FreqPartner> {
+                fn prepare_argument(self) -> TransRes<Self::FreqPartner> {
                     Self::FreqPartner::from_genres(self.to_gen().prepare_argument())
                 }
     
-                fn prepare_argument_padded(self) -> VecResult<Self::FreqPartner> {
+                fn prepare_argument_padded(self) -> TransRes<Self::FreqPartner> {
                     Self::FreqPartner::from_genres(self.to_gen().prepare_argument_padded())
                 }
                 
-                fn correlate(self, other: &Self::FreqPartner) -> VecResult<Self> {
+                fn correlate(self, other: &Self::FreqPartner) -> TransRes<Self> {
                     Self::from_genres(self.to_gen().correlate(other.to_gen_borrow()))
                 }
             }
