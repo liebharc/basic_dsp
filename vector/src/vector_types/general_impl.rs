@@ -22,7 +22,7 @@ macro_rules! impl_real_complex_dispatch {
         fn $function_name(self) -> TransRes<Self>
         {
             if self.is_complex() {
-                Self::$complex_op(self)  
+                Self::$complex_op(self)
             }
             else {
                 Self::$real_op(self)
@@ -37,7 +37,7 @@ macro_rules! impl_real_complex_arg_dispatch {
         fn $function_name(self, $arg: $arg_type) -> TransRes<Self>
         {
             if self.is_complex() {
-                Self::$complex_op(self, $arg)  
+                Self::$complex_op(self, $arg)
             }
             else {
                 Self::$real_op(self, $arg)
@@ -52,7 +52,7 @@ macro_rules! impl_function_call_real_complex {
         {
             self.pure_real_operation(|v, _arg| v.$real_op(), (), Complexity::Small)
         }
-        
+
         fn $complex_name(self) -> TransRes<Self>
         {
             self.pure_complex_operation(|v, _arg| v.$complex_op(), (), Complexity::Small)
@@ -66,7 +66,7 @@ macro_rules! impl_function_call_real_arg_complex {
         {
             self.pure_real_operation(|v, arg| v.$real_op(arg), value, Complexity::Medium)
         }
-        
+
         fn $complex_name(self, value: $data_type) -> TransRes<Self>
         {
             self.pure_complex_operation(|v, arg| v.$complex_op(arg), value, Complexity::Medium)
@@ -82,7 +82,7 @@ macro_rules! impl_binary_vector_operation {
                 let len = self.len();
                 reject_if!(self, len != $arg_name.len(), ErrorReason::InputMustHaveTheSameSize);
                 assert_meta_data!(self, $arg_name);
-                
+
                 let data_length = self.len();
                 let scalar_length = data_length % $reg::len();
                 let vectorization_length = data_length - scalar_length;
@@ -90,13 +90,13 @@ macro_rules! impl_binary_vector_operation {
                 let other = &$arg_name.data;
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
-                    &other[0..vectorization_length], $reg::len(), 
-                    &mut array[0..vectorization_length], $reg::len(), (), 
+                    &other[0..vectorization_length], $reg::len(),
+                    &mut array[0..vectorization_length], $reg::len(), (),
                     |original, range, target, _arg| {
                         let mut i = 0;
                         let mut j = range.start;
                         while i < target.len()
-                        { 
+                        {
                             let vector1 = $reg::load_unchecked(original, j);
                             let vector2 = $reg::load_unchecked(target, i);
                             let result = vector2.$simd_op(vector1);
@@ -112,7 +112,7 @@ macro_rules! impl_binary_vector_operation {
                     i += 1;
                 }
             }
-            
+
             Ok(self)
         }
     }
@@ -126,7 +126,7 @@ macro_rules! impl_binary_complex_vector_operation {
                 let len = self.len();
                 reject_if!(self, len != $arg_name.len(), ErrorReason::InputMustHaveTheSameSize);
                 assert_meta_data!(self, $arg_name);
-                
+
                 let data_length = self.len();
                 let scalar_length = data_length % $reg::len();
                 let vectorization_length = data_length - scalar_length;
@@ -134,13 +134,13 @@ macro_rules! impl_binary_complex_vector_operation {
                 let other = &$arg_name.data;
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
-                    &other[0..vectorization_length], $reg::len(), 
+                    &other[0..vectorization_length], $reg::len(),
                     &mut array[0..vectorization_length], $reg::len(), (),
                     |original, range, target, _arg| {
                         let mut i = 0;
                         let mut j = range.start;
                         while i < target.len()
-                        { 
+                        {
                             let vector1 = $reg::load_unchecked(original, j);
                             let vector2 = $reg::load_unchecked(target, i);
                             let result = vector2.$simd_op(vector1);
@@ -160,7 +160,7 @@ macro_rules! impl_binary_complex_vector_operation {
                     i += 2;
                 }
             }
-            
+
             Ok(self)
         }
     }
@@ -174,7 +174,7 @@ macro_rules! impl_binary_smaller_vector_operation {
                 let len = self.len();
                 reject_if!(self, len % $arg_name.len() != 0, ErrorReason::InvalidArgumentLength);
                 assert_meta_data!(self, $arg_name);
-                
+
                 let data_length = self.len();
                 let scalar_length = data_length % $reg::len();
                 let vectorization_length = data_length - scalar_length;
@@ -182,18 +182,18 @@ macro_rules! impl_binary_smaller_vector_operation {
                 let other = &$arg_name.data;
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
-                    &other, $reg::len(), 
+                    &other, $reg::len(),
                     &mut array[0..vectorization_length], $reg::len(), (),
                     |original, range, target, _arg| {
-                        // This parallelization likely doesn't make sense for the use 
+                        // This parallelization likely doesn't make sense for the use
                         // case which we have in mind with this implementation
                         // so we likely have to revisit this code piece in future
                         let mut i = 0;
                         let mut j = range.start;
                         while i < target.len()
-                        { 
-                            let vector1 = 
-                                if j + $reg::len() < original.len() { 
+                        {
+                            let vector1 =
+                                if j + $reg::len() < original.len() {
                                     $reg::load_unchecked(original, j)
                                 } else {
                                     $reg::load_wrap_unchecked(original, j)
@@ -212,7 +212,7 @@ macro_rules! impl_binary_smaller_vector_operation {
                     i += 1;
                 }
             }
-            
+
             Ok(self)
         }
     }
@@ -226,7 +226,7 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
                 let len = self.len();
                 reject_if!(self, len % $arg_name.len() != 0, ErrorReason::InvalidArgumentLength);
                 assert_meta_data!(self, $arg_name);
-                
+
                 let data_length = self.len();
                 let scalar_length = data_length % $reg::len();
                 let vectorization_length = data_length - scalar_length;
@@ -234,18 +234,18 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
                 let other = &$arg_name.data;
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
-                    &other, $reg::len(), 
+                    &other, $reg::len(),
                     &mut array[0..vectorization_length], $reg::len(), (),
                     |original, range, target, _arg| {
-                        // This parallelization likely doesn't make sense for the use 
+                        // This parallelization likely doesn't make sense for the use
                         // case which we have in mind with this implementation
                         // so we likely have to revisit this code piece in future
                         let mut i = 0;
                         let mut j = range.start;
                         while i < target.len()
-                        { 
-                            let vector1 = 
-                                if j + $reg::len() < original.len() { 
+                        {
+                            let vector1 =
+                                if j + $reg::len() < original.len() {
                                     $reg::load_unchecked(original, j)
                                 } else {
                                     $reg::load_wrap_unchecked(original, j)
@@ -268,7 +268,7 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
                     i += 2;
                 }
             }
-            
+
             Ok(self)
         }
     }
@@ -281,7 +281,7 @@ macro_rules! vector_diff_par {
         }
         Chunk::from_src_to_dest(
             Complexity::Small, &$self_.multicore_settings,
-            &$org[0..$data_length], $step, 
+            &$org[0..$data_length], $step,
             &mut $target[0..$data_length], $step, (),
             |original, range, target, _arg| {
                 let mut i = 0;
@@ -292,15 +292,15 @@ macro_rules! vector_diff_par {
                     for k in 0..$step {
                         target[k] = original[k];
                     }
-                }     
-                
-                let len = 
+                }
+
+                let len =
                     if !$keep_start && range.end >= original.len() - 1 {
                         target.len() - $step
                     } else {
                         target.len()
-                    };     
-                                
+                    };
+
                 while i < len {
                     target[i] = if $keep_start { original[j] - original[j - $step] } else { original[j + $step] - original[i] };
                     i += 1;
@@ -327,7 +327,7 @@ macro_rules! vector_diff {
             Ok($self_.swap_data_temp())
         }
     }
-}      
+}
 
 macro_rules! zero_interleave {
     ($self_: ident, $data_type: ident, $step: ident, $tuple: expr) => {
@@ -335,7 +335,7 @@ macro_rules! zero_interleave {
             if $step <= 1 {
                 return Ok($self_);
             }
-            
+
             {
                 let step = $step as usize;
                 let old_len = $self_.len();
@@ -345,7 +345,7 @@ macro_rules! zero_interleave {
                 let source = &$self_.data;
                 Chunk::from_src_to_dest(
                     Complexity::Small, &$self_.multicore_settings,
-                    &source[0..old_len], $tuple, 
+                    &source[0..old_len], $tuple,
                     &mut target[0..new_len], $tuple * step, (),
                     move|original, range, target, _arg| {
                          // Zero target
@@ -362,7 +362,7 @@ macro_rules! zero_interleave {
                             unsafe {
                                 ptr::copy(original_ptr, target_ptr, $tuple);
                             }
-                            
+
                             j += $tuple;
                             i += skip;
                         }
@@ -371,12 +371,12 @@ macro_rules! zero_interleave {
             Ok($self_.swap_data_temp())
         }
     }
-}      
+}
 
 macro_rules! add_general_impl {
     ($($data_type:ident, $reg:ident);*)
      =>
-     {     
+     {
         $(
             impl GenericDataVec<$data_type> {
                 /// Same as `new` but also allows to set multicore options.
@@ -392,12 +392,12 @@ macro_rules! add_general_impl {
                         multicore_settings: options
                     }
                 }
-                
+
                 /// Same as `from_array` but also allows to set multicore options.
                 pub fn from_array_with_options(is_complex: bool, domain: DataVecDomain, data: &[$data_type], options: MultiCoreSettings) -> Self {
                     let length = data.len();
                     GenericDataVec
-                    { 
+                    {
                         data: data.to_vec(),
                         temp: if options.early_temp_allocation { vec![0.0; length] } else { Vec::new() },
                         delta: 1.0,
@@ -407,12 +407,12 @@ macro_rules! add_general_impl {
                         multicore_settings: options
                     }
                 }
-                
+
                 /// Same as `from_array_no_copy` but also allows to set multicore options.
                 pub fn from_array_no_copy_with_options(is_complex: bool, domain: DataVecDomain, data: Vec<$data_type>, options: MultiCoreSettings) -> Self {
                     let length = data.len();
                     GenericDataVec
-                    { 
+                    {
                         data: data,
                         temp: if options.early_temp_allocation { vec![0.0; length] } else { Vec::new() },
                         delta: 1.0,
@@ -422,12 +422,12 @@ macro_rules! add_general_impl {
                         multicore_settings: options
                     }
                 }
-                
+
                 /// Same as `from_array_with_delta` but also allows to set multicore options.
                 pub fn from_array_with_delta_and_options(is_complex: bool, domain: DataVecDomain, data: &[$data_type], delta: $data_type, options: MultiCoreSettings) -> Self {
                     let length = data.len();
                     GenericDataVec
-                    { 
+                    {
                         data: data.to_vec(),
                         temp: if options.early_temp_allocation { vec![0.0; length] } else { Vec::new() },
                         delta: delta,
@@ -437,12 +437,12 @@ macro_rules! add_general_impl {
                         multicore_settings: options
                     }
                 }
-                
+
                 /// Same as `from_array_no_copy_with_delta` but also allows to set multicore options.
                 pub fn from_array_no_copy_with_delta_and_options(is_complex: bool, domain: DataVecDomain, data: Vec<$data_type>, delta: $data_type, options: MultiCoreSettings) -> Self {
                     let length = data.len();
                     GenericDataVec
-                    { 
+                    {
                         data: data,
                         temp: if options.early_temp_allocation { vec![0.0; length] } else { Vec::new() },
                         delta: delta,
@@ -452,33 +452,33 @@ macro_rules! add_general_impl {
                         multicore_settings: options
                     }
                 }
-                
+
                 /// Creates a new generic data vector from the given arguments.
                 pub fn new(is_complex: bool, domain: DataVecDomain, init_value: $data_type, length: usize, delta: $data_type) -> Self {
                     Self::new_with_options(is_complex, domain, init_value, length, delta, MultiCoreSettings::default())
                 }
-                
+
                 /// Creates a new generic data vector from the given arguments.
                 pub fn from_array(is_complex: bool, domain: DataVecDomain, data: &[$data_type]) -> Self {
                     Self::from_array_with_options(is_complex, domain, data, MultiCoreSettings::default())
                 }
-                
+
                 /// Creates a new generic data vector from the given arguments.
                 pub fn from_array_no_copy(is_complex: bool, domain: DataVecDomain, data: Vec<$data_type>) -> Self {
                     Self::from_array_no_copy_with_options(is_complex, domain, data, MultiCoreSettings::default())
                 }
-                
+
                 /// Creates a new generic data vector from the given arguments.
                 pub fn from_array_with_delta(is_complex: bool, domain: DataVecDomain, data: &[$data_type], delta: $data_type) -> Self {
                     Self::from_array_with_delta_and_options(is_complex, domain, data, delta, MultiCoreSettings::default())
                 }
-                
+
                 /// Creates a new generic data vector from the given arguments.
                 pub fn from_array_no_copy_with_delta(is_complex: bool, domain: DataVecDomain, data: Vec<$data_type>, delta: $data_type) -> Self {
                     Self::from_array_no_copy_with_delta_and_options(is_complex, domain, data, delta, MultiCoreSettings::default())
                 }
             }
-            
+
             impl GenericVectorOps<$data_type> for GenericDataVec<$data_type> {
                 impl_binary_vector_operation!($data_type, $reg, fn add_vector, summand, add, add);
                 impl_binary_smaller_vector_operation!($data_type, $reg, fn add_smaller_vector, summand, add, add);
@@ -490,7 +490,7 @@ macro_rules! add_general_impl {
                     let len = self.len();
                     reject_if!(self, len != factor.len(), ErrorReason::InputMustHaveTheSameSize);
                     assert_meta_data!(self, factor);
-                    
+
                     if self.is_complex
                     {
                         self.multiply_vector_complex(factor)
@@ -500,13 +500,13 @@ macro_rules! add_general_impl {
                         self.multiply_vector_real(factor)
                     }
                 }
-                
+
                 fn multiply_smaller_vector(self, factor: &Self) -> TransRes<Self>
                 {
                     let len = self.len();
                     reject_if!(self, len % factor.len() != 0, ErrorReason::InvalidArgumentLength);
                     assert_meta_data!(self, factor);
-                    
+
                     if self.is_complex
                     {
                         self.multiply_smaller_vector_complex(factor)
@@ -516,13 +516,13 @@ macro_rules! add_general_impl {
                         self.multiply_smaller_vector_real(factor)
                     }
                 }
-                
+
                 fn divide_vector(self, divisor: &Self) -> TransRes<Self>
                 {
                     let len = self.len();
                     reject_if!(self, len != divisor.len(), ErrorReason::InputMustHaveTheSameSize);
                     assert_meta_data!(self, divisor);
-                    
+
                     if self.is_complex
                     {
                         self.divide_vector_complex(divisor)
@@ -532,13 +532,13 @@ macro_rules! add_general_impl {
                         self.divide_vector_real(divisor)
                     }
                 }
-                
+
                 fn divide_smaller_vector(self, divisor: &Self) -> TransRes<Self>
                 {
                     let len = self.len();
                     reject_if!(self, len % divisor.len() != 0, ErrorReason::InvalidArgumentLength);
                     assert_meta_data!(self, divisor);
-                    
+
                     if self.is_complex
                     {
                         self.divide_smaller_vector_complex(divisor)
@@ -548,7 +548,7 @@ macro_rules! add_general_impl {
                         self.divide_smaller_vector_real(divisor)
                     }
                 }
-                
+
                 fn zero_pad(mut self, points: usize, option: PaddingOption) -> TransRes<Self>
                 {
                     {
@@ -580,7 +580,7 @@ macro_rules! add_general_impl {
                                     right *= 2;
                                     left *= 2;
                                 }
-                                
+
                                 unsafe {
                                     let src = &array[0] as *const $data_type;
                                     let dest = &mut array[left] as *mut $data_type;
@@ -600,7 +600,7 @@ macro_rules! add_general_impl {
                                     left *= 2;
                                     diff *= 2;
                                 }
-                                
+
                                 unsafe {
                                     let src = &array[left] as *const $data_type;
                                     let dest = &mut array[len-right] as *mut $data_type;
@@ -611,10 +611,10 @@ macro_rules! add_general_impl {
                             }
                         }
                     }
-                    
+
                     Ok(self)
                 }
-                
+
                 fn reverse(mut self) -> TransRes<Self> {
                     {
                         let len = self.len();
@@ -633,10 +633,10 @@ macro_rules! add_general_impl {
                             }
                         }
                     }
-                    
+
                     Ok(self.swap_data_temp())
                 }
-                
+
                 fn zero_interleave(self, factor: u32) -> TransRes<Self> {
                     if self.is_complex {
                         self.zero_interleave_complex(factor)
@@ -644,17 +644,17 @@ macro_rules! add_general_impl {
                         self.zero_interleave_real(factor)
                     }
                 }
-                
+
                 fn diff(mut self) -> TransRes<Self>
                 {
                     vector_diff!(self, false)
                 }
-                
+
                 fn diff_with_start(mut self) -> TransRes<Self>
                 {
                     vector_diff!(self, true)
                 }
-                
+
                 fn cum_sum(mut self) -> TransRes<Self>
                 {
                     {
@@ -665,7 +665,7 @@ macro_rules! add_general_impl {
                         if self.is_complex {
                             j = 2;
                         }
-                        
+
                         while j < data_length {
                             data[j] = data[j] + data[i];
                             i += 1;
@@ -674,7 +674,7 @@ macro_rules! add_general_impl {
                     }
                     Ok(self)
                 }
-                
+
                 impl_real_complex_dispatch!(fn sqrt, real_sqrt, complex_sqrt);
                 impl_real_complex_dispatch!(fn square, real_square, complex_square);
                 impl_real_complex_arg_dispatch!(fn root, $data_type, degree, real_root, complex_root);
@@ -695,36 +695,23 @@ macro_rules! add_general_impl {
                 impl_real_complex_dispatch!(fn asinh, real_asinh, complex_asinh);
                 impl_real_complex_dispatch!(fn acosh, real_acosh, complex_acosh);
                 impl_real_complex_dispatch!(fn atanh, real_atanh, complex_atanh);
-                
+
                 fn swap_halves(self) -> TransRes<Self>
                 {
                    self.swap_halves_priv(true)
                 }
-                
-                fn overwrite_data(mut self, data: &[$data_type]) -> TransRes<Self> {
-                    {
-                        self.reallocate(data.len());
-                        let target = &mut self.data[0] as *mut $data_type;
-                        let source = &data[0] as *const $data_type;
-                        unsafe {
-                            ptr::copy(source, target, data.len());
-                        }
-                    }
-                    
-                    Ok(self)
-                }
-                
+
                 fn split_into(&self, targets: &mut [Box<Self>]) -> VoidResult {
                     let num_targets = targets.len();
                     let data_length = self.len();
                     if num_targets == 0 || data_length % num_targets != 0 {
                         return Err(ErrorReason::InvalidArgumentLength);
                     }
-                    
+
                     for i in 0..num_targets {
                         targets[i].reallocate(data_length / num_targets);
                     }
-                    
+
                     let data = &self.data;
                     if self.is_complex {
                         for i in 0..(data_length / 2) {
@@ -740,10 +727,10 @@ macro_rules! add_general_impl {
                             target[pos] = data[i];
                         }
                     }
-                    
+
                     Ok(())
                 }
-                
+
                 fn merge(mut self, sources: &[Box<Self>]) -> TransRes<Self> {
                     {
                         let num_sources = sources.len();
@@ -751,9 +738,9 @@ macro_rules! add_general_impl {
                         for i in 1..num_sources {
                             reject_if!(self, sources[0].len() != sources[i].len(), ErrorReason::InvalidArgumentLength);
                         }
-                        
+
                         self.reallocate(sources[0].len() * num_sources);
-                        
+
                         let data_length = self.len();
                         let data = &mut self.data;
                         if self.is_complex {
@@ -768,79 +755,79 @@ macro_rules! add_general_impl {
                                 let source = &sources[i % num_sources];
                                 let pos = i / num_sources;
                                 data[i] = source[pos];
-                            } 
+                            }
                         }
                     }
-                    
+
                     Ok(self)
                 }
             }
-            
-            impl GenericDataVec<$data_type> {       
+
+            impl GenericDataVec<$data_type> {
                 impl_binary_complex_vector_operation!($data_type, $reg, fn multiply_vector_complex, factor, mul_complex, mul);
-                impl_binary_smaller_complex_vector_operation!($data_type, $reg, fn multiply_smaller_vector_complex, factor, mul_complex, mul);  
+                impl_binary_smaller_complex_vector_operation!($data_type, $reg, fn multiply_smaller_vector_complex, factor, mul_complex, mul);
                 impl_binary_vector_operation!($data_type, $reg, fn multiply_vector_real, factor, mul, mul);
                 impl_binary_smaller_vector_operation!($data_type, $reg, fn multiply_smaller_vector_real, factor, mul, mul);
                 impl_binary_complex_vector_operation!($data_type, $reg, fn divide_vector_complex, divisor, div_complex, div);
                 impl_binary_smaller_complex_vector_operation!($data_type, $reg, fn divide_smaller_vector_complex, divisor, div_complex, div);
                 impl_binary_vector_operation!($data_type, $reg, fn divide_vector_real, divisor, div, div);
                 impl_binary_smaller_vector_operation!($data_type, $reg, fn divide_smaller_vector_real, divisor, div, div);
-                
+
                 fn zero_interleave_complex(mut self, factor: u32) -> TransRes<Self>
                 {
                     zero_interleave!(self, $data_type, factor, 2)
                 }
-                
+
                 fn zero_interleave_real(mut self, factor: u32) -> TransRes<Self>
                 {
                     zero_interleave!(self, $data_type, factor, 1)
                 }
-                
+
                 fn real_sqrt(self) -> TransRes<Self>
                 {
                     self.simd_real_operation(|x,_arg|x.sqrt(), |x,_arg|x.sqrt(), (), Complexity::Small)
                 }
-                
+
                 fn complex_sqrt(self) -> TransRes<Self>
                 {
                     self.pure_complex_operation(|x,_arg|x.sqrt(), (), Complexity::Small)
                 }
-                
+
                 fn real_square(self) -> TransRes<Self>
                 {
                     self.simd_real_operation(|x,_arg|x * x, |x,_arg|x * x, (), Complexity::Small)
                 }
-                
+
                 fn complex_square(self) -> TransRes<Self>
                 {
                     self.pure_complex_operation(|x,_arg|x * x, (), Complexity::Small)
                 }
-                
+
                 fn real_root(self, degree: $data_type) -> TransRes<Self>
                 {
                     self.pure_real_operation(|x,y|x.powf(1.0 / y), degree, Complexity::Medium)
                 }
-                
+
                 fn complex_root(self, base: $data_type) -> TransRes<Self>
                 {
                     self.pure_complex_operation(|x,y|x.powf(1.0 / y), base, Complexity::Medium)
                 }
-                
+
                 impl_function_call_real_arg_complex!($data_type; fn real_powf, powf; fn complex_powf, powf);
                 impl_function_call_real_complex!($data_type; fn real_ln, ln; fn complex_ln, ln);
                 impl_function_call_real_complex!($data_type; fn real_exp, exp; fn complex_exp, exp);
                 impl_function_call_real_arg_complex!($data_type; fn real_log, log; fn complex_log, log);
-                
+
                 fn real_expf(self, base: $data_type) -> TransRes<Self>
                 {
                     self.pure_real_operation(|x,y|y.powf(x), base, Complexity::Medium)
                 }
-                
+
                 fn complex_expf(self, base: $data_type) -> TransRes<Self>
                 {
                     self.pure_complex_operation(|x,y|x.expf(y), base, Complexity::Medium)
                 }
-                               
+
                 impl_function_call_real_complex!($data_type; fn real_sin, sin; fn complex_sin, sin);
                 impl_function_call_real_complex!($data_type; fn real_cos, cos; fn complex_cos, cos);
                 impl_function_call_real_complex!($data_type; fn real_tan, tan; fn complex_tan, tan);

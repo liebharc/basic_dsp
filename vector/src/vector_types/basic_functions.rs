@@ -4,7 +4,7 @@ macro_rules! add_basic_private_impl {
         $(
             impl GenericDataVec<$data_type> {
                 #[inline]
-                fn pure_real_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> TransRes<Self> 
+                fn pure_real_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> TransRes<Self>
                     where A: Sync + Copy + Send,
                         F: Fn($data_type, A) -> $data_type + 'static + Sync {
                     {
@@ -20,9 +20,9 @@ macro_rules! add_basic_private_impl {
                     }
                     Ok(self)
                 }
-                
+
                 #[inline]
-                fn simd_real_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> TransRes<Self> 
+                fn simd_real_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> TransRes<Self>
                     where A: Sync + Copy + Send,
                             F: Fn($reg, A) -> $reg + 'static + Sync,
                             G: Fn($data_type, A) -> $data_type + 'static + Sync {
@@ -33,7 +33,7 @@ macro_rules! add_basic_private_impl {
                         if vectorization_length > 0 {
                             Chunk::execute_partial(
                                 complexity, &self.multicore_settings,
-                                &mut array[scalar_left..vectorization_length], $reg::len(), argument, 
+                                &mut array[scalar_left..vectorization_length], $reg::len(), argument,
                                 move |array, argument| {
                                 let array = $reg::array_to_regs_mut(array);
                                 for reg in array {
@@ -52,9 +52,9 @@ macro_rules! add_basic_private_impl {
                     }
                     Ok(self)
                 }
-                
+
                 #[inline]
-                fn pure_complex_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> TransRes<Self> 
+                fn pure_complex_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> TransRes<Self>
                     where A: Sync + Copy + Send,
                         F: Fn(Complex<$data_type>, A) -> Complex<$data_type> + 'static + Sync {
                     {
@@ -71,18 +71,18 @@ macro_rules! add_basic_private_impl {
                     }
                     Ok(self)
                 }
-                
+
                 #[inline]
-                fn pure_complex_to_real_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> TransRes<Self> 
+                fn pure_complex_to_real_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> TransRes<Self>
                     where A: Sync + Copy + Send,
                         F: Fn(Complex<$data_type>, A) -> $data_type + 'static + Sync {
                     {
-                        let data_length = self.len();   
+                        let data_length = self.len();
                         let mut array = &mut self.data;
                         let mut temp = temp_mut!(self, data_length / 2);
                         Chunk::from_src_to_dest(
                             complexity, &self.multicore_settings,
-                            &mut array[0..data_length], 2, 
+                            &mut array[0..data_length], 2,
                             &mut temp[0..data_length / 2], 1, argument,
                             move |array, range, target, argument| {
                                 let array = Self::array_to_complex(&array[range.start..range.end]);
@@ -96,9 +96,9 @@ macro_rules! add_basic_private_impl {
                     }
                     Ok(self.swap_data_temp())
                 }
-                
+
                 #[inline]
-                fn simd_complex_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> TransRes<Self> 
+                fn simd_complex_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> TransRes<Self>
                     where A: Sync + Copy + Send,
                             F: Fn($reg, A) -> $reg + 'static + Sync,
                             G: Fn(Complex<$data_type>, A) -> Complex<$data_type> + 'static + Sync {
@@ -109,7 +109,7 @@ macro_rules! add_basic_private_impl {
                         if vectorization_length > 0 {
                             Chunk::execute_partial(
                                 complexity, &self.multicore_settings,
-                                &mut array[scalar_left..vectorization_length], $reg::len(), argument, 
+                                &mut array[scalar_left..vectorization_length], $reg::len(), argument,
                                 move |array, argument| {
                                 let array = $reg::array_to_regs_mut(array);
                                 for reg in array {
@@ -134,9 +134,9 @@ macro_rules! add_basic_private_impl {
                     }
                     Ok(self)
                 }
-                
+
                 #[inline]
-                fn simd_complex_to_real_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> TransRes<Self> 
+                fn simd_complex_to_real_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> TransRes<Self>
                     where A: Sync + Copy + Send,
                           F: Fn($reg, A) -> $reg + 'static + Sync,
                           G: Fn(Complex<$data_type>, A) -> $data_type + 'static + Sync {
@@ -148,7 +148,7 @@ macro_rules! add_basic_private_impl {
                         if vectorization_length > 0 {
                             Chunk::from_src_to_dest(
                             complexity, &self.multicore_settings,
-                            &mut array[scalar_left..vectorization_length], $reg::len(), 
+                            &mut array[scalar_left..vectorization_length], $reg::len(),
                             &mut temp[scalar_left/2..vectorization_length/2], $reg::len() / 2, argument,
                             move |array, range, target, argument| {
                                 let array = $reg::array_to_regs(&array[range.start..range.end]);
@@ -174,13 +174,13 @@ macro_rules! add_basic_private_impl {
                                 *dest = scalar_op(*src, argument);
                             }
                         }
-                        
+
                         self.is_complex = false;
                         self.valid_len = data_length / 2;
                     }
                     Ok(self.swap_data_temp())
                 }
-                
+
                 #[inline]
                 fn swap_halves_priv(mut self, forward: bool) -> TransRes<Self>
                 {
@@ -188,45 +188,45 @@ macro_rules! add_basic_private_impl {
                         let data_length = self.len();
                         let points = self.points();
                         let complex = self.is_complex;
-                        let elems_per_point = if complex { 2 } else { 1 };  
-                        let mut temp = temp_mut!(self, data_length);  
-                         
+                        let elems_per_point = if complex { 2 } else { 1 };
+                        let mut temp = temp_mut!(self, data_length);
+
                         // First half
-                        let len = 
+                        let len =
                             if forward {
-                                points / 2 * elems_per_point 
+                                points / 2 * elems_per_point
                             }
                             else {
-                                data_length - points / 2 * elems_per_point 
+                                data_length - points / 2 * elems_per_point
                             };
-                        let start = data_length - len; 
+                        let start = data_length - len;
                         let data = &self.data[start] as *const $data_type;
                         let target = &mut temp[0] as *mut $data_type;
                         unsafe {
                             ptr::copy(data, target, len);
                         }
-                        
+
                         // Second half
                         let data = &self.data[0] as *const $data_type;
-                        let start = len; 
+                        let start = len;
                         let len = data_length - len;
                         let target = &mut temp[start] as *mut $data_type;
                         unsafe {
                             ptr::copy(data, target, len);
                         }
                     }
-                    
+
                     Ok(self.swap_data_temp())
                 }
-                
+
                 fn multiply_function_priv<T,CMut,FA, F>(
-                    mut self, 
+                    mut self,
                     is_symmetric: bool,
                     ratio: $data_type,
                     convert_mut: CMut,
-                    function_arg: FA, 
+                    function_arg: FA,
                     fun: F) -> Self
-                        where 
+                        where
                             CMut: Fn(&mut [$data_type]) -> &mut [T],
                             FA: Copy + Sync + Send,
                             F: Fn(FA, $data_type)->T + 'static + Sync,
@@ -243,7 +243,7 @@ macro_rules! add_basic_private_impl {
                                 move |array, range, arg| {
                                     let scale = T::from(ratio);
                                     let offset = if points % 2 != 0 { 1 } else { 0 };
-                                    let max = (points - offset) as $data_type / 2.0; 
+                                    let max = (points - offset) as $data_type / 2.0;
                                     let mut j = -((points - offset) as $data_type) / 2.0 + (range.start as $data_type);
                                     for num in array {
                                         *num = (*num) * scale * fun(arg, j / max * ratio);
@@ -266,9 +266,9 @@ macro_rules! add_basic_private_impl {
                                     let len1 = array1.len();
                                     let len2 = array2.len();
                                     let offset = if points % 2 != 0 { 1 } else { 0 };
-                                    let max = (points - offset) as $data_type / 2.0; 
+                                    let max = (points - offset) as $data_type / 2.0;
                                     let mut j1 = -((points - offset) as $data_type) / 2.0 + range1.start as $data_type;
-                                    let mut j2 = ((points - offset) as $data_type) / 2.0 - (range2.end - 1) as $data_type; 
+                                    let mut j2 = ((points - offset) as $data_type) / 2.0 - (range2.end - 1) as $data_type;
                                     let mut i1 = 0;
                                     let mut i2 = 0;
                                     {
@@ -295,7 +295,7 @@ macro_rules! add_basic_private_impl {
                                         }
                                         j2 = j1;
                                     }
-                                    
+
                                     // Now we have to deal with differences in length
                                     // `common_length` is the number of iterations we spent
                                     // in the previous loop.
@@ -315,14 +315,14 @@ macro_rules! add_basic_private_impl {
                         self
                     }
                 }
-                
+
                 fn multiply_window_priv<T,CMut,FA, F>(
-                    mut self, 
+                    mut self,
                     is_symmetric: bool,
                     convert_mut: CMut,
-                    function_arg: FA, 
+                    function_arg: FA,
                     fun: F) -> Self
-                        where 
+                        where
                             CMut: Fn(&mut [$data_type]) -> &mut [T],
                             FA: Copy + Sync + Send,
                             F: Fn(FA, usize, usize)->T + 'static + Sync,
@@ -378,22 +378,8 @@ macro_rules! add_basic_private_impl {
                         self
                     }
                 }
-                
-                /// Reallocates the data inside a vector, but 
-                /// not temp. The data will not be preserved by this operation
-                fn reallocate(&mut self, len: usize)
-                {
-                    if len > self.allocated_len()
-                    {
-                        let mut new_data = Vec::with_capacity(round_len(len));
-                        unsafe { new_data.set_len(len) };
-                        self.data = new_data;
-                    }
-                    
-                    self.valid_len = len;
-                }
-                
-                /// Creates shifted and reversed copies of the given data vector. 
+
+                /// Creates shifted and reversed copies of the given data vector.
                 /// This function is especially designed for convolutions.
                 fn create_shifted_copies(vector: &GenericDataVec<$data_type>) -> Vec<Vec<$reg>>{
                     let step = if vector.is_complex { 2 } else { 1 };
@@ -402,7 +388,7 @@ macro_rules! add_basic_private_impl {
                     let mut i = 0;
                     while i < number_of_shifts {
                         let mut data = vector.data.iter().rev();
-                        
+
                         // In general (number_of_shifts - i) indicates which prepared vector we need to use
                         // if we later calculate end % number_of_shifts. Some examples:
                         // number_of_shifts: 4, end: 13 -> mod: 1. The code will round end to the next SIMD register
@@ -418,7 +404,7 @@ macro_rules! add_basic_private_impl {
                         let min_len = vector.len() + shift;
                         let len =  (min_len + $reg::len() - 1) / $reg::len();
                         let mut copy: Vec<$reg> = Vec::with_capacity(len);
-                        
+
                         let mut j = len  * $reg::len();;
                         let mut k = 0;
                         let mut current = $reg::splat(0.0).to_array();
@@ -466,7 +452,7 @@ macro_rules! add_basic_private_impl {
                                 }
                             }
                         }
-                        
+
                         assert_eq!(k, 0);
                         assert_eq!(copy.len(), len);
                         shifted_copies.push(copy);

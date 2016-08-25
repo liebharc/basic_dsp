@@ -26,6 +26,19 @@ pub trait DataVec<T> : Sized
     /// since the vector may decide at any operation to invalidate the array.
     fn data(&self) -> &[T];
 
+    /// Overwrites the data in the vector with the given data. This may also change
+    /// the vectors length (however not the allocated length).
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0]);
+    /// let result = vector.overwrite_data(&[5.0, 7.0]).expect("Ignoring error handling in examples");
+    /// assert_eq!(&[5.0, 7.0], result.data());
+    /// ```
+    fn overwrite_data(self, data: &[T]) -> TransRes<Self>;
+
     /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
     fn delta(&self) -> T;
 
@@ -682,19 +695,6 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// assert_eq!([1.0, 1.0, 2.0, 2.0], merged.data());
     /// ```
     fn merge(self, sources: &[Box<Self>]) -> TransRes<Self>;
-
-    /// Overwrites the data in the vector with the given data. This may also change
-    /// the vectors length (however not the allocated length).
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
-    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0]);
-    /// let result = vector.overwrite_data(&[5.0, 7.0]).expect("Ignoring error handling in examples");
-    /// assert_eq!(&[5.0, 7.0], result.data());
-    /// ```
-    fn overwrite_data(self, data: &[T]) -> TransRes<Self>;
 }
 
 /// Defines all operations which are valid on `DataVecs` containing real data.
