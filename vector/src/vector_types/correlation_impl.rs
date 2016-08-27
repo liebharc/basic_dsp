@@ -92,7 +92,7 @@ macro_rules! define_correlation_impl {
                     Ok(self)
                     .and_then(|v|v.zero_pad(points, PaddingOption::Surround))
                     .and_then(|v|v.plain_fft())
-                    .and_then(|v|v.multiply_vector(&other))
+                    .and_then(|v|v.mul(&other))
                     .and_then(|v| {
                         let p = v.points();
                         v.real_scale(1.0 / p as $data_type)

@@ -51,7 +51,7 @@
 //!     let b = b.clone_from(&a);
 //!     let a = a.sin();
 //!     let b = b.cos();
-//!     let a = a.multiply_vector(&b).abs();
+//!     let a = a.mul(&b).abs();
 //!     let a_db = a.log(10.0).scale(10.0);
 //!     (a_db, b)
 //! });

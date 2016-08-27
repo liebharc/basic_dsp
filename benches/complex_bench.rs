@@ -49,7 +49,7 @@ mod bench {
             vector.execute_res(|v| {
                 let len = v.points(); 
                 let operand = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), len);
-                v.multiply_vector(&operand) 
+                v.mul(&operand) 
             } )
         });
     }

@@ -480,12 +480,12 @@ macro_rules! add_general_impl {
             }
 
             impl GenericVectorOps<$data_type> for GenericDataVec<$data_type> {
-                impl_binary_vector_operation!($data_type, $reg, fn add_vector, summand, add, add);
-                impl_binary_smaller_vector_operation!($data_type, $reg, fn add_smaller_vector, summand, add, add);
-                impl_binary_vector_operation!($data_type, $reg, fn subtract_vector, summand, sub, sub);
-                impl_binary_smaller_vector_operation!($data_type, $reg, fn subtract_smaller_vector, summand, sub, sub);
+                impl_binary_vector_operation!($data_type, $reg, fn add, summand, add, add);
+                impl_binary_smaller_vector_operation!($data_type, $reg, fn add_smaller, summand, add, add);
+                impl_binary_vector_operation!($data_type, $reg, fn sub, summand, sub, sub);
+                impl_binary_smaller_vector_operation!($data_type, $reg, fn sub_smaller, summand, sub, sub);
 
-                fn multiply_vector(self, factor: &Self) -> TransRes<Self>
+                fn mul(self, factor: &Self) -> TransRes<Self>
                 {
                     let len = self.len();
                     reject_if!(self, len != factor.len(), ErrorReason::InputMustHaveTheSameSize);
@@ -493,15 +493,15 @@ macro_rules! add_general_impl {
 
                     if self.is_complex
                     {
-                        self.multiply_vector_complex(factor)
+                        self.mul_complex(factor)
                     }
                     else
                     {
-                        self.multiply_vector_real(factor)
+                        self.mul_real(factor)
                     }
                 }
 
-                fn multiply_smaller_vector(self, factor: &Self) -> TransRes<Self>
+                fn mul_smaller(self, factor: &Self) -> TransRes<Self>
                 {
                     let len = self.len();
                     reject_if!(self, len % factor.len() != 0, ErrorReason::InvalidArgumentLength);
@@ -509,15 +509,15 @@ macro_rules! add_general_impl {
 
                     if self.is_complex
                     {
-                        self.multiply_smaller_vector_complex(factor)
+                        self.mul_smaller_complex(factor)
                     }
                     else
                     {
-                        self.multiply_smaller_vector_real(factor)
+                        self.mul_smaller_real(factor)
                     }
                 }
 
-                fn divide_vector(self, divisor: &Self) -> TransRes<Self>
+                fn div(self, divisor: &Self) -> TransRes<Self>
                 {
                     let len = self.len();
                     reject_if!(self, len != divisor.len(), ErrorReason::InputMustHaveTheSameSize);
@@ -525,15 +525,15 @@ macro_rules! add_general_impl {
 
                     if self.is_complex
                     {
-                        self.divide_vector_complex(divisor)
+                        self.div_complex(divisor)
                     }
                     else
                     {
-                        self.divide_vector_real(divisor)
+                        self.div_real(divisor)
                     }
                 }
 
-                fn divide_smaller_vector(self, divisor: &Self) -> TransRes<Self>
+                fn div_smaller(self, divisor: &Self) -> TransRes<Self>
                 {
                     let len = self.len();
                     reject_if!(self, len % divisor.len() != 0, ErrorReason::InvalidArgumentLength);
@@ -541,11 +541,11 @@ macro_rules! add_general_impl {
 
                     if self.is_complex
                     {
-                        self.divide_smaller_vector_complex(divisor)
+                        self.div_smaller_complex(divisor)
                     }
                     else
                     {
-                        self.divide_smaller_vector_real(divisor)
+                        self.div_smaller_real(divisor)
                     }
                 }
 
@@ -764,14 +764,14 @@ macro_rules! add_general_impl {
             }
 
             impl GenericDataVec<$data_type> {
-                impl_binary_complex_vector_operation!($data_type, $reg, fn multiply_vector_complex, factor, mul_complex, mul);
-                impl_binary_smaller_complex_vector_operation!($data_type, $reg, fn multiply_smaller_vector_complex, factor, mul_complex, mul);
-                impl_binary_vector_operation!($data_type, $reg, fn multiply_vector_real, factor, mul, mul);
-                impl_binary_smaller_vector_operation!($data_type, $reg, fn multiply_smaller_vector_real, factor, mul, mul);
-                impl_binary_complex_vector_operation!($data_type, $reg, fn divide_vector_complex, divisor, div_complex, div);
-                impl_binary_smaller_complex_vector_operation!($data_type, $reg, fn divide_smaller_vector_complex, divisor, div_complex, div);
-                impl_binary_vector_operation!($data_type, $reg, fn divide_vector_real, divisor, div, div);
-                impl_binary_smaller_vector_operation!($data_type, $reg, fn divide_smaller_vector_real, divisor, div, div);
+                impl_binary_complex_vector_operation!($data_type, $reg, fn mul_complex, factor, mul_complex, mul);
+                impl_binary_smaller_complex_vector_operation!($data_type, $reg, fn mul_smaller_complex, factor, mul_complex, mul);
+                impl_binary_vector_operation!($data_type, $reg, fn mul_real, factor, mul, mul);
+                impl_binary_smaller_vector_operation!($data_type, $reg, fn mul_smaller_real, factor, mul, mul);
+                impl_binary_complex_vector_operation!($data_type, $reg, fn div_complex, divisor, div_complex, div);
+                impl_binary_smaller_complex_vector_operation!($data_type, $reg, fn div_smaller_complex, divisor, div_complex, div);
+                impl_binary_vector_operation!($data_type, $reg, fn div_real, divisor, div, div);
+                impl_binary_smaller_vector_operation!($data_type, $reg, fn div_smaller_real, divisor, div, div);
 
                 fn zero_interleave_complex(mut self, factor: u32) -> TransRes<Self>
                 {

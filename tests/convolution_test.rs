@@ -78,7 +78,7 @@ mod slow_test {
             let left = time1.clone().convolve_vector(&time2).unwrap();
             let freq1 = time1.fft().unwrap();
             let freq2 = time2.fft().unwrap();
-            let freq_res = freq1.multiply_vector(&freq2).unwrap();
+            let freq_res = freq1.mul(&freq2).unwrap();
             let right = freq_res.ifft().unwrap();
             assert_vector_eq_with_reason_and_tolerance(
                 left.data(), 

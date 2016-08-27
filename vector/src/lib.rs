@@ -126,7 +126,7 @@ mod tests {
         let vector = DataVec32::from_array(false, DataVecDomain::Time, &array);
         let array = [1.0, 2.0, 3.0, 4.0];
         let dest = DataVec32::from_array(false, DataVecDomain::Time, &array);
-        let _ = try_vec!(vector.add_vector(&dest));
+        let _ = try_vec!(vector.add(&dest));
         Ok(0)
     }
 

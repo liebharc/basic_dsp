@@ -155,7 +155,7 @@ mod bench {
                     let ops = multi_ops2(v, operand);
                     let ops = ops.add_ops(|v, o| {
                         let v = v.abs()
-                         .multiply_vector(&o)
+                         .mul(&o)
                          .sin();
                         (v, o)
                     });
@@ -198,7 +198,7 @@ mod bench {
                     let ops = multi_ops2(v, operand);
                     let ops = ops.add_ops(|v, o| {
                         let v = v.abs()
-                         .multiply_vector(&o)
+                         .mul(&o)
                          .sin()
                          .real_scale(10.0)
                          .abs()
@@ -404,7 +404,7 @@ mod bench {
             vector.execute_res(|v| {
                 let len = v.len(); 
                 let operand = RealTimeVector32::from_constant(0.0, len);
-                v.multiply_vector(&operand) 
+                v.mul(&operand) 
             } )
         });
     }

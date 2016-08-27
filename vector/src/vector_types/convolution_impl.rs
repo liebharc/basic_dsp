@@ -53,7 +53,7 @@ pub trait FrequencyMultiplication<T, C> : DataVec<T>
     where T : RealNumber {
     /// Multiplies `self` with the frequency response function `frequency_response`.
     /// 
-    /// In order to multiply a vector with another vector in frequency response use `multiply_vector`.
+    /// In order to multiply a vector with another vector in frequency response use `mul`.
     /// # Assumptions
     /// The operation assumes that the vector contains a full spectrum centered at 0 Hz. If half a spectrum
     /// or a FFT shifted spectrum is provided the operation will come back with invalid results.
@@ -725,7 +725,7 @@ mod tests {
         let conv = a.clone().convolve_vector(&b).unwrap();
         let a = a.fft().unwrap();
         let b = b.fft().unwrap();
-        let mul = a.multiply_vector(&b).unwrap();
+        let mul = a.mul(&b).unwrap();
         let mul = mul.ifft().unwrap();
         let mul = mul.reverse().unwrap();
         let mul = mul.swap_halves().unwrap();
@@ -765,7 +765,7 @@ mod tests {
         let conv = a.clone().convolve_vector(&b).unwrap();
         let a = a.fft().unwrap();
         let b = b.fft().unwrap();
-        let mul = a.multiply_vector(&b).unwrap();
+        let mul = a.mul(&b).unwrap();
         let mul = mul.ifft().unwrap();
         let mul = mul.magnitude().unwrap();
         let mul = mul.reverse().unwrap();
@@ -783,7 +783,7 @@ mod tests {
         let conv = a.clone().convolve_vector(&b).unwrap();
         let a = a.fft().unwrap();
         let b = b.fft().unwrap();
-        let mul = a.multiply_vector(&b).unwrap();
+        let mul = a.mul(&b).unwrap();
         let mul = mul.ifft().unwrap();
         let mul = mul.magnitude().unwrap();
         let mul = mul.reverse().unwrap();

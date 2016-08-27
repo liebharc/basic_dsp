@@ -104,14 +104,14 @@ pub trait RealIdentifier<T> : Identifier<T>
 pub trait GeneralIdentifier<T> : Identifier<T>
     where T: RealNumber 
 {
-    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.add_vector).
-    fn add_vector(self, summand: &Self) -> Self;
-    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.subtract_vector).
-    fn subtract_vector(self, subtrahend: &Self) -> Self;
-    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.multiply_vector).
-    fn multiply_vector(self, factor: &Self) -> Self;
-    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.divide_vector).
-    fn divide_vector(self, divisor: &Self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.add).
+    fn add(self, summand: &Self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.sub).
+    fn sub(self, subtrahend: &Self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.mul).
+    fn mul(self, factor: &Self) -> Self;
+    /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.div).
+    fn div(self, divisor: &Self) -> Self;
     /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.sqrt).
     fn sqrt(self) -> Self;
     /// See [`GenericVectorOps`](../trait.GenericVectorOps.html#tymethod.square).
@@ -491,22 +491,22 @@ macro_rules! add_general_multi_ops_impl {
         impl GeneralIdentifier<$data_type> for $name<$data_type>
                 where $data_type: RealNumber 
         {
-            fn add_vector(self, summand: &Self) -> Self {
+            fn add(self, summand: &Self) -> Self {
                 let arg = self.arg;
                 self.add_op(Operation::AddVector(arg, summand.arg))
             }
             
-            fn subtract_vector(self, subtrahend: &Self) -> Self {
+            fn sub(self, subtrahend: &Self) -> Self {
                 let arg = self.arg;
                 self.add_op(Operation::SubVector(arg, subtrahend.arg))
             }
             
-            fn multiply_vector(self, factor: &Self) -> Self {
+            fn mul(self, factor: &Self) -> Self {
                 let arg = self.arg;
                 self.add_op(Operation::MulVector(arg, factor.arg))
             }
             
-            fn divide_vector(self, divisor: &Self) -> Self {
+            fn div(self, divisor: &Self) -> Self {
                 let arg = self.arg;
                 self.add_op(Operation::DivVector(arg, divisor.arg))
             }

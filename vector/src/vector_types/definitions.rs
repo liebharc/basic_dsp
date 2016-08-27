@@ -254,10 +254,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
     /// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
     /// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
-    /// let result = vector1.add_vector(&vector2).expect("Ignoring error handling in examples");
+    /// let result = vector1.add(&vector2).expect("Ignoring error handling in examples");
     /// assert_eq!([11.0, 13.0], result.data());
     /// ```
-    fn add_vector(self, summand: &Self) -> TransRes<Self>;
+    fn add(self, summand: &Self) -> TransRes<Self>;
 
     /// Calculates the sum of `self + summand`. `summand` may be smaller than `self` as long
     /// as `self.len() % summand.len() == 0`. THe result is the same as it would be if
@@ -275,10 +275,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
     /// let vector1 = RealTimeVector32::from_array(&[10.0, 11.0, 12.0, 13.0]);
     /// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
-    /// let result = vector1.add_smaller_vector(&vector2).expect("Ignoring error handling in examples");
+    /// let result = vector1.add_smaller(&vector2).expect("Ignoring error handling in examples");
     /// assert_eq!([11.0, 13.0, 13.0, 15.0], result.data());
     /// ```
-    fn add_smaller_vector(self, summand: &Self) -> TransRes<Self>;
+    fn add_smaller(self, summand: &Self) -> TransRes<Self>;
 
     /// Calculates the difference of `self - subtrahend`. It consumes self and returns the result.
     /// # Failures
@@ -293,10 +293,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
     /// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
     /// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
-    /// let result = vector1.subtract_vector(&vector2).expect("Ignoring error handling in examples");
+    /// let result = vector1.sub(&vector2).expect("Ignoring error handling in examples");
     /// assert_eq!([-9.0, -9.0], result.data());
     /// ```
-    fn subtract_vector(self, subtrahend: &Self) -> TransRes<Self>;
+    fn sub(self, subtrahend: &Self) -> TransRes<Self>;
 
     /// Calculates the sum of `self - subtrahend`. `subtrahend` may be smaller than `self` as long
     /// as `self.len() % subtrahend.len() == 0`. THe result is the same as it would be if
@@ -314,10 +314,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
     /// let vector1 = RealTimeVector32::from_array(&[10.0, 11.0, 12.0, 13.0]);
     /// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
-    /// let result = vector1.subtract_smaller_vector(&vector2).expect("Ignoring error handling in examples");
+    /// let result = vector1.sub_smaller(&vector2).expect("Ignoring error handling in examples");
     /// assert_eq!([9.0, 9.0, 11.0, 11.0], result.data());
     /// ```
-    fn subtract_smaller_vector(self, summand: &Self) -> TransRes<Self>;
+    fn sub_smaller(self, summand: &Self) -> TransRes<Self>;
 
     /// Calculates the product of `self * factor`. It consumes self and returns the result.
     /// # Failures
@@ -332,10 +332,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
     /// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
     /// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
-    /// let result = vector1.multiply_vector(&vector2).expect("Ignoring error handling in examples");
+    /// let result = vector1.mul(&vector2).expect("Ignoring error handling in examples");
     /// assert_eq!([10.0, 22.0], result.data());
     /// ```
-    fn multiply_vector(self, factor: &Self) -> TransRes<Self>;
+    fn mul(self, factor: &Self) -> TransRes<Self>;
 
     /// Calculates the sum of `self - factor`. `factor` may be smaller than `self` as long
     /// as `self.len() % factor.len() == 0`. THe result is the same as it would be if
@@ -353,10 +353,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
     /// let vector1 = RealTimeVector32::from_array(&[10.0, 11.0, 12.0, 13.0]);
     /// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
-    /// let result = vector1.multiply_smaller_vector(&vector2).expect("Ignoring error handling in examples");
+    /// let result = vector1.mul_smaller(&vector2).expect("Ignoring error handling in examples");
     /// assert_eq!([10.0, 22.0, 12.0, 26.0], result.data());
     /// ```
-    fn multiply_smaller_vector(self, factor: &Self) -> TransRes<Self>;
+    fn mul_smaller(self, factor: &Self) -> TransRes<Self>;
 
     /// Calculates the quotient of `self / summand`. It consumes self and returns the result.
     /// # Failures
@@ -371,10 +371,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
     /// let vector1 = RealTimeVector32::from_array(&[10.0, 22.0]);
     /// let vector2 = RealTimeVector32::from_array(&[2.0, 11.0]);
-    /// let result = vector1.divide_vector(&vector2).expect("Ignoring error handling in examples");
+    /// let result = vector1.div(&vector2).expect("Ignoring error handling in examples");
     /// assert_eq!([5.0, 2.0], result.data());
     /// ```
-    fn divide_vector(self, divisor: &Self) -> TransRes<Self>;
+    fn div(self, divisor: &Self) -> TransRes<Self>;
 
     /// Calculates the sum of `self - divisor`. `divisor` may be smaller than `self` as long
     /// as `self.len() % divisor.len() == 0`. THe result is the same as it would be if
@@ -392,10 +392,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
     /// let vector1 = RealTimeVector32::from_array(&[10.0, 12.0, 12.0, 14.0]);
     /// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
-    /// let result = vector1.divide_smaller_vector(&vector2).expect("Ignoring error handling in examples");
+    /// let result = vector1.div_smaller(&vector2).expect("Ignoring error handling in examples");
     /// assert_eq!([10.0, 6.0, 12.0, 7.0], result.data());
     /// ```
-    fn divide_smaller_vector(self, divisor: &Self) -> TransRes<Self>;
+    fn div_smaller(self, divisor: &Self) -> TransRes<Self>;
 
     /// Appends zeros add the end of the vector until the vector has the size given in the points argument.
     /// If `points` smaller than the `self.len()` then this operation won't do anything.

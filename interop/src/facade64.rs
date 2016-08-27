@@ -107,23 +107,23 @@ pub extern fn get_allocated_len64(vector: &DataVec64) -> usize {
 }
 
 #[no_mangle]
-pub extern fn add_vector64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
-    convert_vec!(vector.add_vector(operand))
+pub extern fn add64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
+    convert_vec!(vector.add(operand))
 }
 
 #[no_mangle]
-pub extern fn subtract_vector64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
-    convert_vec!(vector.subtract_vector(operand))
+pub extern fn sub64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
+    convert_vec!(vector.sub(operand))
 }
 
 #[no_mangle]
-pub extern fn divide_vector64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
-    convert_vec!(vector.divide_vector(operand))
+pub extern fn div64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
+    convert_vec!(vector.div(operand))
 }
 
 #[no_mangle]
-pub extern fn multiply_vector64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
-    convert_vec!(vector.multiply_vector(operand))
+pub extern fn mul64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
+    convert_vec!(vector.mul(operand))
 }
 
 #[no_mangle]
@@ -445,23 +445,23 @@ pub extern fn multiply_complex_exponential64(vector: Box<DataVec64>, a: f64, b: 
 }
 
 #[no_mangle]
-pub extern fn add_smaller_vector64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
-    convert_vec!(vector.add_smaller_vector(operand))
+pub extern fn add_smaller64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
+    convert_vec!(vector.add_smaller(operand))
 }
 
 #[no_mangle]
-pub extern fn subtract_smaller_vector64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
-    convert_vec!(vector.subtract_smaller_vector(operand))
+pub extern fn sub_smaller64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
+    convert_vec!(vector.sub_smaller(operand))
 }
 
 #[no_mangle]
-pub extern fn divide_smaller_vector64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
-    convert_vec!(vector.divide_smaller_vector(operand))
+pub extern fn div_smaller64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
+    convert_vec!(vector.div_smaller(operand))
 }
 
 #[no_mangle]
-pub extern fn multiply_smaller_vector64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
-    convert_vec!(vector.multiply_smaller_vector(operand))
+pub extern fn mul_smaller64(vector: Box<DataVec64>, operand: &DataVec64) -> VectorResult<DataVec64> {
+    convert_vec!(vector.mul_smaller(operand))
 }
 
 #[no_mangle]
@@ -1021,7 +1021,7 @@ pub extern fn multiply_complex_exponential_ops1_f64(ops: &mut PreparedOp1F32, ar
 }
 
 #[no_mangle]
-pub extern fn add_vector_ops1_f64(ops: &mut PreparedOp1F32, arg: usize, other: usize) {
+pub extern fn add_ops1_f64(ops: &mut PreparedOp1F32, arg: usize, other: usize) {
     ops.add_enum_op(Operation::AddVector(arg, other))
 }
 
@@ -1249,7 +1249,7 @@ pub extern fn multiply_complex_exponential_ops2_f64(ops: &mut PreparedOp2F32, ar
 }
 
 #[no_mangle]
-pub extern fn add_vector_ops2_f64(ops: &mut PreparedOp2F32, arg: usize, other: usize) {
+pub extern fn add_ops2_f64(ops: &mut PreparedOp2F32, arg: usize, other: usize) {
     ops.add_enum_op(Operation::AddVector(arg, other))
 }
 

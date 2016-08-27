@@ -106,23 +106,23 @@ pub extern fn get_allocated_len32(vector: &DataVec32) -> usize {
 }
 
 #[no_mangle]
-pub extern fn add_vector32(vector: Box<DataVec32>, operand: &DataVec32) -> VectorResult<DataVec32> {
-    convert_vec!(vector.add_vector(operand))
+pub extern fn add32(vector: Box<DataVec32>, operand: &DataVec32) -> VectorResult<DataVec32> {
+    convert_vec!(vector.add(operand))
 }
 
 #[no_mangle]
-pub extern fn subtract_vector32(vector: Box<DataVec32>, operand: &DataVec32) -> VectorResult<DataVec32> {
-    convert_vec!(vector.subtract_vector(operand))
+pub extern fn sub32(vector: Box<DataVec32>, operand: &DataVec32) -> VectorResult<DataVec32> {
+    convert_vec!(vector.sub(operand))
 }
 
 #[no_mangle]
-pub extern fn divide_vector32(vector: Box<DataVec32>, operand: &DataVec32) -> VectorResult<DataVec32> {
-    convert_vec!(vector.divide_vector(operand))
+pub extern fn div32(vector: Box<DataVec32>, operand: &DataVec32) -> VectorResult<DataVec32> {
+    convert_vec!(vector.div(operand))
 }
 
 #[no_mangle]
-pub extern fn multiply_vector32(vector: Box<DataVec32>, operand: &DataVec32) -> VectorResult<DataVec32> {
-    convert_vec!(vector.multiply_vector(operand))
+pub extern fn mul32(vector: Box<DataVec32>, operand: &DataVec32) -> VectorResult<DataVec32> {
+    convert_vec!(vector.mul(operand))
 }
 
 #[no_mangle]
@@ -444,23 +444,23 @@ pub extern fn multiply_complex_exponential32(vector: Box<DataVec32>, a: f32, b: 
 }
 
 #[no_mangle]
-pub extern fn add_smaller_vector32(vector: Box<DataVec32>, operand: &DataVec32) -> VectorResult<DataVec32> {
-    convert_vec!(vector.add_smaller_vector(operand))
+pub extern fn add_smaller32(vector: Box<DataVec32>, operand: &DataVec32) -> VectorResult<DataVec32> {
+    convert_vec!(vector.add_smaller(operand))
 }
 
 #[no_mangle]
-pub extern fn subtract_smaller_vector32(vector: Box<DataVec32>, operand: &DataVec32) -> VectorResult<DataVec32> {
-    convert_vec!(vector.subtract_smaller_vector(operand))
+pub extern fn sub_smaller32(vector: Box<DataVec32>, operand: &DataVec32) -> VectorResult<DataVec32> {
+    convert_vec!(vector.sub_smaller(operand))
 }
 
 #[no_mangle]
-pub extern fn divide_smaller_vector32(vector: Box<DataVec32>, operand: &DataVec32) -> VectorResult<DataVec32> {
-    convert_vec!(vector.divide_smaller_vector(operand))
+pub extern fn div_smaller32(vector: Box<DataVec32>, operand: &DataVec32) -> VectorResult<DataVec32> {
+    convert_vec!(vector.div_smaller(operand))
 }
 
 #[no_mangle]
-pub extern fn multiply_smaller_vector32(vector: Box<DataVec32>, operand: &DataVec32) -> VectorResult<DataVec32> {
-    convert_vec!(vector.multiply_smaller_vector(operand))
+pub extern fn mul_smaller32(vector: Box<DataVec32>, operand: &DataVec32) -> VectorResult<DataVec32> {
+    convert_vec!(vector.mul_smaller(operand))
 }
 
 #[no_mangle]
@@ -1020,7 +1020,7 @@ pub extern fn multiply_complex_exponential_ops1_f32(ops: &mut PreparedOp1F32, ar
 }
 
 #[no_mangle]
-pub extern fn add_vector_ops1_f32(ops: &mut PreparedOp1F32, arg: usize, other: usize) {
+pub extern fn add_ops1_f32(ops: &mut PreparedOp1F32, arg: usize, other: usize) {
     ops.add_enum_op(Operation::AddVector(arg, other))
 }
 
@@ -1248,7 +1248,7 @@ pub extern fn multiply_complex_exponential_ops2_f32(ops: &mut PreparedOp2F32, ar
 }
 
 #[no_mangle]
-pub extern fn add_vector_ops2_f32(ops: &mut PreparedOp2F32, arg: usize, other: usize) {
+pub extern fn add_ops2_f32(ops: &mut PreparedOp2F32, arg: usize, other: usize) {
     ops.add_enum_op(Operation::AddVector(arg, other))
 }
 

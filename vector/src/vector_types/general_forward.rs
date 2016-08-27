@@ -5,44 +5,44 @@ macro_rules! define_generic_operations_forward {
          $(
             impl GenericVectorOps<$data_type> for $name<$data_type>
             {
-                fn add_vector(self, summand: &Self) -> TransRes<Self>
+                fn add(self, summand: &Self) -> TransRes<Self>
                 {
-                    Self::from_genres(self.to_gen().add_vector(&summand.to_gen_borrow()))
+                    Self::from_genres(self.to_gen().add(&summand.to_gen_borrow()))
                 }
 
-                fn add_smaller_vector(self, summand: &Self) -> TransRes<Self>
+                fn add_smaller(self, summand: &Self) -> TransRes<Self>
                 {
-                    Self::from_genres(self.to_gen().add_smaller_vector(&summand.to_gen_borrow()))
+                    Self::from_genres(self.to_gen().add_smaller(&summand.to_gen_borrow()))
                 }
 
-                fn subtract_vector(self, subtrahend: &Self) -> TransRes<Self>
+                fn sub(self, subtrahend: &Self) -> TransRes<Self>
                 {
-                    Self::from_genres(self.to_gen().subtract_vector(&subtrahend.to_gen_borrow()))
+                    Self::from_genres(self.to_gen().sub(&subtrahend.to_gen_borrow()))
                 }
 
-                fn subtract_smaller_vector(self, subtrahend: &Self) -> TransRes<Self>
+                fn sub_smaller(self, subtrahend: &Self) -> TransRes<Self>
                 {
-                    Self::from_genres(self.to_gen().subtract_smaller_vector(&subtrahend.to_gen_borrow()))
+                    Self::from_genres(self.to_gen().sub_smaller(&subtrahend.to_gen_borrow()))
                 }
 
-                fn multiply_vector(self, factor: &Self) -> TransRes<Self>
+                fn mul(self, factor: &Self) -> TransRes<Self>
                 {
-                    Self::from_genres(self.to_gen().multiply_vector(&factor.to_gen_borrow()))
+                    Self::from_genres(self.to_gen().mul(&factor.to_gen_borrow()))
                 }
 
-                fn multiply_smaller_vector(self, factor: &Self) -> TransRes<Self>
+                fn mul_smaller(self, factor: &Self) -> TransRes<Self>
                 {
-                    Self::from_genres(self.to_gen().multiply_smaller_vector(&factor.to_gen_borrow()))
+                    Self::from_genres(self.to_gen().mul_smaller(&factor.to_gen_borrow()))
                 }
 
-                fn divide_vector(self, divisor: &Self) -> TransRes<Self>
+                fn div(self, divisor: &Self) -> TransRes<Self>
                 {
-                    Self::from_genres(self.to_gen().divide_vector(&divisor.to_gen_borrow()))
+                    Self::from_genres(self.to_gen().div(&divisor.to_gen_borrow()))
                 }
 
-                fn divide_smaller_vector(self, divisor: &Self) -> TransRes<Self>
+                fn div_smaller(self, divisor: &Self) -> TransRes<Self>
                 {
-                    Self::from_genres(self.to_gen().divide_smaller_vector(&divisor.to_gen_borrow()))
+                    Self::from_genres(self.to_gen().div_smaller(&divisor.to_gen_borrow()))
                 }
 
                 fn zero_pad(self, points: usize, option: PaddingOption) -> TransRes<Self>

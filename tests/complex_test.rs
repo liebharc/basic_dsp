@@ -163,7 +163,7 @@ mod slow_test {
             let delta = create_delta(3561159, iteration);
             let vector1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let vector2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
-            let result = vector1.multiply_vector(&vector2).unwrap();
+            let result = vector1.mul(&vector2).unwrap();
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);
@@ -190,7 +190,7 @@ mod slow_test {
         let delta = create_delta(3561159, 1);
         let vector1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
         let vector2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
-        let result = vector1.multiply_smaller_vector(&vector2).unwrap();
+        let result = vector1.mul_smaller(&vector2).unwrap();
         assert_vector_eq(&expected, &result.data());
         assert_eq!(result.is_complex(), true);
         assert_eq!(result.delta(), delta);
@@ -216,7 +216,7 @@ mod slow_test {
         let delta = create_delta(3561159, 1);
         let vector1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
         let vector2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
-        let result = vector1.divide_smaller_vector(&vector2).unwrap();
+        let result = vector1.div_smaller(&vector2).unwrap();
         assert_vector_eq(&expected, &result.data());
         assert_eq!(result.is_complex(), true);
         assert_eq!(result.delta(), delta);
@@ -258,7 +258,7 @@ mod slow_test {
             let delta = create_delta(3561159, iteration);
             let vector1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let vector2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
-            let result = vector1.divide_vector(&vector2).unwrap();
+            let result = vector1.div(&vector2).unwrap();
             assert_vector_eq(&expected, &result.data());
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);
@@ -659,7 +659,7 @@ mod slow_test {
     }
     
     #[test]
-    fn multi_ops_add_vector_test() {
+    fn multi_ops_add_test() {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
@@ -668,11 +668,11 @@ mod slow_test {
             let b = DataVec32::from_array(true, DataVecDomain::Time, &b);
             let ops = multi_ops2(a.clone(), b.clone());
             let ops = ops.add_ops(|a, b| {
-                let a = a.add_vector(&b);
+                let a = a.add(&b);
                 (a, b)
             });
             let (a_actual, b_actual) = ops.get().unwrap();
-            let a_expected = a.add_vector(&b).unwrap();
+            let a_expected = a.add(&b).unwrap();
             let b_expected = b;
             assert_vector_eq(&a_expected.data(), &a_actual.data());
             assert_vector_eq(&b_expected.data(), &b_actual.data());
@@ -680,7 +680,7 @@ mod slow_test {
     }
     
     #[test]
-    fn multi_ops_subtract_vector_test() {
+    fn multi_ops_sub_test() {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
@@ -689,11 +689,11 @@ mod slow_test {
             let b = DataVec32::from_array(true, DataVecDomain::Time, &b);
             let ops = multi_ops2(a.clone(), b.clone());
             let ops = ops.add_ops(|a, b| {
-                let a = a.subtract_vector(&b);
+                let a = a.sub(&b);
                 (a, b)
             });
             let (a_actual, b_actual) = ops.get().unwrap();
-            let a_expected = a.subtract_vector(&b).unwrap();
+            let a_expected = a.sub(&b).unwrap();
             let b_expected = b;
             assert_vector_eq(&a_expected.data(), &a_actual.data());
             assert_vector_eq(&b_expected.data(), &b_actual.data());
@@ -701,7 +701,7 @@ mod slow_test {
     }
     
     #[test]
-    fn multi_ops_multiply_vector_test() {
+    fn multi_ops_mul_test() {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
@@ -710,11 +710,11 @@ mod slow_test {
             let b = DataVec32::from_array(true, DataVecDomain::Time, &b);
             let ops = multi_ops2(a.clone(), b.clone());
             let ops = ops.add_ops(|a, b| {
-                let a = a.multiply_vector(&b);
+                let a = a.mul(&b);
                 (a, b)
             });
             let (a_actual, b_actual) = ops.get().unwrap();
-            let a_expected = a.multiply_vector(&b).unwrap();
+            let a_expected = a.mul(&b).unwrap();
             let b_expected = b;
             assert_vector_eq(&a_expected.data(), &a_actual.data());
             assert_vector_eq(&b_expected.data(), &b_actual.data());
@@ -722,7 +722,7 @@ mod slow_test {
     }
     
     #[test]
-    fn multi_ops_divide_vector_test() {
+    fn multi_ops_div_test() {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
@@ -731,11 +731,11 @@ mod slow_test {
             let b = DataVec32::from_array(true, DataVecDomain::Time, &b);
             let ops = multi_ops2(a.clone(), b.clone());
             let ops = ops.add_ops(|a, b| {
-                let a = a.divide_vector(&b);
+                let a = a.div(&b);
                 (a, b)
             });
             let (a_actual, b_actual) = ops.get().unwrap();
-            let a_expected = a.divide_vector(&b).unwrap();
+            let a_expected = a.div(&b).unwrap();
             let b_expected = b;
             assert_vector_eq(&a_expected.data(), &a_actual.data());
             assert_vector_eq(&b_expected.data(), &b_actual.data());
