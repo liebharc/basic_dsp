@@ -131,7 +131,9 @@ macro_rules! define_vector_struct {
 
             fn index(&self, index: usize) -> &T
             {
-                &self.data[index]
+                let len = self.len();
+                let data = &self.data[0..len];
+                &data[index]
             }
         }
 
@@ -140,7 +142,9 @@ macro_rules! define_vector_struct {
         {
             fn index_mut(&mut self, index: usize) -> &mut T
             {
-                &mut self.data[index]
+                let len = self.len();
+                let data = &mut self.data[0..len];
+                &mut data[index]
             }
         }
 
@@ -151,7 +155,9 @@ macro_rules! define_vector_struct {
 
             fn index(&self, index: Range<usize>) -> &[T]
             {
-                &self.data[index]
+                let len = self.len();
+                let data = &self.data[0..len];
+                &data[index]
             }
         }
 
@@ -160,7 +166,9 @@ macro_rules! define_vector_struct {
         {
             fn index_mut(&mut self, index: Range<usize>) -> &mut [T]
             {
-                &mut self.data[index]
+                let len = self.len();
+                let data = &mut self.data[0..len];
+                &mut data[index]
             }
         }
 
@@ -171,7 +179,9 @@ macro_rules! define_vector_struct {
 
             fn index(&self, index: RangeFrom<usize>) -> &[T]
             {
-                &self.data[index]
+                let len = self.len();
+                let data = &self.data[0..len];
+                &data[index]
             }
         }
 
@@ -180,7 +190,9 @@ macro_rules! define_vector_struct {
         {
             fn index_mut(&mut self, index: RangeFrom<usize>) -> &mut [T]
             {
-                &mut self.data[index]
+                let len = self.len();
+                let data = &mut self.data[0..len];
+                &mut data[index]
             }
         }
 
@@ -751,7 +763,9 @@ macro_rules! add_complex_accessors {
 
             fn complex(&self, index: RangeFrom<usize>) -> &[Complex<T>]
             {
-                array_to_complex(&self.data[index])
+                let len = self.len();
+                let data = &self.data[0..len];
+                array_to_complex(&data[index])
             }
         }
 
@@ -760,7 +774,9 @@ macro_rules! add_complex_accessors {
         {
             fn complex_mut(&mut self, index: RangeFrom<usize>) -> &mut [Complex<T>]
             {
-                array_to_complex_mut(&mut self.data[index])
+                let len = self.len();
+                let data = &mut self.data[0..len];
+                array_to_complex_mut(&mut data[index])
             }
         }
 
@@ -771,7 +787,9 @@ macro_rules! add_complex_accessors {
 
             fn complex(&self, index: RangeTo<usize>) -> &[Complex<T>]
             {
-                array_to_complex(&self.data[index])
+                let len = self.len();
+                let data = &self.data[0..len];
+                array_to_complex(&data[index])
             }
         }
 
@@ -780,7 +798,9 @@ macro_rules! add_complex_accessors {
         {
             fn complex_mut(&mut self, index: RangeTo<usize>) -> &mut [Complex<T>]
             {
-                array_to_complex_mut(&mut self.data[index])
+                let len = self.len();
+                let data = &mut self.data[0..len];
+                array_to_complex_mut(&mut data[index])
             }
         }
 
@@ -791,7 +811,9 @@ macro_rules! add_complex_accessors {
 
             fn complex(&self, index: RangeFull) -> &[Complex<T>]
             {
-                array_to_complex(&self.data[index])
+                let len = self.len();
+                let data = &self.data[0..len];
+                array_to_complex(&data[index])
             }
         }
 
@@ -800,7 +822,9 @@ macro_rules! add_complex_accessors {
         {
             fn complex_mut(&mut self, index: RangeFull) -> &mut [Complex<T>]
             {
-                array_to_complex_mut(&mut self.data[index])
+                let len = self.len();
+                let data = &mut self.data[0..len];
+                array_to_complex_mut(&mut data[index])
             }
         }
     }
