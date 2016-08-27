@@ -63,7 +63,7 @@ macro_rules! add_basic_private_impl {
                             complexity, &self.multicore_settings,
                             array, 2, argument,
                             move|array, argument| {
-                                let array = Self::array_to_complex_mut(array);
+                                let array = array_to_complex_mut(array);
                                 for num in array {
                                     *num = op(*num, argument);
                                 }
@@ -85,7 +85,7 @@ macro_rules! add_basic_private_impl {
                             &mut array[0..data_length], 2,
                             &mut temp[0..data_length / 2], 1, argument,
                             move |array, range, target, argument| {
-                                let array = Self::array_to_complex(&array[range.start..range.end]);
+                                let array = array_to_complex(&array[range.start..range.end]);
                                 for pair in array.iter().zip(target) {
                                     let (src, dest) = pair;
                                     *dest = op(*src, argument);
@@ -118,14 +118,14 @@ macro_rules! add_basic_private_impl {
                             });
                         }
                         {
-                            let array = Self::array_to_complex_mut(&mut array[0..scalar_left]);
+                            let array = array_to_complex_mut(&mut array[0..scalar_left]);
                             for num in array
                             {
                                 *num = scalar_op(*num, argument);
                             }
                         }
                         {
-                            let array = Self::array_to_complex_mut(&mut array[scalar_right..data_length]);
+                            let array = array_to_complex_mut(&mut array[scalar_right..data_length]);
                             for num in array
                             {
                                 *num = scalar_op(*num, argument);
@@ -161,14 +161,14 @@ macro_rules! add_basic_private_impl {
                             });
                         }
                         {
-                            let array = Self::array_to_complex(&array[0..scalar_left]);
+                            let array = array_to_complex(&array[0..scalar_left]);
                             for pair in array.iter().zip(&mut temp[0..scalar_left/2]) {
                                 let (src, dest) = pair;
                                 *dest = scalar_op(*src, argument);
                             }
                         }
                         {
-                            let array = Self::array_to_complex(&array[scalar_right..data_length]);
+                            let array = array_to_complex(&array[scalar_right..data_length]);
                             for pair in array.iter().zip(&mut temp[scalar_right/2..data_length/2]) {
                                 let (src, dest) = pair;
                                 *dest = scalar_op(*src, argument);

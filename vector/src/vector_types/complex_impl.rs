@@ -12,7 +12,10 @@ use super::definitions::{
     DotProductOps,
     StatisticsOps,
     ComplexVectorOps};
-use super::GenericDataVec;
+use super::{
+    array_to_complex,
+    array_to_complex_mut,
+    GenericDataVec};
 use super::stats_impl::Stats;
 use simd_extensions::*;
 use num::complex::Complex;
@@ -29,7 +32,7 @@ macro_rules! add_complex_impl {
 
                 fn complex_data(&self) -> &[Complex<$data_type>] {
                     let len = self.len();
-                    Self::array_to_complex(&self.data[0..len])
+                    array_to_complex(&self.data[0..len])
                 }
 
                 fn complex_offset(self, offset: Complex<$data_type>)  -> TransRes<Self>
@@ -64,7 +67,7 @@ macro_rules! add_complex_impl {
                                 Complex::<$data_type>::from_polar(&1.0, &b)
                                 * Complex::<$data_type>::from_polar(&1.0, &(a * range.start as $data_type / 2.0));
                             let increment = Complex::<$data_type>::from_polar(&1.0, &a);
-                            let array = Self::array_to_complex_mut(array);
+                            let array = array_to_complex_mut(array);
                             for complex in array {
                                 *complex = (*complex) * exponential;
                                 exponential = exponential * increment;
@@ -74,7 +77,7 @@ macro_rules! add_complex_impl {
                             Complex::<$data_type>::from_polar(&1.0, &b)
                             * Complex::<$data_type>::from_polar(&1.0, &(a * vectorization_length as $data_type / 2.0));
                         let increment = Complex::<$data_type>::from_polar(&1.0, &a);
-                        let array = Self::array_to_complex_mut(&mut array[vectorization_length..data_length]);
+                        let array = array_to_complex_mut(&mut array[vectorization_length..data_length]);
                         for complex in array {
                             *complex = (*complex) * exponential;
                             exponential = exponential * increment;
@@ -200,7 +203,7 @@ macro_rules! add_complex_impl {
                             &mut array[0..length], 2, argument,
                             move|array, range, argument| {
                                 let mut i = range.start / 2;
-                                let array = Self::array_to_complex_mut(array);
+                                let array = array_to_complex_mut(array);
                                 for num in array {
                                     *num = f(*num, i, argument);
                                     i += 1;
@@ -237,7 +240,7 @@ macro_rules! add_complex_impl {
                             &array[0..length], 2, argument,
                             move|array, range, argument| {
                                 let aggregate  = aggregate.clone();
-                                let array = Self::array_to_complex(array);
+                                let array = array_to_complex(array);
                                 let mut i = range.start / 2;
                                 let mut sum: Option<R> = None;
                                 for num in array {
@@ -331,7 +334,7 @@ macro_rules! add_complex_impl {
                         |array, range, _arg| {
                             let mut stat = Statistics::<Complex<$data_type>>::empty();
                             let mut j = range.start / 2;
-                            let array = Self::array_to_complex(array);
+                            let array = array_to_complex(array);
                             for num in array {
                                 stat.add(*num, j);
                                 j += 1;
@@ -355,7 +358,7 @@ macro_rules! add_complex_impl {
                         |array, range, len| {
                             let mut results = Statistics::<Complex<$data_type>>::empty_vec(len);
                             let mut j = range.start / 2;
-                            let array = Self::array_to_complex(array);
+                            let array = array_to_complex(array);
                             for num in array {
                                 let stat = &mut results[j % len];
                                 stat.add(*num, j / len);
@@ -461,11 +464,11 @@ macro_rules! add_complex_impl {
                         else {
                             Complex::<$data_type>::new(0.0, 0.0)
                         };
-                    for num in Self::array_to_complex(&array[0..scalar_left])
+                    for num in array_to_complex(&array[0..scalar_left])
                     {
                         sum = sum + *num;
                     }
-                    for num in Self::array_to_complex(&array[scalar_right..data_length])
+                    for num in array_to_complex(&array[scalar_right..data_length])
                     {
                         sum = sum + *num;
                     }
@@ -496,11 +499,11 @@ macro_rules! add_complex_impl {
                         else {
                             Complex::<$data_type>::new(0.0, 0.0)
                         };
-                    for num in Self::array_to_complex(&array[0..scalar_left])
+                    for num in array_to_complex(&array[0..scalar_left])
                     {
                         sum = sum + *num * *num;
                     }
-                    for num in Self::array_to_complex(&array[scalar_right..data_length])
+                    for num in array_to_complex(&array[scalar_right..data_length])
                     {
                         sum = sum + *num * *num;
                     }

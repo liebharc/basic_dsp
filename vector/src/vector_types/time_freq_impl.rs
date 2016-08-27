@@ -10,6 +10,8 @@ use super::{
     RealTimeVector,
     ComplexFreqVector,
     ComplexTimeVector,
+    array_to_complex,
+    array_to_complex_mut,
     round_len};
 use rustfft::FFT;
 use RealNumber;
@@ -21,14 +23,14 @@ use std::ops::{Mul, Div};
 /// Defines all operations which are valid on `DataVecs` containing time domain data.
 /// # Failures
 /// All operations in this trait fail with `VectorMustBeInTimeDomain` if the vector isn't in time domain.
-pub trait TimeDomainOperations<T> : DataVec<T> 
+pub trait TimeDomainOperations<T> : DataVec<T>
     where T : RealNumber {
     type FreqPartner;
-    
+
     /// Performs a Fast Fourier Transformation transforming a time domain vector
-    /// into a frequency domain vector. 
-    /// 
-    /// This version of the FFT neither applies a window nor does it scale the 
+    /// into a frequency domain vector.
+    ///
+    /// This version of the FFT neither applies a window nor does it scale the
     /// vector.
     /// # Example
     ///
@@ -44,9 +46,9 @@ pub trait TimeDomainOperations<T> : DataVec<T>
     /// }
     /// ```
     fn plain_fft(self) -> TransRes<Self::FreqPartner>;
-    
+
     /// Performs a Fast Fourier Transformation transforming a time domain vector
-    /// into a frequency domain vector. 
+    /// into a frequency domain vector.
     /// # Unstable
     /// FFTs of real vectors are unstable.
     /// # Example
@@ -63,14 +65,14 @@ pub trait TimeDomainOperations<T> : DataVec<T>
     /// }
     /// ```
     fn fft(self) -> TransRes<Self::FreqPartner>;
-    
+
     /// Applies a FFT window and performs a Fast Fourier Transformation transforming a time domain vector
-    /// into a frequency domain vector. 
+    /// into a frequency domain vector.
     fn windowed_fft(self, window: &WindowFunction<T>) -> TransRes<Self::FreqPartner>;
-    
+
     /// Applies a window to the data vector.
     fn apply_window(self, window: &WindowFunction<T>) -> TransRes<Self>;
-    
+
     /// Removes a window from the data vector.
     fn unapply_window(self, window: &WindowFunction<T>) -> TransRes<Self>;
 }
@@ -79,48 +81,48 @@ pub trait TimeDomainOperations<T> : DataVec<T>
 /// # Failures
 /// All operations in this trait fail with `VectorMustBeInTimeDomain` if the vector isn't in time domain or
 /// with `VectorMustHaveAnOddLength` if `self.points()` isn't and odd number.
-pub trait SymmetricTimeDomainOperations<T> : DataVec<T> 
+pub trait SymmetricTimeDomainOperations<T> : DataVec<T>
     where T : RealNumber {
     type FreqPartner;
-    
+
     /// Performs a Symmetric Fast Fourier Transformation under the assumption that `self`
     /// is symmetric around the center. This assumption
     /// isn't verified and no error is raised if the vector isn't symmetric.
     ///
-    /// This version of the IFFT neither applies a window nor does it scale the 
+    /// This version of the IFFT neither applies a window nor does it scale the
     /// vector.
     /// # Failures
     /// TransRes may report the following `ErrorReason` members:
-    /// 
+    ///
     /// 1. `VectorMustBeReal`: if `self` is in complex number space.
     /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
-    /// 
+    ///
     /// # Unstable
     /// Symmetric IFFTs are unstable and may only work under certain conditions.
     fn plain_sfft(self) -> TransRes<Self::FreqPartner>;
-    
+
     /// Performs a Symmetric Fast Fourier Transformation under the assumption that `self`
     /// is symmetric around the center. This assumption
     /// isn't verified and no error is raised if the vector isn't symmetric.
     /// # Failures
     /// TransRes may report the following `ErrorReason` members:
-    /// 
+    ///
     /// 1. `VectorMustBeReal`: if `self` is in complex number space.
     /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
-    /// 
+    ///
     /// # Unstable
     /// Symmetric IFFTs are unstable and may only work under certain conditions.
     fn sfft(self) -> TransRes<Self::FreqPartner>;
-    
+
     /// Performs a Symmetric Fast Fourier Transformation under the assumption that `self`
     /// is symmetric around the center. This assumption
     /// isn't verified and no error is raised if the vector isn't symmetric.
     /// # Failures
     /// TransRes may report the following `ErrorReason` members:
-    /// 
+    ///
     /// 1. `VectorMustBeReal`: if `self` is in complex number space.
     /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
-    /// 
+    ///
     /// # Unstable
     /// Symmetric IFFTs are unstable and may only work under certain conditions.
     fn windowed_sfft(self, window: &WindowFunction<T>) -> TransRes<Self::FreqPartner>;
@@ -128,16 +130,16 @@ pub trait SymmetricTimeDomainOperations<T> : DataVec<T>
 
 /// Defines all operations which are valid on `DataVecs` containing frequency domain data.
 /// # Failures
-/// All operations in this trait fail with `VectorMustBeInFrquencyDomain` or `VectorMustBeComplex` 
+/// All operations in this trait fail with `VectorMustBeInFrquencyDomain` or `VectorMustBeComplex`
 /// if the vector isn't in frequency domain and complex number space.
-pub trait FrequencyDomainOperations<T> : DataVec<T> 
+pub trait FrequencyDomainOperations<T> : DataVec<T>
     where T : RealNumber {
     type ComplexTimePartner;
-    
+
     /// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
     /// into a time domain vector.
-    /// 
-    /// This version of the IFFT neither applies a window nor does it scale the 
+    ///
+    /// This version of the IFFT neither applies a window nor does it scale the
     /// vector.
     /// # Example
     ///
@@ -153,7 +155,7 @@ pub trait FrequencyDomainOperations<T> : DataVec<T>
     /// }
     /// ```
     fn plain_ifft(self) -> TransRes<Self::ComplexTimePartner>;
-        
+
     /// This function mirrors the spectrum vector to transform a symmetric spectrum
     /// into a full spectrum with the DC element at index 0 (no FFT shift/swap halves).
     ///
@@ -168,7 +170,7 @@ pub trait FrequencyDomainOperations<T> : DataVec<T>
     /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, -6.0, 3.0, -4.0], result.data());
     /// ```
     fn mirror(self) -> TransRes<Self>;
-    
+
     /// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
     /// into a time domain vector.
     /// # Example
@@ -185,26 +187,26 @@ pub trait FrequencyDomainOperations<T> : DataVec<T>
     /// }
     /// ```
     fn ifft(self) -> TransRes<Self::ComplexTimePartner>;
-    
+
     /// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
     /// into a time domain vector and removes the FFT window.
     fn windowed_ifft(self, window: &WindowFunction<T>) -> TransRes<Self::ComplexTimePartner>;
-    
+
     /// Swaps vector halves after a Fourier Transformation.
     fn fft_shift(self) -> TransRes<Self>;
-    
+
     /// Swaps vector halves before an Inverse Fourier Transformation.
     fn ifft_shift(self) -> TransRes<Self>;
 }
 
 /// Defines all operations which are valid on `DataVecs` containing frequency domain data and
-/// the data is assumed to half of complex conjugate symmetric spectrum round 0 Hz where 
+/// the data is assumed to half of complex conjugate symmetric spectrum round 0 Hz where
 /// the 0 Hz element itself is real.
 /// # Failures
 /// All operations in this trait fail with `VectorMustBeInFrquencyDomain`
 /// if the vector isn't in frequency domain or with `VectorMustBeConjSymmetric` if the first element (0Hz)
 /// isn't real.
-pub trait SymmetricFrequencyDomainOperations<T> : DataVec<T> 
+pub trait SymmetricFrequencyDomainOperations<T> : DataVec<T>
     where T : RealNumber {
     type RealTimePartner;
     /// Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that `self`
@@ -214,10 +216,10 @@ pub trait SymmetricFrequencyDomainOperations<T> : DataVec<T>
     ///
     /// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1` points.
     ///
-    /// This version of the IFFT neither applies a window nor does it scale the 
+    /// This version of the IFFT neither applies a window nor does it scale the
     /// vector.
     fn plain_sifft(self) -> TransRes<Self::RealTimePartner>;
-    
+
     /// Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that `self`
     /// contains half of a symmetric spectrum starting from 0 Hz. This assumption
     /// isn't verified and no error is raised if the spectrum isn't symmetric. The reason
@@ -225,8 +227,8 @@ pub trait SymmetricFrequencyDomainOperations<T> : DataVec<T>
     ///
     /// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1` points.
     fn sifft(self) -> TransRes<Self::RealTimePartner>;
-    
-    /// Performs a Symmetric Inverse Fast Fourier Transformation (SIFFT) and removes the FFT window. 
+
+    /// Performs a Symmetric Inverse Fast Fourier Transformation (SIFFT) and removes the FFT window.
     /// The SIFFT is performed under the assumption that `self`
     /// contains half of a symmetric spectrum starting from 0 Hz. This assumption
     /// isn't verified and no error is raised if the spectrum isn't symmetric. The reason
@@ -238,25 +240,25 @@ pub trait SymmetricFrequencyDomainOperations<T> : DataVec<T>
 
 macro_rules! define_time_domain_forward {
     ($($name:ident, $data_type:ident);*) => {
-        $( 
+        $(
             impl TimeDomainOperations<$data_type> for $name<$data_type> {
                 type FreqPartner = ComplexFreqVector<$data_type>;
                 fn plain_fft(self) -> TransRes<Self::FreqPartner> {
                     Self::FreqPartner::from_genres(self.to_gen().plain_fft())
                 }
-                
+
                 fn apply_window(self, window: &WindowFunction<$data_type>) -> TransRes<Self> {
                     Self::from_genres(self.to_gen().apply_window(window))
                 }
-    
+
                 fn unapply_window(self, window: &WindowFunction<$data_type>) -> TransRes<Self> {
                     Self::from_genres(self.to_gen().unapply_window(window))
                 }
-                
+
                 fn fft(self) -> TransRes<Self::FreqPartner> {
                     Self::FreqPartner::from_genres(self.to_gen().fft())
                 }
-                
+
                 fn windowed_fft(self, window: &WindowFunction<$data_type>) -> TransRes<Self::FreqPartner> {
                     Self::FreqPartner::from_genres(self.to_gen().windowed_fft(window))
                 }
@@ -267,13 +269,13 @@ macro_rules! define_time_domain_forward {
 
 macro_rules! implement_window_function {
     ($($name:ident, $data_type:ident, $operation: ident);*) => {
-        $( 
+        $(
             fn $name(self, window: &WindowFunction<$data_type>) -> TransRes<Self> {
                     assert_time!(self);
                     if self.is_complex {
                         Ok(self.multiply_window_priv(
                             window.is_symmetric(),
-                            |array|Self::array_to_complex_mut(array),
+                            |array|array_to_complex_mut(array),
                             window,
                             |f,i,p|Complex::<$data_type>::new(1.0.$operation(f.window(i, p)), 0.0)))
                     } else {
@@ -291,7 +293,7 @@ macro_rules! implement_window_function {
 macro_rules! add_time_freq_impl {
     ($($data_type:ident);*)
      =>
-     {     
+     {
         $(
             impl TimeDomainOperations<$data_type> for GenericDataVec<$data_type> {
                 type FreqPartner = GenericDataVec<$data_type>;
@@ -305,32 +307,32 @@ macro_rules! add_time_freq_impl {
                             let mut fft = FFT::new(points, false);
                             let signal = &self.data;
                             let spectrum = temp_mut!(self, signal.len());
-                            let signal = Self::array_to_complex(signal);
-                            let spectrum = Self::array_to_complex_mut(spectrum);
+                            let signal = array_to_complex(signal);
+                            let spectrum = array_to_complex_mut(spectrum);
                             fft.process(&signal[0..points], &mut spectrum[0..points]);
                             self.domain = DataVecDomain::Frequency;
                         }
-                        
+
                         Ok(self.swap_data_temp())
                     } else {
                         self.to_complex().and_then(|v|v.plain_fft())
                     }
                 }
-                
+
                 implement_window_function!(apply_window, $data_type, mul; unapply_window, $data_type, div);
-                
+
                 fn fft(self) -> TransRes<Self::FreqPartner> {
                     self.plain_fft()
                     .and_then(|v|v.fft_shift())
                 }
-                
+
                 fn windowed_fft(self, window: &WindowFunction<$data_type>) -> TransRes<Self::FreqPartner> {
                     self.apply_window(window)
                     .and_then(|v|v.plain_fft())
                     .and_then(|v|v.fft_shift())
                 }
             }
-            
+
             impl SymmetricTimeDomainOperations<$data_type> for GenericDataVec<$data_type> {
                 type FreqPartner = GenericDataVec<$data_type>;
                 fn plain_sfft(self) -> TransRes<GenericDataVec<$data_type>> {
@@ -339,14 +341,14 @@ macro_rules! add_time_freq_impl {
                     .and_then(|v|v.plain_fft())
                     .and_then(|v|v.unmirror())
                 }
-                
+
                 fn sfft(self) -> TransRes<GenericDataVec<$data_type>> {
                     reject_if!(self, self.points() % 2 == 0, ErrorReason::InputMustHaveAnOddLength);
                     self.to_complex()
                     .and_then(|v|v.plain_fft())
                     .and_then(|v|v.unmirror())
                 }
-                
+
                 fn windowed_sfft(self, window: &WindowFunction<$data_type>) -> TransRes<GenericDataVec<$data_type>> {
                     reject_if!(self, self.points() % 2 == 0, ErrorReason::InputMustHaveAnOddLength);
                     self.to_complex()
@@ -355,7 +357,7 @@ macro_rules! add_time_freq_impl {
                     .and_then(|v|v.unmirror())
                 }
             }
-            
+
             impl GenericDataVec<$data_type> {
                 fn unmirror(mut self) -> TransRes<Self> {
                     let len = self.len();
@@ -364,24 +366,24 @@ macro_rules! add_time_freq_impl {
                     Ok(self)
                 }
             }
-            
+
             define_time_domain_forward!(ComplexTimeVector, $data_type; RealTimeVector, $data_type);
-            
+
             impl SymmetricTimeDomainOperations<$data_type> for RealTimeVector<$data_type> {
                 type FreqPartner = ComplexFreqVector<$data_type>;
                 fn plain_sfft(self) -> TransRes<Self::FreqPartner> {
                     Self::FreqPartner::from_genres(self.to_gen().plain_sfft())
                 }
-                
+
                 fn sfft(self) -> TransRes<Self::FreqPartner> {
                     Self::FreqPartner::from_genres(self.to_gen().sfft())
                 }
-                
+
                 fn windowed_sfft(self, window: &WindowFunction<$data_type>) -> TransRes<Self::FreqPartner> {
                     Self::FreqPartner::from_genres(self.to_gen().windowed_sfft(window))
                 }
             }
-            
+
             impl FrequencyDomainOperations<$data_type> for GenericDataVec<$data_type> {
                 type ComplexTimePartner = GenericDataVec<$data_type>;
                 fn plain_ifft(mut self) -> TransRes<GenericDataVec<$data_type>> {
@@ -394,14 +396,14 @@ macro_rules! add_time_freq_impl {
                         self.delta = delta;
                         let signal = &self.data;
                         let spectrum = temp_mut!(self, signal.len());
-                        let signal = Self::array_to_complex(signal);
-                        let spectrum = Self::array_to_complex_mut(spectrum);
+                        let signal = array_to_complex(signal);
+                        let spectrum = array_to_complex_mut(spectrum);
                         fft.process(&signal[0..points], &mut spectrum[0..points]);
                         self.domain = DataVecDomain::Time;
                     }
                     Ok(self.swap_data_temp())
                 }
-                
+
                 fn mirror(mut self) -> TransRes<Self> {
                     assert_freq!(self);
                     assert_complex!(self);
@@ -433,20 +435,20 @@ macro_rules! add_time_freq_impl {
                                 i -= 2;
                                 j += 2;
                             }
-                        
+
                             self.valid_len = temp_len;
                     }
                     Ok(self.swap_data_temp())
                 }
-                
+
                 fn ifft(self) -> TransRes<Self::ComplexTimePartner> {
-                    
+
                     let points = self.points();
                     self.real_scale(1.0 / points as $data_type)
                     .and_then(|v| v.ifft_shift())
                     .and_then(|v| v.plain_ifft())
                 }
-                
+
                 fn windowed_ifft(self, window: &WindowFunction<$data_type>) -> TransRes<Self::ComplexTimePartner> {
                     let points = self.points();
                     self.real_scale(1.0 / points as $data_type)
@@ -454,19 +456,19 @@ macro_rules! add_time_freq_impl {
                     .and_then(|v| v.plain_ifft())
                     .and_then(|v|v.unapply_window(window))
                 }
-                
+
                 fn fft_shift(self) -> TransRes<Self> {
                     self.swap_halves_priv(true)
                 }
-                
+
                 fn ifft_shift(self) -> TransRes<Self> {
                     self.swap_halves_priv(false)
                 }
             }
-            
+
             impl SymmetricFrequencyDomainOperations<$data_type> for GenericDataVec<$data_type> {
                 type RealTimePartner = GenericDataVec<$data_type>;
-                
+
                 fn plain_sifft(self) -> TransRes<GenericDataVec<$data_type>> {
                     assert_complex!(self);
                     assert_freq!(self);
@@ -475,7 +477,7 @@ macro_rules! add_time_freq_impl {
                         .and_then(|v|v.plain_ifft())
                         .and_then(|v|v.to_real())
                 }
-                
+
                 fn sifft(self) -> TransRes<Self::RealTimePartner> {
                     let points = self.points();
                     self.real_scale(1.0 / points as $data_type)
@@ -490,44 +492,44 @@ macro_rules! add_time_freq_impl {
                     .and_then(|v|v.unapply_window(window))
                 }
             }
-            
+
             impl FrequencyDomainOperations<$data_type> for ComplexFreqVector<$data_type> {
                 type ComplexTimePartner = ComplexTimeVector<$data_type>;
                 fn plain_ifft(self) -> TransRes<ComplexTimeVector<$data_type>> {
                     Self::ComplexTimePartner::from_genres(self.to_gen().plain_ifft())
                 }
-                                
+
                 fn mirror(self) -> TransRes<ComplexFreqVector<$data_type>> {
                     Self::from_genres(self.to_gen().mirror())
                 }
-                
+
                 fn ifft(self) -> TransRes<Self::ComplexTimePartner> {
                     Self::ComplexTimePartner::from_genres(self.to_gen().ifft())
                 }
-                
+
                 fn windowed_ifft(self, window: &WindowFunction<$data_type>) -> TransRes<Self::ComplexTimePartner> {
                     Self::ComplexTimePartner::from_genres(self.to_gen().windowed_ifft(window))
                 }
-                
+
                 fn fft_shift(self) -> TransRes<Self> {
                     Self::from_genres(self.to_gen().fft_shift())
                 }
-                
+
                 fn ifft_shift(self) -> TransRes<Self> {
                     Self::from_genres(self.to_gen().ifft_shift())
                 }
             }
-            
+
             impl SymmetricFrequencyDomainOperations<$data_type> for ComplexFreqVector<$data_type> {
                 type RealTimePartner = RealTimeVector<$data_type>;
                 fn plain_sifft(self) -> TransRes<Self::RealTimePartner> {
                     Self::RealTimePartner::from_genres(self.to_gen().plain_sifft())
                 }
-                
+
                 fn sifft(self) -> TransRes<Self::RealTimePartner> {
                     Self::RealTimePartner::from_genres(self.to_gen().sifft())
                 }
-                
+
                 fn windowed_sifft(self, window: &WindowFunction<$data_type>) -> TransRes<Self::RealTimePartner> {
                     Self::RealTimePartner::from_genres(self.to_gen().windowed_sifft(window))
                 }
@@ -550,8 +552,8 @@ mod tests {
     use window_functions::*;
     use RealNumber;
     use std::fmt::Debug;
-    
-    fn assert_eq_tol<T>(left: &[T], right: &[T], tol: T) 
+
+    fn assert_eq_tol<T>(left: &[T], right: &[T], tol: T)
         where T: RealNumber + Debug {
         assert_eq!(left.len(), right.len());
         for i in 0..left.len() {
@@ -572,7 +574,7 @@ mod tests {
             assert!((result[i] - expected[i]).abs() < 1e-4);
         }
     }
-    
+
     #[test]
     fn plain_ifft_test()
     {
@@ -584,7 +586,7 @@ mod tests {
             assert!((result[i] - expected[i]).abs() < 1e-4);
         }
     }
-    
+
     #[test]
     fn plain_sfft_test()
     {
@@ -596,7 +598,7 @@ mod tests {
             assert!((result[i] - expected[i]).abs() < 1e-4);
         }
     }
-    
+
     #[test]
     fn mirror_test()
     {
@@ -605,7 +607,7 @@ mod tests {
         let expected = &[0.0, 0.0, 1.5, 0.0, 1.5, 0.0];
         assert_eq!(result.data(), expected);
     }
-    
+
     #[test]
     fn plain_sifft_test() {
         let vector = ComplexFreqVector32::from_interleaved(&[0.0, 0.0, 1.5, 0.0]);
@@ -617,7 +619,7 @@ mod tests {
             assert!((result[i] - expected[i]).abs() < 1e-4);
         }
     }
-    
+
     #[test]
     fn sfft_test()
     {
@@ -629,7 +631,7 @@ mod tests {
             assert!((result[i] - expected[i]).abs() < 1e-4);
         }
     }
-    
+
     #[test]
     fn ifft_shift_test()
     {
@@ -638,7 +640,7 @@ mod tests {
         let r = c.ifft_shift().unwrap();
         assert_eq!(r.data(), &[3.0, 4.0, 5.0, 6.0, 1.0, 2.0]);
     }
-    
+
     #[test]
     fn fft_shift_test()
     {
@@ -647,7 +649,7 @@ mod tests {
         let r = c.fft_shift().unwrap();
         assert_eq!(r.data(), &[5.0, 6.0, 1.0, 2.0, 3.0, 4.0]);
     }
-    
+
     #[test]
     fn window_test()
     {
@@ -658,7 +660,7 @@ mod tests {
         let r = r.data();
         assert_eq_tol(r, &expected, 1e-4);
     }
-    
+
     #[test]
     fn window_odd_test()
     {
@@ -669,7 +671,7 @@ mod tests {
         let r = r.data();
         assert_eq_tol(r, &expected, 1e-2);
     }
-    
+
     #[test]
     fn unapply_window_test()
     {

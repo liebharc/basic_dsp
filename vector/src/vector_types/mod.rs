@@ -8,7 +8,7 @@ macro_rules! reject_if {
 
 macro_rules! assert_meta_data {
     ($self_: ident, $other: ident) => {
-         {        
+         {
             let delta_ratio = $self_.delta / $other.delta;
             if $self_.is_complex != $other.is_complex ||
                 $self_.domain != $other.domain ||
@@ -96,7 +96,7 @@ pub use vector_types::definitions::{
         ErrorReason,
         GenericVectorOps,
         RealVectorOps,
-        ComplexVectorOps,    
+        ComplexVectorOps,
         Statistics,
         RededicateOps,
         ScaleOps,
@@ -104,7 +104,9 @@ pub use vector_types::definitions::{
         DotProductOps,
         StatisticsOps,
         PaddingOption,
-        VectorIter
+        VectorIter,
+        ComplexIndex,
+        ComplexIndexMut
     };
 pub use vector_types::time_freq_impl::{
         TimeDomainOperations,
@@ -119,7 +121,7 @@ pub use vector_types::convolution_impl::{
 pub use vector_types::correlation_impl::CrossCorrelationOps;
 pub use vector_types::interpolation_impl::{
     InterpolationOps,
-    RealInterpolationOps};  
+    RealInterpolationOps};
 use num::complex::Complex;
 use RealNumber;
 use multicore_support::{Chunk, Complexity, MultiCoreSettings};
@@ -134,9 +136,10 @@ use std::fmt::{Display, Debug};
 fn round_len(len: usize) -> usize {
     ((len + Reg32::len() - 1) / Reg32::len()) * Reg32::len()
 }
-    
+
 define_vector_struct!(struct GenericDataVec);
 add_basic_private_impl!(f32, Reg32; f64, Reg64);
+add_complex_accessors!(GenericDataVec);
 
 define_vector_struct!(struct RealTimeVector);
 define_real_basic_struct_members!(impl RealTimeVector, DataVecDomain::Time);
@@ -149,11 +152,13 @@ define_generic_operations_forward!(from: RealFreqVector, to: GenericDataVec, f32
 define_real_operations_forward!(from: RealFreqVector, to: GenericDataVec, complex_partner: ComplexFreqVector, f32, f64);
 
 define_vector_struct!(struct ComplexTimeVector);
+add_complex_accessors!(ComplexTimeVector);
 define_complex_basic_struct_members!(impl ComplexTimeVector, DataVecDomain::Time);
 define_generic_operations_forward!(from: ComplexTimeVector, to: GenericDataVec, f32, f64);
 define_complex_operations_forward!(from: ComplexTimeVector, to: GenericDataVec, complex: Complex, real_partner: RealTimeVector, f32, f64);
 
 define_vector_struct!(struct ComplexFreqVector);
+add_complex_accessors!(ComplexFreqVector);
 define_complex_basic_struct_members!(impl ComplexFreqVector, DataVecDomain::Frequency);
 define_generic_operations_forward!(from: ComplexFreqVector, to: GenericDataVec, f32, f64);
 define_complex_operations_forward!(from: ComplexFreqVector, to: GenericDataVec, complex: Complex, real_partner: RealTimeVector, f32, f64);
@@ -169,9 +174,9 @@ define_vector_struct_type_alias!(struct RealFreqVector64, based_on: RealFreqVect
 define_vector_struct_type_alias!(struct ComplexTimeVector64, based_on: ComplexTimeVector, f64);
 define_vector_struct_type_alias!(struct ComplexFreqVector64, based_on: ComplexFreqVector, f64);
 
-impl<T> GenericDataVec<T> 
+impl<T> GenericDataVec<T>
     where T: RealNumber
-{  
+{
     fn swap_data_temp(mut self) -> Self
     {
         let temp = self.temp;
@@ -179,30 +184,30 @@ impl<T> GenericDataVec<T>
         self.data = temp;
         self
     }
-    
-    fn array_to_complex(array: &[T]) -> &[Complex<T>] {
-        unsafe { 
-            let len = array.len();
-            if len % 2 != 0 {
-                panic!("Argument must have an even length");
-            }
-            let trans: &[Complex<T>] = mem::transmute(array);
-            &trans[0 .. len / 2]
+}
+
+fn array_to_complex<T>(array: &[T]) -> &[Complex<T>] {
+    unsafe {
+        let len = array.len();
+        if len % 2 != 0 {
+            panic!("Argument must have an even length");
         }
-    }
-    
-    fn array_to_complex_mut(array: &mut [T]) -> &mut [Complex<T>] {
-        unsafe { 
-            let len = array.len();
-            if len % 2 != 0 {
-                panic!("Argument must have an even length");
-            }
-            let trans: &mut [Complex<T>] = mem::transmute(array);
-            &mut trans[0 .. len / 2]            
-        }
+        let trans: &[Complex<T>] = mem::transmute(array);
+        &trans[0 .. len / 2]
     }
 }
-  
+
+fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
+    unsafe {
+        let len = array.len();
+        if len % 2 != 0 {
+            panic!("Argument must have an even length");
+        }
+        let trans: &mut [Complex<T>] = mem::transmute(array);
+        &mut trans[0 .. len / 2]
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -217,7 +222,7 @@ mod tests {
         assert_eq!(vector.delta(), 1.0);
         assert_eq!(vector.domain(), DataVecDomain::Time);
     }
-    
+
     #[test]
     fn construct_complex_time_vector_32_test()
     {
@@ -226,7 +231,7 @@ mod tests {
         assert_eq!(vector.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
         assert_eq!(vector.complex_data(), &array);
     }
-    
+
     #[test]
     fn add_real_one_32_test()
     {
@@ -237,7 +242,7 @@ mod tests {
         assert_eq!(result.data, expected);
         assert_eq!(result.delta, 1.0);
     }
-    
+
     #[test]
     fn add_real_two_32_test()
     {
@@ -248,7 +253,7 @@ mod tests {
         assert_eq!(result.data, [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0]);
         assert_eq!(result.delta, 1.0);
     }
-    
+
     #[test]
     fn add_complex_32_test()
     {
@@ -258,7 +263,7 @@ mod tests {
         assert_eq!(result.data, [2.0, 1.0, 4.0, 3.0, 6.0, 5.0, 8.0, 7.0]);
         assert_eq!(result.delta, 1.0);
     }
-    
+
     #[test]
     fn multiply_real_two_32_test()
     {
@@ -269,7 +274,7 @@ mod tests {
         assert_eq!(result.data, expected);
         assert_eq!(result.delta, 1.0);
     }
-    
+
     #[test]
     fn multiply_complex_32_test()
     {
@@ -280,7 +285,7 @@ mod tests {
         assert_eq!(result.data, expected);
         assert_eq!(result.delta, 1.0);
     }
-    
+
     #[test]
     fn abs_real_32_test()
     {
@@ -291,7 +296,7 @@ mod tests {
         assert_eq!(result.data, expected);
         assert_eq!(result.delta, 1.0);
     }
-    
+
     #[test]
     fn abs_complex_32_test()
     {
@@ -302,7 +307,7 @@ mod tests {
         assert_eq!(result.data(), expected);
         assert_eq!(result.delta, 1.0);
     }
-    
+
     #[test]
     fn abs_complex_squared_32_test()
     {
@@ -313,7 +318,7 @@ mod tests {
         assert_eq!(result.data(), expected);
         assert_eq!(result.delta, 1.0);
     }
-    
+
     #[test]
     fn indexer_test()
     {
@@ -325,7 +330,7 @@ mod tests {
         let expected = [5.0, 2.0, 3.0, 4.0];
         assert_eq!(result.data(), expected);
     }
-    
+
     #[test]
     fn add_test()
     {
@@ -337,7 +342,7 @@ mod tests {
         let expected = [6.0, 9.0, 12.0, 15.0];
         assert_eq!(result.data(), expected);
     }
-    
+
     #[test]
     fn multiply_complex_vector_32_test()
     {
@@ -348,7 +353,7 @@ mod tests {
         assert_eq!(result.data, expected);
         assert_eq!(result.delta, 1.0);
     }
-    
+
     #[test]
     fn divide_complex_vector_32_test()
     {
@@ -359,7 +364,7 @@ mod tests {
         assert_eq!(result.data, expected);
         assert_eq!(result.delta, 1.0);
     }
-    
+
     #[test]
     fn array_to_complex_test()
     {
@@ -368,7 +373,7 @@ mod tests {
         let expected = [Complex32::new(1.0, 1.0); 5];
         assert_eq!(&expected, c);
     }
-    
+
     #[test]
     fn array_to_complex_mut_test()
     {
@@ -377,7 +382,7 @@ mod tests {
         let expected = [Complex32::new(1.0, 1.0); 5];
         assert_eq!(&expected, c);
     }
-    
+
     #[test]
     fn swap_halves_real_even_test()
     {
@@ -386,7 +391,7 @@ mod tests {
         let r = c.swap_halves().unwrap();
         assert_eq!(r.data(), &[3.0, 4.0, 1.0, 2.0]);
     }
-    
+
     #[test]
     fn swap_halves_real_odd_test()
     {
@@ -395,7 +400,7 @@ mod tests {
         let r = c.swap_halves().unwrap();
         assert_eq!(r.data(), &[4.0, 5.0, 1.0, 2.0, 3.0]);
     }
-    
+
     #[test]
     fn swap_halves_complex_even_test()
     {
@@ -404,7 +409,7 @@ mod tests {
         let r = c.swap_halves().unwrap();
         assert_eq!(r.data(), &[5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0]);
     }
-    
+
     #[test]
     fn swap_halves_complex_odd_test()
     {
@@ -413,7 +418,7 @@ mod tests {
         let r = c.swap_halves().unwrap();
         assert_eq!(r.data(), &[7.0, 8.0, 9.0, 10.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
     }
-    
+
     #[test]
     fn zero_pad_end_test()
     {
@@ -425,7 +430,7 @@ mod tests {
              0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
         assert_eq!(r.data(), &expected);
     }
-    
+
     #[test]
     fn zero_pad_surround_test()
     {
@@ -438,7 +443,7 @@ mod tests {
              0.0, 0.0, 0.0, 0.0];
         assert_eq!(r.data(), &expected);
     }
-    
+
     #[test]
     fn zero_pad_center_test()
     {
@@ -452,7 +457,7 @@ mod tests {
              0.0, 0.0, 0.0, 0.0];
         assert_eq!(r.data(), &expected);
     }
-    
+
     #[test]
     fn complex_conj_test()
     {

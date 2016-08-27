@@ -8,7 +8,7 @@
 //! involves making mistakes, don't expect things to be flawless or even close to flawless.
 //!
 //! This library isn't suited - from my point of view - for game programming. If you are looking for vector types to do
-//! 2D or 3D graphics calculations then you unfortunately have to continue with your search. However there seem to be 
+//! 2D or 3D graphics calculations then you unfortunately have to continue with your search. However there seem to be
 //! a lot of suitable crates on `crates.io` for you.
 //!
 //! The vector types don't distinguish between 1xN or Nx1. This is a difference to other conventions such as in MATLAB or GNU Octave.
@@ -19,18 +19,18 @@
 //! of multiple cores. In future there will be likely an option which tells the library how it should balance between processing time
 //! and CPU utilization. The library also avoids to allocate and free memory so it allocates all of the required temporary memory when a new vector
 //! is constructed. Therefore the library is likely not suitable for devices which are tight on memory. On normal desktop computers there is usually plenty of
-//! memory available so that the optimization focus is on decreasing the processing time for every (common) operation and to spent little time with memory allocations.  
+//! memory available so that the optimization focus is on decreasing the processing time for every (common) operation and to spent little time with memory allocations.
 
 /// Like `try!` but for operations returning a vector.
 ///
-/// Operations which return a vector on success even return an error reason 
+/// Operations which return a vector on success even return an error reason
 /// together with a vector on failure. So even if the operation has failed the
 /// vector can still be reused and thus memory allocation can be avoided. If
 /// this is undesired then this macro can be used instead of `try!` to just
 /// return the error reason.
 #[macro_export]
 macro_rules! try_vec {
-    ( $ expr : expr ) => { 
+    ( $ expr : expr ) => {
         match $expr {
             Ok(vec) => vec,
             Err((reason, _)) => return Err(reason)
@@ -68,14 +68,14 @@ pub use vector_types::
         ComplexTimeVector,
         RealTimeVector,
         RealFreqVector,
-        DataVec32, 
+        DataVec32,
         RealTimeVector32,
-        ComplexTimeVector32, 
+        ComplexTimeVector32,
         RealFreqVector32,
         ComplexFreqVector32,
-        DataVec64, 
+        DataVec64,
         RealTimeVector64,
-        ComplexTimeVector64, 
+        ComplexTimeVector64,
         RealFreqVector64,
         ComplexFreqVector64,
         Statistics,
@@ -91,20 +91,22 @@ pub use vector_types::
         InterpolationOps,
         RealInterpolationOps,
         PaddingOption,
-        VectorIter
+        VectorIter,
+        ComplexIndex,
+        ComplexIndexMut
     };
  pub use multicore_support::MultiCoreSettings;
- use num::traits::Float;   
- 
+ use num::traits::Float;
+
  /// A real floating pointer number intended to abstract over `f32` and `f64`.
  pub trait RealNumber : Float + Copy + Clone + Send + Sync { }
  impl<T> RealNumber for T
   where T: Float + Copy + Clone + Send + Sync {}
-  
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     fn void_try_method() -> Result<i32, ErrorReason> {
         let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
         let vector = DataVec32::from_array(false, DataVecDomain::Time, &array);
@@ -112,7 +114,7 @@ mod tests {
         let _ = try!(vector.get_magnitude(&mut dest));
         Ok(0)
     }
-    
+
     fn scalar_try_method() -> Result<i32, ErrorReason> {
         let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
         let vector = DataVec32::from_array(false, DataVecDomain::Time, &array);
@@ -120,7 +122,7 @@ mod tests {
         let _ = try!(vector.complex_dot_product(&dest));
         Ok(0)
     }
-    
+
     fn vec_try_method() -> Result<i32, ErrorReason> {
         let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
         let vector = DataVec32::from_array(false, DataVecDomain::Time, &array);
@@ -130,7 +132,7 @@ mod tests {
         Ok(0)
     }
 
-    /// This test should make sure that there are convenient error handling 
+    /// This test should make sure that there are convenient error handling
     /// methods available.
     #[test]
     fn construct_real_time_vector_32_test()

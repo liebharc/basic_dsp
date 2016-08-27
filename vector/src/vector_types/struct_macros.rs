@@ -741,3 +741,67 @@ macro_rules! define_complex_basic_struct_members {
         }
      }
 }
+
+macro_rules! add_complex_accessors {
+    ($name:ident) => {
+        impl<T> ComplexIndex<RangeFrom<usize>> for $name<T>
+            where T: RealNumber
+        {
+            type Output = [Complex<T>];
+
+            fn complex(&self, index: RangeFrom<usize>) -> &[Complex<T>]
+            {
+                array_to_complex(&self.data[index])
+            }
+        }
+
+        impl<T> ComplexIndexMut<RangeFrom<usize>> for $name<T>
+            where T: RealNumber
+        {
+            fn complex_mut(&mut self, index: RangeFrom<usize>) -> &mut [Complex<T>]
+            {
+                array_to_complex_mut(&mut self.data[index])
+            }
+        }
+
+        impl<T> ComplexIndex<RangeTo<usize>> for $name<T>
+            where T: RealNumber
+        {
+            type Output = [Complex<T>];
+
+            fn complex(&self, index: RangeTo<usize>) -> &[Complex<T>]
+            {
+                array_to_complex(&self.data[index])
+            }
+        }
+
+        impl<T> ComplexIndexMut<RangeTo<usize>> for $name<T>
+            where T: RealNumber
+        {
+            fn complex_mut(&mut self, index: RangeTo<usize>) -> &mut [Complex<T>]
+            {
+                array_to_complex_mut(&mut self.data[index])
+            }
+        }
+
+        impl<T> ComplexIndex<RangeFull> for $name<T>
+            where T: RealNumber
+        {
+            type Output = [Complex<T>];
+
+            fn complex(&self, index: RangeFull) -> &[Complex<T>]
+            {
+                array_to_complex(&self.data[index])
+            }
+        }
+
+        impl<T> ComplexIndexMut<RangeFull> for $name<T>
+            where T: RealNumber
+        {
+            fn complex_mut(&mut self, index: RangeFull) -> &mut [Complex<T>]
+            {
+                array_to_complex_mut(&mut self.data[index])
+            }
+        }
+    }
+}

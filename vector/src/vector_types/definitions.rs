@@ -67,6 +67,23 @@ pub trait DataVec<T> : Sized
     fn allocated_len(&self) -> usize;
 }
 
+/// Like [`std::ops::Index`](https://doc.rust-lang.org/std/ops/trait.Index.html)
+/// but with a different method name so that it can be used to implement a 2nd range
+/// accessor for complex data.
+pub trait ComplexIndex<Idx> where Idx: Sized {
+    type Output: ?Sized;
+    /// The method for complex indexing
+    fn complex(&self, index: Idx) -> &Self::Output;
+}
+
+/// Like [`std::ops::IndexMut`](https://doc.rust-lang.org/std/ops/trait.IndexMut.html)
+/// but with a different method name so that it can be used to implement a 2nd range
+/// accessor for complex data.
+pub trait ComplexIndexMut<Idx>: ComplexIndex<Idx> where Idx: Sized {
+    /// The method for complex indexing
+    fn complex_mut(&mut self, index: Idx) -> &mut Self::Output;
+}
+
 /// The domain of a data vector
 #[derive(Copy)]
 #[derive(Clone)]
