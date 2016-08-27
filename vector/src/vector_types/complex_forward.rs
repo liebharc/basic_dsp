@@ -7,10 +7,6 @@ macro_rules! define_complex_operations_forward {
             {
                 type RealPartner = $real_partner<$data_type>;
 
-                fn complex_data(&self) -> &[Complex<$data_type>] {
-                    self.to_gen_borrow().complex_data()
-                }
-
                 fn complex_offset(self, offset: Complex<$data_type>) -> TransRes<Self>
                 {
                     Self::from_genres(self.to_gen().complex_offset(offset))

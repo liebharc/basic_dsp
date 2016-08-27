@@ -98,7 +98,7 @@ pub extern fn get_delta64(vector: &DataVec64) -> f64 {
 
 #[no_mangle]
 pub extern fn complex_data64(vector: &DataVec64) -> &[Complex64] {
-    vector.complex_data()
+    vector.complex(0..)
 }
 
 #[no_mangle]

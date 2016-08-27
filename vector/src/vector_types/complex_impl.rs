@@ -30,11 +30,6 @@ macro_rules! add_complex_impl {
             {
                 type RealPartner = GenericDataVec<$data_type>;
 
-                fn complex_data(&self) -> &[Complex<$data_type>] {
-                    let len = self.len();
-                    array_to_complex(&self.data[0..len])
-                }
-
                 fn complex_offset(self, offset: Complex<$data_type>)  -> TransRes<Self>
                 {
                     assert_complex!(self);

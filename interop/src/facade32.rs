@@ -97,7 +97,7 @@ pub extern fn get_delta32(vector: &DataVec32) -> f32 {
 
 #[no_mangle]
 pub extern fn complex_data32(vector: &DataVec32) -> &[Complex32] {
-    vector.complex_data()
+    vector.complex(0..)
 }
 
 #[no_mangle]

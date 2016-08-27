@@ -911,9 +911,6 @@ pub trait ComplexVectorOps<T> : DataVec<T>
     where T : RealNumber {
     type RealPartner;
 
-    /// Gets `self.data()` as complex array.
-    fn complex_data(&self) -> &[Complex<T>];
-
     /// Adds a scalar to the vector. See also  [`OffsetOps`](trait.OffsetOps.html).
     /// # Example
     ///

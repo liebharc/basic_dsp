@@ -229,7 +229,7 @@ mod tests {
         let array = [Complex32::new(1.0, 2.0), Complex32::new(3.0, 4.0), Complex32::new(5.0, 6.0), Complex32::new(7.0, 8.0)];
         let vector = ComplexTimeVector32::from_complex(&array);
         assert_eq!(vector.data, [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
-        assert_eq!(vector.complex_data(), &array);
+        assert_eq!(vector.complex(0..), &array);
     }
 
     #[test]
@@ -369,7 +369,7 @@ mod tests {
     fn array_to_complex_test()
     {
         let a = [1.0; 10];
-        let c = DataVec32::array_to_complex(&a);
+        let c = super::array_to_complex(&a);
         let expected = [Complex32::new(1.0, 1.0); 5];
         assert_eq!(&expected, c);
     }
@@ -378,7 +378,7 @@ mod tests {
     fn array_to_complex_mut_test()
     {
         let mut a = [1.0; 10];
-        let c = DataVec32::array_to_complex_mut(&mut a);
+        let c = super::array_to_complex_mut(&mut a);
         let expected = [Complex32::new(1.0, 1.0); 5];
         assert_eq!(&expected, c);
     }
