@@ -3,7 +3,6 @@ extern crate basic_dsp_vector;
 mod definitions;
 
 use std::result::Result;
-use std::ops::{Range, Index, IndexMut};
 use basic_dsp_vector::*;
 
 pub use definitions::*;
@@ -206,9 +205,6 @@ macro_rules! add_basic_impl {
             impl<V, T> DataMatrix<T> for $matrix<V, T>
                 where T: RealNumber,
                   V: DataVec<T> {
-                fn get_row(&self, row: usize) -> &[T] {
-                    self.rows[row].data()
-                }
 
                 fn delta(&self) -> T {
                     self.rows[0].delta()
@@ -220,46 +216,6 @@ macro_rules! add_basic_impl {
 
                 fn is_complex(&self) -> bool {
                     self.rows[0].is_complex()
-                }
-            }
-
-            impl<V, T> Index<usize> for $matrix<V, T>
-                where T: RealNumber,
-                  V: DataVec<T> {
-                type Output = [T];
-
-                fn index(&self, index: usize) -> &[T] {
-                    self.get_row(index)
-                }
-            }
-
-            impl<V, T> Index<(usize, usize)> for $matrix<V, T>
-                where T: RealNumber,
-                  V: DataVec<T> {
-                type Output = T;
-
-                fn index(&self, index: (usize, usize)) -> &T {
-                    let vec = self.get_row(index.0);
-                    &vec[index.1]
-                }
-            }
-
-            impl<V, T> IndexMut<usize> for $matrix<V, T>
-                where T: RealNumber,
-                  V: DataVec<T> + IndexMut<Range<usize>, Output=[T]> {
-                fn index_mut(&mut self, index: usize) -> &mut [T] {
-                    let vec = &mut self.rows[index];
-                    let len = vec.len();
-                    &mut vec[0..len]
-                }
-            }
-
-            impl<V, T> IndexMut<(usize, usize)> for $matrix<V, T>
-                where T: RealNumber,
-                  V: DataVec<T> + IndexMut<usize, Output=T> {
-                fn index_mut(&mut self, index: (usize, usize)) -> &mut T {
-                    let vec = &mut self.rows[index.0];
-                    &mut vec[index.1]
                 }
             }
         )*
@@ -281,7 +237,7 @@ mod tests {
         let vector2 = DataVec32::from_array(false, DataVecDomain::Time, &array2);
         let mat = Matrix2xN::new([vector1, vector2]).unwrap();
         let pair = mat.decompose();
-        assert_eq!(pair[0].data(), array1);
-        assert_eq!(pair[1].data(), array2);
+        assert_eq!(pair[0].real(0..), array1);
+        assert_eq!(pair[1].real(0..), array2);
     }
 }

@@ -3,6 +3,20 @@ macro_rules! add_basic_private_impl {
     => {
         $(
             impl GenericDataVec<$data_type> {
+                /// Reallocates the data inside a vector, but
+                /// not temp. The data will not be preserved by this operation
+                fn reallocate(&mut self, len: usize)
+                {
+                    if len > self.allocated_len()
+                    {
+                        let mut new_data = Vec::with_capacity(round_len(len));
+                        unsafe { new_data.set_len(len) };
+                        self.data = new_data;
+                    }
+
+                    self.valid_len = len;
+                }
+
                 #[inline]
                 fn pure_real_operation<A, F>(mut self, op: F, argument: A, complexity: Complexity) -> TransRes<Self>
                     where A: Sync + Copy + Send,

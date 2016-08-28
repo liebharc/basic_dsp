@@ -21,24 +21,6 @@ pub type ScalarResult<T> = result::Result<T, ErrorReason>;
 pub trait DataVec<T> : Sized
     where T : RealNumber
 {
-    /// Gives direct access to the underlying data sequence. It's recommended to use the `Index functions .
-    /// For users outside of Rust: It's discouraged to hold references to this array while executing operations on the vector,
-    /// since the vector may decide at any operation to invalidate the array.
-    fn data(&self) -> &[T];
-
-    /// Overwrites the data in the vector with the given data. This may also change
-    /// the vectors length (however not the allocated length).
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
-    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0]);
-    /// let result = vector.overwrite_data(&[5.0, 7.0]).expect("Ignoring error handling in examples");
-    /// assert_eq!(&[5.0, 7.0], result.data());
-    /// ```
-    fn overwrite_data(self, data: &[T]) -> TransRes<Self>;
-
     /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
     fn delta(&self) -> T;
 
@@ -68,8 +50,10 @@ pub trait DataVec<T> : Sized
 }
 
 /// Like [`std::ops::Index`](https://doc.rust-lang.org/std/ops/trait.Index.html)
-/// but with a different method name so that it can be used to implement a 2nd range
+/// but with a different method name so that it can be used to implement an additional range
 /// accessor for complex data.
+///
+/// Note if indexers will return an empty array in case the vector isn't complex.
 pub trait ComplexIndex<Idx> where Idx: Sized {
     type Output: ?Sized;
     /// The method for complex indexing
@@ -77,11 +61,55 @@ pub trait ComplexIndex<Idx> where Idx: Sized {
 }
 
 /// Like [`std::ops::IndexMut`](https://doc.rust-lang.org/std/ops/trait.IndexMut.html)
-/// but with a different method name so that it can be used to implement a 2nd range
+/// but with a different method name so that it can be used to implement a additional range
 /// accessor for complex data.
+///
+/// Note if indexers will return an empty array in case the vector isn't complex.
 pub trait ComplexIndexMut<Idx>: ComplexIndex<Idx> where Idx: Sized {
     /// The method for complex indexing
     fn complex_mut(&mut self, index: Idx) -> &mut Self::Output;
+}
+
+/// Like [`std::ops::Index`](https://doc.rust-lang.org/std/ops/trait.Index.html)
+/// but with a different method name so that it can be used to implement an additional range
+/// accessor for interleaved data.
+///
+/// Note if indexers will return an empty array in case the vector isn't complex.
+pub trait InterleavedIndex<Idx> where Idx: Sized {
+    type Output: ?Sized;
+    /// The method for complex indexing
+    fn interleaved(&self, index: Idx) -> &Self::Output;
+}
+
+/// Like [`std::ops::IndexMut`](https://doc.rust-lang.org/std/ops/trait.IndexMut.html)
+/// but with a different method name so that it can be used to implement a additional range
+/// accessor for interleaved data.
+///
+/// Note if indexers will return an empty array in case the vector isn't complex.
+pub trait InterleavedIndexMut<Idx>: InterleavedIndex<Idx> where Idx: Sized {
+    /// The method for complex indexing
+    fn interleaved_mut(&mut self, index: Idx) -> &mut Self::Output;
+}
+
+/// Like [`std::ops::Index`](https://doc.rust-lang.org/std/ops/trait.Index.html)
+/// but with a different method name so that it can be used to implement an additional range
+/// accessor for real data.
+///
+/// Note if indexers will return an empty array in case the vector isn't real.
+pub trait RealIndex<Idx> where Idx: Sized {
+    type Output: ?Sized;
+    /// The method for complex indexing
+    fn real(&self, index: Idx) -> &Self::Output;
+}
+
+/// Like [`std::ops::IndexMut`](https://doc.rust-lang.org/std/ops/trait.IndexMut.html)
+/// but with a different method name so that it can be used to implement a additional range
+/// accessor for real data.
+///
+/// Note if indexers will return an empty array in case the vector isn't real.
+pub trait RealIndexMut<Idx>: RealIndex<Idx> where Idx: Sized {
+    /// The method for complex indexing
+    fn real_mut(&mut self, index: Idx) -> &mut Self::Output;
 }
 
 /// The domain of a data vector
@@ -268,11 +296,11 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
     /// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
     /// let result = vector1.add(&vector2).expect("Ignoring error handling in examples");
-    /// assert_eq!([11.0, 13.0], result.data());
+    /// assert_eq!([11.0, 13.0], result.real(0..));
     /// ```
     fn add(self, summand: &Self) -> TransRes<Self>;
 
@@ -289,11 +317,11 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector1 = RealTimeVector32::from_array(&[10.0, 11.0, 12.0, 13.0]);
     /// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
     /// let result = vector1.add_smaller(&vector2).expect("Ignoring error handling in examples");
-    /// assert_eq!([11.0, 13.0, 13.0, 15.0], result.data());
+    /// assert_eq!([11.0, 13.0, 13.0, 15.0], result.real(0..));
     /// ```
     fn add_smaller(self, summand: &Self) -> TransRes<Self>;
 
@@ -307,11 +335,11 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
     /// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
     /// let result = vector1.sub(&vector2).expect("Ignoring error handling in examples");
-    /// assert_eq!([-9.0, -9.0], result.data());
+    /// assert_eq!([-9.0, -9.0], result.real(0..));
     /// ```
     fn sub(self, subtrahend: &Self) -> TransRes<Self>;
 
@@ -328,11 +356,11 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector1 = RealTimeVector32::from_array(&[10.0, 11.0, 12.0, 13.0]);
     /// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
     /// let result = vector1.sub_smaller(&vector2).expect("Ignoring error handling in examples");
-    /// assert_eq!([9.0, 9.0, 11.0, 11.0], result.data());
+    /// assert_eq!([9.0, 9.0, 11.0, 11.0], result.real(0..));
     /// ```
     fn sub_smaller(self, summand: &Self) -> TransRes<Self>;
 
@@ -346,11 +374,11 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector1 = RealTimeVector32::from_array(&[1.0, 2.0]);
     /// let vector2 = RealTimeVector32::from_array(&[10.0, 11.0]);
     /// let result = vector1.mul(&vector2).expect("Ignoring error handling in examples");
-    /// assert_eq!([10.0, 22.0], result.data());
+    /// assert_eq!([10.0, 22.0], result.real(0..));
     /// ```
     fn mul(self, factor: &Self) -> TransRes<Self>;
 
@@ -367,11 +395,11 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector1 = RealTimeVector32::from_array(&[10.0, 11.0, 12.0, 13.0]);
     /// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
     /// let result = vector1.mul_smaller(&vector2).expect("Ignoring error handling in examples");
-    /// assert_eq!([10.0, 22.0, 12.0, 26.0], result.data());
+    /// assert_eq!([10.0, 22.0, 12.0, 26.0], result.real(0..));
     /// ```
     fn mul_smaller(self, factor: &Self) -> TransRes<Self>;
 
@@ -385,11 +413,11 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector1 = RealTimeVector32::from_array(&[10.0, 22.0]);
     /// let vector2 = RealTimeVector32::from_array(&[2.0, 11.0]);
     /// let result = vector1.div(&vector2).expect("Ignoring error handling in examples");
-    /// assert_eq!([5.0, 2.0], result.data());
+    /// assert_eq!([5.0, 2.0], result.real(0..));
     /// ```
     fn div(self, divisor: &Self) -> TransRes<Self>;
 
@@ -406,11 +434,11 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector1 = RealTimeVector32::from_array(&[10.0, 12.0, 12.0, 14.0]);
     /// let vector2 = RealTimeVector32::from_array(&[1.0, 2.0]);
     /// let result = vector1.div_smaller(&vector2).expect("Ignoring error handling in examples");
-    /// assert_eq!([10.0, 6.0, 12.0, 7.0], result.data());
+    /// assert_eq!([10.0, 6.0, 12.0, 7.0], result.real(0..));
     /// ```
     fn div_smaller(self, divisor: &Self) -> TransRes<Self>;
 
@@ -424,13 +452,13 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{PaddingOption, RealTimeVector32, ComplexTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{PaddingOption, RealTimeVector32, ComplexTimeVector32, GenericVectorOps, DataVec, RealIndex, InterleavedIndex};
     /// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
     /// let result = vector.zero_pad(4, PaddingOption::End).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());
+    /// assert_eq!([1.0, 2.0, 0.0, 0.0], result.real(0..));
     /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0]);
     /// let result = vector.zero_pad(2, PaddingOption::End).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 2.0, 0.0, 0.0], result.data());
+    /// assert_eq!([1.0, 2.0, 0.0, 0.0], result.interleaved(0..));
     /// ```
     fn zero_pad(self, points: usize, option: PaddingOption) -> TransRes<Self>;
 
@@ -447,13 +475,13 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, ComplexTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, ComplexTimeVector32, GenericVectorOps, DataVec, RealIndex, InterleavedIndex};
     /// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
     /// let result = vector.zero_interleave(2).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 0.0, 2.0, 0.0], result.data());
+    /// assert_eq!([1.0, 0.0, 2.0, 0.0], result.real(0..));
     /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
     /// let result = vector.zero_interleave(2).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], result.data());
+    /// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], result.interleaved(0..));
     /// ```
     fn zero_interleave(self, factor: u32) -> TransRes<Self>;
 
@@ -462,10 +490,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[2.0, 3.0, 2.0, 6.0]);
     /// let result = vector.diff().expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, -1.0, 4.0], result.data());
+    /// assert_eq!([1.0, -1.0, 4.0], result.real(0..));
     /// ```
     fn diff(self) -> TransRes<Self>;
 
@@ -475,10 +503,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[2.0, 3.0, 2.0, 6.0]);
     /// let result = vector.diff_with_start().expect("Ignoring error handling in examples");
-    /// assert_eq!([2.0, 1.0, -1.0, 4.0], result.data());
+    /// assert_eq!([2.0, 1.0, -1.0, 4.0], result.real(0..));
     /// ```
     fn diff_with_start(self) -> TransRes<Self>;
 
@@ -487,10 +515,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[2.0, 1.0, -1.0, 4.0]);
     /// let result = vector.cum_sum().expect("Ignoring error handling in examples");
-    /// assert_eq!([2.0, 3.0, 2.0, 6.0], result.data());
+    /// assert_eq!([2.0, 3.0, 2.0, 6.0], result.real(0..));
     /// ```
     fn cum_sum(self) -> TransRes<Self>;
 
@@ -500,11 +528,11 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// # use std::f32;
     /// let vector = RealTimeVector32::from_array(&[1.0, 4.0, 9.0, 16.0, 25.0]);
     /// let result = vector.sqrt().expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0], result.data());
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0], result.real(0..));
     /// let vector = RealTimeVector32::from_array(&[-1.0]);
     /// let result = vector.sqrt().expect("Ignoring error handling in examples");
     /// assert!(result[0].is_nan());
@@ -516,10 +544,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0]);
     /// let result = vector.square().expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 4.0, 9.0, 16.0, 25.0], result.data());
+    /// assert_eq!([1.0, 4.0, 9.0, 16.0, 25.0], result.real(0..));
     /// ```
     fn square(self) -> TransRes<Self>;
 
@@ -531,10 +559,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[1.0, 8.0, 27.0]);
     /// let result = vector.root(3.0).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 2.0, 3.0], result.data());
+    /// assert_eq!([1.0, 2.0, 3.0], result.real(0..));
     /// ```
     fn root(self, degree: T) -> TransRes<Self>;
 
@@ -543,10 +571,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
     /// let result = vector.powf(3.0).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 8.0, 27.0], result.data());
+    /// assert_eq!([1.0, 8.0, 27.0], result.real(0..));
     /// ```
     fn powf(self, exponent: T) -> TransRes<Self>;
 
@@ -555,10 +583,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[2.718281828459045    , 7.389056, 20.085537]);
     /// let result = vector.ln().expect("Ignoring error handling in examples");
-    /// let actual = result.data();
+    /// let actual = result.real(0..);
     /// let expected = &[1.0, 2.0, 3.0];
     /// assert_eq!(actual.len(), expected.len());
     /// for i in 0..actual.len() {
@@ -572,10 +600,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
     /// let result = vector.exp().expect("Ignoring error handling in examples");
-    /// assert_eq!([2.71828182846, 7.389056, 20.085537], result.data());
+    /// assert_eq!([2.71828182846, 7.389056, 20.085537], result.real(0..));
     /// ```
     fn exp(self) -> TransRes<Self>;
 
@@ -584,10 +612,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[10.0, 100.0, 1000.0]);
     /// let result = vector.log(10.0).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 2.0, 3.0], result.data());
+    /// assert_eq!([1.0, 2.0, 3.0], result.real(0..));
     /// ```
     fn log(self, base: T) -> TransRes<Self>;
 
@@ -596,10 +624,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0]);
     /// let result = vector.expf(10.0).expect("Ignoring error handling in examples");
-    /// assert_eq!([10.0, 100.0, 1000.0], result.data());
+    /// assert_eq!([10.0, 100.0, 1000.0], result.real(0..));
     /// ```
     fn expf(self, base: T) -> TransRes<Self>;
 
@@ -609,10 +637,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     ///
     /// ```
     /// use std::f32;
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[f32::consts::PI/2.0, -f32::consts::PI/2.0]);
     /// let result = vector.sin().expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, -1.0], result.data());
+    /// assert_eq!([1.0, -1.0], result.real(0..));
     /// ```
     fn sin(self) -> TransRes<Self>;
 
@@ -622,10 +650,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     ///
     /// ```
     /// use std::f32;
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[2.0 * f32::consts::PI, f32::consts::PI]);
     /// let result = vector.cos().expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, -1.0], result.data());
+    /// assert_eq!([1.0, -1.0], result.real(0..));
     /// ```
     fn cos(self) -> TransRes<Self>;
 
@@ -665,10 +693,10 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
     /// let result = vector.swap_halves().expect("Ignoring error handling in examples");
-    /// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], result.data());
+    /// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], result.real(0..));
     /// ```
     fn swap_halves(self) -> TransRes<Self>;
 
@@ -682,14 +710,14 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
     /// let merge = RealTimeVector32::from_array(&a);
     /// let mut split = &mut
     ///     [Box::new(RealTimeVector32::empty()),
     ///     Box::new(RealTimeVector32::empty())];
     /// merge.split_into(split).unwrap();
-    /// assert_eq!([1.0, 3.0, 5.0, 7.0, 9.0], split[0].data());
+    /// assert_eq!([1.0, 3.0, 5.0, 7.0, 9.0], split[0].real(0..));
     /// ```
     fn split_into(&self, targets: &mut [Box<Self>]) -> VoidResult;
 
@@ -703,13 +731,13 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::empty();
     /// let parts = &[
     ///     Box::new(RealTimeVector32::from_array(&[1.0, 2.0])),
     ///     Box::new(RealTimeVector32::from_array(&[1.0, 2.0]))];
     /// let merged = vector.merge(parts).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 1.0, 2.0, 2.0], merged.data());
+    /// assert_eq!([1.0, 1.0, 2.0, 2.0], merged.real(0..));
     /// ```
     fn merge(self, sources: &[Box<Self>]) -> TransRes<Self>;
 }
@@ -725,10 +753,10 @@ pub trait RealVectorOps<T> : DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, RealVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, RealVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
     /// let result = vector.real_offset(2.0).expect("Ignoring error handling in examples");
-    /// assert_eq!([3.0, 4.0], result.data());
+    /// assert_eq!([3.0, 4.0], result.real(0..));
     /// ```
     fn real_offset(self, factor: T) -> TransRes<Self>;
 
@@ -736,10 +764,10 @@ pub trait RealVectorOps<T> : DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, RealVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, RealVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
     /// let result = vector.real_scale(4.0).expect("Ignoring error handling in examples");
-    /// assert_eq!([4.0, 8.0], result.data());
+    /// assert_eq!([4.0, 8.0], result.real(0..));
     /// ```
     fn real_scale(self, offset: T) -> TransRes<Self>;
 
@@ -747,10 +775,10 @@ pub trait RealVectorOps<T> : DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, RealVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, RealVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[1.0, -2.0]);
     /// let result = vector.abs().expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 2.0], result.data());
+    /// assert_eq!([1.0, 2.0], result.real(0..));
     /// ```
     fn abs(self) -> TransRes<Self>;
 
@@ -759,10 +787,10 @@ pub trait RealVectorOps<T> : DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, RealVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, RealVectorOps, DataVec, InterleavedIndex};
     /// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
     /// let result = vector.to_complex().expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 0.0, 2.0, 0.0], result.data());
+    /// assert_eq!([1.0, 0.0, 2.0, 0.0], result.interleaved(0..));
     /// ```
     fn to_complex(self) -> TransRes<Self::ComplexPartner>;
 
@@ -772,10 +800,10 @@ pub trait RealVectorOps<T> : DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, RealVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, RealVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
     /// let result = vector.wrap(4.0).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0], result.data());
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0], result.real(0..));
     /// ```
     fn wrap(self, divisor: T) -> TransRes<Self>;
 
@@ -785,10 +813,10 @@ pub trait RealVectorOps<T> : DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, RealVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, RealVectorOps, DataVec, RealIndex};
     /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0]);
     /// let result = vector.unwrap(4.0).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], result.data());
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], result.real(0..));
     /// ```
     fn unwrap(self, divisor: T) -> TransRes<Self>;
 
@@ -872,7 +900,7 @@ pub trait RealVectorOps<T> : DataVec<T>
     /// let c = RealTimeVector32::from_array(&a);
     /// let r = c.map_inplace_real((), |v, i, _|v * i as f32).expect("Ignoring error handling in examples");
     /// let expected = [0.0, 2.0, 6.0, 12.0, 20.0];
-    /// assert_eq!(r.data(), &expected);
+    /// assert_eq!(r.real(0..), &expected);
     /// ```
     fn map_inplace_real<A, F>(self, argument: A, map: F) -> TransRes<Self>
         where A: Sync + Copy + Send,
@@ -917,12 +945,12 @@ pub trait ComplexVectorOps<T> : DataVec<T>
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec};
+    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec, InterleavedIndex};
     /// use num::complex::Complex32;
     /// # fn main() {
     /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
     /// let result = vector.complex_offset(Complex32::new(-1.0, 2.0)).expect("Ignoring error handling in examples");
-    /// assert_eq!([0.0, 4.0, 2.0, 6.0], result.data());
+    /// assert_eq!([0.0, 4.0, 2.0, 6.0], result.interleaved(0..));
     /// # }
     /// ```
     fn complex_offset(self, offset: Complex<T>) -> TransRes<Self>;
@@ -933,12 +961,12 @@ pub trait ComplexVectorOps<T> : DataVec<T>
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec};
+    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec, InterleavedIndex};
     /// use num::complex::Complex32;
     /// # fn main() {
     /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
     /// let result = vector.complex_scale(Complex32::new(-1.0, 2.0)).expect("Ignoring error handling in examples");
-    /// assert_eq!([-5.0, 0.0, -11.0, 2.0], result.data());
+    /// assert_eq!([-5.0, 0.0, -11.0, 2.0], result.interleaved(0..));
     /// # }
     /// ```
     fn complex_scale(self, factor: Complex<T>) -> TransRes<Self>;
@@ -953,11 +981,11 @@ pub trait ComplexVectorOps<T> : DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec};
+    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec, InterleavedIndex};
     /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
     /// let result = vector.multiply_complex_exponential(2.0, 3.0).expect("Ignoring error handling in examples");
     /// let expected = [-1.2722325, -1.838865, 4.6866837, -1.7421241];
-    /// let result = result.data();
+    /// let result = result.interleaved(0..);
     /// for i in 0..expected.len() {
     ///     assert!((result[i] - expected[i]).abs() < 1e-4);
     /// }
@@ -970,12 +998,12 @@ pub trait ComplexVectorOps<T> : DataVec<T>
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec};
+    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec, RealIndex};
     /// use num::complex::Complex32;
     /// # fn main() {
     /// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
     /// let result = vector.magnitude().expect("Ignoring error handling in examples");
-    /// assert_eq!([5.0, 5.0], result.data());
+    /// assert_eq!([5.0, 5.0], result.real(0..));
     /// # }
     /// ```
     fn magnitude(self) -> TransRes<Self::RealPartner>;
@@ -986,12 +1014,12 @@ pub trait ComplexVectorOps<T> : DataVec<T>
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{ComplexTimeVector32, RealTimeVector32, ComplexVectorOps, DataVec};
+    /// use basic_dsp_vector::{ComplexTimeVector32, RealTimeVector32, ComplexVectorOps, DataVec, RealIndex};
     /// # fn main() {
     /// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
     /// let mut result = RealTimeVector32::from_array(&[0.0]);
     /// vector.get_magnitude(&mut result).expect("Ignoring error handling in examples");
-    /// assert_eq!([5.0, 5.0], result.data());
+    /// assert_eq!([5.0, 5.0], result.real(0..));
     /// # }
     /// ```
     fn get_magnitude(&self, destination: &mut Self::RealPartner) -> VoidResult;
@@ -1002,12 +1030,12 @@ pub trait ComplexVectorOps<T> : DataVec<T>
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec};
+    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec, RealIndex};
     /// use num::complex::Complex32;
     /// # fn main() {
     /// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
     /// let result = vector.magnitude_squared().expect("Ignoring error handling in examples");
-    /// assert_eq!([25.0, 25.0], result.data());
+    /// assert_eq!([25.0, 25.0], result.real(0..));
     /// # }
     /// ```
     fn magnitude_squared(self) -> TransRes<Self::RealPartner>;
@@ -1018,11 +1046,11 @@ pub trait ComplexVectorOps<T> : DataVec<T>
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec};
+    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec, InterleavedIndex};
     /// # fn main() {
     /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
     /// let result = vector.conj().expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, -2.0, 3.0, -4.0], result.data());
+    /// assert_eq!([1.0, -2.0, 3.0, -4.0], result.interleaved(0..));
     /// # }
     /// ```
     fn conj(self) -> TransRes<Self>;
@@ -1033,11 +1061,11 @@ pub trait ComplexVectorOps<T> : DataVec<T>
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec};
+    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec, RealIndex};
     /// # fn main() {
     /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
     /// let result = vector.to_real().expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 3.0], result.data());
+    /// assert_eq!([1.0, 3.0], result.real(0..));
     /// # }
     /// ```
     fn to_real(self) -> TransRes<Self::RealPartner>;
@@ -1048,11 +1076,11 @@ pub trait ComplexVectorOps<T> : DataVec<T>
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec};
+    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec, RealIndex};
     /// # fn main() {
     /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
     /// let result = vector.to_imag().expect("Ignoring error handling in examples");
-    /// assert_eq!([2.0, 4.0], result.data());
+    /// assert_eq!([2.0, 4.0], result.real(0..));
     /// # }
     /// ```
     fn to_imag(self) -> TransRes<Self::RealPartner>;
@@ -1063,12 +1091,12 @@ pub trait ComplexVectorOps<T> : DataVec<T>
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOps, RealIndex};
     /// # fn main() {
     /// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
     /// let vector = ComplexTimeVector32::from_real_imag(&[1.0, 3.0], &[2.0, 4.0]);
     /// vector.get_real(&mut result).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 3.0], result.data());
+    /// assert_eq!([1.0, 3.0], result.real(0..));
     /// # }
     /// ```
     fn get_real(&self, destination: &mut Self::RealPartner) -> VoidResult;
@@ -1079,12 +1107,12 @@ pub trait ComplexVectorOps<T> : DataVec<T>
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOps, DataVec, RealIndex};
     /// # fn main() {
     /// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
     /// let vector = ComplexTimeVector32::from_real_imag(&[1.0, 3.0], &[2.0, 4.0]);
     /// vector.get_imag(&mut result).expect("Ignoring error handling in examples");
-    /// assert_eq!([2.0, 4.0], result.data());
+    /// assert_eq!([2.0, 4.0], result.real(0..));
     /// # }
     /// ```
     fn get_imag(&self, destination: &mut Self::RealPartner) -> VoidResult;
@@ -1095,11 +1123,11 @@ pub trait ComplexVectorOps<T> : DataVec<T>
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec};
+    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec, RealIndex};
     /// # fn main() {
     /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0]);
     /// let result = vector.phase().expect("Ignoring error handling in examples");
-    /// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.data());
+    /// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.real(0..));
     /// # }
     /// ```
     fn phase(self) -> TransRes<Self::RealPartner>;
@@ -1110,12 +1138,12 @@ pub trait ComplexVectorOps<T> : DataVec<T>
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOps, DataVec};
+    /// use basic_dsp_vector::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOps, DataVec, RealIndex};
     /// # fn main() {
     /// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
     /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0]);
     /// vector.get_phase(&mut result).expect("Ignoring error handling in examples");
-    /// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.data());
+    /// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.real(0..));
     /// # }
     /// ```
     fn get_phase(&self, destination: &mut Self::RealPartner) -> VoidResult;
@@ -1251,7 +1279,7 @@ pub trait ComplexVectorOps<T> : DataVec<T>
     /// let c = ComplexTimeVector32::from_interleaved(&a);
     /// let r = c.map_inplace_complex((), |v, i, _|v * Complex32::new(i as f32, 0.0)).expect("Ignoring error handling in examples");
     /// let expected = [0.0, 0.0, 3.0, 4.0, 10.0, 12.0];
-    /// assert_eq!(r.data(), &expected);
+    /// assert_eq!(r.interleaved(0..), &expected);
     /// # }
     /// ```
     fn map_inplace_complex<A, F>(self, argument: A, map: F) -> TransRes<Self>

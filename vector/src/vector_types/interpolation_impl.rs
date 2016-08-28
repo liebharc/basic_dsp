@@ -590,7 +590,7 @@ mod tests {
         let expected =
             [0.16666667, 0.044658206, 0.16666667, 0.16666667, 0.16666667, 0.6220085,
              1.1666667, 0.6220085, 0.16666667, 0.16666667, 0.16666667, 0.044658206];
-        assert_eq_tol(result.data(), &expected, 1e-4);
+        assert_eq_tol(result.real(0..), &expected, 1e-4);
     }
 
     #[test]
@@ -604,7 +604,7 @@ mod tests {
         let expected =
             [0.0, 0.038979173, 0.0000000062572014, 0.15530863, 0.000000015884869, 0.6163295,
              1.0, 0.61632943, 0.0000000142918966, 0.15530863, 0.000000048099658, 0.038979173];
-        assert_eq_tol(result.data(), &expected, 1e-4);
+        assert_eq_tol(result.real(0..), &expected, 1e-4);
     }
 
     #[test]
@@ -618,7 +618,7 @@ mod tests {
         let expected =
             [0.00000, 0.04466, 0.00000, 0.16667, 0.00000, 0.62201,
              1.00000, 0.62201, 0.00000, 0.16667, 0.00000, 0.04466];
-        assert_eq_tol(result.data(), &expected, 0.1);
+        assert_eq_tol(result.real(0..), &expected, 0.1);
     }
 
     #[test]
@@ -632,7 +632,7 @@ mod tests {
         let expected =
             [0.00000, 0.00000, 0.00000, 0.04466, 0.00000, 0.16667,
              0.00000, 0.62201, 1.00000, 0.62201, 0.00000, 0.16667];
-        assert_eq_tol(result.data(), &expected, 0.1);
+        assert_eq_tol(result.real(0..), &expected, 0.1);
     }
 
     #[test]
@@ -640,7 +640,7 @@ mod tests {
         let time = ComplexTimeVector32::from_interleaved(&[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0]);
         let result = time.decimatei(2, 1).unwrap();
         let expected = [2.0, 3.0, 6.0, 7.0, 10.0, 11.0];
-        assert_eq_tol(result.data(), &expected, 0.1);
+        assert_eq_tol(result.interleaved(0..), &expected, 0.1);
     }
 
     #[test]
@@ -652,7 +652,7 @@ mod tests {
             -1.0000, -0.7500, -0.5000, -0.2500, 0.0, 0.2344, 0.4583, 0.7031,
             1.0000, 1.4375, 2.0000, 2.5625, 3.0000, 3.3203, 3.6042, 3.8359, 4.0];
         assert_eq_tol(
-            &result.data()[4..expected.len()-4],
+            &result.real(0..)[4..expected.len()-4],
             &expected[4..expected.len()-4],
             6e-2);
     }
@@ -664,7 +664,7 @@ mod tests {
         let expected = [
             -3.0, -2.666, -2.333, -2.0, -1.666, -1.333, -1.0, -0.666, -0.333, 0.0,
             0.333, 0.666, 1.0, 1.333, 1.666, 2.0, 2.333, 2.666, 3.0];
-        assert_eq_tol(result.data(), &expected, 5e-3);
+        assert_eq_tol(result.real(0..), &expected, 5e-3);
     }
 
     #[test]
@@ -675,6 +675,6 @@ mod tests {
             -1.0000, -1.2500, -1.5000, -1.7500, -2.0000, -1.7500, -1.5000, -1.2500,
             -1.0000, -0.7500, -0.5000, -0.2500, 0.0, 0.2500, 0.5000, 0.7500,
              1.0000, 1.5000, 2.0000, 2.5000, 3.0000, 3.2500, 3.5000, 3.7500, 4.0];
-        assert_eq_tol(result.data(), &expected, 0.1);
+        assert_eq_tol(result.real(0..), &expected, 0.1);
     }
 }

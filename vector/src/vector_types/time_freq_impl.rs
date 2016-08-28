@@ -35,10 +35,10 @@ pub trait TimeDomainOperations<T> : DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{ComplexTimeVector32, TimeDomainOperations, DataVec};
+    /// use basic_dsp_vector::{ComplexTimeVector32, TimeDomainOperations, DataVec, InterleavedIndex};
     /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254]);
     /// let result = vector.plain_fft().expect("Ignoring error handling in examples");
-    /// let actual = result.data();
+    /// let actual = result.interleaved(0..);
     /// let expected = &[0.0, 0.0, 3.0, 0.0, 0.0, 0.0];
     /// assert_eq!(actual.len(), expected.len());
     /// for i in 0..actual.len() {
@@ -54,10 +54,10 @@ pub trait TimeDomainOperations<T> : DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{ComplexTimeVector32, TimeDomainOperations, DataVec};
+    /// use basic_dsp_vector::{ComplexTimeVector32, TimeDomainOperations, DataVec, InterleavedIndex};
     /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254]);
     /// let result = vector.fft().expect("Ignoring error handling in examples");
-    /// let actual = result.data();
+    /// let actual = result.interleaved(0..);
     /// let expected = &[0.0, 0.0, 0.0, 0.0, 3.0, 0.0];
     /// assert_eq!(actual.len(), expected.len());
     /// for i in 0..actual.len() {
@@ -144,10 +144,10 @@ pub trait FrequencyDomainOperations<T> : DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{ComplexFreqVector32, FrequencyDomainOperations, DataVec};
+    /// use basic_dsp_vector::{ComplexFreqVector32, FrequencyDomainOperations, DataVec, InterleavedIndex};
     /// let vector = ComplexFreqVector32::from_interleaved(&[0.0, 0.0, 1.0, 0.0, 0.0, 0.0]);
     /// let result = vector.plain_ifft().expect("Ignoring error handling in examples");
-    /// let actual = result.data();
+    /// let actual = result.interleaved(0..);
     /// let expected = &[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254];
     /// assert_eq!(actual.len(), expected.len());
     /// for i in 0..actual.len() {
@@ -164,10 +164,10 @@ pub trait FrequencyDomainOperations<T> : DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{ComplexFreqVector32, FrequencyDomainOperations, DataVec};
+    /// use basic_dsp_vector::{ComplexFreqVector32, FrequencyDomainOperations, DataVec, InterleavedIndex};
     /// let vector = ComplexFreqVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
     /// let result = vector.mirror().expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, -6.0, 3.0, -4.0], result.data());
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, -6.0, 3.0, -4.0], result.interleaved(0..));
     /// ```
     fn mirror(self) -> TransRes<Self>;
 
@@ -176,10 +176,10 @@ pub trait FrequencyDomainOperations<T> : DataVec<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{ComplexFreqVector32, FrequencyDomainOperations, DataVec};
+    /// use basic_dsp_vector::{ComplexFreqVector32, FrequencyDomainOperations, DataVec, InterleavedIndex};
     /// let vector = ComplexFreqVector32::from_interleaved(&[0.0, 0.0, 0.0, 0.0, 3.0, 0.0]);
     /// let result = vector.ifft().expect("Ignoring error handling in examples");
-    /// let actual = result.data();
+    /// let actual = result.interleaved(0..);
     /// let expected = &[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254];
     /// assert_eq!(actual.len(), expected.len());
     /// for i in 0..actual.len() {
@@ -547,7 +547,9 @@ mod tests {
         ComplexFreqVector32,
         RealTimeVector32,
         ComplexVectorOps,
-        DataVec};
+        DataVec,
+        RealIndex,
+        InterleavedIndex};
     use num::complex::Complex32;
     use window_functions::*;
     use RealNumber;
@@ -569,7 +571,7 @@ mod tests {
         let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254]);
         let result = vector.plain_fft().unwrap();
         let expected = &[0.0, 0.0, 3.0, 0.0, 0.0, 0.0];
-        let result = result.data();
+        let result = result.interleaved(0..);
         for i in 0..result.len() {
             assert!((result[i] - expected[i]).abs() < 1e-4);
         }
@@ -581,7 +583,7 @@ mod tests {
         let vector = ComplexFreqVector32::from_interleaved(&[0.0, 0.0, 3.0, 0.0, 0.0, 0.0]);
         let result = vector.plain_ifft().unwrap();
         let expected = &[3.0, 0.0, -1.5, 2.598076, -1.5, -2.598076];
-        let result = result.data();
+        let result = result.interleaved(0..);
         for i in 0..result.len() {
             assert!((result[i] - expected[i]).abs() < 1e-4);
         }
@@ -593,7 +595,7 @@ mod tests {
         let vector = RealTimeVector32::from_array(&[1.0, -0.5, -0.5]);
         let result = vector.plain_sfft().unwrap();
         let expected = &[0.0, 0.0, 1.5, 0.0];
-        let result = result.data();
+        let result = result.interleaved(0..);
         for i in 0..result.len() {
             assert!((result[i] - expected[i]).abs() < 1e-4);
         }
@@ -605,7 +607,7 @@ mod tests {
         let vector = ComplexFreqVector32::from_interleaved(&[0.0, 0.0, 1.5, 0.0]);
         let result = vector.mirror().unwrap();
         let expected = &[0.0, 0.0, 1.5, 0.0, 1.5, 0.0];
-        assert_eq!(result.data(), expected);
+        assert_eq!(result.interleaved(0..), expected);
     }
 
     #[test]
@@ -614,7 +616,7 @@ mod tests {
         let result = vector.plain_sifft().unwrap();
         let expected = &[3.0, -1.5, -1.5];
         assert_eq!(result.is_complex(), false);
-        let result = result.data();
+        let result = result.real(0..);
         for i in 0..result.len() {
             assert!((result[i] - expected[i]).abs() < 1e-4);
         }
@@ -626,7 +628,7 @@ mod tests {
         let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]);
         let result = vector.sfft().unwrap();
         let expected = &[28.0, 0.0, -3.5, 7.2678, -3.5000, 2.7912, -3.5000, 0.7989];
-        let result = result.data();
+        let result = result.interleaved(0..);
         for i in 0..result.len() {
             assert!((result[i] - expected[i]).abs() < 1e-4);
         }
@@ -638,7 +640,7 @@ mod tests {
         let mut a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
         let c = ComplexFreqVector32::from_interleaved(&mut a);
         let r = c.ifft_shift().unwrap();
-        assert_eq!(r.data(), &[3.0, 4.0, 5.0, 6.0, 1.0, 2.0]);
+        assert_eq!(r.interleaved(0..), &[3.0, 4.0, 5.0, 6.0, 1.0, 2.0]);
     }
 
     #[test]
@@ -647,7 +649,7 @@ mod tests {
         let mut a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
         let c = ComplexFreqVector32::from_interleaved(&mut a);
         let r = c.fft_shift().unwrap();
-        assert_eq!(r.data(), &[5.0, 6.0, 1.0, 2.0, 3.0, 4.0]);
+        assert_eq!(r.interleaved(0..), &[5.0, 6.0, 1.0, 2.0, 3.0, 4.0]);
     }
 
     #[test]
@@ -657,7 +659,7 @@ mod tests {
         let triag = TriangularWindow;
         let r = c.apply_window(&triag).unwrap().magnitude().unwrap();
         let expected = [0.1, 0.3, 0.5, 0.7, 0.9, 0.9, 0.7, 0.5, 0.3, 0.1];
-        let r = r.data();
+        let r = r.real(0..);
         assert_eq_tol(r, &expected, 1e-4);
     }
 
@@ -668,7 +670,7 @@ mod tests {
         let triag = TriangularWindow;
         let r = c.apply_window(&triag).unwrap().magnitude().unwrap();
         let expected = [0.111, 0.333, 0.555, 0.777, 1.0, 0.777, 0.555, 0.333, 0.111];
-        let r = r.data();
+        let r = r.real(0..);
         assert_eq_tol(r, &expected, 1e-2);
     }
 
@@ -679,7 +681,7 @@ mod tests {
         let triag = TriangularWindow;
         let r = c.unapply_window(&triag).unwrap();
         let expected = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
-        let r = r.data();
+        let r = r.real(0..);
         assert_eq_tol(r, &expected, 1e-2);
     }
 }

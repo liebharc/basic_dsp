@@ -604,7 +604,7 @@ mod tests {
         let result = vector.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 2.0).unwrap();
         let expected =
             [0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 0.0, 0.0];
-        assert_eq_tol(result.data(), &expected, 1e-4);
+        assert_eq_tol(result.interleaved(0..), &expected, 1e-4);
     }
 
     #[test]
@@ -614,7 +614,7 @@ mod tests {
         let result = vector.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 2.0).unwrap();
         let expected =
             [0.0, 0.0, 0.5, 0.5, 1.5, 1.5, 2.0, 2.0, 1.5, 1.5, 0.5, 0.5];
-        assert_eq_tol(result.data(), &expected, 1e-4);
+        assert_eq_tol(result.interleaved(0..), &expected, 1e-4);
     }
 
     #[test]
@@ -625,7 +625,7 @@ mod tests {
         let expected =
             [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432,
              1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
-        assert_eq_tol(result.data(), &expected, 1e-4);
+        assert_eq_tol(result.real(0..), &expected, 1e-4);
     }
 
     #[test]
@@ -639,7 +639,7 @@ mod tests {
         let expected =
             [0.12732396, 0.000000027827534, 0.21220659, 0.000000027827534, 0.63661975,
              1.0, 0.63661975, 0.000000027827534, 0.21220659, 0.000000027827534, 0.12732396];
-        assert_eq_tol(result.data(), &expected, 1e-4);
+        assert_eq_tol(result.real(0..), &expected, 1e-4);
     }
 
     #[test]
@@ -657,7 +657,7 @@ mod tests {
         let ifreq_res = ifreq_res.magnitude().unwrap();
         assert_eq!(ifreq_res.is_complex(), time_res.is_complex());
         assert_eq!(ifreq_res.domain(), time_res.domain());
-        assert_eq_tol(time_res.data(), ifreq_res.data(), 0.2);
+        assert_eq_tol(time_res.real(0..), ifreq_res.real(0..), 0.2);
     }
 
     #[test]
@@ -692,7 +692,7 @@ mod tests {
         let expected =
             [0.12732396, 0.000000027827534, 0.21220659, 0.000000027827534, 0.63661975,
              1.0, 0.63661975, 0.000000027827534, 0.21220659, 0.000000027827534, 0.12732396];
-        assert_eq_tol(result.data(), &expected, 1e-4);
+        assert_eq_tol(result.real(0..), &expected, 1e-4);
     }
 
     #[test]
@@ -731,7 +731,7 @@ mod tests {
         let mul = mul.ifft().unwrap();
         let mul = mul.reverse().unwrap();
         let mul = mul.swap_halves().unwrap();
-        assert_eq_tol(mul.data(), conv.data(), 1e-4);
+        assert_eq_tol(mul.interleaved(0..), conv.interleaved(0..), 1e-4);
     }
 
     #[test]
@@ -743,7 +743,7 @@ mod tests {
         let conv = a.convolve_vector(&b).unwrap();
         let conv = conv.magnitude().unwrap();
         let exp = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
-        assert_eq_tol(conv.data(), &exp, 1e-4);
+        assert_eq_tol(conv.real(0..), &exp, 1e-4);
     }
 
     #[test]
@@ -755,7 +755,7 @@ mod tests {
         let conv = a.convolve_vector(&b).unwrap();
         let conv = conv.magnitude().unwrap();
         let exp = [9.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-        assert_eq_tol(conv.data(), &exp, 1e-4);
+        assert_eq_tol(conv.real(0..), &exp, 1e-4);
     }
 
     #[test]
@@ -773,7 +773,7 @@ mod tests {
         let mul = mul.reverse().unwrap();
         let mul = mul.swap_halves().unwrap();
         let conv = conv.magnitude().unwrap();
-        assert_eq_tol(mul.data(), conv.data(), 1e-4);
+        assert_eq_tol(mul.real(0..), conv.real(0..), 1e-4);
     }
 
     #[test]
@@ -791,6 +791,6 @@ mod tests {
         let mul = mul.reverse().unwrap();
         let mul = mul.swap_halves().unwrap();
         let conv = conv.magnitude().unwrap();
-        assert_eq_tol(mul.data(), conv.data(), 1e-4);
+        assert_eq_tol(mul.real(0..), conv.real(0..), 1e-4);
     }
 }

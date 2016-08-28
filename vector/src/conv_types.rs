@@ -13,7 +13,8 @@ use vector_types::{
     RealTimeVector,
     ComplexTimeVector,
     ComplexFreqVector,
-    ComplexIndex
+    ComplexIndex,
+    RealIndex
 };
 use vector_types::definitions::{
     DataVec,
@@ -237,7 +238,7 @@ macro_rules! add_complex_linear_table_impl {
                     pub fn to_real(self) -> $real<$data_type> {
                         let vector = ComplexTimeVector::from_complex(&self.table);
                         let real = vector.to_real().expect("to_complex shouldn't fail");
-                        let real = real.data();
+                        let real = real.real(0..);
                         let is_symmetric = self.is_symmetric;
                         let mut table = Vec::with_capacity(real.len());
                         for n in real {
@@ -288,7 +289,7 @@ macro_rules! add_real_time_linear_table_impl {
                     let freq = freq.magnitude().expect("vector magnitude shouldn't fail");
                     let is_symmetric = self.is_symmetric;
                     let delta = freq.delta();
-                    let freq = freq.data();
+                    let freq = freq.real(0..);
                     let mut table = Vec::with_capacity(freq.len());
                     for n in freq {
                         table.push(*n);

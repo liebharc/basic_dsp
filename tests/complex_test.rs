@@ -4,29 +4,21 @@ extern crate num;
 pub mod tools;
 
 mod slow_test {
-    use basic_dsp::{
-        DataVec,
-        DataVec32,
-        RealTimeVector32,
-        GenericVectorOps,
-        ComplexVectorOps,
-        StatisticsOps,
-        DataVecDomain,
-        ComplexTimeVector32};
+    use basic_dsp::*;
     use num::complex::Complex32;
     use basic_dsp::combined_ops::*;
     use tools::*;
-       
+
     fn to_complex(a: &Vec<f32>) -> Vec<Complex32>
     {
         let mut result = vec![Complex32::new(0.0, 0.0); a.len() / 2];
         for i in 0..result.len() {
             result[i] = Complex32::new(a[2 * i], a[2 * i + 1]);
         }
-        
+
         result
     }
-    
+
     fn from_complex(a: &Vec<Complex32>) -> Vec<f32>
     {
         let mut result = vec![0.0; a.len() * 2];
@@ -34,10 +26,10 @@ mod slow_test {
             result[2 * i] = a[i].re;
             result[2 * i + 1] = a[i].im;
         }
-        
+
         result
     }
-    
+
     fn complex_add_scalar(a: &Vec<f32>, value: Complex32) -> Vec<f32>
     {
         let complex = to_complex(&a);
@@ -45,10 +37,10 @@ mod slow_test {
         for i in 0 .. complex.len() {
             result[i] = complex[i] + value;
         }
-        
+
         from_complex(&result)
     }
-    
+
     #[test]
     fn complex_add_scalar_vector32() {
         parameterized_vector_test(|iteration, range| {
@@ -59,12 +51,12 @@ mod slow_test {
             let delta = create_delta(3561159, iteration);
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let result = vector.complex_offset(scalar).unwrap();
-            assert_vector_eq(&expected, &result.data());
+            assert_vector_eq(&expected, &result.interleaved(0..));
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);
         });
     }
-    
+
     fn complex_multiply_scalar(a: &Vec<f32>, value: Complex32) -> Vec<f32>
     {
         let complex = to_complex(&a);
@@ -72,10 +64,10 @@ mod slow_test {
         for i in 0 .. complex.len() {
             result[i] = complex[i] * value;
         }
-        
+
         from_complex(&result)
     }
-    
+
     #[test]
     fn complex_mutiply_scalar_vector32() {
         parameterized_vector_test(|iteration, range| {
@@ -86,12 +78,12 @@ mod slow_test {
             let delta = create_delta(3561159, iteration);
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let result = vector.complex_scale(scalar).unwrap();
-            assert_vector_eq(&expected, &result.data());
+            assert_vector_eq(&expected, &result.interleaved(0..));
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);
         });
     }
-    
+
     fn complex_abs(a: &Vec<f32>) -> Vec<f32>
     {
         let complex = to_complex(&a);
@@ -99,10 +91,10 @@ mod slow_test {
         for i in 0 .. complex.len() {
             result[i] = (complex[i].re * complex[i].re + complex[i].im * complex[i].im).sqrt();
         }
-        
+
         result
     }
-    
+
     #[test]
     fn complex_abs_vector32() {
         parameterized_vector_test(|iteration, range| {
@@ -111,12 +103,12 @@ mod slow_test {
             let delta = create_delta(3561159, iteration);
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let result = vector.magnitude().unwrap();
-            assert_vector_eq(&expected, &result.data());
+            assert_vector_eq(&expected, &result.real(0..));
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);
         });
     }
-  
+
     fn complex_abs_sq(a: &Vec<f32>) -> Vec<f32>
     {
         let complex = to_complex(&a);
@@ -124,10 +116,10 @@ mod slow_test {
         for i in 0 .. complex.len() {
             result[i] = complex[i].re * complex[i].re + complex[i].im * complex[i].im;
         }
-        
+
         result
     }
-    
+
     #[test]
     fn complex_abs_sq_vector32() {
         parameterized_vector_test(|iteration, range| {
@@ -136,12 +128,12 @@ mod slow_test {
             let delta = create_delta(3561159, iteration);
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let result = vector.magnitude_squared().unwrap();
-            assert_vector_eq(&expected, &result.data());
+            assert_vector_eq(&expected, &result.real(0..));
             assert_eq!(result.is_complex(), false);
             assert_eq!(result.delta(), delta);
         });
     }
-    
+
     fn complex_vector_mul(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
     {
         let a = to_complex(a);
@@ -150,10 +142,10 @@ mod slow_test {
         for i in 0 .. a.len() {
             result[i] = a[i] * b[i];
         }
-        
+
         from_complex(&result)
     }
-       
+
     #[test]
     fn complex_mul_vector_vector32() {
         parameterized_vector_test(|iteration, range| {
@@ -164,12 +156,12 @@ mod slow_test {
             let vector1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let vector2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
             let result = vector1.mul(&vector2).unwrap();
-            assert_vector_eq(&expected, &result.data());
+            assert_vector_eq(&expected, &result.interleaved(0..));
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);
         });
     }
-    
+
     fn complex_vector_mul_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
     {
         let a = to_complex(a);
@@ -178,10 +170,10 @@ mod slow_test {
         for i in 0 .. a.len() {
             result[i] = a[i] * b[i % b.len()];
         }
-        
+
         from_complex(&result)
     }
-    
+
     #[test]
     fn complex_mul_smaller_vector_vector32() {
         let a = create_data_with_len(201511171, 1, 240);
@@ -191,11 +183,11 @@ mod slow_test {
         let vector1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
         let vector2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
         let result = vector1.mul_smaller(&vector2).unwrap();
-        assert_vector_eq(&expected, &result.data());
+        assert_vector_eq(&expected, &result.interleaved(0..));
         assert_eq!(result.is_complex(), true);
         assert_eq!(result.delta(), delta);
     }
-    
+
     fn complex_vector_div_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
     {
         let a = to_complex(a);
@@ -204,10 +196,10 @@ mod slow_test {
         for i in 0 .. a.len() {
             result[i] = a[i] / b[i % b.len()];
         }
-        
+
         from_complex(&result)
     }
-    
+
     #[test]
     fn complex_div_smaller_vector_vector32() {
         let a = create_data_with_len(201511171, 1, 240);
@@ -217,11 +209,11 @@ mod slow_test {
         let vector1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
         let vector2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
         let result = vector1.div_smaller(&vector2).unwrap();
-        assert_vector_eq(&expected, &result.data());
+        assert_vector_eq(&expected, &result.interleaved(0..));
         assert_eq!(result.is_complex(), true);
         assert_eq!(result.delta(), delta);
     }
-    
+
     #[test]
     fn complex_dot_product32() {
         parameterized_vector_test(|iteration, range| {
@@ -236,7 +228,7 @@ mod slow_test {
             assert_in_tolerance(expected.im, result.im, 0.5);
         });
     }
-    
+
     fn complex_vector_div(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
     {
         let a = to_complex(a);
@@ -245,10 +237,10 @@ mod slow_test {
         for i in 0 .. a.len() {
             result[i] = a[i] / b[i];
         }
-        
+
         from_complex(&result)
     }
-    
+
     #[test]
     fn complex_div_vector_vector32() {
         parameterized_vector_test(|iteration, range| {
@@ -259,12 +251,12 @@ mod slow_test {
             let vector1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let vector2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
             let result = vector1.div(&vector2).unwrap();
-            assert_vector_eq(&expected, &result.data());
+            assert_vector_eq(&expected, &result.interleaved(0..));
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);
         });
     }
-    
+
     #[test]
     fn complex_real_conversions_vector32() {
         parameterized_vector_test(|iteration, range| {
@@ -277,9 +269,9 @@ mod slow_test {
             complex.get_real(&mut real_vector).unwrap();
             complex.get_imag(&mut imag_vector).unwrap();
             let real_result = complex.to_real().unwrap();
-            assert_vector_eq_with_reason(&real, &real_vector.data(), "Failure in get_real");
-            assert_vector_eq_with_reason(&real, &real_result.data(), "Failure in get_imag");
-            assert_vector_eq_with_reason(&imag, &imag_vector.data(), "Failure in to_real");
+            assert_vector_eq_with_reason(&real, &real_vector.real(0..), "Failure in get_real");
+            assert_vector_eq_with_reason(&real, &real_result.real(0..), "Failure in get_imag");
+            assert_vector_eq_with_reason(&imag, &imag_vector.real(0..), "Failure in to_real");
             assert_eq!(real_vector.is_complex(), false);
             assert_eq!(real_vector.delta(), delta);
             assert_eq!(imag_vector.is_complex(), false);
@@ -288,7 +280,7 @@ mod slow_test {
             assert_eq!(real_result.delta(), delta);
         });
     }
-    
+
     #[test]
     fn abs_phase_conversions_vector32() {
         parameterized_vector_test(|iteration, range| {
@@ -301,9 +293,9 @@ mod slow_test {
             complex.get_magnitude(&mut abs_vector).unwrap();
             complex.get_phase(&mut phase_vector).unwrap();
             let phase_result = complex.phase().unwrap();
-            assert_vector_eq_with_reason(&abs, &abs_vector.data(), "Failure in get_complex_abs");
-            assert_vector_eq_with_reason(&phase, &phase_vector.data(), "Failure in get_phase");
-            assert_vector_eq_with_reason(&phase, &phase_result.data(), "Failure in phase");
+            assert_vector_eq_with_reason(&abs, &abs_vector.real(0..), "Failure in get_complex_abs");
+            assert_vector_eq_with_reason(&phase, &phase_vector.real(0..), "Failure in get_phase");
+            assert_vector_eq_with_reason(&phase, &phase_result.real(0..), "Failure in phase");
             assert_eq!(abs_vector.is_complex(), false);
             assert_eq!(abs_vector.delta(), delta);
             assert_eq!(phase_vector.is_complex(), false);
@@ -312,7 +304,7 @@ mod slow_test {
             assert_eq!(phase_result.delta(), delta);
         });
     }
-    
+
     fn complex_vector_diff(a: &Vec<f32>) -> Vec<f32>
     {
         let a = to_complex(a);
@@ -321,10 +313,10 @@ mod slow_test {
         for i in 1 .. a.len() {
             result[i] = a[i] - a[i - 1];
         }
-        
+
         from_complex(&result)
     }
-    
+
     #[test]
     fn complex_diff_vector32() {
         parameterized_vector_test(|iteration, range| {
@@ -333,12 +325,12 @@ mod slow_test {
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let expected = complex_vector_diff(&a);
             let result = vector.diff_with_start().unwrap();
-            assert_vector_eq(&expected, &result.data());
+            assert_vector_eq(&expected, &result.interleaved(0..));
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);
         });
     }
-    
+
     fn complex_vector_cum_sum(a: &Vec<f32>) -> Vec<f32>
     {
         let a = to_complex(a);
@@ -347,10 +339,10 @@ mod slow_test {
         for i in 1 .. a.len() {
             result[i] = a[i] + result[i - 1];
         }
-        
+
         from_complex(&result)
     }
-    
+
     #[test]
     fn complex_cum_sum_vector32() {
         parameterized_vector_test(|iteration, range| {
@@ -359,12 +351,12 @@ mod slow_test {
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let expected = complex_vector_cum_sum(&a);
             let result = vector.cum_sum().unwrap();
-            assert_vector_eq(&expected, &result.data());
+            assert_vector_eq(&expected, &result.interleaved(0..));
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);
         });
     }
-    
+
     fn complex_exponential(vec: &Vec<f32>, a: f32, b: f32, delta: f32) -> Vec<f32>
     {
         let a = a * delta;
@@ -375,28 +367,28 @@ mod slow_test {
             *complex = (*complex) * exponential;
             exponential = exponential * increment;
         }
-        
+
         from_complex(&result)
     }
-    
+
     #[test]
     fn complex_exponential_vector32() {
         parameterized_vector_test(|iteration, _| {
             // With f32 the errors sums up quite a bit for large arrays
             // in `complex_exponential` and therefore the length is limited
             // in this test.
-            let a = create_data_with_len(201511210, iteration, 10000); 
+            let a = create_data_with_len(201511210, iteration, 10000);
             let args = create_data_with_len(201511210, iteration, 2);
             let delta = create_delta(3561159, iteration);
             let vector = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
             let expected = complex_exponential(&a, args[0], args[1], delta);
             let result = vector.multiply_complex_exponential(args[0], args[1]).unwrap();
-            assert_vector_eq_with_reason_and_tolerance(&expected, &result.data(), 1e-2, "");
+            assert_vector_eq_with_reason_and_tolerance(&expected, &result.interleaved(0..), 1e-2, "");
             assert_eq!(result.is_complex(), true);
             assert_eq!(result.delta(), delta);
         });
     }
-    
+
     #[test]
     fn statistics_test32() {
         parameterized_vector_test(|iteration, range| {
@@ -412,7 +404,7 @@ mod slow_test {
             assert_complex_in_tolerance(result.rms, rms, 0.5);
         });
     }
-    
+
     #[test]
     fn statistics_vs_sum_test32() {
         parameterized_vector_test(|iteration, range| {
@@ -427,12 +419,12 @@ mod slow_test {
             assert_complex_in_tolerance(result.rms, rms, 0.5);
         });
     }
-    
+
     #[test]
     fn split_merge_test32() {
         let a = create_data(201511210, 0, 1000, 1000);
         let vector = ComplexTimeVector32::from_interleaved(&a);
-        let mut split = 
+        let mut split =
             [
                 Box::new(ComplexTimeVector32::empty()),
                 Box::new(ComplexTimeVector32::empty()),
@@ -442,22 +434,22 @@ mod slow_test {
         vector.split_into(&mut split).unwrap();
         let merge = ComplexTimeVector32::empty();
         let result = merge.merge(&split).unwrap();
-        assert_vector_eq(&a, &result.data());
+        assert_vector_eq(&a, &result.interleaved(0..));
     }
-    
+
     #[test]
     fn split_test32() {
         let a = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
         let vector = ComplexTimeVector32::from_interleaved(a);
-        let mut split = 
+        let mut split =
             [
                 Box::new(ComplexTimeVector32::empty()),
                 Box::new(ComplexTimeVector32::empty())];
         vector.split_into(&mut split).unwrap();
-        assert_vector_eq(&[1.0, 2.0, 5.0, 6.0], &split[0].data());
-        assert_vector_eq(&[3.0, 4.0, 7.0, 8.0], &split[1].data()); 
+        assert_vector_eq(&[1.0, 2.0, 5.0, 6.0], &split[0].interleaved(0..));
+        assert_vector_eq(&[3.0, 4.0, 7.0, 8.0], &split[1].interleaved(0..));
     }
-    
+
     #[test]
     fn to_real_imag_and_back32() {
         parameterized_vector_test(|iteration, range| {
@@ -469,10 +461,10 @@ mod slow_test {
             vector.get_real_imag(&mut real, &mut imag).unwrap();
             let vector2 = ComplexTimeVector32::empty();
             let result = vector2.set_real_imag(&real, &imag).unwrap();
-            assert_vector_eq(&a, result.data());
+            assert_vector_eq(&a, result.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn to_mag_phase_and_back32() {
         parameterized_vector_test(|iteration, range| {
@@ -486,16 +478,16 @@ mod slow_test {
             vector.get_mag_phase(&mut mag, &mut phase).unwrap();
             vector.get_magnitude(&mut mag2).unwrap();
             vector.get_phase(&mut phase2).unwrap();
-            
-            assert_vector_eq_with_reason(mag.data(), mag2.data(), "Magnitude differs");
-            assert_vector_eq_with_reason(phase.data(), phase2.data(), "Phase differs");
-            
+
+            assert_vector_eq_with_reason(mag.real(0..), mag2.real(0..), "Magnitude differs");
+            assert_vector_eq_with_reason(phase.real(0..), phase2.real(0..), "Phase differs");
+
             let vector2 = ComplexTimeVector32::empty();
             let result = vector2.set_mag_phase(&mag, &phase).unwrap();
-            assert_vector_eq_with_reason_and_tolerance(&a, result.data(), 1e-4, "Merge differs");
+            assert_vector_eq_with_reason_and_tolerance(&a, result.interleaved(0..), 1e-4, "Merge differs");
         });
     }
-    
+
     #[test]
     fn multi_ops_offset_test() {
         parameterized_vector_test(|iteration, _| {
@@ -509,14 +501,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.complex_offset(Complex32::new(b[0], b[1])))
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_scale_test() {
         parameterized_vector_test(|iteration, _| {
@@ -530,14 +522,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.complex_scale(Complex32::new(b[0], b[1])))
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_magnitude_test() {
         parameterized_vector_test(|iteration, _| {
@@ -550,14 +542,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.magnitude())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_magnitude_squared_test() {
         parameterized_vector_test(|iteration, _| {
@@ -570,14 +562,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.magnitude_squared())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_conj_test() {
         parameterized_vector_test(|iteration, _| {
@@ -590,14 +582,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.conj())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_to_real_test() {
         parameterized_vector_test(|iteration, _| {
@@ -610,14 +602,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.to_real())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_to_imag_test() {
         parameterized_vector_test(|iteration, _| {
@@ -630,14 +622,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.to_imag())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_phase_test() {
         parameterized_vector_test(|iteration, _| {
@@ -650,14 +642,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.phase())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_add_test() {
         parameterized_vector_test(|iteration, _| {
@@ -674,11 +666,11 @@ mod slow_test {
             let (a_actual, b_actual) = ops.get().unwrap();
             let a_expected = a.add(&b).unwrap();
             let b_expected = b;
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
-            assert_vector_eq(&b_expected.data(), &b_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
+            assert_vector_eq(&b_expected.interleaved(0..), &b_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_sub_test() {
         parameterized_vector_test(|iteration, _| {
@@ -695,11 +687,11 @@ mod slow_test {
             let (a_actual, b_actual) = ops.get().unwrap();
             let a_expected = a.sub(&b).unwrap();
             let b_expected = b;
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
-            assert_vector_eq(&b_expected.data(), &b_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
+            assert_vector_eq(&b_expected.interleaved(0..), &b_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_mul_test() {
         parameterized_vector_test(|iteration, _| {
@@ -716,11 +708,11 @@ mod slow_test {
             let (a_actual, b_actual) = ops.get().unwrap();
             let a_expected = a.mul(&b).unwrap();
             let b_expected = b;
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
-            assert_vector_eq(&b_expected.data(), &b_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
+            assert_vector_eq(&b_expected.interleaved(0..), &b_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_div_test() {
         parameterized_vector_test(|iteration, _| {
@@ -737,11 +729,11 @@ mod slow_test {
             let (a_actual, b_actual) = ops.get().unwrap();
             let a_expected = a.div(&b).unwrap();
             let b_expected = b;
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
-            assert_vector_eq(&b_expected.data(), &b_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
+            assert_vector_eq(&b_expected.interleaved(0..), &b_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_sqrt_test() {
         parameterized_vector_test(|iteration, _| {
@@ -754,14 +746,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.sqrt())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_square_test() {
         parameterized_vector_test(|iteration, _| {
@@ -774,14 +766,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.square())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_root_test() {
         parameterized_vector_test(|iteration, _| {
@@ -795,14 +787,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.root(b[0]))
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_powf_test() {
         parameterized_vector_test(|iteration, _| {
@@ -816,14 +808,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.powf(b[0]))
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_ln_test() {
         parameterized_vector_test(|iteration, _| {
@@ -836,14 +828,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.ln())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_exp_test() {
         parameterized_vector_test(|iteration, _| {
@@ -856,14 +848,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.exp())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_log_test() {
         parameterized_vector_test(|iteration, _| {
@@ -877,14 +869,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.log(b[0]))
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_expf_test() {
         parameterized_vector_test(|iteration, _| {
@@ -898,14 +890,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.expf(b[0]))
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_sin_test() {
         parameterized_vector_test(|iteration, _| {
@@ -918,14 +910,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.sin())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_cos_test() {
         parameterized_vector_test(|iteration, _| {
@@ -938,14 +930,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.cos())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_tan_test() {
         parameterized_vector_test(|iteration, _| {
@@ -958,14 +950,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.tan())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_asin_test() {
         parameterized_vector_test(|iteration, _| {
@@ -978,14 +970,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.asin())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_acos_test() {
         parameterized_vector_test(|iteration, _| {
@@ -998,14 +990,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.acos())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_atan_test() {
         parameterized_vector_test(|iteration, _| {
@@ -1018,14 +1010,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.atan())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_sinh_test() {
         parameterized_vector_test(|iteration, _| {
@@ -1038,14 +1030,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.sinh())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_cosh_test() {
         parameterized_vector_test(|iteration, _| {
@@ -1058,14 +1050,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.cosh())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_tanh_test() {
         parameterized_vector_test(|iteration, _| {
@@ -1078,14 +1070,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.tanh())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_asinh_test() {
         parameterized_vector_test(|iteration, _| {
@@ -1098,14 +1090,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.asinh())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_acosh_test() {
         parameterized_vector_test(|iteration, _| {
@@ -1118,14 +1110,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.acosh())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_atanh_test() {
         parameterized_vector_test(|iteration, _| {
@@ -1138,14 +1130,14 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.atanh())
                 .unwrap();
-            assert_vector_eq(&a_expected.data(), &a_actual.data());
+            assert_vector_eq(&a_expected.interleaved(0..), &a_actual.interleaved(0..));
         });
     }
-    
+
     #[test]
     fn multi_ops_complex_exponential_test() {
         parameterized_vector_test(|iteration, _| {
@@ -1159,11 +1151,11 @@ mod slow_test {
                 a
             });
             let a_actual = ops.get().unwrap();
-            let a_expected = 
+            let a_expected =
                 Ok(a)
                 .and_then(|a|a.multiply_complex_exponential(args[0], args[1]))
                 .unwrap();
-            assert_vector_eq_with_reason_and_tolerance(&a_expected.data(), &a_actual.data(), 1e-2, "");
+            assert_vector_eq_with_reason_and_tolerance(&a_expected.interleaved(0..), &a_actual.interleaved(0..), 1e-2, "");
         });
     }
 }

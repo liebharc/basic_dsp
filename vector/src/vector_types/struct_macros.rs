@@ -66,26 +66,6 @@ macro_rules! define_vector_struct {
                 self.data.len()
             }
 
-            fn data(&self) -> &[T]
-            {
-                let valid_length = self.len();
-
-                &self.data[0 .. valid_length]
-            }
-
-            fn overwrite_data(mut self, data: &[T]) -> TransRes<Self> {
-                {
-                    self.reallocate(data.len());
-                    let target = &mut self.data[0] as *mut T;
-                    let source = &data[0] as *const T;
-                    unsafe {
-                        ptr::copy(source, target, data.len());
-                    }
-                }
-
-                Ok(self)
-            }
-
             fn delta(&self) -> T
             {
                 self.delta
@@ -104,23 +84,6 @@ macro_rules! define_vector_struct {
             fn points(&self) -> usize
             {
                 self.valid_len / if self.is_complex { 2 } else { 1 }
-            }
-        }
-
-        impl<T> $name<T>
-            where T: RealNumber {
-            /// Reallocates the data inside a vector, but
-            /// not temp. The data will not be preserved by this operation
-            fn reallocate(&mut self, len: usize)
-            {
-                if len > self.allocated_len()
-                {
-                    let mut new_data = Vec::with_capacity(round_len(len));
-                    unsafe { new_data.set_len(len) };
-                    self.data = new_data;
-                }
-
-                self.valid_len = len;
             }
         }
 
@@ -754,6 +717,112 @@ macro_rules! define_complex_basic_struct_members {
      }
 }
 
+macro_rules! add_real_accessors {
+    ($name:ident) => {
+        impl<T> RealIndex<RangeFrom<usize>> for $name<T>
+            where T: RealNumber
+        {
+            type Output = [T];
+
+            fn real(&self, index: RangeFrom<usize>) -> &[T]
+            {
+                let len =
+                    if !self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
+                let data = &self.data[0..len];
+                &data[index]
+            }
+        }
+
+        impl<T> RealIndexMut<RangeFrom<usize>> for $name<T>
+            where T: RealNumber
+        {
+            fn real_mut(&mut self, index: RangeFrom<usize>) -> &mut [T]
+            {
+                let len =
+                    if !self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
+                    let data = &mut self.data[0..len];
+                    &mut data[index]
+            }
+        }
+
+        impl<T> RealIndex<RangeTo<usize>> for $name<T>
+            where T: RealNumber
+        {
+            type Output = [T];
+
+            fn real(&self, index: RangeTo<usize>) -> &[T]
+            {
+                let len =
+                    if !self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
+                let data = &self.data[0..len];
+                &data[index]
+            }
+        }
+
+        impl<T> RealIndexMut<RangeTo<usize>> for $name<T>
+            where T: RealNumber
+        {
+            fn real_mut(&mut self, index: RangeTo<usize>) -> &mut [T]
+            {
+                let len =
+                    if !self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
+                let data = &mut self.data[0..len];
+                &mut data[index]
+            }
+        }
+
+        impl<T> RealIndex<RangeFull> for $name<T>
+            where T: RealNumber
+        {
+            type Output = [T];
+
+            fn real(&self, index: RangeFull) -> &[T]
+            {
+                let len =
+                    if !self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
+                let data = &self.data[0..len];
+                &data[index]
+            }
+        }
+
+        impl<T> RealIndexMut<RangeFull> for $name<T>
+            where T: RealNumber
+        {
+            fn real_mut(&mut self, index: RangeFull) -> &mut [T]
+            {
+                let len =
+                    if !self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
+                let data = &mut self.data[0..len];
+                &mut data[index]
+            }
+        }
+    }
+}
+
 macro_rules! add_complex_accessors {
     ($name:ident) => {
         impl<T> ComplexIndex<RangeFrom<usize>> for $name<T>
@@ -763,9 +832,15 @@ macro_rules! add_complex_accessors {
 
             fn complex(&self, index: RangeFrom<usize>) -> &[Complex<T>]
             {
-                let len = self.len();
+                let len =
+                    if self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
                 let data = &self.data[0..len];
-                array_to_complex(&data[index])
+                let complex = array_to_complex(data);
+                &complex[index]
             }
         }
 
@@ -774,9 +849,15 @@ macro_rules! add_complex_accessors {
         {
             fn complex_mut(&mut self, index: RangeFrom<usize>) -> &mut [Complex<T>]
             {
-                let len = self.len();
+                let len =
+                    if self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
                 let data = &mut self.data[0..len];
-                array_to_complex_mut(&mut data[index])
+                let complex = array_to_complex_mut(data);
+                &mut complex[index]
             }
         }
 
@@ -787,9 +868,15 @@ macro_rules! add_complex_accessors {
 
             fn complex(&self, index: RangeTo<usize>) -> &[Complex<T>]
             {
-                let len = self.len();
+                let len =
+                    if self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
                 let data = &self.data[0..len];
-                array_to_complex(&data[index])
+                let complex = array_to_complex(data);
+                &complex[index]
             }
         }
 
@@ -798,9 +885,15 @@ macro_rules! add_complex_accessors {
         {
             fn complex_mut(&mut self, index: RangeTo<usize>) -> &mut [Complex<T>]
             {
-                let len = self.len();
+                let len =
+                    if self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
                 let data = &mut self.data[0..len];
-                array_to_complex_mut(&mut data[index])
+                let complex = array_to_complex_mut(data);
+                &mut complex[index]
             }
         }
 
@@ -811,9 +904,15 @@ macro_rules! add_complex_accessors {
 
             fn complex(&self, index: RangeFull) -> &[Complex<T>]
             {
-                let len = self.len();
+                let len =
+                    if self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
                 let data = &self.data[0..len];
-                array_to_complex(&data[index])
+                let complex = array_to_complex(data);
+                &complex[index]
             }
         }
 
@@ -822,9 +921,117 @@ macro_rules! add_complex_accessors {
         {
             fn complex_mut(&mut self, index: RangeFull) -> &mut [Complex<T>]
             {
-                let len = self.len();
+                let len =
+                    if self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
                 let data = &mut self.data[0..len];
-                array_to_complex_mut(&mut data[index])
+                let complex = array_to_complex_mut(data);
+                &mut complex[index]
+            }
+        }
+
+        impl<T> InterleavedIndex<RangeFrom<usize>> for $name<T>
+            where T: RealNumber
+        {
+            type Output = [T];
+
+            fn interleaved(&self, index: RangeFrom<usize>) -> &[T]
+            {
+                let len =
+                    if self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
+                let data = &self.data[0..len];
+                &data[index]
+            }
+        }
+
+        impl<T> InterleavedIndexMut<RangeFrom<usize>> for $name<T>
+            where T: RealNumber
+        {
+            fn interleaved_mut(&mut self, index: RangeFrom<usize>) -> &mut [T]
+            {
+                let len =
+                    if self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
+                    let data = &mut self.data[0..len];
+                    &mut data[index]
+            }
+        }
+
+        impl<T> InterleavedIndex<RangeTo<usize>> for $name<T>
+            where T: RealNumber
+        {
+            type Output = [T];
+
+            fn interleaved(&self, index: RangeTo<usize>) -> &[T]
+            {
+                let len =
+                    if self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
+                let data = &self.data[0..len];
+                &data[index]
+            }
+        }
+
+        impl<T> InterleavedIndexMut<RangeTo<usize>> for $name<T>
+            where T: RealNumber
+        {
+            fn interleaved_mut(&mut self, index: RangeTo<usize>) -> &mut [T]
+            {
+                let len =
+                    if self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
+                let data = &mut self.data[0..len];
+                &mut data[index]
+            }
+        }
+
+        impl<T> InterleavedIndex<RangeFull> for $name<T>
+            where T: RealNumber
+        {
+            type Output = [T];
+
+            fn interleaved(&self, index: RangeFull) -> &[T]
+            {
+                let len =
+                    if self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
+                let data = &self.data[0..len];
+                &data[index]
+            }
+        }
+
+        impl<T> InterleavedIndexMut<RangeFull> for $name<T>
+            where T: RealNumber
+        {
+            fn interleaved_mut(&mut self, index: RangeFull) -> &mut [T]
+            {
+                let len =
+                    if self.is_complex {
+                        self.len()
+                    } else {
+                        0
+                    };
+                let data = &mut self.data[0..len];
+                &mut data[index]
             }
         }
     }

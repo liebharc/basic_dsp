@@ -9,7 +9,7 @@ mod slow_test {
     use basic_dsp::window_functions::*;
     use tools::*;
     use std::os::raw::c_void;
-    
+
     #[test]
     fn compare_conv_freq_multiplication_for_rc() {
         for iteration in 0 .. 3 {
@@ -23,12 +23,12 @@ mod slow_test {
             let time_res = time.convolve(&fun as &RealImpulseResponse<f32>, ratio, points).unwrap();
             let freq_res = freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
             let ifreq_res = freq_res.ifft().unwrap();
-            let left = &ifreq_res.data();
-            let right = &time_res.data();
+            let left = &ifreq_res.interleaved(0..);
+            let right = &time_res.interleaved(0..);
             assert_vector_eq_with_reason_and_tolerance(&left, &right, 0.2, "Results should match independent if done in time or frequency domain");
         }
     }
-    
+
     #[test]
     fn compare_conv_freq_multiplication_for_sinc() {
         for iteration in 0 .. 3 {
@@ -42,19 +42,19 @@ mod slow_test {
             let time_res = time.convolve(&fun as &RealImpulseResponse<f32>, ratio, points).unwrap();
             let freq_res = freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
             let ifreq_res = freq_res.ifft().unwrap();
-            let left = &ifreq_res.data();
-            let right = &time_res.data();
+            let left = &ifreq_res.interleaved(0..);
+            let right = &time_res.interleaved(0..);
             assert_vector_eq_with_reason_and_tolerance(&left, &right, 0.3, "Results should match independent if done in time or frequency domain");
         }
     }
-    
+
     #[test]
     fn compare_optimized_and_non_optimized_conv() {
         for iteration in 0 .. 3 {
             // This offset is small enough to now have a big impact on the results (for the RC function)
             // but the code will use a different non-optimized branch since it won't recognize ratio as an
             // integer
-            let offset = 2e-6; 
+            let offset = 2e-6;
             let a = create_data_even(201602217, iteration, 2002, 4000);
             let b = create_data_even(201602218, iteration, 50, 202);
             let delta = create_delta(201602219, iteration);
@@ -63,10 +63,10 @@ mod slow_test {
             let ratio = iteration as f32 + 1.0;
             let left = time.clone().convolve(&fun as &RealImpulseResponse<f32>, ratio, b.len()).unwrap();
             let right = time.convolve(&fun as &RealImpulseResponse<f32>, ratio + offset, b.len()).unwrap();
-            assert_vector_eq_with_reason_and_tolerance(&left.data(), &right.data(), 0.1, "Results should match independent if done in optimized or non optimized code branch");
+            assert_vector_eq_with_reason_and_tolerance(&left.interleaved(0..), &right.interleaved(0..), 0.1, "Results should match independent if done in optimized or non optimized code branch");
         }
     }
-    
+
     #[test]
     fn compare_vector_conv_freq_multiplication() {
         for iteration in 0 .. 3 {
@@ -81,13 +81,13 @@ mod slow_test {
             let freq_res = freq1.mul(&freq2).unwrap();
             let right = freq_res.ifft().unwrap();
             assert_vector_eq_with_reason_and_tolerance(
-                left.data(), 
-                &conv_swap(right.data())[0..left.len()], 
-                0.2, 
+                left.interleaved(0..),
+                &conv_swap(right.interleaved(0..))[0..left.len()],
+                0.2,
                 "Results should match independent if done in time or frequency domain");
         }
     }
-    
+
     #[test]
     fn compare_smaller_vector_conv_with_zero_padded_conv() {
         for iteration in 0 .. 3 {
@@ -100,13 +100,13 @@ mod slow_test {
             let time2 = ComplexTimeVector32::from_interleaved_with_delta(&conv_zero_pad(&b, time1.len(), true), delta);
             let right = time1.convolve_vector(&time2).unwrap();
             assert_vector_eq_with_reason_and_tolerance(
-                left.data(), 
-                right.data(), 
-                0.2, 
+                left.interleaved(0..),
+                right.interleaved(0..),
+                0.2,
                 "Results should match independent if done with a smaller vector or with a zero padded vector of the same size");
         }
     }
-    
+
     #[test]
     fn compare_smaller_vector_conv_with_zero_padded_conv_real() {
         for iteration in 0 .. 3 {
@@ -119,13 +119,13 @@ mod slow_test {
             let time2 = RealTimeVector32::from_array_with_delta(&conv_zero_pad(&b, time1.len(), false), delta);
             let right = time1.convolve_vector(&time2).unwrap();
             assert_vector_eq_with_reason_and_tolerance(
-                left.data(), 
-                right.data(), 
-                0.2, 
+                left.real(0..),
+                right.real(0..),
+                0.2,
                 "Results should match independent if done with a smaller vector or with a zero padded vector of the same size");
         }
     }
-    
+
     fn conv_zero_pad(data: &[f32], len: usize, is_complex: bool) -> Vec<f32> {
         if is_complex {
             let mut result = vec![0.0; len];
@@ -149,7 +149,7 @@ mod slow_test {
             result
         }
     }
-    
+
     /// This kind of swapping is necessary since we defined
     /// our conv to have 0s in the center
     fn conv_swap(data: &[f32]) -> Vec<f32> {
@@ -164,13 +164,13 @@ mod slow_test {
             else if i >= len - half {
                 result[i] = data[i - half];
             }
-            else /* Center */ { 
-                result[i] = data[i]; 
+            else /* Center */ {
+                result[i] = data[i];
             }
         }
         result
     }
-    
+
     /// Calls to another window with the only
     /// difference that it doesn't allow to make use of symmetry
     fn unsym_triag_window() -> ForeignWindowFunction<f32> {
@@ -180,12 +180,12 @@ mod slow_test {
             is_symmetric: false
         }
     }
-       
+
     extern fn call_triag(_arg: *const c_void, i: usize, points: usize) -> f32 {
         let triag: &WindowFunction<f32> = &TriangularWindow;
         triag.window(i, points)
     }
-    
+
     /// Calls to another window with the only
     /// difference that it doesn't allow to make use of symmetry
     fn unsym_rc_mul() -> ForeignRealConvolutionFunction<f32> {
@@ -195,12 +195,12 @@ mod slow_test {
             is_symmetric: false
         }
     }
-       
+
     extern fn call_freq_rc(_arg: *const c_void, x: f32) -> f32 {
         let rc: &RealFrequencyResponse<f32> = &RaisedCosineFunction::new(0.35);
         rc.calc(x)
     }
-    
+
     #[test]
     fn compare_sym_optimized_window_with_normal_version() {
         parameterized_vector_test(|iteration, range| {
@@ -211,12 +211,12 @@ mod slow_test {
             let triag_unsym = unsym_triag_window();
             let result_sym = time.clone().apply_window(&triag_sym).unwrap();
             let result_unsym = time.apply_window(&triag_unsym).unwrap();
-            let left = &result_sym.data();
-            let right = &result_unsym.data();
+            let left = &result_sym.interleaved(0..);
+            let right = &result_unsym.interleaved(0..);
             assert_vector_eq_with_reason_and_tolerance(&left, &right, 1e-2, "Results should match with or without symmetry optimization");
         });
     }
-    
+
     #[test]
     fn compare_sym_optimized_freq_mul_with_normal_version() {
         parameterized_vector_test(|iteration, range| {
@@ -228,8 +228,8 @@ mod slow_test {
             let ratio = create_delta(201601164, iteration).abs() / 20.0 + 0.5; // Should get us a range [0.5 .. 1.0]
             let result_sym = freq.clone().multiply_frequency_response(&rc_sym as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
             let result_unsym = freq.multiply_frequency_response(&rc_unsym as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
-            let left = &result_sym.data();
-            let right = &result_unsym.data();
+            let left = &result_sym.interleaved(0..);
+            let right = &result_unsym.interleaved(0..);
             assert_vector_eq_with_reason_and_tolerance(&left, &right, 1e-2, "Results should match with or without symmetry optimization");
         });
     }

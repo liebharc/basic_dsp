@@ -106,7 +106,11 @@ pub use vector_types::definitions::{
         PaddingOption,
         VectorIter,
         ComplexIndex,
-        ComplexIndexMut
+        ComplexIndexMut,
+        InterleavedIndex,
+        InterleavedIndexMut,
+        RealIndex,
+        RealIndexMut
     };
 pub use vector_types::time_freq_impl::{
         TimeDomainOperations,
@@ -139,15 +143,18 @@ fn round_len(len: usize) -> usize {
 
 define_vector_struct!(struct GenericDataVec);
 add_basic_private_impl!(f32, Reg32; f64, Reg64);
+add_real_accessors!(GenericDataVec);
 add_complex_accessors!(GenericDataVec);
 
 define_vector_struct!(struct RealTimeVector);
 define_real_basic_struct_members!(impl RealTimeVector, DataVecDomain::Time);
+add_real_accessors!(RealTimeVector);
 define_generic_operations_forward!(from: RealTimeVector, to: GenericDataVec, f32, f64);
 define_real_operations_forward!(from: RealTimeVector, to: GenericDataVec, complex_partner: ComplexTimeVector, f32, f64);
 
 define_vector_struct!(struct RealFreqVector);
 define_real_basic_struct_members!(impl RealFreqVector, DataVecDomain::Frequency);
+add_real_accessors!(RealFreqVector);
 define_generic_operations_forward!(from: RealFreqVector, to: GenericDataVec, f32, f64);
 define_real_operations_forward!(from: RealFreqVector, to: GenericDataVec, complex_partner: ComplexFreqVector, f32, f64);
 
@@ -304,7 +311,7 @@ mod tests {
         let result = ComplexTimeVector32::from_interleaved(&data);
         let result = result.magnitude().unwrap();
         let expected = [5.0, 5.0, 5.0, 5.0];
-        assert_eq!(result.data(), expected);
+        assert_eq!(result.real(0..), expected);
         assert_eq!(result.delta, 1.0);
     }
 
@@ -315,7 +322,7 @@ mod tests {
         let result = ComplexTimeVector32::from_interleaved(&data);
         let result = result.magnitude_squared().unwrap();
         let expected = [5.0, 25.0, 61.0, 113.0, 181.0];
-        assert_eq!(result.data(), expected);
+        assert_eq!(result.real(0..), expected);
         assert_eq!(result.delta, 1.0);
     }
 
@@ -328,7 +335,7 @@ mod tests {
         result[0] = 5.0;
         assert_eq!(result[0], 5.0);
         let expected = [5.0, 2.0, 3.0, 4.0];
-        assert_eq!(result.data(), expected);
+        assert_eq!(result.interleaved(0..), expected);
     }
 
     #[test]
@@ -340,7 +347,7 @@ mod tests {
         let vector2 = ComplexTimeVector32::from_interleaved(&data2);
         let result = vector1.add(&vector2).unwrap();
         let expected = [6.0, 9.0, 12.0, 15.0];
-        assert_eq!(result.data(), expected);
+        assert_eq!(result.interleaved(0..), expected);
     }
 
     #[test]
@@ -389,7 +396,7 @@ mod tests {
         let mut a = [1.0, 2.0, 3.0, 4.0];
         let c = RealTimeVector32::from_array(&mut a);
         let r = c.swap_halves().unwrap();
-        assert_eq!(r.data(), &[3.0, 4.0, 1.0, 2.0]);
+        assert_eq!(r.real(0..), &[3.0, 4.0, 1.0, 2.0]);
     }
 
     #[test]
@@ -398,7 +405,7 @@ mod tests {
         let mut a = [1.0, 2.0, 3.0, 4.0, 5.0];
         let c = RealTimeVector32::from_array(&mut a);
         let r = c.swap_halves().unwrap();
-        assert_eq!(r.data(), &[4.0, 5.0, 1.0, 2.0, 3.0]);
+        assert_eq!(r.real(0..), &[4.0, 5.0, 1.0, 2.0, 3.0]);
     }
 
     #[test]
@@ -407,7 +414,7 @@ mod tests {
         let mut a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
         let c = ComplexTimeVector32::from_interleaved(&mut a);
         let r = c.swap_halves().unwrap();
-        assert_eq!(r.data(), &[5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0]);
+        assert_eq!(r.interleaved(0..), &[5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0]);
     }
 
     #[test]
@@ -416,7 +423,7 @@ mod tests {
         let mut a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
         let c = ComplexTimeVector32::from_interleaved(&mut a);
         let r = c.swap_halves().unwrap();
-        assert_eq!(r.data(), &[7.0, 8.0, 9.0, 10.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+        assert_eq!(r.interleaved(0..), &[7.0, 8.0, 9.0, 10.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
     }
 
     #[test]
@@ -428,7 +435,7 @@ mod tests {
         let expected =
             [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
              0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
-        assert_eq!(r.data(), &expected);
+        assert_eq!(r.interleaved(0..), &expected);
     }
 
     #[test]
@@ -441,7 +448,7 @@ mod tests {
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
              1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
              0.0, 0.0, 0.0, 0.0];
-        assert_eq!(r.data(), &expected);
+        assert_eq!(r.interleaved(0..), &expected);
     }
 
     #[test]
@@ -455,7 +462,7 @@ mod tests {
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
              7.0, 8.0, 9.0, 10.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
              0.0, 0.0, 0.0, 0.0];
-        assert_eq!(r.data(), &expected);
+        assert_eq!(r.interleaved(0..), &expected);
     }
 
     #[test]
@@ -466,6 +473,6 @@ mod tests {
         let r = c.conj().unwrap();
         let expected =
             [1.0, -2.0, 3.0, -4.0, 5.0, -6.0, 7.0, -8.0, 9.0, -10.0];
-        assert_eq!(r.data(), &expected);
+        assert_eq!(r.interleaved(0..), &expected);
     }
 }

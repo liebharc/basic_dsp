@@ -93,7 +93,11 @@ pub use vector_types::
         PaddingOption,
         VectorIter,
         ComplexIndex,
-        ComplexIndexMut
+        ComplexIndexMut,
+        RealIndex,
+        RealIndexMut,
+        InterleavedIndex,
+        InterleavedIndexMut
     };
  pub use multicore_support::MultiCoreSettings;
  use num::traits::Float;
