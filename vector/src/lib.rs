@@ -44,6 +44,8 @@ extern crate crossbeam;
 extern crate num;
 extern crate rustfft;
 mod vector_types;
+#[allow(dead_code)] // TODO: Remove this as soon as vector_types2 is able to replace vector_types (also rename at the same point)
+mod vector_types2;
 mod multicore_support;
 mod simd_extensions;
 pub mod window_functions;
