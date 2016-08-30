@@ -1,4 +1,3 @@
-use std::ops::*;
 use RealNumber;
 
 mod requirements;
@@ -9,10 +8,7 @@ mod vec_trait_and_indexers;
 pub use self::vec_trait_and_indexers::*;
 use vector_types::{
     DataVecDomain};
-use multicore_support::{
-    Chunk,
-    Complexity,
-    MultiCoreSettings};
+use multicore_support::MultiCoreSettings;
 
 macro_rules! define_vector_struct {
     ($($name:ident),*) => {
@@ -107,16 +103,6 @@ impl<T> TransOps<T> for DspVec<Vec<T>, T>
             *i = i.abs();
         }
         self
-    }
-}
-
-impl<S, T> Index<RangeFull> for DspVec<S, T>
-    where S: ToSlice<T>,
-          T: RealNumber {
-    type Output = [T];
-
-    fn index(&self, _index: RangeFull) -> &[T] {
-        self.data.to_slice()
     }
 }
 */

@@ -6,7 +6,8 @@ use super::{
     GenDspVec,
     RealTimeVec, RealFreqVec,
     ComplexTimeVec, ComplexFreqVec,
-    ToSlice, Resize};
+    ToSlice, ToSliceMut, Resize};
+use std::ops::*;
 
 /// `DspVec` gives access to the basic properties of all data vectors.
 ///
@@ -84,6 +85,126 @@ macro_rules! define_vector_conversions {
                   fn alloc_len(&self) -> usize {
                       self.data.alloc_len()
                   }
+            }
+
+            impl<S, T> Index<usize> for $name<S, T>
+                where S: ToSlice<T>,
+                      T: RealNumber {
+                type Output = T;
+
+                fn index(&self, index: usize) -> &T {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice();
+                    let slice = &slice[0..len];
+                    &slice[index]
+                }
+            }
+
+            impl<S, T> IndexMut<usize> for $name<S, T>
+                where S: ToSliceMut<T>,
+                      T: RealNumber {
+                fn index_mut(&mut self, index: usize) -> &mut T {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice_mut();
+                    let slice = &mut slice[0..len];
+                    &mut slice[index]
+                }
+            }
+
+            impl<S, T> Index<RangeFull> for $name<S, T>
+                where S: ToSlice<T>,
+                      T: RealNumber {
+                type Output = [T];
+
+                fn index(&self, _index: RangeFull) -> &[T] {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice();
+                    let slice = &slice[0..len];
+                    slice
+                }
+            }
+
+            impl<S, T> IndexMut<RangeFull> for $name<S, T>
+                where S: ToSliceMut<T>,
+                      T: RealNumber {
+                fn index_mut(&mut self, _index: RangeFull) -> &mut [T] {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice_mut();
+                    let slice = &mut slice[0..len];
+                    slice
+                }
+            }
+
+            impl<S, T> Index<RangeFrom<usize>> for $name<S, T>
+                where S: ToSlice<T>,
+                      T: RealNumber {
+                type Output = [T];
+
+                fn index(&self, index: RangeFrom<usize>) -> &[T] {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice();
+                    let slice = &slice[0..len];
+                    &slice[index]
+                }
+            }
+
+            impl<S, T> IndexMut<RangeFrom<usize>> for $name<S, T>
+                where S: ToSliceMut<T>,
+                      T: RealNumber {
+                fn index_mut(&mut self, index: RangeFrom<usize>) -> &mut [T] {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice_mut();
+                    let slice = &mut slice[0..len];
+                    &mut slice[index]
+                }
+            }
+
+            impl<S, T> Index<RangeTo<usize>> for $name<S, T>
+                where S: ToSlice<T>,
+                      T: RealNumber {
+                type Output = [T];
+
+                fn index(&self, index: RangeTo<usize>) -> &[T] {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice();
+                    let slice = &slice[0..len];
+                    &slice[index]
+                }
+            }
+
+            impl<S, T> IndexMut<RangeTo<usize>> for $name<S, T>
+                where S: ToSliceMut<T>,
+                      T: RealNumber {
+                fn index_mut(&mut self, index: RangeTo<usize>) -> &mut [T] {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice_mut();
+                    let slice = &mut slice[0..len];
+                    &mut slice[index]
+                }
+            }
+
+            impl<S, T> Index<Range<usize>> for $name<S, T>
+                where S: ToSlice<T>,
+                      T: RealNumber {
+                type Output = [T];
+
+                fn index(&self, index: Range<usize>) -> &[T] {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice();
+                    let slice = &slice[0..len];
+                    &slice[index]
+                }
+            }
+
+            impl<S, T> IndexMut<Range<usize>> for $name<S, T>
+                where S: ToSliceMut<T>,
+                      T: RealNumber {
+                fn index_mut(&mut self, index: Range<usize>) -> &mut [T] {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice_mut();
+                    let slice = &mut slice[0..len];
+                    &mut slice[index]
+                }
             }
         )*
     }
