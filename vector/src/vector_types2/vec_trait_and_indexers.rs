@@ -1,6 +1,10 @@
 //! This module defines the basic vector trait and indexers.
 use RealNumber;
 use vector_types::{
+    array_to_complex,
+    array_to_complex_mut,
+    ComplexIndex,
+    ComplexIndexMut,
     DataVecDomain};
 use super::{
     GenDspVec,
@@ -8,6 +12,19 @@ use super::{
     ComplexTimeVec, ComplexFreqVec,
     ToSlice, ToSliceMut, Resize};
 use std::ops::*;
+use num::complex::Complex;
+
+/// Marker trait for types containing real data.
+pub trait RealData { }
+
+/// Marker trait for types containing complex data.
+pub trait ComplexData { }
+
+/// Marker trait for types containing time domain data.
+pub trait TimeData { }
+
+/// Marker trait for types containing frequency domain data.
+pub trait FrequencyData { }
 
 /// `DspVec` gives access to the basic properties of all data vectors.
 ///
@@ -209,7 +226,187 @@ macro_rules! define_vector_conversions {
         )*
     }
 }
+
+macro_rules! define_complex_vector_conversions {
+    ($($name:ident),*) => {
+        $(
+            impl<S, T> ComplexIndex<usize> for $name<S, T>
+                where S: ToSlice<T>,
+                      T: RealNumber {
+                type Output = Complex<T>;
+
+                fn complex(&self, index: usize) -> &Complex<T> {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice();
+                    let slice = array_to_complex(&slice[0..len]);
+                    &slice[index]
+                }
+            }
+
+            impl<S, T> ComplexIndexMut<usize> for $name<S, T>
+                where S: ToSliceMut<T>,
+                      T: RealNumber {
+                fn complex_mut(&mut self, index: usize) -> &mut Complex<T> {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice_mut();
+                    let slice = array_to_complex_mut(&mut slice[0..len]);
+                    &mut slice[index]
+                }
+            }
+
+            impl<S, T> ComplexIndex<RangeFull> for $name<S, T>
+                where S: ToSlice<T>,
+                      T: RealNumber {
+                type Output = [Complex<T>];
+
+                fn complex(&self, _index: RangeFull) -> &[Complex<T>] {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice();
+                    let slice = array_to_complex(&slice[0..len]);
+                    slice
+                }
+            }
+
+            impl<S, T> ComplexIndexMut<RangeFull> for $name<S, T>
+                where S: ToSliceMut<T>,
+                      T: RealNumber {
+                fn complex_mut(&mut self, _index: RangeFull) -> &mut [Complex<T>] {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice_mut();
+                    let slice = array_to_complex_mut(&mut slice[0..len]);
+                    slice
+                }
+            }
+
+            impl<S, T> ComplexIndex<RangeFrom<usize>> for $name<S, T>
+                where S: ToSlice<T>,
+                      T: RealNumber {
+                type Output = [Complex<T>];
+
+                fn complex(&self, index: RangeFrom<usize>) -> &[Complex<T>] {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice();
+                    let slice = array_to_complex(&slice[0..len]);
+                    &slice[index]
+                }
+            }
+
+            impl<S, T> ComplexIndexMut<RangeFrom<usize>> for $name<S, T>
+                where S: ToSliceMut<T>,
+                      T: RealNumber {
+                fn complex_mut(&mut self, index: RangeFrom<usize>) -> &mut [Complex<T>] {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice_mut();
+                    let slice = array_to_complex_mut(&mut slice[0..len]);
+                    &mut slice[index]
+                }
+            }
+
+            impl<S, T> ComplexIndex<RangeTo<usize>> for $name<S, T>
+                where S: ToSlice<T>,
+                      T: RealNumber {
+                type Output = [Complex<T>];
+
+                fn complex(&self, index: RangeTo<usize>) -> &[Complex<T>] {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice();
+                    let slice = array_to_complex(&slice[0..len]);
+                    &slice[index]
+                }
+            }
+
+            impl<S, T> ComplexIndexMut<RangeTo<usize>> for $name<S, T>
+                where S: ToSliceMut<T>,
+                      T: RealNumber {
+                fn complex_mut(&mut self, index: RangeTo<usize>) -> &mut [Complex<T>] {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice_mut();
+                    let slice = array_to_complex_mut(&mut slice[0..len]);
+                    &mut slice[index]
+                }
+            }
+
+            impl<S, T> ComplexIndex<Range<usize>> for $name<S, T>
+                where S: ToSlice<T>,
+                      T: RealNumber {
+                type Output = [Complex<T>];
+
+                fn complex(&self, index: Range<usize>) -> &[Complex<T>] {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice();
+                    let slice = array_to_complex(&slice[0..len]);
+                    &slice[index]
+                }
+            }
+
+            impl<S, T> ComplexIndexMut<Range<usize>> for $name<S, T>
+                where S: ToSliceMut<T>,
+                      T: RealNumber {
+                fn complex_mut(&mut self, index: Range<usize>) -> &mut [Complex<T>] {
+                    let len = self.valid_len;
+                    let slice = self.data.to_slice_mut();
+                    let slice = array_to_complex_mut(&mut slice[0..len]);
+                    &mut slice[index]
+                }
+            }
+        )*
+    }
+}
+
 define_vector_conversions!(
     GenDspVec,
     RealTimeVec, RealFreqVec,
     ComplexTimeVec, ComplexFreqVec);
+
+define_complex_vector_conversions!(
+    GenDspVec,
+    ComplexTimeVec, ComplexFreqVec);
+
+#[cfg(test)]
+mod tests {
+    use super::super::*;
+
+    #[test]
+    fn len_of_vec() {
+        let vec: Vec<f32> = vec!(1.0, 2.0, 3.0);
+        let dsp = vec.to_real_time();
+        assert_eq!(dsp.len(), 3);
+    }
+
+    #[test]
+    fn len_of_slice() {
+        let slice = [1.0, 5.0, 4.0];
+        let dsp = slice.to_real_freq();
+        assert_eq!(dsp.len(), 3);
+    }
+
+    #[test]
+    #[allow(unused_mut)]
+    fn len_of_slice_mut() {
+        let mut slice = [1.0, 5.0, 4.0];
+        let dsp = slice.to_real_freq();
+        assert_eq!(dsp.len(), 3);
+    }
+
+    #[test]
+    #[allow(unused_mut)]
+    fn len_of_invalid_storage() {
+        let mut slice = [1.0, 5.0, 4.0];
+        let dsp = slice.to_complex_freq();
+        assert_eq!(dsp.len(), 0);
+    }
+
+    #[test]
+    fn index_of_vec() {
+        let vec = vec!(1.0, 2.0, 3.0);
+        let dsp = vec.to_real_time();
+        assert_eq!(dsp[..], [1.0, 2.0, 3.0]);
+    }
+
+    #[test]
+    fn index_of_slice() {
+        let slice = [1.0, 5.0, 4.0];
+        let dsp = slice.to_real_time();
+        assert_eq!(dsp[..], [1.0, 5.0, 4.0]);
+    }
+}

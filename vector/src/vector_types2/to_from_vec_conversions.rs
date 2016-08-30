@@ -14,15 +14,17 @@ use super::{
 /// only at runtime. See `ToRealVector` and
 /// `ToComplexVector` for alternatives which track most of the meta data
 /// with the type system and therefore avoid runtime errors.
-trait ToDspVector<T> : Sized + ToSlice<T>
+pub trait ToDspVector<T> : Sized + ToSlice<T>
     where T: RealNumber {
     /// Create a new generic vector.
     /// `delta` can be changed after construction with a call of `set_delta`.
+    ///
+    /// For complex vectors with an odd length the resulting value will have a zero length.
     fn to_gen_dsp(self, domain: DataVecDomain, is_complex: bool) -> GenDspVec<Self, T>;
 }
 
 /// Conversion from a generic data type into a dsp vector with real data.
-trait ToRealVector<T> : Sized + ToSlice<T>
+pub trait ToRealVector<T> : Sized + ToSlice<T>
     where T: RealNumber {
     /// Create a new vector in real number space and time domain.
     /// `delta` can be changed after construction with a call of `set_delta`.
@@ -34,19 +36,23 @@ trait ToRealVector<T> : Sized + ToSlice<T>
 }
 
 /// Conversion from a generic data type into a dsp vector with complex data.
-trait ToComplexVector<T> : Sized + ToSlice<T>
+pub trait ToComplexVector<T> : Sized + ToSlice<T>
     where T: RealNumber {
     /// Create a new vector in complex number space and time domain.
     /// `delta` can be changed after construction with a call of `set_delta`.
+    ///
+    /// For complex vectors with an odd length the resulting value will have a zero length.
     fn to_complex_time(self) -> ComplexTimeVec<Self, T>;
 
     /// Create a new vector in complex number space and frequency domain.
     /// `delta` can be changed after construction with a call of `set_delta`.
+    ///
+    /// For complex vectors with an odd length the resulting value will have a zero length.
     fn to_complex_freq(self) -> ComplexFreqVec<Self, T>;
 }
 
 /// Retrieves the underlying storage from a vector.
-trait FromVector<T>
+pub trait FromVector<T>
     where T: RealNumber {
     /// Type of the underlying storage of a vector.
     type Output;
@@ -62,7 +68,10 @@ trait FromVector<T>
 impl<T> ToDspVector<T> for Vec<T>
     where T: RealNumber {
     fn to_gen_dsp(self, domain: DataVecDomain, is_complex: bool) -> GenDspVec<Self, T> {
-        let len = self.len();
+        let mut len = self.len();
+        if len % 2 != 0 && is_complex {
+            len = 0;
+        }
         GenDspVec {
             data: self,
             delta: T::one(),
@@ -173,7 +182,10 @@ impl<'a, T> ToRealVector<T> for &'a [T]
 impl<'a, T> ToComplexVector<T> for &'a[T]
     where T: RealNumber {
     fn to_complex_time(self) -> ComplexTimeVec<Self, T> {
-        let len = self.len();
+        let mut len = self.len();
+        if len % 2 != 0 {
+            len = 0;
+        }
         ComplexTimeVec {
             data: self,
             delta: T::one(),
@@ -185,7 +197,10 @@ impl<'a, T> ToComplexVector<T> for &'a[T]
     }
 
     fn to_complex_freq(self) -> ComplexFreqVec<Self, T> {
-        let len = self.len();
+        let mut len = self.len();
+        if len % 2 != 0 {
+            len = 0;
+        }
         ComplexFreqVec {
             data: self,
             delta: T::one(),
@@ -200,7 +215,10 @@ impl<'a, T> ToComplexVector<T> for &'a[T]
 impl<'a, T> ToDspVector<T> for &'a mut [T]
     where T: RealNumber {
     fn to_gen_dsp(self, domain: DataVecDomain, is_complex: bool) -> GenDspVec<Self, T> {
-        let len = self.len();
+        let mut len = self.len();
+        if len % 2 != 0 && is_complex {
+            len = 0;
+        }
         GenDspVec {
             data: self,
             delta: T::one(),
@@ -242,7 +260,10 @@ impl<'a, T> ToRealVector<T> for &'a mut [T]
 impl<'a, T> ToComplexVector<T> for &'a mut [T]
     where T: RealNumber {
     fn to_complex_time(self) -> ComplexTimeVec<Self, T> {
-        let len = self.len();
+        let mut len = self.len();
+        if len % 2 != 0 {
+            len = 0;
+        }
         ComplexTimeVec {
             data: self,
             delta: T::one(),
@@ -254,7 +275,10 @@ impl<'a, T> ToComplexVector<T> for &'a mut [T]
     }
 
     fn to_complex_freq(self) -> ComplexFreqVec<Self, T> {
-        let len = self.len();
+        let mut len = self.len();
+        if len % 2 != 0 {
+            len = 0;
+        }
         ComplexFreqVec {
             data: self,
             delta: T::one(),
@@ -269,7 +293,10 @@ impl<'a, T> ToComplexVector<T> for &'a mut [T]
 impl<T> ToDspVector<T> for Box<[T]>
     where T: RealNumber {
     fn to_gen_dsp(self, domain: DataVecDomain, is_complex: bool) -> GenDspVec<Self, T> {
-        let len = self.len();
+        let mut len = self.len();
+        if len % 2 != 0 && is_complex {
+            len = 0;
+        }
         GenDspVec {
             data: self,
             delta: T::one(),
@@ -311,7 +338,10 @@ impl<T> ToRealVector<T> for Box<[T]>
 impl<T> ToComplexVector<T> for Box<[T]>
     where T: RealNumber {
     fn to_complex_time(self) -> ComplexTimeVec<Self, T> {
-        let len = self.len();
+        let mut len = self.len();
+        if len % 2 != 0 {
+            len = 0;
+        }
         ComplexTimeVec {
             data: self,
             delta: T::one(),
@@ -323,7 +353,10 @@ impl<T> ToComplexVector<T> for Box<[T]>
     }
 
     fn to_complex_freq(self) -> ComplexFreqVec<Self, T> {
-        let len = self.len();
+        let mut len = self.len();
+        if len % 2 != 0 {
+            len = 0;
+        }
         ComplexFreqVec {
             data: self,
             delta: T::one(),
