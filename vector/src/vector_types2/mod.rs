@@ -1,109 +1,9 @@
-use num::traits::Float;
 use std::marker::PhantomData;
 use std::ops::*;
+use RealNumber;
 
-/// A real floating pointer number intended to abstract over `f32` and `f64`.
-pub trait RealNumber : Float + Copy + Clone + Send + Sync { }
-impl<T> RealNumber for T
- where T: Float + Copy + Clone + Send + Sync {}
-
-pub trait ToSlice<T> {
-    fn to_slice(&self) -> &[T];
-    fn len(&self) -> usize;
-}
-
-pub trait ToSliceMut<T> : ToSlice<T> {
-    fn to_slice_mut(&mut self) -> &mut [T];
-}
-
-pub trait Resize {
-    fn resize(&mut self, len: usize);
-}
-
-impl<'a, T> ToSlice<T> for &'a [T] {
-    fn to_slice(&self) -> &[T] {
-        self
-    }
-    
-    fn len(&self) -> usize {
-        (*self).len()
-    }
-}
-
-impl<T> ToSlice<T> for [T] {
-    fn to_slice(&self) -> &[T] {
-        self
-    }
-    
-    fn len(&self) -> usize {
-        self.len()
-    }
-}
-
-impl<T> ToSliceMut<T> for [T] {
-    fn to_slice_mut(&mut self) -> &mut [T] {
-        self
-    }
-}
-
-impl<'a, T> ToSlice<T> for &'a mut [T] {
-    fn to_slice(&self) -> &[T] {
-        self
-    }
-    
-    fn len(&self) -> usize {
-        (**self).len()
-    }
-}
-
-impl<'a, T> ToSliceMut<T> for &'a mut [T] {
-    fn to_slice_mut(&mut self) -> &mut [T] {
-        self
-    }
-}
-
-impl<T> ToSlice<T> for Vec<T> {
-    fn to_slice(&self) -> &[T] {
-        &self[..]
-    }
-    
-    fn len(&self) -> usize {
-        self.len()
-    }
-}
-
-impl<T> ToSliceMut<T> for Vec<T> {
-    fn to_slice_mut(&mut self) -> &mut [T] {
-        &mut self[..]
-    }
-}
-
-impl<T> Resize for Vec<T>
-    where T: RealNumber {
-    fn resize(&mut self, len: usize) {
-        self.resize(len, T::zero());
-    }
-}
-
-impl<S, T> ToSlice<T> for DspVec<S, T>
-    where S: ToSlice<T>,
-          T: RealNumber {
-    fn to_slice(&self) -> &[T] {
-        self.data.to_slice()
-    }
-    
-    fn len(&self) -> usize {
-        self.data.len()
-    }
-}
-
-impl<S, T> ToSliceMut<T> for DspVec<S, T> 
-    where S: ToSliceMut<T>,
-          T: RealNumber {
-    fn to_slice_mut(&mut self) -> &mut [T] {
-        self.data.to_slice_mut()
-    }
-}
+mod requirements;
+pub use self::requirements::*;
 
 pub struct DspVec<S, T>
     where S: ToSlice<T>,
@@ -187,7 +87,7 @@ impl<S, T> Index<RangeFull> for DspVec<S, T>
     where S: ToSlice<T>,
           T: RealNumber {
     type Output = [T];
-    
+
     fn index(&self, _index: RangeFull) -> &[T] {
         self.data.to_slice()
     }
@@ -196,21 +96,21 @@ impl<S, T> Index<RangeFull> for DspVec<S, T>
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn len_of_vec() {
         let vec: Vec<f32> = vec!(1.0, 2.0, 3.0);
         let dsp = DspVec32::new(vec);
         assert_eq!(dsp.len(), 3);
     }
-    
+
     #[test]
     fn len_of_slice() {
         let slice = [1.0, 5.0, 4.0];
         let dsp = DspSlice32::new(&slice);
         assert_eq!(dsp.len(), 3);
     }
-    
+
     #[test]
     fn len_of_slice_mut() {
         let mut slice = [1.0, 5.0, 4.0];
@@ -266,14 +166,14 @@ mod tests {
         let dsp = dsp.mag();
         assert_eq!(dsp.data, vec!(1.0, 2.0, 3.0));
     }
-    
+
     #[test]
     fn index_of_vec() {
         let vec: Vec<f32> = vec!(1.0, 2.0, 3.0);
         let dsp = DspVec32::new(vec);
         assert_eq!(dsp[..], [1.0, 2.0, 3.0]);
     }
-    
+
     #[test]
     fn index_of_slice() {
         let slice = [1.0, 5.0, 4.0];
