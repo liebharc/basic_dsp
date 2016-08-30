@@ -1,7 +1,6 @@
 //! Requirements which a type needs to fulfill
 //! so that it can serve as a vector storage
 use RealNumber;
-use super::DspVec;
 
 /// A trait to convert a type into a slice.
 pub trait ToSlice<T> {
@@ -58,6 +57,22 @@ impl<T> ToSliceMut<T> for [T] {
     }
 }
 
+impl<T> ToSlice<T> for Box<[T]> {
+    fn to_slice(&self) -> &[T] {
+        self
+    }
+
+    fn len(&self) -> usize {
+        (**self).len()
+    }
+}
+
+impl<T> ToSliceMut<T> for Box<[T]> {
+    fn to_slice_mut(&mut self) -> &mut [T] {
+        self
+    }
+}
+
 impl<'a, T> ToSlice<T> for &'a mut [T] {
     fn to_slice(&self) -> &[T] {
         self
@@ -98,25 +113,5 @@ impl<T> Resize for Vec<T>
 
     fn alloc_len(&self) -> usize {
         self.capacity()
-    }
-}
-
-impl<S, T> ToSlice<T> for DspVec<S, T>
-    where S: ToSlice<T>,
-          T: RealNumber {
-    fn to_slice(&self) -> &[T] {
-        self.data.to_slice()
-    }
-
-    fn len(&self) -> usize {
-        self.data.len()
-    }
-}
-
-impl<S, T> ToSliceMut<T> for DspVec<S, T>
-    where S: ToSliceMut<T>,
-          T: RealNumber {
-    fn to_slice_mut(&mut self) -> &mut [T] {
-        self.data.to_slice_mut()
     }
 }

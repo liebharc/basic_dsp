@@ -33,8 +33,6 @@ macro_rules! define_vector_struct {
             is_complex: bool,
             valid_len: usize,
             multicore_settings: MultiCoreSettings
-            // We could need here (or in one of the traits/impl):
-            // - A view for complex data types with transmute
         }
 
         impl<T> DataVec<T> for $name<T>
