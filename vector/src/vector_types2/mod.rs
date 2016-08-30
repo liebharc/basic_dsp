@@ -5,49 +5,14 @@ mod requirements;
 pub use self::requirements::*;
 mod to_from_vec_conversions;
 pub use self::to_from_vec_conversions::*;
+mod vec_trait_and_indexers;
+pub use self::vec_trait_and_indexers::*;
 use vector_types::{
     DataVecDomain};
 use multicore_support::{
     Chunk,
     Complexity,
     MultiCoreSettings};
-
-/// `DspVec` gives access to the basic properties of all data vectors.
-///
-/// A `DspVec` allocates memory if necessary. It will however never shrink/free memory unless it's
-/// deleted and dropped.
-pub trait DspVec<T>
-    where T: RealNumber {
-    /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
-    fn delta(&self) -> T;
-
-    /// Sets the x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
-    fn set_delta(&self, delta: T) -> T;
-
-    /// The domain in which the data vector resides. Basically specifies the x-axis and the type of operations which
-    /// are valid on this vector.
-    fn domain(&self) -> DataVecDomain;
-
-    /// Indicates whether the vector contains complex data. This also specifies the type of operations which are valid
-    /// on this vector.
-    fn is_complex(&self) -> bool;
-
-    /// The number of valid elements in the vector.
-    fn len(&self) -> usize;
-
-    /// Sets the vector length to the given length.
-    /// If `self.len() < len` then the value of the new elements is undefined.
-    fn set_len(&mut self, len: usize);
-
-    /// The number of valid points. If the vector is complex then every valid point consists of two floating point numbers,
-    /// while for real vectors every point only consists of one floating point number.
-    fn points(&self) -> usize;
-
-    /// Gets the number of allocated elements in the underlying vector.
-    /// The allocated length may be larger than the length of valid points.
-    /// In most cases you likely want to have `len`or `points` instead.
-    fn allocated_len(&self) -> usize;
-}
 
 macro_rules! define_vector_struct {
     ($($name:ident),*) => {
