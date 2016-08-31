@@ -4,8 +4,8 @@ mod requirements;
 pub use self::requirements::*;
 mod to_from_vec_conversions;
 pub use self::to_from_vec_conversions::*;
-mod vec_trait_and_indexers;
-pub use self::vec_trait_and_indexers::*;
+mod vec_impl_and_indexers;
+pub use self::vec_impl_and_indexers::*;
 use vector_types::{
     DataVecDomain};
 use multicore_support::MultiCoreSettings;

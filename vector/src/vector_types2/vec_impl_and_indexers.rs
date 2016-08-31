@@ -12,6 +12,7 @@ use super::{
     ToSliceMut,
     Resize,
     ComplexDataMarker};
+use multicore_support::MultiCoreSettings;
 use std::ops::*;
 use num::complex::Complex;
 
@@ -54,6 +55,20 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     /// while for real vectors every point only consists of one floating point number.
     fn points(&self) -> usize {
         self.valid_len / if self.is_complex { 2 } else { 1 }
+    }
+
+    /// Gets the multi core settings which determine how the
+    /// work is split between several cores if the amount of data
+    /// gets larger.
+    fn get_multicore_settings(&self) -> &MultiCoreSettings {
+        &self.multicore_settings
+    }
+
+    /// Sets the multi core settings which determine how the
+    /// work is split between several cores if the amount of data
+    /// gets larger.
+    fn set_multicore_settings(&mut self, settings: MultiCoreSettings) {
+        self.multicore_settings = settings;
     }
 }
 
@@ -328,14 +343,14 @@ mod tests {
     #[test]
     fn len_of_vec() {
         let vec: Vec<f32> = vec!(1.0, 2.0, 3.0);
-        let dsp = vec.to_real_time();
+        let dsp = vec.to_real_time_vec();
         assert_eq!(dsp.len(), 3);
     }
 
     #[test]
     fn len_of_slice() {
         let slice = [1.0, 5.0, 4.0];
-        let dsp = slice.to_real_freq();
+        let dsp = slice.to_real_freq_vec();
         assert_eq!(dsp.len(), 3);
     }
 
@@ -343,7 +358,7 @@ mod tests {
     #[allow(unused_mut)]
     fn len_of_slice_mut() {
         let mut slice = [1.0, 5.0, 4.0];
-        let dsp = slice.to_real_freq();
+        let dsp = slice.to_real_freq_vec();
         assert_eq!(dsp.len(), 3);
     }
 
@@ -351,21 +366,21 @@ mod tests {
     #[allow(unused_mut)]
     fn len_of_invalid_storage() {
         let mut slice = [1.0, 5.0, 4.0];
-        let dsp = slice.to_complex_freq();
+        let dsp = slice.to_complex_freq_vec();
         assert_eq!(dsp.len(), 0);
     }
 
     #[test]
     fn index_of_vec() {
         let vec = vec!(1.0, 2.0, 3.0);
-        let dsp = vec.to_real_time();
+        let dsp = vec.to_real_time_vec();
         assert_eq!(dsp[..], [1.0, 2.0, 3.0]);
     }
 
     #[test]
     fn index_of_slice() {
         let slice = [1.0, 5.0, 4.0];
-        let dsp = slice.to_real_time();
+        let dsp = slice.to_real_time_vec();
         assert_eq!(dsp[..], [1.0, 5.0, 4.0]);
     }
 }
