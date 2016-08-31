@@ -193,7 +193,7 @@ impl<T> GenericDataVec<T>
     }
 }
 
-pub fn array_to_complex<T>(array: &[T]) -> &[Complex<T>] {
+fn array_to_complex<T>(array: &[T]) -> &[Complex<T>] {
     unsafe {
         let len = array.len();
         if len % 2 != 0 {
@@ -204,7 +204,7 @@ pub fn array_to_complex<T>(array: &[T]) -> &[Complex<T>] {
     }
 }
 
-pub fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
+fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
     unsafe {
         let len = array.len();
         if len % 2 != 0 {

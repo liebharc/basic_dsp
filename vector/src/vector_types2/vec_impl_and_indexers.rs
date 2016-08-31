@@ -1,11 +1,8 @@
 //! This module defines the basic vector trait and indexers.
 use RealNumber;
-use vector_types::{
+use super::{
     array_to_complex,
     array_to_complex_mut,
-    ComplexIndex,
-    ComplexIndexMut};
-use super::{
     DspVec,
     NumberSpace,
     Domain,
@@ -17,6 +14,27 @@ use super::{
 use multicore_support::MultiCoreSettings;
 use std::ops::*;
 use num::complex::Complex;
+
+/// Like [`std::ops::Index`](https://doc.rust-lang.org/std/ops/trait.Index.html)
+/// but with a different method name so that it can be used to implement an additional range
+/// accessor for complex data.
+///
+/// Note if indexers will return an empty array in case the vector isn't complex.
+pub trait ComplexIndex<Idx> where Idx: Sized {
+    type Output: ?Sized;
+    /// The method for complex indexing
+    fn complex(&self, index: Idx) -> &Self::Output;
+}
+
+/// Like [`std::ops::IndexMut`](https://doc.rust-lang.org/std/ops/trait.IndexMut.html)
+/// but with a different method name so that it can be used to implement a additional range
+/// accessor for complex data.
+///
+/// Note if indexers will return an empty array in case the vector isn't complex.
+pub trait ComplexIndexMut<Idx>: ComplexIndex<Idx> where Idx: Sized {
+    /// The method for complex indexing
+    fn complex_mut(&mut self, index: Idx) -> &mut Self::Output;
+}
 
 impl<S, T, N, D> DspVec<S, T, N, D>
     where S: ToSlice<T>,
