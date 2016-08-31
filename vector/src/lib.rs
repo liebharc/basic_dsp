@@ -104,14 +104,31 @@ pub use vector_types::
  pub use multicore_support::MultiCoreSettings;
  use num::traits::Float;
 
+ use simd_extensions::*;
+
+/// Associates a number type with a SIMD register type.
+pub trait ToSimd {
+    type Reg;
+}
+
+impl ToSimd for f32 {
+    type Reg = Reg32;
+}
+
+impl ToSimd for f64 {
+    type Reg = Reg64;
+}
+
  /// A real floating pointer number intended to abstract over `f32` and `f64`.
- pub trait RealNumber : Float + Copy + Clone + Send + Sync { }
+ pub trait RealNumber : Float + Copy + Clone + Send + Sync + ToSimd { }
  impl<T> RealNumber for T
-  where T: Float + Copy + Clone + Send + Sync {}
+  where T: Float + Copy + Clone + Send + Sync + ToSimd,
+           <T as ToSimd>::Reg: Simd<T> + SimdGeneric<T> {}
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use simd_extensions::Simd;
 
     fn void_try_method() -> Result<i32, ErrorReason> {
         let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
@@ -149,5 +166,16 @@ mod tests {
         assert!(res.is_err());
         let res = vec_try_method();
         assert!(res.is_err());
+    }
+
+    #[test]
+    fn to_simd_test()
+    {
+        // This is more a check for syntax. So if it compiles
+        // then the test already passes. The assert is then only
+        // a sanity check.
+        let reg = <f32 as ToSimd>::Reg::splat(1.0);
+        let sum = reg.sum_real();
+        assert!(sum > 0.0);
     }
 }
