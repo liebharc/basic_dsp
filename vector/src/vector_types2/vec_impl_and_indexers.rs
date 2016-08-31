@@ -38,7 +38,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     ///
     /// The domain can be changed using the `RededicateOps` trait.
     fn domain(&self) -> DataDomain {
-        self.domain
+        self.domain.domain()
     }
 
     /// Indicates whether the vector contains complex data. This also specifies the type of operations which are valid
@@ -46,7 +46,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     ///
     /// The number space can be changed using the `RededicateOps` trait.
     fn is_complex(&self) -> bool {
-        self.is_complex
+        self.number_space.is_complex()
     }
 
     /// The number of valid elements in the vector. This can be changed
@@ -58,7 +58,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     /// The number of valid points. If the vector is complex then every valid point consists of two floating point numbers,
     /// while for real vectors every point only consists of one floating point number.
     fn points(&self) -> usize {
-        self.valid_len / if self.is_complex { 2 } else { 1 }
+        self.valid_len / if self.is_complex() { 2 } else { 1 }
     }
 
     /// Gets the multi core settings which determine how the

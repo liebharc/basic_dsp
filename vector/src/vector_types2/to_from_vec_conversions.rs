@@ -7,9 +7,10 @@ use super::{
     DspVec, GenDspVec,
     RealTimeVec, RealFreqVec,
     ComplexTimeVec, ComplexFreqVec,
+    RealData, ComplexData, RealOrComplexData,
+    TimeData, FrequencyData, TimeOrFrequencyData,
     ToSlice};
 use multicore_support::MultiCoreSettings;
-use std::marker::PhantomData;
 
 /// Conversion from a generic data type into a dsp vector which tracks
 /// its meta information (domain and number space)
@@ -77,12 +78,10 @@ impl<T> ToDspVector<T> for Vec<T>
         GenDspVec {
             data: self,
             delta: T::one(),
-            domain: domain,
-            is_complex: is_complex,
+            domain: TimeOrFrequencyData { domain_current: domain },
+            number_space: RealOrComplexData { is_complex_current: is_complex },
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 }
@@ -94,12 +93,10 @@ impl<T> ToRealVector<T> for Vec<T>
         RealTimeVec {
             data: self,
             delta: T::one(),
-            domain: DataDomain::Time,
-            is_complex: false,
+            domain: TimeData,
+            number_space: RealData,
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 
@@ -108,12 +105,10 @@ impl<T> ToRealVector<T> for Vec<T>
         RealFreqVec {
             data: self,
             delta: T::one(),
-            domain: DataDomain::Frequency,
-            is_complex: false,
+            domain: FrequencyData,
+            number_space: RealData,
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 }
@@ -125,12 +120,10 @@ impl<T> ToComplexVector<T> for Vec<T>
         ComplexTimeVec {
             data: self,
             delta: T::one(),
-            domain: DataDomain::Time,
-            is_complex: true,
+            domain: TimeData,
+            number_space: ComplexData,
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 
@@ -139,12 +132,10 @@ impl<T> ToComplexVector<T> for Vec<T>
         ComplexFreqVec {
             data: self,
             delta: T::one(),
-            domain: DataDomain::Frequency,
-            is_complex: true,
+            domain: FrequencyData,
+            number_space: ComplexData,
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 }
@@ -156,12 +147,10 @@ impl<'a, T> ToDspVector<T> for &'a [T]
         GenDspVec {
             data: self,
             delta: T::one(),
-            domain: domain,
-            is_complex: is_complex,
+            domain: TimeOrFrequencyData { domain_current: domain },
+            number_space: RealOrComplexData { is_complex_current: is_complex },
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 }
@@ -173,12 +162,10 @@ impl<'a, T> ToRealVector<T> for &'a [T]
         RealTimeVec {
             data: self,
             delta: T::one(),
-            domain: DataDomain::Time,
-            is_complex: false,
+            domain: TimeData,
+            number_space: RealData,
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 
@@ -187,12 +174,10 @@ impl<'a, T> ToRealVector<T> for &'a [T]
         RealFreqVec {
             data: self,
             delta: T::one(),
-            domain: DataDomain::Frequency,
-            is_complex: false,
+            domain: FrequencyData,
+            number_space: RealData,
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 }
@@ -207,12 +192,10 @@ impl<'a, T> ToComplexVector<T> for &'a[T]
         ComplexTimeVec {
             data: self,
             delta: T::one(),
-            domain: DataDomain::Time,
-            is_complex: true,
+            domain: TimeData,
+            number_space: ComplexData,
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 
@@ -224,12 +207,10 @@ impl<'a, T> ToComplexVector<T> for &'a[T]
         ComplexFreqVec {
             data: self,
             delta: T::one(),
-            domain: DataDomain::Frequency,
-            is_complex: true,
+            domain: FrequencyData,
+            number_space: ComplexData,
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 }
@@ -244,12 +225,10 @@ impl<'a, T> ToDspVector<T> for &'a mut [T]
         GenDspVec {
             data: self,
             delta: T::one(),
-            domain: domain,
-            is_complex: is_complex,
+            domain: TimeOrFrequencyData { domain_current: domain },
+            number_space: RealOrComplexData { is_complex_current: is_complex },
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 }
@@ -261,12 +240,10 @@ impl<'a, T> ToRealVector<T> for &'a mut [T]
         RealTimeVec {
             data: self,
             delta: T::one(),
-            domain: DataDomain::Time,
-            is_complex: false,
+            domain: TimeData,
+            number_space: RealData,
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 
@@ -275,12 +252,10 @@ impl<'a, T> ToRealVector<T> for &'a mut [T]
         RealFreqVec {
             data: self,
             delta: T::one(),
-            domain: DataDomain::Frequency,
-            is_complex: false,
+            domain: FrequencyData,
+            number_space: RealData,
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 }
@@ -295,12 +270,10 @@ impl<'a, T> ToComplexVector<T> for &'a mut [T]
         ComplexTimeVec {
             data: self,
             delta: T::one(),
-            domain: DataDomain::Time,
-            is_complex: true,
+            domain: TimeData,
+            number_space: ComplexData,
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 
@@ -312,12 +285,10 @@ impl<'a, T> ToComplexVector<T> for &'a mut [T]
         ComplexFreqVec {
             data: self,
             delta: T::one(),
-            domain: DataDomain::Frequency,
-            is_complex: true,
+            domain: FrequencyData,
+            number_space: ComplexData,
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 }
@@ -332,12 +303,10 @@ impl<T> ToDspVector<T> for Box<[T]>
         GenDspVec {
             data: self,
             delta: T::one(),
-            domain: domain,
-            is_complex: is_complex,
+            domain: TimeOrFrequencyData { domain_current: domain },
+            number_space: RealOrComplexData { is_complex_current: is_complex },
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 }
@@ -349,12 +318,10 @@ impl<T> ToRealVector<T> for Box<[T]>
         RealTimeVec {
             data: self,
             delta: T::one(),
-            domain: DataDomain::Time,
-            is_complex: false,
+            domain: TimeData,
+            number_space: RealData,
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 
@@ -363,12 +330,10 @@ impl<T> ToRealVector<T> for Box<[T]>
         RealFreqVec {
             data: self,
             delta: T::one(),
-            domain: DataDomain::Frequency,
-            is_complex: false,
+            domain: FrequencyData,
+            number_space: RealData,
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 }
@@ -383,12 +348,10 @@ impl<T> ToComplexVector<T> for Box<[T]>
         ComplexTimeVec {
             data: self,
             delta: T::one(),
-            domain: DataDomain::Time,
-            is_complex: true,
+            domain: TimeData,
+            number_space: ComplexData,
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 
@@ -400,12 +363,10 @@ impl<T> ToComplexVector<T> for Box<[T]>
         ComplexFreqVec {
             data: self,
             delta: T::one(),
-            domain: DataDomain::Frequency,
-            is_complex: true,
+            domain: FrequencyData,
+            number_space: ComplexData,
             valid_len: len,
-            multicore_settings: MultiCoreSettings::default(),
-            _static_number_space: PhantomData,
-            _static_domain: PhantomData
+            multicore_settings: MultiCoreSettings::default()
         }
     }
 }

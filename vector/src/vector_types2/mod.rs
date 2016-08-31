@@ -1,4 +1,5 @@
 use RealNumber;
+use multicore_support::MultiCoreSettings;
 
 mod requirements;
 pub use self::requirements::*;
@@ -6,8 +7,6 @@ mod to_from_vec_conversions;
 pub use self::to_from_vec_conversions::*;
 mod vec_impl_and_indexers;
 pub use self::vec_impl_and_indexers::*;
-use multicore_support::MultiCoreSettings;
-use std::marker::PhantomData;
 
 /// The domain of a data vector
 #[derive(Copy)]
@@ -44,14 +43,14 @@ pub trait TimeDomain { }
 pub trait FrequencyDomain { }
 
 /// Marker for types containing real data.
-pub struct RealData { }
+pub struct RealData;
 impl NumberSpace for RealData {
     fn is_complex(&self) -> bool { false }
 }
 impl RealNumberSpace for RealData { }
 
 /// Marker for types containing complex data.
-pub struct ComplexData { }
+pub struct ComplexData;
 impl NumberSpace for ComplexData {
     fn is_complex(&self) -> bool { true }
 }
@@ -68,14 +67,14 @@ impl RealNumberSpace for RealOrComplexData { }
 impl ComplexNumberSpace for RealOrComplexData { }
 
 /// Marker for types containing time data.
-pub struct TimeData { }
+pub struct TimeData;
 impl Domain for TimeData {
     fn domain(&self) -> DataDomain { DataDomain::Time }
 }
 impl TimeDomain for TimeData { }
 
 /// Marker for types containing frequency data.
-pub struct FrequencyData { }
+pub struct FrequencyData;
 impl Domain for FrequencyData {
     fn domain(&self) -> DataDomain { DataDomain::Frequency }
 }
@@ -119,12 +118,10 @@ pub struct DspVec<S, T, N, D>
           D: Domain {
     data: S,
     delta: T,
-    domain: DataDomain,
-    is_complex: bool,
+    domain: D,
+    number_space: N,
     valid_len: usize,
-    multicore_settings: MultiCoreSettings,
-    _static_number_space: PhantomData<*const N>,
-    _static_domain: PhantomData<*const D>
+    multicore_settings: MultiCoreSettings
 }
 
 /// A vector with real numbers in time domain.
