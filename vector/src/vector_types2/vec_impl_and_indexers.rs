@@ -24,12 +24,12 @@ impl<S, T, N, D> DspVec<S, T, N, D>
           N: NumberSpace,
           D: Domain,  {
     /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
-    fn delta(&self) -> T {
+    pub fn delta(&self) -> T {
         self.delta
     }
 
     /// Sets the x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
-    fn set_delta(&mut self, delta: T) {
+    pub fn set_delta(&mut self, delta: T) {
         self.delta = delta;
     }
 
@@ -37,7 +37,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     /// are valid on this vector.
     ///
     /// The domain can be changed using the `RededicateOps` trait.
-    fn domain(&self) -> DataDomain {
+    pub fn domain(&self) -> DataDomain {
         self.domain.domain()
     }
 
@@ -45,33 +45,33 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     /// on this vector.
     ///
     /// The number space can be changed using the `RededicateOps` trait.
-    fn is_complex(&self) -> bool {
+    pub fn is_complex(&self) -> bool {
         self.number_space.is_complex()
     }
 
     /// The number of valid elements in the vector. This can be changed
     /// with the `Resize` trait.
-    fn len(&self) -> usize {
+    pub fn len(&self) -> usize {
         self.valid_len
     }
 
     /// The number of valid points. If the vector is complex then every valid point consists of two floating point numbers,
     /// while for real vectors every point only consists of one floating point number.
-    fn points(&self) -> usize {
+    pub fn points(&self) -> usize {
         self.valid_len / if self.is_complex() { 2 } else { 1 }
     }
 
     /// Gets the multi core settings which determine how the
     /// work is split between several cores if the amount of data
     /// gets larger.
-    fn get_multicore_settings(&self) -> &MultiCoreSettings {
+    pub fn get_multicore_settings(&self) -> &MultiCoreSettings {
         &self.multicore_settings
     }
 
     /// Sets the multi core settings which determine how the
     /// work is split between several cores if the amount of data
     /// gets larger.
-    fn set_multicore_settings(&mut self, settings: MultiCoreSettings) {
+    pub fn set_multicore_settings(&mut self, settings: MultiCoreSettings) {
         self.multicore_settings = settings;
     }
 }
