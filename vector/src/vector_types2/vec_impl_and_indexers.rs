@@ -40,7 +40,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain,  {
+          D: Domain  {
     /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
     pub fn delta(&self) -> T {
         self.delta
