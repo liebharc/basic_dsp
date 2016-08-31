@@ -1,8 +1,13 @@
 use RealNumber;
-use multicore_support::MultiCoreSettings;
+use ToSimd;
+use multicore_support::{
+    Chunk,
+    MultiCoreSettings,
+    Complexity};
 use num::complex::Complex;
 use std::mem;
 use std::result;
+use simd_extensions::*;
 
 mod requirements;
 pub use self::requirements::*;
@@ -176,4 +181,127 @@ fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
         let trans: &mut [Complex<T>] = mem::transmute(array);
         &mut trans[0 .. len / 2]
     }
+}
+
+impl<S, T, N, D> DspVec<S, T, N, D> where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
+    <T as ToSimd>::Reg: Simd<T> + SimdGeneric<T> + Copy {
+    #[inline]
+    fn pure_real_operation<A, F>(&mut self, op: F, argument: A, complexity: Complexity)
+        where A: Sync + Copy + Send,
+            F: Fn(T, A) -> T + 'static + Sync {
+        {
+            let len = self.valid_len;
+            let mut array = self.data.to_slice_mut();
+            Chunk::execute_partial(
+                complexity, &self.multicore_settings,
+                &mut array[0..len], 1, argument,
+                move|array, argument| {
+                    for num in array {
+                        *num = op(*num, argument);
+                    }
+            });
+        }
+    }
+
+    #[inline]
+    fn pure_complex_operation<A, F>(&mut self, op: F, argument: A, complexity: Complexity)
+        where A: Sync + Copy + Send,
+            F: Fn(Complex<T>, A) -> Complex<T> + 'static + Sync {
+        {
+            let len = self.valid_len;
+            let mut array = self.data.to_slice_mut();
+            Chunk::execute_partial(
+                complexity, &self.multicore_settings,
+                &mut array[0..len], 2, argument,
+                move|array, argument| {
+                    let array = array_to_complex_mut(array);
+                    for num in array {
+                        *num = op(*num, argument);
+                    }
+            });
+        }
+    }
+
+    #[inline]
+    fn simd_real_operation<A, F, G>(&mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity)
+        where A: Sync + Copy + Send,
+                F: Fn(T::Reg, A) -> T::Reg + 'static + Sync,
+                G: Fn(T, A) -> T + 'static + Sync {
+        {
+            let data_length = self.valid_len;
+            let mut array = self.data.to_slice_mut();
+            let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+            if vectorization_length > 0 {
+                Chunk::execute_partial(
+                    complexity, &self.multicore_settings,
+                    &mut array[scalar_left..vectorization_length], T::Reg::len(), argument,
+                    move |array, argument| {
+                    let array = T::Reg::array_to_regs_mut(array);
+                    for reg in array {
+                        *reg = simd_op(*reg, argument);
+                    }
+                });
+            }
+            for num in &mut array[0..scalar_left]
+            {
+                *num = scalar_op(*num, argument);
+            }
+            for num in &mut array[scalar_right..data_length]
+            {
+                *num = scalar_op(*num, argument);
+            }
+        }
+    }
+
+/*
+
+    #[inline]
+    fn simd_complex_to_real_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> TransRes<Self>
+        where A: Sync + Copy + Send,
+              F: Fn(T::Reg, A) -> T::Reg + 'static + Sync,
+              G: Fn(Complex<T>, A) -> T::Reg + 'static + Sync {
+        {
+            let data_length = self.len();
+            let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&self.data[0..data_length]);
+            let mut array = &mut self.data;
+            let mut temp = temp_mut!(self, data_length);
+            if vectorization_length > 0 {
+                Chunk::from_src_to_dest(
+                complexity, &self.multicore_settings,
+                &mut array[scalar_left..vectorization_length], T::Reg::len(),
+                &mut temp[scalar_left/2..vectorization_length/2], T::Reg::len() / 2, argument,
+                move |array, range, target, argument| {
+                    let array = T::Reg::array_to_regs(&array[range.start..range.end]);
+                    let mut j = 0;
+                    for reg in array {
+                        let result = simd_op(*reg, argument);
+                        result.store_half_unchecked(target, j);
+                        j += T::Reg::len() / 2;
+                    }
+                });
+            }
+            {
+                let array = array_to_complex(&array[0..scalar_left]);
+                for pair in array.iter().zip(&mut temp[0..scalar_left/2]) {
+                    let (src, dest) = pair;
+                    *dest = scalar_op(*src, argument);
+                }
+            }
+            {
+                let array = array_to_complex(&array[scalar_right..data_length]);
+                for pair in array.iter().zip(&mut temp[scalar_right/2..data_length/2]) {
+                    let (src, dest) = pair;
+                    *dest = scalar_op(*src, argument);
+                }
+            }
+
+            self.is_complex = false;
+            self.valid_len = data_length / 2;
+        }
+        Ok(self.swap_data_temp())
+    }*/
 }

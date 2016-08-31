@@ -123,7 +123,7 @@ impl ToSimd for f64 {
  pub trait RealNumber : Float + Copy + Clone + Send + Sync + ToSimd { }
  impl<T> RealNumber for T
   where T: Float + Copy + Clone + Send + Sync + ToSimd,
-           <T as ToSimd>::Reg: Simd<T> + SimdGeneric<T> {}
+           <T as ToSimd>::Reg: Simd<T> + SimdGeneric<T> + Copy {}
 
 #[cfg(test)]
 mod tests {
