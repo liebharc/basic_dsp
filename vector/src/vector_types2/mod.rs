@@ -21,6 +21,10 @@ mod redicate_and_relations;
 pub use self::redicate_and_relations::*;
 mod checks_and_results;
 pub use self::checks_and_results::*;
+mod elementary;
+pub use self::elementary::*;
+mod trigonometry;
+pub use self::trigonometry::*;
 
 /// Result for operations which transform a type (most commonly the type is a vector).
 /// On success the transformed type is returned.
@@ -186,9 +190,8 @@ fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
 impl<S, T, N, D> DspVec<S, T, N, D> where
     S: ToSliceMut<T>,
     T: RealNumber,
-    N: ComplexNumberSpace,
-    D: Domain,
-    <T as ToSimd>::Reg: Simd<T> + SimdGeneric<T> + Copy {
+    N: NumberSpace,
+    D: Domain {
     #[inline]
     fn pure_real_operation<A, F>(&mut self, op: F, argument: A, complexity: Complexity)
         where A: Sync + Copy + Send,
@@ -225,6 +228,14 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
             });
         }
     }
+}
+
+impl<S, T, N, D> DspVec<S, T, N, D> where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
+    <T as ToSimd>::Reg: Simd<T> + SimdGeneric<T> + Copy {
 
     #[inline]
     fn simd_real_operation<A, F, G>(&mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity)
