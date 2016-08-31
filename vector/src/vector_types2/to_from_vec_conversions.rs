@@ -1,8 +1,7 @@
 //! Conversions to and from vectors which serve as constructors.
 use RealNumber;
-use vector_types::{
-    DataVecDomain};
 use super::{
+    DataDomain,
     DspVec, GenDspVec,
     RealTimeVec, RealFreqVec,
     ComplexTimeVec, ComplexFreqVec,
@@ -21,7 +20,7 @@ pub trait ToDspVector<T> : Sized + ToSlice<T>
     /// `delta` can be changed after construction with a call of `set_delta`.
     ///
     /// For complex vectors with an odd length the resulting value will have a zero length.
-    fn to_gen_dsp_vec(self, domain: DataVecDomain, is_complex: bool) -> GenDspVec<Self, T>;
+    fn to_gen_dsp_vec(self, domain: DataDomain, is_complex: bool) -> GenDspVec<Self, T>;
 }
 
 /// Conversion from a generic data type into a dsp vector with real data.
@@ -68,7 +67,7 @@ pub trait FromVector<T>
 
 impl<T> ToDspVector<T> for Vec<T>
     where T: RealNumber {
-    fn to_gen_dsp_vec(self, domain: DataVecDomain, is_complex: bool) -> GenDspVec<Self, T> {
+    fn to_gen_dsp_vec(self, domain: DataDomain, is_complex: bool) -> GenDspVec<Self, T> {
         let mut len = self.len();
         if len % 2 != 0 && is_complex {
             len = 0;
@@ -93,7 +92,7 @@ impl<T> ToRealVector<T> for Vec<T>
         RealTimeVec {
             data: self,
             delta: T::one(),
-            domain: DataVecDomain::Time,
+            domain: DataDomain::Time,
             is_complex: false,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
@@ -107,7 +106,7 @@ impl<T> ToRealVector<T> for Vec<T>
         RealFreqVec {
             data: self,
             delta: T::one(),
-            domain: DataVecDomain::Frequency,
+            domain: DataDomain::Frequency,
             is_complex: false,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
@@ -124,7 +123,7 @@ impl<T> ToComplexVector<T> for Vec<T>
         ComplexTimeVec {
             data: self,
             delta: T::one(),
-            domain: DataVecDomain::Time,
+            domain: DataDomain::Time,
             is_complex: true,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
@@ -138,7 +137,7 @@ impl<T> ToComplexVector<T> for Vec<T>
         ComplexFreqVec {
             data: self,
             delta: T::one(),
-            domain: DataVecDomain::Frequency,
+            domain: DataDomain::Frequency,
             is_complex: true,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
@@ -150,7 +149,7 @@ impl<T> ToComplexVector<T> for Vec<T>
 
 impl<'a, T> ToDspVector<T> for &'a [T]
     where T: RealNumber {
-    fn to_gen_dsp_vec(self, domain: DataVecDomain, is_complex: bool) -> GenDspVec<Self, T> {
+    fn to_gen_dsp_vec(self, domain: DataDomain, is_complex: bool) -> GenDspVec<Self, T> {
         let len = self.len();
         GenDspVec {
             data: self,
@@ -172,7 +171,7 @@ impl<'a, T> ToRealVector<T> for &'a [T]
         RealTimeVec {
             data: self,
             delta: T::one(),
-            domain: DataVecDomain::Time,
+            domain: DataDomain::Time,
             is_complex: false,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
@@ -186,7 +185,7 @@ impl<'a, T> ToRealVector<T> for &'a [T]
         RealFreqVec {
             data: self,
             delta: T::one(),
-            domain: DataVecDomain::Frequency,
+            domain: DataDomain::Frequency,
             is_complex: false,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
@@ -206,7 +205,7 @@ impl<'a, T> ToComplexVector<T> for &'a[T]
         ComplexTimeVec {
             data: self,
             delta: T::one(),
-            domain: DataVecDomain::Time,
+            domain: DataDomain::Time,
             is_complex: true,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
@@ -223,7 +222,7 @@ impl<'a, T> ToComplexVector<T> for &'a[T]
         ComplexFreqVec {
             data: self,
             delta: T::one(),
-            domain: DataVecDomain::Frequency,
+            domain: DataDomain::Frequency,
             is_complex: true,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
@@ -235,7 +234,7 @@ impl<'a, T> ToComplexVector<T> for &'a[T]
 
 impl<'a, T> ToDspVector<T> for &'a mut [T]
     where T: RealNumber {
-    fn to_gen_dsp_vec(self, domain: DataVecDomain, is_complex: bool) -> GenDspVec<Self, T> {
+    fn to_gen_dsp_vec(self, domain: DataDomain, is_complex: bool) -> GenDspVec<Self, T> {
         let mut len = self.len();
         if len % 2 != 0 && is_complex {
             len = 0;
@@ -260,7 +259,7 @@ impl<'a, T> ToRealVector<T> for &'a mut [T]
         RealTimeVec {
             data: self,
             delta: T::one(),
-            domain: DataVecDomain::Time,
+            domain: DataDomain::Time,
             is_complex: false,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
@@ -274,7 +273,7 @@ impl<'a, T> ToRealVector<T> for &'a mut [T]
         RealFreqVec {
             data: self,
             delta: T::one(),
-            domain: DataVecDomain::Frequency,
+            domain: DataDomain::Frequency,
             is_complex: false,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
@@ -294,7 +293,7 @@ impl<'a, T> ToComplexVector<T> for &'a mut [T]
         ComplexTimeVec {
             data: self,
             delta: T::one(),
-            domain: DataVecDomain::Time,
+            domain: DataDomain::Time,
             is_complex: true,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
@@ -311,7 +310,7 @@ impl<'a, T> ToComplexVector<T> for &'a mut [T]
         ComplexFreqVec {
             data: self,
             delta: T::one(),
-            domain: DataVecDomain::Frequency,
+            domain: DataDomain::Frequency,
             is_complex: true,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
@@ -323,7 +322,7 @@ impl<'a, T> ToComplexVector<T> for &'a mut [T]
 
 impl<T> ToDspVector<T> for Box<[T]>
     where T: RealNumber {
-    fn to_gen_dsp_vec(self, domain: DataVecDomain, is_complex: bool) -> GenDspVec<Self, T> {
+    fn to_gen_dsp_vec(self, domain: DataDomain, is_complex: bool) -> GenDspVec<Self, T> {
         let mut len = self.len();
         if len % 2 != 0 && is_complex {
             len = 0;
@@ -348,7 +347,7 @@ impl<T> ToRealVector<T> for Box<[T]>
         RealTimeVec {
             data: self,
             delta: T::one(),
-            domain: DataVecDomain::Time,
+            domain: DataDomain::Time,
             is_complex: false,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
@@ -362,7 +361,7 @@ impl<T> ToRealVector<T> for Box<[T]>
         RealFreqVec {
             data: self,
             delta: T::one(),
-            domain: DataVecDomain::Frequency,
+            domain: DataDomain::Frequency,
             is_complex: false,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
@@ -382,7 +381,7 @@ impl<T> ToComplexVector<T> for Box<[T]>
         ComplexTimeVec {
             data: self,
             delta: T::one(),
-            domain: DataVecDomain::Time,
+            domain: DataDomain::Time,
             is_complex: true,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
@@ -399,7 +398,7 @@ impl<T> ToComplexVector<T> for Box<[T]>
         ComplexFreqVec {
             data: self,
             delta: T::one(),
-            domain: DataVecDomain::Frequency,
+            domain: DataDomain::Frequency,
             is_complex: true,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),

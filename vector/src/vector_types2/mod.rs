@@ -6,48 +6,89 @@ mod to_from_vec_conversions;
 pub use self::to_from_vec_conversions::*;
 mod vec_impl_and_indexers;
 pub use self::vec_impl_and_indexers::*;
-use vector_types::{
-    DataVecDomain};
 use multicore_support::MultiCoreSettings;
 use std::marker::PhantomData;
 
+/// The domain of a data vector
+#[derive(Copy)]
+#[derive(Clone)]
+#[derive(PartialEq)]
+#[derive(Debug)]
+pub enum DataDomain {
+    /// Time domain, the x-axis is in [s]
+    Time,
+    /// Frequency domain, the x-axis in [Hz]
+    Frequency
+}
+
+pub trait NumberSpace {
+    fn is_complex(&self) -> bool;
+}
+
+pub trait Domain {
+    fn domain(&self) -> DataDomain;
+}
+
 /// Marker trait for types containing real data.
-pub trait RealDataMarker { }
+pub trait RealNumberSpace : NumberSpace { }
 
 /// Marker trait for types containing complex data.
-pub trait ComplexDataMarker { }
+pub trait ComplexNumberSpace : NumberSpace { }
 
 /// Marker trait for types containing time domain data.
-pub trait TimeDataMarker { }
+pub trait TimeDomain { }
 
 /// Marker trait for types containing frequency domain data.
-pub trait FrequencyDataMarker { }
+pub trait FrequencyDomain { }
 
 /// Marker for types containing real data.
 pub struct RealData { }
-impl RealDataMarker for RealData { }
+impl NumberSpace for RealData {
+    fn is_complex(&self) -> bool { false }
+}
+impl RealNumberSpace for RealData { }
 
 /// Marker for types containing complex data.
 pub struct ComplexData { }
-impl ComplexDataMarker for ComplexData { }
+impl NumberSpace for ComplexData {
+    fn is_complex(&self) -> bool { true }
+}
+impl ComplexNumberSpace for ComplexData {}
 
 /// Marker for types containing real or complex data.
-pub struct RealOrComplexData { }
-impl RealDataMarker for RealOrComplexData { }
-impl ComplexDataMarker for RealOrComplexData { }
+pub struct RealOrComplexData {
+    is_complex_current: bool
+}
+impl NumberSpace for RealOrComplexData {
+    fn is_complex(&self) -> bool { self.is_complex_current }
+}
+impl RealNumberSpace for RealOrComplexData { }
+impl ComplexNumberSpace for RealOrComplexData { }
 
 /// Marker for types containing time data.
 pub struct TimeData { }
-impl TimeDataMarker for TimeData { }
+impl Domain for TimeData {
+    fn domain(&self) -> DataDomain { DataDomain::Time }
+}
+impl TimeDomain for TimeData { }
 
 /// Marker for types containing frequency data.
 pub struct FrequencyData { }
-impl FrequencyDataMarker for FrequencyData { }
+impl Domain for FrequencyData {
+    fn domain(&self) -> DataDomain { DataDomain::Frequency }
+}
+impl FrequencyDomain for FrequencyData { }
 
 /// Marker for types containing time or frequency data.
-pub struct TimeOrFrequencyData { }
-impl TimeDataMarker for TimeOrFrequencyData { }
-impl FrequencyDataMarker for TimeOrFrequencyData { }
+pub struct TimeOrFrequencyData {
+    domain_current: DataDomain
+}
+impl Domain for TimeOrFrequencyData {
+    fn domain(&self) -> DataDomain { self.domain_current }
+}
+
+impl TimeDomain for TimeOrFrequencyData { }
+impl FrequencyDomain for TimeOrFrequencyData { }
 
 /// A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing (DSP) operations.
 /// All data vector operations consume the vector they operate on and return a new vector. A consumed vector
@@ -74,7 +115,7 @@ pub struct DspVec<S, T, N, D>
           T: RealNumber {
     data: S,
     delta: T,
-    domain: DataVecDomain,
+    domain: DataDomain,
     is_complex: bool,
     valid_len: usize,
     multicore_settings: MultiCoreSettings,
