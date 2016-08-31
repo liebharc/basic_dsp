@@ -2,6 +2,8 @@
 use RealNumber;
 use super::{
     DataDomain,
+    NumberSpace,
+    Domain,
     DspVec, GenDspVec,
     RealTimeVec, RealFreqVec,
     ComplexTimeVec, ComplexFreqVec,
@@ -410,7 +412,9 @@ impl<T> ToComplexVector<T> for Box<[T]>
 
 impl<S, T, N, D> FromVector<T> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
-          T: RealNumber {
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain {
     type Output = S;
 
     fn get(self) -> (Self::Output, usize) {

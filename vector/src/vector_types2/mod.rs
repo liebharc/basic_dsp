@@ -21,24 +21,26 @@ pub enum DataDomain {
     Frequency
 }
 
+/// Number space (real or complex) information.
 pub trait NumberSpace {
     fn is_complex(&self) -> bool;
 }
 
+/// Domain (time or frequency) information.
 pub trait Domain {
     fn domain(&self) -> DataDomain;
 }
 
-/// Marker trait for types containing real data.
+/// Trait for types containing real data.
 pub trait RealNumberSpace : NumberSpace { }
 
-/// Marker trait for types containing complex data.
+/// TWorait for types containing complex data.
 pub trait ComplexNumberSpace : NumberSpace { }
 
-/// Marker trait for types containing time domain data.
+/// Trait for types containing time domain data.
 pub trait TimeDomain { }
 
-/// Marker trait for types containing frequency domain data.
+/// Trait for types containing frequency domain data.
 pub trait FrequencyDomain { }
 
 /// Marker for types containing real data.
@@ -112,7 +114,9 @@ impl FrequencyDomain for TimeOrFrequencyData { }
 /// enough.
 pub struct DspVec<S, T, N, D>
     where S: ToSlice<T>,
-          T: RealNumber {
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain {
     data: S,
     delta: T,
     domain: DataDomain,
