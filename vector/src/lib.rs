@@ -107,8 +107,8 @@ pub use vector_types::
  use simd_extensions::*;
 
 /// Associates a number type with a SIMD register type.
-pub trait ToSimd {
-    type Reg;
+pub trait ToSimd : Sized + Sync + Send {
+    type Reg: Simd<Self> + SimdGeneric<Self> + Copy ;
 }
 
 impl ToSimd for f32 {
@@ -122,8 +122,7 @@ impl ToSimd for f64 {
  /// A real floating pointer number intended to abstract over `f32` and `f64`.
  pub trait RealNumber : Float + Copy + Clone + Send + Sync + ToSimd { }
  impl<T> RealNumber for T
-  where T: Float + Copy + Clone + Send + Sync + ToSimd,
-           <T as ToSimd>::Reg: Simd<T> + SimdGeneric<T> + Copy {}
+  where T: Float + Copy + Clone + Send + Sync + ToSimd {}
 
 #[cfg(test)]
 mod tests {

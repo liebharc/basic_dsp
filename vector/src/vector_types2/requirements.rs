@@ -31,6 +31,15 @@ pub trait Resize {
     fn alloc_len(&self) -> usize;
 }
 
+/// A marker trait which states the the type owns its storage.
+///
+/// Some operations would be possible on data even if doesn't
+/// own the storage (usually a slice). However the result
+/// would be likely not as desired. E.g. if suddenly half
+/// the storage is in real number space and the other half in
+/// complex.
+pub trait Owner { }
+
 impl<'a, T> ToSlice<T> for &'a [T] {
     fn to_slice(&self) -> &[T] {
         self
@@ -57,6 +66,8 @@ impl<T> ToSliceMut<T> for [T] {
     }
 }
 
+impl<T> Owner for [T] { }
+
 impl<T> ToSlice<T> for Box<[T]> {
     fn to_slice(&self) -> &[T] {
         self
@@ -72,6 +83,8 @@ impl<T> ToSliceMut<T> for Box<[T]> {
         self
     }
 }
+
+impl<T> Owner for Box<[T]> { }
 
 impl<'a, T> ToSlice<T> for &'a mut [T] {
     fn to_slice(&self) -> &[T] {
@@ -115,3 +128,5 @@ impl<T> Resize for Vec<T>
         self.capacity()
     }
 }
+
+impl<T> Owner for Vec<T> { }

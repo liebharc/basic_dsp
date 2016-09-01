@@ -1,5 +1,4 @@
 use RealNumber;
-use ToSimd;
 use multicore_support::{
     Chunk,
     MultiCoreSettings,
@@ -8,6 +7,7 @@ use num::complex::Complex;
 use std::mem;
 use std::result;
 use simd_extensions::*;
+ use std::fmt::Debug;
 
 mod requirements;
 pub use self::requirements::*;
@@ -17,14 +17,16 @@ mod vec_impl_and_indexers;
 pub use self::vec_impl_and_indexers::*;
 mod complex_to_real;
 pub use self::complex_to_real::*;
-mod redicate_and_relations;
-pub use self::redicate_and_relations::*;
+mod rededicate_and_relations;
+pub use self::rededicate_and_relations::*;
 mod checks_and_results;
 pub use self::checks_and_results::*;
 mod elementary;
 pub use self::elementary::*;
 mod trigonometry;
 pub use self::trigonometry::*;
+mod buffer;
+pub use self::buffer::*;
 
 /// Result for operations which transform a type (most commonly the type is a vector).
 /// On success the transformed type is returned.
@@ -51,12 +53,12 @@ pub enum DataDomain {
 }
 
 /// Number space (real or complex) information.
-pub trait NumberSpace {
+pub trait NumberSpace : Debug {
     fn is_complex(&self) -> bool;
 }
 
 /// Domain (time or frequency) information.
-pub trait Domain {
+pub trait Domain : Debug {
     fn domain(&self) -> DataDomain;
 }
 
@@ -73,6 +75,7 @@ pub trait TimeDomain { }
 pub trait FrequencyDomain { }
 
 /// Marker for types containing real data.
+#[derive(Debug)]
 pub struct RealData;
 impl NumberSpace for RealData {
     fn is_complex(&self) -> bool { false }
@@ -80,6 +83,7 @@ impl NumberSpace for RealData {
 impl RealNumberSpace for RealData { }
 
 /// Marker for types containing complex data.
+#[derive(Debug)]
 pub struct ComplexData;
 impl NumberSpace for ComplexData {
     fn is_complex(&self) -> bool { true }
@@ -87,6 +91,7 @@ impl NumberSpace for ComplexData {
 impl ComplexNumberSpace for ComplexData {}
 
 /// Marker for types containing real or complex data.
+#[derive(Debug)]
 pub struct RealOrComplexData {
     is_complex_current: bool
 }
@@ -97,6 +102,7 @@ impl RealNumberSpace for RealOrComplexData { }
 impl ComplexNumberSpace for RealOrComplexData { }
 
 /// Marker for types containing time data.
+#[derive(Debug)]
 pub struct TimeData;
 impl Domain for TimeData {
     fn domain(&self) -> DataDomain { DataDomain::Time }
@@ -104,6 +110,7 @@ impl Domain for TimeData {
 impl TimeDomain for TimeData { }
 
 /// Marker for types containing frequency data.
+#[derive(Debug)]
 pub struct FrequencyData;
 impl Domain for FrequencyData {
     fn domain(&self) -> DataDomain { DataDomain::Frequency }
@@ -111,6 +118,7 @@ impl Domain for FrequencyData {
 impl FrequencyDomain for FrequencyData { }
 
 /// Marker for types containing time or frequency data.
+#[derive(Debug)]
 pub struct TimeOrFrequencyData {
     domain_current: DataDomain
 }
@@ -141,6 +149,7 @@ impl FrequencyDomain for TimeOrFrequencyData { }
 /// two times faster than 64bit vectors for most operations. But remember that you should benchmark first
 /// before you give away accuracy for performance unless however you are sure that 32bit accuracy is certainly good
 /// enough.
+#[derive(Debug)]
 pub struct DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
@@ -234,9 +243,7 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
     S: ToSliceMut<T>,
     T: RealNumber,
     N: NumberSpace,
-    D: Domain,
-    <T as ToSimd>::Reg: Simd<T> + SimdGeneric<T> + Copy {
-
+    D: Domain {
     #[inline]
     fn simd_real_operation<A, F, G>(&mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity)
         where A: Sync + Copy + Send,
@@ -267,19 +274,25 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
             }
         }
     }
+}
 
-/*
-
+impl<S, T, N, D> DspVec<S, T, N, D> where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain {
     #[inline]
-    fn simd_complex_to_real_operation<A, F, G>(mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity) -> TransRes<Self>
+    fn simd_complex_to_real_operation<A, F, G, B>(&mut self, buffer: &mut B, simd_op: F, scalar_op: G, argument: A, complexity: Complexity)
         where A: Sync + Copy + Send,
               F: Fn(T::Reg, A) -> T::Reg + 'static + Sync,
-              G: Fn(Complex<T>, A) -> T::Reg + 'static + Sync {
+              G: Fn(Complex<T>, A) -> T + 'static + Sync,
+              B: Buffer<S, T> {
+        let data_length = self.len();
+        let mut result = buffer.get(data_length);
         {
-            let data_length = self.len();
-            let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&self.data[0..data_length]);
-            let mut array = &mut self.data;
-            let mut temp = temp_mut!(self, data_length);
+            let mut array = self.data.to_slice_mut();
+            let mut temp = result.to_slice_mut();
+            let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if vectorization_length > 0 {
                 Chunk::from_src_to_dest(
                 complexity, &self.multicore_settings,
@@ -310,9 +323,9 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
                 }
             }
 
-            self.is_complex = false;
-            self.valid_len = data_length / 2;
+            self.valid_len = self.valid_len / 2;
         }
-        Ok(self.swap_data_temp())
-    }*/
+        mem::swap(&mut self.data, &mut result);
+        buffer.free(result);
+    }
 }
