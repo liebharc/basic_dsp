@@ -6,7 +6,6 @@ use super::{
     VoidResult,
     NumberSpace,
     Domain};
-
 /// Trigonometry methods.
 pub trait TrigOps {
     /// Calculates the sine of each element in radians.
@@ -15,10 +14,10 @@ pub trait TrigOps {
     ///
     /// ```
     /// use std::f32;
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
-    /// let vector = RealTimeVector32::from_array(&[f32::consts::PI/2.0, -f32::consts::PI/2.0]);
-    /// let result = vector.sin().expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, -1.0], result.real(0..));
+    /// use basic_dsp_vector::vector_types2::*;
+    /// let mut vector = vec!(f32::consts::PI/2.0, -f32::consts::PI/2.0).to_real_time_vec();
+    /// vector.sin().expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, -1.0], vector[..]);
     /// ```
     fn sin(&mut self) -> VoidResult;
 
@@ -28,10 +27,10 @@ pub trait TrigOps {
     ///
     /// ```
     /// use std::f32;
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
-    /// let vector = RealTimeVector32::from_array(&[2.0 * f32::consts::PI, f32::consts::PI]);
-    /// let result = vector.cos().expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, -1.0], result.real(0..));
+    /// use basic_dsp_vector::vector_types2::*;
+    /// let mut vector = vec!(2.0 * f32::consts::PI, f32::consts::PI).to_real_time_vec();
+    /// vector.cos().expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, -1.0], vector[..]);
     /// ```
     fn cos(&mut self) -> VoidResult;
 
@@ -74,9 +73,9 @@ impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
         D: Domain {
     fn sin(&mut self) -> VoidResult {
         if self.is_complex() {
-            self.pure_real_operation(|v, _| v.sin(), (), Complexity::Medium);
-        } else {
             self.pure_complex_operation(|v, _| v.sin(), (), Complexity::Medium);
+        } else {
+            self.pure_real_operation(|v, _| v.sin(), (), Complexity::Medium);
         }
 
         Ok(())
@@ -84,9 +83,9 @@ impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
 
     fn cos(&mut self) -> VoidResult {
         if self.is_complex() {
-            self.pure_real_operation(|v, _| v.cos(), (), Complexity::Medium);
-        } else {
             self.pure_complex_operation(|v, _| v.cos(), (), Complexity::Medium);
+        } else {
+            self.pure_real_operation(|v, _| v.cos(), (), Complexity::Medium);
         }
 
         Ok(())
@@ -94,9 +93,9 @@ impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
 
     fn tan(&mut self) -> VoidResult {
         if self.is_complex() {
-            self.pure_real_operation(|v, _| v.tan(), (), Complexity::Medium);
-        } else {
             self.pure_complex_operation(|v, _| v.tan(), (), Complexity::Medium);
+        } else {
+            self.pure_real_operation(|v, _| v.tan(), (), Complexity::Medium);
         }
 
         Ok(())
@@ -104,9 +103,9 @@ impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
 
     fn asin(&mut self) -> VoidResult {
         if self.is_complex() {
-            self.pure_real_operation(|v, _| v.asin(), (), Complexity::Medium);
-        } else {
             self.pure_complex_operation(|v, _| v.asin(), (), Complexity::Medium);
+        } else {
+            self.pure_real_operation(|v, _| v.asin(), (), Complexity::Medium);
         }
 
         Ok(())
@@ -114,9 +113,9 @@ impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
 
     fn acos(&mut self) -> VoidResult {
         if self.is_complex() {
-            self.pure_real_operation(|v, _| v.acos(), (), Complexity::Medium);
-        } else {
             self.pure_complex_operation(|v, _| v.acos(), (), Complexity::Medium);
+        } else {
+            self.pure_real_operation(|v, _| v.acos(), (), Complexity::Medium);
         }
 
         Ok(())
@@ -124,9 +123,9 @@ impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
 
     fn atan(&mut self) -> VoidResult {
         if self.is_complex() {
-            self.pure_real_operation(|v, _| v.atan(), (), Complexity::Medium);
-        } else {
             self.pure_complex_operation(|v, _| v.atan(), (), Complexity::Medium);
+        } else {
+            self.pure_real_operation(|v, _| v.atan(), (), Complexity::Medium);
         }
 
         Ok(())
@@ -134,9 +133,9 @@ impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
 
     fn sinh(&mut self) -> VoidResult {
         if self.is_complex() {
-            self.pure_real_operation(|v, _| v.sinh(), (), Complexity::Medium);
-        } else {
             self.pure_complex_operation(|v, _| v.sinh(), (), Complexity::Medium);
+        } else {
+            self.pure_real_operation(|v, _| v.sinh(), (), Complexity::Medium);
         }
 
         Ok(())
@@ -144,9 +143,9 @@ impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
 
     fn cosh(&mut self) -> VoidResult {
         if self.is_complex() {
-            self.pure_real_operation(|v, _| v.cosh(), (), Complexity::Medium);
-        } else {
             self.pure_complex_operation(|v, _| v.cosh(), (), Complexity::Medium);
+        } else {
+            self.pure_real_operation(|v, _| v.cosh(), (), Complexity::Medium);
         }
 
         Ok(())
@@ -154,9 +153,9 @@ impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
 
     fn tanh(&mut self) -> VoidResult {
         if self.is_complex() {
-            self.pure_real_operation(|v, _| v.tanh(), (), Complexity::Medium);
-        } else {
             self.pure_complex_operation(|v, _| v.tanh(), (), Complexity::Medium);
+        } else {
+            self.pure_real_operation(|v, _| v.tanh(), (), Complexity::Medium);
         }
 
         Ok(())
@@ -164,9 +163,9 @@ impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
 
     fn asinh(&mut self) -> VoidResult {
         if self.is_complex() {
-            self.pure_real_operation(|v, _| v.asinh(), (), Complexity::Medium);
-        } else {
             self.pure_complex_operation(|v, _| v.asinh(), (), Complexity::Medium);
+        } else {
+            self.pure_real_operation(|v, _| v.asinh(), (), Complexity::Medium);
         }
 
         Ok(())
@@ -174,9 +173,9 @@ impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
 
     fn acosh(&mut self) -> VoidResult {
         if self.is_complex() {
-            self.pure_real_operation(|v, _| v.acosh(), (), Complexity::Medium);
-        } else {
             self.pure_complex_operation(|v, _| v.acosh(), (), Complexity::Medium);
+        } else {
+            self.pure_real_operation(|v, _| v.acosh(), (), Complexity::Medium);
         }
 
         Ok(())
@@ -184,9 +183,9 @@ impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
 
     fn atanh(&mut self) -> VoidResult {
         if self.is_complex() {
-            self.pure_real_operation(|v, _| v.atanh(), (), Complexity::Medium);
-        } else {
             self.pure_complex_operation(|v, _| v.atanh(), (), Complexity::Medium);
+        } else {
+            self.pure_real_operation(|v, _| v.atanh(), (), Complexity::Medium);
         }
 
         Ok(())
