@@ -14,8 +14,8 @@ pub const DEFAULT_DATA_SIZE: usize = 10000;
 
 pub struct VectorBox<T>
 {
-    vector: *mut T,
-    size: usize
+    pub vector: *mut T,
+    pub size: usize
 }
 
 #[derive(Copy)]
@@ -29,7 +29,7 @@ pub enum Size {
     Large
 }
 
-fn translate_size(size: Size) -> usize {
+pub fn translate_size(size: Size) -> usize {
     match size {
         Size::Tiny => 1000,
         Size::Small => DEFAULT_DATA_SIZE,
