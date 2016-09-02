@@ -63,16 +63,31 @@ pub trait Domain : Debug {
 }
 
 /// Trait for types containing real data.
-pub trait RealNumberSpace : NumberSpace { }
+pub trait RealNumberSpace : NumberSpace {
+    /// For implementations which track meta data
+    /// at runtime this method may be implemented to transition
+    /// between different states. For all other implementations
+    /// they may leave this empty.
+    fn to_complex(&mut self);
+}
 
 /// TWorait for types containing complex data.
-pub trait ComplexNumberSpace : NumberSpace { }
+pub trait ComplexNumberSpace : NumberSpace {
+    /// See `RealNumberSpace` for some more details.
+    fn to_real(&mut self);
+}
 
 /// Trait for types containing time domain data.
-pub trait TimeDomain { }
+pub trait TimeDomain {
+    /// See `RealNumberSpace` for some more details.
+    fn to_freq(&mut self);
+}
 
 /// Trait for types containing frequency domain data.
-pub trait FrequencyDomain { }
+pub trait FrequencyDomain {
+    /// See `RealNumberSpace` for some more details.
+    fn to_time(&mut self);
+}
 
 /// Marker for types containing real data.
 #[derive(Debug)]
@@ -80,7 +95,9 @@ pub struct RealData;
 impl NumberSpace for RealData {
     fn is_complex(&self) -> bool { false }
 }
-impl RealNumberSpace for RealData { }
+impl RealNumberSpace for RealData {
+    fn to_complex(&mut self) { }
+}
 
 /// Marker for types containing complex data.
 #[derive(Debug)]
@@ -88,7 +105,9 @@ pub struct ComplexData;
 impl NumberSpace for ComplexData {
     fn is_complex(&self) -> bool { true }
 }
-impl ComplexNumberSpace for ComplexData {}
+impl ComplexNumberSpace for ComplexData {
+    fn to_real(&mut self) { }
+}
 
 /// Marker for types containing real or complex data.
 #[derive(Debug)]
@@ -98,8 +117,16 @@ pub struct RealOrComplexData {
 impl NumberSpace for RealOrComplexData {
     fn is_complex(&self) -> bool { self.is_complex_current }
 }
-impl RealNumberSpace for RealOrComplexData { }
-impl ComplexNumberSpace for RealOrComplexData { }
+impl RealNumberSpace for RealOrComplexData {
+    fn to_complex(&mut self) {
+        self.is_complex_current = true;
+    }
+}
+impl ComplexNumberSpace for RealOrComplexData {
+    fn to_real(&mut self) {
+        self.is_complex_current = false;
+    }
+}
 
 /// Marker for types containing time data.
 #[derive(Debug)]
@@ -107,7 +134,9 @@ pub struct TimeData;
 impl Domain for TimeData {
     fn domain(&self) -> DataDomain { DataDomain::Time }
 }
-impl TimeDomain for TimeData { }
+impl TimeDomain for TimeData {
+    fn to_freq(&mut self) { }
+ }
 
 /// Marker for types containing frequency data.
 #[derive(Debug)]
@@ -115,7 +144,9 @@ pub struct FrequencyData;
 impl Domain for FrequencyData {
     fn domain(&self) -> DataDomain { DataDomain::Frequency }
 }
-impl FrequencyDomain for FrequencyData { }
+impl FrequencyDomain for FrequencyData {
+    fn to_time(&mut self) { }
+}
 
 /// Marker for types containing time or frequency data.
 #[derive(Debug)]
@@ -126,8 +157,16 @@ impl Domain for TimeOrFrequencyData {
     fn domain(&self) -> DataDomain { self.domain_current }
 }
 
-impl TimeDomain for TimeOrFrequencyData { }
-impl FrequencyDomain for TimeOrFrequencyData { }
+impl TimeDomain for TimeOrFrequencyData {
+    fn to_freq(&mut self) {
+        self.domain_current = DataDomain::Frequency;
+    }
+}
+impl FrequencyDomain for TimeOrFrequencyData {
+    fn to_time(&mut self) {
+        self.domain_current = DataDomain::Time;
+    }
+}
 
 /// A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing (DSP) operations.
 /// All data vector operations consume the vector they operate on and return a new vector. A consumed vector
@@ -288,7 +327,7 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
               G: Fn(Complex<T>, A) -> T + 'static + Sync,
               B: Buffer<S, T> {
         let data_length = self.len();
-        let mut result = buffer.get(data_length);
+        let mut result = buffer.get(data_length / 2);
         {
             let mut array = self.data.to_slice_mut();
             let mut temp = result.to_slice_mut();

@@ -103,6 +103,7 @@ pub use vector_types::
     };
  pub use multicore_support::MultiCoreSettings;
  use num::traits::Float;
+ use std::fmt::Debug;
 
  use simd_extensions::*;
 
@@ -120,9 +121,9 @@ impl ToSimd for f64 {
 }
 
  /// A real floating pointer number intended to abstract over `f32` and `f64`.
- pub trait RealNumber : Float + Copy + Clone + Send + Sync + ToSimd { }
+ pub trait RealNumber : Float + Copy + Clone + Send + Sync + ToSimd + Debug { }
  impl<T> RealNumber for T
-  where T: Float + Copy + Clone + Send + Sync + ToSimd {}
+  where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug {}
 
 #[cfg(test)]
 mod tests {

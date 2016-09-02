@@ -4,13 +4,10 @@ use super::{
     array_to_complex,
     array_to_complex_mut,
     DspVec,
-    NumberSpace,
-    Domain,
-    DataDomain,
-    ToSlice,
-    ToSliceMut,
-    Resize,
-    ComplexNumberSpace};
+    NumberSpace, ComplexNumberSpace,
+    Domain, DataDomain,
+    ToSlice, ToSliceMut, Resize,
+    ErrorReason, VoidResult};
 use multicore_support::MultiCoreSettings;
 use std::ops::*;
 use num::complex::Complex;
@@ -94,20 +91,40 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     }
 }
 
-impl<S, T, N, D> Resize for DspVec<S, T, N, D>
+
+pub trait SetLen {
+    /// Gets the number of allocated elements in the underlying vector.
+    /// The allocated length may be larger than the length of valid points.
+    /// In most cases you likely want to have `len`or `points` instead.
+    fn alloc_len(&self) -> usize;
+
+    /// Sets the vector length to the given length.
+    /// If `self.len() < len` then the value of the new elements is undefined.
+    /// For complex data `len` needs to be even.
+    fn set_len(&mut self, len: usize) -> VoidResult;
+}
+
+impl<S, T, N, D> SetLen for DspVec<S, T, N, D>
     where S: ToSlice<T> + Resize,
           T: RealNumber,
           N: NumberSpace,
           D: Domain {
-      fn resize(&mut self, len: usize) {
-          if len > self.alloc_len() {
-              self.data.resize(len);
-          }
-      }
+    fn alloc_len(&self) -> usize {
+        self.data.alloc_len()
+    }
 
-      fn alloc_len(&self) -> usize {
-          self.data.alloc_len()
-      }
+    fn set_len(&mut self, len: usize) -> VoidResult {
+        if self.is_complex() && len % 2 != 0 {
+            return Err(ErrorReason::InputMustHaveAnEvenLength);
+        }
+
+        if self.data.alloc_len() < len {
+            self.data.resize(len);
+        }
+
+        self.valid_len = len;
+        Ok(())
+    }
 }
 
 impl<S, T, N, D> Index<usize> for DspVec<S, T, N, D>

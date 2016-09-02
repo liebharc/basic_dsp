@@ -28,7 +28,7 @@ pub trait ComplexToRealTransformsOps<S, T, B> : ToRealResult
     /// # fn main() {
     /// let mut vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
     /// let mut buffer = SingleBuffer::new();
-    /// let result = vector.magnitude(&mut buffer).ok().unwrap();
+    /// let result = vector.magnitude(&mut buffer).expect("Ignoring error handling in examples");
     /// assert_eq!([5.0, 5.0], result[0..]);
     /// # }
     /// ```
@@ -99,6 +99,8 @@ pub trait ComplexToRealTransformsOps<S, T, B> : ToRealResult
 macro_rules! assert_complex {
     ($self_: ident) => {
         if !$self_.is_complex() {
+            $self_.number_space.to_real();
+            $self_.valid_len = 0;
             return Err((ErrorReason::InputMustBeComplex, Self::RealResult::rededicate_from_force($self_)));
         }
     }
@@ -115,6 +117,7 @@ impl<S, T, N, D, B> ComplexToRealTransformsOps<S, T, B> for DspVec<S, T, N, D>
     fn magnitude(mut self, buffer: &mut B) -> TransRes<Self::RealResult> {
         assert_complex!(self);
         self.simd_complex_to_real_operation(buffer, |x,_arg| x.complex_abs(), |x,_arg| x.norm(), (), Complexity::Small);
-        Ok(Self::RealResult::rededicate_from_force(self)) // TODO rededicate_from_force doesn't change the number space for GenVectors
+        self.number_space.to_real();
+        Ok(Self::RealResult::rededicate_from_force(self))
     }
 }

@@ -56,4 +56,11 @@ pub enum ErrorReason {
 
     /// The operation isn't specified for an empty vector.
     InputMustNotBeEmpty,
+
+    /// Given input must have an even length.
+    InputMustHaveAnEvenLength,
+
+    /// The arguments would require that the type allocates larger memory. But the
+    /// type can't do that.
+    TypeCanNotResize,
 }
