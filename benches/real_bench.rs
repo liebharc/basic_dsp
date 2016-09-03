@@ -417,4 +417,22 @@ mod bench {
             vector.execute_res(|v|  { v.sin() } )
         });
     }
+    
+    #[bench]
+    fn real_sin_32m_benchmark(b: &mut Bencher)
+    {
+        let mut vector = VectorBox::<RealTimeVector32>::new(Size::Medium);
+        b.iter(|| {
+            vector.execute_res(|v|  { v.sin() } )
+        });
+    }
+    
+    #[bench]
+    fn real_sin_64s_benchmark(b: &mut Bencher)
+    {
+        let mut vector = VectorBox::<RealTimeVector64>::new(Size::Small);
+        b.iter(|| {
+            vector.execute_res(|v|  { v.sin() } )
+        });
+    }
 }

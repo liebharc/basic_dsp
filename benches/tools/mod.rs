@@ -42,7 +42,7 @@ impl VectorBox<Vec<f32>> {
     pub fn new(size: Size) -> VectorBox<Vec<f32>>
     {
         let size = translate_size(size);
-        let data = vec![0.0; size];
+        let data = vec![10.0; size];
         VectorBox
         {
             vector: Box::into_raw(Box::new(data)),
@@ -55,7 +55,7 @@ impl VectorBox<Vec<f64>> {
     pub fn new(size: Size) -> VectorBox<Vec<f64>>
     {
         let size = translate_size(size);
-        let data = vec![0.0; size];
+        let data = vec![10.0; size];
         VectorBox
         {
             vector: Box::into_raw(Box::new(data)),
@@ -68,7 +68,7 @@ impl VectorBox<DataVec32>
 {
     pub fn with_size(is_complex: bool, size: usize) -> VectorBox<DataVec32>
     {
-        let data = vec![0.0; size];
+        let data = vec![10.0; size];
         let vector = DataVec32::from_array_no_copy(is_complex, DataVecDomain::Time, data);
         VectorBox
         {
@@ -80,7 +80,7 @@ impl VectorBox<DataVec32>
     pub fn new(size: Size, is_complex: bool) -> VectorBox<DataVec32>
     {
         let size = translate_size(size);
-        let data = vec![0.0; size];
+        let data = vec![10.0; size];
         let vector = DataVec32::from_array_no_copy(is_complex, DataVecDomain::Time, data);
         VectorBox
         {
@@ -95,7 +95,7 @@ impl VectorBox<RealTimeVector32>
     pub fn new(size: Size) -> VectorBox<RealTimeVector32>
     {
         let size = translate_size(size);
-        let data = vec![0.0; size];
+        let data = vec![10.0; size];
         let vector = RealTimeVector32::from_array_no_copy(data);
         VectorBox
         {
@@ -110,7 +110,7 @@ impl VectorBox<RealTimeVector64>
     pub fn new(size: Size) -> VectorBox<RealTimeVector64>
     {
         let size = translate_size(size);
-        let data = vec![0.0; size];
+        let data = vec![10.0; size];
         let vector = RealTimeVector64::from_array_no_copy(data);
         VectorBox
         {
@@ -125,7 +125,7 @@ impl VectorBox<ComplexTimeVector32>
     pub fn new(size: Size) -> VectorBox<ComplexTimeVector32>
     {
         let size = translate_size(size);
-        let data = vec![0.0; size];
+        let data = vec![10.0; size];
         let vector = ComplexTimeVector32::from_interleaved_no_copy(data);
         VectorBox
         {

@@ -33,6 +33,15 @@ mod bench {
     }
     
     #[bench]
+    fn complex_sin_32s_benchmark(b: &mut Bencher)
+    {
+        let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Small);
+        b.iter(|| {
+            vector.execute_res(|v|  { v.sin() } )
+        });
+    }
+    
+    #[bench]
     fn complex_conj_32s_benchmark(b: &mut Bencher)
     {
         let mut vector = VectorBox::<ComplexTimeVector32>::new(Size::Small);

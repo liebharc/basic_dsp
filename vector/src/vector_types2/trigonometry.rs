@@ -1,8 +1,8 @@
-use RealNumber;
+use {RealNumber, FloatPrimitive};
 use multicore_support::Complexity;
 use super::{
     DspVec,
-    ToSliceMut,
+    ToSliceMut, 
     NumberSpace,
     Domain};
 /// Trigonometry methods.
@@ -64,105 +64,107 @@ pub trait TrigOps {
     fn atanh(&mut self);
 }
 
+const TRIG_COMPLEXITY: Complexity = Complexity::Small;
+
 impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
     where
         S: ToSliceMut<T>,
-        T: RealNumber,
+        T: RealNumber + FloatPrimitive,
         N: NumberSpace,
         D: Domain {
     fn sin(&mut self) {
         if self.is_complex() {
-            self.pure_complex_operation(|v, _| v.sin(), (), Complexity::Medium);
+            self.pure_complex_operation(|v, _| v.sin(), (), TRIG_COMPLEXITY);
         } else {
-            self.pure_real_operation(|v, _| v.sin(), (), Complexity::Medium);
+            self.pure_real_operation(|v, _| FloatPrimitive::sin(v), (), TRIG_COMPLEXITY);
         }
     }
 
     fn cos(&mut self) {
         if self.is_complex() {
-            self.pure_complex_operation(|v, _| v.cos(), (), Complexity::Medium);
+            self.pure_complex_operation(|v, _| v.cos(), (), TRIG_COMPLEXITY);
         } else {
-            self.pure_real_operation(|v, _| v.cos(), (), Complexity::Medium);
+            self.pure_real_operation(|v, _| FloatPrimitive::cos(v), (), TRIG_COMPLEXITY);
         }
     }
 
     fn tan(&mut self) {
         if self.is_complex() {
-            self.pure_complex_operation(|v, _| v.tan(), (), Complexity::Medium);
+            self.pure_complex_operation(|v, _| v.tan(), (), TRIG_COMPLEXITY);
         } else {
-            self.pure_real_operation(|v, _| v.tan(), (), Complexity::Medium);
+            self.pure_real_operation(|v, _| FloatPrimitive::tan(v), (), TRIG_COMPLEXITY);
         }
     }
 
     fn asin(&mut self) {
         if self.is_complex() {
-            self.pure_complex_operation(|v, _| v.asin(), (), Complexity::Medium);
+            self.pure_complex_operation(|v, _| v.asin(), (), TRIG_COMPLEXITY);
         } else {
-            self.pure_real_operation(|v, _| v.asin(), (), Complexity::Medium);
+            self.pure_real_operation(|v, _| FloatPrimitive::asin(v), (), TRIG_COMPLEXITY);
         }
     }
 
     fn acos(&mut self) {
         if self.is_complex() {
-            self.pure_complex_operation(|v, _| v.acos(), (), Complexity::Medium);
+            self.pure_complex_operation(|v, _| v.acos(), (), TRIG_COMPLEXITY);
         } else {
-            self.pure_real_operation(|v, _| v.acos(), (), Complexity::Medium);
+            self.pure_real_operation(|v, _| FloatPrimitive::acos(v), (), TRIG_COMPLEXITY);
         }
     }
 
     fn atan(&mut self) {
         if self.is_complex() {
-            self.pure_complex_operation(|v, _| v.atan(), (), Complexity::Medium);
+            self.pure_complex_operation(|v, _| v.atan(), (), TRIG_COMPLEXITY);
         } else {
-            self.pure_real_operation(|v, _| v.atan(), (), Complexity::Medium);
+            self.pure_real_operation(|v, _| FloatPrimitive::atan(v), (), TRIG_COMPLEXITY);
         }
     }
 
     fn sinh(&mut self) {
         if self.is_complex() {
-            self.pure_complex_operation(|v, _| v.sinh(), (), Complexity::Medium);
+            self.pure_complex_operation(|v, _| v.sinh(), (), TRIG_COMPLEXITY);
         } else {
-            self.pure_real_operation(|v, _| v.sinh(), (), Complexity::Medium);
+            self.pure_real_operation(|v, _| FloatPrimitive::sinh(v), (), TRIG_COMPLEXITY);
         }
     }
 
     fn cosh(&mut self) {
         if self.is_complex() {
-            self.pure_complex_operation(|v, _| v.cosh(), (), Complexity::Medium);
+            self.pure_complex_operation(|v, _| v.cosh(), (), TRIG_COMPLEXITY);
         } else {
-            self.pure_real_operation(|v, _| v.cosh(), (), Complexity::Medium);
+            self.pure_real_operation(|v, _| FloatPrimitive::cosh(v), (), TRIG_COMPLEXITY);
         }
     }
 
     fn tanh(&mut self) {
         if self.is_complex() {
-            self.pure_complex_operation(|v, _| v.tanh(), (), Complexity::Medium);
+            self.pure_complex_operation(|v, _| v.tanh(), (), TRIG_COMPLEXITY);
         } else {
-            self.pure_real_operation(|v, _| v.tanh(), (), Complexity::Medium);
+            self.pure_real_operation(|v, _| FloatPrimitive::tanh(v), (), TRIG_COMPLEXITY);
         }
     }
 
     fn asinh(&mut self) {
         if self.is_complex() {
-            self.pure_complex_operation(|v, _| v.asinh(), (), Complexity::Medium);
+            self.pure_complex_operation(|v, _| v.asinh(), (), TRIG_COMPLEXITY);
         } else {
-            self.pure_real_operation(|v, _| v.asinh(), (), Complexity::Medium);
+            self.pure_real_operation(|v, _| FloatPrimitive::asinh(v), (), TRIG_COMPLEXITY);
         }
     }
 
     fn acosh(&mut self) {
         if self.is_complex() {
-            self.pure_complex_operation(|v, _| v.acosh(), (), Complexity::Medium);
+            self.pure_complex_operation(|v, _| v.acosh(), (), TRIG_COMPLEXITY);
         } else {
-            self.pure_real_operation(|v, _| v.acosh(), (), Complexity::Medium);
+            self.pure_real_operation(|v, _| FloatPrimitive::acosh(v), (), TRIG_COMPLEXITY);
         }
     }
 
     fn atanh(&mut self) {
         if self.is_complex() {
-            self.pure_complex_operation(|v, _| v.atanh(), (), Complexity::Medium);
+            self.pure_complex_operation(|v, _| v.atanh(), (), TRIG_COMPLEXITY);
         } else {
-            self.pure_real_operation(|v, _| v.atanh(), (), Complexity::Medium);
+            self.pure_real_operation(|v, _| FloatPrimitive::atanh(v), (), TRIG_COMPLEXITY);
         }
     }
 }

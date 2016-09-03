@@ -107,6 +107,156 @@ pub use vector_types::
 
  use simd_extensions::*;
 
+pub trait FloatPrimitive {
+    fn sin(self) -> Self;
+    
+    fn cos(self) -> Self;
+    
+    fn tan(self) -> Self;
+    
+    fn asin(self) -> Self;
+    
+    fn acos(self) -> Self;
+    
+    fn atan(self) -> Self;
+    
+    fn sinh(self) -> Self;
+    
+    fn cosh(self) -> Self;
+    
+    fn tanh(self) -> Self;
+    
+    fn asinh(self) -> Self;
+    
+    fn acosh(self) -> Self;
+    
+    fn atanh(self) -> Self;
+}
+
+impl FloatPrimitive for f32 {
+    #[inline]
+    fn sin(self) -> Self {
+        f32::sin(self)
+    }
+    
+    #[inline]
+    fn cos(self) -> Self {
+        f32::cos(self)
+    }
+    
+    #[inline]
+    fn tan(self) -> Self {
+        f32::tan(self)
+    }
+    
+    #[inline]
+    fn asin(self) -> Self {
+        f32::asin(self)
+    }
+    
+    #[inline]
+    fn acos(self) -> Self {
+        f32::acos(self)
+    }
+    
+    #[inline]
+    fn atan(self) -> Self {
+        f32::atan(self)
+    }
+    
+    #[inline]
+    fn sinh(self) -> Self {
+        f32::sinh(self)
+    }
+    
+    #[inline]
+    fn cosh(self) -> Self {
+        f32::cosh(self)
+    }
+    
+    #[inline]
+    fn tanh(self) -> Self {
+        f32::tanh(self)
+    }
+    
+    #[inline]
+    fn asinh(self) -> Self {
+        f32::asinh(self)
+    }
+    
+    #[inline]
+    fn acosh(self) -> Self {
+        f32::acosh(self)
+    }
+    
+    #[inline]
+    fn atanh(self) -> Self {
+        f32::atanh(self)
+    }
+}
+
+impl FloatPrimitive for f64 {
+    #[inline]
+    fn sin(self) -> Self {
+        f64::sin(self)
+    }
+    
+    #[inline]
+    fn cos(self) -> Self {
+        f64::cos(self)
+    }
+    
+    #[inline]
+    fn tan(self) -> Self {
+        f64::tan(self)
+    }
+    
+    #[inline]
+    fn asin(self) -> Self {
+        f64::asin(self)
+    }
+    
+    #[inline]
+    fn acos(self) -> Self {
+        f64::acos(self)
+    }
+    
+    #[inline]
+    fn atan(self) -> Self {
+        f64::atan(self)
+    }
+    
+    #[inline]
+    fn sinh(self) -> Self {
+        f64::sinh(self)
+    }
+    
+    #[inline]
+    fn cosh(self) -> Self {
+        f64::cosh(self)
+    }
+    
+    #[inline]
+    fn tanh(self) -> Self {
+        f64::tanh(self)
+    }
+    
+    #[inline]
+    fn asinh(self) -> Self {
+        f64::asinh(self)
+    }
+    
+    #[inline]
+    fn acosh(self) -> Self {
+        f64::acosh(self)
+    }
+    
+    #[inline]
+    fn atanh(self) -> Self {
+        f64::atanh(self)
+    }
+}
+ 
 /// Associates a number type with a SIMD register type.
 pub trait ToSimd : Sized + Sync + Send {
     type Reg: Simd<Self> + SimdGeneric<Self> + Copy ;
@@ -121,9 +271,9 @@ impl ToSimd for f64 {
 }
 
  /// A real floating pointer number intended to abstract over `f32` and `f64`.
- pub trait RealNumber : Float + Copy + Clone + Send + Sync + ToSimd + Debug { }
+ pub trait RealNumber : Float + Copy + Clone + Send + Sync + ToSimd + Debug  { }
  impl<T> RealNumber for T
-  where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug {}
+  where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug  {}
 
 #[cfg(test)]
 mod tests {

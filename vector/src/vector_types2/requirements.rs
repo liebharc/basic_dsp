@@ -104,7 +104,7 @@ impl<'a, T> ToSliceMut<T> for &'a mut [T] {
 
 impl<T> ToSlice<T> for Vec<T> {
     fn to_slice(&self) -> &[T] {
-        &self[..]
+        &self
     }
 
     fn len(&self) -> usize {
