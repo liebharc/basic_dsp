@@ -5,6 +5,7 @@ use multicore_support::{
     Complexity};
 use num::complex::Complex;
 use std::mem;
+use std::cmp;
 use std::result;
 use simd_extensions::*;
  use std::fmt::Debug;
@@ -53,12 +54,12 @@ pub enum DataDomain {
 }
 
 /// Number space (real or complex) information.
-pub trait NumberSpace : Debug {
+pub trait NumberSpace : Debug + cmp::PartialEq {
     fn is_complex(&self) -> bool;
 }
 
 /// Domain (time or frequency) information.
-pub trait Domain : Debug {
+pub trait Domain : Debug + cmp::PartialEq {
     fn domain(&self) -> DataDomain;
 }
 
@@ -91,6 +92,7 @@ pub trait FrequencyDomain {
 
 /// Marker for types containing real data.
 #[derive(Debug)]
+#[derive(PartialEq)]
 pub struct RealData;
 impl NumberSpace for RealData {
     fn is_complex(&self) -> bool { false }
@@ -101,6 +103,7 @@ impl RealNumberSpace for RealData {
 
 /// Marker for types containing complex data.
 #[derive(Debug)]
+#[derive(PartialEq)]
 pub struct ComplexData;
 impl NumberSpace for ComplexData {
     fn is_complex(&self) -> bool { true }
@@ -111,6 +114,7 @@ impl ComplexNumberSpace for ComplexData {
 
 /// Marker for types containing real or complex data.
 #[derive(Debug)]
+#[derive(PartialEq)]
 pub struct RealOrComplexData {
     is_complex_current: bool
 }
@@ -130,6 +134,7 @@ impl ComplexNumberSpace for RealOrComplexData {
 
 /// Marker for types containing time data.
 #[derive(Debug)]
+#[derive(PartialEq)]
 pub struct TimeData;
 impl Domain for TimeData {
     fn domain(&self) -> DataDomain { DataDomain::Time }
@@ -140,6 +145,7 @@ impl TimeDomain for TimeData {
 
 /// Marker for types containing frequency data.
 #[derive(Debug)]
+#[derive(PartialEq)]
 pub struct FrequencyData;
 impl Domain for FrequencyData {
     fn domain(&self) -> DataDomain { DataDomain::Frequency }
@@ -150,6 +156,7 @@ impl FrequencyDomain for FrequencyData {
 
 /// Marker for types containing time or frequency data.
 #[derive(Debug)]
+#[derive(PartialEq)]
 pub struct TimeOrFrequencyData {
     domain_current: DataDomain
 }
