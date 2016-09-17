@@ -12,10 +12,9 @@ use super::{
 /// Defines all operations which are valid on complex data and result in real data.
 /// # Failures
 /// All operations in this trait fail with `VectorMustBeComplex` if the vector isn't in the complex number space.
-pub trait ComplexToRealTransformsOps<S, T, B> : ToRealResult
+pub trait ComplexToRealTransformsOps<S, T> : ToRealResult
     where S: ToSliceMut<T>,
-          T: RealNumber,
-          B: Buffer<S, T> {
+          T: RealNumber {
 
     /// Gets the absolute value, magnitude or norm of all vector elements.
     /// # Example
@@ -31,7 +30,8 @@ pub trait ComplexToRealTransformsOps<S, T, B> : ToRealResult
     /// assert_eq!([5.0, 5.0], result[0..]);
     /// # }
     /// ```
-    fn magnitude(self, buffer: &mut B) -> TransRes<Self::RealResult>;
+    fn magnitude<B>(self, buffer: &mut B) -> TransRes<Self::RealResult>
+        where B: Buffer<S, T>;
 
     /// Gets the square root of the absolute value of all vector elements.
     /// # Example
@@ -47,7 +47,8 @@ pub trait ComplexToRealTransformsOps<S, T, B> : ToRealResult
     /// assert_eq!([25.0, 25.0], result[0..]);
     /// # }
     /// ```
-    fn magnitude_squared(self, buffer: &mut B) -> TransRes<Self::RealResult>;
+    fn magnitude_squared<B>(self, buffer: &mut B) -> TransRes<Self::RealResult>
+        where B: Buffer<S, T>;
 
     /// Gets all real elements.
     /// # Example
@@ -63,7 +64,8 @@ pub trait ComplexToRealTransformsOps<S, T, B> : ToRealResult
     /// assert_eq!([1.0, 3.0], result[0..]);
     /// # }
     /// ```
-    fn to_real(self, buffer: &mut B) -> TransRes<Self::RealResult>;
+    fn to_real<B>(self, buffer: &mut B) -> TransRes<Self::RealResult>
+        where B: Buffer<S, T>;
 
     /// Gets all imag elements.
     /// # Example
@@ -79,7 +81,8 @@ pub trait ComplexToRealTransformsOps<S, T, B> : ToRealResult
     /// assert_eq!([2.0, 4.0], result[0..]);
     /// # }
     /// ```
-    fn to_imag(self, buffer: &mut B) -> TransRes<Self::RealResult>;
+    fn to_imag<B>(self, buffer: &mut B) -> TransRes<Self::RealResult>
+        where B: Buffer<S, T>;
 
     /// Gets the phase of all elements in [rad].
     /// # Example
@@ -96,7 +99,8 @@ pub trait ComplexToRealTransformsOps<S, T, B> : ToRealResult
     /// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result[0..]);
     /// # }
     /// ```
-    fn phase(self, buffer: &mut B) -> TransRes<Self::RealResult>;
+    fn phase<B>(self, buffer: &mut B) -> TransRes<Self::RealResult>
+        where B: Buffer<S, T>;
 }
 
 macro_rules! assert_complex {
@@ -109,43 +113,47 @@ macro_rules! assert_complex {
     }
 }
 
-impl<S, T, N, D, B> ComplexToRealTransformsOps<S, T, B> for DspVec<S, T, N, D>
+impl<S, T, N, D> ComplexToRealTransformsOps<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToRealResult,
           <DspVec<S, T, N, D> as ToRealResult>::RealResult: RededicateForceOps<DspVec<S, T, N, D>>,
           S: ToSliceMut<T> + Owner,
           T: RealNumber,
           N: ComplexNumberSpace,
-          D: Domain,
-          B: Buffer<S, T> {
-    fn magnitude(mut self, buffer: &mut B) -> TransRes<Self::RealResult> {
+          D: Domain {
+    fn magnitude<B>(mut self, buffer: &mut B) -> TransRes<Self::RealResult>
+        where B: Buffer<S, T> {
         assert_complex!(self);
         self.simd_complex_to_real_operation(buffer, |x,_arg| x.complex_abs(), |x,_arg| x.norm(), (), Complexity::Small);
         self.number_space.to_real();
         Ok(Self::RealResult::rededicate_from_force(self))
     }
 
-    fn magnitude_squared(mut self, buffer: &mut B) -> TransRes<Self::RealResult> {
+    fn magnitude_squared<B>(mut self, buffer: &mut B) -> TransRes<Self::RealResult>
+        where B: Buffer<S, T> {
         assert_complex!(self);
         self.simd_complex_to_real_operation(buffer, |x,_arg| x.complex_abs_squared(), |x,_arg| x.re * x.re + x.im * x.im, (), Complexity::Small);
         self.number_space.to_real();
         Ok(Self::RealResult::rededicate_from_force(self))
     }
 
-    fn to_real(mut self, buffer: &mut B) -> TransRes<Self::RealResult> {
+    fn to_real<B>(mut self, buffer: &mut B) -> TransRes<Self::RealResult>
+        where B: Buffer<S, T> {
         assert_complex!(self);
         self.pure_complex_to_real_operation(buffer, |x,_arg|x.re, (), Complexity::Small);
         self.number_space.to_real();
         Ok(Self::RealResult::rededicate_from_force(self))
     }
 
-    fn to_imag(mut self, buffer: &mut B) -> TransRes<Self::RealResult> {
+    fn to_imag<B>(mut self, buffer: &mut B) -> TransRes<Self::RealResult>
+        where B: Buffer<S, T> {
         assert_complex!(self);
         self.pure_complex_to_real_operation(buffer, |x,_arg|x.im, (), Complexity::Small);
         self.number_space.to_real();
         Ok(Self::RealResult::rededicate_from_force(self))
     }
 
-    fn phase(mut self, buffer: &mut B) -> TransRes<Self::RealResult> {
+    fn phase<B>(mut self, buffer: &mut B) -> TransRes<Self::RealResult>
+        where B: Buffer<S, T> {
         assert_complex!(self);
         self.pure_complex_to_real_operation(buffer, |x,_arg|x.arg(), (), Complexity::Small);
         self.number_space.to_real();
