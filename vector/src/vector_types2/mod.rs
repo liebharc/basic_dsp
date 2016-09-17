@@ -8,7 +8,7 @@ use std::mem;
 use std::cmp;
 use std::result;
 use simd_extensions::*;
- use std::fmt::Debug;
+use std::fmt::Debug;
 
 mod requirements;
 pub use self::requirements::*;
@@ -24,8 +24,8 @@ mod checks_and_results;
 pub use self::checks_and_results::*;
 mod elementary;
 pub use self::elementary::*;
-mod trigonometry;
-pub use self::trigonometry::*;
+mod trigonometry_and_powers;
+pub use self::trigonometry_and_powers::*;
 mod buffer;
 pub use self::buffer::*;
 
