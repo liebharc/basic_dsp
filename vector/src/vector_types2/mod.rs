@@ -276,13 +276,7 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
             });
         }
     }
-}
 
-impl<S, T, N, D> DspVec<S, T, N, D> where
-    S: ToSliceMut<T>,
-    T: RealNumber,
-    N: NumberSpace,
-    D: Domain {
     #[inline]
     fn simd_real_operation<A, F, G>(&mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity)
         where A: Sync + Copy + Send,
@@ -313,13 +307,36 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
             }
         }
     }
-}
 
-impl<S, T, N, D> DspVec<S, T, N, D> where
-    S: ToSliceMut<T>,
-    T: RealNumber,
-    N: NumberSpace,
-    D: Domain {
+    #[inline]
+    fn pure_complex_to_real_operation<A, F, B>(&mut self, buffer: &mut B, op: F, argument: A, complexity: Complexity)
+        where A: Sync + Copy + Send,
+            F: Fn(Complex<T>, A) -> T + 'static + Sync,
+            B: Buffer<S, T> {
+        {
+            let data_length = self.len();
+            let mut result = buffer.get(data_length / 2);
+            {
+                let mut array = self.data.to_slice_mut();
+                let mut temp = result.to_slice_mut();
+                Chunk::from_src_to_dest(
+                    complexity, &self.multicore_settings,
+                    &mut array[0..data_length], 2,
+                    &mut temp[0..data_length / 2], 1, argument,
+                    move |array, range, target, argument| {
+                        let array = array_to_complex(&array[range.start..range.end]);
+                        for pair in array.iter().zip(target) {
+                            let (src, dest) = pair;
+                            *dest = op(*src, argument);
+                        }
+                });
+                self.valid_len = data_length / 2;
+            }
+            mem::swap(&mut self.data, &mut result);
+            buffer.free(result);
+        }
+    }
+
     #[inline]
     fn simd_complex_to_real_operation<A, F, G, B>(&mut self, buffer: &mut B, simd_op: F, scalar_op: G, argument: A, complexity: Complexity)
         where A: Sync + Copy + Send,

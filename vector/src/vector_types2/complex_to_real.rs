@@ -24,28 +24,27 @@ pub trait ComplexToRealTransformsOps<S, T, B> : ToRealResult
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::vector_types2::*;
-    /// use num::complex::Complex32;
     /// # fn main() {
-    /// let mut vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
+    /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.magnitude(&mut buffer).expect("Ignoring error handling in examples");
     /// assert_eq!([5.0, 5.0], result[0..]);
     /// # }
     /// ```
     fn magnitude(self, buffer: &mut B) -> TransRes<Self::RealResult>;
-/*
+
     /// Gets the square root of the absolute value of all vector elements.
     /// # Example
     ///
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec, RealIndex};
-    /// use num::complex::Complex32;
+    /// use basic_dsp_vector::vector_types2::*;
     /// # fn main() {
-    /// let vector = ComplexTimeVector32::from_interleaved(&[3.0, -4.0, -3.0, 4.0]);
-    /// let result = vector.magnitude_squared().expect("Ignoring error handling in examples");
-    /// assert_eq!([25.0, 25.0], result.real(0..));
+    /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
+    /// let mut buffer = SingleBuffer::new();
+    /// let result = vector.magnitude_squared(&mut buffer).expect("Ignoring error handling in examples");
+    /// assert_eq!([25.0, 25.0], result[0..]);
     /// # }
     /// ```
     fn magnitude_squared(self, buffer: &mut B) -> TransRes<Self::RealResult>;
@@ -56,11 +55,12 @@ pub trait ComplexToRealTransformsOps<S, T, B> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec, RealIndex};
+    /// use basic_dsp_vector::vector_types2::*;
     /// # fn main() {
-    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-    /// let result = vector.to_real().expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 3.0], result.real(0..));
+    /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let mut buffer = SingleBuffer::new();
+    /// let result = vector.to_real(&mut buffer).expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 3.0], result[0..]);
     /// # }
     /// ```
     fn to_real(self, buffer: &mut B) -> TransRes<Self::RealResult>;
@@ -71,11 +71,12 @@ pub trait ComplexToRealTransformsOps<S, T, B> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec, RealIndex};
+    /// use basic_dsp_vector::vector_types2::*;
     /// # fn main() {
-    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-    /// let result = vector.to_imag().expect("Ignoring error handling in examples");
-    /// assert_eq!([2.0, 4.0], result.real(0..));
+    /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let mut buffer = SingleBuffer::new();
+    /// let result = vector.to_imag(&mut buffer).expect("Ignoring error handling in examples");
+    /// assert_eq!([2.0, 4.0], result[0..]);
     /// # }
     /// ```
     fn to_imag(self, buffer: &mut B) -> TransRes<Self::RealResult>;
@@ -86,14 +87,16 @@ pub trait ComplexToRealTransformsOps<S, T, B> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{ComplexTimeVector32, ComplexVectorOps, DataVec, RealIndex};
+    /// use basic_dsp_vector::vector_types2::*;
     /// # fn main() {
-    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0]);
-    /// let result = vector.phase().expect("Ignoring error handling in examples");
-    /// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.real(0..));
+    /// let data: Vec<f32> = vec!(1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0);
+    /// let vector = data.to_complex_time_vec();
+    /// let mut buffer = SingleBuffer::new();
+    /// let result = vector.phase(&mut buffer).expect("Ignoring error handling in examples");
+    /// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result[0..]);
     /// # }
     /// ```
-    fn phase(self, buffer: &mut B) -> TransRes<Self::RealResult>;*/
+    fn phase(self, buffer: &mut B) -> TransRes<Self::RealResult>;
 }
 
 macro_rules! assert_complex {
@@ -117,6 +120,34 @@ impl<S, T, N, D, B> ComplexToRealTransformsOps<S, T, B> for DspVec<S, T, N, D>
     fn magnitude(mut self, buffer: &mut B) -> TransRes<Self::RealResult> {
         assert_complex!(self);
         self.simd_complex_to_real_operation(buffer, |x,_arg| x.complex_abs(), |x,_arg| x.norm(), (), Complexity::Small);
+        self.number_space.to_real();
+        Ok(Self::RealResult::rededicate_from_force(self))
+    }
+
+    fn magnitude_squared(mut self, buffer: &mut B) -> TransRes<Self::RealResult> {
+        assert_complex!(self);
+        self.simd_complex_to_real_operation(buffer, |x,_arg| x.complex_abs_squared(), |x,_arg| x.re * x.re + x.im * x.im, (), Complexity::Small);
+        self.number_space.to_real();
+        Ok(Self::RealResult::rededicate_from_force(self))
+    }
+
+    fn to_real(mut self, buffer: &mut B) -> TransRes<Self::RealResult> {
+        assert_complex!(self);
+        self.pure_complex_to_real_operation(buffer, |x,_arg|x.re, (), Complexity::Small);
+        self.number_space.to_real();
+        Ok(Self::RealResult::rededicate_from_force(self))
+    }
+
+    fn to_imag(mut self, buffer: &mut B) -> TransRes<Self::RealResult> {
+        assert_complex!(self);
+        self.pure_complex_to_real_operation(buffer, |x,_arg|x.im, (), Complexity::Small);
+        self.number_space.to_real();
+        Ok(Self::RealResult::rededicate_from_force(self))
+    }
+
+    fn phase(mut self, buffer: &mut B) -> TransRes<Self::RealResult> {
+        assert_complex!(self);
+        self.pure_complex_to_real_operation(buffer, |x,_arg|x.arg(), (), Complexity::Small);
         self.number_space.to_real();
         Ok(Self::RealResult::rededicate_from_force(self))
     }
