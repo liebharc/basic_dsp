@@ -103,6 +103,78 @@ pub trait ComplexToRealTransformsOps<S, T> : ToRealResult
         where B: Buffer<S, T>;
 }
 
+pub trait ComplexToRealGetterSetterOps {
+    /// Copies all real elements into the given vector.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp_vector;
+    /// use basic_dsp_vector::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOps, RealIndex};
+    /// # fn main() {
+    /// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
+    /// let vector = ComplexTimeVector32::from_real_imag(&[1.0, 3.0], &[2.0, 4.0]);
+    /// vector.get_real(&mut result).expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 3.0], result.real(0..));
+    /// # }
+    /// ```
+    fn get_real(&self, destination: &mut Self::RealPartner) -> VoidResult;
+
+    /// Copies all imag elements into the given vector.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp_vector;
+    /// use basic_dsp_vector::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOps, DataVec, RealIndex};
+    /// # fn main() {
+    /// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
+    /// let vector = ComplexTimeVector32::from_real_imag(&[1.0, 3.0], &[2.0, 4.0]);
+    /// vector.get_imag(&mut result).expect("Ignoring error handling in examples");
+    /// assert_eq!([2.0, 4.0], result.real(0..));
+    /// # }
+    /// ```
+    fn get_imag(&self, destination: &mut Self::RealPartner) -> VoidResult;
+
+    /// Copies the phase of all elements in [rad] into the given vector.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp_vector;
+    /// use basic_dsp_vector::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOps, DataVec, RealIndex};
+    /// # fn main() {
+    /// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
+    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0]);
+    /// vector.get_phase(&mut result).expect("Ignoring error handling in examples");
+    /// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.real(0..));
+    /// # }
+    /// ```
+    fn get_phase(&self, destination: &mut Self::RealPartner) -> VoidResult;
+
+    /// Gets the real and imaginary parts and stores them in the given vectors.
+    /// See also  [`get_phase`](trait.ComplexVectorOps.html#tymethod.get_phase) and
+    /// [`get_complex_abs`](trait.ComplexVectorOps.html#tymethod.get_complex_abs) for further
+    /// information.
+    fn get_real_imag(&self, real: &mut Self::RealPartner, imag: &mut Self::RealPartner) -> VoidResult;
+
+    /// Gets the magnitude and phase and stores them in the given vectors.
+    /// See also [`get_real`](trait.ComplexVectorOps.html#tymethod.get_real) and
+    /// [`get_imag`](trait.ComplexVectorOps.html#tymethod.get_imag) for further
+    /// information.
+    fn get_mag_phase(&self, mag: &mut Self::RealPartner, phase: &mut Self::RealPartner) -> VoidResult;
+
+    /// Overrides the `self` vectors data with the real and imaginary data in the given vectors.
+    /// `real` and `imag` must have the same size.
+    fn set_real_imag(self, real: &Self::RealPartner, imag: &Self::RealPartner) -> TransRes<Self>;
+
+    /// Overrides the `self` vectors data with the magnitude and phase data in the given vectors.
+    /// Note that `self` vector will immediately convert the data into a real and imaginary representation
+    /// of the complex numbers which is its default format.
+    /// `mag` and `phase` must have the same size.
+    fn set_mag_phase(self, mag: &Self::RealPartner, phase: &Self::RealPartner) -> TransRes<Self>;
+}
+
 macro_rules! assert_complex {
     ($self_: ident) => {
         if !$self_.is_complex() {
