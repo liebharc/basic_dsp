@@ -309,6 +309,43 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
     }
 
     #[inline]
+    fn simd_complex_operation<A, F, G>(&mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity)
+        where A: Sync + Copy + Send,
+                F: Fn(T::Reg, A) -> T::Reg + 'static + Sync,
+                G: Fn(Complex<T>, A) -> Complex<T> + 'static + Sync {
+        {
+            let data_length = self.valid_len;
+            let mut array = self.data.to_slice_mut();
+            let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+            if vectorization_length > 0 {
+                Chunk::execute_partial(
+                    complexity, &self.multicore_settings,
+                    &mut array[scalar_left..vectorization_length], T::Reg::len(), argument,
+                    move |array, argument| {
+                    let array = T::Reg::array_to_regs_mut(array);
+                    for reg in array {
+                        *reg = simd_op(*reg, argument);
+                    }
+                });
+            }
+            {
+                let array = array_to_complex_mut(&mut array[0..scalar_left]);
+                for num in array
+                {
+                    *num = scalar_op(*num, argument);
+                }
+            }
+            {
+                let array = array_to_complex_mut(&mut array[scalar_right..data_length]);
+                for num in array
+                {
+                    *num = scalar_op(*num, argument);
+                }
+            }
+        }
+    }
+
+    #[inline]
     fn pure_complex_to_real_operation<A, F, B>(&mut self, buffer: &mut B, op: F, argument: A, complexity: Complexity)
         where A: Sync + Copy + Send,
             F: Fn(Complex<T>, A) -> T + 'static + Sync,
