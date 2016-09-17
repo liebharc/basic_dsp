@@ -1,7 +1,7 @@
 use RealNumber;
 use multicore_support::*;
 use simd_extensions::*;
-use super::{
+use super::super::{
     DspVec,
     ToSliceMut,
     NumberSpace,

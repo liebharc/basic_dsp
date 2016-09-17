@@ -1,7 +1,7 @@
 use RealNumber;
 use multicore_support::Complexity;
 use simd_extensions::Simd;
-use super::{
+use super::super::{
     TransRes, ErrorReason,
     Owner, ToRealResult,
     Buffer,
@@ -102,7 +102,7 @@ pub trait ComplexToRealTransformsOps<S, T> : ToRealResult
     fn phase<B>(self, buffer: &mut B) -> TransRes<Self::RealResult>
         where B: Buffer<S, T>;
 }
-
+/*
 pub trait ComplexToRealGetterSetterOps {
     /// Copies all real elements into the given vector.
     /// # Example
@@ -174,7 +174,7 @@ pub trait ComplexToRealGetterSetterOps {
     /// `mag` and `phase` must have the same size.
     fn set_mag_phase(self, mag: &Self::RealPartner, phase: &Self::RealPartner) -> TransRes<Self>;
 }
-
+*/
 macro_rules! assert_complex {
     ($self_: ident) => {
         if !$self_.is_complex() {

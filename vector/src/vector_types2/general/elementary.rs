@@ -4,7 +4,7 @@ use multicore_support::*;
 use simd_extensions::*;
 use num::Complex;
 use std::ops::*;
-use super::{
+use super::super::{
     ErrorReason, VoidResult,
     DspVec, ToSliceMut,
     Domain, RealNumberSpace,
