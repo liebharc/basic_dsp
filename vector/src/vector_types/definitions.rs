@@ -485,6 +485,19 @@ pub trait GenericVectorOps<T>: DataVec<T>
     /// ```
     fn zero_interleave(self, factor: u32) -> TransRes<Self>;
 
+    /// This function swaps both halves of the vector. This operation is also called FFT shift
+    /// Use it after a `plain_fft` to get a spectrum which is centered at `0 Hz`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
+    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+    /// let result = vector.swap_halves().expect("Ignoring error handling in examples");
+    /// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], result.real(0..));
+    /// ```
+    fn swap_halves(self) -> TransRes<Self>;
+
     /// Calculates the delta of each elements to its previous element. This will decrease the vector length by one point.
     ///
     /// # Example
@@ -686,19 +699,6 @@ pub trait GenericVectorOps<T>: DataVec<T>
 
     /// Calculates the principal value of the inverse hyperbolic tangent of each element in radians.
     fn atanh(self) -> TransRes<Self>;
-
-    /// This function swaps both halves of the vector. This operation is also called FFT shift
-    /// Use it after a `plain_fft` to get a spectrum which is centered at `0 Hz`.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
-    /// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
-    /// let result = vector.swap_halves().expect("Ignoring error handling in examples");
-    /// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], result.real(0..));
-    /// ```
-    fn swap_halves(self) -> TransRes<Self>;
 
     /// Splits the vector into several smaller vectors. `self.len()` must be dividable by
     /// `targets.len()` without a remainder and this condition must be true too `targets.len() > 0`.
