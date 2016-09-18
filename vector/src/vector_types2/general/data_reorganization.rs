@@ -1,12 +1,24 @@
 use RealNumber;
 use super::super::{
-	VoidResult,
+	array_to_complex_mut,
+	VoidResult, Buffer, Owner,
 	NumberSpace, Domain,
-	DspVec, ToSliceMut,
+	DspVec, Vector, ToSliceMut,
 };
 
-pub trait ReorganizeDataOps {
+pub trait ReorganizeDataOps<S, T>
+ 	where T: RealNumber,
+	      S: ToSliceMut<T> {
 	/// Reverses the data inside the vector.
+	///
+	/// # Example
+	///
+	/// ```
+    /// use basic_dsp_vector::vector_types2::*;
+    /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();
+    /// vector.reverse();
+    /// assert_eq!([8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0], vector[..]);
+    /// ```
 	fn reverse(&mut self);
 
 	/// This function swaps both halves of the vector. This operation is also called FFT shift
@@ -17,10 +29,12 @@ pub trait ReorganizeDataOps {
 	/// ```
     /// use basic_dsp_vector::vector_types2::*;
     /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();
-    /// vector.swap_halves();
+	/// let mut buffer = SingleBuffer::new();
+    /// vector.swap_halves(&mut buffer);
     /// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], vector[..]);
     /// ```
-	fn swap_halves(&mut self);
+	fn swap_halves<B>(&mut self, buffer: &mut B)
+		where B: Buffer<S, T>;
 }
 
 /// An option which defines how a vector should be padded
@@ -125,15 +139,35 @@ pub trait MergeOps {
     fn merge(&mut self, sources: &[Box<Self>]) -> VoidResult;
 }
 
-impl<S, T, N, D> ReorganizeDataOps for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
+impl<S, T, N, D> ReorganizeDataOps<S, T> for DspVec<S, T, N, D>
+    where S: ToSliceMut<T> + Owner,
           T: RealNumber,
           N: NumberSpace,
           D: Domain {
 	fn reverse(&mut self) {
+		if self.is_complex() {
+			let len = self.points();
+			let mut data = self.data.to_slice_mut();
+			let mut data = array_to_complex_mut(&mut data[..]);
+			for i in 0..len / 2 {
+				let temp = data[i];
+				data[i] = data[len - 1 - i];
+				data[len - 1 - i] = temp;
+			}
+		} else {
+			let len = self.len();
+			let mut data = self.data.to_slice_mut();
+			for i in 0..len / 2 {
+				let temp = data[i];
+				data[i] = data[len - 1 - i];
+				data[len - 1 - i] = temp;
+			}
+		}
+
 	}
 
-	fn swap_halves(&mut self) {
-
+	fn swap_halves<B>(&mut self, buffer: &mut B)
+		where B: Buffer<S, T> {
+		self.swap_halves_priv(buffer, true);
 	}
 }

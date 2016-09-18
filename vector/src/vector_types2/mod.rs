@@ -426,4 +426,45 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
         mem::swap(&mut self.data, &mut result);
         buffer.free(result);
     }
+
+    #[inline]
+    fn swap_halves_priv<B>(&mut self, buffer: &mut B, forward: bool)
+        where B: Buffer<S, T>
+    {
+        use std::ptr;
+        let data_length = self.len();
+        let points = self.points();
+        let complex = self.is_complex();
+        let elems_per_point = if complex { 2 } else { 1 };
+        let mut temp = buffer.get(data_length);
+        {
+            let mut temp = temp.to_slice_mut();
+            let data = self.data.to_slice();
+            // First half
+            let len =
+                if forward {
+                    points / 2 * elems_per_point
+                }
+                else {
+                    data_length - points / 2 * elems_per_point
+                };
+            let start = data_length - len;
+            let src = &data[start] as *const T;
+            let dest = &mut temp[0] as *mut T;
+            unsafe {
+                ptr::copy(src, dest, len);
+            }
+
+            // Second half
+            let src = &data[0] as *const T;
+            let start = len;
+            let len = data_length - len;
+            let dest = &mut temp[start] as *mut T;
+            unsafe {
+                ptr::copy(src, dest, len);
+            }
+        }
+        mem::swap(&mut self.data, &mut temp);
+        buffer.free(temp);
+    }
 }
