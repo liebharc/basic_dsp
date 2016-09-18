@@ -1,16 +1,19 @@
 use RealNumber;
-use multicore_support::Complexity;
+use multicore_support::*;
 use simd_extensions::Simd;
+use num::Complex;
+use std::ops::*;
 use super::super::{
-    Owner, ToRealResult,
-    Buffer,
-    DspVec, ToSliceMut,
+    Owner, ToRealResult, ErrorReason,
+    Buffer, Vector, SetLen, Resize,
+    DspVec, ToSliceMut, ToSlice, VoidResult,
     Domain, ComplexNumberSpace, RededicateForceOps
 };
 
-/// Defines all operations which are valid on complex data and result in real data.
+/// Defines transformations from complex to real number space.
+///
 /// # Failures
-/// All operations in this trait set `self.len()` to `0` if the vector isn't in the complex number space.
+/// All operations in this trait set `self.len()` to `0` if the type isn't in the complex number space.
 pub trait ComplexToRealTransformsOps<S, T> : ToRealResult
     where S: ToSliceMut<T>,
           T: RealNumber {
@@ -102,8 +105,12 @@ pub trait ComplexToRealTransformsOps<S, T> : ToRealResult
         where B: Buffer<S, T>;
 }
 
-pub trait ComplexToRealGetterSetterOps<S, T> : ToRealResult
-    where S: ToSliceMut<T>,
+/// Defines getters to get real data from complex types.
+///
+/// # Failures
+/// All operations in this trait set the arguments `len()` to `0` if the type isn't in the complex number space.
+pub trait ComplexToRealGetterOps<S, T> : ToRealResult
+    where S: ToSlice<T>,
           T: RealNumber {
     /// Copies all real elements into the given vector.
     /// # Example
@@ -111,12 +118,12 @@ pub trait ComplexToRealGetterSetterOps<S, T> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOps, RealIndex};
+    /// use basic_dsp_vector::vector_types2::*;
     /// # fn main() {
-    /// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
-    /// let vector = ComplexTimeVector32::from_real_imag(&[1.0, 3.0], &[2.0, 4.0]);
-    /// vector.get_real(&mut result).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 3.0], result.real(0..));
+    /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let mut target = Vec::new().to_real_time_vec();
+    /// vector.get_real(&mut target);
+    /// assert_eq!([1.0, 3.0], target[..]);
     /// # }
     /// ```
     fn get_real(&self, destination: &mut Self::RealResult);
@@ -127,12 +134,12 @@ pub trait ComplexToRealGetterSetterOps<S, T> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOps, DataVec, RealIndex};
+    /// use basic_dsp_vector::vector_types2::*;
     /// # fn main() {
-    /// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
-    /// let vector = ComplexTimeVector32::from_real_imag(&[1.0, 3.0], &[2.0, 4.0]);
-    /// vector.get_imag(&mut result).expect("Ignoring error handling in examples");
-    /// assert_eq!([2.0, 4.0], result.real(0..));
+    /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let mut target = Vec::new().to_real_time_vec();
+    /// vector.get_imag(&mut target);
+    /// assert_eq!([2.0, 4.0], target[..]);
     /// # }
     /// ```
     fn get_imag(&self, destination: &mut Self::RealResult);
@@ -141,14 +148,20 @@ pub trait ComplexToRealGetterSetterOps<S, T> : ToRealResult
     /// # Example
     ///
     /// ```
+    /// # use std::f64;
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::{RealTimeVector32, ComplexTimeVector32, ComplexVectorOps, DataVec, RealIndex};
+    /// use basic_dsp_vector::vector_types2::*;
     /// # fn main() {
-    /// let mut result = RealTimeVector32::from_array(&[0.0, 0.0]);
-    /// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0]);
-    /// vector.get_phase(&mut result).expect("Ignoring error handling in examples");
-    /// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result.real(0..));
+    /// let vector = vec!(1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0).to_complex_time_vec();
+    /// let mut target = Vec::new().to_real_time_vec();
+    /// vector.get_phase(&mut target);
+    /// let actual = &target[..];
+    /// let expected = &[0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982];
+    /// assert_eq!(actual.len(), expected.len());
+    /// for i in 0..actual.len() {
+    ///        assert!(f64::abs(actual[i] - expected[i]) < 1e-4);
+    /// }
     /// # }
     /// ```
     fn get_phase(&self, destination: &mut Self::RealResult);
@@ -164,16 +177,24 @@ pub trait ComplexToRealGetterSetterOps<S, T> : ToRealResult
     /// [`get_imag`](trait.ComplexVectorOps.html#tymethod.get_imag) for further
     /// information.
     fn get_mag_phase(&self, mag: &mut Self::RealResult, phase: &mut Self::RealResult);
+}
 
+/// Defines setters to create complex data from real data.
+///
+/// # Failures
+/// All operations in this trait set `self.len()` to `0` if the type isn't in the complex number space.
+pub trait ComplexToRealSetterOps<S, T> : ToRealResult
+    where S: ToSliceMut<T>,
+          T: RealNumber {
     /// Overrides the `self` vectors data with the real and imaginary data in the given vectors.
     /// `real` and `imag` must have the same size.
-    fn set_real_imag(&mut self, real: &Self::RealResult, imag: &Self::RealResult);
+    fn set_real_imag(&mut self, real: &Self::RealResult, imag: &Self::RealResult) -> VoidResult;
 
     /// Overrides the `self` vectors data with the magnitude and phase data in the given vectors.
     /// Note that `self` vector will immediately convert the data into a real and imaginary representation
     /// of the complex numbers which is its default format.
     /// `mag` and `phase` must have the same size.
-    fn set_mag_phase(&mut self, mag: &Self::RealResult, phase: &Self::RealResult);
+    fn set_mag_phase(&mut self, mag: &Self::RealResult, phase: &Self::RealResult) -> VoidResult;
 }
 
 macro_rules! assert_complex {
@@ -231,5 +252,167 @@ impl<S, T, N, D> ComplexToRealTransformsOps<S, T> for DspVec<S, T, N, D>
         self.pure_complex_to_real_operation(buffer, |x,_arg|x.arg(), (), Complexity::Small);
         self.number_space.to_real();
         Self::RealResult::rededicate_from_force(self)
+    }
+}
+
+impl<S, T, N, D> DspVec<S, T, N, D>
+    where S: ToSlice<T>,
+        T: RealNumber,
+        N: ComplexNumberSpace,
+        D: Domain {
+    #[inline]
+    fn pure_complex_into_real_target_operation<A, F, V>(&self, destination: &mut V, op: F, argument: A, complexity: Complexity)
+        where A: Sync + Copy + Send,
+              F: Fn(Complex<T>, A) -> T + 'static + Sync,
+              V: Vector<T> + Index<Range<usize>, Output=[T]> + IndexMut<Range<usize>> + SetLen {
+        let len = self.len();
+        destination.set_len(len / 2).expect("Target should be real and thus all values for len / 2 should be valid");
+        destination.set_delta(self.delta);
+        let mut array = &mut destination[0..len / 2];
+        let source = &self.data.to_slice();
+        Chunk::from_src_to_dest(
+            complexity, &self.multicore_settings,
+            &source[0..len], 2,
+            array, 1, argument,
+            move|original, range, target, argument| {
+                let mut i = range.start;
+                let mut j = 0;
+                while j < target.len()
+                {
+                    let complex = Complex::<T>::new(original[i], original[i + 1]);
+                    target[j] = op(complex, argument);
+                    i += 2;
+                    j += 1;
+                }
+            });
+    }
+}
+
+macro_rules! assert_self_complex_and_target_real {
+    ($self_: ident, $target: ident) => {
+        if !$self_.is_complex() || $target.is_complex() {
+            $target.shrink(0).unwrap();
+            return;
+        }
+    }
+}
+
+macro_rules! assert_self_complex_and_targets_real {
+    ($self_: ident, $real: ident, $imag: ident) => {
+        if !$self_.is_complex() || $real.is_complex() || $imag.is_complex() {
+            $real.shrink(0).unwrap();
+            $imag.shrink(0).unwrap();
+            return;
+        }
+    }
+}
+
+impl<S, T, N, D> ComplexToRealGetterOps<S, T> for DspVec<S, T, N, D>
+    where DspVec<S, T, N, D>: ToRealResult,
+          <DspVec<S, T, N, D> as ToRealResult>::RealResult: Vector<T> + Index<Range<usize>, Output=[T]> + IndexMut<Range<usize>> + SetLen,
+          S: ToSlice<T>,
+          T: RealNumber,
+          N: ComplexNumberSpace,
+          D: Domain {
+    fn get_real(&self, destination: &mut Self::RealResult) {
+        assert_self_complex_and_target_real!(self, destination);
+        self.pure_complex_into_real_target_operation(destination, |x,_arg|x.re, (), Complexity::Small);
+    }
+
+    fn get_imag(&self, destination: &mut Self::RealResult) {
+        assert_self_complex_and_target_real!(self, destination);
+        self.pure_complex_into_real_target_operation(destination, |x,_arg|x.im, (), Complexity::Small);
+    }
+
+    fn get_phase(&self, destination: &mut Self::RealResult) {
+        assert_self_complex_and_target_real!(self, destination);
+        self.pure_complex_into_real_target_operation(destination, |x,_arg|x.arg(), (), Complexity::Small)
+    }
+
+    fn get_real_imag(&self, real: &mut Self::RealResult, imag: &mut Self::RealResult) {
+        assert_self_complex_and_targets_real!(self, real, imag);
+        let data_length = self.len();
+        real.set_len(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");
+        imag.set_len(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");
+        let real = &mut real[0..data_length / 2];
+        let imag = &mut imag[0..data_length / 2];
+        let data = self.data.to_slice();
+        for i in 0..data_length {
+            if i % 2 == 0 {
+                real[i / 2] = data[i];
+            } else {
+                imag[i / 2] = data[i];
+            }
+        }
+    }
+
+    fn get_mag_phase(&self, mag: &mut Self::RealResult, phase: &mut Self::RealResult) {
+        assert_self_complex_and_targets_real!(self, mag, phase);
+        let data_length = self.len();
+        mag.set_len(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");
+        phase.set_len(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");
+        let mag = &mut mag[0..data_length / 2];
+        let phase = &mut phase[0..data_length / 2];
+        let data = self.data.to_slice();
+        let mut i = 0;
+        while i < data_length {
+            let c = Complex::<T>::new(data[i], data[i + 1]);
+            let (m, p) = c.to_polar();
+            mag[i / 2] = m;
+            phase[i / 2] = p;
+            i += 2;
+        }
+    }
+}
+
+impl<S, T, N, D> ComplexToRealSetterOps<S, T> for DspVec<S, T, N, D>
+    where DspVec<S, T, N, D>: ToRealResult,
+          <DspVec<S, T, N, D> as ToRealResult>::RealResult: Index<Range<usize>, Output=[T]> + Vector<T>,
+          S: ToSliceMut<T> + Owner + Resize,
+          T: RealNumber,
+          N: ComplexNumberSpace,
+          D: Domain {
+    fn set_real_imag(&mut self, real: &Self::RealResult, imag: &Self::RealResult) -> VoidResult {
+        {
+            if real.len() != imag.len() {
+                return Err(ErrorReason::InvalidArgumentLength);
+            }
+            let data_length = real.len() + imag.len();
+            self.data.resize(data_length);
+            let data = self.data.to_slice_mut();
+            let real = &real[0..real.len()];
+            let imag = &imag[0..imag.len()];
+            for i in 0..data_length {
+                if i % 2 == 0 {
+                    data[i] = real[i / 2];
+                } else {
+                    data[i] = imag[i / 2];
+                }
+            }
+        }
+
+        Ok(())
+    }
+
+    fn set_mag_phase(&mut self, mag: &Self::RealResult, phase: &Self::RealResult) -> VoidResult {
+        {
+            if mag.len() != phase.len() {
+                return Err(ErrorReason::InvalidArgumentLength);
+            }
+            let data_length = mag.len() + phase.len();
+            self.data.resize(data_length);
+            let data = self.data.to_slice_mut();
+            let mag = &mag[0..mag.len()];
+            let phase = &phase[0..phase.len()];
+            let mut i = 0;
+            while i < data_length {
+                let c = Complex::<T>::from_polar(&mag[i / 2], &phase[i / 2]);
+                data[i] = c.re;
+                data[i + 1] = c.im;
+                i += 2;
+            }
+        }
+
+        Ok(())
     }
 }

@@ -5,7 +5,7 @@ use simd_extensions::*;
 use num::Complex;
 use std::ops::*;
 use super::super::{
-    ErrorReason, VoidResult,
+    ErrorReason, VoidResult, Vector,
     DspVec, ToSliceMut,
     Domain, RealNumberSpace, ComplexNumberSpace
 };

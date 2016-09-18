@@ -33,71 +33,113 @@ pub trait ComplexIndexMut<Idx>: ComplexIndex<Idx> where Idx: Sized {
     fn complex_mut(&mut self, index: Idx) -> &mut Self::Output;
 }
 
-impl<S, T, N, D> DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain  {
+/// A trait for vector types.
+pub trait Vector<T>
+    where T: RealNumber {
     /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
-    pub fn delta(&self) -> T {
-        self.delta
-    }
+    fn delta(&self) -> T;
 
     /// Sets the x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
-    pub fn set_delta(&mut self, delta: T) {
-        self.delta = delta;
-    }
+    fn set_delta(&mut self, delta: T);
 
     /// The domain in which the data vector resides. Basically specifies the x-axis and the type of operations which
     /// are valid on this vector.
     ///
     /// The domain can be changed using the `RededicateOps` trait.
-    pub fn domain(&self) -> DataDomain {
-        self.domain.domain()
-    }
+    fn domain(&self) -> DataDomain;
 
     /// Indicates whether the vector contains complex data. This also specifies the type of operations which are valid
     /// on this vector.
     ///
     /// The number space can be changed using the `RededicateOps` trait.
-    pub fn is_complex(&self) -> bool {
-        self.number_space.is_complex()
-    }
+    fn is_complex(&self) -> bool;
 
     /// The number of valid elements in the vector. This can be changed
     /// with the `Resize` trait.
-    pub fn len(&self) -> usize {
-        self.valid_len
-    }
+    fn len(&self) -> usize;
 
     /// The number of valid points. If the vector is complex then every valid point consists of two floating point numbers,
     /// while for real vectors every point only consists of one floating point number.
-    pub fn points(&self) -> usize {
-        self.valid_len / if self.is_complex() { 2 } else { 1 }
-    }
+    fn points(&self) -> usize;
 
     /// Gets the multi core settings which determine how the
     /// work is split between several cores if the amount of data
     /// gets larger.
-    pub fn get_multicore_settings(&self) -> &MultiCoreSettings {
-        &self.multicore_settings
-    }
+    fn get_multicore_settings(&self) -> &MultiCoreSettings;
 
     /// Sets the multi core settings which determine how the
     /// work is split between several cores if the amount of data
     /// gets larger.
-    pub fn set_multicore_settings(&mut self, settings: MultiCoreSettings) {
-        self.multicore_settings = settings;
-    }
-}
+    fn set_multicore_settings(&mut self, settings: MultiCoreSettings);
 
-
-pub trait SetLen {
     /// Gets the number of allocated elements in the underlying vector.
     /// The allocated length may be larger than the length of valid points.
     /// In most cases you likely want to have `len`or `points` instead.
     fn alloc_len(&self) -> usize;
 
+    /// Set `self.len()` to a value smaller than `self.alloc_len()`. If
+    /// `self.is_complex()` is true then `len` must be an even number.
+    fn shrink(&mut self, len: usize) -> VoidResult;
+}
+
+impl<S, T, N, D> Vector<T> for DspVec<S, T, N, D>
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain  {
+    fn delta(&self) -> T {
+        self.delta
+    }
+
+    fn set_delta(&mut self, delta: T) {
+        self.delta = delta;
+    }
+
+    fn domain(&self) -> DataDomain {
+        self.domain.domain()
+    }
+
+    fn is_complex(&self) -> bool {
+        self.number_space.is_complex()
+    }
+
+    fn len(&self) -> usize {
+        self.valid_len
+    }
+
+    fn points(&self) -> usize {
+        self.valid_len / if self.is_complex() { 2 } else { 1 }
+    }
+
+    fn get_multicore_settings(&self) -> &MultiCoreSettings {
+        &self.multicore_settings
+    }
+
+    fn set_multicore_settings(&mut self, settings: MultiCoreSettings) {
+        self.multicore_settings = settings;
+    }
+
+    fn alloc_len(&self) -> usize {
+        self.data.len()
+    }
+
+    fn shrink(&mut self, len: usize) -> VoidResult {
+        if self.is_complex() && len % 2 != 0 {
+            return Err(ErrorReason::InputMustHaveAnEvenLength);
+        }
+
+        if len > self.alloc_len() {
+            return Err(ErrorReason::InvalidArgumentLength);
+        }
+
+        self.valid_len = len;
+
+        Ok(())
+    }
+}
+
+/// Trait for types which can increase the capacity of their storace.
+pub trait SetLen {
     /// Sets the vector length to the given length.
     /// If `self.len() < len` then the value of the new elements is undefined.
     /// For complex data `len` needs to be even.
@@ -109,10 +151,6 @@ impl<S, T, N, D> SetLen for DspVec<S, T, N, D>
           T: RealNumber,
           N: NumberSpace,
           D: Domain {
-    fn alloc_len(&self) -> usize {
-        self.data.alloc_len()
-    }
-
     fn set_len(&mut self, len: usize) -> VoidResult {
         if self.is_complex() && len % 2 != 0 {
             return Err(ErrorReason::InputMustHaveAnEvenLength);

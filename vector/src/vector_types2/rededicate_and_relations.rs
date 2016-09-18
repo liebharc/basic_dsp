@@ -1,7 +1,7 @@
 //! Specifies the conversions between data types.
 use RealNumber;
 use super::{
-    DspVec, GenDspVec,
+    DspVec, GenDspVec, Vector,
     RealTimeVec, RealFreqVec,
     ComplexTimeVec, ComplexFreqVec,
     ToSlice, NumberSpace, Domain,
