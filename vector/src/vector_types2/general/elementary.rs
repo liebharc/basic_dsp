@@ -387,8 +387,8 @@ macro_rules! impl_binary_complex_vector_operation {
                         &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
                         |original, range, target, _arg| {
                             let original = T::Reg::array_to_regs(&original[range.start .. range.end]);
-                            let mut target = T::Reg::array_to_regs_mut(&mut target[range.start .. range.end]);
-                            for (dst, src) in &mut target.iter_mut().zip(original) {
+                            let target = T::Reg::array_to_regs_mut(&mut target[range.start .. range.end]);
+                            for (dst, src) in target.iter_mut().zip(original) {
                                 *dst = dst.$simd_op(*src);
                             }
                     });
@@ -438,23 +438,16 @@ macro_rules! impl_binary_smaller_vector_operation {
                         &other, T::Reg::len(),
                         &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
                         |original, range, target, _arg| {
-                            // This parallelization likely doesn't make sense for the use
-                            // case which we have in mind with this implementation
-                            // so we likely have to revisit this code piece in future
-                            let mut i = 0;
-                            let mut j = range.start;
-                            while i < target.len()
-                            {
+                            let mut j = range.start % original.len();
+                            let target = T::Reg::array_to_regs_mut(&mut target[..]);
+                            for n in target {
                                 let vector1 =
                                     if j + T::Reg::len() < original.len() {
                                         T::Reg::load_unchecked(original, j)
                                     } else {
                                         T::Reg::load_wrap_unchecked(original, j)
                                     };
-                                let vector2 = T::Reg::load_unchecked(target, i);
-                                let result = vector2.$simd_op(vector1);
-                                result.store_unchecked(target, i);
-                                i += T::Reg::len();
+                                *n = n.$simd_op(vector1);
                                 j = (j + T::Reg::len()) % original.len();
                             }
                     });
@@ -493,23 +486,16 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
                         &other, T::Reg::len(),
                         &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
                         |original, range, target, _arg| {
-                            // This parallelization likely doesn't make sense for the use
-                            // case which we have in mind with this implementation
-                            // so we likely have to revisit this code piece in future
-                            let mut i = 0;
-                            let mut j = range.start;
-                            while i < target.len()
-                            {
+                            let mut j = range.start % original.len();
+                            let target = T::Reg::array_to_regs_mut(&mut target[..]);
+                            for n in target {
                                 let vector1 =
                                     if j + T::Reg::len() < original.len() {
                                         T::Reg::load_unchecked(original, j)
                                     } else {
                                         T::Reg::load_wrap_unchecked(original, j)
                                     };
-                                let vector2 = T::Reg::load_unchecked(target, i);
-                                let result = vector2.$simd_op(vector1);
-                                result.store_unchecked(target, i);
-                                i += T::Reg::len();
+                                *n = n.$simd_op(vector1);
                                 j = (j + T::Reg::len()) % original.len();
                             }
                     });
