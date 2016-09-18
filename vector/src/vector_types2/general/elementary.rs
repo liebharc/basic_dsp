@@ -5,6 +5,7 @@ use simd_extensions::*;
 use num::Complex;
 use std::ops::*;
 use super::super::{
+    array_to_complex, array_to_complex_mut,
     ErrorReason, VoidResult, Vector,
     DspVec, ToSliceMut,
     Domain, RealNumberSpace, ComplexNumberSpace
@@ -430,36 +431,18 @@ macro_rules! impl_binary_smaller_vector_operation {
 
                 let data_length = self.len();
                 let mut array = self.data.to_slice_mut();
-                let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
-                let other = &$arg_name.data.to_slice();
-                if vectorization_length > 0 {
-                    Chunk::from_src_to_dest(
-                        Complexity::Small, &self.multicore_settings,
-                        &other, T::Reg::len(),
-                        &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
-                        |original, range, target, _arg| {
-                            let mut j = range.start % original.len();
-                            let target = T::Reg::array_to_regs_mut(&mut target[..]);
-                            for n in target {
-                                let vector1 =
-                                    if j + T::Reg::len() < original.len() {
-                                        T::Reg::load(original, j)
-                                    } else {
-                                        T::Reg::load_wrap_unchecked(original, j)
-                                    };
-                                *n = n.$simd_op(vector1);
-                                j = (j + T::Reg::len()) % original.len();
-                            }
-                    });
-                }
-
-                for i in 0..scalar_left {
-                    array[i] = array[i].$scal_op(other[i % $arg_name.len()]);
-                }
-
-                for i in scalar_right..data_length {
-                    array[i] = array[i].$scal_op(other[i % $arg_name.len()]);
-                }
+                let other = $arg_name.data.to_slice();
+                Chunk::from_src_to_dest(
+                    Complexity::Small, &self.multicore_settings,
+                    &other, T::Reg::len(),
+                    &mut array[0..data_length], 1, (),
+                    |operand, range, target, _arg| {
+                        let mut i = range.start;
+                        for n in &mut target[..] {
+                            *n = n.$scal_op(operand[i % operand.len()]);
+                            i += 1;
+                        }
+                });
             }
 
             Ok(())
@@ -477,49 +460,21 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
                 assert_meta_data!(self, $arg_name);
 
                 let data_length = self.len();
-                let mut array = &mut self.data.to_slice_mut();
-                let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
-                let other = &$arg_name.data.to_slice();
-                if vectorization_length > 0 {
-                    Chunk::from_src_to_dest(
-                        Complexity::Small, &self.multicore_settings,
-                        &other, T::Reg::len(),
-                        &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
-                        |original, range, target, _arg| {
-                            let mut j = range.start % original.len();
-                            let target = T::Reg::array_to_regs_mut(&mut target[..]);
-                            for n in target {
-                                let vector1 =
-                                    if j + T::Reg::len() < original.len() {
-                                        T::Reg::load(original, j)
-                                    } else {
-                                        T::Reg::load_wrap_unchecked(original, j)
-                                    };
-                                *n = n.$simd_op(vector1);
-                                j = (j + T::Reg::len()) % original.len();
-                            }
-                    });
-                }
-
-                let mut i = 0;
-                while i < scalar_left {
-                    let complex1 = Complex::<T>::new(array[i], array[i + 1]);
-                    let complex2 = Complex::<T>::new(other[i % other.len()], other[(i + 1) % other.len()]);
-                    let result = complex1.$scal_op(complex2);
-                    array[i] = result.re;
-                    array[i + 1] = result.im;
-                    i += 2;
-                }
-
-                let mut i = scalar_right;
-                while i < data_length {
-                    let complex1 = Complex::<T>::new(array[i], array[i + 1]);
-                    let complex2 = Complex::<T>::new(other[i % other.len()], other[(i + 1) % other.len()]);
-                    let result = complex1.$scal_op(complex2);
-                    array[i] = result.re;
-                    array[i + 1] = result.im;
-                    i += 2;
-                }
+                let mut array = self.data.to_slice_mut();
+                let other = $arg_name.data.to_slice();
+                Chunk::from_src_to_dest(
+                    Complexity::Small, &self.multicore_settings,
+                    &other, T::Reg::len(),
+                    &mut array[0..data_length], 2, (),
+                    |operand, range, target, _arg| {
+                        let mut target = array_to_complex_mut(&mut target[..]);
+                        let operand = array_to_complex(&operand[..]);
+                        let mut i = range.start;
+                        for n in &mut target[..] {
+                            *n = n.$scal_op(operand[i % operand.len()]);
+                            i += 1;
+                        }
+                });
             }
 
             Ok(())

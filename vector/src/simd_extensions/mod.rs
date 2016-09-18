@@ -49,8 +49,6 @@ pub trait SimdGeneric<T> : Simd<T>
 
     fn array_to_regs_mut(array: &mut [T]) -> &mut [Self];
 
-    fn load(array: &[T], idx: usize) -> Self;
-
     fn load_unchecked(array: &[T], idx: usize) -> Self;
 
     fn store_unchecked(self, target: &mut [T], index: usize);
@@ -120,11 +118,6 @@ macro_rules! simd_generic_impl {
                     let trans: &mut [Self] = mem::transmute(array);
                     &mut trans[0 .. len / reg_len]
                 }
-            }
-
-            #[inline]
-            fn load(array: &[$data_type], idx: usize) -> Self {
-                $reg::load(array, idx)
             }
 
             #[inline]
