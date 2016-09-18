@@ -340,13 +340,10 @@ impl<S, T, N, D> DspVec<S, T, N, D>
               &mut temp[scalar_left..vectorization_length], T::Reg::len() / 2, (),
               move |array, range, target, _arg| {
                   let mut i = 0;
-                  let mut j = range.start;
-                  while i < target.len()
-                  {
-                      let vector = T::Reg::load_unchecked(array, j);
-                      let result = op_simd(vector);
+                  let array = T::Reg::array_to_regs(&array[range]);
+                  for n in array {
+                      let result = op_simd(*n);
                       result.store_half_unchecked(target, i);
-                      j += T::Reg::len();
                       i += T::Reg::len() / 2;
                   }
               });
