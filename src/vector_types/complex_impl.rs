@@ -87,12 +87,12 @@ macro_rules! add_complex_impl {
 
                     let data_length = self.len();
                     destination.reallocate(data_length / 2);
-                    let (scalar_left, scalar_right, vectorization_length) = $reg::calc_data_alignment_reqs(&self.data[0..data_length]);
-                    let array = &self.data;
                     let mut temp = &mut destination.data;
+                    let (scalar_left, scalar_right, vectorization_length) = $reg::calc_data_alignment_reqs(&temp[0..data_length / 2]);
+                    let array = &self.data;
                     Chunk::from_src_to_dest(
                         Complexity::Small, &self.multicore_settings,
-                        &array[scalar_left..vectorization_length], $reg::len(),
+                        &array[2*scalar_left..2*vectorization_length], $reg::len(),
                         &mut temp[scalar_left..vectorization_length/2], $reg::len() / 2, (),
                         move |array, range, target, _arg| {
                             let mut i = 0;
@@ -108,13 +108,13 @@ macro_rules! add_complex_impl {
                         });
 
                     let mut i = 0;
-                    while i < scalar_left
+                    while i < 2 * scalar_left
                     {
                         temp[i / 2] = (array[i] * array[i] + array[i + 1] * array[i + 1]).sqrt();
                         i += 2;
                     }
 
-                    let mut i = scalar_right;
+                    let mut i = 2 * scalar_right;
                     while i < data_length
                     {
                         temp[i / 2] = (array[i] * array[i] + array[i + 1] * array[i + 1]).sqrt();
@@ -284,25 +284,29 @@ macro_rules! add_complex_impl {
                     let (scalar_left, scalar_right, vectorization_length) = $reg::calc_data_alignment_reqs(&self.data[0..data_length]);
                     let array = &self.data;
                     let other = &factor.data;
-                    let chunks = Chunk::get_a_fold_b(
-                        Complexity::Small, &self.multicore_settings,
-                        &other[scalar_left..vectorization_length], $reg::len(),
-                        &array[scalar_left..vectorization_length], $reg::len(),
-                        |original, range, target| {
-                            let mut i = 0;
-                            let mut j = range.start;
-                            let mut result = $reg::splat(0.0);
-                            while i < target.len()
-                            {
-                                let vector1 = $reg::load_unchecked(original, j);
-                                let vector2 = $reg::load_unchecked(target, i);
-                                result = result + (vector2.mul_complex(vector1));
-                                i += $reg::len();
-                                j += $reg::len();
-                            }
+                    let chunks = if vectorization_length > 0 {
+                        Chunk::get_a_fold_b(
+                            Complexity::Small, &self.multicore_settings,
+                            &other[scalar_left..vectorization_length], $reg::len(),
+                            &array[scalar_left..vectorization_length], $reg::len(),
+                            |original, range, target| {
+                                let mut i = 0;
+                                let mut j = range.start;
+                                let mut result = $reg::splat(0.0);
+                                while i < target.len()
+                                {
+                                    let vector1 = $reg::load_unchecked(original, j);
+                                    let vector2 = $reg::load_unchecked(target, i);
+                                    result = result + (vector2.mul_complex(vector1));
+                                    i += $reg::len();
+                                    j += $reg::len();
+                                }
 
-                        result.sum_complex()
-                    });
+                            result.sum_complex()
+                        })
+                    } else {
+                        Vec::new()
+                    };
 
                     let mut i = 0;
                     let mut sum = Complex::<$data_type>::new(0.0, 0.0);
