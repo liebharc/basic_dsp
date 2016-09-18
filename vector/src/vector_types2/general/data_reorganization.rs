@@ -1,6 +1,10 @@
+use super::super::{
+	VoidResult
+};
+
 pub trait ReorganizeDataOps {
 	/// Reverses the data inside the vector.
-	fn reverse(self);
+	fn reverse(&mut self);
 
 	/// This function swaps both halves of the vector. This operation is also called FFT shift
 	/// Use it after a `plain_fft` to get a spectrum which is centered at `0 Hz`.
@@ -13,8 +17,22 @@ pub trait ReorganizeDataOps {
 	/// let result = vector.swap_halves().expect("Ignoring error handling in examples");
 	/// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], result.real(0..));
 	/// ```
-	fn swap_halves(self);
+	fn swap_halves(&mut self);
+}
 
+/// An option which defines how a vector should be padded
+#[derive(Copy)]
+#[derive(Clone)]
+#[derive(PartialEq)]
+#[derive(Debug)]
+pub enum PaddingOption {
+    /// Appends zeros to the end of the vector.
+    End,
+    /// Surrounds the vector with zeros at the beginning and at the end.
+    Surround,
+
+    /// Inserts zeros in the center of the vector
+    Center,
 }
 
 pub trait InsertZerosOps {
@@ -36,7 +54,7 @@ pub trait InsertZerosOps {
 	/// let result = vector.zero_pad(2, PaddingOption::End).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 0.0, 0.0], result.interleaved(0..));
 	/// ```
-	fn zero_pad(self, points: usize, option: PaddingOption);
+	fn zero_pad(&mut self, points: usize, option: PaddingOption);
 
 	/// Interleaves zeros `factor - 1`times after every vector element, so that the resulting
 	/// vector will have a length of `self.len() * factor`.
@@ -56,10 +74,10 @@ pub trait InsertZerosOps {
 	/// let result = vector.zero_interleave(2).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], result.interleaved(0..));
 	/// ```
-	fn zero_interleave(self, factor: u32);
+	fn zero_interleave(&mut self, factor: u32);
 }
 
-pub trait SplitMergeOps {
+pub trait SplitOps {
 	/// Splits the vector into several smaller vectors. `self.len()` must be dividable by
     /// `targets.len()` without a remainder and this condition must be true too `targets.len() > 0`.
     /// # Failures
@@ -80,7 +98,9 @@ pub trait SplitMergeOps {
     /// assert_eq!([1.0, 3.0, 5.0, 7.0, 9.0], split[0].real(0..));
     /// ```
     fn split_into(&self, targets: &mut [Box<Self>]) -> VoidResult;
+}
 
+pub trait MergeOps {
     /// Merges several vectors into `self`. All vectors must have the same size and
     /// at least one vector must be provided.
     /// # Failures
@@ -99,5 +119,5 @@ pub trait SplitMergeOps {
     /// let merged = vector.merge(parts).expect("Ignoring error handling in examples");
     /// assert_eq!([1.0, 1.0, 2.0, 2.0], merged.real(0..));
     /// ```
-    fn merge(self, sources: &[Box<Self>]) -> TransRes<Self>;
+    fn merge(&mut self, sources: &[Box<Self>]) -> VoidResult;
 }
