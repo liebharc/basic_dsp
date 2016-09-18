@@ -346,16 +346,10 @@ macro_rules! impl_binary_vector_operation {
                         &other[scalar_left..vectorization_length], T::Reg::len(),
                         &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
                         |original, range, target, _arg| {
-                            let mut i = 0;
-                            let mut j = range.start;
-                            while i < target.len()
-                            {
-                                let vector1 = T::Reg::load_unchecked(original, j);
-                                let vector2 = T::Reg::load_unchecked(target, i);
-                                let result = vector2.$simd_op(vector1);
-                                result.store_unchecked(target, i);
-                                i += T::Reg::len();
-                                j += T::Reg::len();
+                            let original = T::Reg::array_to_regs(&original[range.start .. range.end]);
+                            let mut target = T::Reg::array_to_regs_mut(&mut target[range.start .. range.end]);
+                            for (dst, src) in &mut target.iter_mut().zip(original) {
+                                *dst = dst.$simd_op(*src);
                             }
                     });
                 }
@@ -392,16 +386,10 @@ macro_rules! impl_binary_complex_vector_operation {
                         &other[scalar_left..vectorization_length], T::Reg::len(),
                         &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
                         |original, range, target, _arg| {
-                            let mut i = 0;
-                            let mut j = range.start;
-                            while i < target.len()
-                            {
-                                let vector1 = T::Reg::load_unchecked(original, j);
-                                let vector2 = T::Reg::load_unchecked(target, i);
-                                let result = vector2.$simd_op(vector1);
-                                result.store_unchecked(target, i);
-                                i += T::Reg::len();
-                                j += T::Reg::len();
+                            let original = T::Reg::array_to_regs(&original[range.start .. range.end]);
+                            let mut target = T::Reg::array_to_regs_mut(&mut target[range.start .. range.end]);
+                            for (dst, src) in &mut target.iter_mut().zip(original) {
+                                *dst = dst.$simd_op(*src);
                             }
                     });
                 }
