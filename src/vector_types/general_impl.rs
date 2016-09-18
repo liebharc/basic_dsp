@@ -89,7 +89,7 @@ macro_rules! impl_binary_vector_operation {
                 let other = &$arg_name.data;
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
-                    &other[0..vectorization_length], $reg::len(),
+                    &other[scalar_left..vectorization_length], $reg::len(),
                     &mut array[scalar_left..vectorization_length], $reg::len(), (),
                     |original, range, target, _arg| {
                         let mut i = 0;
