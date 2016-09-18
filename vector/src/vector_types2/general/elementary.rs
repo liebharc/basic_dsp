@@ -7,8 +7,7 @@ use std::ops::*;
 use super::super::{
     ErrorReason, VoidResult,
     DspVec, ToSliceMut,
-    Domain, RealNumberSpace,
-    RealData, ComplexData, RealOrComplexData
+    Domain, RealNumberSpace, ComplexNumberSpace
 };
 
 
@@ -16,6 +15,11 @@ use super::super::{
 pub trait ScaleOps<T> : Sized
     where T: Sized {
     /// Multiplies the vector element with a scalar.
+    ///
+    /// # Failures
+    ///
+    /// `self.len()` to `0` if the vector isn't in the complex number space but `factor` is complex.
+    ///
     /// # Example
     ///
     /// ```
@@ -35,6 +39,11 @@ pub trait ScaleOps<T> : Sized
 pub trait OffsetOps<T> : Sized
     where T: Sized {
     /// Adds a scalar to each vector element.
+    ///
+    /// # Failures
+    ///
+    /// `self.len()` to `0` if the vector isn't in the complex number space but `factor` is complex.
+    ///
     /// # Example
     ///
     /// ```
@@ -48,52 +57,6 @@ pub trait OffsetOps<T> : Sized
     /// # }
     /// ```
     fn offset(&mut self, offset: T);
-}
-
-/// An operation which multiplies each vector element with a constant.
-/// This trait is intended for types which track their meta data at runtime.
-pub trait GenScaleOps<T> : Sized
-    where T: Sized {
-    /// Multiplies the vector element with a scalar.
-    /// # Example
-    ///
-    /// ```
-    /// # extern crate num;
-    /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
-    /// # fn main() {
-    /// let mut vector = vec!(1.0, 2.0).to_gen_dsp_vec(DataDomain::Time, false);
-    /// vector.real_scale(2.0).expect("Ignoring error handling in examples");
-    /// assert_eq!([2.0, 4.0], vector[0..]);
-    /// # }
-    /// ```
-    fn real_scale(&mut self, factor: T) -> VoidResult;
-
-    /// Multiplies the vector element with a scalar.
-    fn complex_scale(&mut self, factor: Complex<T>) -> VoidResult;
-}
-
-/// An operation which adds a constant to each vector element.
-/// This trait is intended for types which track their meta data at runtime.
-pub trait GenOffsetOps<T> : Sized
-    where T: Sized {
-    /// Adds a scalar to each vector element.
-    /// # Example
-    ///
-    /// ```
-    /// # extern crate num;
-    /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
-    /// # fn main() {
-    /// let mut vector = vec!(1.0, 2.0).to_gen_dsp_vec(DataDomain::Time, false);
-    /// vector.real_offset(2.0).expect("Ignoring error handling in examples");
-    /// assert_eq!([3.0, 4.0], vector[0..]);
-    /// # }
-    /// ```
-    fn real_offset(&mut self, offset: T) -> VoidResult;
-
-    /// Adds a scalar to each vector element.
-    fn complex_offset(&mut self, offset: Complex<T>) -> VoidResult;
 }
 
 pub trait ElementaryOps {
@@ -286,91 +249,60 @@ pub trait ElementaryOps {
     fn div_smaller(&mut self, divisor: &Self) -> VoidResult;
 }
 
-macro_rules! assert_real {
-    ($self_: ident) => {
-        if $self_.is_complex() {
-            return Err(ErrorReason::InputMustBeReal);
-        }
-    }
-}
-
 macro_rules! assert_complex {
     ($self_: ident) => {
         if !$self_.is_complex() {
-            return Err(ErrorReason::InputMustBeComplex);
+            $self_.valid_len = 0;
+            return;
         }
     }
 }
 
-impl<S, T, D> OffsetOps<T> for DspVec<S, T, RealData, D>
+impl<S, T, N, D> OffsetOps<T> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
+          N: RealNumberSpace,
           D: Domain {
     fn offset(&mut self, offset: T) {
-        self.simd_real_operation(|x, y| x.add_real(y), |x, y| x + y, offset, Complexity::Small);
+        if self.is_complex() {
+            let vector_offset = T::Reg::from_complex(Complex::new(offset, T::zero()));
+            self.simd_complex_operation(|x,y| x + y, |x,y| x + Complex::<T>::new(y.extract(0), y.extract(1)), vector_offset, Complexity::Small);
+        } else {
+            self.simd_real_operation(|x, y| x.add_real(y), |x, y| x + y, offset, Complexity::Small);
+        }
     }
 }
 
-impl<S, T, D> OffsetOps<Complex<T>> for DspVec<S, T, ComplexData, D>
+impl<S, T, N, D> OffsetOps<Complex<T>> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
+          N: RealNumberSpace,
           D: Domain {
     fn offset(&mut self, offset: Complex<T>) {
+        assert_complex!(self);
         let vector_offset = T::Reg::from_complex(offset);
         self.simd_complex_operation(|x,y| x + y, |x,y| x + Complex::<T>::new(y.extract(0), y.extract(1)), vector_offset, Complexity::Small);
     }
 }
 
-impl<S, T, D> ScaleOps<T> for DspVec<S, T, RealData, D>
+impl<S, T, D, N> ScaleOps<T> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
+          N: RealNumberSpace,
           D: Domain {
     fn scale(&mut self, factor: T) {
         self.simd_real_operation(|x, y| x.scale_real(y), |x, y| x * y, factor, Complexity::Small);
     }
 }
 
-impl<S, T, D> ScaleOps<Complex<T>> for DspVec<S, T, ComplexData, D>
+impl<S, T, D, N> ScaleOps<Complex<T>> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
+          N: ComplexNumberSpace,
           D: Domain {
     fn scale(&mut self, factor: Complex<T>) {
-        self.simd_complex_operation(|x,y| x.scale_complex(y), |x,y| x * y, factor, Complexity::Small);
-    }
-}
-
-impl<S, T, D> GenOffsetOps<T> for DspVec<S, T, RealOrComplexData, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          D: Domain {
-      fn real_offset(&mut self, offset: T) -> VoidResult {
-          assert_real!(self);
-          self.simd_real_operation(|x, y| x.add_real(y), |x, y| x + y, offset, Complexity::Small);
-          Ok(())
-      }
-
-      fn complex_offset(&mut self, offset: Complex<T>) -> VoidResult {
-          assert_complex!(self);
-          let vector_offset = T::Reg::from_complex(offset);
-          self.simd_complex_operation(|x,y| x + y, |x,y| x + Complex::<T>::new(y.extract(0), y.extract(1)), vector_offset, Complexity::Small);
-          Ok(())
-      }
-}
-
-impl<S, T, D> GenScaleOps<T> for DspVec<S, T, RealOrComplexData, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          D: Domain {
-    fn real_scale(&mut self, factor: T) -> VoidResult {
-        assert_real!(self);
-        self.simd_real_operation(|x, y| x.scale_real(y), |x, y| x * y, factor, Complexity::Small);
-        Ok(())
-    }
-
-    fn complex_scale(&mut self, factor: Complex<T>) -> VoidResult {
         assert_complex!(self);
         self.simd_complex_operation(|x,y| x.scale_complex(y), |x,y| x * y, factor, Complexity::Small);
-        Ok(())
     }
 }
 
