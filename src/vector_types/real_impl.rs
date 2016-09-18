@@ -12,7 +12,7 @@ use super::definitions::{
     GenericVectorOps,
     RealVectorOps,
     VectorIter};
-use super::GenericDataVector;    
+use super::GenericDataVector;
 use super::stats_impl::Stats;
 use simd_extensions::*;
 use std::sync::Arc;
@@ -20,36 +20,36 @@ use std::sync::Arc;
 macro_rules! add_real_impl {
     ($($data_type:ident, $reg:ident);*)
      =>
-     {     
+     {
         $(
             impl RealVectorOps<$data_type> for GenericDataVector<$data_type>
             {
                 type ComplexPartner = Self;
-                
+
                 fn real_offset(self, offset: $data_type) -> VecResult<Self>
                 {
                     assert_real!(self);
                     self.simd_real_operation(|x, y| x.add_real(y), |x, y| x + y, offset, Complexity::Small)
                 }
-                
+
                 fn real_scale(self, factor: $data_type) -> VecResult<Self>
                 {
                     // This operation actually also works for complex vectors so we allow that
                     self.simd_real_operation(|x, y| x.scale_real(y), |x, y| x * y, factor, Complexity::Small)
                 }
-                
+
                 fn abs(self) -> VecResult<Self>
                 {
                     assert_real!(self);
                     self.simd_real_operation(|x, _arg| (x * x).sqrt(), |x, _arg| x.abs(), (), Complexity::Small)
                 }
-                
+
                 fn to_complex(self) -> VecResult<Self>
                 {
                     assert_real!(self);
                     let result = self.zero_interleave(2);
                     match result {
-                        Ok(mut vec) => { 
+                        Ok(mut vec) => {
                             vec.is_complex = true;
                             Ok(vec)
                         },
@@ -59,13 +59,13 @@ macro_rules! add_real_impl {
                         }
                     }
                 }
-                
+
                 fn wrap(self, divisor: $data_type) -> VecResult<Self>
                 {
                     assert_real!(self);
                     self.pure_real_operation(|x, y| x % y, divisor, Complexity::Small)
                 }
-                
+
                 fn unwrap(mut self, divisor: $data_type) -> VecResult<Self>
                 {
                     {
@@ -87,14 +87,14 @@ macro_rules! add_real_impl {
                                 diff += divisor;
                                 data[j] = data[i] + diff;
                             }
-                                            
+
                             i += 1;
                             j += 1;
                         }
                     }
                     Ok(self)
                 }
-                
+
                 fn map_inplace_real<A, F>(mut self, argument: A, f: F) -> VecResult<Self>
                     where A: Sync + Copy + Send,
                           F: Fn($data_type, usize, A) -> $data_type + 'static + Sync {
@@ -115,23 +115,23 @@ macro_rules! add_real_impl {
                     }
                     Ok(self)
                 }
-                
+
                 fn map_aggregate_real<A, FMap, FAggr, R>(
-                    &self, 
-                    argument: A, 
+                    &self,
+                    argument: A,
                     map: FMap,
                     aggregate: FAggr) -> ScalarResult<R>
                         where A: Sync + Copy + Send,
                               FMap: Fn($data_type, usize, A) -> R + 'static + Sync,
                               FAggr: Fn(R, R) -> R + 'static + Sync + Send,
                               R: Send {
-                    
+
                     let aggregate = Arc::new(aggregate);
                     let mut result = {
                         if self.is_complex {
                             return Err(ErrorReason::VectorMustBeReal);
                         }
-                        
+
                         let array = &self.data;
                         let length = array.len();
                         if length == 0 {
@@ -167,7 +167,7 @@ macro_rules! add_real_impl {
                             Some(e) => only_valid_options.push(e)
                         };
                     }
-                    
+
                     if only_valid_options.len() == 0 {
                         return Err(ErrorReason::VectorMustNotBeEmpty);
                     }
@@ -177,49 +177,54 @@ macro_rules! add_real_impl {
                     }
                     Ok(aggregated)
                 }
-                
+
                 fn real_dot_product(&self, factor: &Self) -> ScalarResult<$data_type>
                 {
                     if self.is_complex {
                         return Err(ErrorReason::VectorMustBeReal);
                     }
-                    
+
                     let data_length = self.len();
-                    let scalar_length = data_length % $reg::len();
-                    let vectorization_length = data_length - scalar_length;
+                    let (scalar_left, scalar_right, vectorization_length) = $reg::calc_data_alignment_reqs(&self.data[0..data_length]);
                     let array = &self.data;
                     let other = &factor.data;
                     let chunks = Chunk::get_a_fold_b(
                         Complexity::Small, &self.multicore_settings,
-                        &other[0..vectorization_length], $reg::len(), 
-                        &array[0..vectorization_length], $reg::len(), 
+                        &other[0..vectorization_length], $reg::len(),
+                        &array[0..vectorization_length], $reg::len(),
                         |original, range, target| {
                             let mut i = 0;
                             let mut j = range.start;
                             let mut result = $reg::splat(0.0);
                             while i < target.len()
-                            { 
+                            {
                                 let vector1 = $reg::load_unchecked(original, j);
                                 let vector2 = $reg::load_unchecked(target, i);
                                 result = result + (vector2 * vector1);
                                 i += $reg::len();
                                 j += $reg::len();
                             }
-                            
-                            result.sum_real()        
+
+                            result.sum_real()
                     });
-                    let mut i = vectorization_length;
+
+                    let mut i = 0;
                     let mut sum = 0.0;
-                    while i < data_length
-                    {
+                    while i < scalar_left {
                         sum += array[i] * other[i];
                         i += 1;
                     }
-                    
+
+                    let mut i = scalar_right;
+                    while i < data_length {
+                        sum += array[i] * other[i];
+                        i += 1;
+                    }
+
                     let chunk_sum: $data_type = chunks.iter().fold(0.0, |a, b| a + b);
                     Ok(chunk_sum + sum)
                 }
-                
+
                 fn real_statistics(&self) -> Statistics<$data_type> {
                     let data_length = self.len();
                     let array = &self.data;
@@ -229,21 +234,21 @@ macro_rules! add_real_impl {
                         |array, range, _arg| {
                             let mut stats = Statistics::empty();
                             let mut j = range.start;
-                            for num in array { 
+                            for num in array {
                                 stats.add(*num, j);
                                 j += 1;
                             }
                             stats
                     });
-                    
+
                     Statistics::merge(&chunks)
                 }
-                
+
                 fn real_statistics_splitted(&self, len: usize) -> Vec<Statistics<$data_type>> {
                     if len == 0 {
                         return Vec::new();
                     }
-                    
+
                     let data_length = self.len();
                     let array = &self.data;
                     let chunks = Chunk::get_chunked_results(
@@ -257,22 +262,22 @@ macro_rules! add_real_impl {
                                 stats.add(*num, j / len);
                                 j += 1;
                             }
-                            
-                            results 
+
+                            results
                     });
-                    
+
                     Statistics::merge_cols(&chunks)
                 }
-                
+
                 fn real_sum(&self) -> $data_type {
                     let data_length = self.len();
                     let (scalar_left, scalar_right, vectorization_length) = $reg::calc_data_alignment_reqs(&self.data[0..data_length]);
                     let array = &self.data;
-                    let mut sum = 
+                    let mut sum =
                         if vectorization_length > 0 {
                             let chunks = Chunk::get_chunked_results(
                                 Complexity::Small, &self.multicore_settings,
-                                &array[scalar_left..vectorization_length], $reg::len(), (), 
+                                &array[scalar_left..vectorization_length], $reg::len(), (),
                                 move |array, _, _| {
                                 let array = $reg::array_to_regs(array);
                                 let mut sum = $reg::splat(0.0);
@@ -284,7 +289,7 @@ macro_rules! add_real_impl {
                             chunks.iter()
                                 .map(|v|v.sum_real())
                                 .sum()
-                        } 
+                        }
                         else {
                             0.0
                         };
@@ -298,16 +303,16 @@ macro_rules! add_real_impl {
                     }
                     sum
                 }
-                
+
                 fn real_sum_sq(&self) -> $data_type {
                     let data_length = self.len();
                     let (scalar_left, scalar_right, vectorization_length) = $reg::calc_data_alignment_reqs(&self.data[0..data_length]);
                     let array = &self.data;
-                    let mut sum = 
+                    let mut sum =
                         if vectorization_length > 0 {
                             let chunks = Chunk::get_chunked_results(
                                 Complexity::Small, &self.multicore_settings,
-                                &array[scalar_left..vectorization_length], $reg::len(), (), 
+                                &array[scalar_left..vectorization_length], $reg::len(), (),
                                 move |array, _, _| {
                                 let array = $reg::array_to_regs(array);
                                 let mut sum = $reg::splat(0.0);
@@ -319,7 +324,7 @@ macro_rules! add_real_impl {
                             chunks.iter()
                                 .map(|v|v.sum_real())
                                 .sum()
-                        } 
+                        }
                         else {
                             0.0
                         };
@@ -334,60 +339,60 @@ macro_rules! add_real_impl {
                     sum
                 }
             }
-            
+
             impl ScaleOps<$data_type> for GenericDataVector<$data_type> {
                 fn scale(self, offset: $data_type) -> VecResult<Self> {
                     self.real_scale(offset)
                 }
             }
-            
+
             impl OffsetOps<$data_type> for GenericDataVector<$data_type> {
                 fn offset(self, offset: $data_type) -> VecResult<Self> {
                     self.real_offset(offset)
                 }
             }
-            
+
             impl DotProductOps<$data_type> for GenericDataVector<$data_type> {
                 fn dot_product(&self, factor: &Self) -> ScalarResult<$data_type> {
                     self.real_dot_product(factor)
                 }
             }
-            
+
             impl StatisticsOps<$data_type> for GenericDataVector<$data_type> {
                 fn statistics(&self) -> Statistics<$data_type> {
                     self.real_statistics()
                 }
-                
+
                 fn statistics_splitted(&self, len: usize) -> Vec<Statistics<$data_type>> {
                     self.real_statistics_splitted(len)
                 }
-                
+
                 fn sum(&self) -> $data_type {
                     self.real_sum()
                 }
-                
+
                 fn sum_sq(&self) -> $data_type {
                     self.real_sum_sq()
                 }
             }
-            
+
             impl VectorIter<$data_type> for GenericDataVector<$data_type> {
                 fn map_inplace<A, F>(self, argument: A, map: F) -> VecResult<Self>
                     where A: Sync + Copy + Send,
                           F: Fn($data_type, usize, A) -> $data_type + 'static + Sync {
                     self.map_inplace_real(argument, map)
                 }
-                
+
                 fn map_aggregate<A, FMap, FAggr, R>(
-                    &self, 
-                    argument: A, 
+                    &self,
+                    argument: A,
                     map: FMap,
                     aggregate: FAggr) -> ScalarResult<R>
                 where A: Sync + Copy + Send,
                       FMap: Fn($data_type, usize, A) -> R + 'static + Sync,
                       FAggr: Fn(R, R) -> R + 'static + Sync + Send,
                       R: Send {
-                    self.map_aggregate_real(argument, map, aggregate)  
+                    self.map_aggregate_real(argument, map, aggregate)
                 }
             }
         )*

@@ -1,6 +1,12 @@
 # `basic_dsp`
 Changes:
 
+## Version 0.3.2
+Bugfix release:
+
+- Bugfix: SEGVAULT in add, sub, mul, div, add_smaller, sub_smaller, mul_smaller and div_smaller methods
+- Bugfix: SEGVAULT in get_magnitude and complex_dot_product
+
 ## Version 0.3.1
 Bugfix release with a minor enhancement:
 
