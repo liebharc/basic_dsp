@@ -90,22 +90,24 @@ macro_rules! add_complex_impl {
                     let mut temp = &mut destination.data;
                     let (scalar_left, scalar_right, vectorization_length) = $reg::calc_data_alignment_reqs(&temp[0..data_length / 2]);
                     let array = &self.data;
-                    Chunk::from_src_to_dest(
-                        Complexity::Small, &self.multicore_settings,
-                        &array[2 * scalar_left.. 2 * vectorization_length], $reg::len(),
-                        &mut temp[scalar_left..vectorization_length], $reg::len() / 2, (),
-                        move |array, range, target, _arg| {
-                            let mut i = 0;
-                            let mut j = range.start;
-                            while i < target.len()
-                            {
-                                let vector = $reg::load_unchecked(array, j);
-                                let result = vector.complex_abs();
-                                result.store_half_unchecked(target, i);
-                                j += $reg::len();
-                                i += $reg::len() / 2;
-                            }
-                        });
+                    if vectorization_length > 0 {
+                        Chunk::from_src_to_dest(
+                            Complexity::Small, &self.multicore_settings,
+                            &array[2 * scalar_left.. 2 * vectorization_length], $reg::len(),
+                            &mut temp[scalar_left..vectorization_length], $reg::len() / 2, (),
+                            move |array, range, target, _arg| {
+                                let mut i = 0;
+                                let mut j = range.start;
+                                while i < target.len()
+                                {
+                                    let vector = $reg::load_unchecked(array, j);
+                                    let result = vector.complex_abs();
+                                    result.store_half_unchecked(target, i);
+                                    j += $reg::len();
+                                    i += $reg::len() / 2;
+                                }
+                            });
+                    }
 
                     let mut i = 0;
                     while i < 2 * scalar_left
