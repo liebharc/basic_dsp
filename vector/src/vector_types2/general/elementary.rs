@@ -332,7 +332,6 @@ macro_rules! impl_binary_vector_operation {
         fn $method(&mut self, $arg_name: &Self) -> VoidResult
         {
             {
-                println!("Start");
                 let len = self.len();
                 reject_if!(self, len != $arg_name.len(), ErrorReason::InputMustHaveTheSameSize);
                 assert_meta_data!(self, $arg_name);
@@ -351,7 +350,6 @@ macro_rules! impl_binary_vector_operation {
                             let mut j = range.start;
                             while i < target.len()
                             {
-                                println!("Here");
                                 let vector1 = T::Reg::load_unchecked(original, j);
                                 let vector2 = T::Reg::load_unchecked(target, i);
                                 let result = vector2.$simd_op(vector1);
@@ -528,7 +526,7 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
                             }
                     });
                 }
-                
+
                 let mut i = 0;
                 while i < scalar_left {
                     let complex1 = Complex::<T>::new(array[i], array[i + 1]);
