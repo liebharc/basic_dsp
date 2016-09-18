@@ -332,6 +332,7 @@ macro_rules! impl_binary_vector_operation {
         fn $method(&mut self, $arg_name: &Self) -> VoidResult
         {
             {
+                println!("Start");
                 let len = self.len();
                 reject_if!(self, len != $arg_name.len(), ErrorReason::InputMustHaveTheSameSize);
                 assert_meta_data!(self, $arg_name);
@@ -340,23 +341,26 @@ macro_rules! impl_binary_vector_operation {
                 let mut array = self.data.to_slice_mut();
                 let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name.data.to_slice();
-                Chunk::from_src_to_dest(
-                    Complexity::Small, &self.multicore_settings,
-                    &other[scalar_left..vectorization_length], T::Reg::len(),
-                    &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
-                    |original, range, target, _arg| {
-                        let mut i = 0;
-                        let mut j = range.start;
-                        while i < target.len()
-                        {
-                            let vector1 = T::Reg::load_unchecked(original, j);
-                            let vector2 = T::Reg::load_unchecked(target, i);
-                            let result = vector2.$simd_op(vector1);
-                            result.store_unchecked(target, i);
-                            i += T::Reg::len();
-                            j += T::Reg::len();
-                        }
-                });
+                if vectorization_length > 0 {
+                    Chunk::from_src_to_dest(
+                        Complexity::Small, &self.multicore_settings,
+                        &other[scalar_left..vectorization_length], T::Reg::len(),
+                        &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
+                        |original, range, target, _arg| {
+                            let mut i = 0;
+                            let mut j = range.start;
+                            while i < target.len()
+                            {
+                                println!("Here");
+                                let vector1 = T::Reg::load_unchecked(original, j);
+                                let vector2 = T::Reg::load_unchecked(target, i);
+                                let result = vector2.$simd_op(vector1);
+                                result.store_unchecked(target, i);
+                                i += T::Reg::len();
+                                j += T::Reg::len();
+                            }
+                    });
+                }
                 for i in 0..scalar_left {
                     array[i] = array[i].$scal_op(other[i]);
                 }
@@ -384,23 +388,25 @@ macro_rules! impl_binary_complex_vector_operation {
                 let mut array = self.data.to_slice_mut();
                 let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name.data.to_slice();
-                Chunk::from_src_to_dest(
-                    Complexity::Small, &self.multicore_settings,
-                    &other[scalar_left..vectorization_length], T::Reg::len(),
-                    &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
-                    |original, range, target, _arg| {
-                        let mut i = 0;
-                        let mut j = range.start;
-                        while i < target.len()
-                        {
-                            let vector1 = T::Reg::load_unchecked(original, j);
-                            let vector2 = T::Reg::load_unchecked(target, i);
-                            let result = vector2.$simd_op(vector1);
-                            result.store_unchecked(target, i);
-                            i += T::Reg::len();
-                            j += T::Reg::len();
-                        }
-                });
+                if vectorization_length > 0 {
+                    Chunk::from_src_to_dest(
+                        Complexity::Small, &self.multicore_settings,
+                        &other[scalar_left..vectorization_length], T::Reg::len(),
+                        &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
+                        |original, range, target, _arg| {
+                            let mut i = 0;
+                            let mut j = range.start;
+                            while i < target.len()
+                            {
+                                let vector1 = T::Reg::load_unchecked(original, j);
+                                let vector2 = T::Reg::load_unchecked(target, i);
+                                let result = vector2.$simd_op(vector1);
+                                result.store_unchecked(target, i);
+                                i += T::Reg::len();
+                                j += T::Reg::len();
+                            }
+                    });
+                }
                 let mut i = 0;
                 while i < scalar_left {
                     let complex1 = Complex::<T>::new(array[i], array[i + 1]);
@@ -440,31 +446,33 @@ macro_rules! impl_binary_smaller_vector_operation {
                 let mut array = self.data.to_slice_mut();
                 let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name.data.to_slice();
-                Chunk::from_src_to_dest(
-                    Complexity::Small, &self.multicore_settings,
-                    &other, T::Reg::len(),
-                    &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
-                    |original, range, target, _arg| {
-                        // This parallelization likely doesn't make sense for the use
-                        // case which we have in mind with this implementation
-                        // so we likely have to revisit this code piece in future
-                        let mut i = 0;
-                        let mut j = range.start;
-                        while i < target.len()
-                        {
-                            let vector1 =
-                                if j + T::Reg::len() < original.len() {
-                                    T::Reg::load_unchecked(original, j)
-                                } else {
-                                    T::Reg::load_wrap_unchecked(original, j)
-                                };
-                            let vector2 = T::Reg::load_unchecked(target, i);
-                            let result = vector2.$simd_op(vector1);
-                            result.store_unchecked(target, i);
-                            i += T::Reg::len();
-                            j = (j + T::Reg::len()) % original.len();
-                        }
-                });
+                if vectorization_length > 0 {
+                    Chunk::from_src_to_dest(
+                        Complexity::Small, &self.multicore_settings,
+                        &other, T::Reg::len(),
+                        &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
+                        |original, range, target, _arg| {
+                            // This parallelization likely doesn't make sense for the use
+                            // case which we have in mind with this implementation
+                            // so we likely have to revisit this code piece in future
+                            let mut i = 0;
+                            let mut j = range.start;
+                            while i < target.len()
+                            {
+                                let vector1 =
+                                    if j + T::Reg::len() < original.len() {
+                                        T::Reg::load_unchecked(original, j)
+                                    } else {
+                                        T::Reg::load_wrap_unchecked(original, j)
+                                    };
+                                let vector2 = T::Reg::load_unchecked(target, i);
+                                let result = vector2.$simd_op(vector1);
+                                result.store_unchecked(target, i);
+                                i += T::Reg::len();
+                                j = (j + T::Reg::len()) % original.len();
+                            }
+                    });
+                }
 
                 for i in 0..scalar_left {
                     array[i] = array[i].$scal_op(other[i % $arg_name.len()]);
@@ -493,31 +501,34 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
                 let mut array = &mut self.data.to_slice_mut();
                 let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name.data.to_slice();
-                Chunk::from_src_to_dest(
-                    Complexity::Small, &self.multicore_settings,
-                    &other, T::Reg::len(),
-                    &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
-                    |original, range, target, _arg| {
-                        // This parallelization likely doesn't make sense for the use
-                        // case which we have in mind with this implementation
-                        // so we likely have to revisit this code piece in future
-                        let mut i = 0;
-                        let mut j = range.start;
-                        while i < target.len()
-                        {
-                            let vector1 =
-                                if j + T::Reg::len() < original.len() {
-                                    T::Reg::load_unchecked(original, j)
-                                } else {
-                                    T::Reg::load_wrap_unchecked(original, j)
-                                };
-                            let vector2 = T::Reg::load_unchecked(target, i);
-                            let result = vector2.$simd_op(vector1);
-                            result.store_unchecked(target, i);
-                            i += T::Reg::len();
-                            j = (j + T::Reg::len()) % original.len();
-                        }
-                });
+                if vectorization_length > 0 {
+                    Chunk::from_src_to_dest(
+                        Complexity::Small, &self.multicore_settings,
+                        &other, T::Reg::len(),
+                        &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
+                        |original, range, target, _arg| {
+                            // This parallelization likely doesn't make sense for the use
+                            // case which we have in mind with this implementation
+                            // so we likely have to revisit this code piece in future
+                            let mut i = 0;
+                            let mut j = range.start;
+                            while i < target.len()
+                            {
+                                let vector1 =
+                                    if j + T::Reg::len() < original.len() {
+                                        T::Reg::load_unchecked(original, j)
+                                    } else {
+                                        T::Reg::load_wrap_unchecked(original, j)
+                                    };
+                                let vector2 = T::Reg::load_unchecked(target, i);
+                                let result = vector2.$simd_op(vector1);
+                                result.store_unchecked(target, i);
+                                i += T::Reg::len();
+                                j = (j + T::Reg::len()) % original.len();
+                            }
+                    });
+                }
+                
                 let mut i = 0;
                 while i < scalar_left {
                     let complex1 = Complex::<T>::new(array[i], array[i + 1]);

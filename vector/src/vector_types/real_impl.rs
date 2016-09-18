@@ -188,25 +188,29 @@ macro_rules! add_real_impl {
                     let (scalar_left, scalar_right, vectorization_length) = $reg::calc_data_alignment_reqs(&self.data[0..data_length]);
                     let array = &self.data;
                     let other = &factor.data;
-                    let chunks = Chunk::get_a_fold_b(
-                        Complexity::Small, &self.multicore_settings,
-                        &other[0..vectorization_length], $reg::len(),
-                        &array[0..vectorization_length], $reg::len(),
-                        |original, range, target| {
-                            let mut i = 0;
-                            let mut j = range.start;
-                            let mut result = $reg::splat(0.0);
-                            while i < target.len()
-                            {
-                                let vector1 = $reg::load_unchecked(original, j);
-                                let vector2 = $reg::load_unchecked(target, i);
-                                result = result + (vector2 * vector1);
-                                i += $reg::len();
-                                j += $reg::len();
-                            }
+                    let chunks = if vectorization_length > 0 {
+                        Chunk::get_a_fold_b(
+                            Complexity::Small, &self.multicore_settings,
+                            &other[0..vectorization_length], $reg::len(),
+                            &array[0..vectorization_length], $reg::len(),
+                            |original, range, target| {
+                                let mut i = 0;
+                                let mut j = range.start;
+                                let mut result = $reg::splat(0.0);
+                                while i < target.len()
+                                {
+                                    let vector1 = $reg::load_unchecked(original, j);
+                                    let vector2 = $reg::load_unchecked(target, i);
+                                    result = result + (vector2 * vector1);
+                                    i += $reg::len();
+                                    j += $reg::len();
+                                }
 
-                            result.sum_real()
-                    });
+                                result.sum_real()
+                        })
+                    } else {
+                        Vec::new()
+                    };
 
                     let mut i = 0;
                     let mut sum = 0.0;

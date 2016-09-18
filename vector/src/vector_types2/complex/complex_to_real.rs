@@ -1,6 +1,6 @@
 use RealNumber;
 use multicore_support::*;
-use simd_extensions::Simd;
+use simd_extensions::*;
 use num::Complex;
 use std::ops::*;
 use super::super::{
@@ -144,6 +144,41 @@ pub trait ComplexToRealGetterOps<S, T> : ToRealResult
     /// ```
     fn get_imag(&self, destination: &mut Self::RealResult);
 
+    /// Copies the absolute value or magnitude of all vector elements into the given target vector.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp_vector;
+    /// use basic_dsp_vector::vector_types2::*;
+    /// # fn main() {
+    /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
+    /// let mut target = Vec::new().to_real_time_vec();
+    /// vector.get_magnitude(&mut target);
+    /// assert_eq!([5.0, 5.0], target[..]);
+    /// # }
+    /// ```
+    fn get_magnitude(&self, destination: &mut Self::RealResult);
+
+    /// Copies the absolute value squared or magnitude squared of all vector elements into the given target vector.
+    /// # Example
+    ///
+    /// Copies the absolute value or magnitude of all vector elements into the given target vector.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp_vector;
+    /// use basic_dsp_vector::vector_types2::*;
+    /// # fn main() {
+    /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
+    /// let mut target = Vec::new().to_real_time_vec();
+    /// vector.get_magnitude_squared(&mut target);
+    /// assert_eq!([25.0, 25.0], target[..]);
+    /// # }
+    /// ```
+    fn get_magnitude_squared(&self, destination: &mut Self::RealResult);
+
     /// Copies the phase of all elements in [rad] into the given vector.
     /// # Example
     ///
@@ -286,6 +321,53 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 }
             });
     }
+
+    #[inline]
+    fn simd_complex_into_real_target_operation<FSimd, F, V>(&self, destination: &mut V, op_simd: FSimd, op: F, complexity: Complexity)
+        where F: Fn(Complex<T>) -> T + 'static + Sync,
+              FSimd: Fn(T::Reg) -> T::Reg + 'static + Sync,
+              V: Vector<T> + Index<Range<usize>, Output=[T]> + IndexMut<Range<usize>> + SetLen {
+      let data_length = self.len();
+      destination.set_len(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");;
+      destination.set_delta(self.delta);
+      let mut temp = &mut destination[0..data_length / 2];
+      let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&temp);
+      let array = &self.data.to_slice();
+      if vectorization_length > 0 {
+          Chunk::from_src_to_dest(
+              complexity, &self.multicore_settings,
+              &array[2*scalar_left..2*vectorization_length], T::Reg::len(),
+              &mut temp[scalar_left..vectorization_length], T::Reg::len() / 2, (),
+              move |array, range, target, _arg| {
+                  let mut i = 0;
+                  let mut j = range.start;
+                  while i < target.len()
+                  {
+                      let vector = T::Reg::load_unchecked(array, j);
+                      let result = op_simd(vector);
+                      result.store_half_unchecked(target, i);
+                      j += T::Reg::len();
+                      i += T::Reg::len() / 2;
+                  }
+              });
+      }
+
+      let mut i = 0;
+      while i < scalar_left
+      {
+          let c = Complex::new(array[i], array[i + 1]);
+          temp[i / 2] = op(c);
+          i += 2;
+      }
+
+      let mut i = scalar_right;
+      while i < data_length
+      {
+          let c = Complex::new(array[i], array[i + 1]);
+          temp[i / 2] = op(c);
+          i += 2;
+      }
+    }
 }
 
 macro_rules! assert_self_complex_and_target_real {
@@ -322,6 +404,16 @@ impl<S, T, N, D> ComplexToRealGetterOps<S, T> for DspVec<S, T, N, D>
     fn get_imag(&self, destination: &mut Self::RealResult) {
         assert_self_complex_and_target_real!(self, destination);
         self.pure_complex_into_real_target_operation(destination, |x,_arg|x.im, (), Complexity::Small);
+    }
+
+    fn get_magnitude(&self, destination: &mut Self::RealResult) {
+        assert_self_complex_and_target_real!(self, destination);
+        self.simd_complex_into_real_target_operation(destination, |x|x.complex_abs(), |x|x.norm().sqrt(), Complexity::Small);
+    }
+
+    fn get_magnitude_squared(&self, destination: &mut Self::RealResult) {
+        assert_self_complex_and_target_real!(self, destination);
+        self.simd_complex_into_real_target_operation(destination, |x|x.complex_abs_squared(), |x|x.norm(), Complexity::Small);
     }
 
     fn get_phase(&self, destination: &mut Self::RealResult) {

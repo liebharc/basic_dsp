@@ -1,5 +1,8 @@
+use RealNumber;
 use super::super::{
-	VoidResult
+	VoidResult,
+	NumberSpace, Domain,
+	DspVec, ToSliceMut,
 };
 
 pub trait ReorganizeDataOps {
@@ -12,11 +15,11 @@ pub trait ReorganizeDataOps {
 	/// # Example
 	///
 	/// ```
-	/// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
-	/// let result = vector.swap_halves().expect("Ignoring error handling in examples");
-	/// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], result.real(0..));
-	/// ```
+    /// use basic_dsp_vector::vector_types2::*;
+    /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();
+    /// vector.swap_halves();
+    /// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], vector[..]);
+    /// ```
 	fn swap_halves(&mut self);
 }
 
@@ -120,4 +123,13 @@ pub trait MergeOps {
     /// assert_eq!([1.0, 1.0, 2.0, 2.0], merged.real(0..));
     /// ```
     fn merge(&mut self, sources: &[Box<Self>]) -> VoidResult;
+}
+
+impl<S, T, N, D> ReorganizeDataOps for DspVec<S, T, N, D>
+    where S: ToSliceMut<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain {
+	fn reverse(&mut self) {}
+	fn swap_halves(&mut self) {}
 }
