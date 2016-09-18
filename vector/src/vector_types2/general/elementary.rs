@@ -337,14 +337,13 @@ macro_rules! impl_binary_vector_operation {
                 assert_meta_data!(self, $arg_name);
 
                 let data_length = self.len();
-                let scalar_length = data_length % T::Reg::len();
-                let vectorization_length = data_length - scalar_length;
                 let mut array = self.data.to_slice_mut();
+                let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name.data.to_slice();
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
-                    &other[0..vectorization_length], T::Reg::len(),
-                    &mut array[0..vectorization_length], T::Reg::len(), (),
+                    &other[scalar_left..vectorization_length], T::Reg::len(),
+                    &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
                     |original, range, target, _arg| {
                         let mut i = 0;
                         let mut j = range.start;
@@ -358,11 +357,12 @@ macro_rules! impl_binary_vector_operation {
                             j += T::Reg::len();
                         }
                 });
-                let mut i = vectorization_length;
-                while i < data_length
-                {
+                for i in 0..scalar_left {
                     array[i] = array[i].$scal_op(other[i]);
-                    i += 1;
+                }
+
+                for i in scalar_right..data_length {
+                    array[i] = array[i].$scal_op(other[i]);
                 }
             }
 
@@ -381,14 +381,13 @@ macro_rules! impl_binary_complex_vector_operation {
                 assert_meta_data!(self, $arg_name);
 
                 let data_length = self.len();
-                let scalar_length = data_length % T::Reg::len();
-                let vectorization_length = data_length - scalar_length;
                 let mut array = self.data.to_slice_mut();
+                let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name.data.to_slice();
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
-                    &other[0..vectorization_length], T::Reg::len(),
-                    &mut array[0..vectorization_length], T::Reg::len(), (),
+                    &other[scalar_left..vectorization_length], T::Reg::len(),
+                    &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
                     |original, range, target, _arg| {
                         let mut i = 0;
                         let mut j = range.start;
@@ -402,9 +401,18 @@ macro_rules! impl_binary_complex_vector_operation {
                             j += T::Reg::len();
                         }
                 });
-                let mut i = vectorization_length;
-                while i < data_length
-                {
+                let mut i = 0;
+                while i < scalar_left {
+                    let complex1 = Complex::<T>::new(array[i], array[i + 1]);
+                    let complex2 = Complex::<T>::new(other[i], other[i + 1]);
+                    let result = complex1.$scal_op(complex2);
+                    array[i] = result.re;
+                    array[i + 1] = result.im;
+                    i += 2;
+                }
+
+                let mut i = scalar_right;
+                while i < data_length {
                     let complex1 = Complex::<T>::new(array[i], array[i + 1]);
                     let complex2 = Complex::<T>::new(other[i], other[i + 1]);
                     let result = complex1.$scal_op(complex2);
@@ -429,14 +437,13 @@ macro_rules! impl_binary_smaller_vector_operation {
                 assert_meta_data!(self, $arg_name);
 
                 let data_length = self.len();
-                let scalar_length = data_length % T::Reg::len();
-                let vectorization_length = data_length - scalar_length;
                 let mut array = self.data.to_slice_mut();
+                let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name.data.to_slice();
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
                     &other, T::Reg::len(),
-                    &mut array[0..vectorization_length], T::Reg::len(), (),
+                    &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
                     |original, range, target, _arg| {
                         // This parallelization likely doesn't make sense for the use
                         // case which we have in mind with this implementation
@@ -458,11 +465,13 @@ macro_rules! impl_binary_smaller_vector_operation {
                             j = (j + T::Reg::len()) % original.len();
                         }
                 });
-                let mut i = vectorization_length;
-                while i < data_length
-                {
+
+                for i in 0..scalar_left {
                     array[i] = array[i].$scal_op(other[i % $arg_name.len()]);
-                    i += 1;
+                }
+
+                for i in scalar_right..data_length {
+                    array[i] = array[i].$scal_op(other[i % $arg_name.len()]);
                 }
             }
 
@@ -481,14 +490,13 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
                 assert_meta_data!(self, $arg_name);
 
                 let data_length = self.len();
-                let scalar_length = data_length % T::Reg::len();
-                let vectorization_length = data_length - scalar_length;
                 let mut array = &mut self.data.to_slice_mut();
+                let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name.data.to_slice();
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
                     &other, T::Reg::len(),
-                    &mut array[0..vectorization_length], T::Reg::len(), (),
+                    &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
                     |original, range, target, _arg| {
                         // This parallelization likely doesn't make sense for the use
                         // case which we have in mind with this implementation
@@ -510,11 +518,20 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
                             j = (j + T::Reg::len()) % original.len();
                         }
                 });
-                let mut i = vectorization_length;
-                while i < data_length
-                {
+                let mut i = 0;
+                while i < scalar_left {
                     let complex1 = Complex::<T>::new(array[i], array[i + 1]);
-                    let complex2 = Complex::<T>::new(other[i], other[i + 1]);
+                    let complex2 = Complex::<T>::new(other[i % other.len()], other[(i + 1) % other.len()]);
+                    let result = complex1.$scal_op(complex2);
+                    array[i] = result.re;
+                    array[i + 1] = result.im;
+                    i += 2;
+                }
+
+                let mut i = scalar_right;
+                while i < data_length {
+                    let complex1 = Complex::<T>::new(array[i], array[i + 1]);
+                    let complex2 = Complex::<T>::new(other[i % other.len()], other[(i + 1) % other.len()]);
                     let result = complex1.$scal_op(complex2);
                     array[i] = result.re;
                     array[i + 1] = result.im;

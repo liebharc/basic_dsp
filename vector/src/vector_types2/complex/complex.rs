@@ -89,12 +89,10 @@ impl<S, T, N, D> ComplexOps<T> for DspVec<S, T, N, D>
         assert_complex!(self);
         let a = a * self.delta();
         let data_length = self.len();
-        let scalar_length = data_length % T::Reg::len();
-        let vectorization_length = data_length - scalar_length;
         let mut array = self.data.to_slice_mut();
         Chunk::execute_with_range(
             Complexity::Small, &self.multicore_settings,
-            &mut array[0..vectorization_length], T::Reg::len(),
+            &mut array[0..data_length], T::Reg::len(),
             (a, b),
             move |array, range, args| {
             let two = T::one() + T::one();
@@ -109,16 +107,6 @@ impl<S, T, N, D> ComplexOps<T> for DspVec<S, T, N, D>
                 exponential = exponential * increment;
             }
         });
-        let two = T::one() + T::one();
-        let mut exponential =
-            Complex::<T>::from_polar(&T::one(), &b)
-            * Complex::<T>::from_polar(&T::one(), &(a * T::from(vectorization_length).unwrap() as T / two));
-        let increment = Complex::<T>::from_polar(&T::one(), &a);
-        let array = array_to_complex_mut(&mut array[vectorization_length..data_length]);
-        for complex in array {
-            *complex = (*complex) * exponential;
-            exponential = exponential * increment;
-        }
     }
 
     fn conj(&mut self) {

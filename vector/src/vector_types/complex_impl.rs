@@ -49,12 +49,10 @@ macro_rules! add_complex_impl {
                     {
                         let a = a * self.delta();
                         let data_length = self.len();
-                        let scalar_length = data_length % $reg::len();
-                        let vectorization_length = data_length - scalar_length;
                         let mut array = &mut self.data;
                         Chunk::execute_with_range(
                             Complexity::Small, &self.multicore_settings,
-                            &mut array[0..vectorization_length], $reg::len(),
+                            &mut array[0..data_length], $reg::len(),
                             (a, b),
                             move |array, range, args| {
                             let (a, b) = args;
@@ -68,15 +66,6 @@ macro_rules! add_complex_impl {
                                 exponential = exponential * increment;
                             }
                         });
-                        let mut exponential =
-                            Complex::<$data_type>::from_polar(&1.0, &b)
-                            * Complex::<$data_type>::from_polar(&1.0, &(a * vectorization_length as $data_type / 2.0));
-                        let increment = Complex::<$data_type>::from_polar(&1.0, &a);
-                        let array = array_to_complex_mut(&mut array[vectorization_length..data_length]);
-                        for complex in array {
-                            *complex = (*complex) * exponential;
-                            exponential = exponential * increment;
-                        }
                     }
 
                     Ok(self)
