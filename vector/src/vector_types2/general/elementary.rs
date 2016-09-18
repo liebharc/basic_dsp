@@ -491,7 +491,7 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
                             for n in target {
                                 let vector1 =
                                     if j + T::Reg::len() < original.len() {
-                                        T::Reg::load_unchecked(original, j)
+                                        T::Reg::load(original, j)
                                     } else {
                                         T::Reg::load_wrap_unchecked(original, j)
                                     };
