@@ -10,7 +10,7 @@ Added support for matrix operations. In order to allow matrices and vectors to i
 ## Version 0.3.2
 Bugfix release:
 
-- Bugfix: SEGVAULT in add, sub, mul, div, add_smaller, sub_smaller, mul_smaller and div_smaller methods
+- Bugfix: Potential SEGVAULT in add, sub, mul, div, add_smaller, sub_smaller, mul_smaller and div_smaller methods
 - Bugfix: SEGVAULT in get_magnitude and complex_dot_product
 
 ## Version 0.3.1
