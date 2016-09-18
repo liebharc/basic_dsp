@@ -336,7 +336,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
       if vectorization_length > 0 {
           Chunk::from_src_to_dest(
               complexity, &self.multicore_settings,
-              &array[2*scalar_left..2*vectorization_length], T::Reg::len(),
+              &array[2 * scalar_left..2 * vectorization_length], T::Reg::len(),
               &mut temp[scalar_left..vectorization_length], T::Reg::len() / 2, (),
               move |array, range, target, _arg| {
                   let mut i = 0;
@@ -353,14 +353,14 @@ impl<S, T, N, D> DspVec<S, T, N, D>
       }
 
       let mut i = 0;
-      while i < scalar_left
+      while i < 2 * scalar_left
       {
           let c = Complex::new(array[i], array[i + 1]);
           temp[i / 2] = op(c);
           i += 2;
       }
 
-      let mut i = scalar_right;
+      let mut i = 2 * scalar_right;
       while i < data_length
       {
           let c = Complex::new(array[i], array[i + 1]);

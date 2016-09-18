@@ -130,6 +130,10 @@ impl<S, T, N, D> ReorganizeDataOps for DspVec<S, T, N, D>
           T: RealNumber,
           N: NumberSpace,
           D: Domain {
-	fn reverse(&mut self) {}
-	fn swap_halves(&mut self) {}
+	fn reverse(&mut self) {
+	}
+
+	fn swap_halves(&mut self) {
+
+	}
 }
