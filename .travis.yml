@@ -15,3 +15,8 @@ script:
   cargo test &&
   cargo bench &&
   cargo doc
+  
+env:
+  global:
+  # Add certain compiler flags with the rustc wrapper script
+  - RUSTC="$TRAVIS_BUILD_DIR/rustc.sh"
