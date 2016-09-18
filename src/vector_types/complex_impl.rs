@@ -92,8 +92,8 @@ macro_rules! add_complex_impl {
                     let array = &self.data;
                     Chunk::from_src_to_dest(
                         Complexity::Small, &self.multicore_settings,
-                        &array[2*scalar_left..2*vectorization_length], $reg::len(),
-                        &mut temp[scalar_left..vectorization_length/2], $reg::len() / 2, (),
+                        &array[2 * scalar_left.. 2 * vectorization_length], $reg::len(),
+                        &mut temp[scalar_left..vectorization_length], $reg::len() / 2, (),
                         move |array, range, target, _arg| {
                             let mut i = 0;
                             let mut j = range.start;
