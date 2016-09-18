@@ -185,8 +185,7 @@ macro_rules! add_real_impl {
                     }
 
                     let data_length = self.len();
-                    let scalar_length = data_length % $reg::len();
-                    let vectorization_length = data_length - scalar_length;
+                    let (scalar_left, scalar_right, vectorization_length) = $reg::calc_data_alignment_reqs(&self.data[0..data_length]);
                     let array = &self.data;
                     let other = &factor.data;
                     let chunks = Chunk::get_a_fold_b(
@@ -208,10 +207,16 @@ macro_rules! add_real_impl {
 
                             result.sum_real()
                     });
-                    let mut i = vectorization_length;
+
+                    let mut i = 0;
                     let mut sum = 0.0;
-                    while i < data_length
-                    {
+                    while i < scalar_left {
+                        sum += array[i] * other[i];
+                        i += 1;
+                    }
+
+                    let mut i = scalar_right;
+                    while i < data_length {
                         sum += array[i] * other[i];
                         i += 1;
                     }

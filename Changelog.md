@@ -7,6 +7,12 @@ Added support for matrix operations. In order to allow matrices and vectors to i
 - Breaking change: Interop facade is now only compiled with `--features interop`
 - Breaking change: Removed `complex_data`, `data` and `override_data` (which also had a spelling mistake) in favor for implementations of several Indexer traits.
 
+## Version 0.3.2
+Bugfix release:
+
+- Bugfix: SEGVAULT in add, sub, mul, div, add_smaller, sub_smaller, mul_smaller and div_smaller methods
+- Bugfix: SEGVAULT in get_magnitude and complex_dot_product
+
 ## Version 0.3.1
 Bugfix release with a minor enhancement:
 
