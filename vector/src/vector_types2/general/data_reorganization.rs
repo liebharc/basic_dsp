@@ -1,4 +1,7 @@
+use std::mem;
+use std::ptr;
 use RealNumber;
+use multicore_support::*;
 use super::super::{
 	array_to_complex_mut,
 	VoidResult, Buffer, Owner,
@@ -52,7 +55,9 @@ pub enum PaddingOption {
     Center,
 }
 
-pub trait InsertZerosOps {
+pub trait InsertZerosOps<S, T>
+ 	where T: RealNumber,
+	      S: ToSliceMut<T> {
 	/// Appends zeros add the end of the vector until the vector has the size given in the points argument.
 	/// If `points` smaller than the `self.len()` then this operation won't do anything.
 	///
@@ -63,15 +68,18 @@ pub trait InsertZerosOps {
 	/// # Example
 	///
 	/// ```
-	/// use basic_dsp_vector::{PaddingOption, RealTimeVector32, ComplexTimeVector32, GenericVectorOps, DataVec, RealIndex, InterleavedIndex};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let result = vector.zero_pad(4, PaddingOption::End).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 2.0, 0.0, 0.0], result.real(0..));
-	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0]);
-	/// let result = vector.zero_pad(2, PaddingOption::End).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 2.0, 0.0, 0.0], result.interleaved(0..));
-	/// ```
-	fn zero_pad(&mut self, points: usize, option: PaddingOption);
+    /// use basic_dsp_vector::vector_types2::*;
+    /// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
+	/// let mut buffer = SingleBuffer::new();
+    /// vector.zero_pad(&mut buffer, 4, PaddingOption::End);
+    /// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
+	/// let mut vector = vec!(1.0, 2.0).to_complex_time_vec();
+	/// let mut buffer = SingleBuffer::new();
+    /// vector.zero_pad(&mut buffer, 2, PaddingOption::End);
+    /// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
+    /// ```
+	fn zero_pad<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption)
+		where B: Buffer<S, T>;
 
 	/// Interleaves zeros `factor - 1`times after every vector element, so that the resulting
 	/// vector will have a length of `self.len() * factor`.
@@ -83,15 +91,18 @@ pub trait InsertZerosOps {
 	/// # Example
 	///
 	/// ```
-	/// use basic_dsp_vector::{RealTimeVector32, ComplexTimeVector32, GenericVectorOps, DataVec, RealIndex, InterleavedIndex};
-	/// let vector = RealTimeVector32::from_array(&[1.0, 2.0]);
-	/// let result = vector.zero_interleave(2).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 0.0, 2.0, 0.0], result.real(0..));
-	/// let vector = ComplexTimeVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-	/// let result = vector.zero_interleave(2).expect("Ignoring error handling in examples");
-	/// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], result.interleaved(0..));
-	/// ```
-	fn zero_interleave(&mut self, factor: u32);
+    /// use basic_dsp_vector::vector_types2::*;
+    /// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
+	/// let mut buffer = SingleBuffer::new();
+    /// vector.zero_interleave(&mut buffer, 2);
+    /// assert_eq!([1.0, 0.0, 2.0, 0.0], vector[..]);
+	/// let mut vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+	/// let mut buffer = SingleBuffer::new();
+    /// vector.zero_interleave(&mut buffer, 2);
+    /// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], vector[..]);
+    /// ```
+	fn zero_interleave<B>(&mut self, buffer: &mut B, factor: u32)
+		where B: Buffer<S, T>;
 }
 
 pub trait SplitOps {
@@ -169,5 +180,137 @@ impl<S, T, N, D> ReorganizeDataOps<S, T> for DspVec<S, T, N, D>
 	fn swap_halves<B>(&mut self, buffer: &mut B)
 		where B: Buffer<S, T> {
 		self.swap_halves_priv(buffer, true);
+	}
+}
+
+macro_rules! zero_interleave {
+    ($self_: ident, $buffer: ident, $step: ident, $tuple: expr) => {
+        {
+            if $step <= 1 {
+                return;
+            }
+
+            let step = $step as usize;
+            let old_len = $self_.len();
+            let new_len = step * old_len;
+            $self_.valid_len = new_len;
+            let mut target = $buffer.get(new_len);
+			{
+				let mut target = target.to_slice_mut();
+				let source = &$self_.data.to_slice();
+                Chunk::from_src_to_dest(
+                    Complexity::Small, &$self_.multicore_settings,
+                    &source[0..old_len], $tuple,
+                    &mut target[0..new_len], $tuple * step, (),
+                    move|original, range, target, _arg| {
+                         // Zero target
+                        let ptr = &mut target[0] as *mut T;
+                        unsafe {
+                            ptr::write_bytes(ptr, 0, new_len);
+                        }
+                        let skip = step * $tuple;
+                        let mut i = 0;
+                        let mut j = range.start;
+                        while i < target.len() {
+                            let original_ptr = unsafe { original.get_unchecked(j) };
+                            let target_ptr = unsafe { target.get_unchecked_mut(i) };
+                            unsafe {
+                                ptr::copy(original_ptr, target_ptr, $tuple);
+                            }
+
+                            j += $tuple;
+                            i += skip;
+                        }
+            	});
+			}
+
+			mem::swap(&mut $self_.data, &mut target);
+			$buffer.free(target);
+        }
+    }
+}
+
+impl<S, T, N, D> InsertZerosOps<S, T> for DspVec<S, T, N, D>
+	where S: ToSliceMut<T> + Owner,
+	  T: RealNumber,
+	  N: NumberSpace,
+	  D: Domain {
+	fn zero_pad<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption)
+		where B: Buffer<S, T> {
+		let len_before = self.len();
+		let is_complex = self.is_complex();
+		let len = if is_complex { 2 * points } else { points };
+		if len < len_before {
+			return;
+		}
+
+		let mut target = buffer.get(len);
+		{
+			let data = self.data.to_slice();
+			let target = target.to_slice_mut();
+			self.valid_len = len;
+			match option {
+				PaddingOption::End => {
+					// Zero target
+					let src = &data[0] as *const T;
+					let dest_start = &mut target[0] as *mut T;
+					let dest_end = &mut target[len_before] as *mut T;
+					unsafe {
+						ptr::copy(src, dest_start, len_before);
+						ptr::write_bytes(dest_end, 0, target.len() - len_before);
+					}
+				}
+				PaddingOption::Surround => {
+					let diff = (len - len_before) / if is_complex { 2 } else { 1 };
+					let mut right = diff / 2;
+					let mut left = diff - right;
+					if is_complex {
+						right *= 2;
+						left *= 2;
+					}
+
+					unsafe {
+						let src = &data[0] as *const T;
+						let dest = &mut target[left] as *mut T;
+						ptr::copy(src, dest, len_before);
+						let dest = &mut target[len - right] as *mut T;
+						ptr::write_bytes(dest, 0, right);
+						let dest = &mut target[0] as *mut T;
+						ptr::write_bytes(dest, 0, left);
+					}
+				}
+				PaddingOption::Center => {
+					let mut diff = (len - len_before) / if is_complex { 2 } else { 1 };
+					let mut right = diff / 2;
+					let mut left = diff - right;
+					if is_complex {
+						right *= 2;
+						left *= 2;
+						diff *= 2;
+					}
+
+					unsafe {
+						let src = &data[left] as *const T;
+						let dest = &mut target[len-right] as *mut T;
+						ptr::copy(src, dest, right);
+						let dest = &mut target[left] as *mut T;
+						ptr::write_bytes(dest, 0, len - diff);
+					}
+				}
+			}
+		}
+
+		mem::swap(&mut self.data, &mut target);
+		buffer.free(target);
+	}
+
+
+	fn zero_interleave<B>(&mut self, buffer: &mut B, factor: u32)
+		where B: Buffer<S, T> {
+		if self.is_complex() {
+			zero_interleave!(self, buffer, factor, 2)
+		} else {
+			zero_interleave!(self, buffer, factor, 1)
+		}
 	}
 }
