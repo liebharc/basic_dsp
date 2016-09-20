@@ -4,9 +4,9 @@ use RealNumber;
 use multicore_support::*;
 use super::super::{
 	array_to_complex_mut,
-	VoidResult, Buffer, Owner,
+	VoidResult, Buffer, Owner, ErrorReason,
 	NumberSpace, Domain,
-	DspVec, Vector, ToSliceMut,
+	DspVec, Vector, ToSliceMut, Resize
 };
 
 pub trait ReorganizeDataOps<S, T>
@@ -116,14 +116,13 @@ pub trait SplitOps {
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
-    /// let a = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
-    /// let merge = RealTimeVector32::from_array(&a);
+	/// use basic_dsp_vector::vector_types2::*;
+    /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0).to_real_time_vec();
     /// let mut split = &mut
-    ///     [Box::new(RealTimeVector32::empty()),
-    ///     Box::new(RealTimeVector32::empty())];
-    /// merge.split_into(split).unwrap();
-    /// assert_eq!([1.0, 3.0, 5.0, 7.0, 9.0], split[0].real(0..));
+    ///     [Box::new(Vec::new().to_real_time_vec()),
+    ///     Box::new(Vec::new().to_real_time_vec())];
+    /// vector.split_into(split).expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 3.0, 5.0, 7.0, 9.0], split[0][..]);
     /// ```
     fn split_into(&self, targets: &mut [Box<Self>]) -> VoidResult;
 }
@@ -138,14 +137,14 @@ pub trait MergeOps {
     ///
     /// # Example
     ///
-    /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
-    /// let vector = RealTimeVector32::empty();
-    /// let parts = &[
-    ///     Box::new(RealTimeVector32::from_array(&[1.0, 2.0])),
-    ///     Box::new(RealTimeVector32::from_array(&[1.0, 2.0]))];
-    /// let merged = vector.merge(parts).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 1.0, 2.0, 2.0], merged.real(0..));
+	/// ```
+	/// use basic_dsp_vector::vector_types2::*;
+    /// let mut parts = &mut
+    ///     [Box::new(vec!(1.0, 2.0).to_real_time_vec()),
+    ///     Box::new(vec!(1.0, 2.0).to_real_time_vec())];
+	/// let mut vector = Vec::new().to_real_time_vec();
+    /// vector.merge(parts).expect("Ignoring error handling in examples");
+    /// assert_eq!([1.0, 1.0, 2.0, 2.0], vector[..]);
     /// ```
     fn merge(&mut self, sources: &[Box<Self>]) -> VoidResult;
 }
@@ -312,5 +311,86 @@ impl<S, T, N, D> InsertZerosOps<S, T> for DspVec<S, T, N, D>
 		} else {
 			zero_interleave!(self, buffer, factor, 1)
 		}
+	}
+}
+
+impl<S, T, N, D> SplitOps for DspVec<S, T, N, D>
+	where S: ToSliceMut<T> + Owner + Resize ,
+	  T: RealNumber,
+	  N: NumberSpace,
+	  D: Domain {
+    fn split_into(&self, targets: &mut [Box<Self>]) -> VoidResult {
+		let num_targets = targets.len();
+		let data_length = self.len();
+		if num_targets == 0 || data_length % num_targets != 0 {
+			return Err(ErrorReason::InvalidArgumentLength);
+		}
+
+		for i in 0..num_targets {
+			targets[i].data.resize(data_length / num_targets);
+			targets[i].shrink(data_length / num_targets).expect("We just resized to this size so shrink should never fail");
+		}
+
+		let data = &self.data.to_slice();
+		if self.is_complex() {
+			for i in 0..(data_length / 2) {
+				let target = targets[i % num_targets].data.to_slice_mut();
+				let pos = i / num_targets;
+				target[2 * pos] = data[2 * i];
+				target[2 * pos + 1] = data[2 * i + 1];
+			}
+		} else {
+			for i in 0..data_length {
+				let target = targets[i % num_targets].data.to_slice_mut();
+				let pos = i / num_targets;
+				target[pos] = data[i];
+			}
+		}
+
+		Ok(())
+	}
+}
+
+impl<S, T, N, D> MergeOps for DspVec<S, T, N, D>
+	where S: ToSliceMut<T> + Owner + Resize,
+	  T: RealNumber,
+	  N: NumberSpace,
+	  D: Domain {
+    fn merge(&mut self, sources: &[Box<Self>]) -> VoidResult {
+		{
+			let num_sources = sources.len();
+			if num_sources == 0 {
+				return Err(ErrorReason::InvalidArgumentLength);
+			}
+
+			for i in 1..num_sources {
+				if sources[0].len() != sources[i].len() {
+					return Err(ErrorReason::InvalidArgumentLength);
+				}
+			}
+
+			self.data.resize(sources[0].len() * num_sources);
+			self.shrink(sources[0].len() * num_sources).expect("We just resized to this size so shrink should never fail");
+
+			let data_length = self.len();
+			let is_complex = self.is_complex();
+			let data = self.data.to_slice_mut();
+			if is_complex {
+				for i in 0..(data_length / 2) {
+					let source = sources[i % num_sources].data.to_slice();
+					let pos = i / num_sources;
+					data[2 * i] = source[2 * pos];
+					data[2 * i + 1] = source[2 * pos + 1];
+				}
+			} else {
+			   for i in 0..data_length {
+					let source = sources[i % num_sources].data.to_slice();
+					let pos = i / num_sources;
+					data[i] = source[pos];
+				}
+			}
+		}
+
+		Ok(())
 	}
 }

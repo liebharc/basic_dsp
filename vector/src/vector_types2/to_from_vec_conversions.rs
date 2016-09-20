@@ -86,10 +86,18 @@ impl<T> ToDspVector<T> for Vec<T>
     }
 }
 
+fn expand_to_full_capacity<T>(vec: &mut Vec<T>)
+    where T: RealNumber {
+    while vec.len() < vec.capacity() {
+        vec.push(T::zero());
+    }
+}
+
 impl<T> ToRealVector<T> for Vec<T>
     where T: RealNumber {
-    fn to_real_time_vec(self) -> RealTimeVec<Self, T> {
+    fn to_real_time_vec(mut self) -> RealTimeVec<Self, T> {
         let len = self.len();
+        expand_to_full_capacity(&mut self);
         RealTimeVec {
             data: self,
             delta: T::one(),
@@ -100,8 +108,9 @@ impl<T> ToRealVector<T> for Vec<T>
         }
     }
 
-    fn to_real_freq_vec(self) -> RealFreqVec<Self, T> {
+    fn to_real_freq_vec(mut self) -> RealFreqVec<Self, T> {
         let len = self.len();
+        expand_to_full_capacity(&mut self);
         RealFreqVec {
             data: self,
             delta: T::one(),
@@ -115,8 +124,9 @@ impl<T> ToRealVector<T> for Vec<T>
 
 impl<T> ToComplexVector<T> for Vec<T>
     where T: RealNumber {
-    fn to_complex_time_vec(self) -> ComplexTimeVec<Self, T> {
+    fn to_complex_time_vec(mut self) -> ComplexTimeVec<Self, T> {
         let len = self.len();
+        expand_to_full_capacity(&mut self);
         ComplexTimeVec {
             data: self,
             delta: T::one(),
@@ -127,8 +137,9 @@ impl<T> ToComplexVector<T> for Vec<T>
         }
     }
 
-    fn to_complex_freq_vec(self) -> ComplexFreqVec<Self, T> {
+    fn to_complex_freq_vec(mut self) -> ComplexFreqVec<Self, T> {
         let len = self.len();
+        expand_to_full_capacity(&mut self);
         ComplexFreqVec {
             data: self,
             delta: T::one(),
