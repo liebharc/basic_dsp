@@ -11,7 +11,6 @@ use super::super::{
     Domain, RealNumberSpace, ComplexNumberSpace
 };
 
-
 /// An operation which multiplies each vector element with a constant
 pub trait ScaleOps<T> : Sized
     where T: Sized {
