@@ -1,15 +1,28 @@
+use RealNumber;
+use super::super::{
+	array_to_complex_mut,
+    Vector,
+    DspVec, ToSliceMut,
+    Domain, NumberSpace
+};
+
 pub trait DiffSumOps {
 	/// Calculates the delta of each elements to its previous element. This will decrease the vector length by one point.
     ///
     /// # Example
     ///
+    /// # Example
+    ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
-    /// let vector = RealTimeVector32::from_array(&[2.0, 3.0, 2.0, 6.0]);
-    /// let result = vector.diff().expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, -1.0, 4.0], result.real(0..));
+    /// use basic_dsp_vector::vector_types2::*;
+    /// let mut vector = vec!(2.0, 3.0, 2.0, 6.0).to_real_time_vec();
+    /// vector.diff();
+    /// assert_eq!([1.0, -1.0, 4.0], vector[..]);
+	/// let mut vector = vec!(2.0, 2.0, 3.0, 3.0, 5.0, 5.0).to_complex_time_vec();
+    /// vector.diff();
+    /// assert_eq!([1.0, 1.0, 2.0, 2.0], vector[..]);
     /// ```
-    fn diff(self) -> TransRes<Self>;
+    fn diff(&mut self);
 
     /// Calculates the delta of each elements to its previous element. The first element
     /// will remain unchanged.
@@ -17,22 +30,129 @@ pub trait DiffSumOps {
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
-    /// let vector = RealTimeVector32::from_array(&[2.0, 3.0, 2.0, 6.0]);
-    /// let result = vector.diff_with_start().expect("Ignoring error handling in examples");
-    /// assert_eq!([2.0, 1.0, -1.0, 4.0], result.real(0..));
+    /// use basic_dsp_vector::vector_types2::*;
+    /// let mut vector = vec!(2.0, 3.0, 2.0, 6.0).to_real_time_vec();
+    /// vector.diff_with_start();
+    /// assert_eq!([2.0, 1.0, -1.0, 4.0], vector[..]);
+	/// let mut vector = vec!(2.0, 2.0, 3.0, 3.0, 5.0, 5.0).to_complex_time_vec();
+    /// vector.diff_with_start();
+    /// assert_eq!([2.0, 2.0, 1.0, 1.0, 2.0, 2.0], vector[..]);
     /// ```
-    fn diff_with_start(self) -> TransRes<Self>;
+    fn diff_with_start(&mut self);
 
     /// Calculates the cumulative sum of all elements. This operation undoes the `diff_with_start`operation.
     ///
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{RealTimeVector32, GenericVectorOps, DataVec, RealIndex};
-    /// let vector = RealTimeVector32::from_array(&[2.0, 1.0, -1.0, 4.0]);
-    /// let result = vector.cum_sum().expect("Ignoring error handling in examples");
-    /// assert_eq!([2.0, 3.0, 2.0, 6.0], result.real(0..));
+    /// use basic_dsp_vector::vector_types2::*;
+    /// let mut vector = vec!(2.0, 1.0, -1.0, 4.0).to_real_time_vec();
+    /// vector.cum_sum();
+    /// assert_eq!([2.0, 3.0, 2.0, 6.0], vector[..]);
     /// ```
-    fn cum_sum(self) -> TransRes<Self>;
+    fn cum_sum(&mut self);
+}
+
+macro_rules! vector_diff {
+    ($self_: ident, $keep_start: ident) => {
+        {
+			let step = if $self_.is_complex() { 2 } else { 1 };
+			let mut data = $self_.data.to_slice_mut();
+
+	        if !$keep_start {
+	            $self_.valid_len -= step;
+	        }
+
+	        let start =
+				if $keep_start {
+		            step
+		        } else {
+					0
+				};
+
+	        let len =
+	            if !$keep_start {
+	                data.len() - step
+	            } else {
+	                data.len()
+	            };
+
+	        for j in start..len {
+	            data[j] = data[j + step] - data[j];
+					/*if $keep_start { data[j] - data[j - step] }
+					else { data[j + step] - data[j] };*/
+	        }
+        }
+    }
+}
+
+impl<S, T, N, D> DiffSumOps for DspVec<S, T, N, D>
+    where S: ToSliceMut<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain {
+	fn diff(&mut self)
+  	{
+		let is_complex = self.is_complex();
+		let step = if is_complex { 2 } else { 1 };
+		let len = self.len();
+		self.valid_len -= step;
+		let mut data = self.data.to_slice_mut();
+
+		if is_complex {
+			let mut data = array_to_complex_mut(data);
+			for j in 0..len/2-1 {
+				data[j] = data[j + 1] - data[j];
+			}
+		} else {
+			for j in 0..len-1 {
+				data[j] = data[j + 1] - data[j];
+			}
+		}
+  	}
+
+  	fn diff_with_start(&mut self)
+  	{
+		let is_complex = self.is_complex();
+		let len = self.len();
+		if len == 0 {
+			return;
+		}
+
+		let mut data = self.data.to_slice_mut();
+
+		if is_complex {
+			let mut data = array_to_complex_mut(data);
+			let mut temp = data[0];
+			for j in 1..len/2 {
+				let diff = data[j] - temp;
+				temp = data[j];
+				data[j] = diff;
+			}
+		} else {
+			let mut temp = data[0];
+			for j in 1..len {
+				let diff = data[j] - temp;
+				temp = data[j];
+				data[j] = diff;
+			}
+		}
+  	}
+
+  	fn cum_sum(&mut self)
+  	{
+  		let data_length = self.len();
+		let mut i = 0;
+		let mut j = 1;
+		if self.is_complex() {
+			j = 2;
+		}
+
+		let mut data = self.data.to_slice_mut();
+		while j < data_length {
+			data[j] = data[j] + data[i];
+			i += 1;
+			j += 1;
+		}
+  	}
 }
