@@ -18,6 +18,8 @@ mod vec_impl_and_indexers;
 pub use self::vec_impl_and_indexers::*;
 mod complex;
 pub use self::complex::*;
+mod real;
+pub use self::real::*;
 mod rededicate_and_relations;
 pub use self::rededicate_and_relations::*;
 mod checks_and_results;
