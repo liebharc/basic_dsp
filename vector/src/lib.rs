@@ -125,9 +125,9 @@ impl ToSimd for f64 {
 }
 
  /// A real floating pointer number intended to abstract over `f32` and `f64`.
- pub trait RealNumber : Float + Copy + Clone + Send + Sync + ToSimd + Debug  { }
+ pub trait RealNumber : Float + Copy + Clone + Send + Sync + ToSimd + Debug { }
  impl<T> RealNumber for T
-  where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug  {}
+  where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug { }
 
 #[cfg(test)]
 mod tests {
