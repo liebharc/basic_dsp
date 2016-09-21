@@ -94,12 +94,12 @@ pub trait StatisticsOps<T> : Sized
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex32;
+    /// # use num::complex::Complex64;
     /// use basic_dsp_vector::vector_types2::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
     /// let result = vector.sum_sq();
-    /// assert_eq!(result, Complex32::new(-21.0, 88.0));
+    /// assert_eq!(result, Complex64::new(-21.0, 88.0));
     /// }
     /// ```
     fn sum_sq(&self) -> T;
