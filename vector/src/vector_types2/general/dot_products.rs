@@ -47,16 +47,12 @@ impl<S, T, N, D> DotProductOps<T> for DspVec<S, T, N, D>
                 &other[0..vectorization_length], T::Reg::len(),
                 &array[0..vectorization_length], T::Reg::len(),
                 |original, range, target| {
-                    let mut i = 0;
-                    let mut j = range.start;
                     let mut result = T::Reg::splat(T::zero());
-                    while i < target.len()
+					let original = T::Reg::array_to_regs(&original[range]);
+					let target = T::Reg::array_to_regs(&target[..]);
+                    for (a, b) in original.iter().zip(target)
                     {
-                        let vector1 = T::Reg::load_unchecked(original, j);
-                        let vector2 = T::Reg::load_unchecked(target, i);
-                        result = result + (vector2 * vector1);
-                        i += T::Reg::len();
-                        j += T::Reg::len();
+                        result = result + (*a * *b);
                     }
 
                     result.sum_real()
@@ -109,17 +105,13 @@ impl<S, T, N, D> DotProductOps<Complex<T>> for DspVec<S, T, N, D>
                 &other[scalar_left..vectorization_length], T::Reg::len(),
                 &array[scalar_left..vectorization_length], T::Reg::len(),
                 |original, range, target| {
-                    let mut i = 0;
-                    let mut j = range.start;
-                    let mut result = T::Reg::splat(T::zero());
-                    while i < target.len()
-                    {
-                        let vector1 = T::Reg::load_unchecked(original, j);
-                        let vector2 = T::Reg::load_unchecked(target, i);
-                        result = result + (vector2.mul_complex(vector1));
-                        i += T::Reg::len();
-                        j += T::Reg::len();
-                    }
+                let mut result = T::Reg::splat(T::zero());
+				let original = T::Reg::array_to_regs(&original[range]);
+				let target = T::Reg::array_to_regs(&target[..]);
+                for (a, b) in original.iter().zip(target)
+                {
+                    result = result + (a.mul_complex(*b));
+                }
 
                 result.sum_complex()
             })
