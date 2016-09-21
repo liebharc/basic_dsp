@@ -54,6 +54,8 @@ pub trait SimdGeneric<T> : Simd<T>
     fn store_unchecked(self, target: &mut [T], index: usize);
 
     fn extract(self, idx: u32) -> T;
+
+    fn splat(value: T) -> Self;
 }
 
 #[repr(packed)]
@@ -140,6 +142,11 @@ macro_rules! simd_generic_impl {
             #[inline]
             fn extract(self, idx: u32) -> $data_type {
                 $reg::extract(self, idx)
+            }
+
+            #[inline]
+            fn splat(value: $data_type) -> Self {
+                $reg::splat(value)
             }
         }
     }

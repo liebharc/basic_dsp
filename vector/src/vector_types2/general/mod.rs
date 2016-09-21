@@ -6,3 +6,5 @@ mod data_reorganization;
 pub use self::data_reorganization::*;
 mod diff_sum;
 pub use self::diff_sum::*;
+mod dot_products;
+pub use self::dot_products::*;

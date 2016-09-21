@@ -53,39 +53,6 @@ pub trait DiffSumOps {
     fn cum_sum(&mut self);
 }
 
-macro_rules! vector_diff {
-    ($self_: ident, $keep_start: ident) => {
-        {
-			let step = if $self_.is_complex() { 2 } else { 1 };
-			let mut data = $self_.data.to_slice_mut();
-
-	        if !$keep_start {
-	            $self_.valid_len -= step;
-	        }
-
-	        let start =
-				if $keep_start {
-		            step
-		        } else {
-					0
-				};
-
-	        let len =
-	            if !$keep_start {
-	                data.len() - step
-	            } else {
-	                data.len()
-	            };
-
-	        for j in start..len {
-	            data[j] = data[j + step] - data[j];
-					/*if $keep_start { data[j] - data[j - step] }
-					else { data[j + step] - data[j] };*/
-	        }
-        }
-    }
-}
-
 impl<S, T, N, D> DiffSumOps for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
