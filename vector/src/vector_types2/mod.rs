@@ -382,6 +382,22 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
     }
 
     #[inline]
+    fn pure_complex_to_real_operation_inplace<A, F>(&mut self, op: F, argument: A)
+        where A: Sync + Copy + Send,
+              F: Fn(Complex<T>, A) -> T + 'static + Sync {
+        {
+            let data_length = self.len();
+            let mut array = self.data.to_slice_mut();
+            for i in 0..data_length/2 {
+                let input = Complex::new(array[2*i], array[2*i + 1]);
+                array[i] = op(input, argument);
+            }
+
+            self.valid_len = self.valid_len / 2;
+        }
+    }
+
+    #[inline]
     fn simd_complex_to_real_operation<A, F, G, B>(&mut self, buffer: &mut B, simd_op: F, scalar_op: G, argument: A, complexity: Complexity)
         where A: Sync + Copy + Send,
               F: Fn(T::Reg, A) -> T::Reg + 'static + Sync,
