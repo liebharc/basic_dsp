@@ -6,7 +6,7 @@ use super::{
     DspVec,
     NumberSpace, ComplexNumberSpace,
     Domain, DataDomain,
-    ToSlice, ToSliceMut, Resize,
+    ToSlice, ToSliceMut,
     ErrorReason, VoidResult};
 use multicore_support::MultiCoreSettings;
 use std::ops::*;
@@ -77,9 +77,10 @@ pub trait Vector<T>
     /// In most cases you likely want to have `len`or `points` instead.
     fn alloc_len(&self) -> usize;
 
-    /// Set `self.len()` to a value smaller than `self.alloc_len()`. If
-    /// `self.is_complex()` is true then `len` must be an even number.
-    fn shrink(&mut self, len: usize) -> VoidResult;
+    /// Changes `self.len()`.
+    /// If `self.is_complex()` is true then `len` must be an even number.
+    /// `len > self.alloc_len()` is only possible if the underlying storage supports resizing.
+    fn resize(&mut self, len: usize) -> VoidResult;
 }
 
 impl<S, T, N, D> Vector<T> for DspVec<S, T, N, D>
@@ -123,44 +124,17 @@ impl<S, T, N, D> Vector<T> for DspVec<S, T, N, D>
         self.data.len()
     }
 
-    fn shrink(&mut self, len: usize) -> VoidResult {
+    fn resize(&mut self, len: usize) -> VoidResult {
         if self.is_complex() && len % 2 != 0 {
             return Err(ErrorReason::InputMustHaveAnEvenLength);
         }
 
         if len > self.alloc_len() {
-            return Err(ErrorReason::InvalidArgumentLength);
+            try!(self.data.try_resize(len));
         }
 
         self.valid_len = len;
 
-        Ok(())
-    }
-}
-
-/// Trait for types which can increase the capacity of their storace.
-pub trait SetLen {
-    /// Sets the vector length to the given length.
-    /// If `self.len() < len` then the value of the new elements is undefined.
-    /// For complex data `len` needs to be even.
-    fn set_len(&mut self, len: usize) -> VoidResult;
-}
-
-impl<S, T, N, D> SetLen for DspVec<S, T, N, D>
-    where S: ToSlice<T> + Resize,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain {
-    fn set_len(&mut self, len: usize) -> VoidResult {
-        if self.is_complex() && len % 2 != 0 {
-            return Err(ErrorReason::InputMustHaveAnEvenLength);
-        }
-
-        if self.data.alloc_len() < len {
-            self.data.resize(len);
-        }
-
-        self.valid_len = len;
         Ok(())
     }
 }

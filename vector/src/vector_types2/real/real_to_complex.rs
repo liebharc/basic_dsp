@@ -1,9 +1,9 @@
 use RealNumber;
 use super::super::{
-    Owner, ToComplexResult,
+    Owner, ToComplexResult, TransRes,
     Buffer, Vector, InsertZerosOps,
     DspVec, ToSliceMut,
-    Domain, RealNumberSpace, RededicateForceOps
+    Domain, RealNumberSpace, RededicateForceOps, ErrorReason
 };
 
 /// Defines transformations from real to complex number space.
@@ -13,29 +13,32 @@ use super::super::{
 pub trait RealToComplexTransformsOps<S, T> : ToComplexResult
     where S: ToSliceMut<T>,
           T: RealNumber {
-	/// Converts the real vector into a complex vector.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use basic_dsp_vector::vector_types2::*;
-    /// let vector = vec!(1.0, 2.0).to_real_time_vec();
-    /// let mut buffer = SingleBuffer::new();
-    /// let result = vector.to_complex(&mut buffer);
-    /// assert_eq!([1.0, 0.0, 2.0, 0.0], result[..]);
-    /// ```
-    fn to_complex<B>(self, buffer: &mut B) -> Self::ComplexResult
-        where B: Buffer<S, T>;
-}
+      /// Converts the real vector into a complex vector.
+      ///
+      /// # Example
+      ///
+      /// ```
+      /// use basic_dsp_vector::vector_types2::*;
+      /// let vector = vec!(1.0, 2.0).to_real_time_vec();
+      /// let result = vector.to_complex().expect("Ignoring error handling in examples");
+      /// assert_eq!([1.0, 0.0, 2.0, 0.0], result[..]);
+      /// ```
+      fn to_complex(self) -> TransRes<Self::ComplexResult>;
 
-macro_rules! assert_real {
-    ($self_: ident) => {
-        if $self_.is_complex() {
-            $self_.number_space.to_complex();
-            $self_.valid_len = 0;
-            return Self::ComplexResult::rededicate_from_force($self_);
-        }
-    }
+	  /// Converts the real vector into a complex vector. The buffer allows
+      /// this operation to succeed even if the storage type doesn't allow resizing.
+      ///
+      /// # Example
+      ///
+      /// ```
+      /// use basic_dsp_vector::vector_types2::*;
+      /// let vector = vec!(1.0, 2.0).to_real_time_vec();
+      /// let mut buffer = SingleBuffer::new();
+      /// let result = vector.to_complex_b(&mut buffer);
+      /// assert_eq!([1.0, 0.0, 2.0, 0.0], result[..]);
+      /// ```
+      fn to_complex_b<B>(self, buffer: &mut B) -> Self::ComplexResult
+          where B: Buffer<S, T>;
 }
 
 impl<S, T, N, D> RealToComplexTransformsOps<S, T> for DspVec<S, T, N, D>
@@ -45,11 +48,29 @@ impl<S, T, N, D> RealToComplexTransformsOps<S, T> for DspVec<S, T, N, D>
           T: RealNumber,
           N: RealNumberSpace,
           D: Domain {
-    fn to_complex<B>(mut self, buffer: &mut B) -> Self::ComplexResult
-        where B: Buffer<S, T> {
-        assert_real!(self);
-        self.zero_interleave(buffer, 2);
-        self.number_space.to_complex();
-        Self::ComplexResult::rededicate_from_force(self)
-    }
+      fn to_complex(mut self) -> TransRes<Self::ComplexResult> {
+          if self.is_complex() {
+              self.number_space.to_complex();
+              return Err((ErrorReason::InputMustBeReal, Self::ComplexResult::rededicate_from_force(self)));
+          }
+
+          self.number_space.to_complex();
+          let result = self.zero_interleave(2);
+          match result {
+              Err(reason) => Err((reason, Self::ComplexResult::rededicate_from_force(self))),
+              Ok(()) =>  Ok(Self::ComplexResult::rededicate_from_force(self))
+          }
+      }
+
+      fn to_complex_b<B>(mut self, buffer: &mut B) -> Self::ComplexResult
+          where B: Buffer<S, T> {
+          if self.is_complex() {
+              self.number_space.to_complex();
+              self.valid_len = 0;
+              return Self::ComplexResult::rededicate_from_force(self);
+          }
+          self.zero_interleave_b(buffer, 2);
+          self.number_space.to_complex();
+          Self::ComplexResult::rededicate_from_force(self)
+      }
 }

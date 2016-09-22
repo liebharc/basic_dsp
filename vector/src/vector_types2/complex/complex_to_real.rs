@@ -5,7 +5,7 @@ use num::Complex;
 use std::ops::*;
 use super::super::{
     Owner, ToRealResult, ErrorReason,
-    Buffer, Vector, SetLen, Resize,
+    Buffer, Vector, Resize,
     DspVec, ToSliceMut, ToSlice, VoidResult,
     Domain, ComplexNumberSpace, RededicateForceOps
 };
@@ -299,9 +299,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     fn pure_complex_into_real_target_operation<A, F, V>(&self, destination: &mut V, op: F, argument: A, complexity: Complexity)
         where A: Sync + Copy + Send,
               F: Fn(Complex<T>, A) -> T + 'static + Sync,
-              V: Vector<T> + Index<Range<usize>, Output=[T]> + IndexMut<Range<usize>> + SetLen {
+              V: Vector<T> + Index<Range<usize>, Output=[T]> + IndexMut<Range<usize>> {
         let len = self.len();
-        destination.set_len(len / 2).expect("Target should be real and thus all values for len / 2 should be valid");
+        destination.resize(len / 2).expect("Target should be real and thus all values for len / 2 should be valid");
         destination.set_delta(self.delta);
         let mut array = &mut destination[0..len / 2];
         let source = &self.data.to_slice();
@@ -326,9 +326,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     fn simd_complex_into_real_target_operation<FSimd, F, V>(&self, destination: &mut V, op_simd: FSimd, op: F, complexity: Complexity)
         where F: Fn(Complex<T>) -> T + 'static + Sync,
               FSimd: Fn(T::Reg) -> T::Reg + 'static + Sync,
-              V: Vector<T> + Index<Range<usize>, Output=[T]> + IndexMut<Range<usize>> + SetLen {
+              V: Vector<T> + Index<Range<usize>, Output=[T]> + IndexMut<Range<usize>> {
       let data_length = self.len();
-      destination.set_len(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");;
+      destination.resize(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");;
       destination.set_delta(self.delta);
       let mut temp = &mut destination[0..data_length / 2];
       let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&temp);
@@ -370,7 +370,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 macro_rules! assert_self_complex_and_target_real {
     ($self_: ident, $target: ident) => {
         if !$self_.is_complex() || $target.is_complex() {
-            $target.shrink(0).unwrap();
+            $target.resize(0).unwrap();
             return;
         }
     }
@@ -379,8 +379,8 @@ macro_rules! assert_self_complex_and_target_real {
 macro_rules! assert_self_complex_and_targets_real {
     ($self_: ident, $real: ident, $imag: ident) => {
         if !$self_.is_complex() || $real.is_complex() || $imag.is_complex() {
-            $real.shrink(0).unwrap();
-            $imag.shrink(0).unwrap();
+            $real.resize(0).unwrap();
+            $imag.resize(0).unwrap();
             return;
         }
     }
@@ -388,7 +388,7 @@ macro_rules! assert_self_complex_and_targets_real {
 
 impl<S, T, N, D> ComplexToRealGetterOps<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToRealResult,
-          <DspVec<S, T, N, D> as ToRealResult>::RealResult: Vector<T> + Index<Range<usize>, Output=[T]> + IndexMut<Range<usize>> + SetLen,
+          <DspVec<S, T, N, D> as ToRealResult>::RealResult: Vector<T> + Index<Range<usize>, Output=[T]> + IndexMut<Range<usize>>,
           S: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
@@ -421,8 +421,8 @@ impl<S, T, N, D> ComplexToRealGetterOps<S, T> for DspVec<S, T, N, D>
     fn get_real_imag(&self, real: &mut Self::RealResult, imag: &mut Self::RealResult) {
         assert_self_complex_and_targets_real!(self, real, imag);
         let data_length = self.len();
-        real.set_len(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");
-        imag.set_len(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");
+        real.resize(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");
+        imag.resize(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");
         let real = &mut real[0..data_length / 2];
         let imag = &mut imag[0..data_length / 2];
         let data = self.data.to_slice();
@@ -438,8 +438,8 @@ impl<S, T, N, D> ComplexToRealGetterOps<S, T> for DspVec<S, T, N, D>
     fn get_mag_phase(&self, mag: &mut Self::RealResult, phase: &mut Self::RealResult) {
         assert_self_complex_and_targets_real!(self, mag, phase);
         let data_length = self.len();
-        mag.set_len(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");
-        phase.set_len(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");
+        mag.resize(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");
+        phase.resize(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");
         let mag = &mut mag[0..data_length / 2];
         let phase = &mut phase[0..data_length / 2];
         let data = self.data.to_slice();

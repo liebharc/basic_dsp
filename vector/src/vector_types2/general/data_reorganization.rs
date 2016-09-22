@@ -1,12 +1,13 @@
 use std::mem;
 use std::ptr;
 use RealNumber;
+use num::Complex;
 use multicore_support::*;
 use super::super::{
 	array_to_complex_mut,
 	VoidResult, Buffer, Owner, ErrorReason,
 	NumberSpace, Domain,
-	DspVec, Vector, ToSliceMut, Resize
+	DspVec, Vector, ToSliceMut,
 };
 
 pub trait ReorganizeDataOps<S, T>
@@ -27,16 +28,31 @@ pub trait ReorganizeDataOps<S, T>
 	/// This function swaps both halves of the vector. This operation is also called FFT shift
 	/// Use it after a `plain_fft` to get a spectrum which is centered at `0 Hz`.
 	///
+	/// `swap_halvesb` requires a buffer but performs faster.
+	///
+	/// # Example
+	///
+	/// ```
+    /// use basic_dsp_vector::vector_types2::*;
+    /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();
+    /// vector.swap_halves();
+    /// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], vector[..]);
+    /// ```
+	fn swap_halves(&mut self);
+
+	/// This function swaps both halves of the vector. This operation is also called FFT shift
+	/// Use it after a `plain_fft` to get a spectrum which is centered at `0 Hz`.
+	///
 	/// # Example
 	///
 	/// ```
     /// use basic_dsp_vector::vector_types2::*;
     /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();
 	/// let mut buffer = SingleBuffer::new();
-    /// vector.swap_halves(&mut buffer);
+    /// vector.swap_halves_b(&mut buffer);
     /// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], vector[..]);
     /// ```
-	fn swap_halves<B>(&mut self, buffer: &mut B)
+	fn swap_halves_b<B>(&mut self, buffer: &mut B)
 		where B: Buffer<S, T>;
 }
 
@@ -68,18 +84,57 @@ pub trait InsertZerosOps<S, T>
 	/// # Example
 	///
 	/// ```
+	/// use basic_dsp_vector::vector_types2::*;
+	/// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
+	/// vector.zero_pad(4, PaddingOption::End).expect("Ignoring error handling in examples");
+	/// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
+	/// let mut vector = vec!(1.0, 2.0).to_complex_time_vec();
+	/// vector.zero_pad(2, PaddingOption::End).expect("Ignoring error handling in examples");
+	/// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
+	/// ```
+	fn zero_pad(&mut self, points: usize, option: PaddingOption) -> VoidResult;
+
+	/// Appends zeros add the end of the vector until the vector has the size given in the points argument.
+	/// If `points` smaller than the `self.len()` then this operation won't do anything.
+	///
+	/// Note: Each point is two floating point numbers if the vector is complex.
+	/// Note2: Adding zeros to the signal changes its power. If this function is used to zero pad to a power
+	/// of 2 in order to speed up FFT calculation then it might be necessary to multiply it with `len_after/len_before`\
+	/// so that the spectrum shows the expected power. Of course this is depending on the application.
+	/// # Example
+	///
+	/// ```
     /// use basic_dsp_vector::vector_types2::*;
     /// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
 	/// let mut buffer = SingleBuffer::new();
-    /// vector.zero_pad(&mut buffer, 4, PaddingOption::End);
+    /// vector.zero_pad_b(&mut buffer, 4, PaddingOption::End);
     /// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
 	/// let mut vector = vec!(1.0, 2.0).to_complex_time_vec();
-	/// let mut buffer = SingleBuffer::new();
-    /// vector.zero_pad(&mut buffer, 2, PaddingOption::End);
+    /// vector.zero_pad_b(&mut buffer, 2, PaddingOption::End);
     /// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
     /// ```
-	fn zero_pad<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption)
+	fn zero_pad_b<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption)
 		where B: Buffer<S, T>;
+
+	/// Interleaves zeros `factor - 1`times after every vector element, so that the resulting
+	/// vector will have a length of `self.len() * factor`.
+	///
+	/// Note: Remember that each complex number consists of two floating points and interleaving
+	/// will take that into account.
+	///
+	/// If factor is 0 (zero) then `self` will be returned.
+	/// # Example
+	///
+	/// ```
+	/// use basic_dsp_vector::vector_types2::*;
+	/// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
+	/// vector.zero_interleave(2);
+	/// assert_eq!([1.0, 0.0, 2.0, 0.0], vector[..]);
+	/// let mut vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+	/// vector.zero_interleave(2).expect("Ignoring error handling in examples");
+	/// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], vector[..]);
+	/// ```
+	fn zero_interleave(&mut self, factor: u32) -> VoidResult;
 
 	/// Interleaves zeros `factor - 1`times after every vector element, so that the resulting
 	/// vector will have a length of `self.len() * factor`.
@@ -94,14 +149,13 @@ pub trait InsertZerosOps<S, T>
     /// use basic_dsp_vector::vector_types2::*;
     /// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
 	/// let mut buffer = SingleBuffer::new();
-    /// vector.zero_interleave(&mut buffer, 2);
+    /// vector.zero_interleave_b(&mut buffer, 2);
     /// assert_eq!([1.0, 0.0, 2.0, 0.0], vector[..]);
 	/// let mut vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
-	/// let mut buffer = SingleBuffer::new();
-    /// vector.zero_interleave(&mut buffer, 2);
+    /// vector.zero_interleave_b(&mut buffer, 2);
     /// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], vector[..]);
     /// ```
-	fn zero_interleave<B>(&mut self, buffer: &mut B, factor: u32)
+	fn zero_interleave_b<B>(&mut self, buffer: &mut B, factor: u32)
 		where B: Buffer<S, T>;
 }
 
@@ -173,10 +227,30 @@ impl<S, T, N, D> ReorganizeDataOps<S, T> for DspVec<S, T, N, D>
 				data[len - 1 - i] = temp;
 			}
 		}
-
 	}
 
-	fn swap_halves<B>(&mut self, buffer: &mut B)
+	fn swap_halves(&mut self) {
+		if self.is_complex() {
+			let len = self.points();
+			let mut data = self.data.to_slice_mut();
+			let mut data = array_to_complex_mut(&mut data[..]);
+			for i in 0..len / 2 {
+				let temp = data[i];
+				data[i] = data[len / 2 + i];
+				data[len / 2 + i] = temp;
+			}
+		} else {
+			let len = self.len();
+			let mut data = self.data.to_slice_mut();
+			for i in 0..len / 2 {
+				let temp = data[i];
+				data[i] = data[len / 2 + i];
+				data[len / 2 + i] = temp;
+			}
+		}
+	}
+
+	fn swap_halves_b<B>(&mut self, buffer: &mut B)
 		where B: Buffer<S, T> {
 		self.swap_halves_priv(buffer, true);
 	}
@@ -234,7 +308,68 @@ impl<S, T, N, D> InsertZerosOps<S, T> for DspVec<S, T, N, D>
 	  T: RealNumber,
 	  N: NumberSpace,
 	  D: Domain {
-	fn zero_pad<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption)
+    fn zero_pad(&mut self, points: usize, option: PaddingOption) -> VoidResult {
+		let len_before = self.len();
+		let is_complex = self.is_complex();
+		let len = if is_complex { 2 * points } else { points };
+		if len < len_before {
+			return Ok(());
+		}
+
+		try!(self.resize(len));
+		let data = self.data.to_slice_mut();
+		match option {
+			PaddingOption::End => {
+				// Zero target
+				let dest = &mut data[len_before] as *mut T;
+				unsafe {
+					ptr::write_bytes(dest, 0, len - len_before);
+				}
+				Ok(())
+			}
+			PaddingOption::Surround => {
+				let diff = (len - len_before) / if is_complex { 2 } else { 1 };
+				let mut right = diff / 2;
+				let mut left = diff - right;
+				if is_complex {
+					right *= 2;
+					left *= 2;
+				}
+
+				unsafe {
+					let src = &data[0] as *const T;
+					let dest = &mut data[left] as *mut T;
+					ptr::copy(src, dest, len_before);
+					let dest = &mut data[len - right] as *mut T;
+					ptr::write_bytes(dest, 0, right);
+					let dest = &mut data[0] as *mut T;
+					ptr::write_bytes(dest, 0, left);
+				}
+				Ok(())
+			}
+			PaddingOption::Center => {
+				let mut diff = (len - len_before) / if is_complex { 2 } else { 1 };
+				let mut right = diff / 2;
+				let mut left = diff - right;
+				if is_complex {
+					right *= 2;
+					left *= 2;
+					diff *= 2;
+				}
+
+				unsafe {
+					let src = &data[left] as *const T;
+					let dest = &mut data[len-right] as *mut T;
+					ptr::copy(src, dest, right);
+					let dest = &mut data[left] as *mut T;
+					ptr::write_bytes(dest, 0, len - diff);
+				}
+				Ok(())
+			}
+		}
+	}
+
+	fn zero_pad_b<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption)
 		where B: Buffer<S, T> {
 		let len_before = self.len();
 		let is_complex = self.is_complex();
@@ -256,7 +391,7 @@ impl<S, T, N, D> InsertZerosOps<S, T> for DspVec<S, T, N, D>
 					let dest_end = &mut target[len_before] as *mut T;
 					unsafe {
 						ptr::copy(src, dest_start, len_before);
-						ptr::write_bytes(dest_end, 0, target.len() - len_before);
+						ptr::write_bytes(dest_end, 0, len - len_before);
 					}
 				}
 				PaddingOption::Surround => {
@@ -303,8 +438,44 @@ impl<S, T, N, D> InsertZerosOps<S, T> for DspVec<S, T, N, D>
 		buffer.free(target);
 	}
 
+	fn zero_interleave(&mut self, factor: u32) -> VoidResult {
+		let len_before = self.len();
+		let is_complex = self.is_complex();
+		let factor = factor as usize;
+		let len = len_before * factor;
+		if len < len_before {
+			return Ok(());
+		}
 
-	fn zero_interleave<B>(&mut self, buffer: &mut B, factor: u32)
+		try!(self.resize(len));
+
+		if is_complex {
+			let data = self.data.to_slice_mut();
+			let data = array_to_complex_mut(data);
+			for j in 0..len/2 {
+				let i = len/2 - 1 - j;
+				if i % factor == 0 {
+					data[i] = data[i / factor];
+				} else {
+					data[i] = Complex::<T>::new(T::zero(), T::zero());
+				}
+			}
+		} else {
+			let data = self.data.to_slice_mut();
+			for j in 0..len {
+				let i = len - 1 - j;
+				if i % factor == 0 {
+					data[i] = data[i / factor];
+				} else {
+					data[i] = T::zero();
+				}
+			}
+		}
+
+		Ok(())
+	}
+
+	fn zero_interleave_b<B>(&mut self, buffer: &mut B, factor: u32)
 		where B: Buffer<S, T> {
 		if self.is_complex() {
 			zero_interleave!(self, buffer, factor, 2)
@@ -315,7 +486,7 @@ impl<S, T, N, D> InsertZerosOps<S, T> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> SplitOps for DspVec<S, T, N, D>
-	where S: ToSliceMut<T> + Owner + Resize ,
+	where S: ToSliceMut<T> + Owner ,
 	  T: RealNumber,
 	  N: NumberSpace,
 	  D: Domain {
@@ -327,8 +498,7 @@ impl<S, T, N, D> SplitOps for DspVec<S, T, N, D>
 		}
 
 		for i in 0..num_targets {
-			targets[i].data.resize(data_length / num_targets);
-			targets[i].shrink(data_length / num_targets).expect("We just resized to this size so shrink should never fail");
+			try!(targets[i].resize(data_length / num_targets));
 		}
 
 		let data = &self.data.to_slice();
@@ -352,7 +522,7 @@ impl<S, T, N, D> SplitOps for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> MergeOps for DspVec<S, T, N, D>
-	where S: ToSliceMut<T> + Owner + Resize,
+	where S: ToSliceMut<T> + Owner,
 	  T: RealNumber,
 	  N: NumberSpace,
 	  D: Domain {
@@ -369,8 +539,7 @@ impl<S, T, N, D> MergeOps for DspVec<S, T, N, D>
 				}
 			}
 
-			self.data.resize(sources[0].len() * num_sources);
-			self.shrink(sources[0].len() * num_sources).expect("We just resized to this size so shrink should never fail");
+			try!(self.resize(sources[0].len() * num_sources));
 
 			let data_length = self.len();
 			let is_complex = self.is_complex();
