@@ -312,7 +312,7 @@ impl<S, T, N, D> InsertZerosOps<S, T> for DspVec<S, T, N, D>
 		let len_before = self.len();
 		let is_complex = self.is_complex();
 		let len = if is_complex { 2 * points } else { points };
-		if len < len_before {
+		if len <= len_before {
 			return Ok(());
 		}
 
@@ -374,7 +374,7 @@ impl<S, T, N, D> InsertZerosOps<S, T> for DspVec<S, T, N, D>
 		let len_before = self.len();
 		let is_complex = self.is_complex();
 		let len = if is_complex { 2 * points } else { points };
-		if len < len_before {
+		if len <= len_before {
 			return;
 		}
 

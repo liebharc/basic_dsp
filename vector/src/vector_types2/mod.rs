@@ -20,6 +20,8 @@ mod complex;
 pub use self::complex::*;
 mod real;
 pub use self::real::*;
+mod time_freq;
+pub use self::time_freq::*;
 mod rededicate_and_relations;
 pub use self::rededicate_and_relations::*;
 mod checks_and_results;
