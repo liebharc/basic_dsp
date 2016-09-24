@@ -171,7 +171,7 @@ mod vec2 {
         let mut vector = VectorBox::<ComplexTimeVec<Vec<f32>, f32>, f32>::new(Size::Small);
         b.iter(|| {
             vector.execute(|mut v, buffer|  {
-                v.swap_halvesb(buffer);
+                v.swap_halves_b(buffer);
                 v
             } )
         });

@@ -38,6 +38,8 @@ rand = "^0.3.12"
 num = "^0.1.35"
 
 [features]
+use_avx = []
+use_sse = []
 matrix = ["basic_dsp_matrix"]
 interop= ["basic_dsp_interop"]
 default = ["matrix"]
