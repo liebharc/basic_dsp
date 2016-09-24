@@ -232,20 +232,53 @@ impl<S, T, N, D> ReorganizeDataOps<S, T> for DspVec<S, T, N, D>
 	fn swap_halves(&mut self) {
 		if self.is_complex() {
 			let len = self.points();
+			if len == 0 {
+				return;
+			}
 			let mut data = self.data.to_slice_mut();
 			let mut data = array_to_complex_mut(&mut data[..]);
-			for i in 0..len / 2 {
-				let temp = data[i];
-				data[i] = data[len / 2 + i];
-				data[len / 2 + i] = temp;
+			if len % 2 == 0 {
+				for i in 0.. len / 2 {
+					let temp = data[i];
+					data[i] = data[len / 2 + i];
+					data[len / 2 + i] = temp;
+				}
 			}
+			else {
+				let mut temp = data[0];
+				let mut pos = len / 2;
+				for _ in 0..len {
+					let pos_new = (pos + len / 2) % len;
+					let temp_new = data[pos];
+					data[pos] = temp;
+					temp = temp_new;
+					pos = pos_new;
+				}
+			}
+
 		} else {
 			let len = self.len();
+			if len == 0 {
+				return;
+			}
 			let mut data = self.data.to_slice_mut();
-			for i in 0..len / 2 {
-				let temp = data[i];
-				data[i] = data[len / 2 + i];
-				data[len / 2 + i] = temp;
+			if len % 2 == 0 {
+				for i in 0..len / 2 {
+					let temp = data[i];
+					data[i] = data[len / 2 + i];
+					data[len / 2 + i] = temp;
+				}
+			}
+			else {
+				let mut temp = data[0];
+				let mut pos = len / 2;
+				for _ in 0..len {
+					let pos_new = (pos + len / 2) % len;
+					let temp_new = data[pos];
+					data[pos] = temp;
+					temp = temp_new;
+					pos = pos_new;
+				}
 			}
 		}
 	}
@@ -562,4 +595,146 @@ impl<S, T, N, D> MergeOps for DspVec<S, T, N, D>
 
 		Ok(())
 	}
+}
+
+#[cfg(test)]
+mod tests {
+    use vector_types2::*;
+
+	#[test]
+    fn swap_halves_real_even_test()
+    {
+        let mut v = vec!(1.0, 2.0, 3.0, 4.0).to_real_time_vec();
+        v.swap_halves();
+        assert_eq!(&v[..], &[3.0, 4.0, 1.0, 2.0]);
+    }
+
+    #[test]
+    fn swap_halves_real_odd_test()
+    {
+        let mut v = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0).to_real_time_vec();
+        v.swap_halves();
+        assert_eq!(&v[..], &[7.0, 8.0, 9.0, 10.0, 11.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+    }
+
+    #[test]
+    fn swap_halves_complex_even_test()
+    {
+		let mut v = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_complex_time_vec();
+        v.swap_halves();
+        assert_eq!(&v[..], &[5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0]);
+    }
+
+    #[test]
+    fn swap_halves_complex_odd_test()
+    {
+		let mut v = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0).to_complex_time_vec();
+        v.swap_halves();
+        assert_eq!(&v[..], &[7.0, 8.0, 9.0, 10.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+    }
+
+    #[test]
+    fn zero_pad_end_test()
+    {
+		let mut v = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0).to_complex_time_vec();
+        v.zero_pad(9, PaddingOption::End).unwrap();
+        let expected =
+            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+             0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+        assert_eq!(&v[..], &expected);
+    }
+
+    #[test]
+    fn zero_pad_surround_test()
+    {
+        let mut v = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0).to_complex_time_vec();
+        v.zero_pad(10, PaddingOption::Surround).unwrap();
+        let expected =
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+             1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+             0.0, 0.0, 0.0, 0.0];
+        assert_eq!(&v[..], &expected);
+    }
+
+	#[test]
+    fn swap_halves_b_real_even_test()
+    {
+        let mut v = vec!(1.0, 2.0, 3.0, 4.0).to_real_time_vec();
+		let mut buffer = SingleBuffer::new();
+        v.swap_halves_b(&mut buffer);
+        assert_eq!(&v[..], &[3.0, 4.0, 1.0, 2.0]);
+    }
+
+    #[test]
+    fn swap_halves_b_real_odd_test()
+    {
+		let mut v = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0).to_real_time_vec();
+		let mut buffer = SingleBuffer::new();
+        v.swap_halves_b(&mut buffer);
+        assert_eq!(&v[..], &[7.0, 8.0, 9.0, 10.0, 11.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+    }
+
+    #[test]
+    fn swap_halves_b_complex_even_test()
+    {
+		let mut v = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_complex_time_vec();
+		let mut buffer = SingleBuffer::new();
+        v.swap_halves_b(&mut buffer);
+        assert_eq!(&v[..], &[5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0]);
+    }
+
+    #[test]
+    fn swap_halves_b_complex_odd_test()
+    {
+		let mut v = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0).to_complex_time_vec();
+		let mut buffer = SingleBuffer::new();
+        v.swap_halves_b(&mut buffer);
+        assert_eq!(&v[..], &[7.0, 8.0, 9.0, 10.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+    }
+
+    #[test]
+    fn zero_pad_b_end_test()
+    {
+		let mut v = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0).to_complex_time_vec();
+		let mut buffer = SingleBuffer::new();
+        v.zero_pad_b(&mut buffer, 9, PaddingOption::End);
+        let expected =
+            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+             0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+        assert_eq!(&v[..], &expected);
+    }
+
+    #[test]
+    fn zero_pad_b_surround_test()
+    {
+        let mut v = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0).to_complex_time_vec();
+		let mut buffer = SingleBuffer::new();
+        v.zero_pad_b(&mut buffer, 10, PaddingOption::Surround);
+        let expected =
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+             1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+             0.0, 0.0, 0.0, 0.0];
+        assert_eq!(&v[..], &expected);
+    }
+
+	#[test]
+    fn zero_pad_on_slice_fail_test()
+    {
+		let a: Box<[f64]> = Box::new([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]);
+		let mut v = a.to_complex_time_vec();
+        assert_eq!(v.zero_pad(9, PaddingOption::End), Err(ErrorReason::TypeCanNotResize));
+    }
+
+	#[test]
+    fn zero_pad_on_slice_shrinked_test()
+    {
+		let a: Box<[f64]> = Box::new([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 13.0, 14.0]);
+		let mut v = a.to_complex_time_vec();
+		v.resize(10).unwrap();
+        v.zero_pad(9, PaddingOption::End).unwrap();
+        let expected =
+            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+             0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+        assert_eq!(&v[..], &expected);
+    }
 }
