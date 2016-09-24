@@ -1,5 +1,5 @@
 # Migration Guide v0.3 to v0.4
-The API as defined in version 0.3 proofed to be not flexible enough and would prevent new features from being added to this crate. In particular there was no way to operate on slices of a vector since all implementations were based on `std::vec::Vec<T>`. Thus a lot of breaking changes to the API were unavoidable. This open up the opportunity to rethink the current and the result was a quite different approach.
+The API as defined in version 0.3 proofed to be not flexible enough and would prevent new features from being added to this crate. In particular there was no way to operate on slices of a vector since all implementations were based on `std::vec::Vec<T>`. Thus a lot of breaking changes to the API were unavoidable. This opened up the opportunity to rethink the current and the result was a quite different approach.
 
 Apologies for the inconvenience caused by the API change. Hopefully users will agree that the new approach is more Rust idiomatic. The next sections give a brief overview about what has changed to make the migration easier.
 

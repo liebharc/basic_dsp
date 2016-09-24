@@ -151,22 +151,22 @@ macro_rules! simd_generic_impl {
         }
     }
 }
-#[cfg(any(feature = "doc", target_feature="avx2"))]
+#[cfg(any(feature = "doc", feature="avx"))]
 pub mod avx;
 
-#[cfg(any(feature = "doc", target_feature="avx2"))]
+#[cfg(any(feature = "doc", feature="avx"))]
 pub use self::avx::{Reg32,Reg64};
 
-#[cfg(any(feature = "doc", all(target_feature = "sse3", not(target_feature = "avx2"))))]
+#[cfg(any(feature = "doc", all(feature = "sse", not(feature = "avx"))))]
 pub mod sse;
 
-#[cfg(any(feature = "doc", all(target_feature = "sse3", not(target_feature = "avx2"))))]
+#[cfg(any(feature = "doc", all(feature = "sse", not(feature = "avx"))))]
 pub use self::sse::{Reg32,Reg64};
 
-#[cfg(any(feature = "doc", not(any(target_feature = "avx2", target_feature="sse3"))))]
+#[cfg(any(feature = "doc", not(any(feature = "avx", feature="sse"))))]
 pub mod fallback;
 
-#[cfg(any(feature = "doc", not(any(target_feature = "avx2", target_feature="sse3"))))]
+#[cfg(any(feature = "doc", not(any(feature = "avx", feature="sse"))))]
 pub use self::fallback::{Reg32,Reg64};
 
 simd_generic_impl!(f32, Reg32);

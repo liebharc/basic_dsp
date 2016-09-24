@@ -1,5 +1,3 @@
-#![feature(box_syntax)]
-#![feature(cfg_target_feature)]
 //! Basic digital signal processing (DSP) operations
 //!
 //! Digital signal processing based on real or complex vectors in time or frequency domain. Vectors are expected to typically have a size which is at least in the order
@@ -38,6 +36,7 @@ macro_rules! try_vec {
     };
 }
 
+#[cfg(any(feature = "doc", feature="sse", feature="avx"))]
 extern crate simd;
 extern crate num_cpus;
 extern crate crossbeam;

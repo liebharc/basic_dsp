@@ -6,6 +6,7 @@ Added support for matrix operations. In order to allow matrices and vectors to i
 - Breaking change: Reorganized existing interfaces so that they can be reused for the matrix types. For that traits have been renamed and sometimes traits have been splitted in several smaller traits.
 - Breaking change: Interop facade is now only compiled with `--features interop`
 - Breaking change: Removed `complex_data`, `data` and `override_data` (which also had a spelling mistake) in favor for implementations of several Indexer traits.
+- Crate now compiles with Rust stable
 
 ## Version 0.3.2
 Bugfix release:

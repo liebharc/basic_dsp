@@ -18,8 +18,13 @@ codegen-units = 4
 [profile.test]
 codegen-units = 4
 
+[features]
+use_avx = ["use_simd"]
+use_sse = ["use_simd"]
+use_simd = ["simd"]
+
 [dependencies]
-simd = "^0.1.1"
+simd = { version = "^0.1.1", optional = true }
 num_cpus = "^0.2.10"
 crossbeam = "^0.2.0"
 num = "^0.1.34"
