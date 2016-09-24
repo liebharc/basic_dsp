@@ -62,6 +62,11 @@ pub trait ToFreqResult {
     type FreqResult;
 }
 
+/// Specifies what the the result is if a type is transformed to real numbers in time domain.
+pub trait ToRealTimeResult {
+    type RealTimeResult;
+}
+
 impl<S, T> ToRealResult for ComplexTimeVec<S, T>
     where S: ToSlice<T>,
       T: RealNumber {
@@ -132,6 +137,18 @@ impl<S, T> ToFreqResult for GenDspVec<S, T>
     where S: ToSlice<T>,
       T: RealNumber  {
     type FreqResult = GenDspVec<S, T>;
+}
+
+impl<S, T> ToRealTimeResult for ComplexFreqVec<S, T>
+    where S: ToSlice<T>,
+      T: RealNumber  {
+    type RealTimeResult = RealTimeVec<S, T>;
+}
+
+impl<S, T> ToRealTimeResult for GenDspVec<S, T>
+    where S: ToSlice<T>,
+      T: RealNumber  {
+    type RealTimeResult = GenDspVec<S, T>;
 }
 
 impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for RealTimeVec<S, T>
