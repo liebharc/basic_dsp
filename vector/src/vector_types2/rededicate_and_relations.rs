@@ -103,12 +103,6 @@ impl<S, T> ToComplexResult for GenDspVec<S, T>
     type ComplexResult = GenDspVec<S, T>;
 }
 
-impl<S, T> ToTimeResult for RealFreqVec<S, T>
-    where S: ToSlice<T>,
-      T: RealNumber  {
-    type TimeResult = RealTimeVec<S, T>;
-}
-
 impl<S, T> ToTimeResult for ComplexFreqVec<S, T>
     where S: ToSlice<T>,
       T: RealNumber  {
@@ -124,7 +118,7 @@ impl<S, T> ToTimeResult for GenDspVec<S, T>
 impl<S, T> ToFreqResult for RealTimeVec<S, T>
     where S: ToSlice<T>,
       T: RealNumber  {
-    type FreqResult = RealFreqVec<S, T>;
+    type FreqResult = ComplexFreqVec<S, T>;
 }
 
 impl<S, T> ToFreqResult for ComplexTimeVec<S, T>

@@ -4,6 +4,8 @@ use multicore_support::{
     MultiCoreSettings,
     Complexity};
 use num::complex::Complex;
+use num::Zero;
+use std::ops::*;
 use std::mem;
 use std::cmp;
 use std::result;
@@ -58,39 +60,39 @@ pub enum DataDomain {
 /// Number space (real or complex) information.
 pub trait NumberSpace : Debug + cmp::PartialEq {
     fn is_complex(&self) -> bool;
-}
 
-/// Domain (time or frequency) information.
-pub trait Domain : Debug + cmp::PartialEq {
-    fn domain(&self) -> DataDomain;
-}
-
-/// Trait for types containing real data.
-pub trait RealNumberSpace : NumberSpace {
     /// For implementations which track meta data
     /// at runtime this method may be implemented to transition
     /// between different states. For all other implementations
     /// they may leave this empty.
     fn to_complex(&mut self);
-}
 
-/// TWorait for types containing complex data.
-pub trait ComplexNumberSpace : NumberSpace {
     /// See `RealNumberSpace` for some more details.
     fn to_real(&mut self);
 }
 
-/// Trait for types containing time domain data.
-pub trait TimeDomain {
+/// Domain (time or frequency) information.
+pub trait Domain : Debug + cmp::PartialEq {
+    fn domain(&self) -> DataDomain;
+
     /// See `RealNumberSpace` for some more details.
     fn to_freq(&mut self);
-}
 
-/// Trait for types containing frequency domain data.
-pub trait FrequencyDomain {
     /// See `RealNumberSpace` for some more details.
     fn to_time(&mut self);
 }
+
+/// Trait for types containing real data.
+pub trait RealNumberSpace : NumberSpace { }
+
+/// TWorait for types containing complex data.
+pub trait ComplexNumberSpace : NumberSpace { }
+
+/// Trait for types containing time domain data.
+pub trait TimeDomain : Domain { }
+
+/// Trait for types containing frequency domain data.
+pub trait FrequencyDomain : Domain { }
 
 /// Marker for types containing real data.
 #[derive(Debug)]
@@ -98,10 +100,10 @@ pub trait FrequencyDomain {
 pub struct RealData;
 impl NumberSpace for RealData {
     fn is_complex(&self) -> bool { false }
-}
-impl RealNumberSpace for RealData {
     fn to_complex(&mut self) { }
+    fn to_real(&mut self) { }
 }
+impl RealNumberSpace for RealData { }
 
 /// Marker for types containing complex data.
 #[derive(Debug)]
@@ -109,10 +111,10 @@ impl RealNumberSpace for RealData {
 pub struct ComplexData;
 impl NumberSpace for ComplexData {
     fn is_complex(&self) -> bool { true }
-}
-impl ComplexNumberSpace for ComplexData {
+    fn to_complex(&mut self) { }
     fn to_real(&mut self) { }
 }
+impl ComplexNumberSpace for ComplexData { }
 
 /// Marker for types containing real or complex data.
 #[derive(Debug)]
@@ -122,17 +124,17 @@ pub struct RealOrComplexData {
 }
 impl NumberSpace for RealOrComplexData {
     fn is_complex(&self) -> bool { self.is_complex_current }
-}
-impl RealNumberSpace for RealOrComplexData {
+
     fn to_complex(&mut self) {
         self.is_complex_current = true;
     }
-}
-impl ComplexNumberSpace for RealOrComplexData {
+
     fn to_real(&mut self) {
         self.is_complex_current = false;
     }
 }
+impl RealNumberSpace for RealOrComplexData { }
+impl ComplexNumberSpace for RealOrComplexData { }
 
 /// Marker for types containing time data.
 #[derive(Debug)]
@@ -140,10 +142,10 @@ impl ComplexNumberSpace for RealOrComplexData {
 pub struct TimeData;
 impl Domain for TimeData {
     fn domain(&self) -> DataDomain { DataDomain::Time }
-}
-impl TimeDomain for TimeData {
     fn to_freq(&mut self) { }
- }
+    fn to_time(&mut self) { }
+}
+impl TimeDomain for TimeData { }
 
 /// Marker for types containing frequency data.
 #[derive(Debug)]
@@ -151,10 +153,10 @@ impl TimeDomain for TimeData {
 pub struct FrequencyData;
 impl Domain for FrequencyData {
     fn domain(&self) -> DataDomain { DataDomain::Frequency }
-}
-impl FrequencyDomain for FrequencyData {
     fn to_time(&mut self) { }
+    fn to_freq(&mut self) { }
 }
+impl FrequencyDomain for FrequencyData { }
 
 /// Marker for types containing time or frequency data.
 #[derive(Debug)]
@@ -164,18 +166,18 @@ pub struct TimeOrFrequencyData {
 }
 impl Domain for TimeOrFrequencyData {
     fn domain(&self) -> DataDomain { self.domain_current }
-}
 
-impl TimeDomain for TimeOrFrequencyData {
     fn to_freq(&mut self) {
         self.domain_current = DataDomain::Frequency;
     }
-}
-impl FrequencyDomain for TimeOrFrequencyData {
+
     fn to_time(&mut self) {
         self.domain_current = DataDomain::Time;
     }
 }
+
+impl TimeDomain for TimeOrFrequencyData { }
+impl FrequencyDomain for TimeOrFrequencyData { }
 
 /// A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing (DSP) operations.
 /// All data vector operations consume the vector they operate on and return a new vector. A consumed vector
@@ -486,5 +488,69 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
         }
         mem::swap(&mut self.data, &mut temp);
         buffer.free(temp);
+    }
+
+    #[inline]
+    fn multiply_window_priv<TT,CMut,FA, F>(
+        &mut self,
+        is_symmetric: bool,
+        convert_mut: CMut,
+        function_arg: FA,
+        fun: F)
+            where
+                CMut: Fn(&mut [T]) -> &mut [TT],
+                FA: Copy + Sync + Send,
+                F: Fn(FA, usize, usize) -> TT + 'static + Sync,
+                TT: Zero + Mul<Output=TT> + Copy + Send + Sync + From<T>
+    {
+        if !is_symmetric {
+            {
+                let len = self.len();
+                let points = self.points();
+                let data = self.data.to_slice_mut();
+                let converted = convert_mut(&mut data[0..len]);
+                Chunk::execute_with_range(
+                    Complexity::Medium, &self.multicore_settings,
+                    converted, 1, function_arg,
+                    move |array, range, arg| {
+                        let mut j = range.start;
+                        for num in array {
+                            *num = (*num) * fun(arg, j, points);
+                            j += 1;
+                        }
+                    });
+            }
+        } else {
+            {
+                let len = self.len();
+                let points = self.points();
+                let data = self.data.to_slice_mut();
+                let converted = convert_mut(&mut data[0..len]);
+                Chunk::execute_sym_pairs_with_range(
+                    Complexity::Medium, &self.multicore_settings,
+                    converted, 1, function_arg,
+                    move |array1, range, array2, _, arg| {
+                        assert!(array1.len() >= array2.len());
+                        let mut j = range.start;
+                        let len1 = array1.len();
+                        let len_diff = len1 - array2.len();
+                        {
+                            let iter1 = array1.iter_mut();
+                            let iter2 = array2.iter_mut().rev();
+                            for (num1, num2) in iter1.zip(iter2) {
+                                let arg = fun(arg, j, points);
+                                *num1 = (*num1) * arg;
+                                *num2 = (*num2) * arg;
+                                j += 1;
+                            }
+                        }
+                        for num1 in &mut array1[len1-len_diff..len1] {
+                            let arg = fun(arg, j, points);
+                            *num1 = (*num1) * arg;
+                            j += 1;
+                        }
+                    });
+            }
+        }
     }
 }
