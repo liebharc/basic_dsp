@@ -1,15 +1,13 @@
 use RealNumber;
-use std::mem;
 use num::Complex;
-use rustfft::FFT;
 use super::super::{
-    array_to_complex, array_to_complex_mut,
     ToTimeResult, ToRealTimeResult, TransRes,
     DspVec, Vector, Buffer, ToSliceMut,
     RededicateForceOps, ErrorReason,
     ComplexNumberSpace, Owner, FrequencyDomain, DataDomain,
     InsertZerosOps, ScaleOps, TimeDomainOperations, FrequencyDomainOperations
 };
+use super::fft;
 use window_functions::*;
 
 /// Defines all operations which are valid on `DataVecs` containing frequency domain data.
@@ -131,23 +129,7 @@ impl<S, T, N, D> FrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
               self.number_space.to_complex();
           }
 
-          let len = self.len();
-          let mut temp = buffer.get(len);
-          {
-              let temp = temp.to_slice_mut();
-              let points = self.points();
-              let rbw = (T::from(points).unwrap()) * self.delta;
-              self.delta = rbw;
-              let mut fft = FFT::new(points, true);
-              let signal = self.data.to_slice();
-              let spectrum = &mut temp[0..len];
-              let signal = array_to_complex(&signal[0..len]);
-              let spectrum = array_to_complex_mut(spectrum);
-              fft.process(signal, spectrum);
-          }
-
-          mem::swap(&mut self.data, &mut temp);
-          buffer.free(temp);
+          fft(&mut self, buffer, true);
 
           self.domain.to_freq();
           Ok(Self::TimeResult::rededicate_from_force(self))
@@ -195,23 +177,7 @@ impl<S, T, N, D> FrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
 
        self.mirror(buffer);
 
-       let len = self.len();
-       let mut temp = buffer.get(len);
-       {
-           let temp = temp.to_slice_mut();
-           let points = self.points();
-           let rbw = (T::from(points).unwrap()) * self.delta;
-           self.delta = rbw;
-           let mut fft = FFT::new(points, true);
-           let signal = self.data.to_slice();
-           let spectrum = &mut temp[0..len];
-           let signal = array_to_complex(&signal[0..len]);
-           let spectrum = array_to_complex_mut(spectrum);
-           fft.process(signal, spectrum);
-       }
-
-       mem::swap(&mut self.data, &mut temp);
-       buffer.free(temp);
+       fft(&mut self, buffer, true);
 
        self.domain.to_freq();
        Ok(Self::RealTimeResult::rededicate_from_force(self))

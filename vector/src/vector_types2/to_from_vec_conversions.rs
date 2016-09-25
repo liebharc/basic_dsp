@@ -11,6 +11,7 @@ use super::{
     TimeData, FrequencyData, TimeOrFrequencyData,
     ToSlice};
 use multicore_support::MultiCoreSettings;
+use std::convert::From;
 
 /// Conversion from a generic data type into a dsp vector which tracks
 /// its meta information (domain and number space)
@@ -398,5 +399,76 @@ impl<S, T, N, D> FromVector<T> for DspVec<S, T, N, D>
         let len = self.valid_len;
         let slice = self.data.to_slice();
         &slice[0..len]
+    }
+}
+
+impl<S, T> From<S> for RealTimeVec<S, T>
+    where S: ToSlice<T>,
+        T: RealNumber {
+    fn from(mut data: S) -> Self {
+        let len = data.len();
+        let alloc = data.alloc_len();
+        data.try_resize(alloc).expect("Expanding to alloc_len should always work");
+        RealTimeVec {
+            data: data,
+            delta: T::one(),
+            domain: TimeData,
+            number_space: RealData,
+            valid_len: len,
+            multicore_settings: MultiCoreSettings::default()
+        }
+    }
+}
+
+impl<S, T> From<S> for ComplexTimeVec<S, T>
+    where S: ToSlice<T>,
+        T: RealNumber {
+    fn from(mut data: S) -> Self {
+        let len = data.len();
+        let alloc = data.alloc_len();
+        data.try_resize(alloc).expect("Expanding to alloc_len should always work");
+        ComplexTimeVec {
+            data: data,
+            delta: T::one(),
+            domain: TimeData,
+            number_space: ComplexData,
+            valid_len: len,
+            multicore_settings: MultiCoreSettings::default()
+        }
+    }
+}
+impl<S, T> From<S> for RealFreqVec<S, T>
+    where S: ToSlice<T>,
+        T: RealNumber {
+    fn from(mut data: S) -> Self {
+        let len = data.len();
+        let alloc = data.alloc_len();
+        data.try_resize(alloc).expect("Expanding to alloc_len should always work");
+        RealFreqVec {
+            data: data,
+            delta: T::one(),
+            domain: FrequencyData,
+            number_space: RealData,
+            valid_len: len,
+            multicore_settings: MultiCoreSettings::default()
+        }
+    }
+}
+
+impl<S, T> From<S> for ComplexFreqVec<S, T>
+    where S: ToSlice<T>,
+        T: RealNumber {
+    fn from(mut data: S) -> Self {
+        let len = data.len();
+        let alloc = data.alloc_len();
+        data.try_resize(alloc).expect("Expanding to alloc_len should always work");
+        ComplexFreqVec {
+            data: data,
+            delta: T::one(),
+            domain: FrequencyData,
+            number_space: ComplexData,
+            valid_len: len,
+            multicore_settings: MultiCoreSettings::default()
+        }
     }
 }

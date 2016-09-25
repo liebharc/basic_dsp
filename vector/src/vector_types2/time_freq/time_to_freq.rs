@@ -1,14 +1,12 @@
 use RealNumber;
-use std::mem;
-use rustfft::FFT;
 use super::super::{
-    array_to_complex, array_to_complex_mut,
     Owner, ToFreqResult, TransRes, TimeDomain,
-    Buffer, Vector, DataDomain,
+    Buffer, Vector, DataDomain, 
     DspVec, ToSliceMut, RealNumberSpace,
     NumberSpace, RededicateForceOps, ErrorReason,
     InsertZerosOps, FrequencyDomainOperations, TimeDomainOperations
 };
+use super::fft;
 use window_functions::*;
 
 /// Defines all operations which are valid on `DataVecs` containing time domain data.
@@ -144,23 +142,7 @@ impl<S, T, N, D> TimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
             self.number_space.to_complex();
         }
 
-        let len = self.len();
-        let mut temp = buffer.get(len);
-        {
-            let temp = temp.to_slice_mut();
-            let points = self.points();
-            let rbw = (T::from(points).unwrap()) * self.delta;
-            self.delta = rbw;
-            let mut fft = FFT::new(points, false);
-            let signal = self.data.to_slice();
-            let spectrum = &mut temp[0..len];
-            let signal = array_to_complex(&signal[0..len]);
-            let spectrum = array_to_complex_mut(spectrum);
-            fft.process(signal, spectrum);
-        }
-
-        mem::swap(&mut self.data, &mut temp);
-        buffer.free(temp);
+        fft(&mut self, buffer, false);
 
         self.domain.to_freq();
         Ok(Self::FreqResult::rededicate_from_force(self))

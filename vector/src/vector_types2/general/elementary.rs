@@ -8,7 +8,7 @@ use super::super::{
     array_to_complex, array_to_complex_mut,
     ErrorReason, VoidResult, Vector,
     DspVec, ToSliceMut,
-    Domain, RealNumberSpace, ComplexNumberSpace
+    Domain, NumberSpace, RealNumberSpace, ComplexNumberSpace
 };
 
 /// An operation which multiplies each vector element with a constant
@@ -489,7 +489,7 @@ macro_rules! impl_binary_smaller_complex_vector_operation {
 impl<S, T, N, D> DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
-          N: RealNumberSpace,
+          N: NumberSpace,
           D: Domain {
     impl_binary_complex_vector_operation!(fn mul_complex, factor, mul_complex, mul);
     impl_binary_smaller_complex_vector_operation!(fn mul_smaller_complex, factor, mul_complex, mul);
@@ -504,7 +504,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 impl<S, T, N, D> ElementaryOps for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
-          N: RealNumberSpace,
+          N: NumberSpace,
           D: Domain {
       impl_binary_vector_operation!(fn add, summand, add, add);
       impl_binary_smaller_vector_operation!(fn add_smaller, summand, add, add);
