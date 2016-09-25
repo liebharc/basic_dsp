@@ -1,7 +1,14 @@
 use RealNumber;
+use std::mem;
+use num::Complex;
+use rustfft::FFT;
 use super::super::{
-    ToTimeResult, ToRealTimeResult, TransRes, VoidResult,
-    Buffer, ToSliceMut
+    array_to_complex, array_to_complex_mut,
+    ToTimeResult, ToRealTimeResult, TransRes,
+    DspVec, Vector, Buffer, ToSliceMut,
+    RededicateForceOps, ErrorReason,
+    ComplexNumberSpace, Owner, FrequencyDomain, DataDomain,
+    InsertZerosOps, ScaleOps, TimeDomainOperations, FrequencyDomainOperations
 };
 use window_functions::*;
 
@@ -9,7 +16,7 @@ use window_functions::*;
 /// # Failures
 /// All operations in this trait set `self.len()` to `0`
 /// if the vector isn't in frequency domain and complex number space.
-pub trait FrequencyDomainOperations<S, T> : ToTimeResult
+pub trait FrequencyToTimeDomainOperations<S, T> : ToTimeResult
     where S: ToSliceMut<T>,
           T: RealNumber {
 
@@ -21,33 +28,19 @@ pub trait FrequencyDomainOperations<S, T> : ToTimeResult
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{ComplexFreqVector32, FrequencyDomainOperations, DataVec, InterleavedIndex};
-    /// let vector = ComplexFreqVector32::from_interleaved(&[0.0, 0.0, 1.0, 0.0, 0.0, 0.0]);
-    /// let result = vector.plain_ifft().expect("Ignoring error handling in examples");
-    /// let actual = result.interleaved(0..);
+    /// use std::f32;
+    /// use basic_dsp_vector::vector_types2::*;
+    /// let vector = vec!(0.0, 0.0, 1.0, 0.0, 0.0, 0.0).to_complex_freq_vec();
+    /// let mut buffer = SingleBuffer::new();
+    /// let result = vector.plain_ifft(&mut buffer).expect("Ignoring error handling in examples");
+    /// let actual = &result[..];
     /// let expected = &[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254];
     /// assert_eq!(actual.len(), expected.len());
     /// for i in 0..actual.len() {
-    ///        assert!((actual[i] - expected[i]).abs() < 1e-4);
+    ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
     /// }
     /// ```
     fn plain_ifft<B>(self, buffer: &mut B) -> TransRes<Self::TimeResult>
-        where B: Buffer<S, T>;
-
-    /// This function mirrors the spectrum vector to transform a symmetric spectrum
-    /// into a full spectrum with the DC element at index 0 (no FFT shift/swap halves).
-    ///
-    /// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1` points.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use basic_dsp_vector::{ComplexFreqVector32, FrequencyDomainOperations, DataVec, InterleavedIndex};
-    /// let vector = ComplexFreqVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
-    /// let result = vector.mirror().expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, -6.0, 3.0, -4.0], result.interleaved(0..));
-    /// ```
-    fn mirror<B>(&mut self, buffer: &mut B) -> VoidResult
         where B: Buffer<S, T>;
 
     /// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
@@ -55,14 +48,16 @@ pub trait FrequencyDomainOperations<S, T> : ToTimeResult
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{ComplexFreqVector32, FrequencyDomainOperations, DataVec, InterleavedIndex};
-    /// let vector = ComplexFreqVector32::from_interleaved(&[0.0, 0.0, 0.0, 0.0, 3.0, 0.0]);
-    /// let result = vector.ifft().expect("Ignoring error handling in examples");
-    /// let actual = result.interleaved(0..);
+    /// use std::f32;
+    /// use basic_dsp_vector::vector_types2::*;
+    /// let vector = vec!(0.0, 0.0, 0.0, 0.0, 3.0, 0.0).to_complex_freq_vec();
+    /// let mut buffer = SingleBuffer::new();
+    /// let result = vector.ifft(&mut buffer).expect("Ignoring error handling in examples");
+    /// let actual = &result[..];
     /// let expected = &[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254];
     /// assert_eq!(actual.len(), expected.len());
     /// for i in 0..actual.len() {
-    ///        assert!((actual[i] - expected[i]).abs() < 1e-4);
+    ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
     /// }
     /// ```
     fn ifft<B>(self, buffer: &mut B) -> TransRes<Self::TimeResult>
@@ -72,14 +67,6 @@ pub trait FrequencyDomainOperations<S, T> : ToTimeResult
     /// into a time domain vector and removes the FFT window.
     fn windowed_ifft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> TransRes<Self::TimeResult>
         where B: Buffer<S, T>;
-
-    /// Swaps vector halves after a Fourier Transformation.
-    fn fft_shift<B>(&mut self, buffer: &mut B)
-        where B: Buffer<S, T>;
-
-    /// Swaps vector halves before an Inverse Fourier Transformation.
-    fn ifft_shift<B>(&mut self, buffer: &mut B)
-        where B: Buffer<S, T>;
 }
 
 /// Defines all operations which are valid on `DataVecs` containing frequency domain data and
@@ -88,7 +75,7 @@ pub trait FrequencyDomainOperations<S, T> : ToTimeResult
 /// # Failures
 /// All operations in this trait set `self.len()` to `0` if the first element (0Hz)
 /// isn't real.
-pub trait SymmetricFrequencyDomainOperations<S, T> : ToRealTimeResult
+pub trait SymmetricFrequencyToTimeDomainOperations<S, T> : ToRealTimeResult
     where S: ToSliceMut<T>,
           T: RealNumber {
     /// Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that `self`
@@ -121,4 +108,127 @@ pub trait SymmetricFrequencyDomainOperations<S, T> : ToRealTimeResult
     /// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1` points.
     fn windowed_sifft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> TransRes<Self::RealTimeResult>
 		where B: Buffer<S, T>;
+}
+
+impl<S, T, N, D> FrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
+    where DspVec<S, T, N, D>: ToTimeResult,
+          <DspVec<S, T, N, D> as ToTimeResult>::TimeResult: RededicateForceOps<DspVec<S, T, N, D>> + TimeDomainOperations<S, T>,
+          S: ToSliceMut<T> + Owner,
+          T: RealNumber,
+          N: ComplexNumberSpace,
+          D: FrequencyDomain {
+    fn plain_ifft<B>(mut self, buffer: &mut B) -> TransRes<Self::TimeResult>
+      where B: Buffer<S, T> {
+          if self.domain() != DataDomain::Frequency {
+              self.valid_len = 0;
+              self.number_space.to_complex();
+              self.domain.to_freq();
+              return Err((ErrorReason::InputMustBeInFrquencyDomain, Self::TimeResult::rededicate_from_force(self)));
+          }
+
+          if !self.is_complex() {
+              self.zero_interleave_b(buffer, 2);
+              self.number_space.to_complex();
+          }
+
+          let len = self.len();
+          let mut temp = buffer.get(len);
+          {
+              let temp = temp.to_slice_mut();
+              let points = self.points();
+              let rbw = (T::from(points).unwrap()) * self.delta;
+              self.delta = rbw;
+              let mut fft = FFT::new(points, true);
+              let signal = self.data.to_slice();
+              let spectrum = &mut temp[0..len];
+              let signal = array_to_complex(&signal[0..len]);
+              let spectrum = array_to_complex_mut(spectrum);
+              fft.process(signal, spectrum);
+          }
+
+          mem::swap(&mut self.data, &mut temp);
+          buffer.free(temp);
+
+          self.domain.to_freq();
+          Ok(Self::TimeResult::rededicate_from_force(self))
+    }
+
+    fn ifft<B>(mut self, buffer: &mut B) -> TransRes<Self::TimeResult>
+      where B: Buffer<S, T> {
+          let points = self.points();
+          self.scale(Complex::<T>::new(T::one() / T::from(points).unwrap(), T::zero()));
+          self.ifft_shift(buffer);
+          self.plain_ifft(buffer)
+    }
+
+    fn windowed_ifft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> TransRes<Self::TimeResult>
+      where B: Buffer<S, T> {
+          let mut result = try!(self.ifft(buffer));
+          result.unapply_window(window);
+          Ok(result)
+    }
+ }
+
+ impl<S, T, N, D> SymmetricFrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
+     where DspVec<S, T, N, D>: ToRealTimeResult + ToTimeResult + FrequencyDomainOperations<S, T>,
+           <DspVec<S, T, N, D> as ToRealTimeResult>::RealTimeResult: RededicateForceOps<DspVec<S, T, N, D>> + TimeDomainOperations<S, T>,
+           S: ToSliceMut<T> + Owner,
+           T: RealNumber,
+           N: ComplexNumberSpace,
+           D: FrequencyDomain {
+   fn plain_sifft<B>(mut self, buffer: &mut B) -> TransRes<Self::RealTimeResult>
+       where B: Buffer<S, T> {
+       if self.domain() != DataDomain::Time ||
+          self.is_complex() {
+           self.valid_len = 0;
+           self.number_space.to_complex();
+           self.domain.to_freq();
+           return Err((ErrorReason::InputMustBeInFrquencyDomain, Self::RealTimeResult::rededicate_from_force(self)));
+       }
+
+       if self.points() > 0 && self[1].abs() > T::from(1e-10).unwrap() {
+           self.valid_len = 0;
+           self.number_space.to_complex();
+           self.domain.to_freq();
+           return Err((ErrorReason::InputMustBeConjSymmetric, Self::RealTimeResult::rededicate_from_force(self)));
+       }
+
+       self.mirror(buffer);
+
+       let len = self.len();
+       let mut temp = buffer.get(len);
+       {
+           let temp = temp.to_slice_mut();
+           let points = self.points();
+           let rbw = (T::from(points).unwrap()) * self.delta;
+           self.delta = rbw;
+           let mut fft = FFT::new(points, true);
+           let signal = self.data.to_slice();
+           let spectrum = &mut temp[0..len];
+           let signal = array_to_complex(&signal[0..len]);
+           let spectrum = array_to_complex_mut(spectrum);
+           fft.process(signal, spectrum);
+       }
+
+       mem::swap(&mut self.data, &mut temp);
+       buffer.free(temp);
+
+       self.domain.to_freq();
+       Ok(Self::RealTimeResult::rededicate_from_force(self))
+   }
+
+   fn sifft<B>(mut self, buffer: &mut B) -> TransRes<Self::RealTimeResult>
+       where B: Buffer<S, T> {
+       let points = self.points();
+       self.scale(Complex::<T>::new(T::one() / T::from(points).unwrap(), T::zero()));
+       self.ifft_shift(buffer);
+       self.plain_sifft(buffer)
+   }
+
+   fn windowed_sifft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> TransRes<Self::RealTimeResult>
+       where B: Buffer<S, T> {
+           let mut result = try!(self.sifft(buffer));
+           result.unapply_window(window);
+           Ok(result)
+   }
 }
