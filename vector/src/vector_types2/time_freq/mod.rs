@@ -8,6 +8,8 @@ mod freq_to_time;
 pub use self::freq_to_time::*;
 mod correlation;
 pub use self::correlation::*;
+mod convolution;
+pub use self::convolution::*;
 
 use std::mem;
 use rustfft::FFT;
