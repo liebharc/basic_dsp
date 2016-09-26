@@ -96,6 +96,7 @@ pub trait FrequencyDomain : Domain { }
 
 /// Marker for types containing real data.
 #[derive(Debug)]
+#[derive(Clone)]
 #[derive(PartialEq)]
 pub struct RealData;
 impl NumberSpace for RealData {
@@ -107,6 +108,7 @@ impl RealNumberSpace for RealData { }
 
 /// Marker for types containing complex data.
 #[derive(Debug)]
+#[derive(Clone)]
 #[derive(PartialEq)]
 pub struct ComplexData;
 impl NumberSpace for ComplexData {
@@ -118,6 +120,7 @@ impl ComplexNumberSpace for ComplexData { }
 
 /// Marker for types containing real or complex data.
 #[derive(Debug)]
+#[derive(Clone)]
 #[derive(PartialEq)]
 pub struct RealOrComplexData {
     is_complex_current: bool
@@ -138,6 +141,7 @@ impl ComplexNumberSpace for RealOrComplexData { }
 
 /// Marker for types containing time data.
 #[derive(Debug)]
+#[derive(Clone)]
 #[derive(PartialEq)]
 pub struct TimeData;
 impl Domain for TimeData {
@@ -149,6 +153,7 @@ impl TimeDomain for TimeData { }
 
 /// Marker for types containing frequency data.
 #[derive(Debug)]
+#[derive(Clone)]
 #[derive(PartialEq)]
 pub struct FrequencyData;
 impl Domain for FrequencyData {
@@ -160,6 +165,7 @@ impl FrequencyDomain for FrequencyData { }
 
 /// Marker for types containing time or frequency data.
 #[derive(Debug)]
+#[derive(Clone)]
 #[derive(PartialEq)]
 pub struct TimeOrFrequencyData {
     domain_current: DataDomain

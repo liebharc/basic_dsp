@@ -1,14 +1,12 @@
 use RealNumber;
 use conv_types::*;
-use num::{Complex, Zero};
-use std::mem;
-use std::ops::*;
+use num::Complex;
 use super::super::{
 	array_to_complex, array_to_complex_mut,
 	VoidResult, ToSliceMut,
 	DspVec, NumberSpace, TimeDomain,
 	DataDomain, Vector,
-	Buffer
+	Buffer, ErrorReason
 };
 
 /// Provides a convolution operations.
@@ -30,7 +28,9 @@ pub trait Convolution<S, T, C>
 }
 
 /// Provides a convolution operation for types which at some point are slice based.
-pub trait ConvolutionOps {
+pub trait ConvolutionOps<S, T>
+    where S: ToSliceMut<T>,
+		  T: RealNumber {
     /// Convolves `self` with the convolution function `impulse_response`. For performance it's recommended
     /// to use multiply both vectors in frequency domain instead of this operation.
     /// # Failures
@@ -39,7 +39,8 @@ pub trait ConvolutionOps {
     /// 1. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
     /// 2. `VectorMetaDataMustAgree`: in case `self` and `impulse_response` are not in the same number space and same domain.
     /// 3. `InvalidArgumentLength`: if `self.points() < impulse_response.points()`.
-    fn convolve_vector(&mut self, impulse_response: &Self) -> VoidResult;
+    fn convolve_vector<B>(&mut self, buffer: &mut B, impulse_response: &Self) -> VoidResult
+		where B: Buffer<S, T>;
 }
 
 /// Provides a frequency response multiplication operations.
@@ -66,61 +67,6 @@ macro_rules! assert_time {
 			return;
         }
     }
-}
-
-impl<S, T, N, D> DspVec<S, T, N, D>
-	where S: ToSliceMut<T>,
-		  T: RealNumber,
-		  N: NumberSpace,
-		  D: TimeDomain
-{
-	fn convolve_function_priv<B, TT,C,CMut,F>(
-		&mut self,
-		buffer: &mut B,
-		ratio: T,
-		conv_len: usize,
-		convert: C,
-		convert_mut: CMut,
-		fun: F)
-			where
-				B: Buffer<S, T>,
-				C: Fn(&[T]) -> &[TT],
-				CMut: Fn(&mut [T]) -> &mut [TT],
-				F: Fn(T)->TT,
-				TT: Zero + Mul<Output=TT> + Copy
-	{
-		let len = self.len();
-		let mut temp = buffer.get(len);
-		{
-			let data = self.data.to_slice();
-			let temp = temp.to_slice_mut();
-			let complex = convert(&data[0..len]);
-			let dest = convert_mut(&mut temp[0..len]);
-			let len = complex.len();
-			let mut i = 0;
-			let conv_len =
-				if conv_len > len {
-					len
-				} else {
-					conv_len
-				};
-			let sconv_len = conv_len as isize;
-			for num in dest {
-				let iter = WrappingIterator::new(complex, i - sconv_len - 1, 2 * conv_len + 1);
-				let mut sum = TT::zero();
-				let mut j = -(T::from(conv_len).unwrap());
-				for c in iter {
-					sum = sum + c * fun(-j * ratio);
-					j = j + T::one();
-				}
-				(*num) = sum;
-				i += 1;
-			}
-		}
-
-		mem::swap(&mut temp, &mut self.data);
-		buffer.free(temp);
-	}
 }
 
 impl<'a, S, T, N, D> Convolution<S, T, &'a RealImpulseResponse<T>> for DspVec<S, T, N, D>
@@ -186,124 +132,58 @@ impl<'a, S, T, N, D> Convolution<S, T, &'a RealImpulseResponse<T>> for DspVec<S,
 	}
 }
 
-struct WrappingIterator<T>
-    where T: Clone {
-    start: *const T,
-    end: *const T,
-    pos: *const T,
-    count: usize
-}
-
-impl<T> Iterator for WrappingIterator<T>
-    where T: Clone {
-    type Item = T;
-
-    fn next(&mut self) -> Option<T> {
-        unsafe {
-            if self.count == 0 {
-                return None;
+macro_rules! assert_meta_data {
+    ($self_: ident, $other: ident) => {
+         {
+            let delta_ratio = $self_.delta / $other.delta;
+            if $self_.is_complex() != $other.is_complex() ||
+                $self_.domain != $other.domain ||
+                delta_ratio > T::from(1.1).unwrap() || delta_ratio < T::from(0.9).unwrap() {
+                return Err(ErrorReason::InputMetaDataMustAgree);
             }
-
-            let mut n = self.pos;
-            if n < self.end {
-                n = n.offset(1);
-            } else {
-                n = self.start;
-            }
-
-            self.pos = n;
-            self.count -= 1;
-            Some((*n).clone())
-        }
+         }
     }
 }
 
-impl<T> WrappingIterator<T>
-    where T: Clone {
-    pub fn new(slice: &[T], pos: isize, iter_len: usize) -> Self {
-        use std::isize;
-
-        assert!(slice.len() <= isize::MAX as usize);
-        let len = slice.len() as isize;
-        let mut pos = pos % len;
-        while pos < 0 {
-            pos += len;
+impl<S, T, N, D> ConvolutionOps<S, T> for DspVec<S, T, N, D>
+	where S: ToSliceMut<T>,
+		  T: RealNumber,
+		  N: NumberSpace,
+		  D: TimeDomain {
+	fn convolve_vector<B>(&mut self, buffer: &mut B, impulse_response: &Self) -> VoidResult
+		where B: Buffer<S, T> {
+		assert_meta_data!(self, impulse_response);
+		if self.domain() != DataDomain::Time {
+			return Err(ErrorReason::InputMustBeInTimeDomain);
         }
 
-        let start = slice.as_ptr();
-        unsafe {
-            WrappingIterator {
-                start: start,
-                end: start.offset(len - 1),
-                pos: start.offset(pos),
-                count: iter_len
-            }
-        }
-    }
-}
-
-struct ReverseWrappingIterator<T>
-    where T: Clone {
-    start: *const T,
-    end: *const T,
-    pos: *const T,
-    count: usize
-}
-
-impl<T> Iterator for ReverseWrappingIterator<T>
-    where T: Clone {
-    type Item = T;
-
-    fn next(&mut self) -> Option<T> {
-        unsafe {
-            if self.count == 0 {
-                return None;
-            }
-
-            let mut n = self.pos;
-            if n > self.start {
-                n = n.offset(-1);
-            } else {
-                n = self.end;
-            }
-
-            self.pos = n;
-            self.count -= 1;
-            Some((*n).clone())
-        }
-    }
-}
-
-impl<T> ReverseWrappingIterator<T>
-    where T: Clone {
-    pub fn new(slice: &[T], pos: isize, iter_len: usize) -> Self {
-        use std::isize;
-
-        assert!(slice.len() <= isize::MAX as usize);
-        let len = slice.len() as isize;
-        let mut pos = pos % len;
-        while pos < 0 {
-            pos += len;
+		if self.points() < impulse_response.points() {
+			return Err(ErrorReason::InvalidArgumentLength);
         }
 
-        let start = slice.as_ptr();
-        unsafe {
-            ReverseWrappingIterator {
-                start: start,
-                end: start.offset(len - 1),
-                pos: start.offset(pos),
-                count: iter_len
-            }
-        }
-    }
+		// The values in this condition are nothing more than a
+		// ... guess. The reasoning is basically this:
+		// For the SIMD operation we need to clone `vector` several
+		// times and this only is worthwhile if `vector.len() << self.len()`
+		// where `<<` means "significant smaller".
+		if self.len() > 1000 && impulse_response.len() <= 202 {
+			self.convolve_vector_simd(buffer, impulse_response);
+		}
+		else {
+			self.convolve_vector_scalar(buffer, impulse_response);
+		}
+
+		Ok(())
+	}
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{WrappingIterator, ReverseWrappingIterator};
+    use super::super::{WrappingIterator, ReverseWrappingIterator};
     use super::super::super::*;
     use conv_types::*;
     use RealNumber;
+	use num::complex::Complex32;
     use std::fmt::Debug;
 
     fn assert_eq_tol<T>(left: &[T], right: &[T], tol: T)
@@ -391,32 +271,34 @@ mod tests {
         time.convolve(&mut buffer, &sinc as &RealImpulseResponse<f32>, 0.5, 10 * len);
         // As long as we don't panic we are happy with the error handling here
     }
-/*
+
     #[test]
     fn convolve_complex_vectors32() {
         const LEN: usize = 11;
-        let mut time = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), LEN);
+        let mut time = vec!(Complex32::new(0.0, 0.0); LEN).to_complex_time_vec();
         time[LEN] = 1.0;
         let sinc: SincFunction<f32> = SincFunction::new();
-        let mut argument_data = [0.0; LEN];
+        let mut real = [0.0; LEN];
         {
             let mut v = -5.0;
-            for a in &mut argument_data {
+            for a in &mut real {
                 *a = (&sinc as &RealImpulseResponse<f32>).calc(v * 0.5);
                 v += 1.0;
             }
         }
-        let argument = ComplexTimeVector32::from_real_imag(&argument_data, &[0.0; LEN]);
+		let imag = &[0.0; LEN];
+        let argument = (&real[..]).interleave_to_complex_time_vec(&&imag[..]).unwrap();
         assert_eq!(time.points(), argument.points());
-        let result = time.convolve_vector(&argument).unwrap();
-        assert_eq!(result.points(), LEN);
-        let result = result.magnitude().unwrap();
+		let mut buffer = SingleBuffer::new();
+        time.convolve_vector(&mut buffer, &argument).unwrap();
+        assert_eq!(time.points(), LEN);
+        let result = time.magnitude();
         assert_eq!(result.points(), LEN);
         let expected =
             [0.12732396, 0.000000027827534, 0.21220659, 0.000000027827534, 0.63661975,
              1.0, 0.63661975, 0.000000027827534, 0.21220659, 0.000000027827534, 0.12732396];
-        assert_eq_tol(result.real(0..), &expected, 1e-4);
-    }*/
+        assert_eq_tol(&result[..], &expected, 1e-4);
+    }
 
     #[test]
     fn wrapping_iterator() {
@@ -442,78 +324,86 @@ mod tests {
         assert_eq!(iter.next().unwrap(), 4.0);
         assert_eq!(iter.next().unwrap(), 3.0);
     }
-/*
+
     #[test]
     fn vector_conv_vs_freq_multiplication() {
-        let a = ComplexTimeVector32::from_interleaved(&[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]);
-        let b = ComplexTimeVector32::from_interleaved(&[15.0, 14.0, 13.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0]);
-        let conv = a.clone().convolve_vector(&b).unwrap();
-        let a = a.fft().unwrap();
-        let b = b.fft().unwrap();
-        let mul = a.mul(&b).unwrap();
-        let mul = mul.ifft().unwrap();
-        let mul = mul.reverse().unwrap();
-        let mul = mul.swap_halves().unwrap();
-        assert_eq_tol(mul.interleaved(0..), conv.interleaved(0..), 1e-4);
+        let a = vec!(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0).to_complex_time_vec();
+        let b = vec!(15.0, 14.0, 13.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0).to_complex_time_vec();
+		let mut buffer = SingleBuffer::new();
+		let mut conv = a.clone();
+        conv.convolve_vector(&mut buffer, &b).unwrap();
+        let mut a = a.fft(&mut buffer).unwrap();
+        let b = b.fft(&mut buffer).unwrap();
+        a.mul(&b).unwrap();
+        let mut mul = a.ifft(&mut buffer).unwrap();
+        mul.reverse();
+        mul.swap_halves();
+        assert_eq_tol(&mul[..], &conv[..], 1e-4);
     }
 
     #[test]
     fn shift_left_by_1_as_conv() {
-        let a = RealTimeVector32::from_array(&[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]);
-        let b = RealTimeVector32::from_array(&[0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
-        let a = a.to_complex().unwrap();
+        let a = vec!(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0).to_real_time_vec();
+        let b = vec!(0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0).to_real_time_vec();
+		let mut buffer = SingleBuffer::new();
+        let mut a = a.to_complex().unwrap();
         let b = b.to_complex().unwrap();
-        let conv = a.convolve_vector(&b).unwrap();
-        let conv = conv.magnitude().unwrap();
+        a.convolve_vector(&mut buffer, &b).unwrap();
+        let a = a.magnitude();
         let exp = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
-        assert_eq_tol(conv.real(0..), &exp, 1e-4);
+        assert_eq_tol(&a[..], &exp, 1e-4);
     }
 
     #[test]
     fn shift_left_by_1_as_conv_shorter() {
-        let a = RealTimeVector32::from_array(&[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]);
-        let b = RealTimeVector32::from_array(&[0.0, 0.0, 1.0]);
-        let a = a.to_complex().unwrap();
+        let a = vec!(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0).to_real_time_vec();
+		let mut buffer = SingleBuffer::new();
+        let b = vec!(0.0, 0.0, 1.0).to_real_time_vec();
+        let mut a = a.to_complex().unwrap();
         let b = b.to_complex().unwrap();
-        let conv = a.convolve_vector(&b).unwrap();
-        let conv = conv.magnitude().unwrap();
+        a.convolve_vector(&mut buffer, &b).unwrap();
+        let a = a.magnitude();
         let exp = [9.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-        assert_eq_tol(conv.real(0..), &exp, 1e-4);
+        assert_eq_tol(&a[..], &exp, 1e-4);
     }
 
     #[test]
     fn vector_conv_vs_freq_multiplication_pure_real_data() {
-        let a = RealTimeVector32::from_array(&[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]);
-        let b = RealTimeVector32::from_array(&[15.0, 14.0, 13.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0]);
+        let a = vec!(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0).to_real_time_vec();
+        let b = vec!(15.0, 14.0, 13.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0).to_real_time_vec();
+		let mut buffer = SingleBuffer::new();
         let a = a.to_complex().unwrap();
         let b = b.to_complex().unwrap();
-        let conv = a.clone().convolve_vector(&b).unwrap();
-        let a = a.fft().unwrap();
-        let b = b.fft().unwrap();
-        let mul = a.mul(&b).unwrap();
-        let mul = mul.ifft().unwrap();
-        let mul = mul.magnitude().unwrap();
-        let mul = mul.reverse().unwrap();
-        let mul = mul.swap_halves().unwrap();
-        let conv = conv.magnitude().unwrap();
-        assert_eq_tol(mul.real(0..), conv.real(0..), 1e-4);
+		let mut conv = a.clone();
+        conv.convolve_vector(&mut buffer, &b).unwrap();
+        let mut a = a.fft(&mut buffer).unwrap();
+        let b = b.fft(&mut buffer).unwrap();
+        a.mul(&b).unwrap();
+        let mul = a.ifft(&mut buffer).unwrap();
+        let mut mul = mul.magnitude();
+        mul.reverse();
+        mul.swap_halves();
+        let conv = conv.magnitude();
+        assert_eq_tol(&mul[..], &conv[..], 1e-4);
     }
 
     #[test]
     fn vector_conv_vs_freq_multiplication_pure_real_data_odd() {
-        let a = RealTimeVector32::from_array(&[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
-        let b = RealTimeVector32::from_array(&[15.0, 14.0, 13.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0]);
+        let a = vec!(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();
+        let b = vec!(15.0, 14.0, 13.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0).to_real_time_vec();
+		let mut buffer = SingleBuffer::new();
         let a = a.to_complex().unwrap();
         let b = b.to_complex().unwrap();
-        let conv = a.clone().convolve_vector(&b).unwrap();
-        let a = a.fft().unwrap();
-        let b = b.fft().unwrap();
-        let mul = a.mul(&b).unwrap();
-        let mul = mul.ifft().unwrap();
-        let mul = mul.magnitude().unwrap();
-        let mul = mul.reverse().unwrap();
-        let mul = mul.swap_halves().unwrap();
-        let conv = conv.magnitude().unwrap();
-        assert_eq_tol(mul.real(0..), conv.real(0..), 1e-4);
-    }*/
+		let mut conv = a.clone();
+        conv.convolve_vector(&mut buffer, &b).unwrap();
+        let mut a = a.fft(&mut buffer).unwrap();
+        let b = b.fft(&mut buffer).unwrap();
+        a.mul(&b).unwrap();
+        let mul = a.ifft(&mut buffer).unwrap();
+        let mut mul = mul.magnitude();
+        mul.reverse();
+        mul.swap_halves();
+        let conv = conv.magnitude();
+        assert_eq_tol(&mul[..], &conv[..], 1e-4);
+    }
 }
