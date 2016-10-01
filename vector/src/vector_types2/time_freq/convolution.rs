@@ -4,8 +4,8 @@ use num::Complex;
 use super::super::{
 	array_to_complex, array_to_complex_mut,
 	VoidResult, ToSliceMut,
-	DspVec, NumberSpace, TimeDomain,
-	DataDomain, Vector,
+	DspVec, NumberSpace, TimeDomain, FrequencyDomain,
+	DataDomain, Vector, ComplexNumberSpace,
 	Buffer, ErrorReason
 };
 
@@ -44,8 +44,9 @@ pub trait ConvolutionOps<S, T>
 }
 
 /// Provides a frequency response multiplication operations.
-pub trait FrequencyMultiplication<T, C>
-    where T: RealNumber {
+pub trait FrequencyMultiplication<S, T, C>
+	where S: ToSliceMut<T>,
+	  	  T: RealNumber {
     /// Multiplies `self` with the frequency response function `frequency_response`.
     ///
     /// In order to multiply a vector with another vector in frequency response use `mul`.
@@ -57,7 +58,7 @@ pub trait FrequencyMultiplication<T, C>
     ///
     /// 1. `VectorMustBeComplex`: if `self` is in real number space but `frequency_response` is in complex number space.
     /// 2. `VectorMustBeInFreqDomain`: if `self` is in time domain.
-    fn multiply_frequency_response(&mut self, frequency_response: C, ratio: T) -> VoidResult;
+    fn multiply_frequency_response(&mut self, frequency_response: C, ratio: T);
 }
 
 macro_rules! assert_time {
@@ -177,6 +178,55 @@ impl<S, T, N, D> ConvolutionOps<S, T> for DspVec<S, T, N, D>
 	}
 }
 
+impl<'a, S, T, N, D> FrequencyMultiplication<S, T, &'a ComplexFrequencyResponse<T>> for DspVec<S, T, N, D>
+	where S: ToSliceMut<T>,
+		  T: RealNumber,
+		  N: ComplexNumberSpace,
+		  D: FrequencyDomain {
+	fn multiply_frequency_response(&mut self, frequency_response: &ComplexFrequencyResponse<T>, ratio: T) {
+		if !self.is_complex() ||
+			self.domain() != DataDomain::Frequency {
+			self.valid_len = 0;
+			return;
+		}
+		self.multiply_function_priv(
+						frequency_response.is_symmetric(),
+						ratio,
+						|array|array_to_complex_mut(array),
+						frequency_response,
+						|f,x|f.calc(x));
+	}
+}
+
+impl<'a, S, T, N, D> FrequencyMultiplication<S, T, &'a RealFrequencyResponse<T>> for DspVec<S, T, N, D>
+	where S: ToSliceMut<T>,
+		  T: RealNumber,
+		  N: NumberSpace,
+		  D: FrequencyDomain {
+	fn multiply_frequency_response(&mut self, frequency_response: &RealFrequencyResponse<T>, ratio: T) {
+		if self.domain() != DataDomain::Frequency {
+			self.valid_len = 0;
+			return;
+		}
+		if self.is_complex() {
+			self.multiply_function_priv(
+							frequency_response.is_symmetric(),
+							ratio,
+							|array|array_to_complex_mut(array),
+							frequency_response,
+							|f,x|Complex::<T>::new(f.calc(x), T::zero()))
+		}
+		else {
+			self.multiply_function_priv(
+							frequency_response.is_symmetric(),
+							ratio,
+							|array|array,
+							frequency_response,
+							|f,x|f.calc(x))
+		}
+	}
+}
+
 #[cfg(test)]
 mod tests {
     use super::super::{WrappingIterator, ReverseWrappingIterator};
@@ -195,27 +245,26 @@ mod tests {
             }
         }
     }
-	/*
+
     #[test]
     fn convolve_complex_freq_and_freq32() {
-        let vector = vec!(1.0; 10).to_complex_freq_vec();
+        let mut vector = vec!(1.0; 10).to_complex_freq_vec();
         let rc: RaisedCosineFunction<f32> = RaisedCosineFunction::new(1.0);
-		let mut buffer = SingleBuffer::new();
-        let result = vector.multiply_frequency_response(&mut buffer, &rc as &RealFrequencyResponse<f32>, 2.0).unwrap();
+        vector.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 2.0);
         let expected =
             [0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 0.0, 0.0];
-        assert_eq_tol(result.interleaved(0..), &expected, 1e-4);
+        assert_eq_tol(&vector[..], &expected, 1e-4);
     }
 
     #[test]
     fn convolve_complex_freq_and_freq_even32() {
-        let vector = ComplexFreqVector32::from_constant(Complex32::new(1.0, 1.0), 6);
+        let mut vector = vec!(1.0; 12).to_complex_freq_vec();
         let rc: RaisedCosineFunction<f32> = RaisedCosineFunction::new(1.0);
-        let result = vector.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 2.0).unwrap();
+        vector.multiply_frequency_response(&rc as &RealFrequencyResponse<f32>, 2.0);
         let expected =
             [0.0, 0.0, 0.5, 0.5, 1.5, 1.5, 2.0, 2.0, 1.5, 1.5, 0.5, 0.5];
-        assert_eq_tol(result.interleaved(0..), &expected, 1e-4);
-    }*/
+        assert_eq_tol(&vector[..], &expected, 1e-4);
+    }
 
     #[test]
     fn convolve_real_time_and_time32() {
@@ -243,24 +292,24 @@ mod tests {
              1.0, 0.63661975, 0.000000027827534, 0.21220659, 0.000000027827534, 0.12732396];
         assert_eq_tol(&res[..], &expected, 1e-4);
     }
-/*
+
     #[test]
     fn compare_conv_freq_mul() {
         let len = 11;
-        let mut time = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), len);
+        let mut time = vec!(0.0; 2 * len).to_complex_time_vec();
         time[len] = 1.0;
-        let freq = time.clone().fft().unwrap();
+		let mut buffer = SingleBuffer::new();
+		let mut freq = time.clone().fft(&mut buffer);
         let sinc: SincFunction<f32> = SincFunction::new();
         let ratio = 0.5;
-        let freq_res = freq.multiply_frequency_response(&sinc as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
-        let time_res = time.convolve(&sinc as &RealImpulseResponse<f32>, 0.5, len).unwrap();
-        let ifreq_res = freq_res.ifft().unwrap();
-        let time_res = time_res.magnitude().unwrap();
-        let ifreq_res = ifreq_res.magnitude().unwrap();
-        assert_eq!(ifreq_res.is_complex(), time_res.is_complex());
-        assert_eq!(ifreq_res.domain(), time_res.domain());
-        assert_eq_tol(time_res.real(0..), ifreq_res.real(0..), 0.2);
-    }*/
+        freq.multiply_frequency_response(&sinc as &RealFrequencyResponse<f32>, 1.0 / ratio);
+        time.convolve(&mut buffer, &sinc as &RealImpulseResponse<f32>, 0.5, len);
+		let ifft = freq.ifft(&mut buffer).magnitude();
+        let time = time.magnitude();
+        assert_eq!(ifft.is_complex(), time.is_complex());
+        assert_eq!(ifft.domain(), time.domain());
+        assert_eq_tol(&ifft[..], &time[..], 0.2);
+    }
 
     #[test]
     fn invalid_length_parameter() {

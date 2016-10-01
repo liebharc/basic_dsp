@@ -17,11 +17,11 @@ use RealNumber;
 use num::Zero;
 use std::ops::*;
 use simd_extensions::*;
+use multicore_support::*;
 use super::{
 	array_to_complex, array_to_complex_mut,
     Buffer, Vector,
-    DspVec, ToSliceMut, NumberSpace, Domain,
-	TimeDomain
+    DspVec, ToSliceMut, NumberSpace, Domain
 };
 
 fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: bool)
@@ -53,7 +53,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 	where S: ToSliceMut<T>,
 		  T: RealNumber,
 		  N: NumberSpace,
-		  D: TimeDomain
+		  D: Domain
 {
 	fn convolve_function_priv<B, TT,C,CMut,F>(
 		&mut self,
@@ -343,6 +343,101 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 		}
 		mem::swap(&mut temp, &mut self.data);
 		buffer.free(temp);
+	}
+
+	fn multiply_function_priv<TT, CMut, FA, F>(
+		&mut self,
+		is_symmetric: bool,
+		ratio: T,
+		convert_mut: CMut,
+		function_arg: FA,
+		fun: F)
+			where
+				CMut: Fn(&mut [T]) -> &mut [TT],
+				FA: Copy + Sync + Send,
+				F: Fn(FA, T)->TT + 'static + Sync,
+				TT: Zero + Mul<Output=TT> + Copy + Send + Sync + From<T>
+	{
+		if !is_symmetric {
+			let len = self.len();
+			let points = self.points();
+			let mut data = self.data.to_slice_mut();
+			let converted = convert_mut(&mut data[0..len]);
+			Chunk::execute_with_range(
+				Complexity::Medium, &self.multicore_settings,
+				converted, 1, (ratio, function_arg),
+				move |array, range, (ratio, arg)| {
+					let two = T::from(2.0).unwrap();
+					let scale = TT::from(ratio);
+					let offset = if points % 2 != 0 { 1 } else { 0 };
+					let max = T::from(points - offset).unwrap() / two;
+					let mut j = -(T::from(points - offset).unwrap()) / two + T::from(range.start).unwrap();
+					for num in array {
+						*num = (*num) * scale * fun(arg, j / max * ratio);
+						j = j + T::one();
+					}
+				});
+		} else {
+			let len = self.len();
+			let points = self.points();
+			let mut data = self.data.to_slice_mut();
+			let converted = convert_mut(&mut data[0..len]);
+			Chunk::execute_sym_pairs_with_range(
+				Complexity::Medium, &self.multicore_settings,
+				converted, 1, (ratio, function_arg),
+				move |array1, range1, array2, range2, (ratio, arg)| {
+					let two = T::from(2.0).unwrap();
+					assert!(array1.len() >= array2.len());
+					assert!(range1.end <= range2.start);let scale = TT::from(ratio);
+					let len1 = array1.len();
+					let len2 = array2.len();
+					let offset = if points % 2 != 0 { 1 } else { 0 };
+					let max = T::from(points - offset).unwrap() / two;
+					let mut j1 = -(T::from(points - offset).unwrap()) / two + T::from(range1.start).unwrap();
+					let mut j2 = (T::from(points - offset).unwrap()) / two - T::from(range2.end - 1).unwrap();
+					let mut i1 = 0;
+					let mut i2 = 0;
+					{
+						let mut iter1 = array1.iter_mut();
+						let mut iter2 = array2.iter_mut().rev();
+						while j1 < j2 {
+							let num = iter1.next().unwrap();
+							(*num) = (*num) * scale * fun(arg, j1 / max * ratio);
+							j1 = j1 + T::one();
+							i1 += 1;
+						}
+						while j2 < j1 {
+							let num = iter2.next().unwrap();
+							(*num) = (*num) * scale * fun(arg, j2 / max * ratio);
+							j2 = j2 + T::one();
+							i2 += 1;
+						}
+						// At this point we can be sure that `j1 == j2`
+						for (num1, num2) in iter1.zip(iter2) {
+							let arg = scale * fun(arg, j1 / max * ratio);
+							*num1 = (*num1) * arg;
+							*num2 = (*num2) * arg;
+							j1 = j1 + T::one();
+						}
+						j2 = j1;
+					}
+
+					// Now we have to deal with differences in length
+					// `common_length` is the number of iterations we spent
+					// in the previous loop.
+					let pos1 = len1 - i1;
+					let pos2 = len2 - i2;
+					let common_length = if pos1 < pos2 { pos1 } else { pos2 };
+					for num in &mut array1[i1 + common_length..len1] {
+						(*num) = (*num) * scale * fun(arg, j1 / max * ratio);
+						j1 = j1 + T::one();
+					}
+					for num in &mut array2[0..len2-common_length-i2] {
+						(*num) = (*num) * scale * fun(arg, j2 / max * ratio);
+						j2 = j2 + T::one();
+					}
+				});
+		}
 	}
 }
 
