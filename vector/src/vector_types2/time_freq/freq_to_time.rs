@@ -30,7 +30,7 @@ pub trait FrequencyToTimeDomainOperations<S, T> : ToTimeResult
     /// use basic_dsp_vector::vector_types2::*;
     /// let vector = vec!(0.0, 0.0, 1.0, 0.0, 0.0, 0.0).to_complex_freq_vec();
     /// let mut buffer = SingleBuffer::new();
-    /// let result = vector.plain_ifft(&mut buffer).expect("Ignoring error handling in examples");
+    /// let result = vector.plain_ifft(&mut buffer);
     /// let actual = &result[..];
     /// let expected = &[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254];
     /// assert_eq!(actual.len(), expected.len());
@@ -38,7 +38,7 @@ pub trait FrequencyToTimeDomainOperations<S, T> : ToTimeResult
     ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
     /// }
     /// ```
-    fn plain_ifft<B>(self, buffer: &mut B) -> TransRes<Self::TimeResult>
+    fn plain_ifft<B>(self, buffer: &mut B) -> Self::TimeResult
         where B: Buffer<S, T>;
 
     /// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
@@ -50,7 +50,7 @@ pub trait FrequencyToTimeDomainOperations<S, T> : ToTimeResult
     /// use basic_dsp_vector::vector_types2::*;
     /// let vector = vec!(0.0, 0.0, 0.0, 0.0, 3.0, 0.0).to_complex_freq_vec();
     /// let mut buffer = SingleBuffer::new();
-    /// let result = vector.ifft(&mut buffer).expect("Ignoring error handling in examples");
+    /// let result = vector.ifft(&mut buffer);
     /// let actual = &result[..];
     /// let expected = &[1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254];
     /// assert_eq!(actual.len(), expected.len());
@@ -58,12 +58,12 @@ pub trait FrequencyToTimeDomainOperations<S, T> : ToTimeResult
     ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
     /// }
     /// ```
-    fn ifft<B>(self, buffer: &mut B) -> TransRes<Self::TimeResult>
+    fn ifft<B>(self, buffer: &mut B) -> Self::TimeResult
         where B: Buffer<S, T>;
 
     /// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
     /// into a time domain vector and removes the FFT window.
-    fn windowed_ifft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> TransRes<Self::TimeResult>
+    fn windowed_ifft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> Self::TimeResult
         where B: Buffer<S, T>;
 }
 
@@ -115,13 +115,13 @@ impl<S, T, N, D> FrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
           T: RealNumber,
           N: ComplexNumberSpace,
           D: FrequencyDomain {
-    fn plain_ifft<B>(mut self, buffer: &mut B) -> TransRes<Self::TimeResult>
+    fn plain_ifft<B>(mut self, buffer: &mut B) -> Self::TimeResult
       where B: Buffer<S, T> {
           if self.domain() != DataDomain::Frequency {
               self.valid_len = 0;
               self.number_space.to_complex();
               self.domain.to_freq();
-              return Err((ErrorReason::InputMustBeInFrquencyDomain, Self::TimeResult::rededicate_from_force(self)));
+              return Self::TimeResult::rededicate_from_force(self);
           }
 
           if !self.is_complex() {
@@ -132,10 +132,10 @@ impl<S, T, N, D> FrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
           fft(&mut self, buffer, true);
 
           self.domain.to_freq();
-          Ok(Self::TimeResult::rededicate_from_force(self))
+          Self::TimeResult::rededicate_from_force(self)
     }
 
-    fn ifft<B>(mut self, buffer: &mut B) -> TransRes<Self::TimeResult>
+    fn ifft<B>(mut self, buffer: &mut B) -> Self::TimeResult
       where B: Buffer<S, T> {
           let points = self.points();
           self.scale(Complex::<T>::new(T::one() / T::from(points).unwrap(), T::zero()));
@@ -143,11 +143,11 @@ impl<S, T, N, D> FrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
           self.plain_ifft(buffer)
     }
 
-    fn windowed_ifft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> TransRes<Self::TimeResult>
+    fn windowed_ifft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> Self::TimeResult
       where B: Buffer<S, T> {
-          let mut result = try!(self.ifft(buffer));
+          let mut result = self.ifft(buffer);
           result.unapply_window(window);
-          Ok(result)
+          result
     }
  }
 

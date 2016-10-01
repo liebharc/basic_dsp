@@ -4,7 +4,7 @@ use super::super::{
 	DspVec, Buffer, ComplexOps, ScaleOps,
 	FrequencyDomainOperations, TimeToFrequencyDomainOperations, RededicateForceOps,
 	ToSliceMut, Owner, PaddingOption,
-	TransRes, VoidResult, Vector, FromVector,
+	VoidResult, Vector, FromVector,
 	ComplexNumberSpace, TimeDomain, ElementaryOps,
     ToFreqResult, InsertZerosOps,
 	DataDomain, ErrorReason, ReorganizeDataOps
@@ -33,7 +33,7 @@ use std::convert::From;
 /// let mut vector = vec!(1.0, 1.0, 2.0, 2.0, 3.0, 3.0).to_complex_time_vec();
 /// let argument = vec!(3.0, 3.0, 2.0, 2.0, 1.0, 1.0).to_complex_time_vec();
 /// let mut buffer = SingleBuffer::new();
-/// let argument = argument.prepare_argument_padded(&mut buffer).expect("Ignoring error handling in examples");
+/// let argument = argument.prepare_argument_padded(&mut buffer);
 /// vector.correlate(&mut buffer, &argument).expect("Ignoring error handling in examples");
 /// let expected = &[2.0, 0.0, 8.0, 0.0, 20.0, 0.0, 24.0, 0.0, 18.0, 0.0];
 /// for i in 0..vector.len() {
@@ -55,12 +55,12 @@ pub trait CrossCorrelationOps<S, T> : ToFreqResult
     ///
     /// 1. Calculate the plain FFT
     /// 2. Calculate the complex conjugate
-    fn prepare_argument<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult>
+    fn prepare_argument<B>(self, buffer: &mut B) -> Self::FreqResult
 		where B: Buffer<S, T>;
 
     /// Prepares an argument to be used for convolution. The argument is zero padded to length of `2 * self.points() - 1`
     /// and then the same operations are performed as described for `prepare_argument`.
-    fn prepare_argument_padded<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult>
+    fn prepare_argument_padded<B>(self, buffer: &mut B) -> Self::FreqResult
 		where B: Buffer<S, T>;
 
     /// Calculates the correlation between `self` and `other`. `other` needs to be a time vector which
@@ -80,20 +80,20 @@ impl<S, T, N, D> CrossCorrelationOps<S, T> for DspVec<S, T, N, D>
 	  N: ComplexNumberSpace,
 	  D: TimeDomain {
 
-	fn prepare_argument<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult>
+	fn prepare_argument<B>(self, buffer: &mut B) -> Self::FreqResult
 	 	where B: Buffer<S, T> {
-		let mut result = try!(self.plain_fft(buffer));
+		let mut result = self.plain_fft(buffer);
 		result.conj();
-		Ok(result)
+		result
 	}
 
-	fn prepare_argument_padded<B>(mut self, buffer: &mut B) -> TransRes<Self::FreqResult>
+	fn prepare_argument_padded<B>(mut self, buffer: &mut B) -> Self::FreqResult
 		where B: Buffer<S, T> {
 		let points = self.points();
 		self.zero_pad_b(buffer, 2 * points - 1, PaddingOption::Surround);
-		let mut result = try!(self.plain_fft(buffer));
+		let mut result = self.plain_fft(buffer);
 		result.conj();
-		Ok(result)
+		result
 	}
 
 	fn correlate<B>(&mut self, buffer: &mut B, other: &Self::FreqResult) -> VoidResult
@@ -138,7 +138,7 @@ mod tests {
                           2.7047, 2.5665, 3.2186, 3.0874, 3.4409, 3.2994, 3.2291, 3.1287, 2.5801, 2.7264, 1.7085, 2.1882, 0.8637, 1.6369,
                           0.2319, 1.1420, -0.0878, 0.7078, -0.1208, 0.3523, -0.0317, 0.1311, 0.0080, 0.0509];
 	    let mut buffer = SingleBuffer::new();
-        let b = b.prepare_argument_padded(&mut buffer).unwrap();
+        let b = b.prepare_argument_padded(&mut buffer);
         a.correlate(&mut buffer, &b).unwrap();
         let res = &a[..];
         let tol = 0.1;
@@ -155,7 +155,7 @@ mod tests {
         let b = vec!(4.0, 1.0, 5.0, 1.0, 6.0, 1.0).to_complex_time_vec();
         let c: &[f32] = &[7.0, 5.0, 19.0, 8.0, 35.0, 9.0, 25.0, 4.0, 13.0, 1.0];
 		let mut buffer = SingleBuffer::new();
-        let b = b.prepare_argument_padded(&mut buffer).unwrap();
+        let b = b.prepare_argument_padded(&mut buffer);
         a.correlate(&mut buffer, &b).unwrap();
         let res = &a[..];
         let tol = 0.1;

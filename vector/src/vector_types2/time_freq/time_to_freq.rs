@@ -1,7 +1,7 @@
 use RealNumber;
 use super::super::{
     Owner, ToFreqResult, TransRes, TimeDomain,
-    Buffer, Vector, DataDomain, 
+    Buffer, Vector, DataDomain,
     DspVec, ToSliceMut, RealNumberSpace,
     NumberSpace, RededicateForceOps, ErrorReason,
     InsertZerosOps, FrequencyDomainOperations, TimeDomainOperations
@@ -27,7 +27,7 @@ pub trait TimeToFrequencyDomainOperations<S, T> : ToFreqResult
     /// use basic_dsp_vector::vector_types2::*;
     /// let vector = vec!(1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254).to_complex_time_vec();
     /// let mut buffer = SingleBuffer::new();
-    /// let result = vector.plain_fft(&mut buffer).expect("Ignoring error handling in examples");
+    /// let result = vector.plain_fft(&mut buffer);
     /// let actual = &result[..];
     /// let expected = &[0.0, 0.0, 3.0, 0.0, 0.0, 0.0];
     /// assert_eq!(actual.len(), expected.len());
@@ -35,7 +35,7 @@ pub trait TimeToFrequencyDomainOperations<S, T> : ToFreqResult
     ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
     /// }
     /// ```
-    fn plain_fft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult>
+    fn plain_fft<B>(self, buffer: &mut B) -> Self::FreqResult
         where B: Buffer<S, T>;
 
     /// Performs a Fast Fourier Transformation transforming a time domain vector
@@ -49,7 +49,7 @@ pub trait TimeToFrequencyDomainOperations<S, T> : ToFreqResult
     /// use basic_dsp_vector::vector_types2::*;
     /// let vector = vec!(1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254).to_complex_time_vec();
     /// let mut buffer = SingleBuffer::new();
-    /// let result = vector.fft(&mut buffer).expect("Ignoring error handling in examples");
+    /// let result = vector.fft(&mut buffer);
     /// let actual = &result[..];
     /// let expected = &[0.0, 0.0, 0.0, 0.0, 3.0, 0.0];
     /// assert_eq!(actual.len(), expected.len());
@@ -57,12 +57,12 @@ pub trait TimeToFrequencyDomainOperations<S, T> : ToFreqResult
     ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
     /// }
     /// ```
-    fn fft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult>
+    fn fft<B>(self, buffer: &mut B) -> Self::FreqResult
         where B: Buffer<S, T>;
 
     /// Applies a FFT window and performs a Fast Fourier Transformation transforming a time domain vector
     /// into a frequency domain vector.
-    fn windowed_fft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> TransRes<Self::FreqResult>
+    fn windowed_fft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> Self::FreqResult
         where B: Buffer<S, T>;
 }
 
@@ -128,13 +128,13 @@ impl<S, T, N, D> TimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
           T: RealNumber,
           N: NumberSpace,
           D: TimeDomain {
-    fn plain_fft<B>(mut self, buffer: &mut B) -> TransRes<Self::FreqResult>
+    fn plain_fft<B>(mut self, buffer: &mut B) -> Self::FreqResult
         where B: Buffer<S, T> {
         if self.domain() != DataDomain::Time {
             self.valid_len = 0;
             self.number_space.to_complex();
             self.domain.to_freq();
-            return Err((ErrorReason::InputMustBeInTimeDomain, Self::FreqResult::rededicate_from_force(self)));
+            return Self::FreqResult::rededicate_from_force(self)
         }
 
         if !self.is_complex() {
@@ -145,22 +145,22 @@ impl<S, T, N, D> TimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
         fft(&mut self, buffer, false);
 
         self.domain.to_freq();
-        Ok(Self::FreqResult::rededicate_from_force(self))
+        Self::FreqResult::rededicate_from_force(self)
     }
 
-    fn fft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult>
+    fn fft<B>(self, buffer: &mut B) -> Self::FreqResult
         where B: Buffer<S, T> {
-        let mut result = try!(self.plain_fft(buffer));
+        let mut result = self.plain_fft(buffer);
         result.fft_shift(buffer);
-        Ok(result)
+        result
     }
 
-    fn windowed_fft<B>(mut self, buffer: &mut B, window: &WindowFunction<T>) -> TransRes<Self::FreqResult>
+    fn windowed_fft<B>(mut self, buffer: &mut B, window: &WindowFunction<T>) -> Self::FreqResult
         where B: Buffer<S, T> {
         self.apply_window(window);
-        let mut result = try!(self.plain_fft(buffer));
+        let mut result = self.plain_fft(buffer);
         result.fft_shift(buffer);
-        Ok(result)
+        result
     }
 }
 
@@ -198,7 +198,7 @@ impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T,
 
       self.zero_interleave_b(buffer, 2);
       self.number_space.to_complex();
-      let mut result = try!(self.plain_fft(buffer));
+      let mut result = self.plain_fft(buffer);
       unmirror!(result);
       Ok(result)
     }
@@ -222,7 +222,7 @@ impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T,
 
       self.zero_interleave_b(buffer, 2);
       self.number_space.to_complex();
-      let mut result = try!(self.fft(buffer));
+      let mut result = self.fft(buffer);
       unmirror!(result);
       Ok(result)
     }
@@ -247,7 +247,7 @@ impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T,
       self.zero_interleave_b(buffer, 2);
       self.number_space.to_complex();
       self.apply_window(window);
-      let mut result = try!(self.fft(buffer));
+      let mut result = self.fft(buffer);
       unmirror!(result);
       Ok(result)
     }
