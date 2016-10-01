@@ -58,7 +58,7 @@ pub enum DataDomain {
 }
 
 /// Number space (real or complex) information.
-pub trait NumberSpace : Debug + cmp::PartialEq {
+pub trait NumberSpace : Debug + cmp::PartialEq + Clone {
     fn is_complex(&self) -> bool;
 
     /// For implementations which track meta data
@@ -72,7 +72,7 @@ pub trait NumberSpace : Debug + cmp::PartialEq {
 }
 
 /// Domain (time or frequency) information.
-pub trait Domain : Debug + cmp::PartialEq {
+pub trait Domain : Debug + cmp::PartialEq + Clone {
     fn domain(&self) -> DataDomain;
 
     /// See `RealNumberSpace` for some more details.

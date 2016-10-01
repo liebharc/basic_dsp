@@ -16,6 +16,12 @@ pub trait Buffer<S, T>
     /// S doesn't need to have be initialized with any default value.
     fn get(&mut self, len: usize) -> S;
 
+    /// Asks the buffer for newly created storage which isn't buffered.
+    ///
+    /// The purpose if this method is to abstract the creation of a
+    /// certain storage type.
+    fn construct_new(&mut self, len: usize) -> S;
+
     /// Returns a storage to the buffer. The buffer isn't required to free it and might just
     /// reuse the storage.
     fn free(&mut self, storage: S);
@@ -57,6 +63,10 @@ impl<T> Buffer<Vec<T>, T> for SingleBuffer<T>
             return result;
         }
 
+        vec![T::zero(); len]
+    }
+
+    fn construct_new(&mut self, len: usize) -> Vec<T> {
         vec![T::zero(); len]
     }
 

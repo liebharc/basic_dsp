@@ -1,6 +1,7 @@
 use RealNumber;
 use conv_types::*;
 use num::Complex;
+use multicore_support::*;
 use super::super::{
 	array_to_complex, array_to_complex_mut,
 	VoidResult, ToSliceMut,
@@ -79,23 +80,34 @@ impl<'a, S, T, N, D> Convolution<S, T, &'a RealImpulseResponse<T>> for DspVec<S,
 	 	where B: Buffer<S, T> {
 		assert_time!(self);
 		if !self.is_complex() {
-			/*let ratio_inv = T::one() / ratio;
-			if len <= 202 && self.len() > 2000 && (ratio_inv.round() - ratio_inv).abs() < T::from(1e-6).unwrap() && ratio > T::from(0.5).unwrap() {
-				let mut imp_resp = ComplexTimeVector::<T>::from_constant_with_delta(
-					Complex::<T>::zero(),
-					(2 * len + 1) * ratio as usize,
-					self.delta());
+			let ratio_inv = T::one() / ratio;
+			if len <= 202 && self.len() > 2000
+				&& (ratio_inv.round() - ratio_inv).abs() < T::from(1e-6).unwrap()
+				&& ratio > T::from(0.5).unwrap() {
+				let ratio: usize = ratio.abs().round().to_usize()
+					.expect("Converting ratio to usize failed, is the interpolation factor perhaps really huge?");
+				let points = (2 * len + 1) * ratio;
+				let mut imp_resp = DspVec {
+						data: buffer.construct_new(points),
+						delta: self.delta(),
+						domain: self.domain.clone(),
+						number_space: self.number_space.clone(),
+						valid_len: self.valid_len,
+						multicore_settings: MultiCoreSettings::default()
+					};
+
 				let mut i = 0;
 				let mut j = -(T::from(len).unwrap());
 				while i < imp_resp.len() {
 					let value = function.calc(j * ratio_inv);
 					imp_resp[i] = value;
 					i += 1;
-					j += 1.0;
+					j = j + T::one();
 				}
 
-				return self.convolve_vector(&imp_resp.to_gen_borrow());
-			}*/
+				self.convolve_vector(buffer, &imp_resp)
+					.expect("Meta data should agree since we constructed the argument from this vector");
+			}
 
 			self.convolve_function_priv(
 					buffer,
@@ -106,20 +118,35 @@ impl<'a, S, T, N, D> Convolution<S, T, &'a RealImpulseResponse<T>> for DspVec<S,
 					|x|function.calc(x)
 				);
 		} else {
-			/*let ratio_inv = 1.0 / ratio;
-			if len <= 202 && self.len() > 2000 && (ratio_inv.round() - ratio_inv).abs() < T::from(1e-6).unwrap() && ratio > T::from(0.5).unwrap() {
-				let mut imp_resp = ComplexTimeVector::<T>::from_constant_with_delta(Complex::<T>::zero(), (2 * len + 1) * ratio as usize, self.delta());
+			let ratio_inv = T::one() / ratio;
+			if len <= 202 && self.len() > 2000
+				&& (ratio_inv.round() - ratio_inv).abs() < T::from(1e-6).unwrap()
+				&& ratio > T::from(0.5).unwrap() {
+				let ratio: usize = ratio.abs().round().to_usize()
+					.expect("Converting ratio to usize failed, is the interpolation factor perhaps really huge?");
+				let points = (2 * len + 1) * ratio;
+				let mut imp_resp = DspVec {
+						data: buffer.construct_new(2 * points),
+						delta: self.delta(),
+						domain: self.domain.clone(),
+						number_space: self.number_space.clone(),
+						valid_len: self.valid_len,
+						multicore_settings: MultiCoreSettings::default()
+					};
+
+				let two = T::one() + T::one();
 				let mut i = 0;
 				let mut j = -(T::from(len).unwrap());
 				while i < imp_resp.len() {
 					let value = function.calc(j * ratio_inv);
 					imp_resp[i] = value;
 					i += 2;
-					j += 1.0;
+					j = j + two;
 				}
 
-				return self.convolve_vector(&imp_resp.to_gen_borrow());
-			}*/
+				self.convolve_vector(buffer, &imp_resp)
+					.expect("Meta data should agree since we constructed the argument from this vector");
+			}
 
 			self.convolve_function_priv(
 				buffer,
