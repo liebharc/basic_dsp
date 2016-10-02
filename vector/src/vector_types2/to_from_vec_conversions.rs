@@ -2,8 +2,8 @@
 use RealNumber;
 use num::{Complex, Zero};
 use std::result;
-use simd_extensions::*;
 use super::{
+    round_len,
     DataDomain,
     NumberSpace,
     Domain, ErrorReason,
@@ -654,10 +654,6 @@ impl<S, T, N, D> Clone for DspVec<S, T, N, D>
          self.valid_len = source.valid_len;
          self.multicore_settings = source.multicore_settings.clone();
     }
-}
-
-fn round_len(len: usize) -> usize {
-    ((len + Reg32::len() - 1) / Reg32::len()) * Reg32::len()
 }
 
 fn complex_to_array<T>(complex: &[Complex<T>]) -> &[T]

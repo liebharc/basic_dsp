@@ -24,6 +24,7 @@ mod real;
 pub use self::real::*;
 mod time_freq;
 pub use self::time_freq::*;
+pub mod multi_ops;
 mod rededicate_and_relations;
 pub use self::rededicate_and_relations::*;
 mod checks_and_results;
@@ -250,6 +251,10 @@ fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
         let trans: &mut [Complex<T>] = mem::transmute(array);
         &mut trans[0 .. len / 2]
     }
+}
+
+fn round_len(len: usize) -> usize {
+    ((len + Reg32::len() - 1) / Reg32::len()) * Reg32::len()
 }
 
 impl<S, T, N, D> DspVec<S, T, N, D> where

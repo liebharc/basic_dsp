@@ -45,6 +45,12 @@ pub trait SimdGeneric<T> : Simd<T>
 
     fn from_complex_array(array: Self::ComplexArray) -> Self;
 
+    fn iter_over_vector<F>(self, op: F) -> Self
+        where F: FnMut(T) -> T;
+
+    fn iter_over_complex_vector<F>(self, op: F) -> Self
+        where F: FnMut(Complex<T>) -> Complex<T>;
+
     fn array_to_regs(array: &[T]) -> &[Self];
 
     fn array_to_regs_mut(array: &mut [T]) -> &mut [Self];
@@ -56,6 +62,8 @@ pub trait SimdGeneric<T> : Simd<T>
     fn extract(self, idx: u32) -> T;
 
     fn splat(value: T) -> Self;
+
+    fn store(&self, array: &mut [T], index: usize);
 }
 
 #[repr(packed)]
@@ -94,6 +102,26 @@ macro_rules! simd_generic_impl {
             #[inline]
             fn from_complex_array(array: Self::ComplexArray) -> Self {
                 Self::from_array(unsafe { mem::transmute(array) })
+            }
+
+            #[inline]
+            fn iter_over_vector<F>(self, mut op: F) -> Self
+                where F: FnMut($data_type) -> $data_type {
+                let mut array = self.to_array();
+                for n in &mut array {
+                    *n = op(*n);
+                }
+                Self::from_array(array)
+            }
+
+            #[inline]
+            fn iter_over_complex_vector<F>(self,  mut op: F) -> Self
+                where F: FnMut(Complex<$data_type>) -> Complex<$data_type> {
+                let mut array = self.to_complex_array();
+                for n in &mut array {
+                    *n = op(*n);
+                }
+                Self::from_complex_array(array)
             }
 
             #[inline]
@@ -147,6 +175,11 @@ macro_rules! simd_generic_impl {
             #[inline]
             fn splat(value: $data_type) -> Self {
                 $reg::splat(value)
+            }
+
+            #[inline]
+            fn store(&self, array: &mut [$data_type], index: usize) {
+                $reg::store(self, array, index);
             }
         }
     }
