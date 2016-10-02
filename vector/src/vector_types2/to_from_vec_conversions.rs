@@ -27,7 +27,7 @@ pub trait ToDspVector<T> : Sized + ToSlice<T>
     /// `delta` can be changed after construction with a call of `set_delta`.
     ///
     /// For complex vectors with an odd length the resulting value will have a zero length.
-    fn to_gen_dsp_vec(self, domain: DataDomain, is_complex: bool) -> GenDspVec<Self, T>;
+    fn to_gen_dsp_vec(self, is_complex: bool, domain: DataDomain) -> GenDspVec<Self, T>;
 }
 
 /// Conversion from a generic data type into a dsp vector with real data.
@@ -87,7 +87,7 @@ pub trait FromVector<T>
 
 impl<T> ToDspVector<T> for Vec<T>
     where T: RealNumber {
-    fn to_gen_dsp_vec(self, domain: DataDomain, is_complex: bool) -> GenDspVec<Self, T> {
+    fn to_gen_dsp_vec(self, is_complex: bool, domain: DataDomain) -> GenDspVec<Self, T> {
         let mut len = self.len();
         if len % 2 != 0 && is_complex {
             len = 0;
@@ -192,7 +192,7 @@ impl<T> ToComplexVector<Vec<T>, T> for Vec<Complex<T>>
 
 impl<'a, T> ToDspVector<T> for &'a [T]
     where T: RealNumber {
-    fn to_gen_dsp_vec(self, domain: DataDomain, is_complex: bool) -> GenDspVec<Self, T> {
+    fn to_gen_dsp_vec(self, is_complex: bool, domain: DataDomain) -> GenDspVec<Self, T> {
         let len = self.len();
         GenDspVec {
             data: self,
@@ -296,7 +296,7 @@ impl<'a, T> ToComplexVector<&'a [T], T> for &'a [Complex<T>]
 
 impl<'a, T> ToDspVector<T> for &'a mut [T]
     where T: RealNumber {
-    fn to_gen_dsp_vec(self, domain: DataDomain, is_complex: bool) -> GenDspVec<Self, T> {
+    fn to_gen_dsp_vec(self, is_complex: bool, domain: DataDomain) -> GenDspVec<Self, T> {
         let mut len = self.len();
         if len % 2 != 0 && is_complex {
             len = 0;
@@ -403,7 +403,7 @@ impl<'a, T> ToComplexVector<&'a mut [T], T> for &'a mut [Complex<T>]
 
 impl<T> ToDspVector<T> for Box<[T]>
     where T: RealNumber {
-    fn to_gen_dsp_vec(self, domain: DataDomain, is_complex: bool) -> GenDspVec<Self, T> {
+    fn to_gen_dsp_vec(self, is_complex: bool, domain: DataDomain) -> GenDspVec<Self, T> {
         let mut len = self.len();
         if len % 2 != 0 && is_complex {
             len = 0;
