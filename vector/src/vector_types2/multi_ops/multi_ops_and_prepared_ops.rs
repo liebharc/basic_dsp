@@ -3,7 +3,7 @@ use std::result;
 use std::sync::{Arc, Mutex};
 use super::Identifier;
 use super::super::{
-    Domain, NumberSpace, ToSliceMut, DspVec, ErrorReason, RededicateOps,
+    Domain, NumberSpace, ToSliceMut, DspVec, ErrorReason, RededicateForceOps,
 	Buffer, Owner, TimeOrFrequencyData, RealOrComplexData, Vector,
 	DataDomain
 };
@@ -229,7 +229,7 @@ fn generic_vector_back_to_vector<S, T, N, D>(number_space: N, domain: D, vec: Ds
 impl<T, S, B, NI, DI, NO, DO> PreparedOperation1Exec<B, DspVec<S, T, NI, DI>, DspVec<S, T, NO, DO>> for PreparedOperation1<T, NI, DI, NO, DO>
 	where T: RealNumber + 'static,
         S: ToSliceMut<T> + Owner,
-        DspVec<S, T, NO, DO>: RededicateOps<DspVec<S, T, NI, DI>>,
+        DspVec<S, T, NO, DO>: RededicateForceOps<DspVec<S, T, NI, DI>>,
 		NI: NumberSpace, DI: Domain,
 		NO: NumberSpace, DO: Domain,
         B: Buffer<S, T> {
@@ -249,18 +249,18 @@ impl<T, S, B, NI, DI, NO, DO> PreparedOperation1Exec<B, DspVec<S, T, NI, DI>, Ds
 				let a = generic_vector_back_to_vector(number_space, domain, a);
 				Err((
 					reason,
-					DspVec::<S, T, NO, DO>::rededicate_from(a)))
+					DspVec::<S, T, NO, DO>::rededicate_from_force(a)))
 			},
 			Ok(mut vec) => {
 				let a = vec.pop().unwrap();
 				let a = generic_vector_back_to_vector(number_space, domain, a);
 				// Convert back
-				Ok(DspVec::<S, T, NO, DO>::rededicate_from(a))
+				Ok(DspVec::<S, T, NO, DO>::rededicate_from_force(a))
 			}
 		}
 	}
 }
-
+/*
 impl<T, S, B, N, D> PreparedOperation1Exec<B, DspVec<S, T, N, D>, DspVec<S, T, N, D>> for PreparedOperation1<T, N, D, N, D>
 	where T: RealNumber + 'static,
         S: ToSliceMut<T> + Owner,
@@ -290,4 +290,4 @@ impl<T, S, B, N, D> PreparedOperation1Exec<B, DspVec<S, T, N, D>, DspVec<S, T, N
 			}
 		}
 	}
-}
+}*/
