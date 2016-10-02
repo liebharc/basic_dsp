@@ -82,6 +82,74 @@ pub trait ElementaryOps {
     /// ```
     fn add(&mut self, summand: &Self) -> VoidResult;
 
+    /// Calculates the difference of `self - subtrahend`. It consumes self and returns the result.
+    /// # Failures
+    /// TransRes may report the following `ErrorReason` members:
+    ///
+    /// 1. `VectorsMustHaveTheSameSize`: `self` and `subtrahend` must have the same size
+    /// 2. `VectorMetaDataMustAgree`: `self` and `subtrahend` must be in the same domain and number space
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp_vector;
+    /// use basic_dsp_vector::vector_types2::*;
+    /// # fn main() {
+    /// let mut vector1 = vec!(1.0, 2.0).to_real_time_vec();
+    /// let vector2 = vec!(10.0, 11.0).to_real_time_vec();
+    /// vector1.sub(&vector2).expect("Ignoring error handling in examples");
+    /// assert_eq!([-9.0, -9.0], vector1[0..]);
+    /// # }
+    /// ```
+    fn sub(&mut self, subtrahend: &Self) -> VoidResult;
+
+    /// Calculates the product of `self * factor`. It consumes self and returns the result.
+    /// # Failures
+    /// TransRes may report the following `ErrorReason` members:
+    ///
+    /// 1. `VectorsMustHaveTheSameSize`: `self` and `factor` must have the same size
+    /// 2. `VectorMetaDataMustAgree`: `self` and `factor` must be in the same domain and number space
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp_vector;
+    /// use basic_dsp_vector::vector_types2::*;
+    /// # fn main() {
+    /// let mut vector1 = vec!(1.0, 2.0).to_real_time_vec();
+    /// let vector2 = vec!(10.0, 11.0).to_real_time_vec();
+    /// vector1.mul(&vector2).expect("Ignoring error handling in examples");
+    /// assert_eq!([10.0, 22.0], vector1[0..]);
+    /// # }
+    /// ```
+    fn mul(&mut self, factor: &Self) -> VoidResult;
+
+    /// Calculates the quotient of `self / summand`. It consumes self and returns the result.
+    /// # Failures
+    /// TransRes may report the following `ErrorReason` members:
+    ///
+    /// 1. `VectorsMustHaveTheSameSize`: `self` and `divisor` must have the same size
+    /// 2. `VectorMetaDataMustAgree`: `self` and `divisor` must be in the same domain and number space
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp_vector;
+    /// use basic_dsp_vector::vector_types2::*;
+    /// # fn main() {
+    /// let mut vector1 = vec!(10.0, 22.0).to_real_time_vec();
+    /// let vector2 = vec!(2.0, 11.0).to_real_time_vec();
+    /// vector1.div(&vector2).expect("Ignoring error handling in examples");
+    /// assert_eq!([5.0, 2.0], vector1[0..]);
+    /// # }
+    /// ```
+    fn div(&mut self, divisor: &Self) -> VoidResult;
+}
+
+pub trait ElementaryWrapAroundOps {
     /// Calculates the sum of `self + summand`. `summand` may be smaller than `self` as long
     /// as `self.len() % summand.len() == 0`. THe result is the same as it would be if
     /// you would repeat `summand` until it has the same length as `self`.
@@ -106,28 +174,6 @@ pub trait ElementaryOps {
     /// # }
     /// ```
     fn add_smaller(&mut self, summand: &Self) -> VoidResult;
-
-    /// Calculates the difference of `self - subtrahend`. It consumes self and returns the result.
-    /// # Failures
-    /// TransRes may report the following `ErrorReason` members:
-    ///
-    /// 1. `VectorsMustHaveTheSameSize`: `self` and `subtrahend` must have the same size
-    /// 2. `VectorMetaDataMustAgree`: `self` and `subtrahend` must be in the same domain and number space
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// # extern crate num;
-    /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
-    /// # fn main() {
-    /// let mut vector1 = vec!(1.0, 2.0).to_real_time_vec();
-    /// let vector2 = vec!(10.0, 11.0).to_real_time_vec();
-    /// vector1.sub(&vector2).expect("Ignoring error handling in examples");
-    /// assert_eq!([-9.0, -9.0], vector1[0..]);
-    /// # }
-    /// ```
-    fn sub(&mut self, subtrahend: &Self) -> VoidResult;
 
     /// Calculates the sum of `self - subtrahend`. `subtrahend` may be smaller than `self` as long
     /// as `self.len() % subtrahend.len() == 0`. THe result is the same as it would be if
@@ -154,28 +200,6 @@ pub trait ElementaryOps {
     /// ```
     fn sub_smaller(&mut self, summand: &Self) -> VoidResult;
 
-    /// Calculates the product of `self * factor`. It consumes self and returns the result.
-    /// # Failures
-    /// TransRes may report the following `ErrorReason` members:
-    ///
-    /// 1. `VectorsMustHaveTheSameSize`: `self` and `factor` must have the same size
-    /// 2. `VectorMetaDataMustAgree`: `self` and `factor` must be in the same domain and number space
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// # extern crate num;
-    /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
-    /// # fn main() {
-    /// let mut vector1 = vec!(1.0, 2.0).to_real_time_vec();
-    /// let vector2 = vec!(10.0, 11.0).to_real_time_vec();
-    /// vector1.mul(&vector2).expect("Ignoring error handling in examples");
-    /// assert_eq!([10.0, 22.0], vector1[0..]);
-    /// # }
-    /// ```
-    fn mul(&mut self, factor: &Self) -> VoidResult;
-
     /// Calculates the sum of `self - factor`. `factor` may be smaller than `self` as long
     /// as `self.len() % factor.len() == 0`. THe result is the same as it would be if
     /// you would repeat `factor` until it has the same length as `self`.
@@ -200,28 +224,6 @@ pub trait ElementaryOps {
     /// # }
     /// ```
     fn mul_smaller(&mut self, factor: &Self) -> VoidResult;
-
-    /// Calculates the quotient of `self / summand`. It consumes self and returns the result.
-    /// # Failures
-    /// TransRes may report the following `ErrorReason` members:
-    ///
-    /// 1. `VectorsMustHaveTheSameSize`: `self` and `divisor` must have the same size
-    /// 2. `VectorMetaDataMustAgree`: `self` and `divisor` must be in the same domain and number space
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// # extern crate num;
-    /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
-    /// # fn main() {
-    /// let mut vector1 = vec!(10.0, 22.0).to_real_time_vec();
-    /// let vector2 = vec!(2.0, 11.0).to_real_time_vec();
-    /// vector1.div(&vector2).expect("Ignoring error handling in examples");
-    /// assert_eq!([5.0, 2.0], vector1[0..]);
-    /// # }
-    /// ```
-    fn div(&mut self, divisor: &Self) -> VoidResult;
 
     /// Calculates the sum of `self - divisor`. `divisor` may be smaller than `self` as long
     /// as `self.len() % divisor.len() == 0`. THe result is the same as it would be if
@@ -507,9 +509,7 @@ impl<S, T, N, D> ElementaryOps for DspVec<S, T, N, D>
           N: NumberSpace,
           D: Domain {
       impl_binary_vector_operation!(fn add, summand, add, add);
-      impl_binary_smaller_vector_operation!(fn add_smaller, summand, add, add);
       impl_binary_vector_operation!(fn sub, summand, sub, sub);
-      impl_binary_smaller_vector_operation!(fn sub_smaller, summand, sub, sub);
 
       fn mul(&mut self, factor: &Self) -> VoidResult {
           let len = self.len();
@@ -526,21 +526,6 @@ impl<S, T, N, D> ElementaryOps for DspVec<S, T, N, D>
           }
       }
 
-      fn mul_smaller(&mut self, factor: &Self) -> VoidResult {
-          let len = self.len();
-          reject_if!(self, len % factor.len() != 0, ErrorReason::InvalidArgumentLength);
-          assert_meta_data!(self, factor);
-
-          if self.is_complex()
-          {
-              self.mul_smaller_complex(factor)
-          }
-          else
-          {
-              self.mul_smaller_real(factor)
-          }
-      }
-
       fn div(&mut self, divisor: &Self) -> VoidResult {
           let len = self.len();
           reject_if!(self, len != divisor.len(), ErrorReason::InputMustHaveTheSameSize);
@@ -553,6 +538,30 @@ impl<S, T, N, D> ElementaryOps for DspVec<S, T, N, D>
           else
           {
               self.div_real(divisor)
+          }
+      }
+}
+
+impl<S, T, N, D> ElementaryWrapAroundOps for DspVec<S, T, N, D>
+    where S: ToSliceMut<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain {
+      impl_binary_smaller_vector_operation!(fn add_smaller, summand, add, add);
+      impl_binary_smaller_vector_operation!(fn sub_smaller, summand, sub, sub);
+
+      fn mul_smaller(&mut self, factor: &Self) -> VoidResult {
+          let len = self.len();
+          reject_if!(self, len % factor.len() != 0, ErrorReason::InvalidArgumentLength);
+          assert_meta_data!(self, factor);
+
+          if self.is_complex()
+          {
+              self.mul_smaller_complex(factor)
+          }
+          else
+          {
+              self.mul_smaller_real(factor)
           }
       }
 

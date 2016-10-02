@@ -18,6 +18,16 @@ pub trait MapInplaceOps<T> : Sized
         where A: Sync + Copy + Send,
               F: Fn(T, usize, A) -> T + 'static + Sync;
 }
+
+/// Operations which allow to iterate over the vector and to derive results
+/// or to change the vector.
+pub trait MapInplaceNoArgsOps<T> : Sized
+    where T: Sized {
+    /// Transforms all vector elements using the function `map`.
+    fn map_inplace<F>(&mut self, map: F)
+        where F: Fn(T, usize) -> T + 'static + Sync + Send;
+}
+
 pub trait MapAggregateOps<T> : Sized
     where T: Sized {
     /// Transforms all vector elements using the function `map` and then aggregates
