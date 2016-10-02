@@ -2,6 +2,8 @@ mod operations_enum;
 pub use self::operations_enum::*;
 mod multi_ops_and_prepared_ops;
 pub use self::multi_ops_and_prepared_ops::*;
+mod identifier_ops;
+pub use self::identifier_ops::*;
 
 use RealNumber;
 use simd_extensions::*;
@@ -11,8 +13,38 @@ use super::{
     round_len,
     ToSliceMut, DspVec, ErrorReason,
     TransRes, Vector, RealToComplexTransformsOps, ComplexToRealTransformsOps,
-    Buffer, Owner, RealOrComplexData, TimeOrFrequencyData
+    Buffer, Owner, RealOrComplexData, TimeOrFrequencyData,
+    Domain, NumberSpace
 };
+use std::sync::{Arc, Mutex};
+
+/// An identifier is just a placeholder for a data type
+/// used to ensure already at compile time that operations are valid.
+pub struct Identifier<T, N, D>
+    where T: RealNumber,
+          D: Domain,
+          N: NumberSpace
+{
+    arg: usize,
+    ops: Vec<(u64, Operation<T>)>,
+    counter: Arc<Mutex<u64>>,
+    domain: D,
+    number_space: N
+}
+
+impl<T, N, D> Identifier<T, N, D>
+    where T: RealNumber,
+          D: Domain,
+          N: NumberSpace {
+    fn add_op(&mut self, op: Operation<T>) {
+        let seq = {
+            let mut value = self.counter.lock().unwrap();
+            *value += 1;
+            *value
+        };
+        self.ops.push((seq, op));
+    }
+}
 
 fn perform_complex_operations_par<T>(
     array: &mut Vec<&mut [T]>,
@@ -1531,13 +1563,26 @@ pub fn multi_ops2<T, A, B>(a: A, b: B)
     let b: GenericDataVec<T> = b.rededicate();
     MultiOperation2 { a: a, b: b, prepared_ops: ops }
 }
-*//*
+*/
 #[cfg(test)]
 mod tests {
     use super::super::*;
     use super::*;
-    use num::complex::Complex32;
 
+    #[test]
+    fn prepared_ops1_construction() {
+        let ops = prepare32_1(RealData, TimeData);
+        let ops = ops.add_ops(|mut x| {
+            x.offset(5.0);
+            x
+        });
+
+        let vec = vec!(0.0; 5).to_real_time_vec();
+        let mut buffer = SingleBuffer::new();
+        let vec = ops.exec(&mut buffer, vec).unwrap();
+        assert_eq!(&vec[..], [5.0, 5.0, 5.0, 5.0, 5.0]);
+    }
+/*
     #[test]
     fn multi_ops_construction()
     {
@@ -1721,6 +1766,5 @@ mod tests {
         let a = ops.get().unwrap();
         let expected = [0.0, 0.0, 3.0, 4.0, 10.0, 12.0];
         assert_eq!(a.interleaved(0..), &expected);
-    }
+    }*/
 }
-*/

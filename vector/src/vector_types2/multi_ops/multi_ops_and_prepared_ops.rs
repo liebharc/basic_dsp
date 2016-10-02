@@ -1,6 +1,7 @@
 use RealNumber;
 use std::result;
 use std::sync::{Arc, Mutex};
+use super::Identifier;
 use super::super::{
     Domain, NumberSpace, ToSliceMut, DspVec, ErrorReason, RededicateOps,
 	Buffer, Owner, TimeOrFrequencyData, RealOrComplexData, Vector,
@@ -10,20 +11,6 @@ use super::operations_enum::*;
 
 const ARGUMENT1: usize = 0;
 const ARGUMENT2: usize = 1;
-
-/// An identifier is just a placeholder for a data type
-/// used to ensure already at compile time that operations are valid.
-pub struct Identifier<T, N, D>
-    where T: RealNumber,
-          D: Domain,
-          N: NumberSpace
-{
-    arg: usize,
-    ops: Vec<(u64, Operation<T>)>,
-    counter: Arc<Mutex<u64>>,
-    domain: D,
-    number_space: N
-}
 
 /// An operation on one data vector which has been prepared in
 /// advance.
@@ -39,6 +26,12 @@ pub struct PreparedOperation1<T, NI, DI, NO, DO>
 	number_space_out: NO,
 	domain_out: DO,
     ops: Vec<Operation<T>>
+}
+
+/// Executes the prepared operations to convert `S`to `D`,
+pub trait PreparedOperation1Exec<B, S, D> {
+    /// Executes the prepared operations to convert `S`to `D`,
+    fn exec(&self, buffer: &mut B, source: S) -> result::Result<D, (ErrorReason, D)>;
 }
 
 /// Prepares an operation with one input and one output.
@@ -184,12 +177,19 @@ impl<T, NI, DI, NO, DO> PreparedOperation1<T, NI, DI, NO, DO>
 			ops: ops
 		}
 	}
+}
+
+impl<T, S, B, NI, DI, NO, DO> PreparedOperation1Exec<B, DspVec<S, T, NI, DI>, DspVec<S, T, NO, DO>> for PreparedOperation1<T, NI, DI, NO, DO>
+	where T: RealNumber + 'static,
+        S: ToSliceMut<T> + Owner,
+        DspVec<S, T, NO, DO>: RededicateOps<DspVec<S, T, NI, DI>>,
+		NI: NumberSpace, DI: Domain,
+		NO: NumberSpace, DO: Domain,
+        B: Buffer<S, T> {
+
 
 	/// Executes all recorded operations on the input vectors.
-	pub fn exec<S, B>(&self, buffer: &mut B, a: DspVec<S, T, NI, DI>) -> result::Result<DspVec<S, T, NO, DO>, (ErrorReason, DspVec<S, T, NO, DO>)>
-	 	where S: ToSliceMut<T> + Owner,
-			   DspVec<S, T, NO, DO>: RededicateOps<DspVec<S, T, NI, DI>>,
-			   B: Buffer<S, T> {
+	fn exec(&self, buffer: &mut B, a: DspVec<S, T, NI, DI>) -> result::Result<DspVec<S, T, NO, DO>, (ErrorReason, DspVec<S, T, NO, DO>)> {
 		let mut vec = Vec::new();
 		let domain = a.domain.clone();
 		let number_space = a.number_space.clone();
@@ -264,6 +264,95 @@ impl<T, NI, DI, NO, DO> PreparedOperation1<T, NI, DI, NO, DO>
 
 				// Convert back
 				Ok(DspVec::<S, T, NO, DO>::rededicate_from(a))
+			}
+		}
+
+	}
+}
+
+impl<T, S, B, N, D> PreparedOperation1Exec<B, DspVec<S, T, N, D>, DspVec<S, T, N, D>> for PreparedOperation1<T, N, D, N, D>
+	where T: RealNumber + 'static,
+        S: ToSliceMut<T> + Owner,
+		N: NumberSpace, D: Domain,
+        B: Buffer<S, T> {
+
+
+	/// Executes all recorded operations on the input vectors.
+	fn exec(&self, buffer: &mut B, a: DspVec<S, T, N, D>) -> result::Result<DspVec<S, T, N, D>, (ErrorReason, DspVec<S, T, N, D>)> {
+		let mut vec = Vec::new();
+		let domain = a.domain.clone();
+		let number_space = a.number_space.clone();
+		let gen = DspVec {
+				delta: a.delta,
+				domain: TimeOrFrequencyData { domain_current: a.domain() },
+				number_space: RealOrComplexData { is_complex_current: a.is_complex() },
+				valid_len: a.valid_len,
+				multicore_settings: a.multicore_settings,
+				data: a.data
+		};
+		vec.push(gen);
+
+
+		// at this point we would execute all ops and cast the result to the right types
+		let result = DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(buffer, vec, &self.ops);
+
+		match result {
+			Err((reason, mut vec)) => {
+				let a = vec.pop().unwrap();
+				let is_complex = a.is_complex();
+				let result_domain = a.domain();
+				let mut a = DspVec {
+						data: a.data,
+						delta: a.delta,
+						domain: domain,
+						number_space: number_space,
+						valid_len: a.valid_len,
+						multicore_settings: a.multicore_settings
+				};
+
+				if is_complex {
+					a.number_space.to_complex();
+				} else {
+					a.number_space.to_real();
+				}
+
+				if result_domain == DataDomain::Time {
+					a.domain.to_time();
+				} else {
+					a.domain.to_freq();
+				}
+
+				Err((
+					reason,
+					a))
+			},
+			Ok(mut vec) => {
+				let a = vec.pop().unwrap();
+				let is_complex = a.is_complex();
+				let result_domain = a.domain();
+				let mut a = DspVec {
+						data: a.data,
+						delta: a.delta,
+						domain: domain,
+						number_space: number_space,
+						valid_len: a.valid_len,
+						multicore_settings: a.multicore_settings
+				};
+
+				if is_complex {
+					a.number_space.to_complex();
+				} else {
+					a.number_space.to_real();
+				}
+
+				if result_domain == DataDomain::Time {
+					a.domain.to_time();
+				} else {
+					a.domain.to_freq();
+				}
+
+				// Convert back
+				Ok(a)
 			}
 		}
 
