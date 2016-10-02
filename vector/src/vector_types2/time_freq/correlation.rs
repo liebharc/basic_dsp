@@ -6,8 +6,8 @@ use super::super::{
 	ToSliceMut, Owner, PaddingOption,
 	VoidResult, Vector, FromVector,
 	ComplexNumberSpace, TimeDomain, ElementaryOps,
-    ToFreqResult, InsertZerosOps,
-	DataDomain, ErrorReason, ReorganizeDataOps
+    ToFreqResult, InsertZerosOpsBuffered,
+	DataDomain, ErrorReason, ReorganizeDataOpsBuffered
 };
 use std::mem;
 use super::fft;
@@ -72,7 +72,7 @@ pub trait CrossCorrelationOps<S, T> : ToFreqResult
 
 impl<S, T, N, D> CrossCorrelationOps<S, T> for DspVec<S, T, N, D>
 	where DspVec<S, T, N, D>: ToFreqResult + TimeToFrequencyDomainOperations<S, T> + ScaleOps<Complex<T>>
-		+ ReorganizeDataOps<S, T>,
+		+ ReorganizeDataOpsBuffered<S, T>,
 	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>> +
 	  	FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T> + From<S> + ElementaryOps + FromVector<T, Output=S>,
 	  S: ToSliceMut<T> + Owner,

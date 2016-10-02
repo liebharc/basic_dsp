@@ -12,7 +12,7 @@ use std::ops::Range;
 use super::{
     round_len,
     ToSliceMut, DspVec, ErrorReason,
-    TransRes, Vector, RealToComplexTransformsOps, ComplexToRealTransformsOps,
+    TransRes, Vector, RealToComplexTransformsOpsBuffered, ComplexToRealTransformsOps,
     Buffer, Owner, RealOrComplexData, TimeOrFrequencyData,
     Domain, NumberSpace
 };

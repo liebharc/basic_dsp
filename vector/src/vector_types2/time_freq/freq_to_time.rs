@@ -5,7 +5,7 @@ use super::super::{
     DspVec, Vector, Buffer, ToSliceMut,
     RededicateForceOps, ErrorReason,
     ComplexNumberSpace, Owner, FrequencyDomain, DataDomain,
-    InsertZerosOps, ScaleOps, TimeDomainOperations, FrequencyDomainOperations
+    InsertZerosOpsBuffered, ScaleOps, TimeDomainOperations, FrequencyDomainOperations
 };
 use super::fft;
 use window_functions::*;

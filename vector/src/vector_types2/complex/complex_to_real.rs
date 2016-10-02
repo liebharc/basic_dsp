@@ -14,9 +14,8 @@ use super::super::{
 ///
 /// # Failures
 /// All operations in this trait set `self.len()` to `0` if the type isn't in the complex number space.
-pub trait ComplexToRealTransformsOps<S, T> : ToRealResult
-    where S: ToSliceMut<T>,
-          T: RealNumber {
+pub trait ComplexToRealTransformsOps<T> : ToRealResult
+    where T: RealNumber {
 
     /// Gets the absolute value, magnitude or norm of all vector elements.
     /// # Example
@@ -32,6 +31,76 @@ pub trait ComplexToRealTransformsOps<S, T> : ToRealResult
     /// # }
     /// ```
     fn magnitude(self) -> Self::RealResult;
+
+    /// Gets the square root of the absolute value of all vector elements.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp_vector;
+    /// use basic_dsp_vector::vector_types2::*;
+    /// # fn main() {
+    /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
+    /// let result = vector.magnitude_squared();
+    /// assert_eq!([25.0, 25.0], result[0..]);
+    /// # }
+    /// ```
+    fn magnitude_squared(self,) -> Self::RealResult;
+
+    /// Gets all real elements.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp_vector;
+    /// use basic_dsp_vector::vector_types2::*;
+    /// # fn main() {
+    /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let result = vector.to_real();
+    /// assert_eq!([1.0, 3.0], result[0..]);
+    /// # }
+    /// ```
+    fn to_real(self) -> Self::RealResult;
+
+    /// Gets all imag elements.
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp_vector;
+    /// use basic_dsp_vector::vector_types2::*;
+    /// # fn main() {
+    /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let result = vector.to_imag();
+    /// assert_eq!([2.0, 4.0], result[0..]);
+    /// # }
+    /// ```
+    fn to_imag(self) -> Self::RealResult;
+
+    /// Gets the phase of all elements in [rad].
+    /// # Example
+    ///
+    /// ```
+    /// # extern crate num;
+    /// # extern crate basic_dsp_vector;
+    /// use basic_dsp_vector::vector_types2::*;
+    /// # fn main() {
+    /// let data: Vec<f32> = vec!(1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0);
+    /// let vector = data.to_complex_time_vec();
+    /// let result = vector.phase();
+    /// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result[0..]);
+    /// # }
+    /// ```
+    fn phase(self) -> Self::RealResult;
+}
+
+/// Defines transformations from complex to real number space.
+///
+/// # Failures
+/// All operations in this trait set `self.len()` to `0` if the type isn't in the complex number space.
+pub trait ComplexToRealTransformsOpsBuffered<S, T> : ToRealResult
+    where S: ToSliceMut<T>,
+          T: RealNumber {
 
     /// Gets the absolute value, magnitude or norm of all vector elements.
     /// # Example
@@ -59,21 +128,6 @@ pub trait ComplexToRealTransformsOps<S, T> : ToRealResult
     /// use basic_dsp_vector::vector_types2::*;
     /// # fn main() {
     /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
-    /// let result = vector.magnitude_squared();
-    /// assert_eq!([25.0, 25.0], result[0..]);
-    /// # }
-    /// ```
-    fn magnitude_squared(self,) -> Self::RealResult;
-
-    /// Gets the square root of the absolute value of all vector elements.
-    /// # Example
-    ///
-    /// ```
-    /// # extern crate num;
-    /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
-    /// # fn main() {
-    /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.magnitude_squared_b(&mut buffer);
     /// assert_eq!([25.0, 25.0], result[0..]);
@@ -91,21 +145,6 @@ pub trait ComplexToRealTransformsOps<S, T> : ToRealResult
     /// use basic_dsp_vector::vector_types2::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
-    /// let result = vector.to_real();
-    /// assert_eq!([1.0, 3.0], result[0..]);
-    /// # }
-    /// ```
-    fn to_real(self) -> Self::RealResult;
-
-    /// Gets all real elements.
-    /// # Example
-    ///
-    /// ```
-    /// # extern crate num;
-    /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
-    /// # fn main() {
-    /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.to_real_b(&mut buffer);
     /// assert_eq!([1.0, 3.0], result[0..]);
@@ -113,21 +152,6 @@ pub trait ComplexToRealTransformsOps<S, T> : ToRealResult
     /// ```
     fn to_real_b<B>(self, buffer: &mut B) -> Self::RealResult
         where B: Buffer<S, T>;
-
-    /// Gets all imag elements.
-    /// # Example
-    ///
-    /// ```
-    /// # extern crate num;
-    /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
-    /// # fn main() {
-    /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
-    /// let result = vector.to_imag();
-    /// assert_eq!([2.0, 4.0], result[0..]);
-    /// # }
-    /// ```
-    fn to_imag(self) -> Self::RealResult;
 
     /// Gets all imag elements.
     /// # Example
@@ -156,22 +180,6 @@ pub trait ComplexToRealTransformsOps<S, T> : ToRealResult
     /// # fn main() {
     /// let data: Vec<f32> = vec!(1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0);
     /// let vector = data.to_complex_time_vec();
-    /// let result = vector.phase();
-    /// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result[0..]);
-    /// # }
-    /// ```
-    fn phase(self) -> Self::RealResult;
-
-    /// Gets the phase of all elements in [rad].
-    /// # Example
-    ///
-    /// ```
-    /// # extern crate num;
-    /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
-    /// # fn main() {
-    /// let data: Vec<f32> = vec!(1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0);
-    /// let vector = data.to_complex_time_vec();
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.phase_b(&mut buffer);
     /// assert_eq!([0.0, 1.5707964, 3.1415927, -1.5707964, 0.7853982], result[0..]);
@@ -181,13 +189,13 @@ pub trait ComplexToRealTransformsOps<S, T> : ToRealResult
         where B: Buffer<S, T>;
 }
 
+
 /// Defines getters to get real data from complex types.
 ///
 /// # Failures
 /// All operations in this trait set the arguments `len()` to `0` if the type isn't in the complex number space.
-pub trait ComplexToRealGetterOps<S, T> : ToRealResult
-    where S: ToSlice<T>,
-          T: RealNumber {
+pub trait ComplexToRealGetterOps<T> : ToRealResult
+    where T: RealNumber {
     /// Copies all real elements into the given vector.
     /// # Example
     ///
@@ -294,9 +302,8 @@ pub trait ComplexToRealGetterOps<S, T> : ToRealResult
 ///
 /// # Failures
 /// All operations in this trait set `self.len()` to `0` if the type isn't in the complex number space.
-pub trait ComplexToRealSetterOps<S, T> : ToRealResult
-    where S: ToSliceMut<T>,
-          T: RealNumber {
+pub trait ComplexToRealSetterOps<T> : ToRealResult
+    where T: RealNumber {
     /// Overrides the `self` vectors data with the real and imaginary data in the given vectors.
     /// `real` and `imag` must have the same size.
     fn set_real_imag(&mut self, real: &Self::RealResult, imag: &Self::RealResult) -> VoidResult;
@@ -318,7 +325,7 @@ macro_rules! assert_complex {
     }
 }
 
-impl<S, T, N, D> ComplexToRealTransformsOps<S, T> for DspVec<S, T, N, D>
+impl<S, T, N, D> ComplexToRealTransformsOps<T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToRealResult,
           <DspVec<S, T, N, D> as ToRealResult>::RealResult: RededicateForceOps<DspVec<S, T, N, D>>,
           S: ToSliceMut<T> + Owner,
@@ -332,17 +339,44 @@ impl<S, T, N, D> ComplexToRealTransformsOps<S, T> for DspVec<S, T, N, D>
         Self::RealResult::rededicate_from_force(self)
     }
 
-    fn magnitude_b<B>(mut self, buffer: &mut B) -> Self::RealResult
-        where B: Buffer<S, T> {
+    fn magnitude_squared(mut self) -> Self::RealResult {
         assert_complex!(self);
-        self.simd_complex_to_real_operation(buffer, |x,_arg| x.complex_abs(), |x,_arg| x.norm(), (), Complexity::Small);
+        self.pure_complex_to_real_operation_inplace(|x,_arg| x.re * x.re + x.im * x.im, ());
+        self.number_space.to_real();
+        Self::RealResult::rededicate_from_force(self)
+    }
+    fn to_real(mut self) -> Self::RealResult {
+        assert_complex!(self);
+        self.pure_complex_to_real_operation_inplace(|x,_arg| x.re, ());
+        self.number_space.to_real();
+        Self::RealResult::rededicate_from_force(self)
+    }
+    fn to_imag(mut self) -> Self::RealResult {
+        assert_complex!(self);
+        self.pure_complex_to_real_operation_inplace(|x,_arg| x.im, ());
         self.number_space.to_real();
         Self::RealResult::rededicate_from_force(self)
     }
 
-    fn magnitude_squared(mut self) -> Self::RealResult {
+    fn phase(mut self) -> Self::RealResult {
         assert_complex!(self);
-        self.pure_complex_to_real_operation_inplace(|x,_arg| x.re * x.re + x.im * x.im, ());
+        self.pure_complex_to_real_operation_inplace(|x,_arg| x.arg(), ());
+        self.number_space.to_real();
+        Self::RealResult::rededicate_from_force(self)
+    }
+}
+
+impl<S, T, N, D> ComplexToRealTransformsOpsBuffered<S, T> for DspVec<S, T, N, D>
+    where DspVec<S, T, N, D>: ToRealResult,
+          <DspVec<S, T, N, D> as ToRealResult>::RealResult: RededicateForceOps<DspVec<S, T, N, D>>,
+          S: ToSliceMut<T> + Owner,
+          T: RealNumber,
+          N: ComplexNumberSpace,
+          D: Domain {
+    fn magnitude_b<B>(mut self, buffer: &mut B) -> Self::RealResult
+        where B: Buffer<S, T> {
+        assert_complex!(self);
+        self.simd_complex_to_real_operation(buffer, |x,_arg| x.complex_abs(), |x,_arg| x.norm(), (), Complexity::Small);
         self.number_space.to_real();
         Self::RealResult::rededicate_from_force(self)
     }
@@ -355,13 +389,6 @@ impl<S, T, N, D> ComplexToRealTransformsOps<S, T> for DspVec<S, T, N, D>
         Self::RealResult::rededicate_from_force(self)
     }
 
-    fn to_real(mut self) -> Self::RealResult {
-        assert_complex!(self);
-        self.pure_complex_to_real_operation_inplace(|x,_arg| x.re, ());
-        self.number_space.to_real();
-        Self::RealResult::rededicate_from_force(self)
-    }
-
     fn to_real_b<B>(mut self, buffer: &mut B) -> Self::RealResult
         where B: Buffer<S, T> {
         assert_complex!(self);
@@ -370,24 +397,10 @@ impl<S, T, N, D> ComplexToRealTransformsOps<S, T> for DspVec<S, T, N, D>
         Self::RealResult::rededicate_from_force(self)
     }
 
-    fn to_imag(mut self) -> Self::RealResult {
-        assert_complex!(self);
-        self.pure_complex_to_real_operation_inplace(|x,_arg| x.im, ());
-        self.number_space.to_real();
-        Self::RealResult::rededicate_from_force(self)
-    }
-
     fn to_imag_b<B>(mut self, buffer: &mut B) -> Self::RealResult
         where B: Buffer<S, T> {
         assert_complex!(self);
         self.pure_complex_to_real_operation(buffer, |x,_arg|x.im, (), Complexity::Small);
-        self.number_space.to_real();
-        Self::RealResult::rededicate_from_force(self)
-    }
-
-    fn phase(mut self) -> Self::RealResult {
-        assert_complex!(self);
-        self.pure_complex_to_real_operation_inplace(|x,_arg| x.arg(), ());
         self.number_space.to_real();
         Self::RealResult::rededicate_from_force(self)
     }
@@ -497,7 +510,7 @@ macro_rules! assert_self_complex_and_targets_real {
     }
 }
 
-impl<S, T, N, D> ComplexToRealGetterOps<S, T> for DspVec<S, T, N, D>
+impl<S, T, N, D> ComplexToRealGetterOps<T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToRealResult,
           <DspVec<S, T, N, D> as ToRealResult>::RealResult: Vector<T> + Index<Range<usize>, Output=[T]> + IndexMut<Range<usize>>,
           S: ToSlice<T>,
@@ -565,7 +578,7 @@ impl<S, T, N, D> ComplexToRealGetterOps<S, T> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, T, N, D> ComplexToRealSetterOps<S, T> for DspVec<S, T, N, D>
+impl<S, T, N, D> ComplexToRealSetterOps<T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToRealResult,
           <DspVec<S, T, N, D> as ToRealResult>::RealResult: Index<Range<usize>, Output=[T]> + Vector<T>,
           S: ToSliceMut<T> + Owner + Resize,
