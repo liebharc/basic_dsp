@@ -179,6 +179,53 @@ impl<T, NI, DI, NO, DO> PreparedOperation1<T, NI, DI, NO, DO>
 	}
 }
 
+fn generic_vector_from_any_vector<S, T, N, D>(vec: DspVec<S, T, N, D>) -> (N, D, DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>)
+    where T: RealNumber + 'static,
+        S: ToSliceMut<T> + Owner,
+        N: NumberSpace, D: Domain {
+    let domain = vec.domain.clone();
+    let number_space = vec.number_space.clone();
+    let gen = DspVec {
+            delta: vec.delta,
+            domain: TimeOrFrequencyData { domain_current: vec.domain() },
+            number_space: RealOrComplexData { is_complex_current: vec.is_complex() },
+            valid_len: vec.valid_len,
+            multicore_settings: vec.multicore_settings,
+            data: vec.data
+    };
+    (number_space, domain, gen)
+}
+
+fn generic_vector_back_to_vector<S, T, N, D>(number_space: N, domain: D, vec: DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>) -> DspVec<S, T, N, D>
+    where T: RealNumber + 'static,
+        S: ToSliceMut<T> + Owner,
+        N: NumberSpace, D: Domain {
+    let is_complex = vec.is_complex();
+    let result_domain = vec.domain();
+    let mut vec = DspVec {
+            data: vec.data,
+            delta: vec.delta,
+            domain: domain,
+            number_space: number_space,
+            valid_len: vec.valid_len,
+            multicore_settings: vec.multicore_settings
+    };
+
+    if is_complex {
+        vec.number_space.to_complex();
+    } else {
+        vec.number_space.to_real();
+    }
+
+    if result_domain == DataDomain::Time {
+        vec.domain.to_time();
+    } else {
+        vec.domain.to_freq();
+    }
+
+    vec
+}
+
 impl<T, S, B, NI, DI, NO, DO> PreparedOperation1Exec<B, DspVec<S, T, NI, DI>, DspVec<S, T, NO, DO>> for PreparedOperation1<T, NI, DI, NO, DO>
 	where T: RealNumber + 'static,
         S: ToSliceMut<T> + Owner,
@@ -186,21 +233,10 @@ impl<T, S, B, NI, DI, NO, DO> PreparedOperation1Exec<B, DspVec<S, T, NI, DI>, Ds
 		NI: NumberSpace, DI: Domain,
 		NO: NumberSpace, DO: Domain,
         B: Buffer<S, T> {
-
-
 	/// Executes all recorded operations on the input vectors.
 	fn exec(&self, buffer: &mut B, a: DspVec<S, T, NI, DI>) -> result::Result<DspVec<S, T, NO, DO>, (ErrorReason, DspVec<S, T, NO, DO>)> {
 		let mut vec = Vec::new();
-		let domain = a.domain.clone();
-		let number_space = a.number_space.clone();
-		let gen = DspVec {
-				delta: a.delta,
-				domain: TimeOrFrequencyData { domain_current: a.domain() },
-				number_space: RealOrComplexData { is_complex_current: a.is_complex() },
-				valid_len: a.valid_len,
-				multicore_settings: a.multicore_settings,
-				data: a.data
-		};
+		let (number_space, domain, gen) = generic_vector_from_any_vector(a);
 		vec.push(gen);
 
 
@@ -210,63 +246,18 @@ impl<T, S, B, NI, DI, NO, DO> PreparedOperation1Exec<B, DspVec<S, T, NI, DI>, Ds
 		match result {
 			Err((reason, mut vec)) => {
 				let a = vec.pop().unwrap();
-				let is_complex = a.is_complex();
-				let result_domain = a.domain();
-				let mut a = DspVec {
-						data: a.data,
-						delta: a.delta,
-						domain: domain,
-						number_space: number_space,
-						valid_len: a.valid_len,
-						multicore_settings: a.multicore_settings
-				};
-
-				if is_complex {
-					a.number_space.to_complex();
-				} else {
-					a.number_space.to_real();
-				}
-
-				if result_domain == DataDomain::Time {
-					a.domain.to_time();
-				} else {
-					a.domain.to_freq();
-				}
-
+				let a = generic_vector_back_to_vector(number_space, domain, a);
 				Err((
 					reason,
 					DspVec::<S, T, NO, DO>::rededicate_from(a)))
 			},
 			Ok(mut vec) => {
 				let a = vec.pop().unwrap();
-				let is_complex = a.is_complex();
-				let result_domain = a.domain();
-				let mut a = DspVec {
-						data: a.data,
-						delta: a.delta,
-						domain: domain,
-						number_space: number_space,
-						valid_len: a.valid_len,
-						multicore_settings: a.multicore_settings
-				};
-
-				if is_complex {
-					a.number_space.to_complex();
-				} else {
-					a.number_space.to_real();
-				}
-
-				if result_domain == DataDomain::Time {
-					a.domain.to_time();
-				} else {
-					a.domain.to_freq();
-				}
-
+				let a = generic_vector_back_to_vector(number_space, domain, a);
 				// Convert back
 				Ok(DspVec::<S, T, NO, DO>::rededicate_from(a))
 			}
 		}
-
 	}
 }
 
@@ -275,21 +266,10 @@ impl<T, S, B, N, D> PreparedOperation1Exec<B, DspVec<S, T, N, D>, DspVec<S, T, N
         S: ToSliceMut<T> + Owner,
 		N: NumberSpace, D: Domain,
         B: Buffer<S, T> {
-
-
 	/// Executes all recorded operations on the input vectors.
 	fn exec(&self, buffer: &mut B, a: DspVec<S, T, N, D>) -> result::Result<DspVec<S, T, N, D>, (ErrorReason, DspVec<S, T, N, D>)> {
 		let mut vec = Vec::new();
-		let domain = a.domain.clone();
-		let number_space = a.number_space.clone();
-		let gen = DspVec {
-				delta: a.delta,
-				domain: TimeOrFrequencyData { domain_current: a.domain() },
-				number_space: RealOrComplexData { is_complex_current: a.is_complex() },
-				valid_len: a.valid_len,
-				multicore_settings: a.multicore_settings,
-				data: a.data
-		};
+		let (number_space, domain, gen) = generic_vector_from_any_vector(a);
 		vec.push(gen);
 
 
@@ -299,62 +279,15 @@ impl<T, S, B, N, D> PreparedOperation1Exec<B, DspVec<S, T, N, D>, DspVec<S, T, N
 		match result {
 			Err((reason, mut vec)) => {
 				let a = vec.pop().unwrap();
-				let is_complex = a.is_complex();
-				let result_domain = a.domain();
-				let mut a = DspVec {
-						data: a.data,
-						delta: a.delta,
-						domain: domain,
-						number_space: number_space,
-						valid_len: a.valid_len,
-						multicore_settings: a.multicore_settings
-				};
-
-				if is_complex {
-					a.number_space.to_complex();
-				} else {
-					a.number_space.to_real();
-				}
-
-				if result_domain == DataDomain::Time {
-					a.domain.to_time();
-				} else {
-					a.domain.to_freq();
-				}
-
-				Err((
-					reason,
-					a))
+				let a = generic_vector_back_to_vector(number_space, domain, a);
+				Err((reason, a))
 			},
 			Ok(mut vec) => {
-				let a = vec.pop().unwrap();
-				let is_complex = a.is_complex();
-				let result_domain = a.domain();
-				let mut a = DspVec {
-						data: a.data,
-						delta: a.delta,
-						domain: domain,
-						number_space: number_space,
-						valid_len: a.valid_len,
-						multicore_settings: a.multicore_settings
-				};
-
-				if is_complex {
-					a.number_space.to_complex();
-				} else {
-					a.number_space.to_real();
-				}
-
-				if result_domain == DataDomain::Time {
-					a.domain.to_time();
-				} else {
-					a.domain.to_freq();
-				}
-
+                let a = vec.pop().unwrap();
+				let a = generic_vector_back_to_vector(number_space, domain, a);
 				// Convert back
 				Ok(a)
 			}
 		}
-
 	}
 }
