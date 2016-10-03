@@ -9,7 +9,7 @@ use super::super::{
 		Domain, ToRealResult, ToComplexResult,
 		ScaleOps, OffsetOps, PowerOps, TrigOps, RealOps,
 		MapInplaceNoArgsOps, RealToComplexTransformsOps, ComplexOps,
-		ElementaryOps, ComplexToRealTransformsOps
+		ElementaryOps, ComplexToRealTransformsOps, RededicateForceOps
 };
 use std::sync::Arc;
 
@@ -145,10 +145,92 @@ impl<T> ToComplexResult for GenDspIdent<T>
     type ComplexResult = GenDspIdent<T>;
 }
 
+impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for RealTimeIdent<T>
+    where T: RealNumber,
+          N: NumberSpace,
+          D: Domain {
+
+    fn rededicate_from_force(origin: Identifier<T, N, D>) -> Self {
+        RealTimeIdent {
+			arg: origin.arg,
+		    ops: origin.ops,
+		    counter: origin.counter,
+            domain: TimeData,
+            number_space: RealData
+        }
+    }
+}
+
+impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for RealFreqIdent<T>
+    where T: RealNumber,
+          N: NumberSpace,
+          D: Domain {
+
+    fn rededicate_from_force(origin: Identifier<T, N, D>) -> Self {
+        RealFreqIdent {
+			arg: origin.arg,
+		    ops: origin.ops,
+		    counter: origin.counter,
+            domain: FrequencyData,
+            number_space: RealData
+        }
+    }
+}
+
+impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for ComplexTimeIdent<T>
+    where T: RealNumber,
+          N: NumberSpace,
+          D: Domain {
+
+    fn rededicate_from_force(origin: Identifier<T, N, D>) -> Self {
+        ComplexTimeIdent {
+			arg: origin.arg,
+		    ops: origin.ops,
+		    counter: origin.counter,
+            domain: TimeData,
+            number_space: ComplexData
+        }
+    }
+}
+
+impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for ComplexFreqIdent<T>
+    where T: RealNumber,
+          N: NumberSpace,
+          D: Domain {
+
+    fn rededicate_from_force(origin: Identifier<T, N, D>) -> Self {
+        ComplexFreqIdent {
+			arg: origin.arg,
+		    ops: origin.ops,
+		    counter: origin.counter,
+            domain: FrequencyData,
+            number_space: ComplexData
+        }
+    }
+}
+
+impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for GenDspIdent<T>
+    where T: RealNumber,
+          N: NumberSpace,
+          D: Domain {
+
+    fn rededicate_from_force(origin: Identifier<T, N, D>) -> Self {
+		let is_complex = origin.is_complex();
+		let domain = origin.domain();
+        GenDspIdent {
+			arg: origin.arg,
+		    ops: origin.ops,
+		    counter: origin.counter,
+            domain: TimeOrFrequencyData { domain_current: domain },
+            number_space: RealOrComplexData { is_complex_current: is_complex }
+        }
+    }
+}
+
 impl<T, N, D> OffsetOps<T> for Identifier<T, N, D>
  	where T: RealNumber,
 		  N: RealNumberSpace,
-		  D: Domain{
+		  D: Domain {
     fn offset(&mut self, offset: T) {
 		let arg = self.arg;
 		self.add_op(Operation::AddReal(arg, offset));
@@ -416,45 +498,59 @@ impl<T, N, D> IdentifierOps for Identifier<T, N, D>
 	}
 }
 
-/*
+
 impl<T, N, D> RealToComplexTransformsOps<T> for Identifier<T, N, D>
 	where Identifier<T, N, D>: ToComplexResult,
+	 	  <Identifier<T, N, D> as ToComplexResult>::ComplexResult: RededicateForceOps<Identifier<T, N, D>>,
 		  T: RealNumber,
 		  N: RealNumberSpace,
 		  D: Domain {
-      fn to_complex(self) -> TransRes<Self::ComplexResult> {
+      fn to_complex(mut self) -> TransRes<Self::ComplexResult> {
 		  let arg = self.arg;
-		  let result = self.add_op(Operation::ToComplex(arg));
+		  self.add_op(Operation::ToComplex(arg));
+		  self.number_space.to_complex();
+		  Ok(Self::ComplexResult::rededicate_from_force(self))
 	  }
-}*/
-/*
+}
+
 impl<T, N, D> ComplexToRealTransformsOps<T> for Identifier<T, N, D>
 	where Identifier<T, N, D>: ToRealResult,
+		  <Identifier<T, N, D> as ToRealResult>::RealResult: RededicateForceOps<Identifier<T, N, D>>,
 		  T: RealNumber,
 		  N: ComplexNumberSpace,
 		  D: Domain {
-	  fn magnitude(self) -> Self::RealResult {
+	  fn magnitude(mut self) -> Self::RealResult {
 		  let arg = self.arg;
-		  let result = self.add_op(Operation::Magnitude(arg));
+		  self.add_op(Operation::Magnitude(arg));
+		  self.number_space.to_real();
+		  Self::RealResult::rededicate_from_force(self)
 	  }
 
-      fn magnitude_squared(self,) -> Self::RealResult {
+      fn magnitude_squared(mut self) -> Self::RealResult {
 		  let arg = self.arg;
-		  let result = self.add_op(Operation::MagnitudeSquared(arg));
+		  self.add_op(Operation::MagnitudeSquared(arg));
+		  self.number_space.to_real();
+		  Self::RealResult::rededicate_from_force(self)
 	  }
 
-      fn to_real(self) -> Self::RealResult {
+      fn to_real(mut self) -> Self::RealResult {
 		  let arg = self.arg;
-		  let result = self.add_op(Operation::ToReal(arg));
+		  self.add_op(Operation::ToReal(arg));
+		  self.number_space.to_real();
+		  Self::RealResult::rededicate_from_force(self)
 	  }
 
-      fn to_imag(self) -> Self::RealResult {
+      fn to_imag(mut self) -> Self::RealResult {
 		  let arg = self.arg;
-		  let result = self.add_op(Operation::ToImag(arg));
+		  self.add_op(Operation::ToImag(arg));
+		  self.number_space.to_real();
+		  Self::RealResult::rededicate_from_force(self)
 	  }
 
-      fn phase(self) -> Self::RealResult {
+      fn phase(mut self) -> Self::RealResult {
 		  let arg = self.arg;
-		  let result = self.add_op(Operation::Phase(arg));
+		  self.add_op(Operation::Phase(arg));
+		  self.number_space.to_real();
+		  Self::RealResult::rededicate_from_force(self)
 	  }
-}*/
+}

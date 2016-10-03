@@ -415,6 +415,7 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
 
 #[cfg(test)]
 mod tests {
+    use num::complex::Complex32;
     use super::super::*;
     use super::*;
 
@@ -505,7 +506,7 @@ mod tests {
         assert_eq!(b.is_complex(), false);
         assert_eq!(b.len(), 8);
     }
-/*
+
     #[test]
     fn complex_operation_on_real_vector()
     {
@@ -522,89 +523,91 @@ mod tests {
     #[test]
     fn simple_operation()
     {
-        let ops = prepare2::<f32, ComplexTimeVector32, RealTimeVector32>();
-        let ops = ops.add_ops(|a, b| (b.abs(), a));
-        let ops = ops.add_ops(|a, b| (b, a.abs()));
+        let ops = prepare32_2(ComplexData, TimeData, RealData, TimeData);
+        let ops = ops.add_ops(|a, mut b| {
+            b.abs();
+            (b, a)
+        });
+        let ops = ops.add_ops(|mut a, b| {
+            a.abs();
+            (b, a)
+        });
 
-        let array = [1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0,
-                     1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0];
-        let a = ComplexTimeVector32::from_interleaved(&array);
-        let array = [-11.0, 12.0, -13.0, 14.0, -15.0, 16.0, -17.0, 18.0];
-        let b = RealTimeVector32::from_array(&array);
+        let a = vec!(1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0, 1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0)
+                    .to_complex_time_vec();
+        let b = vec!(-11.0, 12.0, -13.0, 14.0, -15.0, 16.0, -17.0, 18.0)
+                    .to_real_time_vec();
+        let mut buffer = SingleBuffer::new();
+
         assert_eq!(a.is_complex(), true);
-        let (a, b) = ops.exec(a, b).unwrap();
+        let (a, b) = ops.exec(&mut buffer, a, b).unwrap();
         assert_eq!(a.is_complex(), true);
         assert_eq!(b.is_complex(), false);
         let expected = [1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0,
                      1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0];
-        assert_eq!(a.interleaved(0..), &expected);
+        assert_eq!(&a[..], &expected);
         let expected = [11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0];
-        assert_eq!(b.real(0..), &expected);
+        assert_eq!(&b[..], &expected);
     }
 
     /// Same as `simple_operation` but the arguments are passed in reversed order.
     #[test]
     fn simple_operation2()
     {
-        let ops = prepare2::<f32, RealTimeVector32, ComplexTimeVector32>();
-        let ops = ops.add_ops(|a, b| (b, a.abs()));
-        let ops = ops.add_ops(|a, b| (b.abs(), a));
+        let ops = prepare32_2(RealData, TimeData, ComplexData, TimeData);
+        let ops = ops.add_ops(|a, mut b| {
+            b.abs();
+            (b, a)
+        });
+        let ops = ops.add_ops(|mut a, b| {
+            a.abs();
+            (b, a)
+        });
 
-        let array = [1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0,
-                     1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0];
-        let a = ComplexTimeVector32::from_interleaved(&array);
-        let array = [-11.0, 12.0, -13.0, 14.0, -15.0, 16.0, -17.0, 18.0];
-        let b = RealTimeVector32::from_array(&array);
+        let a = vec!(1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0, 1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0)
+                    .to_complex_time_vec();
+        let b = vec!(-11.0, 12.0, -13.0, 14.0, -15.0, 16.0, -17.0, 18.0)
+                    .to_real_time_vec();
+        let mut buffer = SingleBuffer::new();
+
         assert_eq!(a.is_complex(), true);
-        let (b, a) = ops.exec(b, a).unwrap();
+        let (b, a) = ops.exec(&mut buffer, b, a).unwrap();
         assert_eq!(a.is_complex(), true);
         assert_eq!(b.is_complex(), false);
         let expected = [1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0,
                      1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0];
-        assert_eq!(a.interleaved(0..), &expected);
+        assert_eq!(&a[..], &expected);
         let expected = [11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0];
-        assert_eq!(b.real(0..), &expected);
+        assert_eq!(&b[..], &expected);
     }
 
     #[test]
     fn map_inplace_real_test()
     {
-        let array = [1.0, 2.0, 3.0, 4.0];
-        let a = RealTimeVector32::from_array(&array);
+        let a = vec!(1.0, 2.0, 3.0, 4.0).to_real_time_vec();
+        let mut buffer = SingleBuffer::new();
         let ops = multi_ops1(a);
-        let ops = ops.add_ops(|a|a.map_inplace_real(|v,i|v * i as f32));
-        let a = ops.get().unwrap();
+        let ops = ops.add_ops(|mut a| {
+            a.map_inplace(|v,i|v * i as f32);
+            a
+        });
+        let a = ops.get(&mut buffer).unwrap();
         let expected = [0.0, 2.0, 6.0, 12.0];
-        assert_eq!(a.real(0..), &expected);
-    }
-
-    /// This test checks mainly if the closure we store in the Operation enum
-    /// can still reference its scope.
-    #[test]
-    fn multiply_linear_test()
-    {
-        let array = [1.0, 2.0, 3.0, 4.0];
-        let a = RealTimeVector32::from_array(&array);
-        let a = multiply_linear(a, 0.5);
-        let expected = [0.0, 1.0, 3.0, 6.0];
-        assert_eq!(a.real(0..), &expected);
-    }
-
-    fn multiply_linear(a: RealTimeVector32, fac: f32) -> RealTimeVector32 {
-        let ops = multi_ops1(a);
-        let ops = ops.add_ops(|a|a.map_inplace_real(|v,i|v * i as f32 * fac));
-        ops.get().unwrap()
+        assert_eq!(&a[..], &expected);
     }
 
     #[test]
     fn map_inplace_complex_test()
     {
-        let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
-        let a = ComplexTimeVector32::from_interleaved(&array);
+        let a = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
+        let mut buffer = SingleBuffer::new();
         let ops = multi_ops1(a);
-        let ops = ops.add_ops(|a|a.map_inplace_complex(|v,i|v * Complex32::new(i as f32, 0.0)));
-        let a = ops.get().unwrap();
+        let ops = ops.add_ops(|mut a|{
+            a.map_inplace(|v,i|v * Complex32::new(i as f32, 0.0));
+            a
+        });
+        let a = ops.get(&mut buffer).unwrap();
         let expected = [0.0, 0.0, 3.0, 4.0, 10.0, 12.0];
-        assert_eq!(a.interleaved(0..), &expected);
-    }*/
+        assert_eq!(&a[..], &expected);
+    }
 }

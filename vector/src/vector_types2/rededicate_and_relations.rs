@@ -37,6 +37,8 @@ pub trait RededicateOps<Other> : RededicateForceOps<Other> {
 /// without any checks. `RededicateOps` provides the same functionality
 /// but performs runtime checks to avoid that data is interpreted the wrong
 /// way.
+///
+/// In almost all cases this trait shouldn't be used directly.
 pub trait RededicateForceOps<Other> {
     /// Make `Other` a `Self` without performing any checks.
     fn rededicate_from_force(origin: Other) -> Self;
