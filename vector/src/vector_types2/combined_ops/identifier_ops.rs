@@ -35,11 +35,11 @@ pub trait IdentifierOps {
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::vector_types2*;
+    /// use basic_dsp_vector::vector_types2::*;
     /// use basic_dsp_vector::vector_types2::combined_ops::*;
     /// let complex = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
     /// let ops = multi_ops1(complex);
-    /// let ops = ops.add_ops(|v| {
+    /// let ops = ops.add_ops(|mut v| {
 	/// 	v.add_points();
 	/// 	v
 	/// });
@@ -53,11 +53,11 @@ pub trait IdentifierOps {
     /// # Example
     ///
     /// ```
-	/// use basic_dsp_vector::vector_types2*;
+	/// use basic_dsp_vector::vector_types2::*;
     /// use basic_dsp_vector::vector_types2::combined_ops::*;
-    /// let complex = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let complex = vec!(3.0, 2.0, 5.0, 4.0).to_complex_time_vec();
     /// let ops = multi_ops1(complex);
-	/// let ops = ops.add_ops(|v| {
+	/// let ops = ops.add_ops(|mut v| {
 	/// 	v.sub_points();
 	/// 	v
 	/// });
@@ -72,11 +72,11 @@ pub trait IdentifierOps {
     /// # Example
     ///
     /// ```
-	/// use basic_dsp_vector::vector_types2*;
+	/// use basic_dsp_vector::vector_types2::*;
     /// use basic_dsp_vector::vector_types2::combined_ops::*;
-    /// let complex = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let complex = vec!(2.0, 4.0, 6.0, 8.0).to_complex_time_vec();
     /// let ops = multi_ops1(complex);
-	/// let ops = ops.add_ops(|v| {
+	/// let ops = ops.add_ops(|mut v| {
 	/// 	v.div_points();
 	/// 	v
 	/// });
@@ -90,11 +90,11 @@ pub trait IdentifierOps {
     /// # Example
     ///
     /// ```
-	/// use basic_dsp_vector::vector_types2*;
+	/// use basic_dsp_vector::vector_types2::*;
     /// use basic_dsp_vector::vector_types2::combined_ops::*;
     /// let complex = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
     /// let ops = multi_ops1(complex);
-	/// let ops = ops.add_ops(|v| {
+	/// let ops = ops.add_ops(|mut v| {
 	/// 	v.mul_points();
 	/// 	v
 	/// });
@@ -489,12 +489,12 @@ impl<T, N, D> IdentifierOps for Identifier<T, N, D>
 
     fn div_points(&mut self) {
 		let arg = self.arg;
-		self.add_op(Operation::MulPoints(arg))
+		self.add_op(Operation::DivPoints(arg))
 	}
 
     fn mul_points(&mut self) {
 		let arg = self.arg;
-		self.add_op(Operation::DivPoints(arg))
+		self.add_op(Operation::MulPoints(arg))
 	}
 }
 

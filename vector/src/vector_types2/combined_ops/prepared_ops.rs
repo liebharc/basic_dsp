@@ -309,21 +309,21 @@ impl<T, S, B, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2Exec<
 
         match result {
 			Err((reason, mut vec)) => {
+                let b = vec.pop().unwrap();
+				let b = generic_vector_back_to_vector(number_space2, domain2, b);
+                let b = DspVec::<S, T, NO2, DO2>::rededicate_from_force(b);
 				let a = vec.pop().unwrap();
 				let a = generic_vector_back_to_vector(number_space1, domain1, a);
                 let a = DspVec::<S, T, NO1, DO1>::rededicate_from_force(a);
-                let b = vec.pop().unwrap();
-				let b = generic_vector_back_to_vector(number_space2, domain2, b);
-                let b = DspVec::<S, T, NO2, DO2>::rededicate_from_force(b);
 				Err((reason, a, b))
 			},
 			Ok(mut vec) => {
-                let a = vec.pop().unwrap();
-				let a = generic_vector_back_to_vector(number_space1, domain1, a);
-                let a = DspVec::<S, T, NO1, DO1>::rededicate_from_force(a);
                 let b = vec.pop().unwrap();
 				let b = generic_vector_back_to_vector(number_space2, domain2, b);
                 let b = DspVec::<S, T, NO2, DO2>::rededicate_from_force(b);
+                let a = vec.pop().unwrap();
+				let a = generic_vector_back_to_vector(number_space1, domain1, a);
+                let a = DspVec::<S, T, NO1, DO1>::rededicate_from_force(a);
 				Ok((a, b))
 			}
 		}

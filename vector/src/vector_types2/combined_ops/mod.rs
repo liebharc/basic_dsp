@@ -528,10 +528,6 @@ mod tests {
             b.abs();
             (b, a)
         });
-        let ops = ops.add_ops(|mut a, b| {
-            a.abs();
-            (b, a)
-        });
 
         let a = vec!(1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0, 1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0)
                     .to_complex_time_vec();
@@ -540,14 +536,14 @@ mod tests {
         let mut buffer = SingleBuffer::new();
 
         assert_eq!(a.is_complex(), true);
-        let (a, b) = ops.exec(&mut buffer, a, b).unwrap();
+        let (b, a) = ops.exec(&mut buffer, a, b).unwrap();
         assert_eq!(a.is_complex(), true);
         assert_eq!(b.is_complex(), false);
         let expected = [1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0,
                      1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0];
-        assert_eq!(&a[..], &expected);
-        let expected = [11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0];
         assert_eq!(&b[..], &expected);
+        let expected = [11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0];
+        assert_eq!(&a[..], &expected);
     }
 
     /// Same as `simple_operation` but the arguments are passed in reversed order.
@@ -555,10 +551,6 @@ mod tests {
     fn simple_operation2()
     {
         let ops = prepare32_2(RealData, TimeData, ComplexData, TimeData);
-        let ops = ops.add_ops(|a, mut b| {
-            b.abs();
-            (b, a)
-        });
         let ops = ops.add_ops(|mut a, b| {
             a.abs();
             (b, a)
@@ -571,14 +563,14 @@ mod tests {
         let mut buffer = SingleBuffer::new();
 
         assert_eq!(a.is_complex(), true);
-        let (b, a) = ops.exec(&mut buffer, b, a).unwrap();
+        let (a, b) = ops.exec(&mut buffer, b, a).unwrap();
         assert_eq!(a.is_complex(), true);
         assert_eq!(b.is_complex(), false);
         let expected = [1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0,
                      1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0];
-        assert_eq!(&a[..], &expected);
-        let expected = [11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0];
         assert_eq!(&b[..], &expected);
+        let expected = [11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0];
+        assert_eq!(&a[..], &expected);
     }
 
     #[test]

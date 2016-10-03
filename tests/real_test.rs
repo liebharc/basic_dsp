@@ -4,8 +4,8 @@ extern crate num;
 pub mod tools;
 
 mod slow_test {
-    use basic_dsp::*;
-    use basic_dsp::combined_ops::*;
+    use basic_dsp::vector_types2::*;
+    use basic_dsp::vector_types2::combined_ops::*;
     use tools::*;
 
     #[allow(dead_code)]
@@ -36,11 +36,12 @@ mod slow_test {
             let scalar = create_data_with_len(201511142, iteration, 1);
             let expected = real_add_scalar(&a, scalar[0]);
             let delta = create_delta(3561159, iteration);
-            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
-            let result = vector.real_offset(scalar[0]).unwrap();
-            assert_vector_eq(&expected, &result.real(0..));
-            assert_eq!(result.is_complex(), false);
-            assert_eq!(result.delta(), delta);
+            let mut vector = a.to_real_time_vec();;
+            vector.set_delta(delta);
+            vector.offset(scalar[0]);
+            assert_vector_eq(&expected, &vector[..]);
+            assert_eq!(vector.is_complex(), false);
+            assert_eq!(vector.delta(), delta);
         });
     }
 
@@ -48,13 +49,18 @@ mod slow_test {
     fn multi_ops1_vector32() {
         parameterized_vector_test(|iteration, _| {
             let a = create_data_with_len(201511141, iteration, 500008);
-            let vector = DataVec32::from_array(false, DataVecDomain::Time, &a);
-            let mut ops = multi_ops1(vector.clone());
-            ops.add_enum_op(Operation::Log(0, 10.0));
-            ops.add_enum_op(Operation::MultiplyReal(0, 10.0));
-            let result = ops.get().unwrap();
-            let expected = vector.log(10.0).and_then(|v| v.real_scale(10.0)).unwrap();
-            assert_vector_eq(&expected.real(0..), &result.real(0..));
+            let mut buffer = SingleBuffer::new();
+            let mut vector = a.to_gen_dsp_vec(false, DataDomain::Time);
+            let ops = multi_ops1(vector.clone());
+            let ops = ops.add_ops(|mut a| {
+                a.log(10.0);
+                a.scale(10.0);
+                a
+            });
+            let result = ops.get(&mut buffer).unwrap();
+            vector.log(10.0);
+            vector.scale(10.0);
+            assert_vector_eq(&vector[..], &result[..]);
         });
     }
 
@@ -64,27 +70,22 @@ mod slow_test {
             let len = 10;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, 2 * len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
-            let b = DataVec32::from_array(true, DataVecDomain::Time, &b);
+            let mut buffer = SingleBuffer::new();
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
+            let b = b.to_gen_dsp_vec(true, DataDomain::Time);
             let ops = multi_ops2(a.clone(), b.clone());
-            let ops = ops.add_ops(|r, c| {
-                let r = r.sin();
+            let ops = ops.add_ops(|mut r, c| {
+                r.sin();
                 let c = c.magnitude();
-                let r = r.add(&c);
+                r.add(&c).unwrap();
                 (r, c)
             });
-            let (a_actual, b_actual) = ops.get().unwrap();
-            let b_expected =
-                Ok(b)
-                .and_then(|v| v.magnitude())
-                .unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|v| v.sin())
-                .and_then(|v| v.add(&b_expected))
-                .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
-            assert_vector_eq(&b_expected.real(0..), &b_actual.real(0..));
+            let (a_actual, b_actual) = ops.get(&mut buffer).unwrap();
+            let b = b.magnitude();
+            a.sin();
+            a.add(&b).unwrap();
+            assert_vector_eq_with_reason(&b[..], &b_actual[..], "Complex vec");
+            assert_vector_eq_with_reason(&a[..], &a_actual[..], "Real vec");
         });
     }
 
@@ -94,30 +95,25 @@ mod slow_test {
             let len = 10;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, 2 * len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
-            let b = DataVec32::from_array(true, DataVecDomain::Time, &b);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
+            let mut b = b.to_gen_dsp_vec(true, DataDomain::Time);
+            let mut buffer = SingleBuffer::new();
             let ops = multi_ops1(b.clone());
-            let ops = ops.add_ops(|c| {
-                let c = c.conj();
+            let ops = ops.add_ops(|mut c| {
+                c.conj();
                 c.to_imag()
             });
             let ops = ops.extend(a.clone());
-            let ops = ops.add_ops(|c, r| {
-                let r = r.mul(&c);
+            let ops = ops.add_ops(|c, mut r| {
+                r.mul(&c).unwrap();
                 (c, r)
             });
-            let (b_actual, a_actual) = ops.get().unwrap();
-            let b_expected =
-                Ok(b)
-                .and_then(|v| v.conj())
-                .and_then(|v| v.to_imag())
-                .unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|v| v.mul(&b_expected))
-                .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
-            assert_vector_eq(&b_expected.real(0..), &b_actual.real(0..));
+            let (b_actual, a_actual) = ops.get(&mut buffer).unwrap();
+            b.conj();
+            let b = b.to_imag();
+            a.mul(&b).unwrap();
+            assert_vector_eq(&a[..], &a_actual[..]);
+            assert_vector_eq(&b[..], &b_actual[..]);
         });
     }
 
@@ -138,11 +134,12 @@ mod slow_test {
             let scalar = create_data_with_len(201511142, iteration, 1);
             let expected = real_mulitply_scalar(&a, scalar[0]);
             let delta = create_delta(3561159, iteration);
-            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
-            let result = vector.real_scale(scalar[0]).unwrap();
-            assert_vector_eq(&expected, &result.real(0..));
-            assert_eq!(result.is_complex(), false);
-            assert_eq!(result.delta(), delta);
+            let mut vector = a.to_real_time_vec();
+            vector.set_delta(delta);
+            vector.scale(scalar[0]);
+            assert_vector_eq(&expected, &vector[..]);
+            assert_eq!(vector.is_complex(), false);
+            assert_eq!(vector.delta(), delta);
         });
     }
 
@@ -162,11 +159,12 @@ mod slow_test {
             let a = create_data(201511146, iteration, range.start, range.end);
             let expected = real_abs(&a);
             let delta = create_delta(3561159, iteration);
-            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
-            let result = vector.abs().unwrap();
-            assert_vector_eq(&expected, &result.real(0..));
-            assert_eq!(result.is_complex(), false);
-            assert_eq!(result.delta(), delta);
+            let mut vector = a.to_real_time_vec();
+            vector.set_delta(delta);
+            vector.abs();
+            assert_vector_eq(&expected, &vector[..]);
+            assert_eq!(vector.is_complex(), false);
+            assert_eq!(vector.delta(), delta);
         });
     }
 
@@ -187,12 +185,14 @@ mod slow_test {
             let b = create_data_with_len(201511172, iteration, a.len());
             let expected = real_add_vector(&a, &b);
             let delta = create_delta(3561159, iteration);
-            let vector1 = RealTimeVector32::from_array_with_delta(&a, delta);
-            let vector2 = RealTimeVector32::from_array_with_delta(&b, delta);
-            let result = vector1.add(&vector2).unwrap();
-            assert_vector_eq(&expected, &result.real(0..));
-            assert_eq!(result.is_complex(), false);
-            assert_eq!(result.delta(), delta);
+            let mut vector1 = a.to_real_time_vec();
+            vector1.set_delta(delta);
+            let mut vector2 = b.to_real_time_vec();
+            vector2.set_delta(delta);
+            vector1.add(&vector2).unwrap();
+            assert_vector_eq(&expected, &vector1[..]);
+            assert_eq!(vector1.is_complex(), false);
+            assert_eq!(vector1.delta(), delta);
         });
     }
 
@@ -212,12 +212,14 @@ mod slow_test {
         let b = create_data_with_len(201511172, 1, 9);
         let expected = real_add_vector_mod(&a, &b);
         let delta = create_delta(3561159, 1);
-        let vector1 = RealTimeVector32::from_array_with_delta(&a, delta);
-        let vector2 = RealTimeVector32::from_array_with_delta(&b, delta);
-        let result = vector1.add_smaller(&vector2).unwrap();
-        assert_vector_eq(&expected, &result.real(0..));
-        assert_eq!(result.is_complex(), false);
-        assert_eq!(result.delta(), delta);
+        let mut vector1 = a.to_real_time_vec();
+        vector1.set_delta(delta);
+        let mut vector2 = b.to_real_time_vec();
+        vector2.set_delta(delta);
+        vector1.add_smaller(&vector2).unwrap();
+        assert_vector_eq(&expected, &vector1[..]);
+        assert_eq!(vector1.is_complex(), false);
+        assert_eq!(vector1.delta(), delta);
     }
 
     fn real_sub_vector(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
@@ -237,12 +239,14 @@ mod slow_test {
             let b = create_data_with_len(201511172, iteration, a.len());
             let expected = real_sub_vector(&a, &b);
             let delta = create_delta(3561159, iteration);
-            let vector1 = RealTimeVector32::from_array_with_delta(&a, delta);
-            let vector2 = RealTimeVector32::from_array_with_delta(&b, delta);
-            let result = vector1.sub(&vector2).unwrap();
-            assert_vector_eq(&expected, &result.real(0..));
-            assert_eq!(result.is_complex(), false);
-            assert_eq!(result.delta(), delta);
+            let mut vector1 = a.to_real_time_vec();
+            vector1.set_delta(delta);
+            let mut vector2 = b.to_real_time_vec();
+            vector2.set_delta(delta);
+            vector1.sub(&vector2).unwrap();
+            assert_vector_eq(&expected, &vector1[..]);
+            assert_eq!(vector1.is_complex(), false);
+            assert_eq!(vector1.delta(), delta);
         });
     }
 
@@ -262,12 +266,14 @@ mod slow_test {
         let b = create_data_with_len(201511172, 1, 9);
         let expected = real_sub_vector_mod(&a, &b);
         let delta = create_delta(3561159, 1);
-        let vector1 = RealTimeVector32::from_array_with_delta(&a, delta);
-        let vector2 = RealTimeVector32::from_array_with_delta(&b, delta);
-        let result = vector1.sub_smaller(&vector2).unwrap();
-        assert_vector_eq(&expected, &result.real(0..));
-        assert_eq!(result.is_complex(), false);
-        assert_eq!(result.delta(), delta);
+        let mut vector1 = a.to_real_time_vec();
+        vector1.set_delta(delta);
+        let mut vector2 = b.to_real_time_vec();
+        vector2.set_delta(delta);
+        vector1.sub_smaller(&vector2).unwrap();
+        assert_vector_eq(&expected, &vector1[..]);
+        assert_eq!(vector1.is_complex(), false);
+        assert_eq!(vector1.delta(), delta);
     }
 
     fn real_vector_mul(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
@@ -287,12 +293,14 @@ mod slow_test {
             let b = create_data_with_len(201511172, iteration, a.len());
             let expected = real_vector_mul(&a, &b);
             let delta = create_delta(3561159, iteration);
-            let vector1 = RealTimeVector32::from_array_with_delta(&a, delta);
-            let vector2 = RealTimeVector32::from_array_with_delta(&b, delta);
-            let result = vector1.mul(&vector2).unwrap();
-            assert_vector_eq(&expected, &result.real(0..));
-            assert_eq!(result.is_complex(), false);
-            assert_eq!(result.delta(), delta);
+            let mut vector1 = a.to_real_time_vec();
+            vector1.set_delta(delta);
+            let mut vector2 = b.to_real_time_vec();
+            vector2.set_delta(delta);
+            vector1.mul(&vector2).unwrap();
+            assert_vector_eq(&expected, &vector1[..]);
+            assert_eq!(vector1.is_complex(), false);
+            assert_eq!(vector1.delta(), delta);
         });
     }
 
@@ -312,12 +320,14 @@ mod slow_test {
         let b = create_data_with_len(201511172, 1, 9);
         let expected = real_mul_vector_mod(&a, &b);
         let delta = create_delta(3561159, 1);
-        let vector1 = RealTimeVector32::from_array_with_delta(&a, delta);
-        let vector2 = RealTimeVector32::from_array_with_delta(&b, delta);
-        let result = vector1.mul_smaller(&vector2).unwrap();
-        assert_vector_eq(&expected, &result.real(0..));
-        assert_eq!(result.is_complex(), false);
-        assert_eq!(result.delta(), delta);
+        let mut vector1 = a.to_real_time_vec();
+        vector1.set_delta(delta);
+        let mut vector2 = b.to_real_time_vec();
+        vector2.set_delta(delta);
+        vector1.mul_smaller(&vector2).unwrap();
+        assert_vector_eq(&expected, &vector1[..]);
+        assert_eq!(vector1.is_complex(), false);
+        assert_eq!(vector1.delta(), delta);
     }
 
     fn real_div_vector_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
@@ -336,12 +346,14 @@ mod slow_test {
         let b = create_data_with_len(201511172, 1, 9);
         let expected = real_div_vector_mod(&a, &b);
         let delta = create_delta(3561159, 1);
-        let vector1 = RealTimeVector32::from_array_with_delta(&a, delta);
-        let vector2 = RealTimeVector32::from_array_with_delta(&b, delta);
-        let result = vector1.div_smaller(&vector2).unwrap();
-        assert_vector_eq(&expected, &result.real(0..));
-        assert_eq!(result.is_complex(), false);
-        assert_eq!(result.delta(), delta);
+        let mut vector1 = a.to_real_time_vec();
+        vector1.set_delta(delta);
+        let mut vector2 = b.to_real_time_vec();
+        vector2.set_delta(delta);
+        vector1.div_smaller(&vector2).unwrap();
+        assert_vector_eq(&expected, &vector1[..]);
+        assert_eq!(vector1.is_complex(), false);
+        assert_eq!(vector1.delta(), delta);
     }
 
     #[test]
@@ -351,9 +363,11 @@ mod slow_test {
             let b = create_data_with_len(201511172, iteration, a.len());
             let expected = real_vector_mul(&a, &b).iter().fold(0.0, |a, b| a + b);
             let delta = create_delta(3561159, iteration);
-            let vector1 = RealTimeVector32::from_array_with_delta(&a, delta);
-            let vector2 = RealTimeVector32::from_array_with_delta(&b, delta);
-            let result = vector1.real_dot_product(&vector2).unwrap();
+            let mut vector1 = a.to_real_time_vec();
+            vector1.set_delta(delta);
+            let mut vector2 = b.to_real_time_vec();
+            vector2.set_delta(delta);
+            let result = vector1.dot_product(&vector2).unwrap();
             assert_in_tolerance(expected, result, 0.5);
         });
     }
@@ -375,12 +389,14 @@ mod slow_test {
             let b = create_data_with_len(201511172, iteration, a.len());
             let expected = real_vector_div(&a, &b);
             let delta = create_delta(3561159, iteration);
-            let vector1 = RealTimeVector32::from_array_with_delta(&a, delta);
-            let vector2 = RealTimeVector32::from_array_with_delta(&b, delta);
-            let result = vector1.div(&vector2).unwrap();
-            assert_vector_eq(&expected, &result.real(0..));
-            assert_eq!(result.is_complex(), false);
-            assert_eq!(result.delta(), delta);
+            let mut vector1 = a.to_real_time_vec();
+            vector1.set_delta(delta);
+            let mut vector2 = b.to_real_time_vec();
+            vector2.set_delta(delta);
+            vector1.div(&vector2).unwrap();
+            assert_vector_eq(&expected, &vector1[..]);
+            assert_eq!(vector1.is_complex(), false);
+            assert_eq!(vector1.delta(), delta);
         });
     }
 
@@ -389,11 +405,13 @@ mod slow_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data_even_in_range(201511210, iteration, range.start, range.end, 0.0, 10.0);
             let delta = create_delta(3561159, iteration);
-            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
-            let result = vector.square().unwrap().sqrt().unwrap();
-            assert_vector_eq(&a, &result.real(0..));
-            assert_eq!(result.is_complex(), false);
-            assert_eq!(result.delta(), delta);
+            let mut vector = a.clone().to_real_time_vec();
+            vector.set_delta(delta);
+            vector.square();
+            vector.sqrt();
+            assert_vector_eq(&a, &vector[..]);
+            assert_eq!(vector.is_complex(), false);
+            assert_eq!(vector.delta(), delta);
         });
     }
 
@@ -402,11 +420,13 @@ mod slow_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
-            let result = vector.exp().unwrap().ln().unwrap();
-            assert_vector_eq(&a, &result.real(0..));
-            assert_eq!(result.is_complex(), false);
-            assert_eq!(result.delta(), delta);
+            let mut vector = a.clone().to_real_time_vec();
+            vector.set_delta(delta);
+            vector.exp();
+            vector.ln();
+            assert_vector_eq(&a, &vector[..]);
+            assert_eq!(vector.is_complex(), false);
+            assert_eq!(vector.delta(), delta);
         });
     }
 
@@ -417,11 +437,13 @@ mod slow_test {
             let base = create_data_even_in_range(201511213, iteration, 1, 2, 0.1, 20.0);
             let base = base[0];
             let delta = create_delta(3561159, iteration);
-            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
-            let result = vector.expf(base).unwrap().log(base).unwrap();
-            assert_vector_eq(&a, &result.real(0..));
-            assert_eq!(result.is_complex(), false);
-            assert_eq!(result.delta(), delta);
+            let mut vector = a.clone().to_real_time_vec();
+            vector.set_delta(delta);
+            vector.expf(base);
+            vector.log(base);
+            assert_vector_eq(&a, &vector[..]);
+            assert_eq!(vector.is_complex(), false);
+            assert_eq!(vector.delta(), delta);
         });
     }
 
@@ -441,12 +463,13 @@ mod slow_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
+            let mut vector = a.clone().to_real_time_vec();
             let expected = real_vector_diff(&a);
-            let result = vector.diff_with_start().unwrap();
-            assert_vector_eq(&expected, &result.real(0..));
-            assert_eq!(result.is_complex(), false);
-            assert_eq!(result.delta(), delta);
+            vector.set_delta(delta);
+            vector.diff_with_start();
+            assert_vector_eq(&expected, &vector[..]);
+            assert_eq!(vector.is_complex(), false);
+            assert_eq!(vector.delta(), delta);
         });
     }
 
@@ -466,12 +489,13 @@ mod slow_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
+            let mut vector = a.clone().to_real_time_vec();
             let expected = real_vector_cum_sum(&a);
-            let result = vector.cum_sum().unwrap();
-            assert_vector_eq(&expected, &result.real(0..));
-            assert_eq!(result.is_complex(), false);
-            assert_eq!(result.delta(), delta);
+            vector.set_delta(delta);
+            vector.cum_sum();
+            assert_vector_eq(&expected, &vector[..]);
+            assert_eq!(vector.is_complex(), false);
+            assert_eq!(vector.delta(), delta);
         });
     }
 
@@ -480,12 +504,13 @@ mod slow_test {
         let a = vec![1.0; RANGE_MULTI_CORE.end];
         let linear_seq = real_vector_cum_sum(&a);
         let delta = 0.1;
-        let vector = RealTimeVector32::from_array_with_delta(&linear_seq, delta);
-        // Be careful because of the two meanings of unwrap depending on the type
-        let result = vector.wrap(8.0).unwrap().unwrap(8.0).unwrap();
-        assert_vector_eq(&linear_seq, &result.real(0..));
-        assert_eq!(result.is_complex(), false);
-        assert_eq!(result.delta(), delta);
+        let mut vector = linear_seq.clone().to_real_time_vec();
+        vector.set_delta(delta);
+        vector.wrap(8.0);
+        vector.unwrap(8.0);
+        assert_vector_eq(&linear_seq, &vector[..]);
+        assert_eq!(vector.is_complex(), false);
+        assert_eq!(vector.delta(), delta);
     }
 
     #[test]
@@ -493,12 +518,13 @@ mod slow_test {
         let a = vec![-1.0; RANGE_MULTI_CORE.end];
         let linear_seq = real_vector_cum_sum(&a);
         let delta = 0.1;
-        let vector = RealTimeVector32::from_array_with_delta(&linear_seq, delta);
-        // Be careful because of the two meanings of unwrap depending on the type
-        let result = vector.wrap(8.0).unwrap().unwrap(8.0).unwrap();
-        assert_vector_eq(&linear_seq, &result.real(0..));
-        assert_eq!(result.is_complex(), false);
-        assert_eq!(result.delta(), delta);
+        let mut vector = linear_seq.clone().to_real_time_vec();
+        vector.set_delta(delta);
+        vector.wrap(8.0);
+        vector.unwrap(8.0);
+        assert_vector_eq(&linear_seq, &vector[..]);
+        assert_eq!(vector.is_complex(), false);
+        assert_eq!(vector.delta(), delta);
     }
 
     #[test]
@@ -506,11 +532,12 @@ mod slow_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
+            let mut vector = a.clone().to_real_time_vec();
+            vector.set_delta(delta);
             let sum: f32 = a.iter().fold(0.0, |a,b| a + b);
             let sum_sq: f32 = a.iter().map(|v| v * v).fold(0.0, |a,b| a + b);
             let rms = (sum_sq / a.len() as f32).sqrt();
-            let result = vector.real_statistics();
+            let result = vector.statistics();
             assert_eq!(result.sum, sum);
             assert_eq!(result.rms, rms);
         });
@@ -521,11 +548,12 @@ mod slow_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let vector = RealTimeVector32::from_array_with_delta(&a, delta);
-            let sum: f32 = vector.real_sum();
-            let sum_sq: f32 = vector.real_sum_sq();
+            let mut vector = a.clone().to_real_time_vec();
+            vector.set_delta(delta);
+            let sum: f32 = vector.sum();
+            let sum_sq: f32 = vector.sum_sq();
             let rms = (sum_sq / a.len() as f32).sqrt();
-            let result = vector.real_statistics();
+            let result = vector.statistics();
             assert_in_tolerance(result.sum, sum, 1e-1);
             assert_in_tolerance(result.rms, rms, 1e-1);
         });
@@ -534,37 +562,32 @@ mod slow_test {
     #[test]
     fn split_merge_test32() {
         let a = create_data(201511210, 0, 1000, 1000);
-        let vector = RealTimeVector32::from_array(&a);
+        let vector = a.clone().to_real_time_vec();
         let mut split =
             [
-                Box::new(RealTimeVector32::empty()),
-                Box::new(RealTimeVector32::empty()),
-                Box::new(RealTimeVector32::empty()),
-                Box::new(RealTimeVector32::empty()),
-                Box::new(RealTimeVector32::empty())];
+                Box::new(Vec::new().to_real_time_vec()),
+                Box::new(Vec::new().to_real_time_vec()),
+                Box::new(Vec::new().to_real_time_vec()),
+                Box::new(Vec::new().to_real_time_vec()),
+                Box::new(Vec::new().to_real_time_vec())];
         vector.split_into(&mut split).unwrap();
-        let merge = RealTimeVector32::empty();
-        let result = merge.merge(&split).unwrap();
-        assert_vector_eq(&a, &result.real(0..));
+        let mut merge = Vec::new().to_real_time_vec();
+        merge.merge(&split).unwrap();
+        assert_vector_eq(&a, &merge[..]);
     }
-
+/*
     #[test]
     fn real_fft_test32() {
         let data = create_data(201511210, 0, 1001, 1001);
-        let time = RealTimeVector32::from_array(&data);
-        time.assert_meta_data();
+        let time = data.to_real_time_vec();
         let sym_fft = time.clone().plain_sfft().unwrap();
-        sym_fft.assert_meta_data();
         let complex_time = time.clone().to_complex().unwrap();
-        complex_time.assert_meta_data();
         let complex_freq = complex_time.plain_fft().unwrap();
-        complex_freq.assert_meta_data();
         let real_mirror = sym_fft.clone().mirror().unwrap();
-        real_mirror.assert_meta_data();
-        assert_vector_eq_with_reason_and_tolerance(&complex_freq.interleaved(0..), &real_mirror.interleaved(0..), 1e-3, "Different FFT paths must equal");
+        assert_vector_eq_with_reason_and_tolerance(&complex_freq[..], &real_mirror[..], 1e-3, "Different FFT paths must equal");
         let real_ifft = sym_fft.plain_sifft().unwrap()
                                 .real_scale(1.0 / 1001.0).unwrap();
-        assert_vector_eq_with_reason_and_tolerance(&time.real(0..), &real_ifft.real(0..), 1e-3, "Ifft must give back the original result");
+        assert_vector_eq_with_reason_and_tolerance(&time[..], &real_ifft[..], 1e-3, "Ifft must give back the original result");
     }
 
     #[test]
@@ -854,8 +877,8 @@ mod slow_test {
             let (a_actual, b_actual) = ops.get().unwrap();
             let b_expected = b;
             let a_expected = a;
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
-            assert_vector_eq(&b_expected.real(0..), &b_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
+            assert_vector_eq(&b_expected[..], &b_actual[..]);
         });
     }
 
@@ -876,7 +899,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.real_offset(b[0]))
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -897,7 +920,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.real_scale(b[0]))
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -917,7 +940,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.abs())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -937,7 +960,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.to_complex())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -957,8 +980,8 @@ mod slow_test {
             let (a_actual, b_actual) = ops.get().unwrap();
             let a_expected = a.add(&b).unwrap();
             let b_expected = b;
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
-            assert_vector_eq(&b_expected.real(0..), &b_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
+            assert_vector_eq(&b_expected[..], &b_actual[..]);
         });
     }
 
@@ -978,8 +1001,8 @@ mod slow_test {
             let (a_actual, b_actual) = ops.get().unwrap();
             let a_expected = a.sub(&b).unwrap();
             let b_expected = b;
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
-            assert_vector_eq(&b_expected.real(0..), &b_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
+            assert_vector_eq(&b_expected[..], &b_actual[..]);
         });
     }
 
@@ -999,8 +1022,8 @@ mod slow_test {
             let (a_actual, b_actual) = ops.get().unwrap();
             let a_expected = a.mul(&b).unwrap();
             let b_expected = b;
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
-            assert_vector_eq(&b_expected.real(0..), &b_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
+            assert_vector_eq(&b_expected[..], &b_actual[..]);
         });
     }
 
@@ -1020,8 +1043,8 @@ mod slow_test {
             let (a_actual, b_actual) = ops.get().unwrap();
             let a_expected = a.div(&b).unwrap();
             let b_expected = b;
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
-            assert_vector_eq(&b_expected.real(0..), &b_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
+            assert_vector_eq(&b_expected[..], &b_actual[..]);
         });
     }
 
@@ -1041,7 +1064,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.sqrt())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1061,7 +1084,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.square())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1082,7 +1105,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.root(b[0]))
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1103,7 +1126,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.powf(b[0]))
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1123,7 +1146,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.ln())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1143,7 +1166,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.exp())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1164,7 +1187,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.log(b[0]))
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1185,7 +1208,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.expf(b[0]))
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1205,7 +1228,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.sin())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1225,7 +1248,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.cos())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1245,7 +1268,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.tan())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1265,7 +1288,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.asin())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1285,7 +1308,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.acos())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1305,7 +1328,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.atan())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1325,7 +1348,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.sinh())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1345,7 +1368,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.cosh())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1365,7 +1388,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.tanh())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1385,7 +1408,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.asinh())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1405,7 +1428,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.acosh())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
 
@@ -1425,7 +1448,7 @@ mod slow_test {
                 Ok(a)
                 .and_then(|a|a.atanh())
                 .unwrap();
-            assert_vector_eq(&a_expected.real(0..), &a_actual.real(0..));
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
-    }
+    }*/
 }
