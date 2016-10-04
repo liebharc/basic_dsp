@@ -19,6 +19,7 @@ use super::{
     Domain, NumberSpace, DataDomain
 };
 use std::sync::{Arc, Mutex};
+use std::fmt;
 
 /// An identifier is just a placeholder for a data type
 /// used to ensure already at compile time that operations are valid.
@@ -32,6 +33,15 @@ pub struct Identifier<T, N, D>
     counter: Arc<Mutex<u64>>,
     domain: D,
     number_space: N
+}
+
+impl<T, N, D> fmt::Debug for Identifier<T, N, D>
+    where T: RealNumber,
+          D: Domain,
+          N: NumberSpace {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Identifier {{ domain: {:?}, number_space: {:?} }}", self.domain, self.number_space)
+    }
 }
 
 impl<T, N, D> Identifier<T, N, D>

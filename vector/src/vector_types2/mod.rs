@@ -10,7 +10,7 @@ use std::mem;
 use std::cmp;
 use std::result;
 use simd_extensions::*;
-use std::fmt::Debug;
+use std::fmt;
 
 mod requirements;
 pub use self::requirements::*;
@@ -59,7 +59,7 @@ pub enum DataDomain {
 }
 
 /// Number space (real or complex) information.
-pub trait NumberSpace : Debug + cmp::PartialEq + Clone {
+pub trait NumberSpace : fmt::Debug + cmp::PartialEq + Clone {
     fn is_complex(&self) -> bool;
 
     /// For implementations which track meta data
@@ -73,7 +73,7 @@ pub trait NumberSpace : Debug + cmp::PartialEq + Clone {
 }
 
 /// Domain (time or frequency) information.
-pub trait Domain : Debug + cmp::PartialEq + Clone {
+pub trait Domain : fmt::Debug + cmp::PartialEq + Clone {
     fn domain(&self) -> DataDomain;
 
     /// See `RealNumberSpace` for some more details.
@@ -206,7 +206,6 @@ impl FrequencyDomain for TimeOrFrequencyData { }
 /// two times faster than 64bit vectors for most operations. But remember that you should benchmark first
 /// before you give away accuracy for performance unless however you are sure that 32bit accuracy is certainly good
 /// enough.
-#[derive(Debug)]
 pub struct DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
@@ -220,6 +219,16 @@ pub struct DspVec<S, T, N, D>
     multicore_settings: MultiCoreSettings
 }
 
+impl<S, T, N, D> fmt::Debug for DspVec<S, T, N, D>
+    where S: ToSlice<T>,
+          T: RealNumber,
+          D: Domain,
+          N: NumberSpace {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "DspVec {{ points: {}, domain: {:?}, number_space: {:?} }}", self.valid_len, self.domain, self.number_space)
+    }
+}
+
 /// A vector with real numbers in time domain.
 pub type RealTimeVec<S, T> = DspVec<S, T, RealData, TimeData>;
 /// A vector with real numbers in frequency domain.
@@ -230,6 +239,50 @@ pub type ComplexTimeVec<S, T> = DspVec<S, T, ComplexData, TimeData>;
 pub type ComplexFreqVec<S, T> = DspVec<S, T, ComplexData, FrequencyData>;
 /// A vector with no information about number space or domain at compile time.
 pub type GenDspVec<S, T> = DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>;
+
+/// A vector with real numbers in time domain.
+pub type RealTimeVec32 = DspVec<Vec<f32>, f32, RealData, TimeData>;
+/// A vector with real numbers in frequency domain.
+pub type RealFreqVec32 = DspVec<Vec<f32>, f32, RealData, FrequencyData>;
+/// A vector with complex numbers in time domain.
+pub type ComplexTimeVec32 = DspVec<Vec<f32>, f32, ComplexData, TimeData>;
+/// A vector with complex numbers in frequency domain.
+pub type ComplexFreqVec32 = DspVec<Vec<f32>, f32, ComplexData, FrequencyData>;
+/// A vector with no information about number space or domain at compile time.
+pub type GenDspVec32 = DspVec<Vec<f32>, f32, RealOrComplexData, TimeOrFrequencyData>;
+
+/// A vector with real numbers in time domain.
+pub type RealTimeVecSlice32<'a> = DspVec<&'a[f32], f32, RealData, TimeData>;
+/// A vector with real numbers in frequency domain.
+pub type RealFreqVecSlice32<'a> = DspVec<&'a[f32], f32, RealData, FrequencyData>;
+/// A vector with complex numbers in time domain.
+pub type ComplexTimeVecSlice32<'a> = DspVec<&'a[f32], f32, ComplexData, TimeData>;
+/// A vector with complex numbers in frequency domain.
+pub type ComplexFreqVecSlice32<'a> = DspVec<&'a[f32], f32, ComplexData, FrequencyData>;
+/// A vector with no information about number space or domain at compile time.
+pub type GenDspVecSlice32<'a> = DspVec<&'a[f32], f32, RealOrComplexData, TimeOrFrequencyData>;
+
+/// A vector with real numbers in time domain.
+pub type RealTimeVec64 = DspVec<Vec<f64>, f64, RealData, TimeData>;
+/// A vector with real numbers in frequency domain.
+pub type RealFreqVec64 = DspVec<Vec<f64>, f64, RealData, FrequencyData>;
+/// A vector with complex numbers in time domain.
+pub type ComplexTimeVec64 = DspVec<Vec<f64>, f64, ComplexData, TimeData>;
+/// A vector with complex numbers in frequency domain.
+pub type ComplexFreqVec64 = DspVec<Vec<f64>, f64, ComplexData, FrequencyData>;
+/// A vector with no information about number space or domain at compile time.
+pub type GenDspVec64 = DspVec<Vec<f64>, f64, RealOrComplexData, TimeOrFrequencyData>;
+
+/// A vector with real numbers in time domain.
+pub type RealTimeVecSlice64<'a> = DspVec<&'a[f64], f64, RealData, TimeData>;
+/// A vector with real numbers in frequency domain.
+pub type RealFreqVecSlice64<'a> = DspVec<&'a[f64], f64, RealData, FrequencyData>;
+/// A vector with complex numbers in time domain.
+pub type ComplexTimeVecSlice64<'a> = DspVec<&'a[f64], f64, ComplexData, TimeData>;
+/// A vector with complex numbers in frequency domain.
+pub type ComplexFreqVecSlice64<'a> = DspVec<&'a[f64], f64, ComplexData, FrequencyData>;
+/// A vector with no information about number space or domain at compile time.
+pub type GenDspVecSlice64<'a> = DspVec<&'a[f64], f64, RealOrComplexData, TimeOrFrequencyData>;
 
 fn array_to_complex<T>(array: &[T]) -> &[Complex<T>] {
     unsafe {

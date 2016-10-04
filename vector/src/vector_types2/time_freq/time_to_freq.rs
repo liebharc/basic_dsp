@@ -166,7 +166,7 @@ impl<S, T, N, D> TimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
 
 macro_rules! unmirror {
     ($self_: ident) => {
-        let len = $self_.len();
+        let len = $self_.points();
         let len = len / 2 + 1;
         $self_.resize(len).expect("Shrinking a vector should always succeed");
     }
@@ -174,7 +174,7 @@ macro_rules! unmirror {
 
 impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToFreqResult,
-          <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>> + FrequencyDomainOperations<S, T> + Vector<T> + TimeDomainOperations<S, T>,
+          <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>> + FrequencyDomainOperations<S, T> + Vector<T>,
           S: ToSliceMut<T> + Owner,
           T: RealNumber,
           N: RealNumberSpace,
@@ -189,7 +189,7 @@ impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T,
           return Err((ErrorReason::InputMustBeInTimeDomain, Self::FreqResult::rededicate_from_force(self)));
       }
 
-      if self.points() % 2 != 0 {
+      if self.points() % 2 == 0 {
           self.valid_len = 0;
           self.number_space.to_complex();
           self.domain.to_freq();
@@ -213,7 +213,7 @@ impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T,
           return Err((ErrorReason::InputMustBeInTimeDomain, Self::FreqResult::rededicate_from_force(self)));
       }
 
-      if self.points() % 2 != 0 {
+      if self.points() % 2 == 0 {
           self.valid_len = 0;
           self.number_space.to_complex();
           self.domain.to_freq();
@@ -237,7 +237,7 @@ impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T,
           return Err((ErrorReason::InputMustBeInTimeDomain, Self::FreqResult::rededicate_from_force(self)));
       }
 
-      if self.points() % 2 != 0 {
+      if self.points() % 2 == 0 {
           self.valid_len = 0;
           self.number_space.to_complex();
           self.domain.to_freq();

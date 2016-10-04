@@ -159,6 +159,10 @@ impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for RealTimeIdent<T>
             number_space: RealData
         }
     }
+
+	fn rededicate_with_runtime_data(origin: Identifier<T, N, D>, _: bool, _: DataDomain) -> Self {
+        Self::rededicate_from_force(origin)
+    }
 }
 
 impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for RealFreqIdent<T>
@@ -174,6 +178,10 @@ impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for RealFreqIdent<T>
             domain: FrequencyData,
             number_space: RealData
         }
+    }
+
+	fn rededicate_with_runtime_data(origin: Identifier<T, N, D>, _: bool, _: DataDomain) -> Self {
+        Self::rededicate_from_force(origin)
     }
 }
 
@@ -191,6 +199,10 @@ impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for ComplexTimeIdent<T>
             number_space: ComplexData
         }
     }
+
+	fn rededicate_with_runtime_data(origin: Identifier<T, N, D>, _: bool, _: DataDomain) -> Self {
+        Self::rededicate_from_force(origin)
+    }
 }
 
 impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for ComplexFreqIdent<T>
@@ -206,6 +218,10 @@ impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for ComplexFreqIdent<T>
             domain: FrequencyData,
             number_space: ComplexData
         }
+    }
+
+	fn rededicate_with_runtime_data(origin: Identifier<T, N, D>, _: bool, _: DataDomain) -> Self {
+        Self::rededicate_from_force(origin)
     }
 }
 
@@ -224,6 +240,13 @@ impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for GenDspIdent<T>
             domain: TimeOrFrequencyData { domain_current: domain },
             number_space: RealOrComplexData { is_complex_current: is_complex }
         }
+    }
+
+	fn rededicate_with_runtime_data(origin: Identifier<T, N, D>, is_complex: bool, domain: DataDomain) -> Self {
+        let mut result = Self::rededicate_from_force(origin);
+        result.number_space.is_complex_current = is_complex;
+        result.domain.domain_current = domain;
+        result
     }
 }
 
@@ -338,7 +361,7 @@ impl<T, N, D> PowerOps<T> for Identifier<T, N, D>
 		  D: Domain{
     fn sqrt(&mut self) {
 		let arg = self.arg;
-		self.add_op(Operation::ATanh(arg));
+		self.add_op(Operation::Sqrt(arg));
 	}
 
     fn square(&mut self) {

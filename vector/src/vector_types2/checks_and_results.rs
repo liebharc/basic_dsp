@@ -28,7 +28,7 @@ pub enum ErrorReason {
     InputMustBeInTimeDomain,
 
     /// The operation requires the input to be in frequency domain.
-    InputMustBeInFrquencyDomain,
+    InputMustBeInFrequencyDomain,
 
     /// The arguments have an invalid length to perform the operation. The
     /// operations documentation should have more information about the requirements.

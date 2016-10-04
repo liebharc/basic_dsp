@@ -9,6 +9,7 @@ use super::super::{
 };
 use super::fft;
 use window_functions::*;
+use multicore_support::*;
 
 /// Defines all operations which are valid on `DataVecs` containing frequency domain data.
 /// # Failures
@@ -160,12 +161,12 @@ impl<S, T, N, D> FrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
            D: FrequencyDomain {
    fn plain_sifft<B>(mut self, buffer: &mut B) -> TransRes<Self::RealTimeResult>
        where B: Buffer<S, T> {
-       if self.domain() != DataDomain::Time ||
-          self.is_complex() {
+       if self.domain() != DataDomain::Frequency ||
+          !self.is_complex() {
            self.valid_len = 0;
            self.number_space.to_complex();
            self.domain.to_freq();
-           return Err((ErrorReason::InputMustBeInFrquencyDomain, Self::RealTimeResult::rededicate_from_force(self)));
+           return Err((ErrorReason::InputMustBeInFrequencyDomain, Self::RealTimeResult::rededicate_from_force(self)));
        }
 
        if self.points() > 0 && self[1].abs() > T::from(1e-10).unwrap() {
@@ -180,6 +181,7 @@ impl<S, T, N, D> FrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
        fft(&mut self, buffer, true);
 
        self.domain.to_freq();
+       self.pure_complex_to_real_operation(buffer, |x,_arg|x.re, (), Complexity::Small);
        Ok(Self::RealTimeResult::rededicate_from_force(self))
    }
 

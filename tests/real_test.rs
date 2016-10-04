@@ -575,291 +575,21 @@ mod slow_test {
         merge.merge(&split).unwrap();
         assert_vector_eq(&a, &merge[..]);
     }
-/*
+
     #[test]
     fn real_fft_test32() {
         let data = create_data(201511210, 0, 1001, 1001);
+        let mut buffer = SingleBuffer::new();
         let time = data.to_real_time_vec();
-        let sym_fft = time.clone().plain_sfft().unwrap();
-        let complex_time = time.clone().to_complex().unwrap();
-        let complex_freq = complex_time.plain_fft().unwrap();
-        let real_mirror = sym_fft.clone().mirror().unwrap();
+        let sym_fft: ComplexFreqVec32 = time.clone().plain_sfft(&mut buffer).unwrap();
+        let complex_time = time.clone().to_complex_b(&mut buffer);
+        let complex_freq: ComplexFreqVec32 = complex_time.plain_fft(&mut buffer);
+        let mut real_mirror = sym_fft.clone();
+        real_mirror.mirror(&mut buffer);
         assert_vector_eq_with_reason_and_tolerance(&complex_freq[..], &real_mirror[..], 1e-3, "Different FFT paths must equal");
-        let real_ifft = sym_fft.plain_sifft().unwrap()
-                                .real_scale(1.0 / 1001.0).unwrap();
+        let mut real_ifft: RealTimeVec32 = sym_fft.plain_sifft(&mut buffer).unwrap();
+        real_ifft.scale(1.0 / 1001.0);
         assert_vector_eq_with_reason_and_tolerance(&time[..], &real_ifft[..], 1e-3, "Ifft must give back the original result");
-    }
-
-    #[test]
-    fn rededicate_test() {
-        // The test case is rather long since it basically
-        // just checks all the different combinations. I however
-        // sometimes prefer to have explict tests even if they
-        // are repetetive.
-        let len = 8;
-        let data = create_data(20160622, 0, len, len);
-        // RealTimeVector32
-        let original = RealTimeVector32::from_array(&data);
-        original.assert_meta_data();
-        assert_eq!(original.len(), len);
-
-        let vector: ComplexTimeVector32 = original.clone().rededicate();
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector: RealFreqVector32 = original.clone().rededicate();
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector: ComplexFreqVector32 = original.clone().rededicate();
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector: DataVec32 = original.clone().rededicate();
-        assert_eq!(vector.is_complex(), false);
-        assert_eq!(vector.domain(), DataVecDomain::Time);
-        assert_eq!(vector.len(), len);
-
-        // ComplexTimeVector32
-        let original = ComplexTimeVector32::from_interleaved(&data);
-        original.assert_meta_data();
-        assert_eq!(original.len(), len);
-
-        let vector: RealTimeVector32 = original.clone().rededicate();
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector: RealFreqVector32 = original.clone().rededicate();
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector: ComplexFreqVector32 = original.clone().rededicate();
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector: DataVec32 = original.clone().rededicate();
-        assert_eq!(vector.is_complex(), true);
-        assert_eq!(vector.domain(), DataVecDomain::Time);
-        assert_eq!(vector.len(), len);
-
-        // RealFreqVector32
-        let original = RealFreqVector32::from_array(&data);
-        original.assert_meta_data();
-        assert_eq!(original.len(), len);
-
-        let vector: RealTimeVector32 = original.clone().rededicate();
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector: ComplexTimeVector32 = original.clone().rededicate();
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector: ComplexFreqVector32 = original.clone().rededicate();
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector: DataVec32 = original.clone().rededicate();
-        assert_eq!(vector.is_complex(), false);
-        assert_eq!(vector.domain(), DataVecDomain::Frequency);
-        assert_eq!(vector.len(), len);
-
-        // ComplexFreqVector32
-        let original = ComplexFreqVector32::from_interleaved(&data);
-        original.assert_meta_data();
-        assert_eq!(original.len(), len);
-
-        let vector: RealFreqVector32 = original.clone().rededicate();
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector: ComplexTimeVector32 = original.clone().rededicate();
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector: ComplexFreqVector32 = original.clone().rededicate();
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector: DataVec32 = original.clone().rededicate();
-        assert_eq!(vector.is_complex(), true);
-        assert_eq!(vector.domain(), DataVecDomain::Frequency);
-        assert_eq!(vector.len(), len);
-    }
-
-    #[test]
-    fn rededicate_from_test() {
-        let len = 8;
-        let data = create_data(20160622, 0, len, len);
-        // RealTimeVector32
-        let original = RealTimeVector32::from_array(&data);
-        original.assert_meta_data();
-        assert_eq!(original.len(), len);
-
-        let vector = ComplexTimeVector32::rededicate_from(original.clone());
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector = RealFreqVector32::rededicate_from(original.clone());
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector = ComplexFreqVector32::rededicate_from(original.clone());
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector = DataVec32::rededicate_from(original.clone());
-        assert_eq!(vector.is_complex(), false);
-        assert_eq!(vector.domain(), DataVecDomain::Time);
-        assert_eq!(vector.len(), len);
-
-        // ComplexTimeVector32
-        let original = ComplexTimeVector32::from_interleaved(&data);
-        original.assert_meta_data();
-        assert_eq!(original.len(), len);
-
-        let vector = RealTimeVector32::rededicate_from(original.clone());
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector = RealFreqVector32::rededicate_from(original.clone());
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector = ComplexFreqVector32::rededicate_from(original.clone());
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector = DataVec32::rededicate_from(original.clone());
-        assert_eq!(vector.is_complex(), true);
-        assert_eq!(vector.domain(), DataVecDomain::Time);
-        assert_eq!(vector.len(), len);
-
-        // RealFreqVector32
-        let original = RealFreqVector32::from_array(&data);
-        original.assert_meta_data();
-        assert_eq!(original.len(), len);
-
-        let vector = RealTimeVector32::rededicate_from(original.clone());
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector = ComplexTimeVector32::rededicate_from(original.clone());
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector = ComplexFreqVector32::rededicate_from(original.clone());
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector = DataVec32::rededicate_from(original.clone());
-        assert_eq!(vector.is_complex(), false);
-        assert_eq!(vector.domain(), DataVecDomain::Frequency);
-        assert_eq!(vector.len(), len);
-
-        // ComplexFreqVector32
-        let original = ComplexFreqVector32::from_interleaved(&data);
-        original.assert_meta_data();
-        assert_eq!(original.len(), len);
-
-        let vector = RealFreqVector32::rededicate_from(original.clone());
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector = ComplexTimeVector32::rededicate_from(original.clone());
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector = ComplexFreqVector32::rededicate_from(original.clone());
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), 0);
-
-        let vector = DataVec32::rededicate_from(original.clone());
-        assert_eq!(vector.is_complex(), true);
-        assert_eq!(vector.domain(), DataVecDomain::Frequency);
-        assert_eq!(vector.len(), len);
-    }
-
-    #[test]
-    fn rededicate_generic_test() {
-        let len = 8;
-        let data = create_data(20160622, 0, len, len);
-        // RealTimeVector32
-        let vector: DataVec32 = RealTimeVector32::from_array(&data).rededicate();
-        assert_eq!(vector.is_complex(), false);
-        assert_eq!(vector.domain(), DataVecDomain::Time);
-        assert_eq!(vector.len(), len);
-        let vector: RealTimeVector32 = vector.rededicate();
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), len);
-
-        // ComplexTimeVector32
-        let vector: DataVec32 = ComplexTimeVector32::from_interleaved(&data).rededicate();
-        assert_eq!(vector.is_complex(), true);
-        assert_eq!(vector.domain(), DataVecDomain::Time);
-        assert_eq!(vector.len(), len);
-        let vector: ComplexTimeVector32 = vector.rededicate();
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), len);
-
-        // RealFreqVector32
-        let vector: DataVec32 = RealFreqVector32::from_array(&data).rededicate();
-        assert_eq!(vector.is_complex(), false);
-        assert_eq!(vector.domain(), DataVecDomain::Frequency);
-        assert_eq!(vector.len(), len);
-        let vector: RealFreqVector32 = vector.rededicate();
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), len);
-
-        // ComplexFreqVector32
-        let vector: DataVec32 = ComplexFreqVector32::from_interleaved(&data).rededicate();
-        assert_eq!(vector.is_complex(), true);
-        assert_eq!(vector.domain(), DataVecDomain::Frequency);
-        assert_eq!(vector.len(), len);
-        let vector: ComplexFreqVector32 = vector.rededicate();
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), len);
-    }
-
-    #[test]
-    fn rededicate_from_generic_test() {
-        let len = 8;
-        let data = create_data(20160622, 0, len, len);
-        // RealTimeVector32
-        let vector = DataVec32::rededicate_from(RealTimeVector32::from_array(&data));
-        assert_eq!(vector.is_complex(), false);
-        assert_eq!(vector.domain(), DataVecDomain::Time);
-        assert_eq!(vector.len(), len);
-        let vector = RealTimeVector32::rededicate_from(vector);
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), len);
-
-        // ComplexTimeVector32
-        let vector = DataVec32::rededicate_from(ComplexTimeVector32::from_interleaved(&data));
-        assert_eq!(vector.is_complex(), true);
-        assert_eq!(vector.domain(), DataVecDomain::Time);
-        assert_eq!(vector.len(), len);
-        let vector = ComplexTimeVector32::rededicate_from(vector);
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), len);
-
-        // RealFreqVector32
-        let vector = DataVec32::rededicate_from(RealFreqVector32::from_array(&data));
-        assert_eq!(vector.is_complex(), false);
-        assert_eq!(vector.domain(), DataVecDomain::Frequency);
-        assert_eq!(vector.len(), len);
-        let vector = RealFreqVector32::rededicate_from(vector);
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), len);
-
-        // ComplexFreqVector32
-        let vector = DataVec32::rededicate_from(ComplexFreqVector32::from_interleaved(&data));
-        assert_eq!(vector.is_complex(), true);
-        assert_eq!(vector.domain(), DataVecDomain::Frequency);
-        assert_eq!(vector.len(), len);
-        let vector = ComplexFreqVector32::rededicate_from(vector);
-        vector.assert_meta_data();
-        assert_eq!(vector.len(), len);
     }
 
     #[test]
@@ -868,13 +598,14 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
-            let b = DataVec32::from_array(false, DataVecDomain::Time, &b);
+            let a = a.to_gen_dsp_vec(false, DataDomain::Time);
+            let b = b.to_gen_dsp_vec(false, DataDomain::Time);
+            let mut buffer = SingleBuffer::new();
             let ops = multi_ops2(a.clone(), b.clone());
             let ops = ops.add_ops(|a, b| {
                 (a, b)
             });
-            let (a_actual, b_actual) = ops.get().unwrap();
+            let (a_actual, b_actual) = ops.get(&mut buffer).unwrap();
             let b_expected = b;
             let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
@@ -888,17 +619,16 @@ mod slow_test {
             let len = 1031;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, 1);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.real_offset(b[0]);
+            let ops = ops.add_ops(|mut a| {
+                a.offset(b[0]);
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.real_offset(b[0]))
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.offset(b[0]);
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -909,17 +639,16 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, 1);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.real_scale(b[0]);
+            let ops = ops.add_ops(|mut a| {
+                a.scale(b[0]);
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.real_scale(b[0]))
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.scale(b[0]);
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -929,17 +658,16 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.abs();
+            let ops = ops.add_ops(|mut a| {
+                a.abs();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.abs())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.abs();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -949,17 +677,14 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
             let ops = ops.add_ops(|a| {
-                let a = a.to_complex();
-                a
+                a.to_complex().unwrap()
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.to_complex())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            let a_expected = a.to_complex().unwrap();
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -970,15 +695,17 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
-            let b = DataVec32::from_array(false, DataVecDomain::Time, &b);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
+            let b = b.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops2(a.clone(), b.clone());
-            let ops = ops.add_ops(|a, b| {
-                let a = a.add(&b);
+            let ops = ops.add_ops(|mut a, b| {
+                a.add(&b).unwrap();
                 (a, b)
             });
-            let (a_actual, b_actual) = ops.get().unwrap();
-            let a_expected = a.add(&b).unwrap();
+            let mut buffer = SingleBuffer::new();
+            let (a_actual, b_actual) = ops.get(&mut buffer).unwrap();
+            a.add(&b).unwrap();
+            let a_expected = a;
             let b_expected = b;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
             assert_vector_eq(&b_expected[..], &b_actual[..]);
@@ -991,15 +718,17 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
-            let b = DataVec32::from_array(false, DataVecDomain::Time, &b);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
+            let b = b.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops2(a.clone(), b.clone());
-            let ops = ops.add_ops(|a, b| {
-                let a = a.sub(&b);
+            let ops = ops.add_ops(|mut a, b| {
+                a.sub(&b).unwrap();
                 (a, b)
             });
-            let (a_actual, b_actual) = ops.get().unwrap();
-            let a_expected = a.sub(&b).unwrap();
+            let mut buffer = SingleBuffer::new();
+            let (a_actual, b_actual) = ops.get(&mut buffer).unwrap();
+            a.sub(&b).unwrap();
+            let a_expected = a;
             let b_expected = b;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
             assert_vector_eq(&b_expected[..], &b_actual[..]);
@@ -1012,15 +741,17 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
-            let b = DataVec32::from_array(false, DataVecDomain::Time, &b);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
+            let b = b.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops2(a.clone(), b.clone());
-            let ops = ops.add_ops(|a, b| {
-                let a = a.mul(&b);
+            let ops = ops.add_ops(|mut a, b| {
+                a.mul(&b).unwrap();
                 (a, b)
             });
-            let (a_actual, b_actual) = ops.get().unwrap();
-            let a_expected = a.mul(&b).unwrap();
+            let mut buffer = SingleBuffer::new();
+            let (a_actual, b_actual) = ops.get(&mut buffer).unwrap();
+            a.mul(&b).unwrap();
+            let a_expected = a;
             let b_expected = b;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
             assert_vector_eq(&b_expected[..], &b_actual[..]);
@@ -1033,18 +764,20 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
-            let b = DataVec32::from_array(false, DataVecDomain::Time, &b);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
+            let b = b.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops2(a.clone(), b.clone());
-            let ops = ops.add_ops(|a, b| {
-                let a = a.div(&b);
+            let ops = ops.add_ops(|mut a, b| {
+                a.div(&b).unwrap();
                 (a, b)
             });
-            let (a_actual, b_actual) = ops.get().unwrap();
-            let a_expected = a.div(&b).unwrap();
+            let mut buffer = SingleBuffer::new();
+            let (a_actual, b_actual) = ops.get(&mut buffer).unwrap();
+            a.div(&b).unwrap();
+            let a_expected = a;
             let b_expected = b;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
-            assert_vector_eq(&b_expected[..], &b_actual[..]);
+            assert_vector_eq(&b_expected[..], &b_actual[..]);;
         });
     }
 
@@ -1052,18 +785,17 @@ mod slow_test {
     fn multi_ops_sqrt_test() {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
-            let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let a = create_data_with_len(201511142, iteration, len);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.sqrt();
+            let ops = ops.add_ops(|mut a| {
+                a.sqrt();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.sqrt())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.sqrt();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1073,17 +805,16 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.square();
+            let ops = ops.add_ops(|mut a| {
+                a.square();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.square())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.square();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1094,17 +825,16 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, 1);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.root(b[0]);
+            let ops = ops.add_ops(|mut a| {
+                a.root(b[0]);
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.root(b[0]))
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.root(b[0]);
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1115,17 +845,16 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, 1);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.powf(b[0]);
+            let ops = ops.add_ops(|mut a| {
+                a.powf(b[0]);
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.powf(b[0]))
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.powf(b[0]);
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1135,17 +864,16 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.ln();
+            let ops = ops.add_ops(|mut a| {
+                a.ln();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.ln())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.ln();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1155,17 +883,16 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.exp();
+            let ops = ops.add_ops(|mut a| {
+                a.exp();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.exp())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.exp();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1176,17 +903,16 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, 1);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.log(b[0]);
+            let ops = ops.add_ops(|mut a| {
+                a.log(b[0]);
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.log(b[0]))
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.log(b[0]);
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1197,17 +923,16 @@ mod slow_test {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
             let b = create_data_with_len(201511141, iteration, 1);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.expf(b[0]);
+            let ops = ops.add_ops(|mut a| {
+                a.expf(b[0]);
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.expf(b[0]))
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.expf(b[0]);
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1217,17 +942,16 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.sin();
+            let ops = ops.add_ops(|mut a| {
+                a.sin();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.sin())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.sin();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1237,17 +961,16 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.cos();
+            let ops = ops.add_ops(|mut a| {
+                a.cos();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.cos())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.cos();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1257,17 +980,16 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.tan();
+            let ops = ops.add_ops(|mut a| {
+                a.tan();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.tan())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.tan();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1277,17 +999,16 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.asin();
+            let ops = ops.add_ops(|mut a| {
+                a.asin();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.asin())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.asin();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1297,17 +1018,16 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.acos();
+            let ops = ops.add_ops(|mut a| {
+                a.acos();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.acos())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.acos();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1317,17 +1037,16 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.atan();
+            let ops = ops.add_ops(|mut a| {
+                a.atan();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.atan())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.atan();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1337,17 +1056,16 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.sinh();
+            let ops = ops.add_ops(|mut a| {
+                a.sinh();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.sinh())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.sinh();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1357,17 +1075,16 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.cosh();
+            let ops = ops.add_ops(|mut a| {
+                a.cosh();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.cosh())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.cosh();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1377,17 +1094,16 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.tanh();
+            let ops = ops.add_ops(|mut a| {
+                a.tanh();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.tanh())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.tanh();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1397,17 +1113,16 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.asinh();
+            let ops = ops.add_ops(|mut a| {
+                a.asinh();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.asinh())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.asinh();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1417,17 +1132,16 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.acosh();
+            let ops = ops.add_ops(|mut a| {
+                a.acosh();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.acosh())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.acosh();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
@@ -1437,18 +1151,17 @@ mod slow_test {
         parameterized_vector_test(|iteration, _| {
             let len = 1000;
             let a = create_data_with_len(201511141, iteration, len);
-            let a = DataVec32::from_array(false, DataVecDomain::Time, &a);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                let a = a.atanh();
+            let ops = ops.add_ops(|mut a| {
+                a.atanh();
                 a
             });
-            let a_actual = ops.get().unwrap();
-            let a_expected =
-                Ok(a)
-                .and_then(|a|a.atanh())
-                .unwrap();
+            let mut buffer = SingleBuffer::new();
+            let a_actual = ops.get(&mut buffer).unwrap();
+            a.atanh();
+            let a_expected = a;
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
-    }*/
+    }
 }

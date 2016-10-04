@@ -4,7 +4,7 @@ use super::{
     DspVec, GenDspVec, Vector,
     RealTimeVec, RealFreqVec,
     ComplexTimeVec, ComplexFreqVec,
-    ToSlice, NumberSpace, Domain,
+    ToSlice, NumberSpace, Domain, DataDomain,
     RealData, ComplexData, RealOrComplexData,
     TimeData, FrequencyData, TimeOrFrequencyData
 };
@@ -42,6 +42,14 @@ pub trait RededicateOps<Other> : RededicateForceOps<Other> {
 pub trait RededicateForceOps<Other> {
     /// Make `Other` a `Self` without performing any checks.
     fn rededicate_from_force(origin: Other) -> Self;
+
+    /// Make `Other` a `Self` without performing any checks.
+    ///
+    /// Try to set the domain and number space. There is no guarantee
+    /// that this will succeed, since some rededication targets only
+    /// support one domain and number space value. Failures will
+    /// be silenty ignored (which is by design).
+    fn rededicate_with_runtime_data(origin: Other, is_complex: bool, domain: DataDomain) -> Self;
 }
 
 /// Specifies what the the result is if a type is transformed to real numbers.
@@ -163,6 +171,10 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for RealTimeVec<S, T>
             multicore_settings: origin.multicore_settings
         }
     }
+
+    fn rededicate_with_runtime_data(origin: DspVec<S, T, N, D>, _: bool, _: DataDomain) -> Self {
+        Self::rededicate_from_force(origin)
+    }
 }
 
 impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for RealFreqVec<S, T>
@@ -180,6 +192,10 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for RealFreqVec<S, T>
             valid_len: origin.valid_len,
             multicore_settings: origin.multicore_settings
         }
+    }
+
+    fn rededicate_with_runtime_data(origin: DspVec<S, T, N, D>, _: bool, _: DataDomain) -> Self {
+        Self::rededicate_from_force(origin)
     }
 }
 
@@ -199,6 +215,10 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for ComplexTimeVec<S, T>
             multicore_settings: origin.multicore_settings
         }
     }
+
+    fn rededicate_with_runtime_data(origin: DspVec<S, T, N, D>, _: bool, _: DataDomain) -> Self {
+        Self::rededicate_from_force(origin)
+    }
 }
 
 impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for ComplexFreqVec<S, T>
@@ -216,6 +236,10 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for ComplexFreqVec<S, T>
             valid_len: origin.valid_len,
             multicore_settings: origin.multicore_settings
         }
+    }
+
+    fn rededicate_with_runtime_data(origin: DspVec<S, T, N, D>, _: bool, _: DataDomain) -> Self {
+        Self::rededicate_from_force(origin)
     }
 }
 
@@ -236,5 +260,12 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for GenDspVec<S, T>
             valid_len: origin.valid_len,
             multicore_settings: origin.multicore_settings
         }
+    }
+
+    fn rededicate_with_runtime_data(origin: DspVec<S, T, N, D>, is_complex: bool, domain: DataDomain) -> Self {
+        let mut result = Self::rededicate_from_force(origin);
+        result.number_space.is_complex_current = is_complex;
+        result.domain.domain_current = domain;
+        result
     }
 }

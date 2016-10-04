@@ -430,8 +430,8 @@ impl<S, T, N, D> InsertZerosOps<T> for DspVec<S, T, N, D>
 		if is_complex {
 			let data = self.data.to_slice_mut();
 			let data = array_to_complex_mut(data);
-			for j in 0..len/2 {
-				let i = len/2 - 1 - j;
+			for j in 0..len / 2 {
+				let i = len / 2 - 1 - j;
 				if i % factor == 0 {
 					data[i] = data[i / factor];
 				} else {
@@ -757,5 +757,47 @@ mod tests {
             [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
              0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
         assert_eq!(&v[..], &expected);
+    }
+
+	#[test]
+    fn zero_interleave_test()
+    {
+		let mut v = vec!(1.0, 2.0, 3.0, 4.0, 5.0).to_real_time_vec();
+		v.zero_interleave(2).unwrap();
+        assert_eq!(&v[..], &[1.0, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.0, 5.0, 0.0]);
+    }
+
+	#[test]
+    fn zero_interleave_even_test()
+    {
+		let mut v = vec!(1.0, 2.0, 3.0, 4.0).to_real_time_vec();
+		v.zero_interleave(2).unwrap();
+        assert_eq!(&v[..], &[1.0, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.0]);
+    }
+
+	#[test]
+    fn zero_interleave_b_test()
+    {
+		let mut v = vec!(1.0, 2.0, 3.0, 4.0, 5.0).to_real_time_vec();
+		let mut buffer = SingleBuffer::new();
+		v.zero_interleave_b(&mut buffer, 2);
+        assert_eq!(&v[..], &[1.0, 0.0, 2.0, 0.0, 3.0, 0.0, 4.0, 0.0, 5.0, 0.0]);
+    }
+
+	#[test]
+    fn zero_interleave_complex_test()
+    {
+		let mut v = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+		v.zero_interleave(2).unwrap();
+        assert_eq!(&v[..], &[1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0]);
+    }
+
+	#[test]
+    fn zero_interleave_b_complex_test()
+    {
+		let mut v = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+		let mut buffer = SingleBuffer::new();
+		v.zero_interleave_b(&mut buffer, 2);
+        assert_eq!(&v[..], &[1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0]);
     }
 }

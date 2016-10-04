@@ -61,11 +61,11 @@ impl<S, T, N, D> RealToComplexTransformsOps<T> for DspVec<S, T, N, D>
               return Err((ErrorReason::InputMustBeReal, Self::ComplexResult::rededicate_from_force(self)));
           }
 
-          self.number_space.to_complex();
           let result = self.zero_interleave(2);
+          let domain = self.domain();
           match result {
-              Err(reason) => Err((reason, Self::ComplexResult::rededicate_from_force(self))),
-              Ok(()) =>  Ok(Self::ComplexResult::rededicate_from_force(self))
+              Err(reason) => Err((reason, Self::ComplexResult::rededicate_with_runtime_data(self, true, domain))),
+              Ok(()) =>  Ok(Self::ComplexResult::rededicate_with_runtime_data(self, true, domain))
           }
       }
 }

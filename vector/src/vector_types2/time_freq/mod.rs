@@ -34,7 +34,7 @@ fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: boo
 	let mut temp = buffer.get(len);
 	{
 		let temp = temp.to_slice_mut();
-		let points = vec.points();
+		let points = len / 2; // By two since vector is always complex
 		let rbw = (T::from(points).unwrap()) * vec.delta;
 		vec.delta = rbw;
 		let mut fft = FFT::new(points, reverse);
