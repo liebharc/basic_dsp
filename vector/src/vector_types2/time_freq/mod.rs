@@ -10,6 +10,8 @@ mod correlation;
 pub use self::correlation::*;
 mod convolution;
 pub use self::convolution::*;
+mod interpolation;
+pub use self::interpolation::*;
 
 use std::mem;
 use rustfft::FFT;
