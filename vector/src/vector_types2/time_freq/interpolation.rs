@@ -10,9 +10,12 @@ use super::super::{
 	array_to_complex, array_to_complex_mut,
 	VoidResult, DspVec, Domain, NumberSpace, ToSliceMut,
 	GenDspVec, ToDspVector, DataDomain, Buffer, Vector,
-    RealNumberSpace
+    RealNumberSpace, ErrorReason, InsertZerosOpsBuffered,
+    ScaleOps
 };
+use super::fft;
 use std::mem;
+use num::complex::Complex;
 
 /// Provides interpolation operations for real and complex data vectors.
 /// # Unstable
@@ -269,7 +272,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
-	where S: ToSliceMut<T>,
+	where DspVec<S, T, N, D>: InsertZerosOpsBuffered<S, T> + ScaleOps<T>,
+          S: ToSliceMut<T>,
 		  T: RealNumber,
 		  N: NumberSpace,
 		  D: Domain {
@@ -352,34 +356,42 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
 
   fn interpolatei<B>(&mut self, buffer: &mut B, function: &RealFrequencyResponse<T>, interpolation_factor: u32) -> VoidResult
   	where B: Buffer<S, T> {
-    panic!("Panic")
-    /*if interpolation_factor <= 1 {
+    if interpolation_factor <= 1 {
         return Ok(());
     }
 
     if !function.is_symmetric() &&!self.is_complex() {
-        Err(ErrorReason::ArgumentFunctionMustBeSymmetric);
+        return Err(ErrorReason::ArgumentFunctionMustBeSymmetric);
     }
 
     let is_complex = self.is_complex();
-    self.zero_interleave_b(buffer, interpolation_factor);
-    let mut freq = self.fft(buffer);
-    let points = freq.points();
+
+    if !self.is_complex() {
+        self.zero_interleave_b(buffer, interpolation_factor * 2);
+    } else {
+        self.zero_interleave_b(buffer, interpolation_factor);
+    }
+    // Vector is always complex from here on
+
+    fft(self, buffer, false); // fft
+    self.swap_halves_priv(buffer, true); // fft shift
+    let points = self.points();
     let interpolation_factorf = T::from(interpolation_factor).unwrap();
-    /*freq.multiply_function_priv(
+    self.multiply_function_priv(
         function.is_symmetric(),
         interpolation_factorf,
         |array|array_to_complex_mut(array),
         function,
-        |f,x|Complex::<T>::new(f.calc(x), T::zero()));*/
-    freq.ifft_shift(buffer);
-    let mut time = freq.plain_ifft(buffer);
-    time.scale(Complex::<T>::new(T::from(1.0 / points).unwrap(), T::zero()));
-    if is_complex {
-        time
-    } else {
-        time.to_real()
-    }*/
+        |f,x|Complex::<T>::new(f.calc(x), T::zero()));
+    self.swap_halves_priv(buffer, false); // ifft shift
+    fft(self, buffer, true); // ifft
+     self.scale(T::one() / T::from(points).unwrap());
+    if !is_complex {
+        // Convert vector back into real number space
+        self.pure_complex_to_real_operation_inplace(|x,_arg| x.re, ());
+    }
+
+    Ok(())
   }
 
   fn decimatei(&mut self, decimation_factor: u32, delay: u32) {
@@ -560,34 +572,36 @@ mod tests {
             }
         }
     }
-/*
+
     #[test]
     fn interpolatei_sinc_test() {
         let len = 6;
-        let mut time = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), len);
+        let mut time = vec!(0.0; 2 * len).to_complex_time_vec();
         time[len] = 1.0;
         let sinc: SincFunction<f32> = SincFunction::new();
-        let result = time.interpolatei(&sinc as &RealFrequencyResponse<f32>, 2).unwrap();
-        let result = result.magnitude().unwrap();
+        let mut buffer = SingleBuffer::new();
+        time.interpolatei(&mut buffer, &sinc as &RealFrequencyResponse<f32>, 2).unwrap();
+        let result = time.magnitude();
         let expected =
             [0.16666667, 0.044658206, 0.16666667, 0.16666667, 0.16666667, 0.6220085,
              1.1666667, 0.6220085, 0.16666667, 0.16666667, 0.16666667, 0.044658206];
-        assert_eq_tol(result.real(0..), &expected, 1e-4);
+        assert_eq_tol(&result[..], &expected, 1e-4);
     }
 
     #[test]
     fn interpolatei_rc_test() {
         let len = 6;
-        let mut time = ComplexTimeVector32::from_constant(Complex32::new(0.0, 0.0), len);
+        let mut time = vec!(0.0; 2 * len).to_complex_time_vec();
         time[len] = 1.0;
         let rc: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.4);
-        let result = time.interpolatei(&rc as &RealFrequencyResponse<f32>, 2).unwrap();
-        let result = result.magnitude().unwrap();
+        let mut buffer = SingleBuffer::new();
+        time.interpolatei(&mut buffer, &rc as &RealFrequencyResponse<f32>, 2).unwrap();
+        let result = time.magnitude();
         let expected =
             [0.0, 0.038979173, 0.0000000062572014, 0.15530863, 0.000000015884869, 0.6163295,
              1.0, 0.61632943, 0.0000000142918966, 0.15530863, 0.000000048099658, 0.038979173];
-        assert_eq_tol(result.real(0..), &expected, 1e-4);
-    }*/
+        assert_eq_tol(&result[..], &expected, 1e-4);
+    }
 
     #[test]
     fn interpolatef_sinc_test() {

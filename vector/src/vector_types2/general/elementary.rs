@@ -263,7 +263,7 @@ macro_rules! assert_complex {
 impl<S, T, N, D> OffsetOps<T> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
-          N: RealNumberSpace,
+          N: NumberSpace,
           D: Domain {
     fn offset(&mut self, offset: T) {
         if self.is_complex() {
@@ -290,7 +290,7 @@ impl<S, T, N, D> OffsetOps<Complex<T>> for DspVec<S, T, N, D>
 impl<S, T, D, N> ScaleOps<T> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
-          N: RealNumberSpace,
+          N: NumberSpace,
           D: Domain {
     fn scale(&mut self, factor: T) {
         self.simd_real_operation(|x, y| x.scale_real(y), |x, y| x * y, factor, Complexity::Small);
