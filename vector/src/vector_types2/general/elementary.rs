@@ -8,7 +8,7 @@ use super::super::{
     array_to_complex, array_to_complex_mut,
     ErrorReason, VoidResult, Vector,
     DspVec, ToSliceMut,
-    Domain, NumberSpace, RealNumberSpace, ComplexNumberSpace
+    Domain, NumberSpace, ComplexNumberSpace
 };
 
 /// An operation which multiplies each vector element with a constant
@@ -278,7 +278,7 @@ impl<S, T, N, D> OffsetOps<T> for DspVec<S, T, N, D>
 impl<S, T, N, D> OffsetOps<Complex<T>> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
-          N: RealNumberSpace,
+          N: ComplexNumberSpace,
           D: Domain {
     fn offset(&mut self, offset: Complex<T>) {
         assert_complex!(self);

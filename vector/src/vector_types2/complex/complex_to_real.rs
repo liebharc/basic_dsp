@@ -519,26 +519,31 @@ impl<S, T, N, D> ComplexToRealGetterOps<T> for DspVec<S, T, N, D>
           D: Domain {
     fn get_real(&self, destination: &mut Self::RealResult) {
         assert_self_complex_and_target_real!(self, destination);
+        destination.resize(self.len()).expect("Target is real and thus all values are valid");
         self.pure_complex_into_real_target_operation(destination, |x,_arg|x.re, (), Complexity::Small);
     }
 
     fn get_imag(&self, destination: &mut Self::RealResult) {
         assert_self_complex_and_target_real!(self, destination);
+        destination.resize(self.len()).expect("Target is real and thus all values are valid");
         self.pure_complex_into_real_target_operation(destination, |x,_arg|x.im, (), Complexity::Small);
     }
 
     fn get_magnitude(&self, destination: &mut Self::RealResult) {
         assert_self_complex_and_target_real!(self, destination);
+        destination.resize(self.len()).expect("Target is real and thus all values are valid");
         self.simd_complex_into_real_target_operation(destination, |x|x.complex_abs(), |x|x.norm().sqrt(), Complexity::Small);
     }
 
     fn get_magnitude_squared(&self, destination: &mut Self::RealResult) {
         assert_self_complex_and_target_real!(self, destination);
+        destination.resize(self.len()).expect("Target is real and thus all values are valid");
         self.simd_complex_into_real_target_operation(destination, |x|x.complex_abs_squared(), |x|x.norm(), Complexity::Small);
     }
 
     fn get_phase(&self, destination: &mut Self::RealResult) {
         assert_self_complex_and_target_real!(self, destination);
+        destination.resize(self.len()).expect("Target is real and thus all values are valid");
         self.pure_complex_into_real_target_operation(destination, |x,_arg|x.arg(), (), Complexity::Small)
     }
 
@@ -592,6 +597,7 @@ impl<S, T, N, D> ComplexToRealSetterOps<T> for DspVec<S, T, N, D>
             }
             let data_length = real.len() + imag.len();
             self.data.resize(data_length);
+            self.valid_len = data_length;
             let data = self.data.to_slice_mut();
             let real = &real[0..real.len()];
             let imag = &imag[0..imag.len()];
@@ -614,6 +620,7 @@ impl<S, T, N, D> ComplexToRealSetterOps<T> for DspVec<S, T, N, D>
             }
             let data_length = mag.len() + phase.len();
             self.data.resize(data_length);
+            self.valid_len = data_length;
             let data = self.data.to_slice_mut();
             let mag = &mag[0..mag.len()];
             let phase = &phase[0..phase.len()];
