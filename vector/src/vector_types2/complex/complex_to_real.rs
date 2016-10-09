@@ -532,13 +532,13 @@ impl<S, T, N, D> ComplexToRealGetterOps<T> for DspVec<S, T, N, D>
     fn get_magnitude(&self, destination: &mut Self::RealResult) {
         assert_self_complex_and_target_real!(self, destination);
         destination.resize(self.len()).expect("Target is real and thus all values are valid");
-        self.simd_complex_into_real_target_operation(destination, |x|x.complex_abs(), |x|x.norm().sqrt(), Complexity::Small);
+        self.simd_complex_into_real_target_operation(destination, |x|x.complex_abs(), |x|x.norm(), Complexity::Small);
     }
 
     fn get_magnitude_squared(&self, destination: &mut Self::RealResult) {
         assert_self_complex_and_target_real!(self, destination);
         destination.resize(self.len()).expect("Target is real and thus all values are valid");
-        self.simd_complex_into_real_target_operation(destination, |x|x.complex_abs_squared(), |x|x.norm(), Complexity::Small);
+        self.simd_complex_into_real_target_operation(destination, |x|x.complex_abs_squared(), |x|x.re * x.re + x.im * x.im, Complexity::Small);
     }
 
     fn get_phase(&self, destination: &mut Self::RealResult) {

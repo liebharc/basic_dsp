@@ -77,74 +77,77 @@ pub trait RealInterpolationOps<S, T>
 		where B: Buffer<S, T>;
 }
 
+fn interpolate_priv_scalar<T, TT> (
+    temp: &mut [TT], data: &[TT],
+    function: &RealImpulseResponse<T>,
+    interpolation_factor: T, delay: T,
+    conv_len: usize)
+        where T: RealNumber,
+              TT: Zero + Mul<Output=TT> + Copy + Send + Sync + From<T> {
+    let mut i = 0;
+    for num in temp {
+        let center = T::from(i).unwrap() / interpolation_factor;
+        let rounded = center.floor();
+        let iter = WrappingIterator::new(&data, rounded.to_isize().unwrap() - conv_len as isize -1, 2 * conv_len + 1);
+        let mut sum = TT::zero();
+        let mut j = -T::from(conv_len).unwrap() - (center - rounded) + delay;
+        for c in iter {
+            sum = sum + c * TT::from(function.calc(j));
+            j = j + T::one();
+        }
+        (*num) = sum;
+        i += 1;
+    }
+}
+
+fn function_to_vectors<T>(
+    function: &RealImpulseResponse<T>,
+    conv_len: usize,
+    complex_result: bool,
+    interpolation_factor: usize,
+    delay: T) -> Vec<GenDspVec<Vec<T>, T>>
+        where T: RealNumber {
+    let mut result = Vec::with_capacity(interpolation_factor);
+    for shift in 0..interpolation_factor {
+        let offset = T::from(shift).unwrap() / T::from(interpolation_factor).unwrap();
+        result.push(function_to_vector(
+            function,
+            conv_len,
+            complex_result,
+            offset,
+            delay));
+    }
+
+    result
+}
+
+fn function_to_vector<T>(
+    function: &RealImpulseResponse<T>,
+    conv_len: usize,
+    complex_result: bool,
+    offset: T,
+    delay: T) -> GenDspVec<Vec<T>, T>
+        where T: RealNumber {
+    let step = if complex_result { 2 } else { 1 };
+    let data_len = step * (2 * conv_len + 1);
+    let mut imp_resp =
+      vec!(T::zero(); data_len).to_gen_dsp_vec(complex_result, DataDomain::Time);
+    let mut i = 0;
+    let mut j = -(T::from(conv_len).unwrap() - T::one()) + delay;
+    while i < data_len {
+        let value = function.calc(j - offset);
+        imp_resp[i] = value;
+        i += step;
+        j = j + T::one();
+    }
+    imp_resp
+}
+
 impl<S, T, N, D> DspVec<S, T, N, D>
 	where S: ToSliceMut<T>,
 		  T: RealNumber,
 		  N: NumberSpace,
 		  D: Domain {
-	  fn interpolate_priv_scalar<TT> (
-		  temp: &mut [TT], data: &[TT],
-		  function: &RealImpulseResponse<T>,
-		  interpolation_factor: T, delay: T,
-		  conv_len: usize)
-			  where TT: Zero + Mul<Output=TT> + Copy + Send + Sync + From<T> {
-		  let mut i = 0;
-		  for num in temp {
-			  let center = T::from(i).unwrap() / interpolation_factor;
-			  let rounded = center.floor();
-			  let iter = WrappingIterator::new(&data, rounded.to_isize().unwrap() - conv_len as isize -1, 2 * conv_len + 1);
-			  let mut sum = TT::zero();
-			  let mut j = -T::from(conv_len).unwrap() - (center - rounded) + delay;
-			  for c in iter {
-				  sum = sum + c * TT::from(function.calc(j));
-				  j = j + T::one();
-			  }
-			  (*num) = sum;
-			  i += 1;
-		  }
-	  }
-
-	  fn function_to_vectors(
-		  function: &RealImpulseResponse<T>,
-		  conv_len: usize,
-		  complex_result: bool,
-		  interpolation_factor: usize,
-		  delay: T) -> Vec<GenDspVec<Vec<T>, T>> {
-		  let mut result = Vec::with_capacity(interpolation_factor);
-		  for shift in 0..interpolation_factor {
-			  let offset = T::from(shift).unwrap() / T::from(interpolation_factor).unwrap();
-			  result.push(Self::function_to_vector(
-				  function,
-				  conv_len,
-				  complex_result,
-				  offset,
-				  delay));
-		  }
-
-		  result
-	  }
-
-	  fn function_to_vector(
-		  function: &RealImpulseResponse<T>,
-		  conv_len: usize,
-		  complex_result: bool,
-		  offset: T,
-		  delay: T) -> GenDspVec<Vec<T>, T> {
-		  let step = if complex_result { 2 } else { 1 };
-		  let data_len = step * (2 * conv_len + 1);
-		  let mut imp_resp =
-		  	vec!(T::zero(); data_len).to_gen_dsp_vec(complex_result, DataDomain::Time);
-		  let mut i = 0;
-		  let mut j = -(T::from(conv_len).unwrap() - T::one()) + delay;
-		  while i < data_len {
-			  let value = function.calc(j - offset);
-			  imp_resp[i] = value;
-			  i += step;
-			  j = j + T::one();
-		  }
-		  imp_resp
-	  }
-
 	  fn interpolate_priv_simd<TT, C, CMut, RMul, RSum, B>(
 		  &mut self,
 		  buffer: &mut B,
@@ -164,11 +167,12 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 				  RMul: Fn(T::Reg, T::Reg) -> T::Reg,
 				  RSum: Fn(T::Reg) -> TT,
 				  B: Buffer<S, T> {
+          let data_len = self.len();
 		  let mut temp = buffer.get(new_len);
 		  {
 			  let step = if self.is_complex() { 2 } else { 1 };
 			  let number_of_shifts = T::Reg::len() / step;
-			  let vectors = Self::function_to_vectors(
+			  let vectors = function_to_vectors(
 				  function,
 				  conv_len,
 				  self.is_complex(),
@@ -189,7 +193,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 			  let scalar_len = vectors[0].points() * interpolation_factor;
 			  let mut i = 0;
 			  {
-				  let data = convert(&data[0..len]);
+				  let data = convert(&data[0..data_len]);
 				  for num in &mut dest[0..scalar_len] {
 					  (*num) =
 						  Self::interpolate_priv_simd_step(
@@ -199,7 +203,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 				  }
 			  }
 
-			  let (scalar_left, _, vectorization_length) = T::Reg::calc_data_alignment_reqs(&data[0..len]);
+			  let (scalar_left, _, vectorization_length) = T::Reg::calc_data_alignment_reqs(&data[0..data_len]);
 			  let simd = T::Reg::array_to_regs(&data[scalar_left..vectorization_length]);
 			  // Length of a SIMD reg relative to the length of type T
 			  // which is 1 for real numbers or 2 for complex numbers
@@ -233,7 +237,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
 			  i = len - scalar_len;
 			  {
-				  let data = convert(&data[0..len]);
+				  let data = convert(&data[0..data_len]);
 				  for num in &mut dest[len-scalar_len..len] {
 					  (*num) =
 						  Self::interpolate_priv_simd_step(
@@ -328,7 +332,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
 	  		let temp = temp.to_slice_mut();;
 	  		let mut temp = array_to_complex_mut(&mut temp[0..new_len]);
 	  		let data = array_to_complex(data);
-	  		Self::interpolate_priv_scalar(
+	  		interpolate_priv_scalar(
 	  			temp, data,
 	  			function,
 	  			interpolation_factor, delay, conv_len);
@@ -340,9 +344,9 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
 		let mut temp = buffer.get(new_len);
 		{
 			let data = self.data.to_slice();
-	  		let data = &data[0..new_len];
+	  		let data = &data[0..len];
 			let temp = temp.to_slice_mut();
-	  		Self::interpolate_priv_scalar(
+	  		interpolate_priv_scalar(
 	  			temp, data,
 	  			function,
 	  			interpolation_factor, delay, conv_len);
@@ -375,7 +379,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
 
     fft(self, buffer, false); // fft
     self.swap_halves_priv(buffer, true); // fft shift
-    let points = self.points();
+    let points = self.len() / 2;
     let interpolation_factorf = T::from(interpolation_factor).unwrap();
     self.multiply_function_priv(
         function.is_symmetric(),
@@ -385,7 +389,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
         |f,x|Complex::<T>::new(f.calc(x), T::zero()));
     self.swap_halves_priv(buffer, false); // ifft shift
     fft(self, buffer, true); // ifft
-     self.scale(T::one() / T::from(points).unwrap());
+    self.scale(T::one() / T::from(points).unwrap());
     if !is_complex {
         // Convert vector back into real number space
         self.pure_complex_to_real_operation_inplace(|x,_arg| x.re, ());

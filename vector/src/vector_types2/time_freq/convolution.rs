@@ -130,18 +130,17 @@ impl<'a, S, T, N, D> Convolution<S, T, &'a RealImpulseResponse<T>> for DspVec<S,
 						delta: self.delta(),
 						domain: self.domain.clone(),
 						number_space: self.number_space.clone(),
-						valid_len: self.valid_len,
+						valid_len: 2 * points,
 						multicore_settings: MultiCoreSettings::default()
 					};
 
-				let two = T::one() + T::one();
 				let mut i = 0;
 				let mut j = -(T::from(len).unwrap());
 				while i < imp_resp.len() {
 					let value = function.calc(j * ratio_inv);
 					imp_resp[i] = value;
 					i += 2;
-					j = j + two;
+					j = j + T::one();
 				}
 
 				self.convolve_vector(buffer, &imp_resp)

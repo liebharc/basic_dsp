@@ -306,8 +306,9 @@ mod slow_test {
     #[test]
     fn abs_phase_conversions_vector32() {
         parameterized_vector_test(|iteration, range| {
-            let abs = create_data(201511191, iteration, range.start, range.end);
-            let phase = create_data_with_len(201511192, iteration, abs.len());
+            let abs = create_data_even_in_range(201511191, iteration, range.start, range.end, 0.1, 10.0);
+            let phase = create_data_in_range_with_len(201511204, iteration, abs.len(), -1.57, 1.57);
+
             let absvec = abs.clone().to_real_time_vec();
             let phasevec = phase.clone().to_real_time_vec();
             let delta = create_delta(3561159, iteration);
@@ -319,13 +320,13 @@ mod slow_test {
             let mut abs_vector = Vec::new().to_real_time_vec();
             let mut phase_vector = Vec::new().to_real_time_vec();
             assert_eq!(abs_vector.is_complex(), false);
-            complex.get_real(&mut abs_vector);
+            complex.get_magnitude(&mut abs_vector);
             assert_eq!(abs_vector.len(), abs.len());
-            complex.get_imag(&mut phase_vector);
+            complex.get_phase(&mut phase_vector);
             let phase_result = complex.phase();
-            assert_vector_eq_with_reason(&abs, &abs_vector[..], "Failure in get_real");
-            assert_vector_eq_with_reason(&phase, &phase_vector[..], "Failure in get_imag");
-            assert_vector_eq_with_reason(&phase, &phase_result[..], "Failure in to_real");
+            assert_vector_eq_with_reason(&phase, &phase_vector[..], "Failure in get_phase");
+            assert_vector_eq_with_reason(&abs, &abs_vector[..], "Failure in get_magnitude");
+            assert_vector_eq_with_reason(&phase, &phase_result[..], "Failure in phase()");
             assert_eq!(abs_vector.is_complex(), false);
             assert_eq!(abs_vector.delta(), delta);
             assert_eq!(phase_vector.is_complex(), false);

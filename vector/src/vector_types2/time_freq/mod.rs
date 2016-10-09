@@ -381,22 +381,24 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 				});
 		} else {
 			let len = self.len();
-			let points = self.points();
 			let mut data = self.data.to_slice_mut();
 			let converted = convert_mut(&mut data[0..len]);
+			let points = converted.len();
 			Chunk::execute_sym_pairs_with_range(
 				Complexity::Medium, &self.multicore_settings,
 				converted, 1, (ratio, function_arg),
 				move |array1, range1, array2, range2, (ratio, arg)| {
 					let two = T::from(2.0).unwrap();
 					assert!(array1.len() >= array2.len());
-					assert!(range1.end <= range2.start);let scale = TT::from(ratio);
+					assert!(range1.end <= range2.start);
+					let scale = TT::from(ratio);
 					let len1 = array1.len();
 					let len2 = array2.len();
 					let offset = if points % 2 != 0 { 1 } else { 0 };
 					let max = T::from(points - offset).unwrap() / two;
-					let mut j1 = -(T::from(points - offset).unwrap()) / two + T::from(range1.start).unwrap();
-					let mut j2 = (T::from(points - offset).unwrap()) / two - T::from(range2.end - 1).unwrap();
+					let center = T::from(points - offset).unwrap() / two;
+					let mut j1 = -center + T::from(range1.start).unwrap();
+					let mut j2 = center - T::from(range2.end - 1).unwrap();
 					let mut i1 = 0;
 					let mut i2 = 0;
 					{
@@ -423,7 +425,6 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 						}
 						j2 = j1;
 					}
-
 					// Now we have to deal with differences in length
 					// `common_length` is the number of iterations we spent
 					// in the previous loop.

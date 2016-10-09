@@ -4,7 +4,7 @@ extern crate num;
 pub mod tools;
 
 mod slow_test {
-    use basic_dsp::*;
+    use basic_dsp::vector_types2::*;
     use basic_dsp::conv_types::*;
     use basic_dsp::window_functions::*;
     use tools::*;
@@ -15,17 +15,17 @@ mod slow_test {
         for iteration in 0 .. 3 {
             let a = create_data_even(201602211, iteration, 1001, 2000);
             let delta = create_delta(201602212, iteration);
-            let time = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let mut time = a.to_complex_time_vec();
+            time.set_delta(delta);
             let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
-            let freq = time.clone().fft().unwrap();
+            let mut buffer = SingleBuffer::new();
+            let mut freq = time.clone().fft(&mut buffer);
             let points = time.points();
             let ratio = create_delta(20160229, iteration).abs() / 10.0; // Should get us a range [0.0 .. 1.0] and hopefully we are not that unlucky to get 0.0
-            let time_res = time.convolve(&fun as &RealImpulseResponse<f32>, ratio, points).unwrap();
-            let freq_res = freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
-            let ifreq_res = freq_res.ifft().unwrap();
-            let left = &ifreq_res.interleaved(0..);
-            let right = &time_res.interleaved(0..);
-            assert_vector_eq_with_reason_and_tolerance(&left, &right, 0.2, "Results should match independent if done in time or frequency domain");
+            time.convolve(&mut buffer, &fun as &RealImpulseResponse<f32>, ratio, points);
+            freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio);
+            let ifreq_res = freq.ifft(&mut buffer);
+            assert_vector_eq_with_reason_and_tolerance(&ifreq_res[..], &time[..], 0.2, "Results should match independent if done in time or frequency domain");
         }
     }
 
@@ -34,17 +34,17 @@ mod slow_test {
         for iteration in 0 .. 3 {
             let a = create_data_even(201602214, iteration, 2001, 4000);
             let delta = create_delta(201602215, iteration);
-            let time = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let mut time = a.to_complex_time_vec();
+            time.set_delta(delta);
             let fun: SincFunction<f32> = SincFunction::new();
-            let freq = time.clone().fft().unwrap();
+            let mut buffer = SingleBuffer::new();
+            let mut freq = time.clone().fft(&mut buffer);
             let points = time.points();
             let ratio = create_delta(201602216, iteration).abs() / 20.0 + 0.5; // Should get us a range [0.5 .. 1.0]
-            let time_res = time.convolve(&fun as &RealImpulseResponse<f32>, ratio, points).unwrap();
-            let freq_res = freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
-            let ifreq_res = freq_res.ifft().unwrap();
-            let left = &ifreq_res.interleaved(0..);
-            let right = &time_res.interleaved(0..);
-            assert_vector_eq_with_reason_and_tolerance(&left, &right, 0.3, "Results should match independent if done in time or frequency domain");
+            time.convolve(&mut buffer, &fun as &RealImpulseResponse<f32>, ratio, points);
+            freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio);
+            let ifreq_res = freq.ifft(&mut buffer);
+            assert_vector_eq_with_reason_and_tolerance(&ifreq_res[..], &time[..], 0.3, "Results should match independent if done in time or frequency domain");
         }
     }
 
@@ -58,12 +58,15 @@ mod slow_test {
             let a = create_data_even(201602217, iteration, 2002, 4000);
             let b = create_data_even(201602218, iteration, 50, 202);
             let delta = create_delta(201602219, iteration);
-            let time = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let mut time = a.to_complex_time_vec();
+            time.set_delta(delta);
+            let mut buffer = SingleBuffer::new();
             let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
             let ratio = iteration as f32 + 1.0;
-            let left = time.clone().convolve(&fun as &RealImpulseResponse<f32>, ratio, b.len()).unwrap();
-            let right = time.convolve(&fun as &RealImpulseResponse<f32>, ratio + offset, b.len()).unwrap();
-            assert_vector_eq_with_reason_and_tolerance(&left.interleaved(0..), &right.interleaved(0..), 0.1, "Results should match independent if done in optimized or non optimized code branch");
+            let mut left = time.clone();
+            left.convolve(&mut buffer, &fun as &RealImpulseResponse<f32>, ratio, b.len());
+            time.convolve(&mut buffer, &fun as &RealImpulseResponse<f32>, ratio + offset, b.len());
+            assert_vector_eq_with_reason_and_tolerance(&left[..], &time[..], 0.1, "Results should match independent if done in optimized or non optimized code branch");
         }
     }
 
@@ -73,16 +76,20 @@ mod slow_test {
             let a = create_data_even(201601171, iteration, 502, 1000);
             let b = create_data_with_len(201601172, iteration, a.len());
             let delta = create_delta(201601173, iteration);
-            let time1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
-            let time2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
-            let left = time1.clone().convolve_vector(&time2).unwrap();
-            let freq1 = time1.fft().unwrap();
-            let freq2 = time2.fft().unwrap();
-            let freq_res = freq1.mul(&freq2).unwrap();
-            let right = freq_res.ifft().unwrap();
+            let mut time1 = a.to_complex_time_vec();
+            time1.set_delta(delta);
+            let mut time2 = b.to_complex_time_vec();
+            time2.set_delta(delta);
+            let mut buffer = SingleBuffer::new();
+            let mut left = time1.clone();
+            left.convolve_vector(&mut buffer, &time2).unwrap();
+            let mut freq1 = time1.fft(&mut buffer);
+            let freq2 = time2.fft(&mut buffer);
+            freq1.mul(&freq2).unwrap();
+            let right = freq1.ifft(&mut buffer);
             assert_vector_eq_with_reason_and_tolerance(
-                left.interleaved(0..),
-                &conv_swap(right.interleaved(0..))[0..left.len()],
+                &left[..],
+                &conv_swap(&right[..])[0..left.len()],
                 0.2,
                 "Results should match independent if done in time or frequency domain");
         }
@@ -94,14 +101,19 @@ mod slow_test {
             let a = create_data_even(201601174, iteration, 1002, 2000);
             let b = create_data_even(201601175, iteration, 50, 202);
             let delta = create_delta(201601176, iteration);
-            let time1 = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
-            let time2 = ComplexTimeVector32::from_interleaved_with_delta(&b, delta);
-            let left = time1.clone().convolve_vector(&time2).unwrap();
-            let time2 = ComplexTimeVector32::from_interleaved_with_delta(&conv_zero_pad(&b, time1.len(), true), delta);
-            let right = time1.convolve_vector(&time2).unwrap();
+            let mut time1 = a.to_complex_time_vec();
+            time1.set_delta(delta);
+            let mut time2 = b.clone().to_complex_time_vec();
+            time2.set_delta(delta);
+            let mut buffer = SingleBuffer::new();
+            let mut left = time1.clone();
+            left.convolve_vector(&mut buffer, &time2).unwrap();
+            let mut time2 = conv_zero_pad(&b, time1.len(), true).to_complex_time_vec();
+            time2.set_delta(delta);
+            time1.convolve_vector(&mut buffer, &time2).unwrap();
             assert_vector_eq_with_reason_and_tolerance(
-                left.interleaved(0..),
-                right.interleaved(0..),
+                &left[..],
+                &time1[..],
                 0.2,
                 "Results should match independent if done with a smaller vector or with a zero padded vector of the same size");
         }
@@ -113,14 +125,19 @@ mod slow_test {
             let a = create_data_even(201601177, iteration, 1002, 2000);
             let b = create_data_even(201601178, iteration, 50, 202);
             let delta = create_delta(201601179, iteration);
-            let time1 = RealTimeVector32::from_array_with_delta(&a, delta);
-            let time2 = RealTimeVector32::from_array_with_delta(&b, delta);
-            let left = time1.clone().convolve_vector(&time2).unwrap();
-            let time2 = RealTimeVector32::from_array_with_delta(&conv_zero_pad(&b, time1.len(), false), delta);
-            let right = time1.convolve_vector(&time2).unwrap();
+            let mut time1 = a.to_real_time_vec();
+            time1.set_delta(delta);
+            let mut time2 = b.clone().to_real_time_vec();
+            time2.set_delta(delta);
+            let mut buffer = SingleBuffer::new();
+            let mut left = time1.clone();
+            left.convolve_vector(&mut buffer, &time2).unwrap();
+            let mut time2 = conv_zero_pad(&b, time1.len(), false).to_real_time_vec();
+            time2.set_delta(delta);
+            time1.convolve_vector(&mut buffer, &time2).unwrap();
             assert_vector_eq_with_reason_and_tolerance(
-                left.real(0..),
-                right.real(0..),
+                &left[..],
+                &time1[..],
                 0.2,
                 "Results should match independent if done with a smaller vector or with a zero padded vector of the same size");
         }
@@ -206,14 +223,15 @@ mod slow_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data_even(20160116, iteration, range.start, range.end);
             let delta = create_delta(201601161, iteration);
-            let time = ComplexTimeVector32::from_interleaved_with_delta(&a, delta);
+            let mut time = a.to_complex_time_vec();
+            time.set_delta(delta);
             let triag_sym = TriangularWindow;
             let triag_unsym = unsym_triag_window();
-            let result_sym = time.clone().apply_window(&triag_sym).unwrap();
-            let result_unsym = time.apply_window(&triag_unsym).unwrap();
-            let left = &result_sym.interleaved(0..);
-            let right = &result_unsym.interleaved(0..);
-            assert_vector_eq_with_reason_and_tolerance(&left, &right, 1e-2, "Results should match with or without symmetry optimization");
+            let mut result_sym = time.clone();
+            result_sym.apply_window(&triag_sym);
+            let mut result_unsym = time;
+            result_unsym.apply_window(&triag_unsym);
+            assert_vector_eq_with_reason_and_tolerance(&result_sym[..], &result_unsym[..], 1e-2, "Results should match with or without symmetry optimization");
         });
     }
 
@@ -222,15 +240,16 @@ mod slow_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data_even(201601162, iteration, range.start, range.end);
             let delta = create_delta(201601163, iteration);
-            let freq = ComplexFreqVector32::from_interleaved_with_delta(&a, delta);
+            let mut freq = a.to_complex_freq_vec();
+            freq.set_delta(delta);
             let rc_sym: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
             let rc_unsym = unsym_rc_mul();
             let ratio = create_delta(201601164, iteration).abs() / 20.0 + 0.5; // Should get us a range [0.5 .. 1.0]
-            let result_sym = freq.clone().multiply_frequency_response(&rc_sym as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
-            let result_unsym = freq.multiply_frequency_response(&rc_unsym as &RealFrequencyResponse<f32>, 1.0 / ratio).unwrap();
-            let left = &result_sym.interleaved(0..);
-            let right = &result_unsym.interleaved(0..);
-            assert_vector_eq_with_reason_and_tolerance(&left, &right, 1e-2, "Results should match with or without symmetry optimization");
+            let mut result_sym = freq.clone();
+            result_sym.multiply_frequency_response(&rc_sym as &RealFrequencyResponse<f32>, 1.0 / ratio);
+            let mut result_unsym = freq;
+            result_unsym.multiply_frequency_response(&rc_unsym as &RealFrequencyResponse<f32>, 1.0 / ratio);
+            assert_vector_eq_with_reason_and_tolerance(&result_sym[..], &result_unsym[..], 1e-2, "Results should match with or without symmetry optimization");
         });
     }
 }
