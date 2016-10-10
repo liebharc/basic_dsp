@@ -1,21 +1,22 @@
-use basic_dsp::{
-    RealNumber,
-    DataVec,
-    DataVec32, 
-    TransRes,
-    RealTimeVector32,
-    RealTimeVector64,
-    ComplexTimeVector32,
-    DataVecDomain};
+use basic_dsp::RealNumber;
+use basic_dsp::vector_types2::*;
 use std::boxed::Box;
-use std::fmt::Debug;
 
 pub const DEFAULT_DATA_SIZE: usize = 10000;
 
-pub struct VectorBox<T>
+pub type RealTime32Box = VectorBox<RealTimeVec<Vec<f32>, f32>, f32>;
+pub type RealTime64Box = VectorBox<RealTimeVec<Vec<f64>, f64>, f64>;
+
+pub type ComplexTime32Box = VectorBox<ComplexTimeVec<Vec<f32>, f32>, f32>;
+
+pub type Gen32Box = VectorBox<GenDspVec<Vec<f32>, f32>, f32>;
+
+pub struct VectorBox<B, T>
+    where T: RealNumber
 {
-    pub vector: *mut T,
-    pub size: usize
+    pub vector: *mut B,
+    pub size: usize,
+    pub buffer: SingleBuffer<T>
 }
 
 #[derive(Copy)]
@@ -38,138 +39,118 @@ pub fn translate_size(size: Size) -> usize {
     }
 }
 
-impl VectorBox<Vec<f32>> {
-    pub fn new(size: Size) -> VectorBox<Vec<f32>>
+impl VectorBox<RealTimeVec<Vec<f32>, f32>, f32> {
+    pub fn new(size: Size) -> VectorBox<RealTimeVec<Vec<f32>, f32>, f32>
+    {
+        let size = translate_size(size);
+        let data = vec![10.0; size];
+        VectorBox
+        {
+            vector: Box::into_raw(Box::new(data.to_real_time_vec())),
+            buffer: SingleBuffer::with_capacity(size),
+            size: size
+        }
+    }
+}
+
+impl VectorBox<Vec<f32>, f32> {
+    pub fn new(size: Size) -> VectorBox<Vec<f32>, f32>
     {
         let size = translate_size(size);
         let data = vec![10.0; size];
         VectorBox
         {
             vector: Box::into_raw(Box::new(data)),
+            buffer: SingleBuffer::with_capacity(size),
             size: size
         }
     }
 }
 
-impl VectorBox<Vec<f64>> {
-    pub fn new(size: Size) -> VectorBox<Vec<f64>>
+impl VectorBox<Vec<f64>, f64> {
+    pub fn new(size: Size) -> VectorBox<Vec<f64>, f64>
     {
         let size = translate_size(size);
         let data = vec![10.0; size];
         VectorBox
         {
             vector: Box::into_raw(Box::new(data)),
+            buffer: SingleBuffer::with_capacity(size),
             size: size
         }
     }
 }
 
-impl VectorBox<DataVec32>
-{
-    pub fn with_size(is_complex: bool, size: usize) -> VectorBox<DataVec32>
-    {
-        let data = vec![10.0; size];
-        let vector = DataVec32::from_array_no_copy(is_complex, DataVecDomain::Time, data);
-        VectorBox
-        {
-            vector: Box::into_raw(Box::new(vector)),
-            size: size
-        }
-    }
-    
-    pub fn new(size: Size, is_complex: bool) -> VectorBox<DataVec32>
+impl VectorBox<GenDspVec<Vec<f32>, f32>, f32> {
+    pub fn new(size: Size) -> VectorBox<GenDspVec<Vec<f32>, f32>, f32>
     {
         let size = translate_size(size);
+        Self::with_size(size)
+    }
+
+    pub fn with_size(size: usize) -> VectorBox<GenDspVec<Vec<f32>, f32>, f32>
+    {
         let data = vec![10.0; size];
-        let vector = DataVec32::from_array_no_copy(is_complex, DataVecDomain::Time, data);
         VectorBox
         {
-            vector: Box::into_raw(Box::new(vector)),
+            vector: Box::into_raw(Box::new(data.to_gen_dsp_vec(false, DataDomain::Time))),
+            buffer: SingleBuffer::with_capacity(size),
             size: size
         }
     }
 }
 
-impl VectorBox<RealTimeVector32>
-{
-    pub fn new(size: Size) -> VectorBox<RealTimeVector32>
+impl VectorBox<ComplexTimeVec<Vec<f32>, f32>, f32> {
+    pub fn new(size: Size) -> VectorBox<ComplexTimeVec<Vec<f32>, f32>, f32>
     {
         let size = translate_size(size);
         let data = vec![10.0; size];
-        let vector = RealTimeVector32::from_array_no_copy(data);
         VectorBox
         {
-            vector: Box::into_raw(Box::new(vector)),
+            vector: Box::into_raw(Box::new(data.to_complex_time_vec())),
+            buffer: SingleBuffer::with_capacity(size),
             size: size
         }
     }
 }
 
-impl VectorBox<RealTimeVector64>
-{
-    pub fn new(size: Size) -> VectorBox<RealTimeVector64>
+impl VectorBox<RealTimeVec<Vec<f64>, f64>, f64> {
+    pub fn new(size: Size) -> VectorBox<RealTimeVec<Vec<f64>, f64>, f64>
     {
         let size = translate_size(size);
         let data = vec![10.0; size];
-        let vector = RealTimeVector64::from_array_no_copy(data);
         VectorBox
         {
-            vector: Box::into_raw(Box::new(vector)),
-            size: size
-        }
-    }
-}
-
-impl VectorBox<ComplexTimeVector32>
-{
-    pub fn new(size: Size) -> VectorBox<ComplexTimeVector32>
-    {
-        let size = translate_size(size);
-        let data = vec![10.0; size];
-        let vector = ComplexTimeVector32::from_interleaved_no_copy(data);
-        VectorBox
-        {
-            vector: Box::into_raw(Box::new(vector)),
+            vector: Box::into_raw(Box::new(data.to_real_time_vec())),
+            buffer: SingleBuffer::with_capacity(size),
             size: size
         }
     }
 }
 
 #[allow(dead_code)]
-impl<T> VectorBox<T>
+impl<B, T> VectorBox<B, T>
+    where T: RealNumber
 {
     pub fn len(&self) -> usize {
         self.size
     }
-    
+
     pub fn execute<F>(&mut self, function: F) -> bool
-        where F: Fn(T) -> T + 'static + Sync
+        where F: Fn(B, &mut SingleBuffer<T>) -> B + 'static + Sync
     {
         unsafe {
             let vector = Box::from_raw(self.vector);
-            let result = function(*vector);
+            let result = function(*vector, &mut self.buffer);
             self.vector = Box::into_raw(Box::new(result));
         }
-        
-        true
-    }
-    
-    pub fn execute_res<F, U>(&mut self, function: F) -> bool
-        where F: Fn(T) -> TransRes<T> + 'static + Sync,
-        T: DataVec<U> + Debug,
-        U: RealNumber
-    {
-        unsafe {
-            let vector = Box::from_raw(self.vector);
-            let result = function(*vector).unwrap();
-            self.vector = Box::into_raw(Box::new(result));
-        }
-        
+
         true
     }
 }
 
-impl<T> Drop for VectorBox<T>
+impl<B, T> Drop for VectorBox<B, T>
+    where T: RealNumber
 {
     fn drop(&mut self) {
         unsafe {
