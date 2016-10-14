@@ -93,7 +93,7 @@ impl VectorBox<GenDspVec<Vec<f32>, f32>, f32> {
         let data = vec![10.0; size];
         VectorBox
         {
-            vector: Box::into_raw(Box::new(data.to_gen_dsp_vec(false, DataDomain::Time))),
+            vector: Box::into_raw(Box::new(data.to_gen_dsp_vec(true, DataDomain::Time))),
             buffer: SingleBuffer::with_capacity(size),
             size: size
         }

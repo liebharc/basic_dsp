@@ -252,21 +252,29 @@ impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for GenDspIdent<T>
 
 impl<T, N, D> OffsetOps<T> for Identifier<T, N, D>
  	where T: RealNumber,
-		  N: RealNumberSpace,
+		  N: NumberSpace,
 		  D: Domain {
     fn offset(&mut self, offset: T) {
 		let arg = self.arg;
-		self.add_op(Operation::AddReal(arg, offset));
+		if self.is_complex() {
+			self.add_op(Operation::AddComplex(arg, Complex::<T>::new(offset, T::zero())));
+		} else {
+			self.add_op(Operation::AddReal(arg, offset));
+		}
 	}
 }
 
 impl<T, N, D> ScaleOps<T> for Identifier<T, N, D>
  	where T: RealNumber,
-		  N: RealNumberSpace,
+		  N: NumberSpace,
 		  D: Domain{
     fn scale(&mut self, offset: T) {
 		let arg = self.arg;
-		self.add_op(Operation::MultiplyReal(arg, offset));
+		if self.is_complex() {
+			self.add_op(Operation::MultiplyComplex(arg, Complex::<T>::new(offset, T::zero())));
+		} else {
+			self.add_op(Operation::MultiplyReal(arg, offset));
+		}
 	}
 }
 

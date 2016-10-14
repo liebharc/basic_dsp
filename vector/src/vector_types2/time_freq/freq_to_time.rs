@@ -3,7 +3,7 @@ use num::Complex;
 use super::super::{
     ToTimeResult, ToRealTimeResult, TransRes,
     DspVec, Vector, Buffer, ToSliceMut,
-    RededicateForceOps, ErrorReason,
+    RededicateForceOps, ErrorReason, MetaData,
     ComplexNumberSpace, Owner, FrequencyDomain, DataDomain,
     InsertZerosOpsBuffered, ScaleOps, TimeDomainOperations, FrequencyDomainOperations
 };

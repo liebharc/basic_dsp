@@ -1,8 +1,8 @@
 //! Specifies the conversions between data types.
 use RealNumber;
 use super::{
-    DspVec, GenDspVec, Vector,
-    RealTimeVec, RealFreqVec,
+    DspVec, GenDspVec, MetaData,
+    RealTimeVec, RealFreqVec, ResizeOps,
     ComplexTimeVec, ComplexFreqVec,
     ToSlice, NumberSpace, Domain, DataDomain,
     RealData, ComplexData, RealOrComplexData,
@@ -50,6 +50,15 @@ pub trait RededicateForceOps<Other> {
     /// support one domain and number space value. Failures will
     /// be silenty ignored (which is by design).
     fn rededicate_with_runtime_data(origin: Other, is_complex: bool, domain: DataDomain) -> Self;
+}
+
+/// This trait allows to change a data type. The operations will
+/// convert a type to a different one and set `self.len()` to zero.
+/// However `self.allocated_len()` will remain unchanged. The use case for this
+/// is to allow to reuse the memory of a vector for different operations.
+pub trait RededicateToOps<Other> {
+    /// Make `Selfr` a `SelOther`.
+    fn rededicate(self) -> Other;
 }
 
 /// Specifies what the the result is if a type is transformed to real numbers.
@@ -267,5 +276,27 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for GenDspVec<S, T>
         result.number_space.is_complex_current = is_complex;
         result.domain.domain_current = domain;
         result
+    }
+}
+
+impl<U, V> RededicateOps<U> for V
+    where V: RededicateForceOps<U> + MetaData + ResizeOps,
+          U: MetaData {
+    fn rededicate_from(origin: U) -> Self {
+        let is_complex = origin.is_complex();
+        let domain = origin.domain();
+        let mut result = Self::rededicate_from_force(origin);
+        if result.is_complex() != is_complex
+           && result.domain() != domain {
+               result.resize(0).expect("Setting size to 0 should always succeed");
+           }
+        result
+    }
+}
+
+impl<T, U> RededicateToOps<U> for T
+    where U: RededicateOps<T> {
+    fn rededicate(self) -> U {
+        U::rededicate_from(self)
     }
 }

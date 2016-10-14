@@ -11,7 +11,7 @@ use super::super::{
 	VoidResult, DspVec, Domain, NumberSpace, ToSliceMut,
 	GenDspVec, ToDspVector, DataDomain, Buffer, Vector,
     RealNumberSpace, ErrorReason, InsertZerosOpsBuffered,
-    ScaleOps
+    ScaleOps, MetaData
 };
 use super::fft;
 use std::mem;

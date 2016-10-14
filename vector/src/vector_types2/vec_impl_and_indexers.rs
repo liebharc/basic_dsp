@@ -33,15 +33,8 @@ pub trait ComplexIndexMut<Idx>: ComplexIndex<Idx> where Idx: Sized {
     fn complex_mut(&mut self, index: Idx) -> &mut Self::Output;
 }
 
-/// A trait for vector types.
-pub trait Vector<T>
-    where T: RealNumber {
-    /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
-    fn delta(&self) -> T;
-
-    /// Sets the x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
-    fn set_delta(&mut self, delta: T);
-
+/// A trait which provides information about number space and domain.
+pub trait MetaData {
     /// The domain in which the data vector resides. Basically specifies the x-axis and the type of operations which
     /// are valid on this vector.
     ///
@@ -53,6 +46,24 @@ pub trait Vector<T>
     ///
     /// The number space can be changed using the `RededicateOps` trait.
     fn is_complex(&self) -> bool;
+}
+
+/// Operations to resize a data type.
+pub trait ResizeOps {
+    /// Changes `self.len()`.
+    /// If `self.is_complex()` is true then `len` must be an even number.
+    /// `len > self.alloc_len()` is only possible if the underlying storage supports resizing.
+    fn resize(&mut self, len: usize) -> VoidResult;
+}
+
+/// A trait for vector types.
+pub trait Vector<T> : MetaData + ResizeOps
+    where T: RealNumber {
+    /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
+    fn delta(&self) -> T;
+
+    /// Sets the x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
+    fn set_delta(&mut self, delta: T);
 
     /// The number of valid elements in the vector. This can be changed
     /// with the `Resize` trait.
@@ -76,11 +87,40 @@ pub trait Vector<T>
     /// The allocated length may be larger than the length of valid points.
     /// In most cases you likely want to have `len`or `points` instead.
     fn alloc_len(&self) -> usize;
+}
 
-    /// Changes `self.len()`.
-    /// If `self.is_complex()` is true then `len` must be an even number.
-    /// `len > self.alloc_len()` is only possible if the underlying storage supports resizing.
-    fn resize(&mut self, len: usize) -> VoidResult;
+impl<S, T, N, D> MetaData for DspVec<S, T, N, D>
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain  {
+      fn domain(&self) -> DataDomain {
+          self.domain.domain()
+      }
+
+      fn is_complex(&self) -> bool {
+          self.number_space.is_complex()
+      }
+}
+
+impl<S, T, N, D> ResizeOps for DspVec<S, T, N, D>
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain  {
+      fn resize(&mut self, len: usize) -> VoidResult {
+          if self.is_complex() && len % 2 != 0 {
+              return Err(ErrorReason::InputMustHaveAnEvenLength);
+          }
+
+          if len > self.alloc_len() {
+              try!(self.data.try_resize(len));
+          }
+
+          self.valid_len = len;
+
+          Ok(())
+      }
 }
 
 impl<S, T, N, D> Vector<T> for DspVec<S, T, N, D>
@@ -94,14 +134,6 @@ impl<S, T, N, D> Vector<T> for DspVec<S, T, N, D>
 
     fn set_delta(&mut self, delta: T) {
         self.delta = delta;
-    }
-
-    fn domain(&self) -> DataDomain {
-        self.domain.domain()
-    }
-
-    fn is_complex(&self) -> bool {
-        self.number_space.is_complex()
     }
 
     fn len(&self) -> usize {
@@ -122,20 +154,6 @@ impl<S, T, N, D> Vector<T> for DspVec<S, T, N, D>
 
     fn alloc_len(&self) -> usize {
         self.data.len()
-    }
-
-    fn resize(&mut self, len: usize) -> VoidResult {
-        if self.is_complex() && len % 2 != 0 {
-            return Err(ErrorReason::InputMustHaveAnEvenLength);
-        }
-
-        if len > self.alloc_len() {
-            try!(self.data.try_resize(len));
-        }
-
-        self.valid_len = len;
-
-        Ok(())
     }
 }
 

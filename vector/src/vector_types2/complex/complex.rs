@@ -4,7 +4,7 @@ use simd_extensions::Simd;
 use num::Complex;
 use super::super::{
     array_to_complex_mut,
-    Vector, DspVec, ToSliceMut,
+    Vector, DspVec, ToSliceMut, MetaData,
     Domain, ComplexNumberSpace,
 };
 

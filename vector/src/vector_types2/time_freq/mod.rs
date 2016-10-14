@@ -22,7 +22,7 @@ use simd_extensions::*;
 use multicore_support::*;
 use super::{
 	array_to_complex, array_to_complex_mut,
-    Buffer, Vector,
+    Buffer, Vector, MetaData,
     DspVec, ToSliceMut, NumberSpace, Domain
 };
 

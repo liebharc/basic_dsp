@@ -4,7 +4,7 @@ use multicore_support::*;
 use simd_extensions::*;
 use super::super::{
 	Vector, ScalarResult, ErrorReason,
-    DspVec, ToSlice,
+    DspVec, ToSlice, MetaData,
     Domain, RealNumberSpace, ComplexNumberSpace
 };
 

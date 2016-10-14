@@ -124,7 +124,7 @@ impl ComplexNumberSpace for ComplexData { }
 #[derive(Clone)]
 #[derive(PartialEq)]
 pub struct RealOrComplexData {
-    is_complex_current: bool
+    pub is_complex_current: bool
 }
 impl NumberSpace for RealOrComplexData {
     fn is_complex(&self) -> bool { self.is_complex_current }
@@ -169,7 +169,7 @@ impl FrequencyDomain for FrequencyData { }
 #[derive(Clone)]
 #[derive(PartialEq)]
 pub struct TimeOrFrequencyData {
-    domain_current: DataDomain
+    pub domain_current: DataDomain
 }
 impl Domain for TimeOrFrequencyData {
     fn domain(&self) -> DataDomain { self.domain_current }

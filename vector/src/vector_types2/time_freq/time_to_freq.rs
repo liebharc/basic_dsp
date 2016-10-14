@@ -1,7 +1,7 @@
 use RealNumber;
 use super::super::{
     Owner, ToFreqResult, TransRes, TimeDomain,
-    Buffer, Vector, DataDomain,
+    Buffer, Vector, DataDomain, MetaData, ResizeOps,
     DspVec, ToSliceMut, RealNumberSpace,
     NumberSpace, RededicateForceOps, ErrorReason,
     InsertZerosOpsBuffered, FrequencyDomainOperations, TimeDomainOperations

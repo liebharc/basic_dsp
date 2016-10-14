@@ -13,26 +13,34 @@ use File::Basename;
 my $location = dirname(abs_path($0));
 print "$location\n";
 
-open FACADE32, "<", "$location/facade32.rs" or die $!;
-open FACADE64, ">", "$location/facade64.rs.tmp" or die $!;
-print FACADE64 "// Auto generated code, change facade32.rs and run facade64_create.pl\n";
-while (<FACADE32>) {
-    my $line = $_;
-    chomp $line;
-    $line =~ s/(\w+)Vector32/$1Vector64/g;
-    $line =~ s/f32/f64/g;
-    $line =~ s/32bit/64bit/g;
-    $line =~ s/Complex32/Complex64/g;
-    $line =~ s/^pub extern fn (\w+)32/pub extern fn ${1}64/;
-    $line =~ s/fn.(\w+)32.html/fn.${1}64.html/;
-    $line =~ s/`(\w+)32`/`${1}64`/;
-    print FACADE64 "$line\n";
-}
-close FACADE32;
-close FACADE64;
+sub copy_replace {
+  my ($source, $target) = @_;
+  open FACADE32, "<", "$location/$source.rs" or die $!;
+  open FACADE64, ">", "$location/$target.rs.tmp" or die $!;
+  print FACADE64 "// Auto generated code, change $source.rs and run facade64_create.pl\n";
+  while (<FACADE32>) {
+      my $line = $_;
+      chomp $line;
+      $line =~ s/(\w+)Vector32/$1Vector64/g;
+      $line =~ s/f32/f64/g;
+      $line =~ s/32bit/64bit/g;
+      $line =~ s/Complex32/Complex64/g;
+      $line =~ s/^pub extern fn (\w+)32/pub extern fn ${1}64/;
+      $line =~ s/fn.(\w+)32.html/fn.${1}64.html/;
+      $line =~ s/`(\w+)32`/`${1}64`/;
+      $line =~ s/(\w+)F32/${1}F64/g;
+      $line =~ s/32_(\d)/64_${1}/g;
+      print FACADE64 "$line\n";
+  }
+  close FACADE32;
+  close FACADE64;
 
-if (-f "$location/facade64.rs") {
-    unlink "$location/facade64.rs";
+  if (-f "$location/$target.rs") {
+      unlink "$location/$target.rs";
+  }
+
+  rename "$location/$target.rs.tmp", "$location/$target.rs";
 }
 
-rename "$location/facade64.rs.tmp", "$location/facade64.rs";
+copy_replace("facade32", "facade64");
+copy_replace("combined_ops32", "combined_ops64");

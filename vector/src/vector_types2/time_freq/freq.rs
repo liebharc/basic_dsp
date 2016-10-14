@@ -4,7 +4,7 @@ use std::ptr;
 use super::super::{
     ToTimeResult,
     DspVec, Vector, Buffer, ToSliceMut,
-    RededicateForceOps,
+    RededicateForceOps, MetaData,
     ComplexNumberSpace, Owner, FrequencyDomain, DataDomain
 };
 

@@ -10,7 +10,6 @@ pub mod tools;
 mod real {
     use test::Bencher;
     use basic_dsp::vector_types2::*;
-    use basic_dsp::vector_types2::combined_ops::*;
     use tools::*;
 
     #[inline(never)]
@@ -77,139 +76,6 @@ mod real {
             let data = vec![0.0; DEFAULT_DATA_SIZE];
             data.to_real_time_vec();
             });
-    }
-
-    #[bench]
-    fn multi_operations_2ops1_vector_32_benchmark(b: &mut Bencher)
-    {
-        let mut vector = RealTime32Box::new(Size::Small);
-        b.iter(|| {
-            vector.execute(|v, mut buffer|
-                {
-                    let ops = multi_ops1(v);
-                    let ops = ops.add_ops(|mut x| {
-                        x.log(10.0);
-                        x.scale(10.0);
-                        x
-                    });
-                    ops.get(buffer).unwrap()
-                })
-        });
-    }
-
-    #[bench]
-    fn multi_operations_2ops1_vector_32_reference(b: &mut Bencher)
-    {
-        let mut vector = RealTime32Box::new(Size::Small);
-        b.iter(|| {
-            vector.execute(|mut v, _|  {
-                v.log(10.0);
-                v.scale(10.0);
-                v
-            } )
-        });
-    }
-
-    #[bench]
-    fn multi_operations_3ops1_vector_32_benchmark(b: &mut Bencher)
-    {
-        let mut vector = RealTime32Box::new(Size::Small);
-        b.iter(|| {
-            vector.execute(|v, mut buffer|
-                {
-                    let ops = multi_ops1(v);
-                    let ops = ops.add_ops(|mut x| {
-                        x.log(10.0);
-                        x.scale(10.0);
-                        x.sqrt();
-                        x
-                    });
-                    ops.get(buffer).unwrap()
-                })
-        });
-    }
-
-    #[bench]
-    fn multi_operations_3ops1_vector_32_reference(b: &mut Bencher)
-    {
-        let mut vector = RealTime32Box::new(Size::Small);
-        b.iter(|| {
-            vector.execute(|mut v, _|  {
-                v.log(10.0);
-                v.scale(10.0);
-                v.sqrt();
-                v
-            } )
-        });
-    }
-
-    #[bench]
-    fn multi_operations_3ops2_vector_32_benchmark(b: &mut Bencher)
-    {
-        let mut vector = RealTime32Box::new(Size::Small);
-        b.iter(|| {
-            vector.execute(|v, mut buffer|
-                {
-                    let len = v.len();
-                    let operand = vec!(6.0; len).to_real_time_vec();
-                    let ops = multi_ops2(v, operand);
-                    let ops = ops.add_ops(|mut v, o| {
-                        v.abs();
-                        v.mul(&o).unwrap();
-                        v.sin();
-                        (v, o)
-                    });
-                    let (v, _) = ops.get(buffer).unwrap();
-                    v
-                })
-        });
-    }
-
-    #[bench]
-    fn multi_operations_6ops1_vector_32_benchmark(b: &mut Bencher)
-    {
-        let mut vector = RealTime32Box::new(Size::Small);
-        b.iter(|| {
-            vector.execute(|v, mut buffer|
-                {
-                    let ops = multi_ops1(v);
-                    let ops = ops.add_ops(|mut x| {
-                        x.abs();
-                        x.scale(6.0);
-                        x.sin();
-                        x.scale(10.0);
-                        x.abs();
-                        x.sqrt();
-                        x
-                    });
-                    ops.get(buffer).unwrap()
-                })
-        });
-    }
-
-    #[bench]
-    fn multi_operations_6ops2_vector_32_benchmark(b: &mut Bencher)
-    {
-        let mut vector = RealTime32Box::new(Size::Small);
-        b.iter(|| {
-            vector.execute(|v, mut buffer|
-                {
-                    let len = v.len();
-                    let operand = vec!(6.0; len).to_real_time_vec();
-                    let ops = multi_ops2(v, operand);
-                    let ops = ops.add_ops(|mut v, o| {
-                        v.abs();
-                        v.mul(&o).unwrap();
-                        v.sin();
-                        v.scale(10.0);
-                        v.abs();
-                        v.sqrt();
-                        (v, o)
-                    });
-                    let (v, _) = ops.get(buffer).unwrap();
-                    v
-                })
-        });
     }
 
     #[bench]
@@ -285,26 +151,6 @@ mod real {
             vector.execute(|mut v, _|
                 {
                     v.map_inplace((), |v,_,_| 2.0 * v);
-                    v
-                })
-        });
-    }
-
-    #[bench]
-    fn real_scale_with_multi_ops_mapping_32m_benchmark(b: &mut Bencher)
-    {
-        let mut vector = RealTime32Box::new(Size::Medium);
-        b.iter(|| {
-            vector.execute(|v, mut buffer|
-                {
-                    let len = v.len();
-                    let operand = vec!(6.0; len).to_real_time_vec();
-                    let ops = multi_ops2(v, operand);
-                    let ops = ops.add_ops(|mut v, o| {
-                        v.map_inplace(|v, _| 2.0 * v);
-                        (v, o)
-                    });
-                    let (v, _) = ops.get(buffer).unwrap();
                     v
                 })
         });

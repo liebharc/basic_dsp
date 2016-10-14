@@ -5,7 +5,7 @@ use num::Complex;
 use std::ops::*;
 use super::super::{
     Owner, ToRealResult, ErrorReason,
-    Buffer, Vector, Resize,
+    Buffer, Vector, Resize, MetaData, ResizeOps,
     DspVec, ToSliceMut, ToSlice, VoidResult,
     Domain, ComplexNumberSpace, RededicateForceOps
 };

@@ -4,7 +4,7 @@ use num::Complex;
 use multicore_support::*;
 use super::super::{
 	array_to_complex, array_to_complex_mut,
-	VoidResult, ToSliceMut,
+	VoidResult, ToSliceMut, MetaData,
 	DspVec, NumberSpace, TimeDomain, FrequencyDomain,
 	DataDomain, Vector, ComplexNumberSpace,
 	Buffer, ErrorReason
@@ -60,6 +60,15 @@ pub trait FrequencyMultiplication<S, T, C>
     /// 1. `VectorMustBeComplex`: if `self` is in real number space but `frequency_response` is in complex number space.
     /// 2. `VectorMustBeInFreqDomain`: if `self` is in time domain.
     fn multiply_frequency_response(&mut self, frequency_response: C, ratio: T);
+}
+
+macro_rules! assert_complex {
+    ($self_: ident) => {
+        if !$self_.is_complex() {
+            $self_.valid_len = 0;
+			return;
+        }
+    }
 }
 
 macro_rules! assert_time {
@@ -156,6 +165,57 @@ impl<'a, S, T, N, D> Convolution<S, T, &'a RealImpulseResponse<T>> for DspVec<S,
 				|x|Complex::<T>::new(function.calc(x), T::zero())
 			);
 		}
+	}
+}
+
+impl<'a, S, T, N, D> Convolution<S, T, &'a ComplexImpulseResponse<T>> for DspVec<S, T, N, D>
+	where S: ToSliceMut<T>,
+		  T: RealNumber,
+		  N: ComplexNumberSpace,
+		  D: TimeDomain {
+    fn convolve<B>(&mut self, buffer: &mut B, function: &ComplexImpulseResponse<T>, ratio: T, len: usize)
+	 	where B: Buffer<S, T> {
+		assert_complex!(self);
+		assert_time!(self);
+
+		let ratio_inv = T::one() / ratio;
+		if len <= 202 && self.len() > 2000
+			&& (ratio_inv.round() - ratio_inv).abs() < T::from(1e-6).unwrap()
+			&& ratio > T::from(0.5).unwrap() {
+			let ratio: usize = ratio.abs().round().to_usize()
+				.expect("Converting ratio to usize failed, is the interpolation factor perhaps really huge?");
+			let points = (2 * len + 1) * ratio;
+			let mut imp_resp = DspVec {
+					data: buffer.construct_new(2 * points),
+					delta: self.delta(),
+					domain: self.domain.clone(),
+					number_space: self.number_space.clone(),
+					valid_len: self.valid_len,
+					multicore_settings: MultiCoreSettings::default()
+				};
+
+			let mut i = 0;
+			let mut j = -T::from(len).unwrap();
+			while i < imp_resp.len() {
+				let value = function.calc(j * ratio_inv);
+				imp_resp[i] = value.re;
+				i += 2;
+				imp_resp[i] = value.im;
+				i += 1;
+				j = j + T::one();
+			}
+
+			self.convolve_vector(buffer, &imp_resp)
+				.expect("Meta data should agree since we constructed the argument from this vector");
+		}
+
+		self.convolve_function_priv(
+				buffer,
+				ratio,
+				len,
+				|data|array_to_complex(data),
+				|temp|array_to_complex_mut(temp),
+				|x|function.calc(x));
 	}
 }
 

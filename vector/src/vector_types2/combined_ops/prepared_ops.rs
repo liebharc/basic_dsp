@@ -3,7 +3,7 @@ use std::result;
 use std::sync::{Arc, Mutex};
 use super::{
     generic_vector_from_any_vector, generic_vector_back_to_vector,
-    Identifier, PreparedOperation1, PreparedOperation2
+    Identifier, PreparedOperation1, PreparedOperation2, Operation
 };
 use super::super::{
     Domain, NumberSpace, ToSliceMut, DspVec, ErrorReason, RededicateForceOps,
@@ -166,6 +166,12 @@ impl<T, NI, DI, NO, DO> PreparedOperation1<T, NI, DI, NO, DO>
 			ops: ops
 		}
 	}
+
+    /// Allows to directly push an `Operation` enum to a `PreparedOperation1`.
+    /// This mainly exists as interop between Rust and other languages.
+    pub fn add_enum_op(&mut self, op: Operation<T>) {
+        self.ops.push(op);
+    }
 }
 
 impl<T, S, B, NI, DI, NO, DO> PreparedOperation1Exec<B, DspVec<S, T, NI, DI>, DspVec<S, T, NO, DO>> for PreparedOperation1<T, NI, DI, NO, DO>
@@ -274,6 +280,12 @@ impl<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2<T, NI1, DI1, 
  			ops: ops,
             swap: swap
  		}
+    }
+
+    /// Allows to directly push an `Operation` enum to a `PreparedOperation1`.
+    /// This mainly exists as interop between Rust and other languages.
+    pub fn add_enum_op(&mut self, op: Operation<T>) {
+        self.ops.push(op);
     }
 }
 

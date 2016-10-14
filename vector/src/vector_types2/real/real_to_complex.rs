@@ -1,8 +1,8 @@
 use RealNumber;
 use super::super::{
     Owner, ToComplexResult, TransRes,
-    Buffer, Vector, InsertZerosOps, InsertZerosOpsBuffered,
-    DspVec, ToSliceMut,
+    Buffer, InsertZerosOps, InsertZerosOpsBuffered,
+    DspVec, ToSliceMut, MetaData,
     Domain, RealNumberSpace, RededicateForceOps, ErrorReason
 };
 

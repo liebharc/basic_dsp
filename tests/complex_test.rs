@@ -464,13 +464,17 @@ mod slow_test {
         let mut split =
             [
                 Box::new(empty.clone().to_complex_time_vec()),
-                Box::new(empty.clone().clone().to_complex_time_vec()),
+                Box::new(empty.clone().to_complex_time_vec()),
                 Box::new(empty.clone().to_complex_time_vec()),
                 Box::new(empty.clone().to_complex_time_vec()),
                 Box::new(empty.clone().to_complex_time_vec())];
-        vector.split_into(&mut split).unwrap();
+        {
+            let mut dest: Vec<_> = split.iter_mut().map(|x| x.as_mut()).collect();
+            vector.split_into(&mut dest[..]).unwrap();
+        }
         let mut merge = empty.to_complex_time_vec();
-        merge.merge(&split).unwrap();
+        let src: Vec<_> = split.iter().map(|x| x.as_ref()).collect();
+        merge.merge(&src[..]).unwrap();
         assert_vector_eq(&a, &merge[..]);
     }
 
@@ -481,8 +485,8 @@ mod slow_test {
         let empty: Vec<f32> = Vec::new();
         let mut split =
             [
-                Box::new(empty.clone().to_complex_time_vec()),
-                Box::new(empty.clone().to_complex_time_vec())];
+                &mut empty.clone().to_complex_time_vec(),
+                &mut empty.clone().to_complex_time_vec()];
         vector.split_into(&mut split).unwrap();
         assert_vector_eq(&[1.0, 2.0, 5.0, 6.0], &split[0][..]);
         assert_vector_eq(&[3.0, 4.0, 7.0, 8.0], &split[1][..]);

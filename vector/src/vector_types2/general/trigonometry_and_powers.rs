@@ -2,7 +2,7 @@ use RealNumber;
 use multicore_support::*;
 use simd_extensions::*;
 use super::super::{
-    DspVec, Vector,
+    DspVec, MetaData,
     ToSliceMut,
     NumberSpace,
     Domain};

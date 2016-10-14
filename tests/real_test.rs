@@ -563,16 +563,21 @@ mod slow_test {
     fn split_merge_test32() {
         let a = create_data(201511210, 0, 1000, 1000);
         let vector = a.clone().to_real_time_vec();
+        let empty: Vec<f32> = Vec::new();
         let mut split =
             [
-                Box::new(Vec::new().to_real_time_vec()),
-                Box::new(Vec::new().to_real_time_vec()),
-                Box::new(Vec::new().to_real_time_vec()),
-                Box::new(Vec::new().to_real_time_vec()),
-                Box::new(Vec::new().to_real_time_vec())];
-        vector.split_into(&mut split).unwrap();
-        let mut merge = Vec::new().to_real_time_vec();
-        merge.merge(&split).unwrap();
+                Box::new(empty.clone().to_real_time_vec()),
+                Box::new(empty.clone().to_real_time_vec()),
+                Box::new(empty.clone().to_real_time_vec()),
+                Box::new(empty.clone().to_real_time_vec()),
+                Box::new(empty.clone().to_real_time_vec())];
+        {
+            let mut dest: Vec<_> = split.iter_mut().map(|x| x.as_mut()).collect();
+            vector.split_into(&mut dest[..]).unwrap();
+        }
+        let mut merge = empty.to_real_time_vec();
+        let src: Vec<_> = split.iter().map(|x| x.as_ref()).collect();
+        merge.merge(&src[..]).unwrap();
         assert_vector_eq(&a, &merge[..]);
     }
 

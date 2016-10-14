@@ -4,14 +4,13 @@ use super::super::{
 	DspVec, Buffer, ComplexOps, ScaleOps,
 	FrequencyDomainOperations, TimeToFrequencyDomainOperations, RededicateForceOps,
 	ToSliceMut, Owner, PaddingOption,
-	VoidResult, Vector, FromVector,
+	VoidResult, Vector, FromVector, MetaData,
 	ComplexNumberSpace, TimeDomain, ElementaryOps,
     ToFreqResult, InsertZerosOpsBuffered,
 	DataDomain, ErrorReason, ReorganizeDataOpsBuffered
 };
 use std::mem;
 use super::fft;
-use std::convert::From;
 
 /// Cross-correlation of data vectors. See also https://en.wikipedia.org/wiki/Cross-correlation
 ///
@@ -72,9 +71,9 @@ pub trait CrossCorrelationOps<S, T> : ToFreqResult
 
 impl<S, T, N, D> CrossCorrelationOps<S, T> for DspVec<S, T, N, D>
 	where DspVec<S, T, N, D>: ToFreqResult + TimeToFrequencyDomainOperations<S, T> + ScaleOps<Complex<T>>
-		+ ReorganizeDataOpsBuffered<S, T>,
+		+ ReorganizeDataOpsBuffered<S, T> + Clone,
 	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>> +
-	  	FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T> + From<S> + ElementaryOps + FromVector<T, Output=S>,
+	  	FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T> + ElementaryOps + FromVector<T, Output=S>,
 	  S: ToSliceMut<T> + Owner,
 	  T: RealNumber,
 	  N: ComplexNumberSpace,
@@ -109,12 +108,13 @@ impl<S, T, N, D> CrossCorrelationOps<S, T> for DspVec<S, T, N, D>
 		self.zero_pad_b(buffer, points, PaddingOption::Surround);
 		fft(self, buffer, false);
 		{
-			let mut temp = buffer.get(0);
+			let mut temp = buffer.construct_new(0);
 			mem::swap(&mut temp, &mut self.data);
-			let mut self_in_freq = Self::FreqResult::from(temp);
-			self_in_freq.set_delta(other.delta());
-			try!(self_in_freq.mul(other));
-			let (mut temp, _) = self_in_freq.get();
+			let mut clone = self.clone();
+			mem::swap(&mut temp, &mut clone.data);
+			let mut clone = Self::FreqResult::rededicate_from_force(clone);
+			try!(clone.mul(other));
+			let (mut temp, _) = clone.get();
 			mem::swap(&mut temp, &mut self.data);
 		}
 

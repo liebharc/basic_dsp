@@ -3,7 +3,7 @@ use super::super::{
 	array_to_complex_mut,
     Vector,
     DspVec, ToSliceMut,
-    Domain, NumberSpace
+    Domain, NumberSpace, MetaData
 };
 
 pub trait DiffSumOps {
@@ -69,11 +69,19 @@ impl<S, T, N, D> DiffSumOps for DspVec<S, T, N, D>
 		if is_complex {
 			let mut data = array_to_complex_mut(data);
 			for j in 0..len/2-1 {
-				data[j] = data[j + 1] - data[j];
+				unsafe {
+					let b = *data.get_unchecked(j + 1);
+					let a = data.get_unchecked_mut(j);
+					*a = b - *a;
+				}
 			}
 		} else {
 			for j in 0..len-1 {
-				data[j] = data[j + 1] - data[j];
+				unsafe {
+					let b = *data.get_unchecked(j + 1);
+					let a = data.get_unchecked_mut(j);
+					*a = b - *a;
+				}
 			}
 		}
   	}
@@ -91,17 +99,17 @@ impl<S, T, N, D> DiffSumOps for DspVec<S, T, N, D>
 		if is_complex {
 			let mut data = array_to_complex_mut(data);
 			let mut temp = data[0];
-			for j in 1..len/2 {
-				let diff = data[j] - temp;
-				temp = data[j];
-				data[j] = diff;
+			for n in &mut data[1..len/2] {
+				let diff = *n - temp;
+				temp = *n;
+				*n = diff;
 			}
 		} else {
 			let mut temp = data[0];
-			for j in 1..len {
-				let diff = data[j] - temp;
-				temp = data[j];
-				data[j] = diff;
+			for n in &mut data[1..len] {
+				let diff = *n - temp;
+				temp = *n;
+				*n = diff;
 			}
 		}
   	}

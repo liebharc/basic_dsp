@@ -3,7 +3,7 @@ use num::Complex;
 use super::super::{
     array_to_complex_mut,
     Owner, ToFreqResult, TimeDomain,
-    Vector,
+    MetaData,
     DspVec, ToSliceMut,
     NumberSpace, RededicateForceOps
 };

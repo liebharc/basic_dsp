@@ -13,7 +13,7 @@ use multicore_support::*;
 use std::ops::Range;
 use super::{
     round_len,
-    ToSliceMut, DspVec, ErrorReason,
+    ToSliceMut, DspVec, ErrorReason, MetaData,
     TransRes, Vector, RealToComplexTransformsOpsBuffered, ComplexToRealTransformsOps,
     Buffer, Owner, RealOrComplexData, TimeOrFrequencyData,
     Domain, NumberSpace, DataDomain

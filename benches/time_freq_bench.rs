@@ -7,7 +7,7 @@ extern crate num;
 pub mod tools;
 
 #[cfg(test)]
-mod bench {
+mod time_freq {
     use test::Bencher;
     use basic_dsp::vector_types2::*;
     use tools::*;

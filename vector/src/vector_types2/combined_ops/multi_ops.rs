@@ -9,7 +9,7 @@ use super::super::{
 use super::{
 	generic_vector_from_any_vector,
     Identifier, PreparedOperation1, PreparedOperation2,
-	PreparedOperation1Exec, PreparedOperation2Exec
+	PreparedOperation1Exec, PreparedOperation2Exec, Operation
 };
 
 /// A multi operation which holds a vector and records all changes
@@ -157,6 +157,12 @@ impl<S, T, NO, DO> MultiOperation1<S, T, NO, DO>
 		let ops = self.prepared_ops.add_ops(operation);
 		MultiOperation1 { a: self.a, prepared_ops: ops }
 	}
+
+	/// Allows to directly push an `Operation` enum to a `MultiOperation1`.
+    /// This mainly exists as interop between Rust and other languages.
+    pub fn add_enum_op(&mut self, op: Operation<T>) {
+        self.prepared_ops.add_enum_op(op);
+    }
 }
 
 /// Holds two vectors and records all operations which shall be done on the
@@ -190,4 +196,10 @@ impl<S, T, NO1, DO1, NO2, DO2> MultiOperation2<S, T, NO1, DO1, NO2, DO2>
 		let ops = self.prepared_ops.add_ops(operation);
 		MultiOperation2 { a: self.a, b: self.b, prepared_ops: ops }
 	}
+
+	/// Allows to directly push an `Operation` enum to a `MultiOperation1`.
+    /// This mainly exists as interop between Rust and other languages.
+    pub fn add_enum_op(&mut self, op: Operation<T>) {
+        self.prepared_ops.add_enum_op(op);
+    }
 }

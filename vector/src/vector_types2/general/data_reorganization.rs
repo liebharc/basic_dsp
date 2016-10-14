@@ -6,8 +6,8 @@ use multicore_support::*;
 use super::super::{
 	array_to_complex_mut,
 	VoidResult, Buffer, Owner, ErrorReason,
-	NumberSpace, Domain,
-	DspVec, Vector, ToSliceMut,
+	NumberSpace, Domain, ResizeOps,
+	DspVec, Vector, ToSliceMut, MetaData
 };
 
 pub trait ReorganizeDataOps<T>
@@ -181,12 +181,12 @@ pub trait SplitOps {
 	/// use basic_dsp_vector::vector_types2::*;
     /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0).to_real_time_vec();
     /// let mut split = &mut
-    ///     [Box::new(Vec::new().to_real_time_vec()),
-    ///     Box::new(Vec::new().to_real_time_vec())];
+    ///     [&mut Vec::new().to_real_time_vec(),
+    ///      &mut Vec::new().to_real_time_vec()];
     /// vector.split_into(split).expect("Ignoring error handling in examples");
     /// assert_eq!([1.0, 3.0, 5.0, 7.0, 9.0], split[0][..]);
     /// ```
-    fn split_into(&self, targets: &mut [Box<Self>]) -> VoidResult;
+    fn split_into(&self, targets: &mut [&mut Self]) -> VoidResult;
 }
 
 pub trait MergeOps {
@@ -202,13 +202,13 @@ pub trait MergeOps {
 	/// ```
 	/// use basic_dsp_vector::vector_types2::*;
     /// let mut parts = &mut
-    ///     [Box::new(vec!(1.0, 2.0).to_real_time_vec()),
-    ///     Box::new(vec!(1.0, 2.0).to_real_time_vec())];
+    ///     [&vec!(1.0, 2.0).to_real_time_vec(),
+    ///      &vec!(1.0, 2.0).to_real_time_vec()];
 	/// let mut vector = Vec::new().to_real_time_vec();
     /// vector.merge(parts).expect("Ignoring error handling in examples");
     /// assert_eq!([1.0, 1.0, 2.0, 2.0], vector[..]);
     /// ```
-    fn merge(&mut self, sources: &[Box<Self>]) -> VoidResult;
+    fn merge(&mut self, sources: &[&Self]) -> VoidResult;
 }
 
 impl<S, T, N, D> ReorganizeDataOps<T> for DspVec<S, T, N, D>
@@ -544,7 +544,7 @@ impl<S, T, N, D> SplitOps for DspVec<S, T, N, D>
 	  T: RealNumber,
 	  N: NumberSpace,
 	  D: Domain {
-    fn split_into(&self, targets: &mut [Box<Self>]) -> VoidResult {
+    fn split_into(&self, targets: &mut [&mut Self]) -> VoidResult {
 		let num_targets = targets.len();
 		let data_length = self.len();
 		if num_targets == 0 || data_length % num_targets != 0 {
@@ -580,7 +580,7 @@ impl<S, T, N, D> MergeOps for DspVec<S, T, N, D>
 	  T: RealNumber,
 	  N: NumberSpace,
 	  D: Domain {
-    fn merge(&mut self, sources: &[Box<Self>]) -> VoidResult {
+    fn merge(&mut self, sources: &[&Self]) -> VoidResult {
 		{
 			let num_sources = sources.len();
 			if num_sources == 0 {

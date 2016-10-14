@@ -4,8 +4,8 @@ use std::sync::Arc;
 use multicore_support::*;
 use super::super::{
     array_to_complex, array_to_complex_mut,
-	Vector, ScalarResult, ErrorReason,
-    DspVec, ToSlice, ToSliceMut,
+	ScalarResult, ErrorReason,
+    DspVec, ToSlice, ToSliceMut, MetaData,
     Domain, RealNumberSpace, ComplexNumberSpace
 };
 

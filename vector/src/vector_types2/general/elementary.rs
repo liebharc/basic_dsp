@@ -7,7 +7,7 @@ use std::ops::*;
 use super::super::{
     array_to_complex, array_to_complex_mut,
     ErrorReason, VoidResult, Vector,
-    DspVec, ToSliceMut,
+    DspVec, ToSliceMut, MetaData,
     Domain, NumberSpace, ComplexNumberSpace
 };
 
