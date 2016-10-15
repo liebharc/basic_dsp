@@ -23,7 +23,7 @@ pub trait ComplexToRealTransformsOps<T> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
     /// let result = vector.magnitude();
@@ -38,7 +38,7 @@ pub trait ComplexToRealTransformsOps<T> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
     /// let result = vector.magnitude_squared();
@@ -53,7 +53,7 @@ pub trait ComplexToRealTransformsOps<T> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
     /// let result = vector.to_real();
@@ -68,7 +68,7 @@ pub trait ComplexToRealTransformsOps<T> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
     /// let result = vector.to_imag();
@@ -83,7 +83,7 @@ pub trait ComplexToRealTransformsOps<T> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let data: Vec<f32> = vec!(1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0);
     /// let vector = data.to_complex_time_vec();
@@ -108,7 +108,7 @@ pub trait ComplexToRealTransformsOpsBuffered<S, T> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
     /// let mut buffer = SingleBuffer::new();
@@ -125,7 +125,7 @@ pub trait ComplexToRealTransformsOpsBuffered<S, T> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
     /// let mut buffer = SingleBuffer::new();
@@ -142,7 +142,7 @@ pub trait ComplexToRealTransformsOpsBuffered<S, T> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
     /// let mut buffer = SingleBuffer::new();
@@ -159,7 +159,7 @@ pub trait ComplexToRealTransformsOpsBuffered<S, T> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
     /// let mut buffer = SingleBuffer::new();
@@ -176,7 +176,7 @@ pub trait ComplexToRealTransformsOpsBuffered<S, T> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let data: Vec<f32> = vec!(1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0);
     /// let vector = data.to_complex_time_vec();
@@ -202,7 +202,7 @@ pub trait ComplexToRealGetterOps<T> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
     /// let mut target = Vec::new().to_real_time_vec();
@@ -218,7 +218,7 @@ pub trait ComplexToRealGetterOps<T> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
     /// let mut target = Vec::new().to_real_time_vec();
@@ -234,7 +234,7 @@ pub trait ComplexToRealGetterOps<T> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
     /// let mut target = Vec::new().to_real_time_vec();
@@ -253,7 +253,7 @@ pub trait ComplexToRealGetterOps<T> : ToRealResult
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(3.0, -4.0, -3.0, 4.0).to_complex_time_vec();
     /// let mut target = Vec::new().to_real_time_vec();
@@ -270,7 +270,7 @@ pub trait ComplexToRealGetterOps<T> : ToRealResult
     /// # use std::f64;
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0).to_complex_time_vec();
     /// let mut target = Vec::new().to_real_time_vec();

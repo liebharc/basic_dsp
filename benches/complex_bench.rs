@@ -9,7 +9,7 @@ pub mod tools;
 #[cfg(test)]
 mod complex {
     use test::Bencher;
-    use basic_dsp::vector_types2::*;
+    use basic_dsp::*;
     use tools::*;
     use num::complex::Complex32;
     use basic_dsp::conv_types::*;

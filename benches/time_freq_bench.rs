@@ -9,7 +9,7 @@ pub mod tools;
 #[cfg(test)]
 mod time_freq {
     use test::Bencher;
-    use basic_dsp::vector_types2::*;
+    use basic_dsp::*;
     use tools::*;
     use basic_dsp::window_functions::TriangularWindow;
 

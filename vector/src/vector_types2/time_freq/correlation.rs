@@ -28,7 +28,7 @@ use super::fft;
 ///
 /// ```
 /// use std::f32;
-/// use basic_dsp_vector::vector_types2::*;
+/// use basic_dsp_vector::*;
 /// let mut vector = vec!(1.0, 1.0, 2.0, 2.0, 3.0, 3.0).to_complex_time_vec();
 /// let argument = vec!(3.0, 3.0, 2.0, 2.0, 1.0, 1.0).to_complex_time_vec();
 /// let mut buffer = SingleBuffer::new();

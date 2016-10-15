@@ -28,7 +28,7 @@ pub trait FrequencyToTimeDomainOperations<S, T> : ToTimeResult
     ///
     /// ```
     /// use std::f32;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let vector = vec!(0.0, 0.0, 1.0, 0.0, 0.0, 0.0).to_complex_freq_vec();
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.plain_ifft(&mut buffer);
@@ -48,7 +48,7 @@ pub trait FrequencyToTimeDomainOperations<S, T> : ToTimeResult
     ///
     /// ```
     /// use std::f32;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let vector = vec!(0.0, 0.0, 0.0, 0.0, 3.0, 0.0).to_complex_freq_vec();
     /// let mut buffer = SingleBuffer::new();
     /// let result = vector.ifft(&mut buffer);

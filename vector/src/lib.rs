@@ -19,87 +19,18 @@
 //! is constructed. Therefore the library is likely not suitable for devices which are tight on memory. On normal desktop computers there is usually plenty of
 //! memory available so that the optimization focus is on decreasing the processing time for every (common) operation and to spent little time with memory allocations.
 
-/// Like `try!` but for operations returning a vector.
-///
-/// Operations which return a vector on success even return an error reason
-/// together with a vector on failure. So even if the operation has failed the
-/// vector can still be reused and thus memory allocation can be avoided. If
-/// this is undesired then this macro can be used instead of `try!` to just
-/// return the error reason.
-#[macro_export]
-macro_rules! try_vec {
-    ( $ expr : expr ) => {
-        match $expr {
-            Ok(vec) => vec,
-            Err((reason, _)) => return Err(reason)
-        };
-    };
-}
-
 #[cfg(any(feature = "doc", feature="sse", feature="avx"))]
 extern crate simd;
 extern crate num_cpus;
 extern crate crossbeam;
 extern crate num;
 extern crate rustfft;
-mod vector_types;
-#[allow(dead_code)] // TODO: Remove this as soon as vector_types2 is able to replace vector_types (also rename at the same point)
-pub mod vector_types2;
+mod vector_types2;
 mod multicore_support;
 mod simd_extensions;
 pub mod window_functions;
 pub mod conv_types;
-pub mod combined_ops;
-pub use vector_types::
-    {
-        DataVecDomain,
-        DataVec,
-        TransRes,
-        VoidResult,
-        ErrorReason,
-        GenericVectorOps,
-        RealVectorOps,
-        ComplexVectorOps,
-        TimeDomainOperations,
-        FrequencyDomainOperations,
-        SymmetricFrequencyDomainOperations,
-        SymmetricTimeDomainOperations,
-        GenericDataVec,
-        ComplexFreqVector,
-        ComplexTimeVector,
-        RealTimeVector,
-        RealFreqVector,
-        DataVec32,
-        RealTimeVector32,
-        ComplexTimeVector32,
-        RealFreqVector32,
-        ComplexFreqVector32,
-        DataVec64,
-        RealTimeVector64,
-        ComplexTimeVector64,
-        RealFreqVector64,
-        ComplexFreqVector64,
-        Statistics,
-        RededicateOps,
-        ScaleOps,
-        OffsetOps,
-        DotProductOps,
-        StatisticsOps,
-        Convolution,
-        ConvolutionOps,
-        FrequencyMultiplication,
-        CrossCorrelationOps,
-        InterpolationOps,
-        RealInterpolationOps,
-        PaddingOption,
-        VectorIter,
-        ComplexIndex,
-        ComplexIndexMut,
-        RealIndex,
-        RealIndexMut,
-        InterleavedIndex,
-        InterleavedIndexMut
-    };
+pub use vector_types2::*;
 pub use multicore_support::MultiCoreSettings;
 use num::traits::Float;
 use num::{FromPrimitive, Signed};
@@ -133,44 +64,6 @@ impl ToSimd for f64 {
 mod tests {
     use super::*;
     use simd_extensions::Simd;
-
-    fn void_try_method() -> Result<i32, ErrorReason> {
-        let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-        let vector = DataVec32::from_array(false, DataVecDomain::Time, &array);
-        let mut dest = DataVec32::from_array(false, DataVecDomain::Time, &array);
-        let _ = try!(vector.get_magnitude(&mut dest));
-        Ok(0)
-    }
-
-    fn scalar_try_method() -> Result<i32, ErrorReason> {
-        let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-        let vector = DataVec32::from_array(false, DataVecDomain::Time, &array);
-        let dest = DataVec32::from_array(false, DataVecDomain::Time, &array);
-        let _ = try!(vector.complex_dot_product(&dest));
-        Ok(0)
-    }
-
-    fn vec_try_method() -> Result<i32, ErrorReason> {
-        let array = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-        let vector = DataVec32::from_array(false, DataVecDomain::Time, &array);
-        let array = [1.0, 2.0, 3.0, 4.0];
-        let dest = DataVec32::from_array(false, DataVecDomain::Time, &array);
-        let _ = try_vec!(vector.add(&dest));
-        Ok(0)
-    }
-
-    /// This test should make sure that there are convenient error handling
-    /// methods available.
-    #[test]
-    fn construct_real_time_vector_32_test()
-    {
-        let res = void_try_method();
-        assert!(res.is_err());
-        let res = scalar_try_method();
-        assert!(res.is_err());
-        let res = vec_try_method();
-        assert!(res.is_err());
-    }
 
     #[test]
     fn to_simd_test()

@@ -1,9 +1,8 @@
 //! Functions for 32bit floating point number based vectors. Please refer to the other chapters of the help for documentation of the functions.
 use super::*;
-use basic_dsp_vector::vector_types2::*;
+use basic_dsp_vector::*;
 use basic_dsp_vector::window_functions::*;
 use basic_dsp_vector::conv_types::*;
-use basic_dsp_vector::MultiCoreSettings;
 use num::complex::Complex32;
 use std::slice;
 use std::os::raw::c_void;

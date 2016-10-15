@@ -17,7 +17,7 @@ pub trait RealToComplexTransformsOps<T> : ToComplexResult
       /// # Example
       ///
       /// ```
-      /// use basic_dsp_vector::vector_types2::*;
+      /// use basic_dsp_vector::*;
       /// let vector = vec!(1.0, 2.0).to_real_time_vec();
       /// let result = vector.to_complex().expect("Ignoring error handling in examples");
       /// assert_eq!([1.0, 0.0, 2.0, 0.0], result[..]);
@@ -38,7 +38,7 @@ pub trait RealToComplexTransformsOpsBuffered<S, T> : ToComplexResult
       /// # Example
       ///
       /// ```
-      /// use basic_dsp_vector::vector_types2::*;
+      /// use basic_dsp_vector::*;
       /// let vector = vec!(1.0, 2.0).to_real_time_vec();
       /// let mut buffer = SingleBuffer::new();
       /// let result = vector.to_complex_b(&mut buffer);

@@ -1,5 +1,4 @@
-use basic_dsp::RealNumber;
-use basic_dsp::vector_types2::*;
+use basic_dsp::*;
 use std::boxed::Box;
 
 pub const DEFAULT_DATA_SIZE: usize = 10000;

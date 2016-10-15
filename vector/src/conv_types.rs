@@ -9,23 +9,7 @@ use num::complex::{Complex, Complex32,Complex64};
 use std::marker::PhantomData;
 use std::os::raw::c_void;
 use std::mem;
-use vector_types::{
-    RealTimeVector,
-    ComplexTimeVector,
-    ComplexFreqVector,
-    ComplexIndex,
-    RealIndex
-};
-use vector_types::definitions::{
-    DataVec,
-    RealVectorOps,
-    ComplexVectorOps
-};
-
-use vector_types::time_freq_impl::{
-    TimeDomainOperations,
-    FrequencyDomainOperations
-};
+use vector_types2::*;
 
 macro_rules! define_real_conv_trait {
     ($($name: ident, $domain_comment:ident);*) => {
@@ -210,9 +194,10 @@ macro_rules! add_real_linear_table_impl {
                 impl $name<$data_type> {
                     /// Convert the lookup table into complex number space
                     pub fn to_complex(&self) -> $complex<$data_type> {
-                        let vector = RealTimeVector::from_array(&self.table);
-                        let complex = vector.to_complex().expect("to_complex shouldn't fail");
-                        let complex = complex.complex(0..);
+                        let vector = self.table.clone().to_real_time_vec();
+                        let mut buffer = SingleBuffer::new();
+                        let complex = vector.to_complex_b(&mut buffer);
+                        let complex = complex.complex(..);
                         let is_symmetric = self.is_symmetric;
                         let mut table = Vec::with_capacity(complex.len());
                         for n in complex {
@@ -236,9 +221,10 @@ macro_rules! add_complex_linear_table_impl {
                 impl $name<$data_type> {
                     /// Convert the lookup table into real number space
                     pub fn to_real(self) -> $real<$data_type> {
-                        let vector = ComplexTimeVector::from_complex(&self.table);
-                        let real = vector.to_real().expect("to_complex shouldn't fail");
-                        let real = real.real(0..);
+                        let vector = self.table.clone().to_complex_time_vec();
+                        let mut buffer = SingleBuffer::new();
+                        let real = vector.to_real_b(&mut buffer);
+                        let real = &real[..];
                         let is_symmetric = self.is_symmetric;
                         let mut table = Vec::with_capacity(real.len());
                         for n in real {
@@ -261,10 +247,12 @@ macro_rules! add_complex_time_linear_table_impl {
             impl ComplexTimeLinearTableLookup<$data_type> {
                 /// Convert the lookup table into frequency domain
                 pub fn fft(self) -> ComplexFrequencyLinearTableLookup<$data_type> {
-                    let vector = ComplexTimeVector::from_complex_with_delta(&self.table, self.delta);
-                    let freq = vector.fft().expect("vector FFT shouldn't fail");
+                    let mut vector = self.table.clone().to_complex_time_vec();
+                    vector.set_delta(self.delta);
+                    let mut buffer = SingleBuffer::new();
+                    let freq = vector.fft(&mut buffer);
                     let delta = freq.delta();
-                    let freq = freq.complex(0..);
+                    let freq = freq.complex(..);
                     let is_symmetric = self.is_symmetric;
                     let mut table = Vec::with_capacity(freq.len());
                     for n in freq {
@@ -284,12 +272,14 @@ macro_rules! add_real_time_linear_table_impl {
             impl RealTimeLinearTableLookup<$data_type> {
                 /// Convert the lookup table into a magnitude spectrum
                 pub fn fft(self) -> RealFrequencyLinearTableLookup<$data_type> {
-                    let vector = RealTimeVector::from_array_with_delta(&self.table, self.delta);
-                    let freq = vector.fft().expect("vector FFT shouldn't fail");
-                    let freq = freq.magnitude().expect("vector magnitude shouldn't fail");
+                    let mut vector = self.table.clone().to_real_time_vec();
+                    vector.set_delta(self.delta);
+                    let mut buffer = SingleBuffer::new();
+                    let freq = vector.fft(&mut buffer);
+                    let freq = freq.magnitude_b(&mut buffer);
                     let is_symmetric = self.is_symmetric;
                     let delta = freq.delta();
-                    let freq = freq.real(0..);
+                    let freq = &freq[..];
                     let mut table = Vec::with_capacity(freq.len());
                     for n in freq {
                         table.push(*n);
@@ -309,10 +299,12 @@ macro_rules! add_complex_frequency_linear_table_impl {
             impl ComplexFrequencyLinearTableLookup<$data_type> {
                 /// Convert the lookup table into time domain
                 pub fn ifft(self) -> ComplexTimeLinearTableLookup<$data_type> {
-                    let vector = ComplexFreqVector::from_complex_with_delta(&self.table, self.delta);
-                    let time = vector.ifft().expect("vector IFFT shouldn't fail");
+                    let mut vector = self.table.clone().to_complex_freq_vec();
+                    vector.set_delta(self.delta);
+                    let mut buffer = SingleBuffer::new();
+                    let time = vector.ifft(&mut buffer);
                     let delta = time.delta();
-                    let time = time.complex(0..);
+                    let time = time.complex(..);
                     let is_symmetric = self.is_symmetric;
                     let mut table = Vec::with_capacity(time.len());
                     for n in time {

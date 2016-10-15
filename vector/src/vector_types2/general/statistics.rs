@@ -36,7 +36,7 @@ pub trait StatisticsOps<T> : Sized
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
     /// # use num::complex::Complex32;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
     /// let result = vector.statistics();
@@ -62,7 +62,7 @@ pub trait StatisticsOps<T> : Sized
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
     /// # use num::complex::Complex32;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
     /// let result = vector.statistics_splitted(2);
@@ -79,7 +79,7 @@ pub trait StatisticsOps<T> : Sized
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
     /// # use num::complex::Complex32;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
     /// let result = vector.sum();
@@ -95,7 +95,7 @@ pub trait StatisticsOps<T> : Sized
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
     /// # use num::complex::Complex64;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
     /// let result = vector.sum_sq();

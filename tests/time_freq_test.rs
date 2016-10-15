@@ -4,7 +4,7 @@ extern crate num;
 pub mod tools;
 
 mod slow_test {
-    use basic_dsp::vector_types2::*;
+    use basic_dsp::*;
     use num::complex::*;
     use basic_dsp::window_functions::*;
     use tools::*;

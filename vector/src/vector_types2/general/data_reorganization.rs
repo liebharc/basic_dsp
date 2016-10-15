@@ -17,7 +17,7 @@ pub trait ReorganizeDataOps<T>
 	/// # Example
 	///
 	/// ```
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();
     /// vector.reverse();
     /// assert_eq!([8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0], vector[..]);
@@ -32,7 +32,7 @@ pub trait ReorganizeDataOps<T>
 	/// # Example
 	///
 	/// ```
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();
     /// vector.swap_halves();
     /// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], vector[..]);
@@ -49,7 +49,7 @@ pub trait ReorganizeDataOpsBuffered<S, T>
 	  /// # Example
 	  ///
 	  /// ```
-	  /// use basic_dsp_vector::vector_types2::*;
+	  /// use basic_dsp_vector::*;
 	  /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();
 	  /// let mut buffer = SingleBuffer::new();
 	  /// vector.swap_halves_b(&mut buffer);
@@ -86,7 +86,7 @@ pub trait InsertZerosOps<T>
 	/// # Example
 	///
 	/// ```
-	/// use basic_dsp_vector::vector_types2::*;
+	/// use basic_dsp_vector::*;
 	/// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
 	/// vector.zero_pad(4, PaddingOption::End).expect("Ignoring error handling in examples");
 	/// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
@@ -106,7 +106,7 @@ pub trait InsertZerosOps<T>
 	/// # Example
 	///
 	/// ```
-	/// use basic_dsp_vector::vector_types2::*;
+	/// use basic_dsp_vector::*;
 	/// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
 	/// vector.zero_interleave(2);
 	/// assert_eq!([1.0, 0.0, 2.0, 0.0], vector[..]);
@@ -131,7 +131,7 @@ pub trait InsertZerosOpsBuffered<S, T>
 	/// # Example
 	///
 	/// ```
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
 	/// let mut buffer = SingleBuffer::new();
     /// vector.zero_pad_b(&mut buffer, 4, PaddingOption::End);
@@ -153,7 +153,7 @@ pub trait InsertZerosOpsBuffered<S, T>
 	/// # Example
 	///
 	/// ```
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
 	/// let mut buffer = SingleBuffer::new();
     /// vector.zero_interleave_b(&mut buffer, 2);
@@ -178,7 +178,7 @@ pub trait SplitOps {
     /// # Example
     ///
     /// ```
-	/// use basic_dsp_vector::vector_types2::*;
+	/// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0).to_real_time_vec();
     /// let mut split = &mut
     ///     [&mut Vec::new().to_real_time_vec(),
@@ -200,7 +200,7 @@ pub trait MergeOps {
     /// # Example
     ///
 	/// ```
-	/// use basic_dsp_vector::vector_types2::*;
+	/// use basic_dsp_vector::*;
     /// let mut parts = &mut
     ///     [&vec!(1.0, 2.0).to_real_time_vec(),
     ///      &vec!(1.0, 2.0).to_real_time_vec()];
@@ -620,7 +620,7 @@ impl<S, T, N, D> MergeOps for DspVec<S, T, N, D>
 
 #[cfg(test)]
 mod tests {
-    use vector_types2::*;
+    use super::super::super::*;
 
 	#[test]
     fn swap_halves_real_even_test()

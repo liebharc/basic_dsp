@@ -16,7 +16,7 @@ pub trait DotProductOps<R> : Sized
 	/// # Example
 	///
     /// ```
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let vector1 = vec!(2.0, 1.0, -1.0, 4.0).to_real_time_vec();
     /// let vector2 = vec!(3.0, 4.0, -1.0, -2.0).to_real_time_vec();
     /// let product = vector1.dot_product(&vector2).expect("Ignoring error handling in examples");

@@ -14,7 +14,7 @@ pub trait DiffSumOps {
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(2.0, 3.0, 2.0, 6.0).to_real_time_vec();
     /// vector.diff();
     /// assert_eq!([1.0, -1.0, 4.0], vector[..]);
@@ -30,7 +30,7 @@ pub trait DiffSumOps {
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(2.0, 3.0, 2.0, 6.0).to_real_time_vec();
     /// vector.diff_with_start();
     /// assert_eq!([2.0, 1.0, -1.0, 4.0], vector[..]);
@@ -45,7 +45,7 @@ pub trait DiffSumOps {
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(2.0, 1.0, -1.0, 4.0).to_real_time_vec();
     /// vector.cum_sum();
     /// assert_eq!([2.0, 3.0, 2.0, 6.0], vector[..]);

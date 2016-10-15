@@ -35,8 +35,8 @@ pub trait IdentifierOps {
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::vector_types2::*;
-    /// use basic_dsp_vector::vector_types2::combined_ops::*;
+    /// use basic_dsp_vector::*;
+    /// use basic_dsp_vector::combined_ops::*;
     /// let complex = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
     /// let ops = multi_ops1(complex);
     /// let ops = ops.add_ops(|mut v| {
@@ -53,8 +53,8 @@ pub trait IdentifierOps {
     /// # Example
     ///
     /// ```
-	/// use basic_dsp_vector::vector_types2::*;
-    /// use basic_dsp_vector::vector_types2::combined_ops::*;
+	/// use basic_dsp_vector::*;
+    /// use basic_dsp_vector::combined_ops::*;
     /// let complex = vec!(3.0, 2.0, 5.0, 4.0).to_complex_time_vec();
     /// let ops = multi_ops1(complex);
 	/// let ops = ops.add_ops(|mut v| {
@@ -72,8 +72,8 @@ pub trait IdentifierOps {
     /// # Example
     ///
     /// ```
-	/// use basic_dsp_vector::vector_types2::*;
-    /// use basic_dsp_vector::vector_types2::combined_ops::*;
+	/// use basic_dsp_vector::*;
+    /// use basic_dsp_vector::combined_ops::*;
     /// let complex = vec!(2.0, 4.0, 6.0, 8.0).to_complex_time_vec();
     /// let ops = multi_ops1(complex);
 	/// let ops = ops.add_ops(|mut v| {
@@ -90,8 +90,8 @@ pub trait IdentifierOps {
     /// # Example
     ///
     /// ```
-	/// use basic_dsp_vector::vector_types2::*;
-    /// use basic_dsp_vector::vector_types2::combined_ops::*;
+	/// use basic_dsp_vector::*;
+    /// use basic_dsp_vector::combined_ops::*;
     /// let complex = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
     /// let ops = multi_ops1(complex);
 	/// let ops = ops.add_ops(|mut v| {

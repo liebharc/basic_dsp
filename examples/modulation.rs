@@ -1,5 +1,5 @@
 extern crate basic_dsp;
-use basic_dsp::vector_types2::*;
+use basic_dsp::*;
 use basic_dsp::conv_types::*;
 
 use std::fs::File;

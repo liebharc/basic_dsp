@@ -3,8 +3,7 @@ extern crate basic_dsp_vector;
 mod definitions;
 
 use std::result::Result;
-use basic_dsp_vector::vector_types2::*;
-use basic_dsp_vector::RealNumber;
+use basic_dsp_vector::*;
 
 pub use definitions::*;
 

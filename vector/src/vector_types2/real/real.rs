@@ -20,7 +20,7 @@ pub trait RealOps {
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, -2.0).to_real_time_vec();
     /// vector.abs();
     /// assert_eq!([1.0, 2.0], vector[..]);
@@ -44,7 +44,7 @@ pub trait ModuloOps<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();
     /// vector.wrap(4.0);
     /// assert_eq!([1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0], vector[..]);
@@ -57,7 +57,7 @@ pub trait ModuloOps<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.).to_real_time_vec();
     /// vector.unwrap(4.0);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], vector[..]);

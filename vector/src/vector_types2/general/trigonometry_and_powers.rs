@@ -14,7 +14,7 @@ pub trait TrigOps {
     ///
     /// ```
     /// use std::f32;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(f32::consts::PI/2.0, -f32::consts::PI/2.0).to_real_time_vec();
     /// vector.sin();
     /// assert_eq!([1.0, -1.0], vector[..]);
@@ -27,7 +27,7 @@ pub trait TrigOps {
     ///
     /// ```
     /// use std::f32;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(2.0 * f32::consts::PI, f32::consts::PI).to_real_time_vec();
     /// vector.cos();
     /// assert_eq!([1.0, -1.0], vector[..]);
@@ -75,7 +75,7 @@ pub trait PowerOps<T>
     ///
     /// ```
     /// # use std::f64;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, 4.0, 9.0, 16.0, 25.0).to_real_time_vec();
     /// vector.sqrt();
     /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0], vector[..]);
@@ -90,7 +90,7 @@ pub trait PowerOps<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0).to_real_time_vec();
     /// vector.square();
     /// assert_eq!([1.0, 4.0, 9.0, 16.0, 25.0], vector[..]);
@@ -105,7 +105,7 @@ pub trait PowerOps<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, 8.0, 27.0).to_real_time_vec();
     /// vector.root(3.0);
     /// assert_eq!([1.0, 2.0, 3.0], vector[..]);
@@ -117,7 +117,7 @@ pub trait PowerOps<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, 2.0, 3.0).to_real_time_vec();
     /// vector.powf(3.0);
     /// assert_eq!([1.0, 8.0, 27.0], vector[..]);
@@ -130,7 +130,7 @@ pub trait PowerOps<T>
     ///
     /// ```
     /// # use std::f64;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(2.718281828459045, 7.389056, 20.085537).to_real_time_vec();
     /// vector.ln();
     /// let actual = &vector[0..];
@@ -148,7 +148,7 @@ pub trait PowerOps<T>
     ///
     /// ```
     /// # use std::f64;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, 2.0, 3.0).to_real_time_vec();
     /// vector.exp();
     /// let actual = &vector[0..];
@@ -166,7 +166,7 @@ pub trait PowerOps<T>
     ///
     /// ```
     /// # use std::f64;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(10.0, 100.0, 1000.0).to_real_time_vec();
     /// vector.log(10.0);
     /// let actual = &vector[0..];
@@ -183,7 +183,7 @@ pub trait PowerOps<T>
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, 2.0, 3.0).to_real_time_vec();
     /// vector.expf(10.0);
     /// assert_eq!([10.0, 100.0, 1000.0], vector[..]);

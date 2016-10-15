@@ -4,8 +4,8 @@ extern crate num;
 pub mod tools;
 
 mod slow_test {
-    use basic_dsp::vector_types2::*;
-    use basic_dsp::vector_types2::combined_ops::*;
+    use basic_dsp::*;
+    use basic_dsp::combined_ops::*;
     use tools::*;
 
     #[allow(dead_code)]

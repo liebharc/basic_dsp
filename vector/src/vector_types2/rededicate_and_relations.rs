@@ -21,14 +21,14 @@ pub trait RededicateOps<Other> : RededicateForceOps<Other> {
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::{ComplexFreqVector32, ComplexTimeVector32, ComplexVectorOps, RededicateOps, DataVec, DataVecDomain};
-    /// let complex = ComplexFreqVector32::from_interleaved(&[1.0, 2.0, 3.0, 4.0]);
-    /// let real = complex.phase().expect("Ignoring error handling in examples");
-    /// let complex = ComplexTimeVector32::rededicate_from(real);
+    /// use basic_dsp_vector::*;
+    /// let complex = vec!(1.0, 2.0, 3.0, 4.0).to_complex_freq_vec();
+    /// let real = complex.phase();
+    /// let complex = ComplexTimeVec32::rededicate_from(real);
     /// assert_eq!(true, complex.is_complex());
-    /// assert_eq!(DataVecDomain::Time, complex.domain());
+    /// assert_eq!(DataDomain::Time, complex.domain());
     /// assert_eq!(0, complex.len());
-    /// assert_eq!(2, complex.allocated_len());
+    /// assert_eq!(4, complex.alloc_len());
     /// ```
     fn rededicate_from(origin: Other) -> Self;
 }

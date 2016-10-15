@@ -24,7 +24,7 @@ pub trait FrequencyDomainOperations<S, T> : ToTimeResult
     /// # Example
     ///
     /// ```
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_freq_vec();
     /// let mut buffer = SingleBuffer::new();
     /// vector.mirror(&mut buffer);

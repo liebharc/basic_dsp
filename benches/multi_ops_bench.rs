@@ -9,8 +9,8 @@ pub mod tools;
 #[cfg(test)]
 mod real {
     use test::Bencher;
-    use basic_dsp::vector_types2::*;
-    use basic_dsp::vector_types2::combined_ops::*;
+    use basic_dsp::*;
+    use basic_dsp::combined_ops::*;
     use tools::*;
 
     #[bench]

@@ -1,18 +1,11 @@
 use rand::*;
-use basic_dsp::{
-    DataVec,
-    RealTimeVector,
-    RealFreqVector,
-    ComplexTimeVector,
-    ComplexFreqVector,
-    RealNumber,
-    DataVecDomain};
+use basic_dsp::*;
 use std::ops::Range;
 use num::complex::Complex32;
 use std::panic;
 use std::fmt::{Display, Debug};
 
-pub fn assert_vector_eq_with_reason<T>(left: &[T], right: &[T], reason: &str) 
+pub fn assert_vector_eq_with_reason<T>(left: &[T], right: &[T], reason: &str)
     where T: RealNumber + Debug + Display {
     assert_vector_eq_with_reason_and_tolerance(left, right, T::from(1e-6).unwrap(), reason);
 }
@@ -24,13 +17,13 @@ pub fn assert_vector_eq_with_reason_and_tolerance<T>(left: &[T], right: &[T], to
     {
         errors.push(format!("{}:\n", reason));
     }
-    
+
     let size_assert_failed = left.len() != right.len();
     if size_assert_failed
     {
         errors.push(format!("Size difference {} != {}", left.len(), right.len()));
     }
-    
+
     let len = if left.len() < right.len() { left.len() } else { right.len() };
     let mut differences = 0;
     for i in 0 .. len {
@@ -43,12 +36,12 @@ pub fn assert_vector_eq_with_reason_and_tolerance<T>(left: &[T], right: &[T], to
             }
         }
     }
-    
+
     if differences > 0
     {
         errors.push(format!("Total number of differences: {}/{}={}%", differences, len, differences*100/len));
     }
-    
+
     if differences > 0 || size_assert_failed
     {
         let all_errors = errors.join("\n");
@@ -57,8 +50,8 @@ pub fn assert_vector_eq_with_reason_and_tolerance<T>(left: &[T], right: &[T], to
         panic!(full_text);
     }
 }
-    
-pub fn assert_vector_eq<T>(left: &[T], right: &[T]) 
+
+pub fn assert_vector_eq<T>(left: &[T], right: &[T])
     where T: RealNumber + Debug + Display {
     assert_vector_eq_with_reason(left, right, "");
 }
@@ -152,42 +145,6 @@ pub fn create_delta(seed: usize, iteration: usize)
     rng.gen_range(-10.0, 10.0)
 }
 
-pub trait AssertMetaData {
-    fn assert_meta_data(&self);
-}
-
-impl<T> AssertMetaData for RealTimeVector<T> 
-    where T: RealNumber {
-    fn assert_meta_data(&self) {
-        assert_eq!(self.is_complex(), false);
-        assert_eq!(self.domain(), DataVecDomain::Time);
-    }
-}
-
-impl<T> AssertMetaData for RealFreqVector<T> 
-    where T: RealNumber {
-    fn assert_meta_data(&self) {
-        assert_eq!(self.is_complex(), false);
-        assert_eq!(self.domain(), DataVecDomain::Frequency);
-    }
-}
-
-impl<T> AssertMetaData for ComplexTimeVector<T> 
-    where T: RealNumber {
-    fn assert_meta_data(&self) {
-        assert_eq!(self.is_complex(), true);
-        assert_eq!(self.domain(), DataVecDomain::Time);
-    }
-}
-
-impl<T> AssertMetaData for ComplexFreqVector<T> 
-    where T: RealNumber {
-    fn assert_meta_data(&self) {
-        assert_eq!(self.is_complex(), true);
-        assert_eq!(self.domain(), DataVecDomain::Frequency);
-    }
-}
-
 use std::sync::{Arc, Mutex};
 
 pub const RANGE_SINGLE_CORE: Range<usize> = Range { start: 10000, end: 100000 };
@@ -197,16 +154,16 @@ pub fn parameterized_vector_test<F>(test_code: F)
     where F: Fn(usize, Range<usize>) + Send + 'static + Sync
 {
     let mut test_errors = Vec::new();
-    
+
     // I don't know if there is a good reason for this, but Rust
-    // requires us to lock the test_code function, 
+    // requires us to lock the test_code function,
     // does catch_panic spawn really a new thread?
     let test_code = Arc::new(Mutex::new(test_code));
     for iteration in 0 .. 10 {
         if test_errors.len() > 0 {
             break; // Stop on the first error to speed up things
         }
-        
+
         let small_range = RANGE_SINGLE_CORE;
         let test_code = test_code.clone();
         let safe_iteration = panic::AssertUnwindSafe(iteration);
@@ -216,7 +173,7 @@ pub fn parameterized_vector_test<F>(test_code: F)
             let test_code = test_code.lock().unwrap();
             test_code(*safe_iteration, (*small_range).clone());
         });
-        
+
         match result {
             Ok(_) => (),
             Err(e) => {
@@ -232,12 +189,12 @@ pub fn parameterized_vector_test<F>(test_code: F)
             }
         }
     }
-    
+
     for iteration in 0 .. 3 {
         if test_errors.len() > 0 {
             break; // Stop on the first error to speed up things
         }
-        
+
         let large_range = RANGE_MULTI_CORE;
         let test_code = test_code.clone();
         let safe_iteration = panic::AssertUnwindSafe(iteration);
@@ -247,13 +204,13 @@ pub fn parameterized_vector_test<F>(test_code: F)
             let test_code = test_code.lock().unwrap();
             test_code(*safe_iteration, (*large_range).clone());
         });
-        
+
         match result {
             Ok(_) => (),
             Err(e) => {
                 if let Some(e) = e.downcast_ref::<&'static str>() {
                     test_errors.push(format!("\nMulti threaded execution path failed on iteration {}\nFailure: {}", iteration, e));
-                } 
+                }
                 else if let Some(e) = e.downcast_ref::<String>() {
                     test_errors.push(format!("\nMulti threaded execution path failed on iteration {}\nFailure: {}", iteration, e));
                 }
@@ -263,7 +220,7 @@ pub fn parameterized_vector_test<F>(test_code: F)
             }
         }
     }
-    
+
     if test_errors.len() > 0 {
         let error_messages = test_errors.join("\n");
         panic!(error_messages);

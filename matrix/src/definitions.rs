@@ -5,7 +5,7 @@ pub trait DataMatrix<T> : Sized
 {
     fn delta(&self) -> T;
 
-    fn domain(&self) -> DataVecDomain;
+    fn domain(&self) -> DataDomain;
 
     fn is_complex(&self) -> bool;
 }

@@ -25,7 +25,7 @@ pub trait ScaleOps<T> : Sized
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
     /// vector.scale(2.0);
@@ -49,7 +49,7 @@ pub trait OffsetOps<T> : Sized
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
     /// vector.offset(2.0);
@@ -72,7 +72,7 @@ pub trait ElementaryOps {
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let mut vector1 = vec!(1.0, 2.0).to_real_time_vec();
     /// let vector2 = vec!(10.0, 11.0).to_real_time_vec();
@@ -94,7 +94,7 @@ pub trait ElementaryOps {
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let mut vector1 = vec!(1.0, 2.0).to_real_time_vec();
     /// let vector2 = vec!(10.0, 11.0).to_real_time_vec();
@@ -116,7 +116,7 @@ pub trait ElementaryOps {
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let mut vector1 = vec!(1.0, 2.0).to_real_time_vec();
     /// let vector2 = vec!(10.0, 11.0).to_real_time_vec();
@@ -138,7 +138,7 @@ pub trait ElementaryOps {
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let mut vector1 = vec!(10.0, 22.0).to_real_time_vec();
     /// let vector2 = vec!(2.0, 11.0).to_real_time_vec();
@@ -165,7 +165,7 @@ pub trait ElementaryWrapAroundOps {
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let mut vector1 = vec!(10.0, 11.0, 12.0, 13.0).to_real_time_vec();
     /// let vector2 = vec!(1.0, 2.0).to_real_time_vec();
@@ -190,7 +190,7 @@ pub trait ElementaryWrapAroundOps {
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let mut vector1 = vec!(10.0, 11.0, 12.0, 13.0).to_real_time_vec();
     /// let vector2 = vec!(1.0, 2.0).to_real_time_vec();
@@ -215,7 +215,7 @@ pub trait ElementaryWrapAroundOps {
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let mut vector1 = vec!(10.0, 11.0, 12.0, 13.0).to_real_time_vec();
     /// let vector2 = vec!(1.0, 2.0).to_real_time_vec();
@@ -240,7 +240,7 @@ pub trait ElementaryWrapAroundOps {
     /// ```
     /// # extern crate num;
     /// # extern crate basic_dsp_vector;
-    /// use basic_dsp_vector::vector_types2::*;
+    /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let mut vector1 = vec!(10.0, 12.0, 12.0, 14.0).to_real_time_vec();
     /// let vector2 = vec!(1.0, 2.0).to_real_time_vec();
