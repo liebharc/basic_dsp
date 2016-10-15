@@ -3,82 +3,83 @@ extern crate basic_dsp_vector;
 mod definitions;
 
 use std::result::Result;
-use basic_dsp_vector::*;
+use basic_dsp_vector::vector_types2::*;
+use basic_dsp_vector::RealNumber;
 
 pub use definitions::*;
 
 pub struct MatrixMxN<V, T>
     where T: RealNumber,
-          V: DataVec<T> {
+          V: Vector<T> {
   rows: Vec<V>,
   number_type: std::marker::PhantomData<T>
 }
 
 pub struct Matrix2xN<V, T>
     where T: RealNumber,
-          V: DataVec<T> {
+          V: Vector<T> {
   rows: [V; 2],
   number_type: std::marker::PhantomData<T>
 }
 
 pub struct Matrix3xN<V, T>
     where T: RealNumber,
-          V: DataVec<T> {
+          V: Vector<T> {
   rows: [V; 3],
   number_type: std::marker::PhantomData<T>
 }
 
 pub struct Matrix4xN<V, T>
     where T: RealNumber,
-          V: DataVec<T> {
+          V: Vector<T> {
   rows: [V; 4],
   number_type: std::marker::PhantomData<T>
 }
 
-pub type Matrix32xN = MatrixMxN<DataVec32, f32>;
-pub type Matrix64xN = MatrixMxN<DataVec64, f32>;
-pub type RealTimeMatrix32xN = MatrixMxN<RealTimeVector32, f32>;
-pub type RealTimeMatrix64xN = MatrixMxN<RealTimeVector64, f64>;
-pub type ComplexTimeMatrix32xN = MatrixMxN<ComplexTimeVector32, f32>;
-pub type ComplexTimeMatrix64xN = MatrixMxN<ComplexTimeVector64, f64>;
-pub type RealFreqMatrix32xN = MatrixMxN<RealFreqVector32, f32>;
-pub type RealFreqMatrix64xN = MatrixMxN<RealFreqVector64, f64>;
-pub type ComplexFreqMatrix32xN = MatrixMxN<ComplexFreqVector32, f32>;
-pub type ComplexFreqMatrix64xN = MatrixMxN<ComplexFreqVector64, f64>;
+pub type Matrix32xN = MatrixMxN<GenDspVec32, f32>;
+pub type Matrix64xN = MatrixMxN<GenDspVec64, f32>;
+pub type RealTimeMatrix32xN = MatrixMxN<RealTimeVec32, f32>;
+pub type RealTimeMatrix64xN = MatrixMxN<RealTimeVec64, f64>;
+pub type ComplexTimeMatrix32xN = MatrixMxN<ComplexTimeVec32, f32>;
+pub type ComplexTimeMatrix64xN = MatrixMxN<ComplexTimeVec64, f64>;
+pub type RealFreqMatrix32xN = MatrixMxN<RealFreqVec32, f32>;
+pub type RealFreqMatrix64xN = MatrixMxN<RealFreqVec64, f64>;
+pub type ComplexFreqMatrix32xN = MatrixMxN<ComplexFreqVec32, f32>;
+pub type ComplexFreqMatrix64xN = MatrixMxN<ComplexFreqVec64, f64>;
 
-pub type Matrix32x2 = Matrix2xN<DataVec32, f32>;
-pub type Matrix64x2 = Matrix2xN<DataVec64, f32>;
-pub type RealTimeMatrix32x2 = Matrix2xN<RealTimeVector32, f32>;
-pub type RealTimeMatrix64x2 = Matrix2xN<RealTimeVector64, f64>;
-pub type ComplexTimeMatrix32x2 = Matrix2xN<ComplexTimeVector32, f32>;
-pub type ComplexTimeMatrix64x2 = Matrix2xN<ComplexTimeVector64, f64>;
-pub type RealFreqMatrix32x2 = Matrix2xN<RealFreqVector32, f32>;
-pub type RealFreqMatrix64x2 = Matrix2xN<RealFreqVector64, f64>;
-pub type ComplexFreqMatrix32x2 = Matrix2xN<ComplexFreqVector32, f32>;
-pub type ComplexFreqMatrix64x2 = Matrix2xN<ComplexFreqVector64, f64>;
+pub type Matrix32x2 = Matrix2xN<GenDspVec32, f32>;
+pub type Matrix64x2 = Matrix2xN<GenDspVec64, f32>;
+pub type RealTimeMatrix32x2 = Matrix2xN<RealTimeVec32, f32>;
+pub type RealTimeMatrix64x2 = Matrix2xN<RealTimeVec64, f64>;
+pub type ComplexTimeMatrix32x2 = Matrix2xN<ComplexTimeVec32, f32>;
+pub type ComplexTimeMatrix64x2 = Matrix2xN<ComplexTimeVec64, f64>;
+pub type RealFreqMatrix32x2 = Matrix2xN<RealFreqVec32, f32>;
+pub type RealFreqMatrix64x2 = Matrix2xN<RealFreqVec64, f64>;
+pub type ComplexFreqMatrix32x2 = Matrix2xN<ComplexFreqVec32, f32>;
+pub type ComplexFreqMatrix64x2 = Matrix2xN<ComplexFreqVec64, f64>;
 
-pub type Matrix32x3 = Matrix3xN<DataVec32, f32>;
-pub type Matrix64x3 = Matrix3xN<DataVec64, f32>;
-pub type RealTimeMatrix32x3 = Matrix3xN<RealTimeVector32, f32>;
-pub type RealTimeMatrix64x3 = Matrix3xN<RealTimeVector64, f64>;
-pub type ComplexTimeMatrix32x3 = Matrix3xN<ComplexTimeVector32, f32>;
-pub type ComplexTimeMatrix64x3 = Matrix3xN<ComplexTimeVector64, f64>;
-pub type RealFreqMatrix32x3 = Matrix3xN<RealFreqVector32, f32>;
-pub type RealFreqMatrix64x3 = Matrix3xN<RealFreqVector64, f64>;
-pub type ComplexFreqMatrix32x3 = Matrix3xN<ComplexFreqVector32, f32>;
-pub type ComplexFreqMatrix64x3 = Matrix3xN<ComplexFreqVector64, f64>;
+pub type Matrix32x3 = Matrix3xN<GenDspVec32, f32>;
+pub type Matrix64x3 = Matrix3xN<GenDspVec64, f32>;
+pub type RealTimeMatrix32x3 = Matrix3xN<RealTimeVec32, f32>;
+pub type RealTimeMatrix64x3 = Matrix3xN<RealTimeVec64, f64>;
+pub type ComplexTimeMatrix32x3 = Matrix3xN<ComplexTimeVec32, f32>;
+pub type ComplexTimeMatrix64x3 = Matrix3xN<ComplexTimeVec64, f64>;
+pub type RealFreqMatrix32x3 = Matrix3xN<RealFreqVec32, f32>;
+pub type RealFreqMatrix64x3 = Matrix3xN<RealFreqVec64, f64>;
+pub type ComplexFreqMatrix32x3 = Matrix3xN<ComplexFreqVec32, f32>;
+pub type ComplexFreqMatrix64x3 = Matrix3xN<ComplexFreqVec64, f64>;
 
-pub type Matrix32x4 = Matrix4xN<DataVec32, f32>;
-pub type Matrix64x4 = Matrix4xN<DataVec64, f32>;
-pub type RealTimeMatrix32x4 = Matrix4xN<RealTimeVector32, f32>;
-pub type RealTimeMatrix64x4 = Matrix4xN<RealTimeVector64, f64>;
-pub type ComplexTimeMatrix32x4 = Matrix4xN<ComplexTimeVector32, f32>;
-pub type ComplexTimeMatrix64x4 = Matrix4xN<ComplexTimeVector64, f64>;
-pub type RealFreqMatrix32x4 = Matrix4xN<RealFreqVector32, f32>;
-pub type RealFreqMatrix64x4 = Matrix4xN<RealFreqVector64, f64>;
-pub type ComplexFreqMatrix32x4 = Matrix4xN<ComplexFreqVector32, f32>;
-pub type ComplexFreqMatrix64x4 = Matrix4xN<ComplexFreqVector64, f64>;
-
+pub type Matrix32x4 = Matrix4xN<GenDspVec32, f32>;
+pub type Matrix64x4 = Matrix4xN<GenDspVec64, f32>;
+pub type RealTimeMatrix32x4 = Matrix4xN<RealTimeVec32, f32>;
+pub type RealTimeMatrix64x4 = Matrix4xN<RealTimeVec64, f64>;
+pub type ComplexTimeMatrix32x4 = Matrix4xN<ComplexTimeVec32, f32>;
+pub type ComplexTimeMatrix64x4 = Matrix4xN<ComplexTimeVec64, f64>;
+pub type RealFreqMatrix32x4 = Matrix4xN<RealFreqVec32, f32>;
+pub type RealFreqMatrix64x4 = Matrix4xN<RealFreqVec64, f64>;
+pub type ComplexFreqMatrix32x4 = Matrix4xN<ComplexFreqVec32, f32>;
+pub type ComplexFreqMatrix64x4 = Matrix4xN<ComplexFreqVec64, f64>;
+/*
 impl<V, T> MatrixMxN<V, T>
     where T: RealNumber,
       V: DataVec<T> {
@@ -240,4 +241,4 @@ mod tests {
         assert_eq!(pair[0].real(0..), array1);
         assert_eq!(pair[1].real(0..), array2);
     }
-}
+}*/
