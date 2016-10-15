@@ -9,7 +9,7 @@ use num::complex::{Complex, Complex32,Complex64};
 use std::marker::PhantomData;
 use std::os::raw::c_void;
 use std::mem;
-use vector_types2::*;
+use vector_types::*;
 
 macro_rules! define_real_conv_trait {
     ($($name: ident, $domain_comment:ident);*) => {
