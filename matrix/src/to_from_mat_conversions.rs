@@ -1,6 +1,6 @@
 use basic_dsp_vector::*;
 use super::*;
-use std::mem;
+use TransformContent;
 use std::marker;
 
 /// Conversion from a generic data type into a dsp matrix which tracks
@@ -79,94 +79,62 @@ pub trait FromMatrix<T>
     fn get(self) -> (Self::Output, usize);
 }
 
-fn to_mat_mxn<S, F, V, T>(mut source: Vec<S>, conversion: F) -> MatrixMxN<V, T>
+fn to_mat_mxn<S, F, V, T>(source: Vec<S>, conversion: F) -> MatrixMxN<V, S, T>
 	where S: ToSlice<T>,
 	 	  V: Vector<T>,
 		  T: RealNumber,
 		  F: Fn(S) -> V {
-	  let mut rows: Vec<V> = Vec::with_capacity(source.len());
-	  for _ in 0..source.len() {
-	  	let v: S = source.pop().unwrap();
-	  	rows.push(conversion(v));
-	  }
-	  rows.reverse();
-
+      let rows = source.transform(conversion);
 	  MatrixMxN {
 	  	rows: rows,
+		storage_type: marker::PhantomData,
 	  	number_type: marker::PhantomData
 	  }
 }
 
-fn to_mat_2xn<S, F, V, T>(mut source: [S; 2], conversion: F) -> Matrix2xN<V, T>
+fn to_mat_2xn<S, F, V, T>(source: [S; 2], conversion: F) -> Matrix2xN<V, S, T>
 	where S: ToSlice<T>,
 	 	  V: Vector<T>,
 		  T: RealNumber,
 		  F: Fn(S) -> V {
-	  unsafe {
-		  let first = mem::replace(&mut source[0], mem::uninitialized());
-		  let second = mem::replace(&mut source[1], mem::uninitialized());
-		  mem::forget(source); // TODO possible memory leak
-		  let first = conversion(first);
-		  let second = conversion(second);
-		  let rows: [V; 2] = [first, second];
-
-		  Matrix2xN {
-			  rows: rows,
-			  number_type: marker::PhantomData
-		  }
+	  let rows = source.transform(conversion);
+	  Matrix2xN {
+		  rows: rows,
+		  storage_type: marker::PhantomData,
+		  number_type: marker::PhantomData
 	  }
 }
 
-fn to_mat_3xn<S, F, V, T>(mut source: [S; 3], conversion: F) -> Matrix3xN<V, T>
+fn to_mat_3xn<S, F, V, T>(source: [S; 3], conversion: F) -> Matrix3xN<V, S, T>
 	where S: ToSlice<T>,
 	 	  V: Vector<T>,
 		  T: RealNumber,
 		  F: Fn(S) -> V {
-	  unsafe {
-		  let first = mem::replace(&mut source[0], mem::uninitialized());
-		  let second = mem::replace(&mut source[1], mem::uninitialized());
-		  let third = mem::replace(&mut source[2], mem::uninitialized());
-		  mem::forget(source); // TODO possible memory leak
-		  let first = conversion(first);
-		  let second = conversion(second);
-		  let third = conversion(third);
-		  let rows: [V; 3] = [first, second, third];
-
-		  Matrix3xN {
-			  rows: rows,
-			  number_type: marker::PhantomData
-		  }
+      let rows = source.transform(conversion);
+	  Matrix3xN {
+		  rows: rows,
+		  storage_type: marker::PhantomData,
+		  number_type: marker::PhantomData
 	  }
 }
 
-fn to_mat_4xn<S, F, V, T>(mut source: [S; 4], conversion: F) -> Matrix4xN<V, T>
+fn to_mat_4xn<S, F, V, T>(source: [S; 4], conversion: F) -> Matrix4xN<V, S, T>
 	where S: ToSlice<T>,
 	 	  V: Vector<T>,
 		  T: RealNumber,
 		  F: Fn(S) -> V {
-	  unsafe {
-		  let first = mem::replace(&mut source[0], mem::uninitialized());
-		  let second = mem::replace(&mut source[1], mem::uninitialized());
-		  let third = mem::replace(&mut source[2], mem::uninitialized());
-		  let fourth = mem::replace(&mut source[3], mem::uninitialized());
-		  mem::forget(source); // TODO possible memory leak
-		  let first = conversion(first);
-		  let second = conversion(second);
-		  let third = conversion(third);
-		  let fourth = conversion(fourth);
-		  let rows: [V; 4] = [first, second, third, fourth];
-
-		  Matrix4xN {
-			  rows: rows,
-			  number_type: marker::PhantomData
-		  }
-	  }
+      let rows = source.transform(conversion);
+      Matrix4xN {
+          rows: rows,
+          storage_type: marker::PhantomData,
+          number_type: marker::PhantomData
+      }
 }
 
 impl<T, S> ToDspMatrix<GenDspVec<S, T>, T> for Vec<S>
 	where T: RealNumber,
 		  S: ToDspVector<T> + ToSlice<T> {
-	type Output = MatrixMxN<GenDspVec<S, T>, T>;
+	type Output = MatrixMxN<GenDspVec<S, T>, S, T>;
 
 	fn to_gen_dsp_mat(self, is_complex: bool, domain: DataDomain) -> Self::Output {
 		to_mat_mxn(self, |v|v.to_gen_dsp_vec(is_complex, domain))
@@ -176,7 +144,7 @@ impl<T, S> ToDspMatrix<GenDspVec<S, T>, T> for Vec<S>
 impl<T, S> ToDspMatrix<GenDspVec<S, T>, T> for [S; 2]
 	where T: RealNumber,
 		  S: ToDspVector<T> + ToSlice<T> {
-	type Output = Matrix2xN<GenDspVec<S, T>, T>;
+	type Output = Matrix2xN<GenDspVec<S, T>, S, T>;
 
 	fn to_gen_dsp_mat(self, is_complex: bool, domain: DataDomain) -> Self::Output {
 		to_mat_2xn(self, |v|v.to_gen_dsp_vec(is_complex, domain))
@@ -186,7 +154,7 @@ impl<T, S> ToDspMatrix<GenDspVec<S, T>, T> for [S; 2]
 impl<T, S> ToDspMatrix<GenDspVec<S, T>, T> for [S; 3]
 	where T: RealNumber,
 		  S: ToDspVector<T> + ToSlice<T> {
-	type Output = Matrix3xN<GenDspVec<S, T>, T>;
+	type Output = Matrix3xN<GenDspVec<S, T>, S, T>;
 
 	fn to_gen_dsp_mat(self, is_complex: bool, domain: DataDomain) -> Self::Output {
 		to_mat_3xn(self, |v|v.to_gen_dsp_vec(is_complex, domain))
@@ -197,7 +165,7 @@ impl<T, S> ToDspMatrix<GenDspVec<S, T>, T> for [S; 3]
 impl<T, S> ToDspMatrix<GenDspVec<S, T>, T> for [S; 4]
 	where T: RealNumber,
 		  S: ToDspVector<T> + ToSlice<T> {
-	type Output = Matrix4xN<GenDspVec<S, T>, T>;
+	type Output = Matrix4xN<GenDspVec<S, T>, S, T>;
 
 	fn to_gen_dsp_mat(self, is_complex: bool, domain: DataDomain) -> Self::Output {
 		to_mat_4xn(self, |v|v.to_gen_dsp_vec(is_complex, domain))
@@ -207,7 +175,7 @@ impl<T, S> ToDspMatrix<GenDspVec<S, T>, T> for [S; 4]
 impl<T, S> ToRealTimeMatrix<RealTimeVec<S, T>, T> for Vec<S>
 	where T: RealNumber,
 		  S: ToRealVector<T> + ToSlice<T> {
-	type Output = MatrixMxN<RealTimeVec<S, T>, T>;
+	type Output = MatrixMxN<RealTimeVec<S, T>, S, T>;
 
 	fn to_real_time_mat(self) -> Self::Output {
 		to_mat_mxn(self, |v|v.to_real_time_vec())
@@ -217,7 +185,7 @@ impl<T, S> ToRealTimeMatrix<RealTimeVec<S, T>, T> for Vec<S>
 impl<T, S> ToRealTimeMatrix<RealTimeVec<S, T>, T> for [S; 2]
 	where T: RealNumber,
 		  S: ToRealVector<T> + ToSlice<T> {
-	type Output = Matrix2xN<RealTimeVec<S, T>, T>;
+	type Output = Matrix2xN<RealTimeVec<S, T>, S, T>;
 
 	fn to_real_time_mat(self) -> Self::Output {
 		to_mat_2xn(self, |v|v.to_real_time_vec())
@@ -227,7 +195,7 @@ impl<T, S> ToRealTimeMatrix<RealTimeVec<S, T>, T> for [S; 2]
 impl<T, S> ToRealTimeMatrix<RealTimeVec<S, T>, T> for [S; 3]
 	where T: RealNumber,
 		  S: ToRealVector<T> + ToSlice<T> {
-	type Output = Matrix3xN<RealTimeVec<S, T>, T>;
+	type Output = Matrix3xN<RealTimeVec<S, T>, S, T>;
 
 	fn to_real_time_mat(self) -> Self::Output {
 		to_mat_3xn(self, |v|v.to_real_time_vec())
@@ -237,7 +205,7 @@ impl<T, S> ToRealTimeMatrix<RealTimeVec<S, T>, T> for [S; 3]
 impl<T, S> ToRealTimeMatrix<RealTimeVec<S, T>, T> for [S; 4]
 	where T: RealNumber,
 		  S: ToRealVector<T> + ToSlice<T> {
-	type Output = Matrix4xN<RealTimeVec<S, T>, T>;
+	type Output = Matrix4xN<RealTimeVec<S, T>, S, T>;
 
 	fn to_real_time_mat(self) -> Self::Output {
 		to_mat_4xn(self, |v|v.to_real_time_vec())
@@ -247,7 +215,7 @@ impl<T, S> ToRealTimeMatrix<RealTimeVec<S, T>, T> for [S; 4]
 impl<T, S> ToRealFreqMatrix<RealFreqVec<S, T>, T> for Vec<S>
 	where T: RealNumber,
 		  S: ToRealVector<T> + ToSlice<T> {
-	type Output = MatrixMxN<RealFreqVec<S, T>, T>;
+	type Output = MatrixMxN<RealFreqVec<S, T>, S, T>;
 
 	fn to_real_freq_mat(self) -> Self::Output {
 		to_mat_mxn(self, |v|v.to_real_freq_vec())
@@ -257,7 +225,7 @@ impl<T, S> ToRealFreqMatrix<RealFreqVec<S, T>, T> for Vec<S>
 impl<T, S> ToRealFreqMatrix<RealFreqVec<S, T>, T> for [S; 2]
 	where T: RealNumber,
 		  S: ToRealVector<T> + ToSlice<T> {
-	type Output = Matrix2xN<RealFreqVec<S, T>, T>;
+	type Output = Matrix2xN<RealFreqVec<S, T>, S, T>;
 
 	fn to_real_freq_mat(self) -> Self::Output {
 		to_mat_2xn(self, |v|v.to_real_freq_vec())
@@ -267,7 +235,7 @@ impl<T, S> ToRealFreqMatrix<RealFreqVec<S, T>, T> for [S; 2]
 impl<T, S> ToRealFreqMatrix<RealFreqVec<S, T>, T> for [S; 3]
 	where T: RealNumber,
 		  S: ToRealVector<T> + ToSlice<T> {
-	type Output = Matrix3xN<RealFreqVec<S, T>, T>;
+	type Output = Matrix3xN<RealFreqVec<S, T>, S, T>;
 
 	fn to_real_freq_mat(self) -> Self::Output {
 		to_mat_3xn(self, |v|v.to_real_freq_vec())
@@ -277,7 +245,7 @@ impl<T, S> ToRealFreqMatrix<RealFreqVec<S, T>, T> for [S; 3]
 impl<T, S> ToRealFreqMatrix<RealFreqVec<S, T>, T> for [S; 4]
 	where T: RealNumber,
 		  S: ToRealVector<T> + ToSlice<T> {
-	type Output = Matrix4xN<RealFreqVec<S, T>, T>;
+	type Output = Matrix4xN<RealFreqVec<S, T>, S, T>;
 
 	fn to_real_freq_mat(self) -> Self::Output {
 		to_mat_4xn(self, |v|v.to_real_freq_vec())
@@ -287,7 +255,7 @@ impl<T, S> ToRealFreqMatrix<RealFreqVec<S, T>, T> for [S; 4]
 impl<T, S> ToComplexTimeMatrix<ComplexTimeVec<S, T>, T> for Vec<S>
 	where T: RealNumber,
 		  S: ToComplexVector<S, T> + ToSlice<T> {
-	type Output = MatrixMxN<ComplexTimeVec<S, T>, T>;
+	type Output = MatrixMxN<ComplexTimeVec<S, T>, S, T>;
 
 	fn to_complex_time_mat(self) -> Self::Output {
 		to_mat_mxn(self, |v|v.to_complex_time_vec())
@@ -297,7 +265,7 @@ impl<T, S> ToComplexTimeMatrix<ComplexTimeVec<S, T>, T> for Vec<S>
 impl<T, S> ToComplexTimeMatrix<ComplexTimeVec<S, T>, T> for [S; 2]
 	where T: RealNumber,
 		  S: ToComplexVector<S, T> + ToSlice<T> {
-	type Output = Matrix2xN<ComplexTimeVec<S, T>, T>;
+	type Output = Matrix2xN<ComplexTimeVec<S, T>, S, T>;
 
 	fn to_complex_time_mat(self) -> Self::Output {
 		to_mat_2xn(self, |v|v.to_complex_time_vec())
@@ -307,7 +275,7 @@ impl<T, S> ToComplexTimeMatrix<ComplexTimeVec<S, T>, T> for [S; 2]
 impl<T, S> ToComplexTimeMatrix<ComplexTimeVec<S, T>, T> for [S; 3]
 	where T: RealNumber,
 		  S: ToComplexVector<S, T> + ToSlice<T> {
-	type Output = Matrix3xN<ComplexTimeVec<S, T>, T>;
+	type Output = Matrix3xN<ComplexTimeVec<S, T>, S, T>;
 
 	fn to_complex_time_mat(self) -> Self::Output {
 		to_mat_3xn(self, |v|v.to_complex_time_vec())
@@ -317,16 +285,17 @@ impl<T, S> ToComplexTimeMatrix<ComplexTimeVec<S, T>, T> for [S; 3]
 impl<T, S> ToComplexTimeMatrix<ComplexTimeVec<S, T>, T> for [S; 4]
 	where T: RealNumber,
 		  S: ToComplexVector<S, T> + ToSlice<T> {
-	type Output = Matrix4xN<ComplexTimeVec<S, T>, T>;
+	type Output = Matrix4xN<ComplexTimeVec<S, T>, S, T>;
 
 	fn to_complex_time_mat(self) -> Self::Output {
 		to_mat_4xn(self, |v|v.to_complex_time_vec())
 	}
 }
 
-impl<V, T> FromMatrix<T> for MatrixMxN<V, T>
+impl<V, S, T> FromMatrix<T> for MatrixMxN<V, S, T>
 	where T: RealNumber,
-		  V: Vector<T> {
+		  V: Vector<T>,
+		  S: ToSlice<T> {
 	type Output = Vec<V>;
 
 	fn get(self) -> (Self::Output, usize) {
@@ -335,9 +304,10 @@ impl<V, T> FromMatrix<T> for MatrixMxN<V, T>
 	}
 }
 
-impl<V, T> FromMatrix<T> for Matrix2xN<V, T>
+impl<V, S, T> FromMatrix<T> for Matrix2xN<V, S, T>
 	where T: RealNumber,
-		  V: Vector<T> {
+		  V: Vector<T>,
+		  S: ToSlice<T> {
 	type Output = [V; 2];
 
 	fn get(self) -> (Self::Output, usize) {
@@ -346,9 +316,10 @@ impl<V, T> FromMatrix<T> for Matrix2xN<V, T>
 	}
 }
 
-impl<V, T> FromMatrix<T> for Matrix3xN<V, T>
+impl<V, S, T> FromMatrix<T> for Matrix3xN<V, S, T>
 	where T: RealNumber,
-		  V: Vector<T> {
+		  V: Vector<T>,
+		  S: ToSlice<T> {
 	type Output = [V; 3];
 
 	fn get(self) -> (Self::Output, usize) {
@@ -357,9 +328,10 @@ impl<V, T> FromMatrix<T> for Matrix3xN<V, T>
 	}
 }
 
-impl<V, T> FromMatrix<T> for Matrix4xN<V, T>
+impl<V, S, T> FromMatrix<T> for Matrix4xN<V, S, T>
 	where T: RealNumber,
-		  V: Vector<T> {
+		  V: Vector<T>,
+		  S: ToSlice<T> {
 	type Output = [V; 4];
 
 	fn get(self) -> (Self::Output, usize) {
@@ -375,11 +347,11 @@ mod tests {
 
     #[test]
     fn to_gen_dsp_mat_test() {
-        let mat: MatrixMxN<_, _> = vec!(vec!(0.0, 1.0), vec!(2.0, 3.0)).to_gen_dsp_mat(false, DataDomain::Time);
+        let mat: MatrixMxN<_, _, _> = vec!(vec!(0.0, 1.0), vec!(2.0, 3.0)).to_gen_dsp_mat(false, DataDomain::Time);
 		assert_eq!(&mat.rows[0][..], &[0.0, 1.0]);
 		assert_eq!(&mat.rows[1][..], &[2.0, 3.0]);
 
-		let mat: Matrix2xN<_, _> = [vec!(0.0, 1.0), vec!(2.0, 3.0)].to_gen_dsp_mat(false, DataDomain::Time);
+		let mat: Matrix2xN<_, _, _> = [vec!(0.0, 1.0), vec!(2.0, 3.0)].to_gen_dsp_mat(false, DataDomain::Time);
 		assert_eq!(&mat.rows[0][..], &[0.0, 1.0]);
 		assert_eq!(&mat.rows[1][..], &[2.0, 3.0]);
 	}

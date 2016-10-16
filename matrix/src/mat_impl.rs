@@ -36,8 +36,9 @@ pub trait Matrix<V, T> : MetaData + ResizeOps
 macro_rules! add_mat_impl {
     ($($matrix:ident);*) => {
         $(
-			impl<V, T> MetaData for $matrix<V, T>
+			impl<V, S, T> MetaData for $matrix<V, S, T>
 			    where T: RealNumber,
+					  S: ToSlice<T>,
                   	  V: Vector<T> {
                   fn domain(&self) -> DataDomain {
 					  if self.rows.len() == 0 {
@@ -56,8 +57,9 @@ macro_rules! add_mat_impl {
                   }
 			}
 
-			impl<V, T> ResizeOps for $matrix<V, T>
+			impl<V, S, T> ResizeOps for $matrix<V, S, T>
 			    where T: RealNumber,
+					  S: ToSlice<T>,
                   	  V: Vector<T> {
 			      fn resize(&mut self, len: usize) -> VoidResult {
 					  for v in &mut self.rows[..] {
@@ -68,8 +70,9 @@ macro_rules! add_mat_impl {
 			      }
 			}
 
-            impl<V, T> Matrix<V, T> for $matrix<V, T>
+            impl<V, S, T> Matrix<V, T> for $matrix<V, S, T>
                 where T: RealNumber,
+					  S: ToSlice<T>,
                   	  V: Vector<T> {
                 fn delta(&self) -> T {
 					if self.rows.len() == 0 {
