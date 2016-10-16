@@ -315,7 +315,8 @@ macro_rules! add_mat_impl {
 				}
 			}*/
 
-			// TODO DotProductOps, MapAggregateOps, Statistics, Add/sub/mul/div vector to mat
+			// TODO DotProductOps, MapAggregateOps, Statistics, Add/sub/mul/div vector to matu
+      c
 
 
 		)*

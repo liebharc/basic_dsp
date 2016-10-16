@@ -8,7 +8,7 @@ use std::mem;
 use super::RealNumber;
 use std::iter::Iterator;
 
-/// Indicates how complex an operation is and determines how many cores 
+/// Indicates how complex an operation is and determines how many cores
 /// will be used since operations with smaller complexity are memory bus bound
 /// and not CPU bound
 #[derive(Copy)]
@@ -23,12 +23,12 @@ pub enum Complexity {
 
 /// Holds parameters which specify how multiple cores are used
 /// to execute an operation.
-#[derive(Debug, Copy)] 
-#[repr(C)]  
+#[derive(Debug, Copy)]
+#[repr(C)]
 pub struct MultiCoreSettings {
     /// All operations will be limited to not create more threads than specified here
     pub core_limit: usize,
-    
+
     /// Indicates whether the temp arrays of a vector should already be allocated during
     /// construction
     pub early_temp_allocation: bool
@@ -41,11 +41,11 @@ impl MultiCoreSettings {
         // that hyper threading isn't of any use
         Self::new(num_cpus::get() / 2, false)
     }
-    
+
     /// Creates multi core settings with the given values.
     pub fn new(core_limit: usize, early_temp_allocation: bool) -> MultiCoreSettings {
         MultiCoreSettings {
-            core_limit: if core_limit >= 1 { core_limit } else { 1 }, 
+            core_limit: if core_limit >= 1 { core_limit } else { 1 },
             early_temp_allocation: early_temp_allocation
         }
     }
@@ -68,19 +68,19 @@ impl Clone for MultiCoreSettings {
 /// in parallel by dividing an array into chunks.
 pub struct Chunk;
 impl Chunk
-{  
-    /// Figures out how many threads make use for the an operation with the given complexity on 
-    /// an array with the given size. 
+{
+    /// Figures out how many threads make use for the an operation with the given complexity on
+    /// an array with the given size.
     ///
     /// This method tries to balance the expected performance gain vs. CPU utilization since there is in most cases
     /// no point to keep all CPU cores busy only to get 5 to 10% performance gain.
     /// The expected performance gain is roughly estimated based on three factors:
     /// 1. More cores improves the calculation speed according to Amdahl's law (`https://en.wikipedia.org/wiki/Amdahl's_law`)
     /// 2. Spawning a thread consumes time and so the array length must be large enough to so that the expected performance
-    ///    gain justifies the effort to spawn a thread/invoke the thread pool. 
+    ///    gain justifies the effort to spawn a thread/invoke the thread pool.
     /// 3. The CPU is not the only resource and if one of the other resources is a bottleneck then Amdahl's law won't be applicable.
     ///    The memory bus speed is limited (20GB/s in case of a typical 2015 consumer laptop in the price range of $1000) and
-    ///    for operations which only require a few CPU cycles already one or two cores will process data faster than the 
+    ///    for operations which only require a few CPU cycles already one or two cores will process data faster than the
     ///    memory bus is able to provide and to transport back. Using more cores then only creates heat but no performance benefit.
     #[inline]
     fn determine_number_of_chunks(array_length: usize, complexity: Complexity, settings: &MultiCoreSettings) -> usize
@@ -98,7 +98,7 @@ impl Chunk
             }
             else {
                 if cores >= 2 {
-                    2  
+                    2
                 } else {
                     1
                 }
@@ -110,7 +110,7 @@ impl Chunk
             }
             else if array_length < 50000 {
                 if cores >= 2 {
-                    2  
+                    2
                 } else {
                     1
                 }
@@ -127,9 +127,9 @@ impl Chunk
             }
         }
     }
-    
+
     /// Partitions an array into the given number of chunks. It makes sure that all chunks have the same size
-    /// and so it will happen that some elements at the end of the array are not part of any chunk. 
+    /// and so it will happen that some elements at the end of the array are not part of any chunk.
     #[inline]
     fn partition<T>(array: &[T], step_size: usize, number_of_chunks: usize) -> Chunks<T>
         where T: Copy + Clone + Send + Sync
@@ -137,9 +137,9 @@ impl Chunk
         let chunk_size = Chunk::calc_chunk_size(array.len(), step_size, number_of_chunks);
         array[0 .. array.len()].chunks(chunk_size)
     }
-    
+
     /// Partitions an array into the given number of chunks. It makes sure that all chunks have the same size
-    /// and so it will happen that some elements at the end of the array are not part of any chunk. 
+    /// and so it will happen that some elements at the end of the array are not part of any chunk.
     #[inline]
     fn partition_mut<T>(array: &mut [T],  step_size: usize, number_of_chunks: usize) -> ChunksMut<T>
         where T : Copy + Clone + Send
@@ -147,7 +147,7 @@ impl Chunk
         let chunk_size = Chunk::calc_chunk_size(array.len(), step_size, number_of_chunks);
         array.chunks_mut(chunk_size)
     }
-    
+
     #[inline]
     fn calc_chunk_size(array_length: usize, step_size: usize, number_of_chunks: usize) -> usize
     {
@@ -157,11 +157,11 @@ impl Chunk
         {
             chunk_size += step_size - chunk_size % step_size;
         }
-        
+
         chunk_size
     }
-    
-    /// This function returns the ranges which correspond to the chunks generated by `partition_in_number`. 
+
+    /// This function returns the ranges which correspond to the chunks generated by `partition_in_number`.
     #[inline]
     fn partition_in_ranges(array_length: usize, step_size: usize, number_of_chunks: usize) -> Vec<Range<usize>>
     {
@@ -172,20 +172,20 @@ impl Chunk
             let new_sum = if i < number_of_chunks - 1 { sum + chunk_size } else { array_length };
             ranges.push(Range { start: sum, end: new_sum });
             sum = new_sum;
-        } 
-        
+        }
+
         ranges
     }
-    
+
     /// Executes the given function on the first `array_length` elements of the given array in parallel and passes
     /// the argument to all function calls.
     #[inline]
-    pub fn execute_partial<T,S,F>(
-            complexity: Complexity, 
-            settings: &MultiCoreSettings, 
-            array: &mut [T], step_size: usize, 
+    pub fn execute_partial<'a, T, S, F>(
+            complexity: Complexity,
+            settings: &MultiCoreSettings,
+            array: &mut [T], step_size: usize,
             arguments:S, ref function: F)
-        where F: Fn(&mut [T], S) + 'static + Sync, 
+        where F: Fn(&mut [T], S) + 'a + Sync,
               T: RealNumber,
               S: Sync + Copy + Send
     {   let array_length = array.len();
@@ -206,16 +206,16 @@ impl Chunk
             function(array, arguments);
         }
     }
-    
+
     /// Executes the given function on the first `array_length` elements of the given list of arrays in parallel and passes
-    /// the argument to all function calls. 
+    /// the argument to all function calls.
     #[inline]
-    pub fn execute_partial_multidim<T,S,F>(
-            complexity: Complexity, 
-            settings: &MultiCoreSettings, 
-            array: &mut [&mut [T]], range: Range<usize>, step_size: usize, 
+    pub fn execute_partial_multidim<'a, T, S, F>(
+            complexity: Complexity,
+            settings: &MultiCoreSettings,
+            array: &mut [&mut [T]], range: Range<usize>, step_size: usize,
             arguments:S, ref function: F)
-        where F: Fn(&mut Vec<&mut [T]>, Range<usize>, S) + 'static + Sync, 
+        where F: Fn(&mut Vec<&mut [T]>, Range<usize>, S) + 'a + Sync,
               T: RealNumber,
               S: Sync + Copy + Send
     {
@@ -251,7 +251,7 @@ impl Chunk
             let mut flat_layout: Vec<&mut [T]> = array.iter_mut().flat_map(|a| {
                 Chunk::partition_mut(&mut a[range.start .. range.end], step_size, number_of_chunks)
             }).collect();
-            
+
             let mut reorganized = Vec::with_capacity(number_of_chunks);
             for _ in 0..number_of_chunks {
                 reorganized.push(Vec::with_capacity(dimensions));
@@ -262,7 +262,7 @@ impl Chunk
                 reorganized[i % number_of_chunks].push(elem);
                 i-=1;
             }
-            
+
             crossbeam::scope(|scope| {
                 for chunk in reorganized.iter_mut().zip(ranges) {
                     scope.spawn(move|| {
@@ -273,21 +273,21 @@ impl Chunk
         }
         else
         {
-          let mut shortened: Vec<&mut [T]> = 
+          let mut shortened: Vec<&mut [T]> =
             array.iter_mut().map(|a|&mut a[range.start..range.end]).collect();
           function(&mut shortened, range, arguments);
         }
     }
-    
+
     /// Executes the given function on the all elements of the array and also tells the function on which range/chunk
     /// it operates on.
     #[inline]
-    pub fn execute_with_range<T,S,F>(
-            complexity: Complexity, 
-            settings: &MultiCoreSettings, 
-            array: &mut [T], step_size: usize, 
+    pub fn execute_with_range<'a, T, S, F>(
+            complexity: Complexity,
+            settings: &MultiCoreSettings,
+            array: &mut [T], step_size: usize,
             arguments: S, ref function: F)
-        where F: Fn(&mut [T], Range<usize>, S) + 'static + Sync,
+        where F: Fn(&mut [T], Range<usize>, S) + 'a + Sync,
               T : Copy + Clone + Send + Sync,
               S: Sync + Copy + Send
     {
@@ -310,16 +310,16 @@ impl Chunk
             function(array, Range { start: 0, end: array_length }, arguments);
         }
     }
-    
+
     /// Executes the given function on an unspecified number and size of chunks on the array and
     /// returns the result of each chunk.
     #[inline]
-    pub fn map_on_array_chunks<T,S,F, R>(
-            complexity: Complexity, 
-            settings: &MultiCoreSettings, 
-            array: &[T], step_size: usize, 
+    pub fn map_on_array_chunks<'a, T,S,F, R>(
+            complexity: Complexity,
+            settings: &MultiCoreSettings,
+            array: &[T], step_size: usize,
             arguments: S, ref function: F) -> Vec<R>
-        where F: Fn(&[T], Range<usize>, S) -> R + 'static + Sync,
+        where F: Fn(&[T], Range<usize>, S) -> R + 'a + Sync,
               T : Copy + Clone + Send + Sync,
               S: Sync + Copy + Send,
               R: Send
@@ -350,21 +350,21 @@ impl Chunk
             vec![result]
         }
     }
-    
+
     /// Executes the given function on the all elements of the array and also tells the function on which range/chunk
     /// it operates on.
     ///
     /// This function will chunk the array into an even number and pass every
-    /// call to `function` two chunks. The two chunks will always be symmetric 
+    /// call to `function` two chunks. The two chunks will always be symmetric
     /// around 0. This allows `function` to make use of symmetry properties of the
     /// underlying data or the argument.
     #[inline]
-    pub fn execute_sym_pairs_with_range<T,S,F>(
-            complexity: Complexity, 
-            settings: &MultiCoreSettings, 
-            array: &mut [T], step_size: usize, 
+    pub fn execute_sym_pairs_with_range<'a, T, S, F>(
+            complexity: Complexity,
+            settings: &MultiCoreSettings,
+            array: &mut [T], step_size: usize,
             arguments: S, ref function: F)
-        where F: Fn(&mut &mut [T], &Range<usize>, &mut &mut [T], &Range<usize>, S) + 'static + Sync,
+        where F: Fn(&mut &mut [T], &Range<usize>, &mut &mut [T], &Range<usize>, S) + 'a + Sync,
               T: Copy + Clone + Send + Sync,
               S: Sync + Copy + Send
     {
@@ -375,10 +375,10 @@ impl Chunk
             let chunks = Chunk::partition_mut(array, step_size, number_of_chunks);
             let ranges = Chunk::partition_in_ranges(array_length, step_size, chunks.len());
             let mut i = 0;
-            let (mut chunks1, mut chunks2): (Vec<_>, Vec<_>) = 
+            let (mut chunks1, mut chunks2): (Vec<_>, Vec<_>) =
                 chunks.partition(|_c| { i += 1; i <= number_of_chunks / 2 });
             i = 0;
-            let (ranges1, ranges2): (Vec<_>, Vec<_>)  = 
+            let (ranges1, ranges2): (Vec<_>, Vec<_>)  =
                 ranges.iter().partition(|_r| { i += 1; i <= number_of_chunks / 2 });
             let chunks2 = chunks2.iter_mut().rev();
             let ranges2 = ranges2.iter().rev();
@@ -400,24 +400,24 @@ impl Chunk
             let len1 = chunks1.len();
             let mut chunks2 = chunks.next().unwrap();
             function(
-                &mut chunks1, 
-                &Range { start: 0, end: len1 }, 
-                &mut chunks2, 
-                &Range { start: len1, end: array_length }, 
+                &mut chunks1,
+                &Range { start: 0, end: len1 },
+                &mut chunks2,
+                &Range { start: len1, end: array_length },
                 arguments);
         }
     }
-    
+
     /// Executes the given function on the all elements of the array in parallel. A result is
     /// returned for each chunk.
     #[inline]
-    pub fn get_a_fold_b<F, T, R>(
-            complexity: Complexity, 
-            settings: &MultiCoreSettings, 
-            a: &[T], a_step: usize, 
-            b: &[T], b_step: usize, 
+    pub fn get_a_fold_b<'a, F, T, R>(
+            complexity: Complexity,
+            settings: &MultiCoreSettings,
+            a: &[T], a_step: usize,
+            b: &[T], b_step: usize,
             ref function: F) -> Vec<R>
-        where F: Fn(&[T], Range<usize>, &[T]) -> R + 'static + Sync,
+        where F: Fn(&[T], Range<usize>, &[T]) -> R + 'a + Sync,
               T: Float + Copy + Clone + Send + Sync,
               R: Send
     {
@@ -448,16 +448,16 @@ impl Chunk
             vec![result]
         }
     }
-    
+
     /// Executes the given function on the all elements of the array in parallel. A result is
     /// returned for each chunk.
     #[inline]
-    pub fn get_chunked_results<F, S, T, R>(
-            complexity: Complexity, 
-            settings: &MultiCoreSettings, 
-            a: &[T], a_step: usize, 
+    pub fn get_chunked_results<'a, F, S, T, R>(
+            complexity: Complexity,
+            settings: &MultiCoreSettings,
+            a: &[T], a_step: usize,
             arguments:S, ref function: F) -> Vec<R>
-        where F: Fn(&[T], Range<usize>, S) -> R + 'static + Sync,
+        where F: Fn(&[T], Range<usize>, S) -> R + 'a + Sync,
               T: Float + Copy + Clone + Send + Sync,
               R: Send,
               S: Sync + Copy + Send
@@ -488,17 +488,17 @@ impl Chunk
             vec![result]
         }
     }
-    
+
     /// Executes the given function on the all elements of the array in parallel and passes
     /// the argument to all function calls.. Results are intended to be stored in the target array.
     #[inline]
-    pub fn from_src_to_dest<T,S,F>(
-            complexity: Complexity, 
-            settings: &MultiCoreSettings, 
-            original: &[T], original_step: usize, 
-            target: &mut [T], target_step: usize, 
+    pub fn from_src_to_dest<'a, T, S, F>(
+            complexity: Complexity,
+            settings: &MultiCoreSettings,
+            original: &[T], original_step: usize,
+            target: &mut [T], target_step: usize,
             arguments: S, ref function: F)
-        where F: Fn(&[T], Range<usize>, &mut [T], S) + 'static + Sync,
+        where F: Fn(&[T], Range<usize>, &mut [T], S) + 'a + Sync,
               T: Float + Copy + Clone + Send + Sync,
               S: Sync + Copy + Send
     {
@@ -508,7 +508,7 @@ impl Chunk
         {
             let chunks = Chunk::partition_mut(target, target_step, number_of_chunks);
             let ranges = Chunk::partition_in_ranges(original_length, original_step, chunks.len());
-            
+
             crossbeam::scope(|scope| {
                 for chunk in chunks.zip(ranges) {
                     scope.spawn(move|| {
@@ -528,7 +528,7 @@ impl Chunk
 mod tests {
     use super::*;
     use std::ops::Range;
-    
+
     #[test]
     fn partition_array()
     {
@@ -540,7 +540,7 @@ mod tests {
             assert_eq!(chunk.len(), 128);
         }
     }
-    
+
     #[test]
     fn partition_array_8_cores()
     {
@@ -555,7 +555,7 @@ mod tests {
             i += 1;
         }
     }
-    
+
     #[test]
     fn partitionin_ranges()
     {

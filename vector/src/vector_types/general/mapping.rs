@@ -14,9 +14,9 @@ use super::super::{
 pub trait MapInplaceOps<T> : Sized
     where T: Sized {
     /// Transforms all vector elements using the function `map`.
-    fn map_inplace<A, F>(&mut self, argument: A, map: F)
+    fn map_inplace<'a, A, F>(&mut self, argument: A, map: F)
         where A: Sync + Copy + Send,
-              F: Fn(T, usize, A) -> T + 'static + Sync;
+              F: Fn(T, usize, A) -> T + 'a + Sync;
 }
 
 /// Operations which allow to iterate over the vector and to derive results
@@ -33,14 +33,14 @@ pub trait MapAggregateOps<T> : Sized
     /// Transforms all vector elements using the function `map` and then aggregates
     /// all the results with `aggregate`. `aggregate` must be a commutativity and associativity;
     /// that's because there is no guarantee that the numbers will be aggregated in any deterministic order.
-    fn map_aggregate<A, FMap, FAggr, R>(
+    fn map_aggregate<'a, A, FMap, FAggr, R>(
             &self,
             argument: A,
             map: FMap,
             aggregate: FAggr) -> ScalarResult<R>
         where A: Sync + Copy + Send,
-              FMap: Fn(T, usize, A) -> R + 'static + Sync,
-              FAggr: Fn(R, R) -> R + 'static + Sync + Send,
+              FMap: Fn(T, usize, A) -> R + 'a + Sync,
+              FAggr: Fn(R, R) -> R + 'a + Sync + Send,
               R: Send;
 }
 
@@ -49,9 +49,9 @@ impl<S, T, N, D> MapInplaceOps<T> for DspVec<S, T, N, D>
           T: RealNumber,
           N: RealNumberSpace,
           D: Domain {
-    fn map_inplace<A, F>(&mut self, argument: A, map: F)
+    fn map_inplace<'a, A, F>(&mut self, argument: A, map: F)
         where A: Sync + Copy + Send,
-              F: Fn(T, usize, A) -> T + 'static + Sync {
+              F: Fn(T, usize, A) -> T + 'a + Sync {
           if self.is_complex() {
               self.valid_len = 0;
               return;
@@ -77,14 +77,14 @@ impl<S, T, N, D> MapAggregateOps<T> for DspVec<S, T, N, D>
               T: RealNumber,
               N: RealNumberSpace,
               D: Domain {
-    fn map_aggregate<A, FMap, FAggr, R>(
+    fn map_aggregate<'a, A, FMap, FAggr, R>(
         &self,
         argument: A,
         map: FMap,
         aggregate: FAggr) -> ScalarResult<R>
     where A: Sync + Copy + Send,
-          FMap: Fn(T, usize, A) -> R + 'static + Sync,
-          FAggr: Fn(R, R) -> R + 'static + Sync + Send,
+          FMap: Fn(T, usize, A) -> R + 'a + Sync,
+          FAggr: Fn(R, R) -> R + 'a + Sync + Send,
           R: Send {
       let aggregate = Arc::new(aggregate);
       let mut result = {
@@ -144,9 +144,9 @@ impl<S, T, N, D> MapInplaceOps<Complex<T>> for DspVec<S, T, N, D>
           T: RealNumber,
           N: ComplexNumberSpace,
           D: Domain {
-    fn map_inplace<A, F>(&mut self, argument: A, map: F)
+    fn map_inplace<'a, A, F>(&mut self, argument: A, map: F)
         where A: Sync + Copy + Send,
-              F: Fn(Complex<T>, usize, A) -> Complex<T> + 'static + Sync {
+              F: Fn(Complex<T>, usize, A) -> Complex<T> + 'a + Sync {
           if !self.is_complex() {
               self.valid_len = 0;
               return;
@@ -173,14 +173,14 @@ impl<S, T, N, D> MapAggregateOps<Complex<T>> for DspVec<S, T, N, D>
               T: RealNumber,
               N: ComplexNumberSpace,
               D: Domain {
-    fn map_aggregate<A, FMap, FAggr, R>(
+    fn map_aggregate<'a, A, FMap, FAggr, R>(
         &self,
         argument: A,
         map: FMap,
         aggregate: FAggr) -> ScalarResult<R>
     where A: Sync + Copy + Send,
-          FMap: Fn(Complex<T>, usize, A) -> R + 'static + Sync,
-          FAggr: Fn(R, R) -> R + 'static + Sync + Send,
+          FMap: Fn(Complex<T>, usize, A) -> R + 'a + Sync,
+          FAggr: Fn(R, R) -> R + 'a + Sync + Send,
           R: Send {
       let aggregate = Arc::new(aggregate);
       let mut result = {
