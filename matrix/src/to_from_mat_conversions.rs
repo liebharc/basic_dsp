@@ -3,6 +3,17 @@ use super::*;
 use TransformContent;
 use std::marker;
 
+/// Conversion from a collection of vectors to a matrix.
+pub trait ToMatrix<V, T>
+    where V: Vector<T>,
+          T: RealNumber
+{
+    type Output: Matrix<V, T>;
+
+    /// Create a new matrix from a collection of vectors.
+    fn to_mat(self) -> Self::Output;
+}
+
 /// Conversion from a generic data type into a dsp matrix which tracks
 /// its meta information (domain and number space)
 /// only at runtime. See `ToRealMatrix` and
@@ -138,6 +149,74 @@ fn to_mat_4xn<S, F, V, T>(source: [S; 4], conversion: F) -> Matrix4xN<V, S, T>
         rows: rows,
         storage_type: marker::PhantomData,
         number_type: marker::PhantomData,
+    }
+}
+
+impl<S, T, N, D> ToMatrix<DspVec<S, T, N, D>, T> for Vec<DspVec<S, T, N, D>>
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain
+{
+    type Output = MatrixMxN<DspVec<S, T, N, D>, S, T>;
+
+    fn to_mat(self) -> Self::Output {
+        MatrixMxN {
+            rows: self,
+            storage_type: marker::PhantomData,
+            number_type: marker::PhantomData,
+        }
+    }
+}
+
+impl<S, T, N, D> ToMatrix<DspVec<S, T, N, D>, T> for [DspVec<S, T, N, D>; 2]
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain
+{
+    type Output = Matrix2xN<DspVec<S, T, N, D>, S, T>;
+
+    fn to_mat(self) -> Self::Output {
+        Matrix2xN {
+            rows: self,
+            storage_type: marker::PhantomData,
+            number_type: marker::PhantomData,
+        }
+    }
+}
+
+impl<S, T, N, D> ToMatrix<DspVec<S, T, N, D>, T> for [DspVec<S, T, N, D>; 3]
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain
+{
+    type Output = Matrix3xN<DspVec<S, T, N, D>, S, T>;
+
+    fn to_mat(self) -> Self::Output {
+        Matrix3xN {
+            rows: self,
+            storage_type: marker::PhantomData,
+            number_type: marker::PhantomData,
+        }
+    }
+}
+
+impl<S, T, N, D> ToMatrix<DspVec<S, T, N, D>, T> for [DspVec<S, T, N, D>; 4]
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain
+{
+    type Output = Matrix4xN<DspVec<S, T, N, D>, S, T>;
+
+    fn to_mat(self) -> Self::Output {
+        Matrix4xN {
+            rows: self,
+            storage_type: marker::PhantomData,
+            number_type: marker::PhantomData,
+        }
     }
 }
 

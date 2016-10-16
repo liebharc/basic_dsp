@@ -34,7 +34,7 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T>>, S: ToSlice<T>, T: RealNumber> OffsetOps<Complex<T>>
+			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber> OffsetOps<Complex<T>>
                     for $matrix<V, S, T>
                     where V: OffsetOps<Complex<T>> {
 				fn offset(&mut self, offset: Complex<T>) {
@@ -46,7 +46,7 @@ macro_rules! add_mat_impl {
 
 			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber> ElementaryOps
                     for $matrix<V, S, T>
-                    where ElementaryOps {
+                    where V: ElementaryOps {
 				fn add(&mut self, summand: &Self) -> VoidResult {
 					for (v, o) in self.rows_mut().iter_mut().zip(summand.rows()) {
 						try!(v.add(o));
