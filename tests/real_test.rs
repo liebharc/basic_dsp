@@ -9,20 +9,18 @@ mod slow_test {
     use tools::*;
 
     #[allow(dead_code)]
-    fn real_add(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
-    {
+    fn real_add(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32> {
         let mut result = vec![0.0; a.len()];
-        for i in 0 .. a.len() {
+        for i in 0..a.len() {
             result[i] = a[i] + b[i];
         }
 
         result
     }
 
-    fn real_add_scalar(a: &Vec<f32>, value: f32) -> Vec<f32>
-    {
+    fn real_add_scalar(a: &Vec<f32>, value: f32) -> Vec<f32> {
         let mut result = vec![0.0; a.len()];
-        for i in 0 .. a.len() {
+        for i in 0..a.len() {
             result[i] = a[i] + value;
         }
 
@@ -36,7 +34,7 @@ mod slow_test {
             let scalar = create_data_with_len(201511142, iteration, 1);
             let expected = real_add_scalar(&a, scalar[0]);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.to_real_time_vec();;
+            let mut vector = a.to_real_time_vec();
             vector.set_delta(delta);
             vector.offset(scalar[0]);
             assert_vector_eq(&expected, &vector[..]);
@@ -117,10 +115,9 @@ mod slow_test {
         });
     }
 
-    fn real_mulitply_scalar(a: &Vec<f32>, value: f32) -> Vec<f32>
-    {
+    fn real_mulitply_scalar(a: &Vec<f32>, value: f32) -> Vec<f32> {
         let mut result = vec![0.0; a.len()];
-        for i in 0 .. a.len() {
+        for i in 0..a.len() {
             result[i] = a[i] * value;
         }
 
@@ -143,10 +140,9 @@ mod slow_test {
         });
     }
 
-    fn real_abs(a: &Vec<f32>) -> Vec<f32>
-    {
+    fn real_abs(a: &Vec<f32>) -> Vec<f32> {
         let mut result = vec![0.0; a.len()];
-        for i in 0 .. a.len() {
+        for i in 0..a.len() {
             result[i] = a[i].abs();
         }
 
@@ -168,10 +164,9 @@ mod slow_test {
         });
     }
 
-    fn real_add_vector(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
-    {
+    fn real_add_vector(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32> {
         let mut result = vec![0.0; a.len()];
-        for i in 0 .. a.len() {
+        for i in 0..a.len() {
             result[i] = a[i] + b[i];
         }
 
@@ -196,10 +191,9 @@ mod slow_test {
         });
     }
 
-    fn real_add_vector_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
-    {
+    fn real_add_vector_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32> {
         let mut result = vec![0.0; a.len()];
-        for i in 0 .. a.len() {
+        for i in 0..a.len() {
             result[i] = a[i] + b[i % b.len()];
         }
 
@@ -222,10 +216,9 @@ mod slow_test {
         assert_eq!(vector1.delta(), delta);
     }
 
-    fn real_sub_vector(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
-    {
+    fn real_sub_vector(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32> {
         let mut result = vec![0.0; a.len()];
-        for i in 0 .. a.len() {
+        for i in 0..a.len() {
             result[i] = a[i] - b[i];
         }
 
@@ -250,10 +243,9 @@ mod slow_test {
         });
     }
 
-    fn real_sub_vector_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
-    {
+    fn real_sub_vector_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32> {
         let mut result = vec![0.0; a.len()];
-        for i in 0 .. a.len() {
+        for i in 0..a.len() {
             result[i] = a[i] - b[i % b.len()];
         }
 
@@ -276,10 +268,9 @@ mod slow_test {
         assert_eq!(vector1.delta(), delta);
     }
 
-    fn real_vector_mul(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
-    {
+    fn real_vector_mul(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32> {
         let mut result = vec![0.0; a.len()];
-        for i in 0 .. a.len() {
+        for i in 0..a.len() {
             result[i] = a[i] * b[i];
         }
 
@@ -304,10 +295,9 @@ mod slow_test {
         });
     }
 
-    fn real_mul_vector_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
-    {
+    fn real_mul_vector_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32> {
         let mut result = vec![0.0; a.len()];
-        for i in 0 .. a.len() {
+        for i in 0..a.len() {
             result[i] = a[i] * b[i % b.len()];
         }
 
@@ -330,10 +320,9 @@ mod slow_test {
         assert_eq!(vector1.delta(), delta);
     }
 
-    fn real_div_vector_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
-    {
+    fn real_div_vector_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32> {
         let mut result = vec![0.0; a.len()];
-        for i in 0 .. a.len() {
+        for i in 0..a.len() {
             result[i] = a[i] / b[i % b.len()];
         }
 
@@ -372,10 +361,9 @@ mod slow_test {
         });
     }
 
-    fn real_vector_div(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
-    {
+    fn real_vector_div(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32> {
         let mut result = vec![0.0; a.len()];
-        for i in 0 .. a.len() {
+        for i in 0..a.len() {
             result[i] = a[i] / b[i];
         }
 
@@ -403,7 +391,8 @@ mod slow_test {
     #[test]
     fn real_square_sqrt_vector32() {
         parameterized_vector_test(|iteration, range| {
-            let a = create_data_even_in_range(201511210, iteration, range.start, range.end, 0.0, 10.0);
+            let a =
+                create_data_even_in_range(201511210, iteration, range.start, range.end, 0.0, 10.0);
             let delta = create_delta(3561159, iteration);
             let mut vector = a.clone().to_real_time_vec();
             vector.set_delta(delta);
@@ -447,11 +436,10 @@ mod slow_test {
         });
     }
 
-    fn real_vector_diff(a: &Vec<f32>) -> Vec<f32>
-    {
+    fn real_vector_diff(a: &Vec<f32>) -> Vec<f32> {
         let mut result = vec![0.0; a.len()];
         result[0] = a[0];
-        for i in 1 .. a.len() {
+        for i in 1..a.len() {
             result[i] = a[i] - a[i - 1];
         }
 
@@ -473,11 +461,10 @@ mod slow_test {
         });
     }
 
-    fn real_vector_cum_sum(a: &Vec<f32>) -> Vec<f32>
-    {
+    fn real_vector_cum_sum(a: &Vec<f32>) -> Vec<f32> {
         let mut result = vec![0.0; a.len()];
         result[0] = a[0];
-        for i in 1 .. a.len() {
+        for i in 1..a.len() {
             result[i] = a[i] + result[i - 1];
         }
 
@@ -534,8 +521,8 @@ mod slow_test {
             let delta = create_delta(3561159, iteration);
             let mut vector = a.clone().to_real_time_vec();
             vector.set_delta(delta);
-            let sum: f32 = a.iter().fold(0.0, |a,b| a + b);
-            let sum_sq: f32 = a.iter().map(|v| v * v).fold(0.0, |a,b| a + b);
+            let sum: f32 = a.iter().fold(0.0, |a, b| a + b);
+            let sum_sq: f32 = a.iter().map(|v| v * v).fold(0.0, |a, b| a + b);
             let rms = (sum_sq / a.len() as f32).sqrt();
             let result = vector.statistics();
             assert_eq!(result.sum, sum);
@@ -564,13 +551,11 @@ mod slow_test {
         let a = create_data(201511210, 0, 1000, 1000);
         let vector = a.clone().to_real_time_vec();
         let empty: Vec<f32> = Vec::new();
-        let mut split =
-            [
-                Box::new(empty.clone().to_real_time_vec()),
-                Box::new(empty.clone().to_real_time_vec()),
-                Box::new(empty.clone().to_real_time_vec()),
-                Box::new(empty.clone().to_real_time_vec()),
-                Box::new(empty.clone().to_real_time_vec())];
+        let mut split = [Box::new(empty.clone().to_real_time_vec()),
+                         Box::new(empty.clone().to_real_time_vec()),
+                         Box::new(empty.clone().to_real_time_vec()),
+                         Box::new(empty.clone().to_real_time_vec()),
+                         Box::new(empty.clone().to_real_time_vec())];
         {
             let mut dest: Vec<_> = split.iter_mut().map(|x| x.as_mut()).collect();
             vector.split_into(&mut dest[..]).unwrap();
@@ -591,10 +576,16 @@ mod slow_test {
         let complex_freq: ComplexFreqVec32 = complex_time.plain_fft(&mut buffer);
         let mut real_mirror = sym_fft.clone();
         real_mirror.mirror(&mut buffer);
-        assert_vector_eq_with_reason_and_tolerance(&complex_freq[..], &real_mirror[..], 1e-3, "Different FFT paths must equal");
+        assert_vector_eq_with_reason_and_tolerance(&complex_freq[..],
+                                                   &real_mirror[..],
+                                                   1e-3,
+                                                   "Different FFT paths must equal");
         let mut real_ifft: RealTimeVec32 = sym_fft.plain_sifft(&mut buffer).unwrap();
         real_ifft.scale(1.0 / 1001.0);
-        assert_vector_eq_with_reason_and_tolerance(&time[..], &real_ifft[..], 1e-3, "Ifft must give back the original result");
+        assert_vector_eq_with_reason_and_tolerance(&time[..],
+                                                   &real_ifft[..],
+                                                   1e-3,
+                                                   "Ifft must give back the original result");
     }
 
     #[test]
@@ -607,9 +598,7 @@ mod slow_test {
             let b = b.to_gen_dsp_vec(false, DataDomain::Time);
             let mut buffer = SingleBuffer::new();
             let ops = multi_ops2(a.clone(), b.clone());
-            let ops = ops.add_ops(|a, b| {
-                (a, b)
-            });
+            let ops = ops.add_ops(|a, b| (a, b));
             let (a_actual, b_actual) = ops.get(&mut buffer).unwrap();
             let b_expected = b;
             let a_expected = a;
@@ -684,9 +673,7 @@ mod slow_test {
             let a = create_data_with_len(201511141, iteration, len);
             let a = a.to_gen_dsp_vec(false, DataDomain::Time);
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                a.to_complex().unwrap()
-            });
+            let ops = ops.add_ops(|a| a.to_complex().unwrap());
             let mut buffer = SingleBuffer::new();
             let a_actual = ops.get(&mut buffer).unwrap();
             let a_expected = a.to_complex().unwrap();

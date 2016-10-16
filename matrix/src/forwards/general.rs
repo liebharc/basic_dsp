@@ -297,25 +297,24 @@ macro_rules! add_mat_impl {
 					}
 				}
 			}
-/*
-			impl<S: ToSlice<T>, V: Vector<T> + MapAggregateOps<T>, T: RealNumber>
-					MapAggregateOps<T> for $matrix<V, S, T> {
-				fn map_aggregate<'a, A, F>(
-						&self,
-			            argument: A,
-			            map: FMap,
-			            aggregate: FAggr) -> ScalarResult<R>
-					where A: Sync + Copy + Send,
-						  FMap: Fn(T, usize, A) -> R + 'a + Sync,
-						  FAggr: Fn(R, R) -> R + 'a + Sync + Send,
-						  R: Send {
-					for v in self.rows_mut() {
-						v.map_inplace(argument, |v, i, a|map(v, i, a))
-					}
-				}
-			}*/
+// impl<S: ToSlice<T>, V: Vector<T> + MapAggregateOps<T>, T: RealNumber>
+// MapAggregateOps<T> for $matrix<V, S, T> {
+// fn map_aggregate<'a, A, F>(
+// &self,
+// argument: A,
+// map: FMap,
+// aggregate: FAggr) -> ScalarResult<R>
+// where A: Sync + Copy + Send,
+// FMap: Fn(T, usize, A) -> R + 'a + Sync,
+// FAggr: Fn(R, R) -> R + 'a + Sync + Send,
+// R: Send {
+// for v in self.rows_mut() {
+// v.map_inplace(argument, |v, i, a|map(v, i, a))
+// }
+// }
+// }
 
-			// TODO DotProductOps, MapAggregateOps, Statistics, Add/sub/mul/div vector to matu
+// TODO DotProductOps, MapAggregateOps, Statistics, Add/sub/mul/div vector to matu
       c
 
 

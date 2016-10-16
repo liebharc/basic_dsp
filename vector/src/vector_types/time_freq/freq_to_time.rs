@@ -1,12 +1,9 @@
 use RealNumber;
 use num::Complex;
-use super::super::{
-    ToTimeResult, ToRealTimeResult, TransRes,
-    DspVec, Vector, Buffer, ToSliceMut,
-    RededicateForceOps, ErrorReason, MetaData,
-    ComplexNumberSpace, Owner, FrequencyDomain, DataDomain,
-    InsertZerosOpsBuffered, ScaleOps, TimeDomainOperations, FrequencyDomainOperations
-};
+use super::super::{ToTimeResult, ToRealTimeResult, TransRes, DspVec, Vector, Buffer, ToSliceMut,
+                   RededicateForceOps, ErrorReason, MetaData, ComplexNumberSpace, Owner,
+                   FrequencyDomain, DataDomain, InsertZerosOpsBuffered, ScaleOps,
+                   TimeDomainOperations, FrequencyDomainOperations};
 use super::fft;
 use window_functions::*;
 use multicore_support::*;
@@ -15,10 +12,10 @@ use multicore_support::*;
 /// # Failures
 /// All operations in this trait set `self.len()` to `0`
 /// if the vector isn't in frequency domain and complex number space.
-pub trait FrequencyToTimeDomainOperations<S, T> : ToTimeResult
+pub trait FrequencyToTimeDomainOperations<S, T>: ToTimeResult
     where S: ToSliceMut<T>,
-          T: RealNumber {
-
+          T: RealNumber
+{
     /// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
     /// into a time domain vector.
     ///
@@ -39,8 +36,7 @@ pub trait FrequencyToTimeDomainOperations<S, T> : ToTimeResult
     ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
     /// }
     /// ```
-    fn plain_ifft<B>(self, buffer: &mut B) -> Self::TimeResult
-        where B: Buffer<S, T>;
+    fn plain_ifft<B>(self, buffer: &mut B) -> Self::TimeResult where B: Buffer<S, T>;
 
     /// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
     /// into a time domain vector.
@@ -59,8 +55,7 @@ pub trait FrequencyToTimeDomainOperations<S, T> : ToTimeResult
     ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
     /// }
     /// ```
-    fn ifft<B>(self, buffer: &mut B) -> Self::TimeResult
-        where B: Buffer<S, T>;
+    fn ifft<B>(self, buffer: &mut B) -> Self::TimeResult where B: Buffer<S, T>;
 
     /// Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
     /// into a time domain vector and removes the FFT window.
@@ -74,9 +69,10 @@ pub trait FrequencyToTimeDomainOperations<S, T> : ToTimeResult
 /// # Failures
 /// All operations in this trait set `self.len()` to `0` if the first element (0Hz)
 /// isn't real.
-pub trait SymmetricFrequencyToTimeDomainOperations<S, T> : ToRealTimeResult
+pub trait SymmetricFrequencyToTimeDomainOperations<S, T>: ToRealTimeResult
     where S: ToSliceMut<T>,
-          T: RealNumber {
+          T: RealNumber
+{
     /// Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that `self`
     /// contains half of a symmetric spectrum starting from 0 Hz. This assumption
     /// isn't verified and no error is raised if the spectrum isn't symmetric. The reason
@@ -86,8 +82,7 @@ pub trait SymmetricFrequencyToTimeDomainOperations<S, T> : ToRealTimeResult
     ///
     /// This version of the IFFT neither applies a window nor does it scale the
     /// vector.
-    fn plain_sifft<B>(self, buffer: &mut B) -> TransRes<Self::RealTimeResult>
-		where B: Buffer<S, T>;
+    fn plain_sifft<B>(self, buffer: &mut B) -> TransRes<Self::RealTimeResult> where B: Buffer<S, T>;
 
     /// Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that `self`
     /// contains half of a symmetric spectrum starting from 0 Hz. This assumption
@@ -95,8 +90,7 @@ pub trait SymmetricFrequencyToTimeDomainOperations<S, T> : ToRealTimeResult
     /// for this is that there is no robust verification possible.
     ///
     /// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1` points.
-    fn sifft<B>(self, buffer: &mut B) -> TransRes<Self::RealTimeResult>
-		where B: Buffer<S, T>;
+    fn sifft<B>(self, buffer: &mut B) -> TransRes<Self::RealTimeResult> where B: Buffer<S, T>;
 
     /// Performs a Symmetric Inverse Fast Fourier Transformation (SIFFT) and removes the FFT window.
     /// The SIFFT is performed under the assumption that `self`
@@ -105,8 +99,11 @@ pub trait SymmetricFrequencyToTimeDomainOperations<S, T> : ToRealTimeResult
     /// for this is that there is no robust verification possible.
     ///
     /// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1` points.
-    fn windowed_sifft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> TransRes<Self::RealTimeResult>
-		where B: Buffer<S, T>;
+    fn windowed_sifft<B>(self,
+                         buffer: &mut B,
+                         window: &WindowFunction<T>)
+                         -> TransRes<Self::RealTimeResult>
+        where B: Buffer<S, T>;
 }
 
 impl<S, T, N, D> FrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
@@ -152,7 +149,7 @@ impl<S, T, N, D> FrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
     }
  }
 
- impl<S, T, N, D> SymmetricFrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
+impl<S, T, N, D> SymmetricFrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
      where DspVec<S, T, N, D>: ToRealTimeResult + ToTimeResult + FrequencyDomainOperations<S, T>,
            <DspVec<S, T, N, D> as ToRealTimeResult>::RealTimeResult: RededicateForceOps<DspVec<S, T, N, D>> + TimeDomainOperations<S, T>,
            S: ToSliceMut<T> + Owner,

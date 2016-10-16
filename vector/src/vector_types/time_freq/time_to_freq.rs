@@ -1,20 +1,18 @@
 use RealNumber;
-use super::super::{
-    Owner, ToFreqResult, TransRes, TimeDomain,
-    Buffer, Vector, DataDomain, MetaData, ResizeOps,
-    DspVec, ToSliceMut, RealNumberSpace,
-    NumberSpace, RededicateForceOps, ErrorReason,
-    InsertZerosOpsBuffered, FrequencyDomainOperations, TimeDomainOperations
-};
+use super::super::{Owner, ToFreqResult, TransRes, TimeDomain, Buffer, Vector, DataDomain,
+                   MetaData, ResizeOps, DspVec, ToSliceMut, RealNumberSpace, NumberSpace,
+                   RededicateForceOps, ErrorReason, InsertZerosOpsBuffered,
+                   FrequencyDomainOperations, TimeDomainOperations};
 use super::fft;
 use window_functions::*;
 
 /// Defines all operations which are valid on `DataVecs` containing time domain data.
 /// # Failures
 /// All operations in this trait set `self.len()` to `0` if the vector isn't in time domain.
-pub trait TimeToFrequencyDomainOperations<S, T> : ToFreqResult
+pub trait TimeToFrequencyDomainOperations<S, T>: ToFreqResult
     where S: ToSliceMut<T>,
-          T: RealNumber {
+          T: RealNumber
+{
     /// Performs a Fast Fourier Transformation transforming a time domain vector
     /// into a frequency domain vector.
     ///
@@ -35,8 +33,7 @@ pub trait TimeToFrequencyDomainOperations<S, T> : ToFreqResult
     ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
     /// }
     /// ```
-    fn plain_fft<B>(self, buffer: &mut B) -> Self::FreqResult
-        where B: Buffer<S, T>;
+    fn plain_fft<B>(self, buffer: &mut B) -> Self::FreqResult where B: Buffer<S, T>;
 
     /// Performs a Fast Fourier Transformation transforming a time domain vector
     /// into a frequency domain vector.
@@ -57,8 +54,7 @@ pub trait TimeToFrequencyDomainOperations<S, T> : ToFreqResult
     ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
     /// }
     /// ```
-    fn fft<B>(self, buffer: &mut B) -> Self::FreqResult
-        where B: Buffer<S, T>;
+    fn fft<B>(self, buffer: &mut B) -> Self::FreqResult where B: Buffer<S, T>;
 
     /// Applies a FFT window and performs a Fast Fourier Transformation transforming a time domain vector
     /// into a frequency domain vector.
@@ -70,10 +66,10 @@ pub trait TimeToFrequencyDomainOperations<S, T> : ToFreqResult
 /// # Failures
 /// All operations in this trait set `self.len()` to `0` if the vector isn't in time domain or
 /// with `VectorMustHaveAnOddLength` if `self.points()` isn't and odd number.
-pub trait SymmetricTimeToFrequencyDomainOperations<S, T> : ToFreqResult
+pub trait SymmetricTimeToFrequencyDomainOperations<S, T>: ToFreqResult
     where S: ToSliceMut<T>,
-          T: RealNumber {
-
+          T: RealNumber
+{
     /// Performs a Symmetric Fast Fourier Transformation under the assumption that `self`
     /// is symmetric around the center. This assumption
     /// isn't verified and no error is raised if the vector isn't symmetric.
@@ -88,8 +84,7 @@ pub trait SymmetricTimeToFrequencyDomainOperations<S, T> : ToFreqResult
     ///
     /// # Unstable
     /// Symmetric IFFTs are unstable and may only work under certain conditions.
-    fn plain_sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult>
-        where B: Buffer<S, T>;
+    fn plain_sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult> where B: Buffer<S, T>;
 
     /// Performs a Symmetric Fast Fourier Transformation under the assumption that `self`
     /// is symmetric around the center. This assumption
@@ -102,8 +97,7 @@ pub trait SymmetricTimeToFrequencyDomainOperations<S, T> : ToFreqResult
     ///
     /// # Unstable
     /// Symmetric IFFTs are unstable and may only work under certain conditions.
-    fn sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult>
-        where B: Buffer<S, T>;
+    fn sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult> where B: Buffer<S, T>;
 
     /// Performs a Symmetric Fast Fourier Transformation under the assumption that `self`
     /// is symmetric around the center. This assumption
@@ -116,7 +110,10 @@ pub trait SymmetricTimeToFrequencyDomainOperations<S, T> : ToFreqResult
     ///
     /// # Unstable
     /// Symmetric IFFTs are unstable and may only work under certain conditions.
-    fn windowed_sfft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> TransRes<Self::FreqResult>
+    fn windowed_sfft<B>(self,
+                        buffer: &mut B,
+                        window: &WindowFunction<T>)
+                        -> TransRes<Self::FreqResult>
         where B: Buffer<S, T>;
 }
 

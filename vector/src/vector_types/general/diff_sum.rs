@@ -1,13 +1,8 @@
 use RealNumber;
-use super::super::{
-	array_to_complex_mut,
-    Vector,
-    DspVec, ToSliceMut,
-    Domain, NumberSpace, MetaData
-};
+use super::super::{array_to_complex_mut, Vector, DspVec, ToSliceMut, Domain, NumberSpace, MetaData};
 
 pub trait DiffSumOps {
-	/// Calculates the delta of each elements to its previous element. This will decrease the vector length by one point.
+    /// Calculates the delta of each elements to its previous element. This will decrease the vector length by one point.
     ///
     /// # Example
     ///
@@ -18,7 +13,7 @@ pub trait DiffSumOps {
     /// let mut vector = vec!(2.0, 3.0, 2.0, 6.0).to_real_time_vec();
     /// vector.diff();
     /// assert_eq!([1.0, -1.0, 4.0], vector[..]);
-	/// let mut vector = vec!(2.0, 2.0, 3.0, 3.0, 5.0, 5.0).to_complex_time_vec();
+    /// let mut vector = vec!(2.0, 2.0, 3.0, 3.0, 5.0, 5.0).to_complex_time_vec();
     /// vector.diff();
     /// assert_eq!([1.0, 1.0, 2.0, 2.0], vector[..]);
     /// ```
@@ -34,7 +29,7 @@ pub trait DiffSumOps {
     /// let mut vector = vec!(2.0, 3.0, 2.0, 6.0).to_real_time_vec();
     /// vector.diff_with_start();
     /// assert_eq!([2.0, 1.0, -1.0, 4.0], vector[..]);
-	/// let mut vector = vec!(2.0, 2.0, 3.0, 3.0, 5.0, 5.0).to_complex_time_vec();
+    /// let mut vector = vec!(2.0, 2.0, 3.0, 3.0, 5.0, 5.0).to_complex_time_vec();
     /// vector.diff_with_start();
     /// assert_eq!([2.0, 2.0, 1.0, 1.0, 2.0, 2.0], vector[..]);
     /// ```
@@ -57,77 +52,75 @@ impl<S, T, N, D> DiffSumOps for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain {
-	fn diff(&mut self)
-  	{
-		let is_complex = self.is_complex();
-		let step = if is_complex { 2 } else { 1 };
-		let len = self.len();
-		self.valid_len -= step;
-		let mut data = self.data.to_slice_mut();
+          D: Domain
+{
+    fn diff(&mut self) {
+        let is_complex = self.is_complex();
+        let step = if is_complex { 2 } else { 1 };
+        let len = self.len();
+        self.valid_len -= step;
+        let mut data = self.data.to_slice_mut();
 
-		if is_complex {
-			let mut data = array_to_complex_mut(data);
-			for j in 0..len/2-1 {
-				unsafe {
-					let b = *data.get_unchecked(j + 1);
-					let a = data.get_unchecked_mut(j);
-					*a = b - *a;
-				}
-			}
-		} else {
-			for j in 0..len-1 {
-				unsafe {
-					let b = *data.get_unchecked(j + 1);
-					let a = data.get_unchecked_mut(j);
-					*a = b - *a;
-				}
-			}
-		}
-  	}
+        if is_complex {
+            let mut data = array_to_complex_mut(data);
+            for j in 0..len / 2 - 1 {
+                unsafe {
+                    let b = *data.get_unchecked(j + 1);
+                    let a = data.get_unchecked_mut(j);
+                    *a = b - *a;
+                }
+            }
+        } else {
+            for j in 0..len - 1 {
+                unsafe {
+                    let b = *data.get_unchecked(j + 1);
+                    let a = data.get_unchecked_mut(j);
+                    *a = b - *a;
+                }
+            }
+        }
+    }
 
-  	fn diff_with_start(&mut self)
-  	{
-		let is_complex = self.is_complex();
-		let len = self.len();
-		if len == 0 {
-			return;
-		}
+    fn diff_with_start(&mut self) {
+        let is_complex = self.is_complex();
+        let len = self.len();
+        if len == 0 {
+            return;
+        }
 
-		let mut data = self.data.to_slice_mut();
+        let mut data = self.data.to_slice_mut();
 
-		if is_complex {
-			let mut data = array_to_complex_mut(data);
-			let mut temp = data[0];
-			for n in &mut data[1..len/2] {
-				let diff = *n - temp;
-				temp = *n;
-				*n = diff;
-			}
-		} else {
-			let mut temp = data[0];
-			for n in &mut data[1..len] {
-				let diff = *n - temp;
-				temp = *n;
-				*n = diff;
-			}
-		}
-  	}
+        if is_complex {
+            let mut data = array_to_complex_mut(data);
+            let mut temp = data[0];
+            for n in &mut data[1..len / 2] {
+                let diff = *n - temp;
+                temp = *n;
+                *n = diff;
+            }
+        } else {
+            let mut temp = data[0];
+            for n in &mut data[1..len] {
+                let diff = *n - temp;
+                temp = *n;
+                *n = diff;
+            }
+        }
+    }
 
-  	fn cum_sum(&mut self)
-  	{
-  		let data_length = self.len();
-		let mut i = 0;
-		let mut j = 1;
-		if self.is_complex() {
-			j = 2;
-		}
+    fn cum_sum(&mut self) {
+        let data_length = self.len();
+        let mut i = 0;
+        let mut j = 1;
+        if self.is_complex() {
+            j = 2;
+        }
 
-		let mut data = self.data.to_slice_mut();
-		while j < data_length {
-			data[j] = data[j] + data[i];
-			i += 1;
-			j += 1;
-		}
-  	}
+        let mut data = self.data.to_slice_mut();
+        while j < data_length {
+            data[j] = data[j] + data[i];
+            i += 1;
+            j += 1;
+        }
+    }
 }

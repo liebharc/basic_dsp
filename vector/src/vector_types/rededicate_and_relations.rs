@@ -1,13 +1,8 @@
 //! Specifies the conversions between data types.
 use RealNumber;
-use super::{
-    DspVec, GenDspVec, MetaData,
-    RealTimeVec, RealFreqVec, ResizeOps,
-    ComplexTimeVec, ComplexFreqVec,
-    ToSlice, NumberSpace, Domain, DataDomain,
-    RealData, ComplexData, RealOrComplexData,
-    TimeData, FrequencyData, TimeOrFrequencyData
-};
+use super::{DspVec, GenDspVec, MetaData, RealTimeVec, RealFreqVec, ResizeOps, ComplexTimeVec,
+            ComplexFreqVec, ToSlice, NumberSpace, Domain, DataDomain, RealData, ComplexData,
+            RealOrComplexData, TimeData, FrequencyData, TimeOrFrequencyData};
 
 /// This trait allows to change a data type. The operations will
 /// convert a type to a different one and set `self.len()` to zero.
@@ -16,7 +11,7 @@ use super::{
 ///
 /// If a type should always be converted without any checks then the `RededicateForceOps`
 /// trait provides option for that.
-pub trait RededicateOps<Other> : RededicateForceOps<Other> {
+pub trait RededicateOps<Other>: RededicateForceOps<Other> {
     /// Make `Other` a `Self`.
     /// # Example
     ///
@@ -88,79 +83,92 @@ pub trait ToRealTimeResult {
 
 impl<S, T> ToRealResult for ComplexTimeVec<S, T>
     where S: ToSlice<T>,
-      T: RealNumber {
+          T: RealNumber
+{
     type RealResult = RealTimeVec<S, T>;
 }
 
 impl<S, T> ToRealResult for ComplexFreqVec<S, T>
     where S: ToSlice<T>,
-      T: RealNumber  {
+          T: RealNumber
+{
     type RealResult = RealFreqVec<S, T>;
 }
 
 impl<S, T> ToRealResult for GenDspVec<S, T>
     where S: ToSlice<T>,
-      T: RealNumber  {
+          T: RealNumber
+{
     type RealResult = GenDspVec<S, T>;
 }
 
 impl<S, T> ToComplexResult for RealTimeVec<S, T>
     where S: ToSlice<T>,
-      T: RealNumber  {
+          T: RealNumber
+{
     type ComplexResult = ComplexTimeVec<S, T>;
 }
 
 impl<S, T> ToComplexResult for RealFreqVec<S, T>
     where S: ToSlice<T>,
-      T: RealNumber  {
+          T: RealNumber
+{
     type ComplexResult = ComplexFreqVec<S, T>;
 }
 
 impl<S, T> ToComplexResult for GenDspVec<S, T>
     where S: ToSlice<T>,
-      T: RealNumber  {
+          T: RealNumber
+{
     type ComplexResult = GenDspVec<S, T>;
 }
 
 impl<S, T> ToTimeResult for ComplexFreqVec<S, T>
     where S: ToSlice<T>,
-      T: RealNumber  {
+          T: RealNumber
+{
     type TimeResult = ComplexTimeVec<S, T>;
 }
 
 impl<S, T> ToTimeResult for GenDspVec<S, T>
     where S: ToSlice<T>,
-      T: RealNumber  {
+          T: RealNumber
+{
     type TimeResult = GenDspVec<S, T>;
 }
 
 impl<S, T> ToFreqResult for RealTimeVec<S, T>
     where S: ToSlice<T>,
-      T: RealNumber  {
+          T: RealNumber
+{
     type FreqResult = ComplexFreqVec<S, T>;
 }
 
 impl<S, T> ToFreqResult for ComplexTimeVec<S, T>
     where S: ToSlice<T>,
-      T: RealNumber  {
+          T: RealNumber
+{
     type FreqResult = ComplexFreqVec<S, T>;
 }
 
 impl<S, T> ToFreqResult for GenDspVec<S, T>
     where S: ToSlice<T>,
-      T: RealNumber  {
+          T: RealNumber
+{
     type FreqResult = GenDspVec<S, T>;
 }
 
 impl<S, T> ToRealTimeResult for ComplexFreqVec<S, T>
     where S: ToSlice<T>,
-      T: RealNumber  {
+          T: RealNumber
+{
     type RealTimeResult = RealTimeVec<S, T>;
 }
 
 impl<S, T> ToRealTimeResult for GenDspVec<S, T>
     where S: ToSlice<T>,
-      T: RealNumber  {
+          T: RealNumber
+{
     type RealTimeResult = GenDspVec<S, T>;
 }
 
@@ -168,8 +176,8 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for RealTimeVec<S, T>
     where S: ToSlice<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain {
-
+          D: Domain
+{
     fn rededicate_from_force(origin: DspVec<S, T, N, D>) -> Self {
         RealTimeVec {
             data: origin.data,
@@ -177,7 +185,7 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for RealTimeVec<S, T>
             domain: TimeData,
             number_space: RealData,
             valid_len: origin.valid_len,
-            multicore_settings: origin.multicore_settings
+            multicore_settings: origin.multicore_settings,
         }
     }
 
@@ -190,8 +198,8 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for RealFreqVec<S, T>
     where S: ToSlice<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain {
-
+          D: Domain
+{
     fn rededicate_from_force(origin: DspVec<S, T, N, D>) -> Self {
         RealFreqVec {
             data: origin.data,
@@ -199,7 +207,7 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for RealFreqVec<S, T>
             domain: FrequencyData,
             number_space: RealData,
             valid_len: origin.valid_len,
-            multicore_settings: origin.multicore_settings
+            multicore_settings: origin.multicore_settings,
         }
     }
 
@@ -212,8 +220,8 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for ComplexTimeVec<S, T>
     where S: ToSlice<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain {
-
+          D: Domain
+{
     fn rededicate_from_force(origin: DspVec<S, T, N, D>) -> Self {
         ComplexTimeVec {
             data: origin.data,
@@ -221,7 +229,7 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for ComplexTimeVec<S, T>
             domain: TimeData,
             number_space: ComplexData,
             valid_len: origin.valid_len,
-            multicore_settings: origin.multicore_settings
+            multicore_settings: origin.multicore_settings,
         }
     }
 
@@ -234,8 +242,8 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for ComplexFreqVec<S, T>
     where S: ToSlice<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain {
-
+          D: Domain
+{
     fn rededicate_from_force(origin: DspVec<S, T, N, D>) -> Self {
         ComplexFreqVec {
             data: origin.data,
@@ -243,7 +251,7 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for ComplexFreqVec<S, T>
             domain: FrequencyData,
             number_space: ComplexData,
             valid_len: origin.valid_len,
-            multicore_settings: origin.multicore_settings
+            multicore_settings: origin.multicore_settings,
         }
     }
 
@@ -256,8 +264,8 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for GenDspVec<S, T>
     where S: ToSlice<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain {
-
+          D: Domain
+{
     fn rededicate_from_force(origin: DspVec<S, T, N, D>) -> Self {
         let domain = origin.domain();
         let is_complex = origin.is_complex();
@@ -267,11 +275,14 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for GenDspVec<S, T>
             domain: TimeOrFrequencyData { domain_current: domain },
             number_space: RealOrComplexData { is_complex_current: is_complex },
             valid_len: origin.valid_len,
-            multicore_settings: origin.multicore_settings
+            multicore_settings: origin.multicore_settings,
         }
     }
 
-    fn rededicate_with_runtime_data(origin: DspVec<S, T, N, D>, is_complex: bool, domain: DataDomain) -> Self {
+    fn rededicate_with_runtime_data(origin: DspVec<S, T, N, D>,
+                                    is_complex: bool,
+                                    domain: DataDomain)
+                                    -> Self {
         let mut result = Self::rededicate_from_force(origin);
         result.number_space.is_complex_current = is_complex;
         result.domain.domain_current = domain;
@@ -281,21 +292,22 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for GenDspVec<S, T>
 
 impl<U, V> RededicateOps<U> for V
     where V: RededicateForceOps<U> + MetaData + ResizeOps,
-          U: MetaData {
+          U: MetaData
+{
     fn rededicate_from(origin: U) -> Self {
         let is_complex = origin.is_complex();
         let domain = origin.domain();
         let mut result = Self::rededicate_from_force(origin);
-        if result.is_complex() != is_complex
-           && result.domain() != domain {
-               result.resize(0).expect("Setting size to 0 should always succeed");
-           }
+        if result.is_complex() != is_complex && result.domain() != domain {
+            result.resize(0).expect("Setting size to 0 should always succeed");
+        }
         result
     }
 }
 
 impl<T, U> RededicateToOps<U> for T
-    where U: RededicateOps<T> {
+    where U: RededicateOps<T>
+{
     fn rededicate(self) -> U {
         U::rededicate_from(self)
     }

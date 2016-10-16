@@ -6,9 +6,10 @@ use super::*;
 /// of a large matrix and that the return types are basic enough
 /// so that other specialized matrix libs can do the rest of the work, e.g.
 /// inverting the resulting matrix.
-pub trait Matrix<V, T> : MetaData + ResizeOps
+pub trait Matrix<V, T>: MetaData + ResizeOps
     where V: Vector<T>,
-		T: RealNumber {
+          T: RealNumber
+{
     /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
     fn delta(&self) -> T;
 
@@ -23,14 +24,14 @@ pub trait Matrix<V, T> : MetaData + ResizeOps
     /// while for real vectors every point only consists of one floating point number.
     fn row_points(&self) -> usize;
 
-	/// The number of columns in the matrix.
-	fn col_len(&self) -> usize;
+    /// The number of columns in the matrix.
+    fn col_len(&self) -> usize;
 
-	/// Gets the rows as vectors.
-	fn rows(&self) -> &[V];
+    /// Gets the rows as vectors.
+    fn rows(&self) -> &[V];
 
-	/// Gets the rows as mutable vectors.
-	fn rows_mut(&mut self) -> &mut [V];
+    /// Gets the rows as mutable vectors.
+    fn rows_mut(&mut self) -> &mut [V];
 }
 
 macro_rules! add_mat_impl {

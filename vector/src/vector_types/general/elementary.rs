@@ -4,16 +4,13 @@ use multicore_support::*;
 use simd_extensions::*;
 use num::Complex;
 use std::ops::*;
-use super::super::{
-    array_to_complex, array_to_complex_mut,
-    ErrorReason, VoidResult, Vector,
-    DspVec, ToSliceMut, MetaData,
-    Domain, NumberSpace, ComplexNumberSpace
-};
+use super::super::{array_to_complex, array_to_complex_mut, ErrorReason, VoidResult, Vector,
+                   DspVec, ToSliceMut, MetaData, Domain, NumberSpace, ComplexNumberSpace};
 
 /// An operation which multiplies each vector element with a constant
-pub trait ScaleOps<T> : Sized
-    where T: Sized {
+pub trait ScaleOps<T>: Sized
+    where T: Sized
+{
     /// Multiplies the vector element with a scalar.
     ///
     /// # Failures
@@ -36,8 +33,9 @@ pub trait ScaleOps<T> : Sized
 }
 
 /// An operation which adds a constant to each vector element
-pub trait OffsetOps<T> : Sized
-    where T: Sized {
+pub trait OffsetOps<T>: Sized
+    where T: Sized
+{
     /// Adds a scalar to each vector element.
     ///
     /// # Failures
@@ -264,13 +262,20 @@ impl<S, T, N, D> OffsetOps<T> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain {
+          D: Domain
+{
     fn offset(&mut self, offset: T) {
         if self.is_complex() {
             let vector_offset = T::Reg::from_complex(Complex::new(offset, T::zero()));
-            self.simd_complex_operation(|x,y| x + y, |x,y| x + Complex::<T>::new(y.extract(0), y.extract(1)), vector_offset, Complexity::Small);
+            self.simd_complex_operation(|x, y| x + y,
+                                        |x, y| x + Complex::<T>::new(y.extract(0), y.extract(1)),
+                                        vector_offset,
+                                        Complexity::Small);
         } else {
-            self.simd_real_operation(|x, y| x.add_real(y), |x, y| x + y, offset, Complexity::Small);
+            self.simd_real_operation(|x, y| x.add_real(y),
+                                     |x, y| x + y,
+                                     offset,
+                                     Complexity::Small);
         }
     }
 }
@@ -279,11 +284,15 @@ impl<S, T, N, D> OffsetOps<Complex<T>> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
-          D: Domain {
+          D: Domain
+{
     fn offset(&mut self, offset: Complex<T>) {
         assert_complex!(self);
         let vector_offset = T::Reg::from_complex(offset);
-        self.simd_complex_operation(|x,y| x + y, |x,y| x + Complex::<T>::new(y.extract(0), y.extract(1)), vector_offset, Complexity::Small);
+        self.simd_complex_operation(|x, y| x + y,
+                                    |x, y| x + Complex::<T>::new(y.extract(0), y.extract(1)),
+                                    vector_offset,
+                                    Complexity::Small);
     }
 }
 
@@ -291,9 +300,13 @@ impl<S, T, D, N> ScaleOps<T> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain {
+          D: Domain
+{
     fn scale(&mut self, factor: T) {
-        self.simd_real_operation(|x, y| x.scale_real(y), |x, y| x * y, factor, Complexity::Small);
+        self.simd_real_operation(|x, y| x.scale_real(y),
+                                 |x, y| x * y,
+                                 factor,
+                                 Complexity::Small);
     }
 }
 
@@ -301,14 +314,20 @@ impl<S, T, D, N> ScaleOps<Complex<T>> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
-          D: Domain {
+          D: Domain
+{
     fn scale(&mut self, factor: Complex<T>) {
         assert_complex!(self);
         if factor.im == T::zero() {
-            self.simd_real_operation(|x, y| x.scale_real(y), |x, y| x * y, factor.re, Complexity::Small);
-        }
-        else {
-            self.simd_complex_operation(|x,y| x.scale_complex(y), |x,y| x * y, factor, Complexity::Small);
+            self.simd_real_operation(|x, y| x.scale_real(y),
+                                     |x, y| x * y,
+                                     factor.re,
+                                     Complexity::Small);
+        } else {
+            self.simd_complex_operation(|x, y| x.scale_complex(y),
+                                        |x, y| x * y,
+                                        factor,
+                                        Complexity::Small);
         }
     }
 }
@@ -492,7 +511,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain {
+          D: Domain
+{
     impl_binary_complex_vector_operation!(fn mul_complex, factor, mul_complex, mul);
     impl_binary_smaller_complex_vector_operation!(fn mul_smaller_complex, factor, mul_complex, mul);
     impl_binary_vector_operation!(fn mul_real, factor, mul, mul);
@@ -507,77 +527,66 @@ impl<S, T, N, D> ElementaryOps for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain {
-      impl_binary_vector_operation!(fn add, summand, add, add);
-      impl_binary_vector_operation!(fn sub, summand, sub, sub);
+          D: Domain
+{
+    impl_binary_vector_operation!(fn add, summand, add, add);
+    impl_binary_vector_operation!(fn sub, summand, sub, sub);
 
-      fn mul(&mut self, factor: &Self) -> VoidResult {
-          let len = self.len();
-          reject_if!(self, len != factor.len(), ErrorReason::InputMustHaveTheSameSize);
-          assert_meta_data!(self, factor);
+    fn mul(&mut self, factor: &Self) -> VoidResult {
+        let len = self.len();
+        reject_if!(self, len != factor.len(), ErrorReason::InputMustHaveTheSameSize);
+        assert_meta_data!(self, factor);
 
-          if self.is_complex()
-          {
-              self.mul_complex(factor)
-          }
-          else
-          {
-              self.mul_real(factor)
-          }
-      }
+        if self.is_complex() {
+            self.mul_complex(factor)
+        } else {
+            self.mul_real(factor)
+        }
+    }
 
-      fn div(&mut self, divisor: &Self) -> VoidResult {
-          let len = self.len();
-          reject_if!(self, len != divisor.len(), ErrorReason::InputMustHaveTheSameSize);
-          assert_meta_data!(self, divisor);
+    fn div(&mut self, divisor: &Self) -> VoidResult {
+        let len = self.len();
+        reject_if!(self, len != divisor.len(), ErrorReason::InputMustHaveTheSameSize);
+        assert_meta_data!(self, divisor);
 
-          if self.is_complex()
-          {
-              self.div_complex(divisor)
-          }
-          else
-          {
-              self.div_real(divisor)
-          }
-      }
+        if self.is_complex() {
+            self.div_complex(divisor)
+        } else {
+            self.div_real(divisor)
+        }
+    }
 }
 
 impl<S, T, N, D> ElementaryWrapAroundOps for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain {
-      impl_binary_smaller_vector_operation!(fn add_smaller, summand, add, add);
-      impl_binary_smaller_vector_operation!(fn sub_smaller, summand, sub, sub);
+          D: Domain
+{
+    impl_binary_smaller_vector_operation!(fn add_smaller, summand, add, add);
+    impl_binary_smaller_vector_operation!(fn sub_smaller, summand, sub, sub);
 
-      fn mul_smaller(&mut self, factor: &Self) -> VoidResult {
-          let len = self.len();
-          reject_if!(self, len % factor.len() != 0, ErrorReason::InvalidArgumentLength);
-          assert_meta_data!(self, factor);
+    fn mul_smaller(&mut self, factor: &Self) -> VoidResult {
+        let len = self.len();
+        reject_if!(self, len % factor.len() != 0, ErrorReason::InvalidArgumentLength);
+        assert_meta_data!(self, factor);
 
-          if self.is_complex()
-          {
-              self.mul_smaller_complex(factor)
-          }
-          else
-          {
-              self.mul_smaller_real(factor)
-          }
-      }
+        if self.is_complex() {
+            self.mul_smaller_complex(factor)
+        } else {
+            self.mul_smaller_real(factor)
+        }
+    }
 
-      fn div_smaller(&mut self, divisor: &Self) -> VoidResult {
-          let len = self.len();
-          reject_if!(self, len % divisor.len() != 0, ErrorReason::InvalidArgumentLength);
-          assert_meta_data!(self, divisor);
+    fn div_smaller(&mut self, divisor: &Self) -> VoidResult {
+        let len = self.len();
+        reject_if!(self, len % divisor.len() != 0, ErrorReason::InvalidArgumentLength);
+        assert_meta_data!(self, divisor);
 
-          if self.is_complex()
-          {
-              self.div_smaller_complex(divisor)
-          }
-          else
-          {
-              self.div_smaller_real(divisor)
-          }
-      }
-
+        if self.is_complex() {
+            self.div_smaller_complex(divisor)
+        } else {
+            self.div_smaller_real(divisor)
+        }
+    }
 }

@@ -10,7 +10,8 @@ use std::mem;
 /// A buffer may can implement any buffering strategy.
 pub trait Buffer<S, T>
     where S: ToSliceMut<T>,
-          T: RealNumber {
+          T: RealNumber
+{
     /// Asks the buffer for new storage.
     /// `len` is the minimum size the storage needs to provide.
     /// S doesn't need to have be initialized with any default value.
@@ -32,30 +33,28 @@ pub trait Buffer<S, T>
 
 /// A buffer which stores a single vector and never shrinks.
 pub struct SingleBuffer<T>
-    where T: RealNumber {
-    temp: Vec<T>
+    where T: RealNumber
+{
+    temp: Vec<T>,
 }
 
 impl<T> SingleBuffer<T>
-    where T: RealNumber {
-
+    where T: RealNumber
+{
     /// Creates a new buffer which is ready to be passed around.
     pub fn new() -> SingleBuffer<T> {
-        SingleBuffer {
-            temp: Vec::new()
-        }
+        SingleBuffer { temp: Vec::new() }
     }
 
     /// Creates a new buffer which is ready to be passed around.
     pub fn with_capacity(len: usize) -> SingleBuffer<T> {
-        SingleBuffer {
-            temp: vec![T::zero(); len]
-        }
+        SingleBuffer { temp: vec![T::zero(); len] }
     }
 }
 
 impl<T> Buffer<Vec<T>, T> for SingleBuffer<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     fn get(&mut self, len: usize) -> Vec<T> {
         if len <= self.temp.len() {
             let mut result = Vec::new();

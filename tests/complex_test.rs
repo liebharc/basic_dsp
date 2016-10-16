@@ -9,8 +9,7 @@ mod slow_test {
     use num::complex::*;
     use tools::*;
 
-    fn to_complex(a: &Vec<f32>) -> Vec<Complex32>
-    {
+    fn to_complex(a: &Vec<f32>) -> Vec<Complex32> {
         let mut result = vec![Complex32::new(0.0, 0.0); a.len() / 2];
         for i in 0..result.len() {
             result[i] = Complex32::new(a[2 * i], a[2 * i + 1]);
@@ -19,8 +18,7 @@ mod slow_test {
         result
     }
 
-    fn from_complex(a: &Vec<Complex32>) -> Vec<f32>
-    {
+    fn from_complex(a: &Vec<Complex32>) -> Vec<f32> {
         let mut result = vec![0.0; a.len() * 2];
         for i in 0..a.len() {
             result[2 * i] = a[i].re;
@@ -30,11 +28,10 @@ mod slow_test {
         result
     }
 
-    fn complex_add_scalar(a: &Vec<f32>, value: Complex32) -> Vec<f32>
-    {
+    fn complex_add_scalar(a: &Vec<f32>, value: Complex32) -> Vec<f32> {
         let complex = to_complex(&a);
         let mut result = vec![Complex32::new(0.0, 0.0); complex.len()];
-        for i in 0 .. complex.len() {
+        for i in 0..complex.len() {
             result[i] = complex[i] + value;
         }
 
@@ -58,11 +55,10 @@ mod slow_test {
         });
     }
 
-    fn complex_multiply_scalar(a: &Vec<f32>, value: Complex32) -> Vec<f32>
-    {
+    fn complex_multiply_scalar(a: &Vec<f32>, value: Complex32) -> Vec<f32> {
         let complex = to_complex(&a);
         let mut result = vec![Complex32::new(0.0, 0.0); complex.len()];
-        for i in 0 .. complex.len() {
+        for i in 0..complex.len() {
             result[i] = complex[i] * value;
         }
 
@@ -86,11 +82,10 @@ mod slow_test {
         });
     }
 
-    fn complex_abs(a: &Vec<f32>) -> Vec<f32>
-    {
+    fn complex_abs(a: &Vec<f32>) -> Vec<f32> {
         let complex = to_complex(&a);
         let mut result = vec![0.0; complex.len()];
-        for i in 0 .. complex.len() {
+        for i in 0..complex.len() {
             result[i] = (complex[i].re * complex[i].re + complex[i].im * complex[i].im).sqrt();
         }
 
@@ -112,11 +107,10 @@ mod slow_test {
         });
     }
 
-    fn complex_abs_sq(a: &Vec<f32>) -> Vec<f32>
-    {
+    fn complex_abs_sq(a: &Vec<f32>) -> Vec<f32> {
         let complex = to_complex(&a);
         let mut result = vec![0.0; complex.len()];
-        for i in 0 .. complex.len() {
+        for i in 0..complex.len() {
             result[i] = complex[i].re * complex[i].re + complex[i].im * complex[i].im;
         }
 
@@ -138,12 +132,11 @@ mod slow_test {
         });
     }
 
-    fn complex_vector_mul(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
-    {
+    fn complex_vector_mul(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32> {
         let a = to_complex(a);
         let b = to_complex(b);
         let mut result = vec![Complex32::new(0.0, 0.0); a.len()];
-        for i in 0 .. a.len() {
+        for i in 0..a.len() {
             result[i] = a[i] * b[i];
         }
 
@@ -168,12 +161,11 @@ mod slow_test {
         });
     }
 
-    fn complex_vector_mul_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
-    {
+    fn complex_vector_mul_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32> {
         let a = to_complex(a);
         let b = to_complex(b);
         let mut result = vec![Complex32::new(0.0, 0.0); a.len()];
-        for i in 0 .. a.len() {
+        for i in 0..a.len() {
             result[i] = a[i] * b[i % b.len()];
         }
 
@@ -196,12 +188,11 @@ mod slow_test {
         assert_eq!(vector1.delta(), delta);
     }
 
-    fn complex_vector_div_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
-    {
+    fn complex_vector_div_mod(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32> {
         let a = to_complex(a);
         let b = to_complex(b);
         let mut result = vec![Complex32::new(0.0, 0.0); a.len()];
-        for i in 0 .. a.len() {
+        for i in 0..a.len() {
             result[i] = a[i] / b[i % b.len()];
         }
 
@@ -229,7 +220,9 @@ mod slow_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data_even(201511171, iteration, range.start, range.end);
             let b = create_data_with_len(201511172, iteration, a.len());
-            let expected = to_complex(&complex_vector_mul(&a, &b)).iter().fold(Complex32::new(0.0, 0.0), |a, b| a + b);
+            let expected = to_complex(&complex_vector_mul(&a, &b))
+                .iter()
+                .fold(Complex32::new(0.0, 0.0), |a, b| a + b);
             let delta = create_delta(3561159, iteration);
             let mut vector1 = a.to_complex_time_vec();
             vector1.set_delta(delta);
@@ -241,12 +234,11 @@ mod slow_test {
         });
     }
 
-    fn complex_vector_div(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32>
-    {
+    fn complex_vector_div(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32> {
         let a = to_complex(a);
         let b = to_complex(b);
         let mut result = vec![Complex32::new(0.0, 0.0); a.len()];
-        for i in 0 .. a.len() {
+        for i in 0..a.len() {
             result[i] = a[i] / b[i];
         }
 
@@ -306,7 +298,8 @@ mod slow_test {
     #[test]
     fn abs_phase_conversions_vector32() {
         parameterized_vector_test(|iteration, range| {
-            let abs = create_data_even_in_range(201511191, iteration, range.start, range.end, 0.1, 10.0);
+            let abs =
+                create_data_even_in_range(201511191, iteration, range.start, range.end, 0.1, 10.0);
             let phase = create_data_in_range_with_len(201511204, iteration, abs.len(), -1.57, 1.57);
 
             let absvec = abs.clone().to_real_time_vec();
@@ -336,12 +329,11 @@ mod slow_test {
         });
     }
 
-    fn complex_vector_diff(a: &Vec<f32>) -> Vec<f32>
-    {
+    fn complex_vector_diff(a: &Vec<f32>) -> Vec<f32> {
         let a = to_complex(a);
         let mut result = vec![Complex32::new(0.0, 0.0); a.len()];
         result[0] = a[0];
-        for i in 1 .. a.len() {
+        for i in 1..a.len() {
             result[i] = a[i] - a[i - 1];
         }
 
@@ -363,12 +355,11 @@ mod slow_test {
         });
     }
 
-    fn complex_vector_cum_sum(a: &Vec<f32>) -> Vec<f32>
-    {
+    fn complex_vector_cum_sum(a: &Vec<f32>) -> Vec<f32> {
         let a = to_complex(a);
         let mut result = vec![Complex32::new(0.0, 0.0); a.len()];
         result[0] = a[0];
-        for i in 1 .. a.len() {
+        for i in 1..a.len() {
             result[i] = a[i] + result[i - 1];
         }
 
@@ -390,8 +381,7 @@ mod slow_test {
         });
     }
 
-    fn complex_exponential(vec: &Vec<f32>, a: f32, b: f32, delta: f32) -> Vec<f32>
-    {
+    fn complex_exponential(vec: &Vec<f32>, a: f32, b: f32, delta: f32) -> Vec<f32> {
         let a = a * delta;
         let mut exponential = Complex32::from_polar(&1.0, &b);
         let increment = Complex32::from_polar(&1.0, &a);
@@ -431,8 +421,8 @@ mod slow_test {
             let c = to_complex(&a);
             let mut vector = a.clone().to_complex_time_vec();
             vector.set_delta(delta);
-            let sum = c.iter().fold(Complex32::new(0.0, 0.0), |a,b| a + b);
-            let sum_sq = c.iter().map(|v| v * v).fold(Complex32::new(0.0, 0.0), |a,b| a + b);
+            let sum = c.iter().fold(Complex32::new(0.0, 0.0), |a, b| a + b);
+            let sum_sq = c.iter().map(|v| v * v).fold(Complex32::new(0.0, 0.0), |a, b| a + b);
             let rms = (sum_sq / a.len() as f32).sqrt();
             let result = vector.statistics();
             assert_complex_in_tolerance(result.sum, sum, 0.5);
@@ -461,13 +451,11 @@ mod slow_test {
         let a = create_data(201511210, 0, 1000, 1000);
         let vector = a.clone().to_complex_time_vec();
         let empty: Vec<f32> = Vec::new();
-        let mut split =
-            [
-                Box::new(empty.clone().to_complex_time_vec()),
-                Box::new(empty.clone().to_complex_time_vec()),
-                Box::new(empty.clone().to_complex_time_vec()),
-                Box::new(empty.clone().to_complex_time_vec()),
-                Box::new(empty.clone().to_complex_time_vec())];
+        let mut split = [Box::new(empty.clone().to_complex_time_vec()),
+                         Box::new(empty.clone().to_complex_time_vec()),
+                         Box::new(empty.clone().to_complex_time_vec()),
+                         Box::new(empty.clone().to_complex_time_vec()),
+                         Box::new(empty.clone().to_complex_time_vec())];
         {
             let mut dest: Vec<_> = split.iter_mut().map(|x| x.as_mut()).collect();
             vector.split_into(&mut dest[..]).unwrap();
@@ -480,13 +468,11 @@ mod slow_test {
 
     #[test]
     fn split_test32() {
-        let a = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
+        let a = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
         let vector = a.to_complex_time_vec();
         let empty: Vec<f32> = Vec::new();
-        let mut split =
-            [
-                &mut empty.clone().to_complex_time_vec(),
-                &mut empty.clone().to_complex_time_vec()];
+        let mut split = [&mut empty.clone().to_complex_time_vec(),
+                         &mut empty.clone().to_complex_time_vec()];
         vector.split_into(&mut split).unwrap();
         assert_vector_eq(&[1.0, 2.0, 5.0, 6.0], &split[0][..]);
         assert_vector_eq(&[3.0, 4.0, 7.0, 8.0], &split[1][..]);
@@ -579,9 +565,7 @@ mod slow_test {
             let a = create_data_with_len(201511141, iteration, len);
             let a = a.to_complex_time_vec();
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                a.magnitude()
-            });
+            let ops = ops.add_ops(|a| a.magnitude());
             let mut buffer = SingleBuffer::new();
             let a_actual = ops.get(&mut buffer).unwrap();
             let a_expected = a.magnitude();
@@ -596,9 +580,7 @@ mod slow_test {
             let a = create_data_with_len(201511141, iteration, len);
             let a = a.to_complex_time_vec();
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                a.magnitude_squared()
-            });
+            let ops = ops.add_ops(|a| a.magnitude_squared());
             let mut buffer = SingleBuffer::new();
             let a_actual = ops.get(&mut buffer).unwrap();
             let a_expected = a.magnitude_squared();
@@ -632,9 +614,7 @@ mod slow_test {
             let a = create_data_with_len(201511141, iteration, len);
             let a = a.to_complex_time_vec();
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                a.to_real()
-            });
+            let ops = ops.add_ops(|a| a.to_real());
             let mut buffer = SingleBuffer::new();
             let a_actual = ops.get(&mut buffer).unwrap();
             let a_expected = a.to_real();
@@ -649,9 +629,7 @@ mod slow_test {
             let a = create_data_with_len(201511141, iteration, len);
             let a = a.to_complex_time_vec();
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                a.to_imag()
-            });
+            let ops = ops.add_ops(|a| a.to_imag());
             let mut buffer = SingleBuffer::new();
             let a_actual = ops.get(&mut buffer).unwrap();
             let a_expected = a.to_imag();
@@ -666,9 +644,7 @@ mod slow_test {
             let a = create_data_with_len(201511141, iteration, len);
             let a = a.to_complex_time_vec();
             let ops = multi_ops1(a.clone());
-            let ops = ops.add_ops(|a| {
-                a.phase()
-            });
+            let ops = ops.add_ops(|a| a.phase());
             let mut buffer = SingleBuffer::new();
             let a_actual = ops.get(&mut buffer).unwrap();
             let a_expected = a.phase();

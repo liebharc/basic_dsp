@@ -40,11 +40,8 @@ use std::ops::*;
 use simd_extensions::*;
 
 /// Associates a number type with a SIMD register type.
-pub trait ToSimd : Sized + Sync + Send {
-    type Reg: Simd<Self>
-        + SimdGeneric<Self>
-        + Copy + Sync + Send
-        + Add<Output=Self::Reg> + Sub<Output=Self::Reg> + Mul<Output=Self::Reg> + Div<Output=Self::Reg>;
+pub trait ToSimd: Sized + Sync + Send {
+    type Reg: Simd<Self> + SimdGeneric<Self> + Copy + Sync + Send + Add<Output = Self::Reg> + Sub<Output = Self::Reg> + Mul<Output = Self::Reg> + Div<Output = Self::Reg>;
 }
 
 impl ToSimd for f32 {
@@ -55,10 +52,15 @@ impl ToSimd for f64 {
     type Reg = Reg64;
 }
 
- /// A real floating pointer number intended to abstract over `f32` and `f64`.
- pub trait RealNumber : Float + Copy + Clone + Send + Sync + ToSimd + Debug + Signed + FromPrimitive { }
- impl<T> RealNumber for T
-  where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug + Signed + FromPrimitive { }
+/// A real floating pointer number intended to abstract over `f32` and `f64`.
+pub trait RealNumber
+    : Float + Copy + Clone + Send + Sync + ToSimd + Debug + Signed + FromPrimitive
+    {
+}
+impl<T> RealNumber for T
+    where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug + Signed + FromPrimitive
+{
+}
 
 #[cfg(test)]
 mod tests {
@@ -66,8 +68,7 @@ mod tests {
     use simd_extensions::Simd;
 
     #[test]
-    fn to_simd_test()
-    {
+    fn to_simd_test() {
         // This is more a check for syntax. So if it compiles
         // then the test already passes. The assert is then only
         // a sanity check.

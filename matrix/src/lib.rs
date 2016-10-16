@@ -14,34 +14,38 @@ pub use self::forwards::*;
 pub struct MatrixMxN<V, S, T>
     where T: RealNumber,
           S: ToSlice<T>,
-          V: Vector<T> {
-  rows: Vec<V>,
-  storage_type: std::marker::PhantomData<S>,
-  number_type: std::marker::PhantomData<T>
+          V: Vector<T>
+{
+    rows: Vec<V>,
+    storage_type: std::marker::PhantomData<S>,
+    number_type: std::marker::PhantomData<T>,
 }
 
 pub struct Matrix2xN<V, S, T>
     where T: RealNumber,
-          V: Vector<T> {
-  rows: [V; 2],
-  storage_type: std::marker::PhantomData<S>,
-  number_type: std::marker::PhantomData<T>
+          V: Vector<T>
+{
+    rows: [V; 2],
+    storage_type: std::marker::PhantomData<S>,
+    number_type: std::marker::PhantomData<T>,
 }
 
 pub struct Matrix3xN<V, S, T>
     where T: RealNumber,
-          V: Vector<T> {
-  rows: [V; 3],
-  storage_type: std::marker::PhantomData<S>,
-  number_type: std::marker::PhantomData<T>
+          V: Vector<T>
+{
+    rows: [V; 3],
+    storage_type: std::marker::PhantomData<S>,
+    number_type: std::marker::PhantomData<T>,
 }
 
 pub struct Matrix4xN<V, S, T>
     where T: RealNumber,
-          V: Vector<T> {
-  rows: [V; 4],
-  storage_type: std::marker::PhantomData<S>,
-  number_type: std::marker::PhantomData<T>
+          V: Vector<T>
+{
+    rows: [V; 4],
+    storage_type: std::marker::PhantomData<S>,
+    number_type: std::marker::PhantomData<T>,
 }
 
 pub type Matrix32xN = MatrixMxN<GenDspVec32, Vec<f32>, f32>;
@@ -91,22 +95,22 @@ pub type ComplexFreqMatrix64x4 = Matrix4xN<ComplexFreqVec64, Vec<f64>, f64>;
 /// Internal trait to transform a row storage type to another
 trait TransformContent<S, D> {
     type Output;
-    fn transform<F>(self, conversion: F) -> Self::Output
-        where F: Fn(S) -> D;
+    fn transform<F>(self, conversion: F) -> Self::Output where F: Fn(S) -> D;
 }
 
 impl<S, D> TransformContent<S, D> for Vec<S> {
     type Output = Vec<D>;
 
     fn transform<F>(mut self, conversion: F) -> Self::Output
-        where F: Fn(S) -> D {
-         let mut rows: Vec<D> = Vec::with_capacity(self.len());
-         for _ in 0..self.len() {
-           let v: S = self.pop().unwrap();
-           rows.push(conversion(v));
-         }
-         rows.reverse();
-         rows
+        where F: Fn(S) -> D
+    {
+        let mut rows: Vec<D> = Vec::with_capacity(self.len());
+        for _ in 0..self.len() {
+            let v: S = self.pop().unwrap();
+            rows.push(conversion(v));
+        }
+        rows.reverse();
+        rows
     }
 }
 
@@ -114,15 +118,16 @@ impl<S, D> TransformContent<S, D> for [S; 2] {
     type Output = [D; 2];
 
     fn transform<F>(mut self, conversion: F) -> Self::Output
-        where F: Fn(S) -> D {
-            unsafe {
-              let first = mem::replace(&mut self[0], mem::uninitialized());
-    		  let second = mem::replace(&mut self[1], mem::uninitialized());
-    		  mem::forget(self); // TODO possible memory leak
-    		  let first = conversion(first);
-    		  let second = conversion(second);
-    		  [first, second]
-          }
+        where F: Fn(S) -> D
+    {
+        unsafe {
+            let first = mem::replace(&mut self[0], mem::uninitialized());
+            let second = mem::replace(&mut self[1], mem::uninitialized());
+            mem::forget(self); // TODO possible memory leak
+            let first = conversion(first);
+            let second = conversion(second);
+            [first, second]
+        }
     }
 }
 
@@ -130,17 +135,18 @@ impl<S, D> TransformContent<S, D> for [S; 3] {
     type Output = [D; 3];
 
     fn transform<F>(mut self, conversion: F) -> Self::Output
-        where F: Fn(S) -> D {
-            unsafe {
-              let first = mem::replace(&mut self[0], mem::uninitialized());
-    		  let second = mem::replace(&mut self[1], mem::uninitialized());
-    		  let third = mem::replace(&mut self[2], mem::uninitialized());
-    		  mem::forget(self); // TODO possible memory leak
-    		  let first = conversion(first);
-    		  let second = conversion(second);
-    		  let third = conversion(third);
-    		  [first, second, third]
-          }
+        where F: Fn(S) -> D
+    {
+        unsafe {
+            let first = mem::replace(&mut self[0], mem::uninitialized());
+            let second = mem::replace(&mut self[1], mem::uninitialized());
+            let third = mem::replace(&mut self[2], mem::uninitialized());
+            mem::forget(self); // TODO possible memory leak
+            let first = conversion(first);
+            let second = conversion(second);
+            let third = conversion(third);
+            [first, second, third]
+        }
     }
 }
 
@@ -148,18 +154,19 @@ impl<S, D> TransformContent<S, D> for [S; 4] {
     type Output = [D; 4];
 
     fn transform<F>(mut self, conversion: F) -> Self::Output
-        where F: Fn(S) -> D {
-           unsafe {
-              let first = mem::replace(&mut self[0], mem::uninitialized());
-    		  let second = mem::replace(&mut self[1], mem::uninitialized());
-    		  let third = mem::replace(&mut self[2], mem::uninitialized());
-    		  let fourth = mem::replace(&mut self[3], mem::uninitialized());
-    		  mem::forget(self); // TODO possible memory leak
-    		  let first = conversion(first);
-    		  let second = conversion(second);
-    		  let third = conversion(third);
-    		  let fourth = conversion(fourth);
-    		  [first, second, third, fourth]
-          }
+        where F: Fn(S) -> D
+    {
+        unsafe {
+            let first = mem::replace(&mut self[0], mem::uninitialized());
+            let second = mem::replace(&mut self[1], mem::uninitialized());
+            let third = mem::replace(&mut self[2], mem::uninitialized());
+            let fourth = mem::replace(&mut self[3], mem::uninitialized());
+            mem::forget(self); // TODO possible memory leak
+            let first = conversion(first);
+            let second = conversion(second);
+            let third = conversion(third);
+            let fourth = conversion(fourth);
+            [first, second, third, fourth]
+        }
     }
 }

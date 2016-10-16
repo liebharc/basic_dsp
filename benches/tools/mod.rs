@@ -15,7 +15,7 @@ pub struct VectorBox<B, T>
 {
     pub vector: *mut B,
     pub size: usize,
-    pub buffer: SingleBuffer<T>
+    pub buffer: SingleBuffer<T>,
 }
 
 #[derive(Copy)]
@@ -26,7 +26,7 @@ pub enum Size {
     Tiny,
     Small,
     Medium,
-    Large
+    Large,
 }
 
 pub fn translate_size(size: Size) -> usize {
@@ -34,95 +34,82 @@ pub fn translate_size(size: Size) -> usize {
         Size::Tiny => 1000,
         Size::Small => DEFAULT_DATA_SIZE,
         Size::Medium => 100000,
-        Size::Large => 1000000
+        Size::Large => 1000000,
     }
 }
 
 impl VectorBox<RealTimeVec<Vec<f32>, f32>, f32> {
-    pub fn new(size: Size) -> VectorBox<RealTimeVec<Vec<f32>, f32>, f32>
-    {
+    pub fn new(size: Size) -> VectorBox<RealTimeVec<Vec<f32>, f32>, f32> {
         let size = translate_size(size);
         let data = vec![10.0; size];
-        VectorBox
-        {
+        VectorBox {
             vector: Box::into_raw(Box::new(data.to_real_time_vec())),
             buffer: SingleBuffer::with_capacity(size),
-            size: size
+            size: size,
         }
     }
 }
 
 impl VectorBox<Vec<f32>, f32> {
-    pub fn new(size: Size) -> VectorBox<Vec<f32>, f32>
-    {
+    pub fn new(size: Size) -> VectorBox<Vec<f32>, f32> {
         let size = translate_size(size);
         let data = vec![10.0; size];
-        VectorBox
-        {
+        VectorBox {
             vector: Box::into_raw(Box::new(data)),
             buffer: SingleBuffer::with_capacity(size),
-            size: size
+            size: size,
         }
     }
 }
 
 impl VectorBox<Vec<f64>, f64> {
-    pub fn new(size: Size) -> VectorBox<Vec<f64>, f64>
-    {
+    pub fn new(size: Size) -> VectorBox<Vec<f64>, f64> {
         let size = translate_size(size);
         let data = vec![10.0; size];
-        VectorBox
-        {
+        VectorBox {
             vector: Box::into_raw(Box::new(data)),
             buffer: SingleBuffer::with_capacity(size),
-            size: size
+            size: size,
         }
     }
 }
 
 impl VectorBox<GenDspVec<Vec<f32>, f32>, f32> {
-    pub fn new(size: Size) -> VectorBox<GenDspVec<Vec<f32>, f32>, f32>
-    {
+    pub fn new(size: Size) -> VectorBox<GenDspVec<Vec<f32>, f32>, f32> {
         let size = translate_size(size);
         Self::with_size(size)
     }
 
-    pub fn with_size(size: usize) -> VectorBox<GenDspVec<Vec<f32>, f32>, f32>
-    {
+    pub fn with_size(size: usize) -> VectorBox<GenDspVec<Vec<f32>, f32>, f32> {
         let data = vec![10.0; size];
-        VectorBox
-        {
+        VectorBox {
             vector: Box::into_raw(Box::new(data.to_gen_dsp_vec(true, DataDomain::Time))),
             buffer: SingleBuffer::with_capacity(size),
-            size: size
+            size: size,
         }
     }
 }
 
 impl VectorBox<ComplexTimeVec<Vec<f32>, f32>, f32> {
-    pub fn new(size: Size) -> VectorBox<ComplexTimeVec<Vec<f32>, f32>, f32>
-    {
+    pub fn new(size: Size) -> VectorBox<ComplexTimeVec<Vec<f32>, f32>, f32> {
         let size = translate_size(size);
         let data = vec![10.0; size];
-        VectorBox
-        {
+        VectorBox {
             vector: Box::into_raw(Box::new(data.to_complex_time_vec())),
             buffer: SingleBuffer::with_capacity(size),
-            size: size
+            size: size,
         }
     }
 }
 
 impl VectorBox<RealTimeVec<Vec<f64>, f64>, f64> {
-    pub fn new(size: Size) -> VectorBox<RealTimeVec<Vec<f64>, f64>, f64>
-    {
+    pub fn new(size: Size) -> VectorBox<RealTimeVec<Vec<f64>, f64>, f64> {
         let size = translate_size(size);
         let data = vec![10.0; size];
-        VectorBox
-        {
+        VectorBox {
             vector: Box::into_raw(Box::new(data.to_real_time_vec())),
             buffer: SingleBuffer::with_capacity(size),
-            size: size
+            size: size,
         }
     }
 }

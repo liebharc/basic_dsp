@@ -2,19 +2,17 @@ use RealNumber;
 use num::Complex;
 use multicore_support::*;
 use simd_extensions::*;
-use super::super::{
-	Vector, ScalarResult, ErrorReason,
-    DspVec, ToSlice, MetaData,
-    Domain, RealNumberSpace, ComplexNumberSpace
-};
+use super::super::{Vector, ScalarResult, ErrorReason, DspVec, ToSlice, MetaData, Domain,
+                   RealNumberSpace, ComplexNumberSpace};
 
 /// An operation which multiplies each vector element with a constant
-pub trait DotProductOps<R> : Sized
-    where R: Sized {
+pub trait DotProductOps<R>: Sized
+    where R: Sized
+{
     /// Calculates the dot product of self and factor. Self and factor remain unchanged.
-	///
-	/// # Example
-	///
+    ///
+    /// # Example
+    ///
     /// ```
     /// use basic_dsp_vector::*;
     /// let vector1 = vec!(2.0, 1.0, -1.0, 4.0).to_real_time_vec();
@@ -29,33 +27,34 @@ impl<S, T, N, D> DotProductOps<T> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: RealNumberSpace,
-          D: Domain {
-
-    fn dot_product(&self, factor: &Self) -> ScalarResult<T>
-    {
+          D: Domain
+{
+    fn dot_product(&self, factor: &Self) -> ScalarResult<T> {
         if self.is_complex() {
             return Err(ErrorReason::InputMustBeReal);
         }
 
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+        let (scalar_left, scalar_right, vectorization_length) =
+            T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = factor.data.to_slice();
         let chunks = if vectorization_length > 0 {
-            Chunk::get_a_fold_b(
-                Complexity::Small, &self.multicore_settings,
-                &other[0..vectorization_length], T::Reg::len(),
-                &array[0..vectorization_length], T::Reg::len(),
-                |original, range, target| {
-                    let mut result = T::Reg::splat(T::zero());
-					let original = T::Reg::array_to_regs(&original[range]);
-					let target = T::Reg::array_to_regs(&target[..]);
-                    for (a, b) in original.iter().zip(target)
-                    {
-                        result = result + (*a * *b);
-                    }
+            Chunk::get_a_fold_b(Complexity::Small,
+                                &self.multicore_settings,
+                                &other[0..vectorization_length],
+                                T::Reg::len(),
+                                &array[0..vectorization_length],
+                                T::Reg::len(),
+                                |original, range, target| {
+                let mut result = T::Reg::splat(T::zero());
+                let original = T::Reg::array_to_regs(&original[range]);
+                let target = T::Reg::array_to_regs(&target[..]);
+                for (a, b) in original.iter().zip(target) {
+                    result = result + (*a * *b);
+                }
 
-                    result.sum_real()
+                result.sum_real()
             })
         } else {
             Vec::new()
@@ -83,33 +82,34 @@ impl<S, T, N, D> DotProductOps<Complex<T>> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
-          D: Domain {
-
+          D: Domain
+{
     fn dot_product(&self, factor: &Self) -> ScalarResult<Complex<T>> {
         if !self.is_complex() {
             return Err(ErrorReason::InputMustBeComplex);
         }
 
-        if !factor.is_complex() ||
-            self.domain != factor.domain {
+        if !factor.is_complex() || self.domain != factor.domain {
             return Err(ErrorReason::InputMetaDataMustAgree);
         }
 
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+        let (scalar_left, scalar_right, vectorization_length) =
+            T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = factor.data.to_slice();
         let chunks = if vectorization_length > 0 {
-            Chunk::get_a_fold_b(
-                Complexity::Small, &self.multicore_settings,
-                &other[scalar_left..vectorization_length], T::Reg::len(),
-                &array[scalar_left..vectorization_length], T::Reg::len(),
-                |original, range, target| {
+            Chunk::get_a_fold_b(Complexity::Small,
+                                &self.multicore_settings,
+                                &other[scalar_left..vectorization_length],
+                                T::Reg::len(),
+                                &array[scalar_left..vectorization_length],
+                                T::Reg::len(),
+                                |original, range, target| {
                 let mut result = T::Reg::splat(T::zero());
-				let original = T::Reg::array_to_regs(&original[range]);
-				let target = T::Reg::array_to_regs(&target[..]);
-                for (a, b) in original.iter().zip(target)
-                {
+                let original = T::Reg::array_to_regs(&original[range]);
+                let target = T::Reg::array_to_regs(&target[..]);
+                for (a, b) in original.iter().zip(target) {
                     result = result + (a.mul_complex(*b));
                 }
 
@@ -136,7 +136,8 @@ impl<S, T, N, D> DotProductOps<Complex<T>> for DspVec<S, T, N, D>
             i += 2;
         }
 
-        let chunk_sum: Complex<T> = chunks.iter().fold(Complex::<T>::new(T::zero(), T::zero()), |a, b| a + b);
+        let chunk_sum: Complex<T> = chunks.iter()
+            .fold(Complex::<T>::new(T::zero(), T::zero()), |a, b| a + b);
         Ok(chunk_sum + sum)
     }
 }

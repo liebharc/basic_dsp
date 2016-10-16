@@ -2,7 +2,8 @@ use num::complex::Complex;
 use super::Simd;
 use std::ops::*;
 
-#[allow(non_camel_case_types)] // To stay consistent with the `simd` crate
+#[allow(non_camel_case_types)]
+// To stay consistent with the `simd` crate
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Copy)]
 pub struct f32x4(f32, f32, f32, f32);
@@ -25,13 +26,18 @@ impl f32x4 {
 
     #[inline]
     pub fn load(array: &[f32], index: usize) -> Self {
-        let array = &array[index..index+4];
-        unsafe { f32x4(*array.get_unchecked(0), *array.get_unchecked(1), *array.get_unchecked(2), *array.get_unchecked(3)) }
+        let array = &array[index..index + 4];
+        unsafe {
+            f32x4(*array.get_unchecked(0),
+                  *array.get_unchecked(1),
+                  *array.get_unchecked(2),
+                  *array.get_unchecked(3))
+        }
     }
 
     #[inline]
     pub fn store(&self, array: &mut [f32], index: usize) {
-        let array = &mut array[index..index+4];
+        let array = &mut array[index..index + 4];
         unsafe {
             *array.get_unchecked_mut(0) = self.0;
             *array.get_unchecked_mut(1) = self.1;
@@ -47,7 +53,7 @@ impl f32x4 {
             1 => self.1,
             2 => self.2,
             3 => self.3,
-            _ => panic!("{} out of bounds for type f32x4", index)
+            _ => panic!("{} out of bounds for type f32x4", index),
         }
     }
 }
@@ -65,13 +71,13 @@ impl f64x2 {
 
     #[inline]
     pub fn load(array: &[f64], index: usize) -> Self {
-        let array = &array[index..index+2];
+        let array = &array[index..index + 2];
         unsafe { f64x2(*array.get_unchecked(0), *array.get_unchecked(1)) }
     }
 
     #[inline]
     pub fn store(&self, array: &mut [f64], index: usize) {
-        let array = &mut array[index..index+2];
+        let array = &mut array[index..index + 2];
         unsafe {
             *array.get_unchecked_mut(0) = self.0;
             *array.get_unchecked_mut(1) = self.1;
@@ -83,7 +89,7 @@ impl f64x2 {
         match index {
             0 => self.0,
             1 => self.1,
-            _ => panic!("{} out of bounds for type f32x4", index)
+            _ => panic!("{} out of bounds for type f32x4", index),
         }
     }
 }
@@ -156,8 +162,7 @@ pub type Reg32 = f32x4;
 
 pub type Reg64 = f64x2;
 
-impl Simd<f32> for f32x4
-{
+impl Simd<f32> for f32x4 {
     type Array = [f32; 4];
 
     #[inline]
@@ -178,7 +183,7 @@ impl Simd<f32> for f32x4
     fn load_wrap_unchecked(array: &[f32], idx: usize) -> f32x4 {
         let mut temp = [0.0; 4];
         for i in 0..temp.len() {
-            temp[i] = unsafe {*array.get_unchecked((idx + i) % array.len())};
+            temp[i] = unsafe { *array.get_unchecked((idx + i) % array.len()) };
         }
         f32x4::load(&temp, 0)
     }
@@ -189,29 +194,25 @@ impl Simd<f32> for f32x4
     }
 
     #[inline]
-    fn add_real(self, value: f32) -> f32x4
-    {
+    fn add_real(self, value: f32) -> f32x4 {
         let increment = f32x4::splat(value);
         self + increment
     }
 
     #[inline]
-    fn add_complex(self, value: Complex<f32>) -> f32x4
-    {
+    fn add_complex(self, value: Complex<f32>) -> f32x4 {
         let increment = f32x4::new(value.re, value.im, value.re, value.im);
         self + increment
     }
 
     #[inline]
-    fn scale_real(self, value: f32) -> f32x4
-    {
+    fn scale_real(self, value: f32) -> f32x4 {
         let scale_vector = f32x4::splat(value);
         self * scale_vector
     }
 
     #[inline]
-    fn scale_complex(self, value: Complex<f32>) -> f32x4
-    {
+    fn scale_complex(self, value: Complex<f32>) -> f32x4 {
         let a = Complex::<f32>::new(self.0, self.1);
         let b = Complex::<f32>::new(self.2, self.3);
         let a = a * value;
@@ -220,8 +221,7 @@ impl Simd<f32> for f32x4
     }
 
     #[inline]
-    fn mul_complex(self, value: f32x4) -> f32x4
-    {
+    fn mul_complex(self, value: f32x4) -> f32x4 {
         let a = Complex::<f32>::new(self.0, self.1);
         let b = Complex::<f32>::new(self.2, self.3);
         let c = Complex::<f32>::new(value.0, value.1);
@@ -232,8 +232,7 @@ impl Simd<f32> for f32x4
     }
 
     #[inline]
-    fn div_complex(self, value: f32x4) -> f32x4
-    {
+    fn div_complex(self, value: f32x4) -> f32x4 {
         let a = Complex::<f32>::new(self.0, self.1);
         let b = Complex::<f32>::new(self.2, self.3);
         let c = Complex::<f32>::new(value.0, value.1);
@@ -244,31 +243,33 @@ impl Simd<f32> for f32x4
     }
 
     #[inline]
-    fn complex_abs_squared(self) -> f32x4
-    {
+    fn complex_abs_squared(self) -> f32x4 {
         let squared = self * self;
         f32x4::new(squared.0 + squared.1, squared.2 + squared.3, 0.0, 0.0)
     }
 
     #[inline]
-    fn complex_abs(self) -> f32x4
-    {
+    fn complex_abs(self) -> f32x4 {
         let squared = self * self;
-        f32x4::new((squared.0 + squared.1).sqrt(), (squared.2 + squared.3).sqrt(), 0.0, 0.0)
+        f32x4::new((squared.0 + squared.1).sqrt(),
+                   (squared.2 + squared.3).sqrt(),
+                   0.0,
+                   0.0)
     }
     #[inline]
 
-    fn complex_abs_squared2(self) -> f32x4
-    {
+    fn complex_abs_squared2(self) -> f32x4 {
         let squared = self * self;
         f32x4::new(squared.0 + squared.1, 0.0, squared.2 + squared.3, 0.0)
     }
 
     #[inline]
-    fn complex_abs2(self) -> f32x4
-    {
+    fn complex_abs2(self) -> f32x4 {
         let squared = self * self;
-        f32x4::new((squared.0 + squared.1).sqrt(), 0.0, (squared.2 + squared.3).sqrt(), 0.0)
+        f32x4::new((squared.0 + squared.1).sqrt(),
+                   0.0,
+                   (squared.2 + squared.3).sqrt(),
+                   0.0)
     }
 
     #[inline]
@@ -277,8 +278,7 @@ impl Simd<f32> for f32x4
     }
 
     #[inline]
-    fn store_half_unchecked(self, target: &mut [f32], index: usize)
-    {
+    fn store_half_unchecked(self, target: &mut [f32], index: usize) {
         unsafe {
             *target.get_unchecked_mut(index) = self.0;
             *target.get_unchecked_mut(index + 1) = self.1;
@@ -287,10 +287,7 @@ impl Simd<f32> for f32x4
 
     #[inline]
     fn sum_real(&self) -> f32 {
-        self.0 +
-        self.1 +
-        self.2 +
-        self.3
+        self.0 + self.1 + self.2 + self.3
     }
 
     #[inline]
@@ -299,8 +296,7 @@ impl Simd<f32> for f32x4
     }
 }
 
-impl Simd<f64> for f64x2
-{
+impl Simd<f64> for f64x2 {
     type Array = [f64; 2];
 
     #[inline]
@@ -321,7 +317,7 @@ impl Simd<f64> for f64x2
     fn load_wrap_unchecked(array: &[f64], idx: usize) -> f64x2 {
         let mut temp = [0.0; 2];
         for i in 0..temp.len() {
-            temp[i] = unsafe {*array.get_unchecked((idx + i) % array.len())};
+            temp[i] = unsafe { *array.get_unchecked((idx + i) % array.len()) };
         }
 
         f64x2::load(&temp, 0)
@@ -333,37 +329,32 @@ impl Simd<f64> for f64x2
     }
 
     #[inline]
-    fn add_real(self, value: f64) -> f64x2
-    {
+    fn add_real(self, value: f64) -> f64x2 {
         let increment = f64x2::splat(value);
         self + increment
     }
 
     #[inline]
-    fn add_complex(self, value: Complex<f64>) -> f64x2
-    {
+    fn add_complex(self, value: Complex<f64>) -> f64x2 {
         let increment = f64x2::new(value.re, value.im);
         self + increment
     }
 
     #[inline]
-    fn scale_real(self, value: f64) -> f64x2
-    {
+    fn scale_real(self, value: f64) -> f64x2 {
         let scale_vector = f64x2::splat(value);
         self * scale_vector
     }
 
     #[inline]
-    fn scale_complex(self, value: Complex<f64>) -> f64x2
-    {
+    fn scale_complex(self, value: Complex<f64>) -> f64x2 {
         let complex = Complex::new(self.0, self.1);
         let result = complex * value;
         f64x2::new(result.re, result.im)
     }
 
     #[inline]
-    fn mul_complex(self, value: f64x2) -> f64x2
-    {
+    fn mul_complex(self, value: f64x2) -> f64x2 {
         let complex = Complex::new(self.0, self.1);
         let value = Complex::new(value.0, value.1);
         let result = complex * value;
@@ -371,8 +362,7 @@ impl Simd<f64> for f64x2
     }
 
     #[inline]
-    fn div_complex(self, value: f64x2) -> f64x2
-    {
+    fn div_complex(self, value: f64x2) -> f64x2 {
         let complex = Complex::new(self.0, self.1);
         let value = Complex::new(value.0, value.1);
         let result = complex / value;
@@ -380,8 +370,7 @@ impl Simd<f64> for f64x2
     }
 
     #[inline]
-    fn complex_abs_squared(self) -> f64x2
-    {
+    fn complex_abs_squared(self) -> f64x2 {
         let a = self.0;
         let b = self.1;
         let result = a * a + b * b;
@@ -389,8 +378,7 @@ impl Simd<f64> for f64x2
     }
 
     #[inline]
-    fn complex_abs(self) -> f64x2
-    {
+    fn complex_abs(self) -> f64x2 {
         let a = self.0;
         let b = self.1;
         let result = (a * a + b * b).sqrt();
@@ -398,8 +386,7 @@ impl Simd<f64> for f64x2
     }
 
     #[inline]
-    fn complex_abs_squared2(self) -> f64x2
-    {
+    fn complex_abs_squared2(self) -> f64x2 {
         let a = self.0;
         let b = self.1;
         let result = a * a + b * b;
@@ -407,8 +394,7 @@ impl Simd<f64> for f64x2
     }
 
     #[inline]
-    fn complex_abs2(self) -> f64x2
-    {
+    fn complex_abs2(self) -> f64x2 {
         let a = self.0;
         let b = self.1;
         let result = (a * a + b * b).sqrt();
@@ -421,8 +407,7 @@ impl Simd<f64> for f64x2
     }
 
     #[inline]
-    fn store_half_unchecked(self, target: &mut [f64], index: usize)
-    {
+    fn store_half_unchecked(self, target: &mut [f64], index: usize) {
         unsafe {
             *target.get_unchecked_mut(index) = self.0;
         }
@@ -430,8 +415,7 @@ impl Simd<f64> for f64x2
 
     #[inline]
     fn sum_real(&self) -> f64 {
-        self.0 +
-        self.1
+        self.0 + self.1
     }
 
     #[inline]

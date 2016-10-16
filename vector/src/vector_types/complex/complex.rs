@@ -2,11 +2,8 @@ use RealNumber;
 use multicore_support::*;
 use simd_extensions::Simd;
 use num::Complex;
-use super::super::{
-    array_to_complex_mut,
-    Vector, DspVec, ToSliceMut, MetaData,
-    Domain, ComplexNumberSpace,
-};
+use super::super::{array_to_complex_mut, Vector, DspVec, ToSliceMut, MetaData, Domain,
+                   ComplexNumberSpace};
 
 /// Operations on complex types.
 ///
@@ -17,8 +14,9 @@ use super::super::{
 /// `to_complex_time_vec` and `to_complex_freq_vec` constructor methods since
 /// the resulting types will already check at compile time (using the type system) that the data is complex.
 pub trait ComplexOps<T>
-    where T: RealNumber {
-	/// Multiplies each vector element with `exp(j*(a*idx*self.delta() + b))`
+    where T: RealNumber
+{
+    /// Multiplies each vector element with `exp(j*(a*idx*self.delta() + b))`
     /// where `a` and `b` are arguments and `idx` is the index of the data points
     /// in the vector ranging from `0 to self.points() - 1`. `j` is the imaginary number and
     /// `exp` the exponential function.
@@ -45,7 +43,7 @@ pub trait ComplexOps<T>
     /// ```
     fn multiply_complex_exponential(&mut self, a: T, b: T);
 
-	/// Calculates the complex conjugate of the vector.
+    /// Calculates the complex conjugate of the vector.
     /// # Example
     ///
     /// ```
@@ -74,22 +72,25 @@ impl<S, T, N, D> ComplexOps<T> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
-          D: Domain {
+          D: Domain
+{
     fn multiply_complex_exponential(&mut self, a: T, b: T) {
         assert_complex!(self);
         let a = a * self.delta();
         let data_length = self.len();
         let mut array = self.data.to_slice_mut();
-        Chunk::execute_with_range(
-            Complexity::Small, &self.multicore_settings,
-            &mut array[0..data_length], T::Reg::len(),
-            (a, b),
-            move |array, range, args| {
+        Chunk::execute_with_range(Complexity::Small,
+                                  &self.multicore_settings,
+                                  &mut array[0..data_length],
+                                  T::Reg::len(),
+                                  (a, b),
+                                  move |array, range, args| {
             let two = T::one() + T::one();
             let (a, b) = args;
             let mut exponential =
-                Complex::<T>::from_polar(&T::one(), &b)
-                * Complex::<T>::from_polar(&T::one(), &(a * T::from(range.start).unwrap() as T / two));
+                Complex::<T>::from_polar(&T::one(), &b) *
+                Complex::<T>::from_polar(&T::one(),
+                                         &(a * T::from(range.start).unwrap() as T / two));
             let increment = Complex::<T>::from_polar(&T::one(), &a);
             let array = array_to_complex_mut(array);
             for complex in array {
@@ -102,6 +103,6 @@ impl<S, T, N, D> ComplexOps<T> for DspVec<S, T, N, D>
     fn conj(&mut self) {
         assert_complex!(self);
         let factor = T::Reg::from_complex(Complex::<T>::new(T::one(), -T::one()));
-        self.simd_complex_operation(|x,y| x * y, |x,_| x.conj(), factor, Complexity::Small)
+        self.simd_complex_operation(|x, y| x * y, |x, _| x.conj(), factor, Complexity::Small)
     }
 }

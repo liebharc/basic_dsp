@@ -1,8 +1,5 @@
 use RealNumber;
-use multicore_support::{
-    Chunk,
-    MultiCoreSettings,
-    Complexity};
+use multicore_support::{Chunk, MultiCoreSettings, Complexity};
 use num::complex::Complex;
 use num::Zero;
 use std::ops::*;
@@ -55,11 +52,11 @@ pub enum DataDomain {
     /// Time domain, the x-axis is in [s]
     Time,
     /// Frequency domain, the x-axis in [Hz]
-    Frequency
+    Frequency,
 }
 
 /// Number space (real or complex) information.
-pub trait NumberSpace : fmt::Debug + cmp::PartialEq + Clone {
+pub trait NumberSpace: fmt::Debug + cmp::PartialEq + Clone {
     fn is_complex(&self) -> bool;
 
     /// For implementations which track meta data
@@ -73,7 +70,7 @@ pub trait NumberSpace : fmt::Debug + cmp::PartialEq + Clone {
 }
 
 /// Domain (time or frequency) information.
-pub trait Domain : fmt::Debug + cmp::PartialEq + Clone {
+pub trait Domain: fmt::Debug + cmp::PartialEq + Clone {
     fn domain(&self) -> DataDomain;
 
     /// See `RealNumberSpace` for some more details.
@@ -84,16 +81,16 @@ pub trait Domain : fmt::Debug + cmp::PartialEq + Clone {
 }
 
 /// Trait for types containing real data.
-pub trait RealNumberSpace : NumberSpace { }
+pub trait RealNumberSpace: NumberSpace {}
 
 /// TWorait for types containing complex data.
-pub trait ComplexNumberSpace : NumberSpace { }
+pub trait ComplexNumberSpace: NumberSpace {}
 
 /// Trait for types containing time domain data.
-pub trait TimeDomain : Domain { }
+pub trait TimeDomain: Domain {}
 
 /// Trait for types containing frequency domain data.
-pub trait FrequencyDomain : Domain { }
+pub trait FrequencyDomain: Domain {}
 
 /// Marker for types containing real data.
 #[derive(Debug)]
@@ -101,11 +98,13 @@ pub trait FrequencyDomain : Domain { }
 #[derive(PartialEq)]
 pub struct RealData;
 impl NumberSpace for RealData {
-    fn is_complex(&self) -> bool { false }
-    fn to_complex(&mut self) { }
-    fn to_real(&mut self) { }
+    fn is_complex(&self) -> bool {
+        false
+    }
+    fn to_complex(&mut self) {}
+    fn to_real(&mut self) {}
 }
-impl RealNumberSpace for RealData { }
+impl RealNumberSpace for RealData {}
 
 /// Marker for types containing complex data.
 #[derive(Debug)]
@@ -113,21 +112,25 @@ impl RealNumberSpace for RealData { }
 #[derive(PartialEq)]
 pub struct ComplexData;
 impl NumberSpace for ComplexData {
-    fn is_complex(&self) -> bool { true }
-    fn to_complex(&mut self) { }
-    fn to_real(&mut self) { }
+    fn is_complex(&self) -> bool {
+        true
+    }
+    fn to_complex(&mut self) {}
+    fn to_real(&mut self) {}
 }
-impl ComplexNumberSpace for ComplexData { }
+impl ComplexNumberSpace for ComplexData {}
 
 /// Marker for types containing real or complex data.
 #[derive(Debug)]
 #[derive(Clone)]
 #[derive(PartialEq)]
 pub struct RealOrComplexData {
-    pub is_complex_current: bool
+    pub is_complex_current: bool,
 }
 impl NumberSpace for RealOrComplexData {
-    fn is_complex(&self) -> bool { self.is_complex_current }
+    fn is_complex(&self) -> bool {
+        self.is_complex_current
+    }
 
     fn to_complex(&mut self) {
         self.is_complex_current = true;
@@ -137,8 +140,8 @@ impl NumberSpace for RealOrComplexData {
         self.is_complex_current = false;
     }
 }
-impl RealNumberSpace for RealOrComplexData { }
-impl ComplexNumberSpace for RealOrComplexData { }
+impl RealNumberSpace for RealOrComplexData {}
+impl ComplexNumberSpace for RealOrComplexData {}
 
 /// Marker for types containing time data.
 #[derive(Debug)]
@@ -146,11 +149,13 @@ impl ComplexNumberSpace for RealOrComplexData { }
 #[derive(PartialEq)]
 pub struct TimeData;
 impl Domain for TimeData {
-    fn domain(&self) -> DataDomain { DataDomain::Time }
-    fn to_freq(&mut self) { }
-    fn to_time(&mut self) { }
+    fn domain(&self) -> DataDomain {
+        DataDomain::Time
+    }
+    fn to_freq(&mut self) {}
+    fn to_time(&mut self) {}
 }
-impl TimeDomain for TimeData { }
+impl TimeDomain for TimeData {}
 
 /// Marker for types containing frequency data.
 #[derive(Debug)]
@@ -158,21 +163,25 @@ impl TimeDomain for TimeData { }
 #[derive(PartialEq)]
 pub struct FrequencyData;
 impl Domain for FrequencyData {
-    fn domain(&self) -> DataDomain { DataDomain::Frequency }
-    fn to_time(&mut self) { }
-    fn to_freq(&mut self) { }
+    fn domain(&self) -> DataDomain {
+        DataDomain::Frequency
+    }
+    fn to_time(&mut self) {}
+    fn to_freq(&mut self) {}
 }
-impl FrequencyDomain for FrequencyData { }
+impl FrequencyDomain for FrequencyData {}
 
 /// Marker for types containing time or frequency data.
 #[derive(Debug)]
 #[derive(Clone)]
 #[derive(PartialEq)]
 pub struct TimeOrFrequencyData {
-    pub domain_current: DataDomain
+    pub domain_current: DataDomain,
 }
 impl Domain for TimeOrFrequencyData {
-    fn domain(&self) -> DataDomain { self.domain_current }
+    fn domain(&self) -> DataDomain {
+        self.domain_current
+    }
 
     fn to_freq(&mut self) {
         self.domain_current = DataDomain::Frequency;
@@ -183,8 +192,8 @@ impl Domain for TimeOrFrequencyData {
     }
 }
 
-impl TimeDomain for TimeOrFrequencyData { }
-impl FrequencyDomain for TimeOrFrequencyData { }
+impl TimeDomain for TimeOrFrequencyData {}
+impl FrequencyDomain for TimeOrFrequencyData {}
 
 /// A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing (DSP) operations.
 /// All data vector operations consume the vector they operate on and return a new vector. A consumed vector
@@ -210,22 +219,28 @@ pub struct DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain {
+          D: Domain
+{
     data: S,
     delta: T,
     domain: D,
     number_space: N,
     valid_len: usize,
-    multicore_settings: MultiCoreSettings
+    multicore_settings: MultiCoreSettings,
 }
 
 impl<S, T, N, D> fmt::Debug for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           D: Domain,
-          N: NumberSpace {
+          N: NumberSpace
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "DspVec {{ points: {}, domain: {:?}, number_space: {:?} }}", self.valid_len, self.domain, self.number_space)
+        write!(f,
+               "DspVec {{ points: {}, domain: {:?}, number_space: {:?} }}",
+               self.valid_len,
+               self.domain,
+               self.number_space)
     }
 }
 
@@ -252,15 +267,15 @@ pub type ComplexFreqVec32 = DspVec<Vec<f32>, f32, ComplexData, FrequencyData>;
 pub type GenDspVec32 = DspVec<Vec<f32>, f32, RealOrComplexData, TimeOrFrequencyData>;
 
 /// A vector with real numbers in time domain.
-pub type RealTimeVecSlice32<'a> = DspVec<&'a[f32], f32, RealData, TimeData>;
+pub type RealTimeVecSlice32<'a> = DspVec<&'a [f32], f32, RealData, TimeData>;
 /// A vector with real numbers in frequency domain.
-pub type RealFreqVecSlice32<'a> = DspVec<&'a[f32], f32, RealData, FrequencyData>;
+pub type RealFreqVecSlice32<'a> = DspVec<&'a [f32], f32, RealData, FrequencyData>;
 /// A vector with complex numbers in time domain.
-pub type ComplexTimeVecSlice32<'a> = DspVec<&'a[f32], f32, ComplexData, TimeData>;
+pub type ComplexTimeVecSlice32<'a> = DspVec<&'a [f32], f32, ComplexData, TimeData>;
 /// A vector with complex numbers in frequency domain.
-pub type ComplexFreqVecSlice32<'a> = DspVec<&'a[f32], f32, ComplexData, FrequencyData>;
+pub type ComplexFreqVecSlice32<'a> = DspVec<&'a [f32], f32, ComplexData, FrequencyData>;
 /// A vector with no information about number space or domain at compile time.
-pub type GenDspVecSlice32<'a> = DspVec<&'a[f32], f32, RealOrComplexData, TimeOrFrequencyData>;
+pub type GenDspVecSlice32<'a> = DspVec<&'a [f32], f32, RealOrComplexData, TimeOrFrequencyData>;
 
 /// A vector with real numbers in time domain.
 pub type RealTimeVec64 = DspVec<Vec<f64>, f64, RealData, TimeData>;
@@ -274,15 +289,15 @@ pub type ComplexFreqVec64 = DspVec<Vec<f64>, f64, ComplexData, FrequencyData>;
 pub type GenDspVec64 = DspVec<Vec<f64>, f64, RealOrComplexData, TimeOrFrequencyData>;
 
 /// A vector with real numbers in time domain.
-pub type RealTimeVecSlice64<'a> = DspVec<&'a[f64], f64, RealData, TimeData>;
+pub type RealTimeVecSlice64<'a> = DspVec<&'a [f64], f64, RealData, TimeData>;
 /// A vector with real numbers in frequency domain.
-pub type RealFreqVecSlice64<'a> = DspVec<&'a[f64], f64, RealData, FrequencyData>;
+pub type RealFreqVecSlice64<'a> = DspVec<&'a [f64], f64, RealData, FrequencyData>;
 /// A vector with complex numbers in time domain.
-pub type ComplexTimeVecSlice64<'a> = DspVec<&'a[f64], f64, ComplexData, TimeData>;
+pub type ComplexTimeVecSlice64<'a> = DspVec<&'a [f64], f64, ComplexData, TimeData>;
 /// A vector with complex numbers in frequency domain.
-pub type ComplexFreqVecSlice64<'a> = DspVec<&'a[f64], f64, ComplexData, FrequencyData>;
+pub type ComplexFreqVecSlice64<'a> = DspVec<&'a [f64], f64, ComplexData, FrequencyData>;
 /// A vector with no information about number space or domain at compile time.
-pub type GenDspVecSlice64<'a> = DspVec<&'a[f64], f64, RealOrComplexData, TimeOrFrequencyData>;
+pub type GenDspVecSlice64<'a> = DspVec<&'a [f64], f64, RealOrComplexData, TimeOrFrequencyData>;
 
 fn array_to_complex<T>(array: &[T]) -> &[Complex<T>] {
     unsafe {
@@ -291,7 +306,7 @@ fn array_to_complex<T>(array: &[T]) -> &[Complex<T>] {
             panic!("Argument must have an even length");
         }
         let trans: &[Complex<T>] = mem::transmute(array);
-        &trans[0 .. len / 2]
+        &trans[0..len / 2]
     }
 }
 
@@ -302,7 +317,7 @@ fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
             panic!("Argument must have an even length");
         }
         let trans: &mut [Complex<T>] = mem::transmute(array);
-        &mut trans[0 .. len / 2]
+        &mut trans[0..len / 2]
     }
 }
 
@@ -310,110 +325,129 @@ fn round_len(len: usize) -> usize {
     ((len + Reg32::len() - 1) / Reg32::len()) * Reg32::len()
 }
 
-impl<S, T, N, D> DspVec<S, T, N, D> where
-    S: ToSliceMut<T>,
-    T: RealNumber,
-    N: NumberSpace,
-    D: Domain {
+impl<S, T, N, D> DspVec<S, T, N, D>
+    where S: ToSliceMut<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain
+{
     #[inline]
     fn pure_real_operation<A, F>(&mut self, op: F, argument: A, complexity: Complexity)
         where A: Sync + Copy + Send,
-            F: Fn(T, A) -> T + 'static + Sync {
+              F: Fn(T, A) -> T + 'static + Sync
+    {
         {
             let len = self.valid_len;
             let mut array = self.data.to_slice_mut();
-            Chunk::execute_partial(
-                complexity, &self.multicore_settings,
-                &mut array[0..len], 1, argument,
-                move|array, argument| {
-                    for num in array {
-                        *num = op(*num, argument);
-                    }
-            });
+            Chunk::execute_partial(complexity,
+                                   &self.multicore_settings,
+                                   &mut array[0..len],
+                                   1,
+                                   argument,
+                                   move |array, argument| {
+                                       for num in array {
+                                           *num = op(*num, argument);
+                                       }
+                                   });
         }
     }
 
     #[inline]
     fn pure_complex_operation<A, F>(&mut self, op: F, argument: A, complexity: Complexity)
         where A: Sync + Copy + Send,
-            F: Fn(Complex<T>, A) -> Complex<T> + 'static + Sync {
+              F: Fn(Complex<T>, A) -> Complex<T> + 'static + Sync
+    {
         {
             let len = self.valid_len;
             let mut array = self.data.to_slice_mut();
-            Chunk::execute_partial(
-                complexity, &self.multicore_settings,
-                &mut array[0..len], 2, argument,
-                move|array, argument| {
-                    let array = array_to_complex_mut(array);
-                    for num in array {
-                        *num = op(*num, argument);
-                    }
-            });
+            Chunk::execute_partial(complexity,
+                                   &self.multicore_settings,
+                                   &mut array[0..len],
+                                   2,
+                                   argument,
+                                   move |array, argument| {
+                                       let array = array_to_complex_mut(array);
+                                       for num in array {
+                                           *num = op(*num, argument);
+                                       }
+                                   });
         }
     }
 
     #[inline]
-    fn simd_real_operation<A, F, G>(&mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity)
+    fn simd_real_operation<A, F, G>(&mut self,
+                                    simd_op: F,
+                                    scalar_op: G,
+                                    argument: A,
+                                    complexity: Complexity)
         where A: Sync + Copy + Send,
-                F: Fn(T::Reg, A) -> T::Reg + 'static + Sync,
-                G: Fn(T, A) -> T + 'static + Sync {
+              F: Fn(T::Reg, A) -> T::Reg + 'static + Sync,
+              G: Fn(T, A) -> T + 'static + Sync
+    {
         {
             let data_length = self.valid_len;
             let mut array = self.data.to_slice_mut();
-            let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+            let (scalar_left, scalar_right, vectorization_length) =
+                T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if vectorization_length > 0 {
-                Chunk::execute_partial(
-                    complexity, &self.multicore_settings,
-                    &mut array[scalar_left..vectorization_length], T::Reg::len(), argument,
-                    move |array, argument| {
-                    let array = T::Reg::array_to_regs_mut(array);
-                    for reg in array {
-                        *reg = simd_op(*reg, argument);
-                    }
-                });
+                Chunk::execute_partial(complexity,
+                                       &self.multicore_settings,
+                                       &mut array[scalar_left..vectorization_length],
+                                       T::Reg::len(),
+                                       argument,
+                                       move |array, argument| {
+                                           let array = T::Reg::array_to_regs_mut(array);
+                                           for reg in array {
+                                               *reg = simd_op(*reg, argument);
+                                           }
+                                       });
             }
-            for num in &mut array[0..scalar_left]
-            {
+            for num in &mut array[0..scalar_left] {
                 *num = scalar_op(*num, argument);
             }
-            for num in &mut array[scalar_right..data_length]
-            {
+            for num in &mut array[scalar_right..data_length] {
                 *num = scalar_op(*num, argument);
             }
         }
     }
 
     #[inline]
-    fn simd_complex_operation<A, F, G>(&mut self, simd_op: F, scalar_op: G, argument: A, complexity: Complexity)
+    fn simd_complex_operation<A, F, G>(&mut self,
+                                       simd_op: F,
+                                       scalar_op: G,
+                                       argument: A,
+                                       complexity: Complexity)
         where A: Sync + Copy + Send,
-                F: Fn(T::Reg, A) -> T::Reg + 'static + Sync,
-                G: Fn(Complex<T>, A) -> Complex<T> + 'static + Sync {
+              F: Fn(T::Reg, A) -> T::Reg + 'static + Sync,
+              G: Fn(Complex<T>, A) -> Complex<T> + 'static + Sync
+    {
         {
             let data_length = self.valid_len;
             let mut array = self.data.to_slice_mut();
-            let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+            let (scalar_left, scalar_right, vectorization_length) =
+                T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if vectorization_length > 0 {
-                Chunk::execute_partial(
-                    complexity, &self.multicore_settings,
-                    &mut array[scalar_left..vectorization_length], T::Reg::len(), argument,
-                    move |array, argument| {
-                    let array = T::Reg::array_to_regs_mut(array);
-                    for reg in array {
-                        *reg = simd_op(*reg, argument);
-                    }
-                });
+                Chunk::execute_partial(complexity,
+                                       &self.multicore_settings,
+                                       &mut array[scalar_left..vectorization_length],
+                                       T::Reg::len(),
+                                       argument,
+                                       move |array, argument| {
+                                           let array = T::Reg::array_to_regs_mut(array);
+                                           for reg in array {
+                                               *reg = simd_op(*reg, argument);
+                                           }
+                                       });
             }
             {
                 let array = array_to_complex_mut(&mut array[0..scalar_left]);
-                for num in array
-                {
+                for num in array {
                     *num = scalar_op(*num, argument);
                 }
             }
             {
                 let array = array_to_complex_mut(&mut array[scalar_right..data_length]);
-                for num in array
-                {
+                for num in array {
                     *num = scalar_op(*num, argument);
                 }
             }
@@ -421,26 +455,34 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
     }
 
     #[inline]
-    fn pure_complex_to_real_operation<A, F, B>(&mut self, buffer: &mut B, op: F, argument: A, complexity: Complexity)
+    fn pure_complex_to_real_operation<A, F, B>(&mut self,
+                                               buffer: &mut B,
+                                               op: F,
+                                               argument: A,
+                                               complexity: Complexity)
         where A: Sync + Copy + Send,
-            F: Fn(Complex<T>, A) -> T + 'static + Sync,
-            B: Buffer<S, T> {
+              F: Fn(Complex<T>, A) -> T + 'static + Sync,
+              B: Buffer<S, T>
+    {
         {
             let data_length = self.len();
             let mut result = buffer.get(data_length / 2);
             {
                 let mut array = self.data.to_slice_mut();
                 let mut temp = result.to_slice_mut();
-                Chunk::from_src_to_dest(
-                    complexity, &self.multicore_settings,
-                    &mut array[0..data_length], 2,
-                    &mut temp[0..data_length / 2], 1, argument,
-                    move |array, range, target, argument| {
-                        let array = array_to_complex(&array[range.start..range.end]);
-                        for pair in array.iter().zip(target) {
-                            let (src, dest) = pair;
-                            *dest = op(*src, argument);
-                        }
+                Chunk::from_src_to_dest(complexity,
+                                        &self.multicore_settings,
+                                        &mut array[0..data_length],
+                                        2,
+                                        &mut temp[0..data_length / 2],
+                                        1,
+                                        argument,
+                                        move |array, range, target, argument| {
+                    let array = array_to_complex(&array[range.start..range.end]);
+                    for pair in array.iter().zip(target) {
+                        let (src, dest) = pair;
+                        *dest = op(*src, argument);
+                    }
                 });
                 self.valid_len = data_length / 2;
             }
@@ -452,12 +494,13 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
     #[inline]
     fn pure_complex_to_real_operation_inplace<A, F>(&mut self, op: F, argument: A)
         where A: Sync + Copy + Send,
-              F: Fn(Complex<T>, A) -> T + 'static + Sync {
+              F: Fn(Complex<T>, A) -> T + 'static + Sync
+    {
         {
             let data_length = self.len();
             let mut array = self.data.to_slice_mut();
-            for i in 0..data_length/2 {
-                let input = Complex::new(array[2*i], array[2*i + 1]);
+            for i in 0..data_length / 2 {
+                let input = Complex::new(array[2 * i], array[2 * i + 1]);
                 array[i] = op(input, argument);
             }
 
@@ -466,23 +509,33 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
     }
 
     #[inline]
-    fn simd_complex_to_real_operation<A, F, G, B>(&mut self, buffer: &mut B, simd_op: F, scalar_op: G, argument: A, complexity: Complexity)
+    fn simd_complex_to_real_operation<A, F, G, B>(&mut self,
+                                                  buffer: &mut B,
+                                                  simd_op: F,
+                                                  scalar_op: G,
+                                                  argument: A,
+                                                  complexity: Complexity)
         where A: Sync + Copy + Send,
               F: Fn(T::Reg, A) -> T::Reg + 'static + Sync,
               G: Fn(Complex<T>, A) -> T + 'static + Sync,
-              B: Buffer<S, T> {
+              B: Buffer<S, T>
+    {
         let data_length = self.len();
         let mut result = buffer.get(data_length / 2);
         {
             let mut array = self.data.to_slice_mut();
             let mut temp = result.to_slice_mut();
-            let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+            let (scalar_left, scalar_right, vectorization_length) =
+                T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if vectorization_length > 0 {
-                Chunk::from_src_to_dest(
-                complexity, &self.multicore_settings,
-                &mut array[scalar_left..vectorization_length], T::Reg::len(),
-                &mut temp[scalar_left/2..vectorization_length/2], T::Reg::len() / 2, argument,
-                move |array, range, target, argument| {
+                Chunk::from_src_to_dest(complexity,
+                                        &self.multicore_settings,
+                                        &mut array[scalar_left..vectorization_length],
+                                        T::Reg::len(),
+                                        &mut temp[scalar_left / 2..vectorization_length / 2],
+                                        T::Reg::len() / 2,
+                                        argument,
+                                        move |array, range, target, argument| {
                     let array = T::Reg::array_to_regs(&array[range.start..range.end]);
                     let mut j = 0;
                     for reg in array {
@@ -494,14 +547,14 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
             }
             {
                 let array = array_to_complex(&array[0..scalar_left]);
-                for pair in array.iter().zip(&mut temp[0..scalar_left/2]) {
+                for pair in array.iter().zip(&mut temp[0..scalar_left / 2]) {
                     let (src, dest) = pair;
                     *dest = scalar_op(*src, argument);
                 }
             }
             {
                 let array = array_to_complex(&array[scalar_right..data_length]);
-                for pair in array.iter().zip(&mut temp[scalar_right/2..data_length/2]) {
+                for pair in array.iter().zip(&mut temp[scalar_right / 2..data_length / 2]) {
                     let (src, dest) = pair;
                     *dest = scalar_op(*src, argument);
                 }
@@ -527,13 +580,11 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
             let mut temp = temp.to_slice_mut();
             let data = self.data.to_slice();
             // First half
-            let len =
-                if forward {
-                    points / 2 * elems_per_point
-                }
-                else {
-                    data_length - points / 2 * elems_per_point
-                };
+            let len = if forward {
+                points / 2 * elems_per_point
+            } else {
+                data_length - points / 2 * elems_per_point
+            };
             let start = data_length - len;
             let src = &data[start] as *const T;
             let dest = &mut temp[0] as *mut T;
@@ -555,17 +606,15 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
     }
 
     #[inline]
-    fn multiply_window_priv<TT,CMut,FA, F>(
-        &mut self,
-        is_symmetric: bool,
-        convert_mut: CMut,
-        function_arg: FA,
-        fun: F)
-            where
-                CMut: Fn(&mut [T]) -> &mut [TT],
-                FA: Copy + Sync + Send,
-                F: Fn(FA, usize, usize) -> TT + 'static + Sync,
-                TT: Zero + Mul<Output=TT> + Copy + Send + Sync + From<T>
+    fn multiply_window_priv<TT, CMut, FA, F>(&mut self,
+                                             is_symmetric: bool,
+                                             convert_mut: CMut,
+                                             function_arg: FA,
+                                             fun: F)
+        where CMut: Fn(&mut [T]) -> &mut [TT],
+              FA: Copy + Sync + Send,
+              F: Fn(FA, usize, usize) -> TT + 'static + Sync,
+              TT: Zero + Mul<Output = TT> + Copy + Send + Sync + From<T>
     {
         if !is_symmetric {
             {
@@ -573,16 +622,18 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
                 let points = self.points();
                 let data = self.data.to_slice_mut();
                 let converted = convert_mut(&mut data[0..len]);
-                Chunk::execute_with_range(
-                    Complexity::Medium, &self.multicore_settings,
-                    converted, 1, function_arg,
-                    move |array, range, arg| {
-                        let mut j = range.start;
-                        for num in array {
-                            *num = (*num) * fun(arg, j, points);
-                            j += 1;
-                        }
-                    });
+                Chunk::execute_with_range(Complexity::Medium,
+                                          &self.multicore_settings,
+                                          converted,
+                                          1,
+                                          function_arg,
+                                          move |array, range, arg| {
+                    let mut j = range.start;
+                    for num in array {
+                        *num = (*num) * fun(arg, j, points);
+                        j += 1;
+                    }
+                });
             }
         } else {
             {
@@ -590,30 +641,32 @@ impl<S, T, N, D> DspVec<S, T, N, D> where
                 let points = self.points();
                 let data = self.data.to_slice_mut();
                 let converted = convert_mut(&mut data[0..len]);
-                Chunk::execute_sym_pairs_with_range(
-                    Complexity::Medium, &self.multicore_settings,
-                    converted, 1, function_arg,
-                    move |array1, range, array2, _, arg| {
-                        assert!(array1.len() >= array2.len());
-                        let mut j = range.start;
-                        let len1 = array1.len();
-                        let len_diff = len1 - array2.len();
-                        {
-                            let iter1 = array1.iter_mut();
-                            let iter2 = array2.iter_mut().rev();
-                            for (num1, num2) in iter1.zip(iter2) {
-                                let arg = fun(arg, j, points);
-                                *num1 = (*num1) * arg;
-                                *num2 = (*num2) * arg;
-                                j += 1;
-                            }
-                        }
-                        for num1 in &mut array1[len1-len_diff..len1] {
+                Chunk::execute_sym_pairs_with_range(Complexity::Medium,
+                                                    &self.multicore_settings,
+                                                    converted,
+                                                    1,
+                                                    function_arg,
+                                                    move |array1, range, array2, _, arg| {
+                    assert!(array1.len() >= array2.len());
+                    let mut j = range.start;
+                    let len1 = array1.len();
+                    let len_diff = len1 - array2.len();
+                    {
+                        let iter1 = array1.iter_mut();
+                        let iter2 = array2.iter_mut().rev();
+                        for (num1, num2) in iter1.zip(iter2) {
                             let arg = fun(arg, j, points);
                             *num1 = (*num1) * arg;
+                            *num2 = (*num2) * arg;
                             j += 1;
                         }
-                    });
+                    }
+                    for num1 in &mut array1[len1 - len_diff..len1] {
+                        let arg = fun(arg, j, points);
+                        *num1 = (*num1) * arg;
+                        j += 1;
+                    }
+                });
             }
         }
     }

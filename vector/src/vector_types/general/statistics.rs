@@ -2,12 +2,8 @@ use RealNumber;
 use num::Complex;
 use multicore_support::*;
 use simd_extensions::*;
-use super::super::{
-    array_to_complex,
-	Vector,
-    DspVec, ToSlice,
-    Domain, RealNumberSpace, ComplexNumberSpace
-};
+use super::super::{array_to_complex, Vector, DspVec, ToSlice, Domain, RealNumberSpace,
+                   ComplexNumberSpace};
 
 /// Statistics about numeric data
 #[repr(C)]
@@ -23,11 +19,12 @@ pub struct Statistics<T> {
     pub min: T,
     pub min_index: usize,
     pub max: T,
-    pub max_index: usize
+    pub max_index: usize,
 }
 
-pub trait StatisticsOps<T> : Sized
-    where T: Sized {
+pub trait StatisticsOps<T>: Sized
+    where T: Sized
+{
     /// Calculates the statistics of the data contained in the vector.
     ///
     /// # Example
@@ -105,7 +102,7 @@ pub trait StatisticsOps<T> : Sized
     fn sum_sq(&self) -> T;
 }
 
-pub trait Stats<T> : Sized {
+pub trait Stats<T>: Sized {
     fn empty() -> Self;
     fn empty_vec(len: usize) -> Vec<Self>;
     fn invalid() -> Self;
@@ -147,7 +144,8 @@ macro_rules! impl_common_stats {
 }
 
 impl<T> Stats<T> for Statistics<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     fn empty() -> Self {
         Statistics {
             sum: T::zero(),
@@ -157,7 +155,7 @@ impl<T> Stats<T> for Statistics<T>
             max: T::neg_infinity(),
             rms: T::zero(), // this field therefore has a different meaning inside this function
             min_index: 0,
-            max_index: 0
+            max_index: 0,
         }
     }
 
@@ -193,8 +191,7 @@ impl<T> Stats<T> for Statistics<T>
             if stat.max > max {
                 max = stat.max;
                 max_index = stat.max_index;
-            }
-            else if stat.min < min {
+            } else if stat.min < min {
                 min = stat.min;
                 min_index = stat.min_index;
             }
@@ -231,7 +228,8 @@ impl<T> Stats<T> for Statistics<T>
 }
 
 impl<T> Stats<Complex<T>> for Statistics<Complex<T>>
-    where T: RealNumber  {
+    where T: RealNumber
+{
     fn empty() -> Self {
         Statistics {
             sum: Complex::<T>::new(T::zero(), T::zero()),
@@ -239,9 +237,9 @@ impl<T> Stats<Complex<T>> for Statistics<Complex<T>>
             average: Complex::<T>::new(T::zero(), T::zero()),
             min: Complex::<T>::new(T::infinity(), T::infinity()),
             max: Complex::<T>::new(T::zero(), T::zero()),
-            rms: Complex::<T>::new(T::zero(), T::zero()), // this field therefore has a different meaning inside this function
+            rms: Complex::<T>::new(T::zero(), T::zero()), /* this field therefore has a different meaning inside this function */
             min_index: 0,
-            max_index: 0
+            max_index: 0,
         }
     }
 
@@ -280,8 +278,7 @@ impl<T> Stats<Complex<T>> for Statistics<Complex<T>>
                 max = stat.max;
                 max_norm = max.norm();
                 max_index = stat.max_index;
-            }
-            else if stat.min.norm() < min_norm {
+            } else if stat.min.norm() < min_norm {
                 min = stat.min;
                 min_norm = min.norm();
                 min_index = stat.min_index;
@@ -311,7 +308,7 @@ impl<T> Stats<Complex<T>> for Statistics<Complex<T>>
             self.max = elem;
             self.max_index = index;
         }
-        if elem.norm() < self.min.norm()  {
+        if elem.norm() < self.min.norm() {
             self.min = elem;
             self.min_index = index;
         }
@@ -322,240 +319,246 @@ impl<S, T, N, D> StatisticsOps<T> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: RealNumberSpace,
-          D: Domain {
-      fn statistics(&self) -> Statistics<T> {
-          let data_length = self.len();
-          let array = self.data.to_slice();
-          let chunks = Chunk::get_chunked_results(
-              Complexity::Small, &self.multicore_settings,
-              &array[0..data_length], 1, (),
-              |array, range, _arg| {
-                  let mut stats = Statistics::empty();
-                  let mut j = range.start;
-                  for num in array {
-                      stats.add(*num, j);
-                      j += 1;
-                  }
-                  stats
-          });
+          D: Domain
+{
+    fn statistics(&self) -> Statistics<T> {
+        let data_length = self.len();
+        let array = self.data.to_slice();
+        let chunks = Chunk::get_chunked_results(Complexity::Small,
+                                                &self.multicore_settings,
+                                                &array[0..data_length],
+                                                1,
+                                                (),
+                                                |array, range, _arg| {
+            let mut stats = Statistics::empty();
+            let mut j = range.start;
+            for num in array {
+                stats.add(*num, j);
+                j += 1;
+            }
+            stats
+        });
 
-          Statistics::merge(&chunks)
-      }
+        Statistics::merge(&chunks)
+    }
 
-      fn statistics_splitted(&self, len: usize) -> Vec<Statistics<T>> {
-          if len == 0 {
-              return Vec::new();
-          }
+    fn statistics_splitted(&self, len: usize) -> Vec<Statistics<T>> {
+        if len == 0 {
+            return Vec::new();
+        }
 
-          let data_length = self.len();
-          let array = self.data.to_slice();
-          let chunks = Chunk::get_chunked_results(
-              Complexity::Small, &self.multicore_settings,
-              &array[0..data_length], 1, len,
-              |array, range, len| {
-                  let mut results = Statistics::empty_vec(len);
-                  let mut j = range.start;
-                  for num in array {
-                      let stats = &mut results[j % len];
-                      stats.add(*num, j / len);
-                      j += 1;
-                  }
+        let data_length = self.len();
+        let array = self.data.to_slice();
+        let chunks = Chunk::get_chunked_results(Complexity::Small,
+                                                &self.multicore_settings,
+                                                &array[0..data_length],
+                                                1,
+                                                len,
+                                                |array, range, len| {
+            let mut results = Statistics::empty_vec(len);
+            let mut j = range.start;
+            for num in array {
+                let stats = &mut results[j % len];
+                stats.add(*num, j / len);
+                j += 1;
+            }
 
-                  results
-          });
+            results
+        });
 
-          Statistics::merge_cols(&chunks)
-      }
+        Statistics::merge_cols(&chunks)
+    }
 
-      fn sum(&self) -> T {
-          let data_length = self.len();
-          let array = self.data.to_slice();
-          let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
-          let mut sum =
-              if vectorization_length > 0 {
-                  let chunks = Chunk::get_chunked_results(
-                      Complexity::Small, &self.multicore_settings,
-                      &array[scalar_left..vectorization_length], T::Reg::len(), (),
-                      move |array, _, _| {
-                      let array = T::Reg::array_to_regs(array);
-                      let mut sum = T::Reg::splat(T::zero());
-                      for reg in array {
-                          sum = sum + *reg;
-                      }
-                      sum
-                  });
-                  chunks.iter()
-                      .map(|v|v.sum_real())
-                      .fold(T::zero(), |a, b| a + b)
-              }
-              else {
-                  T::zero()
-              };
-          for num in &array[0..scalar_left]
-          {
-              sum = sum + *num;
-          }
-          for num in &array[scalar_right..data_length]
-          {
-              sum = sum + *num;
-          }
-          sum
-      }
+    fn sum(&self) -> T {
+        let data_length = self.len();
+        let array = self.data.to_slice();
+        let (scalar_left, scalar_right, vectorization_length) =
+            T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+        let mut sum = if vectorization_length > 0 {
+            let chunks = Chunk::get_chunked_results(Complexity::Small,
+                                                    &self.multicore_settings,
+                                                    &array[scalar_left..vectorization_length],
+                                                    T::Reg::len(),
+                                                    (),
+                                                    move |array, _, _| {
+                let array = T::Reg::array_to_regs(array);
+                let mut sum = T::Reg::splat(T::zero());
+                for reg in array {
+                    sum = sum + *reg;
+                }
+                sum
+            });
+            chunks.iter()
+                .map(|v| v.sum_real())
+                .fold(T::zero(), |a, b| a + b)
+        } else {
+            T::zero()
+        };
+        for num in &array[0..scalar_left] {
+            sum = sum + *num;
+        }
+        for num in &array[scalar_right..data_length] {
+            sum = sum + *num;
+        }
+        sum
+    }
 
-      fn sum_sq(&self) -> T {
-          let data_length = self.len();
-          let array = self.data.to_slice();
-          let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
-          let mut sum =
-              if vectorization_length > 0 {
-                  let chunks = Chunk::get_chunked_results(
-                      Complexity::Small, &self.multicore_settings,
-                      &array[scalar_left..vectorization_length], T::Reg::len(), (),
-                      move |array, _, _| {
-                      let array = T::Reg::array_to_regs(array);
-                      let mut sum = T::Reg::splat(T::zero());
-                      for reg in array {
-                          sum = sum + *reg * *reg;
-                      }
-                      sum
-                  });
-                  chunks.iter()
-                      .map(|v|v.sum_real())
-                      .fold(T::zero(), |a, b| a + b)
-              }
-              else {
-                  T::zero()
-              };
-          for num in &array[0..scalar_left]
-          {
-              sum = sum + *num * *num;
-          }
-          for num in &array[scalar_right..data_length]
-          {
-              sum = sum + *num * *num;
-          }
-          sum
-      }
+    fn sum_sq(&self) -> T {
+        let data_length = self.len();
+        let array = self.data.to_slice();
+        let (scalar_left, scalar_right, vectorization_length) =
+            T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+        let mut sum = if vectorization_length > 0 {
+            let chunks = Chunk::get_chunked_results(Complexity::Small,
+                                                    &self.multicore_settings,
+                                                    &array[scalar_left..vectorization_length],
+                                                    T::Reg::len(),
+                                                    (),
+                                                    move |array, _, _| {
+                let array = T::Reg::array_to_regs(array);
+                let mut sum = T::Reg::splat(T::zero());
+                for reg in array {
+                    sum = sum + *reg * *reg;
+                }
+                sum
+            });
+            chunks.iter()
+                .map(|v| v.sum_real())
+                .fold(T::zero(), |a, b| a + b)
+        } else {
+            T::zero()
+        };
+        for num in &array[0..scalar_left] {
+            sum = sum + *num * *num;
+        }
+        for num in &array[scalar_right..data_length] {
+            sum = sum + *num * *num;
+        }
+        sum
+    }
 }
 
 impl<S, T, N, D> StatisticsOps<Complex<T>> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
-          D: Domain {
-      fn statistics(&self) -> Statistics<Complex<T>> {
-          let data_length = self.len();
-          let array = self.data.to_slice();
-          let chunks = Chunk::get_chunked_results(
-              Complexity::Small, &self.multicore_settings,
-              &array[0..data_length], 2, (),
-              |array, range, _arg| {
-                  let mut stat = Statistics::<Complex<T>>::empty();
-                  let mut j = range.start / 2;
-                  let array = array_to_complex(array);
-                  for num in array {
-                      stat.add(*num, j);
-                      j += 1;
-                  }
-                  stat
-          });
+          D: Domain
+{
+    fn statistics(&self) -> Statistics<Complex<T>> {
+        let data_length = self.len();
+        let array = self.data.to_slice();
+        let chunks = Chunk::get_chunked_results(Complexity::Small,
+                                                &self.multicore_settings,
+                                                &array[0..data_length],
+                                                2,
+                                                (),
+                                                |array, range, _arg| {
+            let mut stat = Statistics::<Complex<T>>::empty();
+            let mut j = range.start / 2;
+            let array = array_to_complex(array);
+            for num in array {
+                stat.add(*num, j);
+                j += 1;
+            }
+            stat
+        });
 
-          Statistics::merge(&chunks)
-      }
+        Statistics::merge(&chunks)
+    }
 
-      fn statistics_splitted(&self, len: usize) -> Vec<Statistics<Complex<T>>> {
-          if len == 0 {
-              return Vec::new();
-          }
+    fn statistics_splitted(&self, len: usize) -> Vec<Statistics<Complex<T>>> {
+        if len == 0 {
+            return Vec::new();
+        }
 
-          let data_length = self.len();
-          let array = self.data.to_slice();
-          let chunks = Chunk::get_chunked_results (
-              Complexity::Small, &self.multicore_settings,
-              &array[0..data_length], 2, len,
-              |array, range, len| {
-                  let mut results = Statistics::<Complex<T>>::empty_vec(len);
-                  let mut j = range.start / 2;
-                  let array = array_to_complex(array);
-                  for num in array {
-                      let stat = &mut results[j % len];
-                      stat.add(*num, j / len);
-                      j += 1;
-                  }
+        let data_length = self.len();
+        let array = self.data.to_slice();
+        let chunks = Chunk::get_chunked_results(Complexity::Small,
+                                                &self.multicore_settings,
+                                                &array[0..data_length],
+                                                2,
+                                                len,
+                                                |array, range, len| {
+            let mut results = Statistics::<Complex<T>>::empty_vec(len);
+            let mut j = range.start / 2;
+            let array = array_to_complex(array);
+            for num in array {
+                let stat = &mut results[j % len];
+                stat.add(*num, j / len);
+                j += 1;
+            }
 
-                  results
-          });
+            results
+        });
 
-          Statistics::merge_cols(&chunks)
-      }
+        Statistics::merge_cols(&chunks)
+    }
 
-      fn sum(&self) -> Complex<T> {
-          let data_length = self.len();
-          let array = self.data.to_slice();
-          let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
-          let mut sum =
-              if vectorization_length > 0 {
-                  let chunks = Chunk::get_chunked_results(
-                      Complexity::Small, &self.multicore_settings,
-                      &array[scalar_left..vectorization_length], T::Reg::len(), (),
-                      move |array, _, _| {
-                      let array = T::Reg::array_to_regs(array);
-                      let mut sum = T::Reg::splat(T::zero());
-                      for reg in array {
-                          sum = sum + *reg;
-                      }
-                      sum
-                  });
-                  chunks.iter()
-                      .map(|v|v.sum_complex())
-                      .fold(Complex::<T>::new(T::zero(), T::zero()), |acc, x| acc + x)
-              }
-              else {
-                  Complex::<T>::new(T::zero(), T::zero())
-              };
-          for num in array_to_complex(&array[0..scalar_left])
-          {
-              sum = sum + *num;
-          }
-          for num in array_to_complex(&array[scalar_right..data_length])
-          {
-              sum = sum + *num;
-          }
-          sum
-      }
+    fn sum(&self) -> Complex<T> {
+        let data_length = self.len();
+        let array = self.data.to_slice();
+        let (scalar_left, scalar_right, vectorization_length) =
+            T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+        let mut sum = if vectorization_length > 0 {
+            let chunks = Chunk::get_chunked_results(Complexity::Small,
+                                                    &self.multicore_settings,
+                                                    &array[scalar_left..vectorization_length],
+                                                    T::Reg::len(),
+                                                    (),
+                                                    move |array, _, _| {
+                let array = T::Reg::array_to_regs(array);
+                let mut sum = T::Reg::splat(T::zero());
+                for reg in array {
+                    sum = sum + *reg;
+                }
+                sum
+            });
+            chunks.iter()
+                .map(|v| v.sum_complex())
+                .fold(Complex::<T>::new(T::zero(), T::zero()), |acc, x| acc + x)
+        } else {
+            Complex::<T>::new(T::zero(), T::zero())
+        };
+        for num in array_to_complex(&array[0..scalar_left]) {
+            sum = sum + *num;
+        }
+        for num in array_to_complex(&array[scalar_right..data_length]) {
+            sum = sum + *num;
+        }
+        sum
+    }
 
-      fn sum_sq(&self) -> Complex<T> {
-          let data_length = self.len();
-          let array = self.data.to_slice();
-          let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
-          let mut sum =
-              if vectorization_length > 0 {
-                  let chunks = Chunk::get_chunked_results(
-                      Complexity::Small, &self.multicore_settings,
-                      &array[scalar_left..vectorization_length], T::Reg::len(), (),
-                      move |array, _, _| {
-                      let array = T::Reg::array_to_regs(array);
-                      let mut sum = T::Reg::splat(T::zero());
-                      for reg in array {
-                          sum = sum + reg.mul_complex(*reg);
-                      }
-                      sum
-                  });
-                  chunks.iter()
-                      .map(|v|v.sum_complex())
-                      .fold(Complex::<T>::new(T::zero(), T::zero()), |acc, x| acc + x)
-              }
-              else {
-                  Complex::<T>::new(T::zero(), T::zero())
-              };
-          for num in array_to_complex(&array[0..scalar_left])
-          {
-              sum = sum + *num * *num;
-          }
-          for num in array_to_complex(&array[scalar_right..data_length])
-          {
-              sum = sum + *num * *num;
-          }
-          sum
-      }
+    fn sum_sq(&self) -> Complex<T> {
+        let data_length = self.len();
+        let array = self.data.to_slice();
+        let (scalar_left, scalar_right, vectorization_length) =
+            T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+        let mut sum = if vectorization_length > 0 {
+            let chunks = Chunk::get_chunked_results(Complexity::Small,
+                                                    &self.multicore_settings,
+                                                    &array[scalar_left..vectorization_length],
+                                                    T::Reg::len(),
+                                                    (),
+                                                    move |array, _, _| {
+                let array = T::Reg::array_to_regs(array);
+                let mut sum = T::Reg::splat(T::zero());
+                for reg in array {
+                    sum = sum + reg.mul_complex(*reg);
+                }
+                sum
+            });
+            chunks.iter()
+                .map(|v| v.sum_complex())
+                .fold(Complex::<T>::new(T::zero(), T::zero()), |acc, x| acc + x)
+        } else {
+            Complex::<T>::new(T::zero(), T::zero())
+        };
+        for num in array_to_complex(&array[0..scalar_left]) {
+            sum = sum + *num * *num;
+        }
+        for num in array_to_complex(&array[scalar_right..data_length]) {
+            sum = sum + *num * *num;
+        }
+        sum
+    }
 }

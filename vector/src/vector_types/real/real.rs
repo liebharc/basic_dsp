@@ -1,11 +1,7 @@
 use RealNumber;
 use multicore_support::*;
 use simd_extensions::*;
-use super::super::{
-    Vector, MetaData,
-    DspVec, ToSliceMut,
-    Domain, RealNumberSpace,
-};
+use super::super::{Vector, MetaData, DspVec, ToSliceMut, Domain, RealNumberSpace};
 
 /// Operations on real types.
 ///
@@ -16,7 +12,7 @@ use super::super::{
 /// `to_complex_time_vec` and `to_complex_freq_vec` constructor methods since
 /// the resulting types will already check at compile time (using the type system) that the data is real.
 pub trait RealOps {
-	/// Gets the absolute value of all vector elements.
+    /// Gets the absolute value of all vector elements.
     /// # Example
     ///
     /// ```
@@ -37,8 +33,9 @@ pub trait RealOps {
 /// `to_complex_time_vec` and `to_complex_freq_vec` constructor methods since
 /// the resulting types will already check at compile time (using the type system) that the data is real.
 pub trait ModuloOps<T>
-    where T: RealNumber {
-	/// Each value in the vector is dividable by the divisor and the remainder is stored in the resulting
+    where T: RealNumber
+{
+    /// Each value in the vector is dividable by the divisor and the remainder is stored in the resulting
     /// vector. This the same a modulo operation or to phase wrapping.
     ///
     /// # Example
@@ -78,46 +75,49 @@ impl<S, T, N, D> RealOps for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: RealNumberSpace,
-          D: Domain {
-      fn abs(&mut self) {
-          assert_real!(self);
-          self.simd_real_operation(|x, _arg| (x * x).sqrt(), |x, _arg| x.abs(), (), Complexity::Small);
-      }
-  }
+          D: Domain
+{
+    fn abs(&mut self) {
+        assert_real!(self);
+        self.simd_real_operation(|x, _arg| (x * x).sqrt(),
+                                 |x, _arg| x.abs(),
+                                 (),
+                                 Complexity::Small);
+    }
+}
 
 impl<S, T, N, D> ModuloOps<T> for DspVec<S, T, N, D>
-      where S: ToSliceMut<T>,
-            T: RealNumber,
-            N: RealNumberSpace,
-            D: Domain {
+    where S: ToSliceMut<T>,
+          T: RealNumber,
+          N: RealNumberSpace,
+          D: Domain
+{
+    fn wrap(&mut self, divisor: T) {
+        assert_real!(self);
+        self.pure_real_operation(|x, y| x % y, divisor, Complexity::Small);
+    }
 
-      fn wrap(&mut self, divisor: T) {
-          assert_real!(self);
-          self.pure_real_operation(|x, y| x % y, divisor, Complexity::Small);
-      }
+    fn unwrap(&mut self, divisor: T) {
+        assert_real!(self);
+        let data_length = self.len();
+        let mut data = self.data.to_slice_mut();
+        let mut i = 0;
+        let mut j = 1;
+        let half = divisor / T::from(2.0).unwrap();
+        while j < data_length {
+            let mut diff = data[j] - data[i];
+            if diff > half {
+                diff = diff % divisor;
+                diff = diff - divisor;
+                data[j] = data[i] + diff;
+            } else if diff < -half {
+                diff = diff % divisor;
+                diff = diff + divisor;
+                data[j] = data[i] + diff;
+            }
 
-      fn unwrap(&mut self, divisor: T) {
-          assert_real!(self);
-          let data_length = self.len();
-          let mut data = self.data.to_slice_mut();
-          let mut i = 0;
-          let mut j = 1;
-          let half = divisor / T::from(2.0).unwrap();
-          while j < data_length {
-              let mut diff = data[j] - data[i];
-              if diff > half {
-                  diff = diff % divisor;
-                  diff = diff - divisor;
-                  data[j] = data[i] + diff;
-              }
-              else if diff < -half {
-                  diff = diff % divisor;
-                  diff = diff + divisor;
-                  data[j] = data[i] + diff;
-              }
-
-              i += 1;
-              j += 1;
-          }
-      }
+            i += 1;
+            j += 1;
+        }
+    }
 }

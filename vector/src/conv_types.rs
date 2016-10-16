@@ -5,7 +5,7 @@
 //! which is the analog operation to a convolution in time domain.
 use RealNumber;
 use num::traits::Zero;
-use num::complex::{Complex, Complex32,Complex64};
+use num::complex::{Complex, Complex32, Complex64};
 use std::marker::PhantomData;
 use std::os::raw::c_void;
 use std::mem;
@@ -155,15 +155,15 @@ macro_rules! add_linear_table_lookup_impl {
                 }
 
                 impl $name<$data_type> {
-                    /// Creates a lookup table by putting the pieces together.
+/// Creates a lookup table by putting the pieces together.
                     pub fn from_raw_parts(table: &[$result_type], delta: $data_type, is_symmetric: bool) -> Self {
                         let owned_table = Vec::from(table);
                         $name { table: owned_table, delta: delta, is_symmetric: is_symmetric }
                     }
 
 
-                    /// Creates a lookup table from another convolution function. The `delta` argument
-                    /// can be used to balance performance vs. accuracy.
+/// Creates a lookup table from another convolution function. The `delta` argument
+/// can be used to balance performance vs. accuracy.
                     pub fn from_conv_function(other: &$conv_type<$data_type>, delta: $data_type, len: usize) -> Self {
                         let center = len as isize;
                         let len = 2 * len + 1;
@@ -245,7 +245,7 @@ macro_rules! add_complex_time_linear_table_impl {
     ($($data_type: ident),*) => {
         $(
             impl ComplexTimeLinearTableLookup<$data_type> {
-                /// Convert the lookup table into frequency domain
+/// Convert the lookup table into frequency domain
                 pub fn fft(self) -> ComplexFrequencyLinearTableLookup<$data_type> {
                     let mut vector = self.table.clone().to_complex_time_vec();
                     vector.set_delta(self.delta);
@@ -270,7 +270,7 @@ macro_rules! add_real_time_linear_table_impl {
     ($($data_type: ident),*) => {
         $(
             impl RealTimeLinearTableLookup<$data_type> {
-                /// Convert the lookup table into a magnitude spectrum
+/// Convert the lookup table into a magnitude spectrum
                 pub fn fft(self) -> RealFrequencyLinearTableLookup<$data_type> {
                     let mut vector = self.table.clone().to_real_time_vec();
                     vector.set_delta(self.delta);
@@ -297,7 +297,7 @@ macro_rules! add_complex_frequency_linear_table_impl {
     ($($data_type: ident),*) => {
         $(
             impl ComplexFrequencyLinearTableLookup<$data_type> {
-                /// Convert the lookup table into time domain
+/// Convert the lookup table into time domain
                 pub fn ifft(self) -> ComplexTimeLinearTableLookup<$data_type> {
                     let mut vector = self.table.clone().to_complex_freq_vec();
                     vector.set_delta(self.delta);
@@ -320,12 +320,14 @@ add_complex_frequency_linear_table_impl!(f32, f64);
 
 /// Raised cosine function according to https://en.wikipedia.org/wiki/Raised-cosine_filter
 pub struct RaisedCosineFunction<T>
-    where T: RealNumber {
-    rolloff: T
+    where T: RealNumber
+{
+    rolloff: T,
 }
 
 impl<T> RealImpulseResponse<T> for RaisedCosineFunction<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     fn is_symmetric(&self) -> bool {
         true
     }
@@ -346,12 +348,13 @@ impl<T> RealImpulseResponse<T> for RaisedCosineFunction<T>
 
         let pi_x = pi * x;
         let arg = two * self.rolloff * x;
-        return pi_x.sin() * (pi_x * self.rolloff).cos() / pi_x / (one - (arg * arg))
+        return pi_x.sin() * (pi_x * self.rolloff).cos() / pi_x / (one - (arg * arg));
     }
 }
 
 impl<T> RealFrequencyResponse<T> for RaisedCosineFunction<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     fn is_symmetric(&self) -> bool {
         true
     }
@@ -365,10 +368,9 @@ impl<T> RealFrequencyResponse<T> for RaisedCosineFunction<T>
             return one;
         }
 
-        if ((one - self.rolloff) < x.abs()) &&
-           (x.abs() <= (one + self.rolloff))
-        {
-            return one / two * (one + (pi / self.rolloff * (x.abs() - (one - self.rolloff)) / two).cos());
+        if ((one - self.rolloff) < x.abs()) && (x.abs() <= (one + self.rolloff)) {
+            return one / two *
+                   (one + (pi / self.rolloff * (x.abs() - (one - self.rolloff)) / two).cos());
         }
 
         return T::zero();
@@ -376,7 +378,8 @@ impl<T> RealFrequencyResponse<T> for RaisedCosineFunction<T>
 }
 
 impl<T> RaisedCosineFunction<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     /// Creates a raised cosine function.
     pub fn new(rolloff: T) -> Self {
         RaisedCosineFunction { rolloff: rolloff }
@@ -385,12 +388,14 @@ impl<T> RaisedCosineFunction<T>
 
 /// Sinc function according to https://en.wikipedia.org/wiki/Sinc_function
 pub struct SincFunction<T>
-    where T: RealNumber {
-    _ghost: PhantomData<T>
+    where T: RealNumber
+{
+    _ghost: PhantomData<T>,
 }
 
 impl<T> RealImpulseResponse<T> for SincFunction<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     fn is_symmetric(&self) -> bool {
         true
     }
@@ -404,12 +409,13 @@ impl<T> RealImpulseResponse<T> for SincFunction<T>
         let two = T::from(2.0).unwrap();
         let pi = two * one.asin();
         let pi_x = pi * x;
-        return pi_x.sin() / pi_x
+        return pi_x.sin() / pi_x;
     }
 }
 
 impl<T> RealFrequencyResponse<T> for SincFunction<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     fn is_symmetric(&self) -> bool {
         true
     }
@@ -425,7 +431,8 @@ impl<T> RealFrequencyResponse<T> for SincFunction<T>
 }
 
 impl<T> SincFunction<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     /// Creates a sinc function.
     pub fn new() -> Self {
         SincFunction { _ghost: PhantomData }
@@ -434,9 +441,10 @@ impl<T> SincFunction<T>
 
 /// A real function which can be constructed outside this crate.
 pub struct ForeignRealConvolutionFunction<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     /// The function
-    pub conv_function: extern fn(*const c_void, T) -> T,
+    pub conv_function: extern "C" fn(*const c_void, T) -> T,
 
     /// The data which is passed to the function.
     ///
@@ -446,24 +454,30 @@ pub struct ForeignRealConvolutionFunction<T>
 
     /// Indicates whether this function is symmetric around 0 or not.
     /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
-    pub is_symmetric: bool
+    pub is_symmetric: bool,
 }
 
 impl<T> ForeignRealConvolutionFunction<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     /// Creates a new real function
-    pub fn new(
-        function: extern fn(*const c_void, T) -> T,
-        function_data: *const c_void,
-        is_symmetric: bool) -> Self {
+    pub fn new(function: extern "C" fn(*const c_void, T) -> T,
+               function_data: *const c_void,
+               is_symmetric: bool)
+               -> Self {
         unsafe {
-            ForeignRealConvolutionFunction { conv_function: function, conv_data: mem::transmute(function_data), is_symmetric: is_symmetric }
+            ForeignRealConvolutionFunction {
+                conv_function: function,
+                conv_data: mem::transmute(function_data),
+                is_symmetric: is_symmetric,
+            }
         }
     }
 }
 
 impl<T> RealImpulseResponse<T> for ForeignRealConvolutionFunction<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     fn is_symmetric(&self) -> bool {
         self.is_symmetric
     }
@@ -475,7 +489,8 @@ impl<T> RealImpulseResponse<T> for ForeignRealConvolutionFunction<T>
 }
 
 impl<T> RealFrequencyResponse<T> for ForeignRealConvolutionFunction<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     fn is_symmetric(&self) -> bool {
         self.is_symmetric
     }
@@ -488,9 +503,10 @@ impl<T> RealFrequencyResponse<T> for ForeignRealConvolutionFunction<T>
 
 /// A complex function which can be constructed outside this crate.
 pub struct ForeignComplexConvolutionFunction<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     /// The function
-    pub conv_function: extern fn(*const c_void, T) -> Complex<T>,
+    pub conv_function: extern "C" fn(*const c_void, T) -> Complex<T>,
 
     /// The data which is passed to the window function
     ///
@@ -500,24 +516,30 @@ pub struct ForeignComplexConvolutionFunction<T>
 
     /// Indicates whether this function is symmetric around 0 or not.
     /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
-    pub is_symmetric: bool
+    pub is_symmetric: bool,
 }
 
 impl<T> ForeignComplexConvolutionFunction<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     /// Creates a new real function
-    pub fn new(
-        function: extern fn(*const c_void, T) -> Complex<T>,
-        function_data: *const c_void,
-        is_symmetric: bool) -> Self {
+    pub fn new(function: extern "C" fn(*const c_void, T) -> Complex<T>,
+               function_data: *const c_void,
+               is_symmetric: bool)
+               -> Self {
         unsafe {
-            ForeignComplexConvolutionFunction { conv_function: function, conv_data: mem::transmute(function_data), is_symmetric: is_symmetric }
+            ForeignComplexConvolutionFunction {
+                conv_function: function,
+                conv_data: mem::transmute(function_data),
+                is_symmetric: is_symmetric,
+            }
         }
     }
 }
 
 impl<T> ComplexImpulseResponse<T> for ForeignComplexConvolutionFunction<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     fn is_symmetric(&self) -> bool {
         self.is_symmetric
     }
@@ -529,7 +551,8 @@ impl<T> ComplexImpulseResponse<T> for ForeignComplexConvolutionFunction<T>
 }
 
 impl<T> ComplexFrequencyResponse<T> for ForeignComplexConvolutionFunction<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     fn is_symmetric(&self) -> bool {
         self.is_symmetric
     }
@@ -552,7 +575,8 @@ mod tests {
 
     fn conv_test<T, C>(conv: C, expected: &[T], step: T, tolerance: T)
         where T: RealNumber + Debug,
-              C: RealImpulseResponse<T> {
+              C: RealImpulseResponse<T>
+    {
         let mut result = vec![T::zero(); expected.len()];
         let mut j = -(expected.len() as isize / 2);
         for i in 0..result.len() {
@@ -569,7 +593,8 @@ mod tests {
 
     fn complex_conv_test<T, C>(conv: C, expected: &[T], step: T, tolerance: T)
         where T: RealNumber + Debug,
-              C: ComplexImpulseResponse<T> {
+              C: ComplexImpulseResponse<T>
+    {
         let mut result = vec![Complex::<T>::zero(); expected.len()];
         let mut j = -(expected.len() as isize / 2);
         for i in 0..result.len() {
@@ -586,7 +611,8 @@ mod tests {
 
     fn real_freq_conv_test<T, C>(conv: C, expected: &[T], step: T, tolerance: T)
         where T: RealNumber + Debug,
-              C: RealFrequencyResponse<T> {
+              C: RealFrequencyResponse<T>
+    {
         let mut result = vec![T::zero(); expected.len()];
         let mut j = -(expected.len() as isize / 2);
         for i in 0..result.len() {
@@ -602,21 +628,26 @@ mod tests {
     }
 
     #[test]
-    fn raised_cosine_test()
-    {
+    fn raised_cosine_test() {
         let rc = RaisedCosineFunction::new(0.35);
-        let expected =
-            [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432,
-             1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
+        let expected = [0.0,
+                        0.2171850639713355,
+                        0.4840621929215732,
+                        0.7430526238101408,
+                        0.9312114164253432,
+                        1.0,
+                        0.9312114164253432,
+                        0.7430526238101408,
+                        0.4840621929215732,
+                        0.2171850639713355];
         conv_test(rc, &expected, 0.2, 1e-4);
     }
 
     #[test]
     fn sinc_test() {
         let rc = SincFunction::<f32>::new();
-        let expected =
-            [0.1273, -0.0000, -0.2122, 0.0000, 0.6366,
-             1.0000, 0.6366, 0.0000, -0.2122, -0.0000];
+        let expected = [0.1273, -0.0000, -0.2122, 0.0000, 0.6366, 1.0000, 0.6366, 0.0000, -0.2122,
+                        -0.0000];
         conv_test(rc, &expected, 0.5, 1e-4);
     }
 
@@ -631,9 +662,16 @@ mod tests {
     fn lookup_table_test() {
         let rc = RaisedCosineFunction::new(0.35);
         let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.2, 5);
-        let expected =
-            [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432,
-             1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
+        let expected = [0.0,
+                        0.2171850639713355,
+                        0.4840621929215732,
+                        0.7430526238101408,
+                        0.9312114164253432,
+                        1.0,
+                        0.9312114164253432,
+                        0.7430526238101408,
+                        0.4840621929215732,
+                        0.2171850639713355];
         conv_test(table, &expected, 0.2, 1e-4);
     }
 
@@ -641,9 +679,16 @@ mod tests {
     fn linear_interpolation_lookup_table_test() {
         let rc = RaisedCosineFunction::new(0.35);
         let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.4, 5);
-        let expected =
-            [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432,
-             1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
+        let expected = [0.0,
+                        0.2171850639713355,
+                        0.4840621929215732,
+                        0.7430526238101408,
+                        0.9312114164253432,
+                        1.0,
+                        0.9312114164253432,
+                        0.7430526238101408,
+                        0.4840621929215732,
+                        0.2171850639713355];
         conv_test(table, &expected, 0.2, 0.1);
     }
 
@@ -652,9 +697,16 @@ mod tests {
         let rc = RaisedCosineFunction::new(0.35);
         let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.4, 5);
         let complex = table.to_complex();
-        let expected =
-            [0.0, 0.2171850639713355, 0.4840621929215732, 0.7430526238101408, 0.9312114164253432,
-             1.0, 0.9312114164253432, 0.7430526238101408, 0.4840621929215732, 0.2171850639713355];
+        let expected = [0.0,
+                        0.2171850639713355,
+                        0.4840621929215732,
+                        0.7430526238101408,
+                        0.9312114164253432,
+                        1.0,
+                        0.9312114164253432,
+                        0.7430526238101408,
+                        0.4840621929215732,
+                        0.2171850639713355];
         complex_conv_test(complex, &expected, 0.2, 0.1);
     }
 
@@ -664,16 +716,24 @@ mod tests {
         let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.2, 5);
         let freq = table.fft();
         assert_eq!(freq.delta(), 2.2);
-        let expected =
-             [0.0078, 0.0269, 0.0602, 0.1311, 2.7701, 5.6396, 2.7701, 0.1311, 0.0602, 0.0269, 0.0078];
+        let expected = [0.0078, 0.0269, 0.0602, 0.1311, 2.7701, 5.6396, 2.7701, 0.1311, 0.0602,
+                        0.0269, 0.0078];
         real_freq_conv_test(freq, &expected, 2.2, 0.1);
     }
 
     #[test]
     fn freq_test() {
         let rc = RaisedCosineFunction::new(0.5);
-        let expected =
-            [0.0, 0.0, 0.20610737385376332, 0.7938926261462365, 1.0, 1.0, 1.0, 0.7938926261462365, 0.20610737385376332, 0.0];
+        let expected = [0.0,
+                        0.0,
+                        0.20610737385376332,
+                        0.7938926261462365,
+                        1.0,
+                        1.0,
+                        1.0,
+                        0.7938926261462365,
+                        0.20610737385376332,
+                        0.0];
         real_freq_conv_test(rc, &expected, 0.4, 0.1);
     }
 }

@@ -22,7 +22,7 @@ pub trait ToSlice<T> {
 }
 
 /// A trait to convert a type into a mutable slice.
-pub trait ToSliceMut<T> : ToSlice<T> {
+pub trait ToSliceMut<T>: ToSlice<T> {
     /// Convert to a mutable slice.
     fn to_slice_mut(&mut self) -> &mut [T];
 }
@@ -43,7 +43,7 @@ pub trait Resize {
 /// would be likely not as desired. E.g. if suddenly half
 /// the storage is in real number space and the other half in
 /// complex.
-pub trait Owner { }
+pub trait Owner {}
 
 impl<'a, T> ToSlice<T> for &'a [T] {
     fn to_slice(&self) -> &[T] {
@@ -95,7 +95,7 @@ impl<T> ToSliceMut<T> for [T] {
     }
 }
 
-impl<T> Owner for [T] { }
+impl<T> Owner for [T] {}
 
 impl<T> ToSlice<T> for Box<[T]> {
     fn to_slice(&self) -> &[T] {
@@ -125,7 +125,7 @@ impl<T> ToSliceMut<T> for Box<[T]> {
     }
 }
 
-impl<T> Owner for Box<[T]> { }
+impl<T> Owner for Box<[T]> {}
 
 impl<'a, T> ToSlice<T> for &'a mut [T] {
     fn to_slice(&self) -> &[T] {
@@ -156,7 +156,8 @@ impl<'a, T> ToSliceMut<T> for &'a mut [T] {
 }
 
 impl<T> ToSlice<T> for Vec<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     fn to_slice(&self) -> &[T] {
         &self
     }
@@ -176,17 +177,19 @@ impl<T> ToSlice<T> for Vec<T>
 }
 
 impl<T> ToSliceMut<T> for Vec<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     fn to_slice_mut(&mut self) -> &mut [T] {
         &mut self[..]
     }
 }
 
 impl<T> Resize for Vec<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     fn resize(&mut self, len: usize) {
         self.resize(len, T::zero());
     }
 }
 
-impl<T> Owner for Vec<T> { }
+impl<T> Owner for Vec<T> {}

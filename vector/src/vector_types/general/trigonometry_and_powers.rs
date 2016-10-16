@@ -1,11 +1,7 @@
 use RealNumber;
 use multicore_support::*;
 use simd_extensions::*;
-use super::super::{
-    DspVec, MetaData,
-    ToSliceMut,
-    NumberSpace,
-    Domain};
+use super::super::{DspVec, MetaData, ToSliceMut, NumberSpace, Domain};
 /// Trigonometry methods.
 pub trait TrigOps {
     /// Calculates the sine of each element in radians.
@@ -67,7 +63,8 @@ pub trait TrigOps {
 
 /// Roots, powers, exponentials and logarithms.
 pub trait PowerOps<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     /// Gets the square root of all vector elements.
     ///
     /// The sqrt of a negative number gives NaN and not a complex vector.
@@ -194,11 +191,11 @@ pub trait PowerOps<T>
 const TRIG_COMPLEXITY: Complexity = Complexity::Small;
 
 impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
-    where
-        S: ToSliceMut<T>,
-        T: RealNumber,
-        N: NumberSpace,
-        D: Domain {
+    where S: ToSliceMut<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain
+{
     fn sin(&mut self) {
         if self.is_complex() {
             self.pure_complex_operation(|v, _| v.sin(), (), TRIG_COMPLEXITY);
@@ -297,24 +294,27 @@ impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> PowerOps<T> for DspVec<S, T, N, D>
-    where
-        S: ToSliceMut<T>,
-        T: RealNumber,
-        N: NumberSpace,
-        D: Domain {
+    where S: ToSliceMut<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain
+{
     fn sqrt(&mut self) {
         if self.is_complex() {
-            self.pure_complex_operation(|x,_arg|x.sqrt(), (), Complexity::Small);
+            self.pure_complex_operation(|x, _arg| x.sqrt(), (), Complexity::Small);
         } else {
-            self.simd_real_operation(|x,_arg|x.sqrt(), |x,_arg|x.sqrt(), (), Complexity::Small);
+            self.simd_real_operation(|x, _arg| x.sqrt(),
+                                     |x, _arg| x.sqrt(),
+                                     (),
+                                     Complexity::Small);
         }
     }
 
     fn square(&mut self) {
         if self.is_complex() {
-            self.pure_complex_operation(|x,_arg|x * x, (), Complexity::Small);
+            self.pure_complex_operation(|x, _arg| x * x, (), Complexity::Small);
         } else {
-            self.simd_real_operation(|x,_arg|x * x, |x,_arg|x * x, (), Complexity::Small);
+            self.simd_real_operation(|x, _arg| x * x, |x, _arg| x * x, (), Complexity::Small);
         }
     }
 
@@ -324,41 +324,41 @@ impl<S, T, N, D> PowerOps<T> for DspVec<S, T, N, D>
 
     fn powf(&mut self, exponent: T) {
         if self.is_complex() {
-            self.pure_complex_operation(|x,y|x.powf(y), exponent, Complexity::Medium);
+            self.pure_complex_operation(|x, y| x.powf(y), exponent, Complexity::Medium);
         } else {
-            self.pure_real_operation(|x,y|x.powf(y), exponent, Complexity::Medium);
+            self.pure_real_operation(|x, y| x.powf(y), exponent, Complexity::Medium);
         }
     }
 
     fn ln(&mut self) {
         if self.is_complex() {
-            self.pure_complex_operation(|x,_arg|x.ln(), (), Complexity::Medium);
+            self.pure_complex_operation(|x, _arg| x.ln(), (), Complexity::Medium);
         } else {
-            self.pure_real_operation(|x,_arg|x.ln(), (), Complexity::Medium);
+            self.pure_real_operation(|x, _arg| x.ln(), (), Complexity::Medium);
         }
     }
 
     fn exp(&mut self) {
         if self.is_complex() {
-            self.pure_complex_operation(|x,_arg|x.exp(), (), Complexity::Medium);
+            self.pure_complex_operation(|x, _arg| x.exp(), (), Complexity::Medium);
         } else {
-            self.pure_real_operation(|x,_arg|x.exp(), (), Complexity::Medium);
+            self.pure_real_operation(|x, _arg| x.exp(), (), Complexity::Medium);
         }
     }
 
     fn log(&mut self, base: T) {
         if self.is_complex() {
-            self.pure_complex_operation(|x,y|x.log(y), base, Complexity::Medium);
+            self.pure_complex_operation(|x, y| x.log(y), base, Complexity::Medium);
         } else {
-            self.pure_real_operation(|x,y|x.log(y), base, Complexity::Medium);
+            self.pure_real_operation(|x, y| x.log(y), base, Complexity::Medium);
         }
     }
 
     fn expf(&mut self, base: T) {
         if self.is_complex() {
-            self.pure_complex_operation(|x,y|x.expf(y), base, Complexity::Medium);
+            self.pure_complex_operation(|x, y| x.expf(y), base, Complexity::Medium);
         } else {
-            self.pure_real_operation(|x,y|y.powf(x), base, Complexity::Medium);
+            self.pure_real_operation(|x, y| y.powf(x), base, Complexity::Medium);
         }
     }
 }

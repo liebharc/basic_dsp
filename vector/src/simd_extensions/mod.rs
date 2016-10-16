@@ -1,7 +1,7 @@
 use num::complex::Complex;
 use std::mem;
 
-pub trait Simd<T> : Sized
+pub trait Simd<T>: Sized
     where T: Sized + Sync + Send
 {
     type Array;
@@ -30,7 +30,7 @@ pub trait Simd<T> : Sized
     fn sum_complex(&self) -> Complex<T>;
 }
 
-pub trait SimdGeneric<T> : Simd<T>
+pub trait SimdGeneric<T>: Simd<T>
     where T: Sized + Sync + Send
 {
     /// On some CPU architectures memory access needs to be aligned or otherwise
@@ -45,11 +45,9 @@ pub trait SimdGeneric<T> : Simd<T>
 
     fn from_complex_array(array: Self::ComplexArray) -> Self;
 
-    fn iter_over_vector<F>(self, op: F) -> Self
-        where F: FnMut(T) -> T;
+    fn iter_over_vector<F>(self, op: F) -> Self where F: FnMut(T) -> T;
 
-    fn iter_over_complex_vector<F>(self, op: F) -> Self
-        where F: FnMut(Complex<T>) -> Complex<T>;
+    fn iter_over_complex_vector<F>(self, op: F) -> Self where F: FnMut(Complex<T>) -> Complex<T>;
 
     fn array_to_regs(array: &[T]) -> &[Self];
 
@@ -188,19 +186,19 @@ macro_rules! simd_generic_impl {
 pub mod avx;
 
 #[cfg(any(feature = "doc", feature="avx"))]
-pub use self::avx::{Reg32,Reg64};
+pub use self::avx::{Reg32, Reg64};
 
 #[cfg(any(feature = "doc", all(feature = "sse", not(feature = "avx"))))]
 pub mod sse;
 
 #[cfg(any(feature = "doc", all(feature = "sse", not(feature = "avx"))))]
-pub use self::sse::{Reg32,Reg64};
+pub use self::sse::{Reg32, Reg64};
 
 #[cfg(any(feature = "doc", not(any(feature = "avx", feature="sse"))))]
 pub mod fallback;
 
 #[cfg(any(feature = "doc", not(any(feature = "avx", feature="sse"))))]
-pub use self::fallback::{Reg32,Reg64};
+pub use self::fallback::{Reg32, Reg64};
 
 simd_generic_impl!(f32, Reg32);
 simd_generic_impl!(f64, Reg64);

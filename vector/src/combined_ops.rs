@@ -33,7 +33,7 @@
 //!
 //! # Examples
 //!
-//!```
+//! ```
 //! use std::f32::consts::PI;
 //! use basic_dsp_vector::*;
 //! use basic_dsp_vector::combined_ops::*;
@@ -58,7 +58,7 @@
 //! let (a, b) = ops.get().expect("Ignoring error handling in examples");
 //! close(&[0.80902, 0.30902, -0.30902, -0.80902, -1.00000, -0.80902, -0.30902, 0.30902], b.real(0..));
 //! close(&[-3.2282, -5.3181, -5.3181, -3.2282, -159.1199, -3.2282, -5.3181, -5.3181], a.real(0..));
-//!```
+//! ```
 //!
 
 // In this module we just export types from other modules with a deeper nesting
