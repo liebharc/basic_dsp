@@ -44,9 +44,9 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber> ElementaryOps
+			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber> ElementaryOps<$matrix<V, S, T>>
                     for $matrix<V, S, T>
-                    where V: ElementaryOps {
+                    where V: ElementaryOps<V> {
 				fn add(&mut self, summand: &Self) -> VoidResult {
 					for (v, o) in self.rows_mut().iter_mut().zip(summand.rows()) {
 						try!(v.add(o));
@@ -80,9 +80,46 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber> ElementaryWrapAroundOps
+			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber> ElementaryOps<V>
                     for $matrix<V, S, T>
-                    where V: ElementaryWrapAroundOps {
+                    where V: ElementaryOps<V> {
+				fn add(&mut self, summand: &V) -> VoidResult {
+                    for v in self.rows_mut() {
+						try!(v.add(summand));
+					}
+
+					Ok(())
+				}
+
+				fn sub(&mut self, summand: &V) -> VoidResult {
+                    for v in self.rows_mut() {
+						try!(v.sub(summand));
+					}
+
+					Ok(())
+				}
+
+				fn div(&mut self, summand: &V) -> VoidResult {
+                    for v in self.rows_mut() {
+						try!(v.div(summand));
+					}
+
+					Ok(())
+				}
+
+				fn mul(&mut self, summand: &V) -> VoidResult {
+                    for v in self.rows_mut() {
+						try!(v.mul(summand));
+					}
+
+					Ok(())
+				}
+			}
+
+			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber>
+                    ElementaryWrapAroundOps<$matrix<V, S, T>>
+                    for $matrix<V, S, T>
+                    where V: ElementaryWrapAroundOps<V> {
 				fn add_smaller(&mut self, summand: &Self) -> VoidResult {
 					for (v, o) in self.rows_mut().iter_mut().zip(summand.rows()) {
 						try!(v.add_smaller(o));
@@ -110,6 +147,42 @@ macro_rules! add_mat_impl {
 				fn mul_smaller(&mut self, summand: &Self) -> VoidResult {
 					for (v, o) in self.rows_mut().iter_mut().zip(summand.rows()) {
 						try!(v.mul_smaller(o));
+					}
+
+					Ok(())
+				}
+			}
+
+			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber> ElementaryWrapAroundOps<V>
+                    for $matrix<V, S, T>
+                    where V: ElementaryWrapAroundOps<V> {
+				fn add_smaller(&mut self, summand: &V) -> VoidResult {
+                    for v in self.rows_mut() {
+						try!(v.add_smaller(summand));
+					}
+
+					Ok(())
+				}
+
+				fn sub_smaller(&mut self, summand: &V) -> VoidResult {
+                    for v in self.rows_mut() {
+						try!(v.sub_smaller(summand));
+					}
+
+					Ok(())
+				}
+
+				fn div_smaller(&mut self, summand: &V) -> VoidResult {
+                    for v in self.rows_mut() {
+						try!(v.div_smaller(summand));
+					}
+
+					Ok(())
+				}
+
+				fn mul_smaller(&mut self, summand: &V) -> VoidResult {
+                    for v in self.rows_mut() {
+						try!(v.mul_smaller(summand));
 					}
 
 					Ok(())
