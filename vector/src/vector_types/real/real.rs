@@ -10,7 +10,8 @@ use super::super::{Vector, MetaData, DspVec, ToSliceMut, Domain, RealNumberSpace
 /// If one of the methods is called on complex data then `self.len()` will be set to `0`.
 /// To avoid this it's recommended to use the `to_real_time_vec`, `to_real_freq_vec`
 /// `to_complex_time_vec` and `to_complex_freq_vec` constructor methods since
-/// the resulting types will already check at compile time (using the type system) that the data is real.
+/// the resulting types will already check at compile time (using the type system)
+/// that the data is real.
 pub trait RealOps {
     /// Gets the absolute value of all vector elements.
     /// # Example
@@ -31,11 +32,13 @@ pub trait RealOps {
 /// If one of the methods is called on complex data then `self.len()` will be set to `0`.
 /// To avoid this it's recommended to use the `to_real_time_vec`, `to_real_freq_vec`
 /// `to_complex_time_vec` and `to_complex_freq_vec` constructor methods since
-/// the resulting types will already check at compile time (using the type system) that the data is real.
+/// the resulting types will already check at compile time (using the type system)
+/// that the data is real.
 pub trait ModuloOps<T>
     where T: RealNumber
 {
-    /// Each value in the vector is dividable by the divisor and the remainder is stored in the resulting
+    /// Each value in the vector is dividable by the divisor and the remainder
+    /// is stored in the resulting
     /// vector. This the same a modulo operation or to phase wrapping.
     ///
     /// # Example
@@ -48,7 +51,8 @@ pub trait ModuloOps<T>
     /// ```
     fn wrap(&mut self, divisor: T);
 
-    /// This function corrects the jumps in the given vector which occur due to wrap or modulo operations.
+    /// This function corrects the jumps in the given vector which occur due
+    /// to wrap or modulo operations.
     /// This will undo a wrap operation only if the deltas are smaller than half the divisor.
     ///
     /// # Example

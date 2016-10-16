@@ -2,7 +2,8 @@ use RealNumber;
 use super::super::{array_to_complex_mut, Vector, DspVec, ToSliceMut, Domain, NumberSpace, MetaData};
 
 pub trait DiffSumOps {
-    /// Calculates the delta of each elements to its previous element. This will decrease the vector length by one point.
+    /// Calculates the delta of each elements to its previous element. This will decrease
+    /// the vector length by one point.
     ///
     /// # Example
     ///
@@ -35,7 +36,8 @@ pub trait DiffSumOps {
     /// ```
     fn diff_with_start(&mut self);
 
-    /// Calculates the cumulative sum of all elements. This operation undoes the `diff_with_start`operation.
+    /// Calculates the cumulative sum of all elements. This operation undoes the
+    /// `diff_with_start`operation.
     ///
     /// # Example
     ///

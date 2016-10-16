@@ -15,7 +15,8 @@ pub trait ScaleOps<T>: Sized
     ///
     /// # Failures
     ///
-    /// `self.len()` to `0` if the vector isn't in the complex number space but `factor` is complex.
+    /// `self.len()` to `0` if the vector isn't in the complex number space but
+    /// `factor` is complex.
     ///
     /// # Example
     ///
@@ -40,7 +41,8 @@ pub trait OffsetOps<T>: Sized
     ///
     /// # Failures
     ///
-    /// `self.len()` to `0` if the vector isn't in the complex number space but `factor` is complex.
+    /// `self.len()` to `0` if the vector isn't in the complex number space but
+    /// `factor` is complex.
     ///
     /// # Example
     ///
@@ -63,7 +65,8 @@ pub trait ElementaryOps {
     /// TransRes may report the following `ErrorReason` members:
     ///
     /// 1. `VectorsMustHaveTheSameSize`: `self` and `summand` must have the same size
-    /// 2. `VectorMetaDataMustAgree`: `self` and `summand` must be in the same domain and number space
+    /// 2. `VectorMetaDataMustAgree`: `self` and `summand` must be in the same domain
+    ///    and number space
     ///
     /// # Example
     ///
@@ -85,7 +88,8 @@ pub trait ElementaryOps {
     /// TransRes may report the following `ErrorReason` members:
     ///
     /// 1. `VectorsMustHaveTheSameSize`: `self` and `subtrahend` must have the same size
-    /// 2. `VectorMetaDataMustAgree`: `self` and `subtrahend` must be in the same domain and number space
+    /// 2. `VectorMetaDataMustAgree`: `self` and `subtrahend` must be in the same domain
+    ///    and number space
     ///
     /// # Example
     ///
@@ -107,7 +111,8 @@ pub trait ElementaryOps {
     /// TransRes may report the following `ErrorReason` members:
     ///
     /// 1. `VectorsMustHaveTheSameSize`: `self` and `factor` must have the same size
-    /// 2. `VectorMetaDataMustAgree`: `self` and `factor` must be in the same domain and number space
+    /// 2. `VectorMetaDataMustAgree`: `self` and `factor` must be in the same domain and
+    ///    number space
     ///
     /// # Example
     ///
@@ -129,7 +134,8 @@ pub trait ElementaryOps {
     /// TransRes may report the following `ErrorReason` members:
     ///
     /// 1. `VectorsMustHaveTheSameSize`: `self` and `divisor` must have the same size
-    /// 2. `VectorMetaDataMustAgree`: `self` and `divisor` must be in the same domain and number space
+    /// 2. `VectorMetaDataMustAgree`: `self` and `divisor` must be in the same domain
+    ///    and number space
     ///
     /// # Example
     ///
@@ -156,7 +162,8 @@ pub trait ElementaryWrapAroundOps {
     /// TransRes may report the following `ErrorReason` members:
     ///
     /// 1. `InvalidArgumentLength`: `self.points()` isn't dividable by `summand.points()`
-    /// 2. `VectorMetaDataMustAgree`: `self` and `summand` must be in the same domain and number space
+    /// 2. `VectorMetaDataMustAgree`: `self` and `summand` must be in the same domain
+    ///    and number space
     ///
     /// # Example
     ///
@@ -181,7 +188,8 @@ pub trait ElementaryWrapAroundOps {
     /// TransRes may report the following `ErrorReason` members:
     ///
     /// 1. `InvalidArgumentLength`: `self.points()` isn't dividable by `subtrahend.points()`
-    /// 2. `VectorMetaDataMustAgree`: `self` and `subtrahend` must be in the same domain and number space
+    /// 2. `VectorMetaDataMustAgree`: `self` and `subtrahend` must be in the
+    ///    same domain and number space
     ///
     /// # Example
     ///
@@ -206,7 +214,8 @@ pub trait ElementaryWrapAroundOps {
     /// TransRes may report the following `ErrorReason` members:
     ///
     /// 1. `InvalidArgumentLength`: `self.points()` isn't dividable by `factor.points()`
-    /// 2. `VectorMetaDataMustAgree`: `self` and `factor` must be in the same domain and number space
+    /// 2. `VectorMetaDataMustAgree`: `self` and `factor` must be in the same
+    ///    domain and number space
     ///
     /// # Example
     ///
@@ -231,7 +240,8 @@ pub trait ElementaryWrapAroundOps {
     /// TransRes may report the following `ErrorReason` members:
     ///
     /// 1. `InvalidArgumentLength`: `self.points()` isn't dividable by `divisor.points()`
-    /// 2. `VectorMetaDataMustAgree`: `self` and `divisor` must be in the same domain and number space
+    /// 2. `VectorMetaDataMustAgree`: `self` and `divisor` must be in the same domain
+    ///    and number space
     ///
     /// # Example
     ///
@@ -364,7 +374,8 @@ macro_rules! impl_binary_vector_operation {
 
                 let data_length = self.len();
                 let mut array = self.data.to_slice_mut();
-                let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+                let (scalar_left, scalar_right, vectorization_length) =
+                    T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name.data.to_slice();
                 if vectorization_length > 0 {
                     Chunk::from_src_to_dest(
@@ -372,8 +383,10 @@ macro_rules! impl_binary_vector_operation {
                         &other[scalar_left..vectorization_length], T::Reg::len(),
                         &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
                         |original, range, target, _arg| {
-                            let original = T::Reg::array_to_regs(&original[range.start .. range.end]);
-                            let mut target = T::Reg::array_to_regs_mut(&mut target[range.start .. range.end]);
+                            let original =
+                                T::Reg::array_to_regs(&original[range.start .. range.end]);
+                            let mut target =
+                                T::Reg::array_to_regs_mut(&mut target[range.start .. range.end]);
                             for (dst, src) in &mut target.iter_mut().zip(original) {
                                 *dst = dst.$simd_op(*src);
                             }
@@ -404,7 +417,8 @@ macro_rules! impl_binary_complex_vector_operation {
 
                 let data_length = self.len();
                 let mut array = self.data.to_slice_mut();
-                let (scalar_left, scalar_right, vectorization_length) = T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+                let (scalar_left, scalar_right, vectorization_length) =
+                    T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name.data.to_slice();
                 if vectorization_length > 0 {
                     Chunk::from_src_to_dest(
@@ -412,8 +426,10 @@ macro_rules! impl_binary_complex_vector_operation {
                         &other[scalar_left..vectorization_length], T::Reg::len(),
                         &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
                         |original, range, target, _arg| {
-                            let original = T::Reg::array_to_regs(&original[range.start .. range.end]);
-                            let target = T::Reg::array_to_regs_mut(&mut target[range.start .. range.end]);
+                            let original =
+                                T::Reg::array_to_regs(&original[range.start .. range.end]);
+                            let target =
+                                T::Reg::array_to_regs_mut(&mut target[range.start .. range.end]);
                             for (dst, src) in target.iter_mut().zip(original) {
                                 *dst = dst.$simd_op(*src);
                             }
@@ -475,7 +491,7 @@ macro_rules! impl_binary_smaller_vector_operation {
     }
 }
 
-macro_rules! impl_binary_smaller_complex_vector_operation {
+macro_rules! impl_binary_smaller_complex_vector_ops {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
         fn $method(&mut self, $arg_name: &Self) -> VoidResult
         {
@@ -514,11 +530,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
           D: Domain
 {
     impl_binary_complex_vector_operation!(fn mul_complex, factor, mul_complex, mul);
-    impl_binary_smaller_complex_vector_operation!(fn mul_smaller_complex, factor, mul_complex, mul);
+    impl_binary_smaller_complex_vector_ops!(fn mul_smaller_complex, factor, mul_complex, mul);
     impl_binary_vector_operation!(fn mul_real, factor, mul, mul);
     impl_binary_smaller_vector_operation!(fn mul_smaller_real, factor, mul, mul);
     impl_binary_complex_vector_operation!(fn div_complex, divisor, div_complex, div);
-    impl_binary_smaller_complex_vector_operation!(fn div_smaller_complex, divisor, div_complex, div);
+    impl_binary_smaller_complex_vector_ops!(fn div_smaller_complex, divisor, div_complex, div);
     impl_binary_vector_operation!(fn div_real, divisor, div, div);
     impl_binary_smaller_vector_operation!(fn div_smaller_real, divisor, div, div);
 }

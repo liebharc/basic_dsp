@@ -14,7 +14,9 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T> + OffsetOps<T>, S: ToSlice<T>, T: RealNumber> OffsetOps<T> for $matrix<V, S, T> {
+			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber> OffsetOps<T>
+                    for $matrix<V, S, T>
+                    where V: OffsetOps<T> {
 				fn offset(&mut self, offset: T) {
 					for v in self.rows_mut() {
 						v.offset(offset);
@@ -22,7 +24,9 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T> + ScaleOps<Complex<T>>, S: ToSlice<T>, T: RealNumber> ScaleOps<Complex<T>> for $matrix<V, S, T> {
+			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber> ScaleOps<Complex<T>>
+                    for $matrix<V, S, T>
+                    where V: ScaleOps<Complex<T>> {
 				fn scale(&mut self, factor: Complex<T>) {
 					for v in self.rows_mut() {
 						v.scale(factor);
@@ -30,7 +34,9 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T> + OffsetOps<Complex<T>>, S: ToSlice<T>, T: RealNumber> OffsetOps<Complex<T>> for $matrix<V, S, T> {
+			impl<V: Vector<T>>, S: ToSlice<T>, T: RealNumber> OffsetOps<Complex<T>>
+                    for $matrix<V, S, T>
+                    where V: OffsetOps<Complex<T>> {
 				fn offset(&mut self, offset: Complex<T>) {
 					for v in self.rows_mut() {
 						v.offset(offset);
@@ -38,7 +44,9 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T> + ElementaryOps, S: ToSlice<T>, T: RealNumber> ElementaryOps for $matrix<V, S, T> {
+			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber> ElementaryOps
+                    for $matrix<V, S, T>
+                    where ElementaryOps {
 				fn add(&mut self, summand: &Self) -> VoidResult {
 					for (v, o) in self.rows_mut().iter_mut().zip(summand.rows()) {
 						try!(v.add(o));
@@ -72,7 +80,9 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T> + ElementaryWrapAroundOps, S: ToSlice<T>, T: RealNumber> ElementaryWrapAroundOps for $matrix<V, S, T> {
+			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber> ElementaryWrapAroundOps
+                    for $matrix<V, S, T>
+                    where V: ElementaryWrapAroundOps {
 				fn add_smaller(&mut self, summand: &Self) -> VoidResult {
 					for (v, o) in self.rows_mut().iter_mut().zip(summand.rows()) {
 						try!(v.add_smaller(o));
@@ -106,7 +116,9 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T> + ReorganizeDataOps<T>, S: ToSlice<T>, T: RealNumber> ReorganizeDataOps<T> for $matrix<V, S, T> {
+			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber> ReorganizeDataOps<T>
+                    for $matrix<V, S, T>
+                    where V: ReorganizeDataOps<T> {
 				fn reverse(&mut self)  {
 					for v in self.rows_mut() {
 						v.reverse()
@@ -315,7 +327,6 @@ macro_rules! add_mat_impl {
 // }
 
 // TODO DotProductOps, MapAggregateOps, Statistics, Add/sub/mul/div vector to matu
-      c
 
 
 		)*

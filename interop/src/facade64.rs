@@ -1,5 +1,6 @@
 // Auto generated code, change facade32.rs and run facade64_create.pl
-// Functions for 64bit floating point number based vectors. Please refer to the other chapters of the help for documentation of the functions.
+// Functions for 64bit floating point number based vectors.
+// Please refer to the other chapters of the help for documentation of the functions.
 use super::*;
 use basic_dsp_vector::*;
 use basic_dsp_vector::window_functions::*;
@@ -14,13 +15,13 @@ pub type VecBuf = InteropVec<f64>;
 pub type VecBox = Box<InteropVec<f64>>;
 
 #[no_mangle]
-pub extern "C" fn delete_vector64(vector: VecBox) {
+pub extern "C" fn delete_vector32(vector: VecBox) {
     drop(vector);
 }
 
 
 #[no_mangle]
-pub extern "C" fn new64(is_complex: i32,
+pub extern "C" fn new32(is_complex: i32,
                         domain: i32,
                         init_value: f64,
                         length: usize,
@@ -41,7 +42,7 @@ pub extern "C" fn new64(is_complex: i32,
 }
 
 #[no_mangle]
-pub extern "C" fn new_with_performance_options64(is_complex: i32,
+pub extern "C" fn new_with_performance_options32(is_complex: i32,
                                                  domain: i32,
                                                  init_value: f64,
                                                  length: usize,
@@ -66,17 +67,17 @@ pub extern "C" fn new_with_performance_options64(is_complex: i32,
 }
 
 #[no_mangle]
-pub extern "C" fn get_value64(vector: &VecBuf, index: usize) -> f64 {
+pub extern "C" fn get_value32(vector: &VecBuf, index: usize) -> f64 {
     vector.vec[index]
 }
 
 #[no_mangle]
-pub extern "C" fn set_value64(vector: &mut VecBuf, index: usize, value: f64) {
+pub extern "C" fn set_value32(vector: &mut VecBuf, index: usize, value: f64) {
     vector.vec[index] = value;
 }
 
 #[no_mangle]
-pub extern "C" fn is_complex64(vector: &VecBuf) -> i32 {
+pub extern "C" fn is_complex32(vector: &VecBuf) -> i32 {
     if vector.vec.is_complex() { 1 } else { 0 }
 }
 
@@ -87,7 +88,7 @@ pub extern "C" fn is_complex64(vector: &VecBuf) -> i32 {
 ///
 /// if the function returns another value then please report a bug.
 #[no_mangle]
-pub extern "C" fn get_domain64(vector: &VecBuf) -> i32 {
+pub extern "C" fn get_domain32(vector: &VecBuf) -> i32 {
     match vector.vec.domain() {
         DataDomain::Time => 0,
         DataDomain::Frequency => 1,
@@ -95,96 +96,96 @@ pub extern "C" fn get_domain64(vector: &VecBuf) -> i32 {
 }
 
 #[no_mangle]
-pub extern "C" fn get_len64(vector: &VecBuf) -> usize {
+pub extern "C" fn get_len32(vector: &VecBuf) -> usize {
     vector.vec.len()
 }
 
 #[no_mangle]
-pub extern "C" fn set_len64(vector: &mut VecBuf, len: usize) {
+pub extern "C" fn set_len32(vector: &mut VecBuf, len: usize) {
     let _ = vector.vec.resize(len);
 }
 
 #[no_mangle]
-pub extern "C" fn get_points64(vector: &VecBuf) -> usize {
+pub extern "C" fn get_points32(vector: &VecBuf) -> usize {
     vector.vec.points()
 }
 
 #[no_mangle]
-pub extern "C" fn get_delta64(vector: &VecBuf) -> f64 {
+pub extern "C" fn get_delta32(vector: &VecBuf) -> f64 {
     vector.vec.delta()
 }
 
 #[no_mangle]
-pub extern "C" fn complex_data64(vector: &VecBuf) -> &[Complex64] {
+pub extern "C" fn complex_data32(vector: &VecBuf) -> &[Complex64] {
     vector.vec.complex(..)
 }
 
 #[no_mangle]
-pub extern "C" fn get_allocated_len64(vector: &VecBuf) -> usize {
+pub extern "C" fn get_allocated_len32(vector: &VecBuf) -> usize {
     vector.vec.alloc_len()
 }
 
 #[no_mangle]
-pub extern "C" fn add64(vector: Box<VecBuf>, operand: &VecBuf) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn add32(vector: Box<VecBuf>, operand: &VecBuf) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| v.add(&operand.vec))
 }
 
 #[no_mangle]
-pub extern "C" fn sub64(vector: Box<VecBuf>, operand: &VecBox) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn sub32(vector: Box<VecBuf>, operand: &VecBox) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| v.sub(&operand.vec))
 }
 
 #[no_mangle]
-pub extern "C" fn div64(vector: Box<VecBuf>, operand: &VecBuf) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn div32(vector: Box<VecBuf>, operand: &VecBuf) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| v.div(&operand.vec))
 }
 
 #[no_mangle]
-pub extern "C" fn mul64(vector: Box<VecBuf>, operand: &VecBuf) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn mul32(vector: Box<VecBuf>, operand: &VecBuf) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| v.mul(&operand.vec))
 }
 
 #[no_mangle]
-pub extern "C" fn real_dot_product64(vector: &VecBuf,
+pub extern "C" fn real_dot_product32(vector: &VecBuf,
                                      operand: &VecBuf)
                                      -> ScalarInteropResult<f64> {
     vector.convert_scalar(|v| v.dot_product(&operand.vec), 0.0)
 }
 
 #[no_mangle]
-pub extern "C" fn complex_dot_product64(vector: &VecBuf,
+pub extern "C" fn complex_dot_product32(vector: &VecBuf,
                                         operand: &VecBuf)
                                         -> ScalarInteropResult<Complex64> {
     vector.convert_scalar(|v| v.dot_product(&operand.vec), Complex64::new(0.0, 0.0))
 }
 
 #[no_mangle]
-pub extern "C" fn real_statistics64(vector: &VecBuf) -> Statistics<f64> {
+pub extern "C" fn real_statistics32(vector: &VecBuf) -> Statistics<f64> {
     vector.vec.statistics()
 }
 
 #[no_mangle]
-pub extern "C" fn complex_statistics64(vector: &VecBuf) -> Statistics<Complex64> {
+pub extern "C" fn complex_statistics32(vector: &VecBuf) -> Statistics<Complex64> {
     vector.vec.statistics()
 }
 
 #[no_mangle]
-pub extern "C" fn real_sum64(vector: &VecBuf) -> f64 {
+pub extern "C" fn real_sum32(vector: &VecBuf) -> f64 {
     vector.vec.sum()
 }
 
 #[no_mangle]
-pub extern "C" fn real_sum_sq64(vector: &VecBuf) -> f64 {
+pub extern "C" fn real_sum_sq32(vector: &VecBuf) -> f64 {
     vector.vec.sum_sq()
 }
 
 #[no_mangle]
-pub extern "C" fn complex_sum64(vector: &VecBuf) -> Complex64 {
+pub extern "C" fn complex_sum32(vector: &VecBuf) -> Complex64 {
     vector.vec.sum()
 }
 
 #[no_mangle]
-pub extern "C" fn complex_sum_sq64(vector: &VecBuf) -> Complex64 {
+pub extern "C" fn complex_sum_sq32(vector: &VecBuf) -> Complex64 {
     vector.vec.sum_sq()
 }
 
@@ -195,7 +196,7 @@ pub extern "C" fn complex_sum_sq64(vector: &VecBuf) -> Complex64 {
 /// 2. `1` for [`PaddingOption::Surround`](../../enum.PaddingOption.html)
 /// 2. `2` for [`PaddingOption::Center`](../../enum.PaddingOption.html)
 #[no_mangle]
-pub extern "C" fn zero_pad64(vector: Box<VecBuf>,
+pub extern "C" fn zero_pad32(vector: Box<VecBuf>,
                              points: usize,
                              padding_option: i32)
                              -> VectorInteropResult<VecBuf> {
@@ -204,7 +205,7 @@ pub extern "C" fn zero_pad64(vector: Box<VecBuf>,
 }
 
 #[no_mangle]
-pub extern "C" fn zero_interleave64(vector: Box<VecBuf>,
+pub extern "C" fn zero_interleave32(vector: Box<VecBuf>,
                                     factor: i32)
                                     -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, b| Ok(v.zero_interleave_b(b, factor as u32)))
@@ -216,42 +217,42 @@ pub extern "C" fn diff64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
 }
 
 #[no_mangle]
-pub extern "C" fn diff_with_start64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn diff_with_start32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.diff_with_start()))
 }
 
 #[no_mangle]
-pub extern "C" fn cum_sum64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn cum_sum32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.cum_sum()))
 }
 
 #[no_mangle]
-pub extern "C" fn real_offset64(vector: Box<VecBuf>, value: f64) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn real_offset32(vector: Box<VecBuf>, value: f64) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.offset(value)))
 }
 
 #[no_mangle]
-pub extern "C" fn real_scale64(vector: Box<VecBuf>, value: f64) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn real_scale32(vector: Box<VecBuf>, value: f64) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.scale(value)))
 }
 
 #[no_mangle]
-pub extern "C" fn abs64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn abs32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.abs()))
 }
 
 #[no_mangle]
-pub extern "C" fn sqrt64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn sqrt32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.sqrt()))
 }
 
 #[no_mangle]
-pub extern "C" fn square64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn square32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.square()))
 }
 
 #[no_mangle]
-pub extern "C" fn root64(vector: Box<VecBuf>, value: f64) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn root32(vector: Box<VecBuf>, value: f64) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.root(value)))
 }
 
@@ -261,17 +262,17 @@ pub extern "C" fn powf64(vector: Box<VecBuf>, value: f64) -> VectorInteropResult
 }
 
 #[no_mangle]
-pub extern "C" fn ln64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn ln32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.ln()))
 }
 
 #[no_mangle]
-pub extern "C" fn exp64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn exp32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.exp()))
 }
 
 #[no_mangle]
-pub extern "C" fn log64(vector: Box<VecBuf>, value: f64) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn log32(vector: Box<VecBuf>, value: f64) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.log(value)))
 }
 
@@ -281,86 +282,86 @@ pub extern "C" fn expf64(vector: Box<VecBuf>, value: f64) -> VectorInteropResult
 }
 
 #[no_mangle]
-pub extern "C" fn to_complex64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn to_complex32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| Ok(v.to_complex_b(b)))
 }
 
 #[no_mangle]
-pub extern "C" fn sin64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn sin32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.sin()))
 }
 
 #[no_mangle]
-pub extern "C" fn cos64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn cos32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.cos()))
 }
 
 #[no_mangle]
-pub extern "C" fn tan64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn tan32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.tan()))
 }
 
 #[no_mangle]
-pub extern "C" fn asin64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn asin32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.asin()))
 }
 
 #[no_mangle]
-pub extern "C" fn acos64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn acos32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.acos()))
 }
 
 #[no_mangle]
-pub extern "C" fn atan64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn atan32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.tan()))
 }
 
 #[no_mangle]
-pub extern "C" fn sinh64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn sinh32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.sinh()))
 }
 #[no_mangle]
-pub extern "C" fn cosh64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn cosh32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.cosh()))
 }
 
 #[no_mangle]
-pub extern "C" fn tanh64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn tanh32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.tanh()))
 }
 
 #[no_mangle]
-pub extern "C" fn asinh64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn asinh32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.asinh()))
 }
 
 #[no_mangle]
-pub extern "C" fn acosh64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn acosh32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.acosh()))
 }
 
 #[no_mangle]
-pub extern "C" fn atanh64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn atanh32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.atanh()))
 }
 
 #[no_mangle]
-pub extern "C" fn wrap64(vector: Box<VecBuf>, value: f64) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn wrap32(vector: Box<VecBuf>, value: f64) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.wrap(value)))
 }
 
 #[no_mangle]
-pub extern "C" fn unwrap64(vector: Box<VecBuf>, value: f64) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn unwrap32(vector: Box<VecBuf>, value: f64) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.unwrap(value)))
 }
 
 #[no_mangle]
-pub extern "C" fn swap_halves64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn swap_halves32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, b| Ok(v.swap_halves_b(b)))
 }
 
 #[no_mangle]
-pub extern "C" fn complex_offset64(vector: Box<VecBuf>,
+pub extern "C" fn complex_offset32(vector: Box<VecBuf>,
                                    real: f64,
                                    imag: f64)
                                    -> VectorInteropResult<VecBuf> {
@@ -368,7 +369,7 @@ pub extern "C" fn complex_offset64(vector: Box<VecBuf>,
 }
 
 #[no_mangle]
-pub extern "C" fn complex_scale64(vector: Box<VecBuf>,
+pub extern "C" fn complex_scale32(vector: Box<VecBuf>,
                                   real: f64,
                                   imag: f64)
                                   -> VectorInteropResult<VecBuf> {
@@ -376,7 +377,7 @@ pub extern "C" fn complex_scale64(vector: Box<VecBuf>,
 }
 
 #[no_mangle]
-pub extern "C" fn complex_divide64(vector: Box<VecBuf>,
+pub extern "C" fn complex_divide32(vector: Box<VecBuf>,
                                    real: f64,
                                    imag: f64)
                                    -> VectorInteropResult<VecBuf> {
@@ -384,44 +385,44 @@ pub extern "C" fn complex_divide64(vector: Box<VecBuf>,
 }
 
 #[no_mangle]
-pub extern "C" fn magnitude64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn magnitude32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| Ok(v.magnitude_b(b)))
 }
 
 #[no_mangle]
-pub extern "C" fn get_magnitude64(vector: Box<VecBuf>, destination: &mut VecBuf) -> i32 {
+pub extern "C" fn get_magnitude32(vector: Box<VecBuf>, destination: &mut VecBuf) -> i32 {
     convert_void(Ok(vector.vec.get_magnitude(&mut destination.vec)))
 }
 
 #[no_mangle]
-pub extern "C" fn magnitude_squared64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn magnitude_squared32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| Ok(v.magnitude_squared_b(b)))
 }
 
 #[no_mangle]
-pub extern "C" fn conj64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn conj32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.conj()))
 }
 
 #[no_mangle]
-pub extern "C" fn to_real64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn to_real32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| Ok(v.to_real_b(b)))
 }
 
 #[no_mangle]
-pub extern "C" fn to_imag64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn to_imag32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| Ok(v.to_imag_b(b)))
 }
 
 #[no_mangle]
-pub extern "C" fn map_inplace_real64(vector: Box<VecBuf>,
+pub extern "C" fn map_inplace_real32(vector: Box<VecBuf>,
                                      map: extern "C" fn(f64, usize) -> f64)
                                      -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.map_inplace((), move |v, i, _| map(v, i))))
 }
 
 #[no_mangle]
-pub extern "C" fn map_inplace_complex64(vector: Box<VecBuf>,
+pub extern "C" fn map_inplace_complex32(vector: Box<VecBuf>,
                                         map: extern "C" fn(Complex64, usize) -> Complex64)
                                         -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.map_inplace((), move |v, i, _| map(v, i))))
@@ -430,18 +431,20 @@ pub extern "C" fn map_inplace_complex64(vector: Box<VecBuf>,
 /// Warning: This function interface heavily works around the Rust type system and the safety
 /// it provides. Use with great care!
 #[no_mangle]
-pub extern "C" fn map_aggregate_real64(vector: &VecBuf,
+pub extern "C" fn map_aggregate_real32(vector: &VecBuf,
                                        map: extern "C" fn(f64, usize) -> *const c_void,
                                        aggregate: extern "C" fn(*const c_void, *const c_void)
                                                                 -> *const c_void)
                                        -> ScalarResult<*const c_void> {
     unsafe {
-        let result = vector.convert_scalar(|v|{
-            v.map_aggregate(
-                (),
-                move|v, i, _| mem::transmute(map(v, i)),
-                move|a: usize, b: usize| mem::transmute(aggregate(mem::transmute(a), mem::transmute(b))))
-        }, mem::transmute(0usize));
+        let result = vector.convert_scalar(|v| {
+            v.map_aggregate((),
+                            move |v, i, _| mem::transmute(map(v, i)),
+                            move |a: usize, b: usize| {
+                                mem::transmute(aggregate(mem::transmute(a), mem::transmute(b)))
+                            })
+        },
+                                           mem::transmute(0usize));
         mem::transmute(result)
     }
 }
@@ -449,59 +452,61 @@ pub extern "C" fn map_aggregate_real64(vector: &VecBuf,
 /// Warning: This function interface heavily works around the Rust type system and the safety
 /// it provides. Use with great care!
 #[no_mangle]
-pub extern "C" fn map_aggregate_complex64(vector: &VecBuf,
+pub extern "C" fn map_aggregate_complex32(vector: &VecBuf,
                                           map: extern "C" fn(Complex64, usize) -> *const c_void,
                                           aggregate: extern "C" fn(*const c_void, *const c_void)
                                                                    -> *const c_void)
                                           -> ScalarResult<*const c_void> {
     unsafe {
-        let result = vector.convert_scalar(|v|{
-            v.map_aggregate(
-                (),
-                move|v, i, _| mem::transmute(map(v, i)),
-                move|a: usize, b: usize| mem::transmute(aggregate(mem::transmute(a), mem::transmute(b))))
-        }, mem::transmute(0usize));
+        let result = vector.convert_scalar(|v| {
+            v.map_aggregate((),
+                            move |v, i, _| mem::transmute(map(v, i)),
+                            move |a: usize, b: usize| {
+                                mem::transmute(aggregate(mem::transmute(a), mem::transmute(b)))
+                            })
+        },
+                                           mem::transmute(0usize));
         mem::transmute(result)
     }
 }
 
 #[no_mangle]
-pub extern "C" fn get_real64(vector: Box<VecBuf>, destination: &mut VecBuf) -> i32 {
+pub extern "C" fn get_real32(vector: Box<VecBuf>, destination: &mut VecBuf) -> i32 {
     convert_void(Ok(vector.vec.get_real(&mut destination.vec)))
 }
 
 #[no_mangle]
-pub extern "C" fn get_imag64(vector: Box<VecBuf>, destination: &mut VecBuf) -> i32 {
+pub extern "C" fn get_imag32(vector: Box<VecBuf>, destination: &mut VecBuf) -> i32 {
     convert_void(Ok(vector.vec.get_imag(&mut destination.vec)))
 }
 
 #[no_mangle]
-pub extern "C" fn phase64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn phase32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| Ok(v.phase_b(b)))
 }
 
 #[no_mangle]
-pub extern "C" fn get_phase64(vector: Box<VecBuf>, destination: &mut VecBuf) -> i32 {
+pub extern "C" fn get_phase32(vector: Box<VecBuf>, destination: &mut VecBuf) -> i32 {
     convert_void(Ok(vector.vec.get_phase(&mut destination.vec)))
 }
 
 #[no_mangle]
-pub extern "C" fn plain_fft64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn plain_fft32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| Ok(v.plain_fft(b)))
 }
 
 #[no_mangle]
-pub extern "C" fn plain_sfft64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn plain_sfft32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| v.plain_sfft(b))
 }
 
 #[no_mangle]
-pub extern "C" fn plain_ifft64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn plain_ifft32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| Ok(v.plain_ifft(b)))
 }
 
 #[no_mangle]
-pub extern "C" fn clone64(vector: Box<VecBuf>) -> Box<VecBuf> {
+pub extern "C" fn clone32(vector: Box<VecBuf>) -> Box<VecBuf> {
     Box::new(VecBuf {
         vec: vector.vec.clone(),
         buffer: SingleBuffer::new(),
@@ -509,7 +514,7 @@ pub extern "C" fn clone64(vector: Box<VecBuf>) -> Box<VecBuf> {
 }
 
 #[no_mangle]
-pub extern "C" fn multiply_complex_exponential64(vector: Box<VecBuf>,
+pub extern "C" fn multiply_complex_exponential32(vector: Box<VecBuf>,
                                                  a: f64,
                                                  b: f64)
                                                  -> VectorInteropResult<VecBuf> {
@@ -517,63 +522,63 @@ pub extern "C" fn multiply_complex_exponential64(vector: Box<VecBuf>,
 }
 
 #[no_mangle]
-pub extern "C" fn add_vector64(vector: Box<VecBuf>,
+pub extern "C" fn add_vector32(vector: Box<VecBuf>,
                                operand: &VecBuf)
                                -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| v.add(&operand.vec))
 }
 
 #[no_mangle]
-pub extern "C" fn sub_vector64(vector: Box<VecBuf>,
+pub extern "C" fn sub_vector32(vector: Box<VecBuf>,
                                operand: &VecBuf)
                                -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| v.sub(&operand.vec))
 }
 
 #[no_mangle]
-pub extern "C" fn div_vector64(vector: Box<VecBuf>,
+pub extern "C" fn div_vector32(vector: Box<VecBuf>,
                                operand: &VecBuf)
                                -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| v.div(&operand.vec))
 }
 
 #[no_mangle]
-pub extern "C" fn mul_vector64(vector: Box<VecBuf>,
+pub extern "C" fn mul_vector32(vector: Box<VecBuf>,
                                operand: &VecBuf)
                                -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| v.mul(&operand.vec))
 }
 
 #[no_mangle]
-pub extern "C" fn add_smaller_vector64(vector: Box<VecBuf>,
+pub extern "C" fn add_smaller_vector32(vector: Box<VecBuf>,
                                        operand: &VecBuf)
                                        -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| v.add_smaller(&operand.vec))
 }
 
 #[no_mangle]
-pub extern "C" fn sub_smaller_vector64(vector: Box<VecBuf>,
+pub extern "C" fn sub_smaller_vector32(vector: Box<VecBuf>,
                                        operand: &VecBuf)
                                        -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| v.sub_smaller(&operand.vec))
 }
 
 #[no_mangle]
-pub extern "C" fn div_smaller_vector64(vector: Box<VecBuf>,
+pub extern "C" fn div_smaller_vector32(vector: Box<VecBuf>,
                                        operand: &VecBuf)
                                        -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| v.div_smaller(&operand.vec))
 }
 
 #[no_mangle]
-pub extern "C" fn mul_smaller_vector64(vector: Box<VecBuf>,
+pub extern "C" fn mul_smaller_vector32(vector: Box<VecBuf>,
                                        operand: &VecBuf)
                                        -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| v.mul_smaller(&operand.vec))
 }
 
 #[no_mangle]
-pub extern "C" fn get_real_imag64(vector: Box<VecBuf>,
+pub extern "C" fn get_real_imag32(vector: Box<VecBuf>,
                                   real: &mut VecBuf,
                                   imag: &mut VecBuf)
                                   -> i32 {
@@ -581,7 +586,7 @@ pub extern "C" fn get_real_imag64(vector: Box<VecBuf>,
 }
 
 #[no_mangle]
-pub extern "C" fn get_mag_phase64(vector: Box<VecBuf>,
+pub extern "C" fn get_mag_phase32(vector: Box<VecBuf>,
                                   mag: &mut VecBuf,
                                   phase: &mut VecBuf)
                                   -> i32 {
@@ -589,7 +594,7 @@ pub extern "C" fn get_mag_phase64(vector: Box<VecBuf>,
 }
 
 #[no_mangle]
-pub extern "C" fn set_real_imag64(vector: Box<VecBuf>,
+pub extern "C" fn set_real_imag32(vector: Box<VecBuf>,
                                   real: &VecBuf,
                                   imag: &VecBuf)
                                   -> VectorInteropResult<VecBuf> {
@@ -597,7 +602,7 @@ pub extern "C" fn set_real_imag64(vector: Box<VecBuf>,
 }
 
 #[no_mangle]
-pub extern "C" fn set_mag_phase64(vector: Box<VecBuf>,
+pub extern "C" fn set_mag_phase32(vector: Box<VecBuf>,
                                   mag: &VecBuf,
                                   phase: &VecBuf)
                                   -> VectorInteropResult<VecBuf> {
@@ -605,7 +610,7 @@ pub extern "C" fn set_mag_phase64(vector: Box<VecBuf>,
 }
 
 #[no_mangle]
-pub extern "C" fn split_into64(vector: &VecBuf, targets: *mut Box<VecBuf>, len: usize) -> i32 {
+pub extern "C" fn split_into32(vector: &VecBuf, targets: *mut Box<VecBuf>, len: usize) -> i32 {
     unsafe {
         let targets = slice::from_raw_parts_mut(targets, len);
         let mut targets: Vec<&mut GenDspVec<Vec<f64>, f64>> =
@@ -615,7 +620,7 @@ pub extern "C" fn split_into64(vector: &VecBuf, targets: *mut Box<VecBuf>, len: 
 }
 
 #[no_mangle]
-pub extern "C" fn merge64(vector: Box<VecBuf>,
+pub extern "C" fn merge32(vector: Box<VecBuf>,
                           sources: *const Box<VecBuf>,
                           len: usize)
                           -> VectorInteropResult<VecBuf> {
@@ -627,7 +632,7 @@ pub extern "C" fn merge64(vector: Box<VecBuf>,
 }
 
 #[no_mangle]
-pub extern "C" fn overwrite_data64(mut vector: Box<VecBuf>,
+pub extern "C" fn overwrite_data32(mut vector: Box<VecBuf>,
                                    data: *const f64,
                                    len: usize)
                                    -> VectorInteropResult<VecBuf> {
@@ -647,7 +652,7 @@ pub extern "C" fn overwrite_data64(mut vector: Box<VecBuf>,
 }
 
 #[no_mangle]
-pub extern "C" fn real_statistics_splitted64(vector: &VecBuf,
+pub extern "C" fn real_statistics_splitted32(vector: &VecBuf,
                                              data: *mut Statistics<f64>,
                                              len: usize)
                                              -> i32 {
@@ -661,7 +666,7 @@ pub extern "C" fn real_statistics_splitted64(vector: &VecBuf,
 }
 
 #[no_mangle]
-pub extern "C" fn complex_statistics_splitted64(vector: &VecBuf,
+pub extern "C" fn complex_statistics_splitted32(vector: &VecBuf,
                                                 data: *mut Statistics<Complex64>,
                                                 len: usize)
                                                 -> i32 {
@@ -675,40 +680,40 @@ pub extern "C" fn complex_statistics_splitted64(vector: &VecBuf,
 }
 
 #[no_mangle]
-pub extern "C" fn fft64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn fft32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| Ok(v.fft(b)))
 }
 
 #[no_mangle]
-pub extern "C" fn sfft64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn sfft32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| v.sfft(b))
 }
 
 #[no_mangle]
-pub extern "C" fn ifft64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn ifft32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| Ok(v.ifft(b)))
 }
 
 #[no_mangle]
-pub extern "C" fn plain_sifft64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn plain_sifft32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| v.plain_sifft(b))
 }
 
 #[no_mangle]
-pub extern "C" fn sifft64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn sifft32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| v.sifft(b))
 }
 
 #[no_mangle]
-pub extern "C" fn mirror64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn mirror32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, b| Ok(v.mirror(b)))
 }
 
-pub extern "C" fn fft_shift64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn fft_shift32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, b| Ok(v.fft_shift(b)))
 }
 
-pub extern "C" fn ifft_shift64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn ifft_shift32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, b| Ok(v.ifft_shift(b)))
 }
 
@@ -717,14 +722,14 @@ pub extern "C" fn ifft_shift64(vector: Box<VecBuf>) -> VectorInteropResult<VecBu
 /// 1. `0` to [`TriangularWindow`](../../window_functions/struct.TriangularWindow.html)
 /// 2. `1` to [`HammingWindow`](../../window_functions/struct.TriangularWindow.html)
 #[no_mangle]
-pub extern "C" fn apply_window64(vector: Box<VecBuf>, window: i32) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn apply_window32(vector: Box<VecBuf>, window: i32) -> VectorInteropResult<VecBuf> {
     let window = translate_to_window_function(window);
     vector.convert_vec(|v, _| Ok(v.apply_window(window.as_ref())))
 }
 
 /// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
 #[no_mangle]
-pub extern "C" fn unapply_window64(vector: Box<VecBuf>,
+pub extern "C" fn unapply_window32(vector: Box<VecBuf>,
                                    window: i32)
                                    -> VectorInteropResult<VecBuf> {
     let window = translate_to_window_function(window);
@@ -733,38 +738,39 @@ pub extern "C" fn unapply_window64(vector: Box<VecBuf>,
 
 /// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
 #[no_mangle]
-pub extern "C" fn windowed_fft64(vector: Box<VecBuf>, window: i32) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn windowed_fft32(vector: Box<VecBuf>, window: i32) -> VectorInteropResult<VecBuf> {
     let window = translate_to_window_function(window);
     vector.trans_vec(|v, b| Ok(v.windowed_fft(b, window.as_ref())))
 }
 
 /// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
 #[no_mangle]
-pub extern "C" fn windowed_sfft64(vector: Box<VecBuf>, window: i32) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn windowed_sfft32(vector: Box<VecBuf>, window: i32) -> VectorInteropResult<VecBuf> {
     let window = translate_to_window_function(window);
     vector.trans_vec(|v, b| v.windowed_sfft(b, window.as_ref()))
 }
 
 /// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
 #[no_mangle]
-pub extern "C" fn windowed_ifft64(vector: Box<VecBuf>, window: i32) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn windowed_ifft32(vector: Box<VecBuf>, window: i32) -> VectorInteropResult<VecBuf> {
     let window = translate_to_window_function(window);
     vector.trans_vec(|v, b| Ok(v.windowed_ifft(b, window.as_ref())))
 }
 
 /// See [`apply_window64`](fn.apply_window64.html) for a description of the `window` parameter.
 #[no_mangle]
-pub extern "C" fn windowed_sifft64(vector: Box<VecBuf>,
+pub extern "C" fn windowed_sifft32(vector: Box<VecBuf>,
                                    window: i32)
                                    -> VectorInteropResult<VecBuf> {
     let window = translate_to_window_function(window);
     vector.trans_vec(|v, b| v.windowed_sifft(b, window.as_ref()))
 }
 
-/// Creates a window from the function `window` and the void pointer `window_data`. The `window_data` pointer is passed to the `window`
+/// Creates a window from the function `window` and the void pointer `window_data`.
+/// The `window_data` pointer is passed to the `window`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
-pub extern "C" fn apply_custom_window64(vector: Box<VecBuf>,
+pub extern "C" fn apply_custom_window32(vector: Box<VecBuf>,
                                         window: extern "C" fn(*const c_void, usize, usize) -> f64,
                                         window_data: *const c_void,
                                         is_symmetric: bool)
@@ -779,9 +785,10 @@ pub extern "C" fn apply_custom_window64(vector: Box<VecBuf>,
     }
 }
 
-/// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
+/// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the
+/// `window` and `window_data` parameter.
 #[no_mangle]
-pub extern "C" fn unapply_custom_window64(vector: Box<VecBuf>,
+pub extern "C" fn unapply_custom_window32(vector: Box<VecBuf>,
                                           window: extern "C" fn(*const c_void, usize, usize) -> f64,
                                           window_data: *const c_void,
                                           is_symmetric: bool)
@@ -796,9 +803,10 @@ pub extern "C" fn unapply_custom_window64(vector: Box<VecBuf>,
     }
 }
 
-/// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
+/// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the
+/// `window` and `window_data` parameter.
 #[no_mangle]
-pub extern "C" fn windowed_custom_fft64(vector: Box<VecBuf>,
+pub extern "C" fn windowed_custom_fft32(vector: Box<VecBuf>,
                                         window: extern "C" fn(*const c_void, usize, usize) -> f64,
                                         window_data: *const c_void,
                                         is_symmetric: bool)
@@ -813,9 +821,10 @@ pub extern "C" fn windowed_custom_fft64(vector: Box<VecBuf>,
     }
 }
 
-/// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
+/// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the
+/// `window` and `window_data` parameter.
 #[no_mangle]
-pub extern "C" fn windowed_custom_sfft64(vector: Box<VecBuf>,
+pub extern "C" fn windowed_custom_sfft32(vector: Box<VecBuf>,
                                          window: extern "C" fn(*const c_void, usize, usize) -> f64,
                                          window_data: *const c_void,
                                          is_symmetric: bool)
@@ -830,9 +839,10 @@ pub extern "C" fn windowed_custom_sfft64(vector: Box<VecBuf>,
     }
 }
 
-/// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
+/// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the
+/// `window` and `window_data` parameter.
 #[no_mangle]
-pub extern "C" fn windowed_custom_ifft64(vector: Box<VecBuf>,
+pub extern "C" fn windowed_custom_ifft32(vector: Box<VecBuf>,
                                          window: extern "C" fn(*const c_void, usize, usize) -> f64,
                                          window_data: *const c_void,
                                          is_symmetric: bool)
@@ -847,9 +857,10 @@ pub extern "C" fn windowed_custom_ifft64(vector: Box<VecBuf>,
     }
 }
 
-/// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the `window` and `window_data` parameter.
+/// See [`apply_custom_window64`](fn.apply_custom_window64.html) for a description of the
+/// `window` and `window_data` parameter.
 #[no_mangle]
-pub extern "C" fn windowed_custom_sifft64(vector: Box<VecBuf>,
+pub extern "C" fn windowed_custom_sifft32(vector: Box<VecBuf>,
                                           window: extern "C" fn(*const c_void, usize, usize) -> f64,
                                           window_data: *const c_void,
                                           is_symmetric: bool)
@@ -865,12 +876,12 @@ pub extern "C" fn windowed_custom_sifft64(vector: Box<VecBuf>,
 }
 
 #[no_mangle]
-pub extern "C" fn reverse64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn reverse32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.reverse()))
 }
 
 #[no_mangle]
-pub extern "C" fn decimatei64(vector: Box<VecBuf>,
+pub extern "C" fn decimatei32(vector: Box<VecBuf>,
                               decimation_factor: u32,
                               delay: u32)
                               -> VectorInteropResult<VecBuf> {
@@ -878,32 +889,33 @@ pub extern "C" fn decimatei64(vector: Box<VecBuf>,
 }
 
 #[no_mangle]
-pub extern "C" fn prepare_argument64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn prepare_argument32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| Ok(v.prepare_argument(b)))
 }
 
 #[no_mangle]
-pub extern "C" fn prepare_argument_padded64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn prepare_argument_padded32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| Ok(v.prepare_argument_padded(b)))
 }
 
 #[no_mangle]
-pub extern "C" fn correlate64(vector: Box<VecBuf>, other: &VecBuf) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn correlate32(vector: Box<VecBuf>, other: &VecBuf) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, b| v.correlate(b, &other.vec))
 }
 
 #[no_mangle]
-pub extern "C" fn convolve_vector64(vector: Box<VecBuf>,
+pub extern "C" fn convolve_vector32(vector: Box<VecBuf>,
                                     impulse_response: &VecBuf)
                                     -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, b| v.convolve_vector(b, &impulse_response.vec))
 }
 
-/// Convolves the vector with an impulse response defined by `impulse_response` and the void pointer `impulse_response_data`.
+/// Convolves the vector with an impulse response defined by `impulse_response` and
+/// the void pointer `impulse_response_data`.
 /// The `impulse_response_data` pointer is passed to the `impulse_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
-pub extern "C" fn convolve_real64(vector: Box<VecBuf>,
+pub extern "C" fn convolve_real32(vector: Box<VecBuf>,
                                   impulse_response: extern "C" fn(*const c_void, f64) -> f64,
                                   impulse_response_data: *const c_void,
                                   is_symmetric: bool,
@@ -920,11 +932,12 @@ pub extern "C" fn convolve_real64(vector: Box<VecBuf>,
     }
 }
 
-/// Convolves the vector with an impulse response defined by `impulse_response` and the void pointer `impulse_response_data`.
+/// Convolves the vector with an impulse response defined by `impulse_response` and the
+/// void pointer `impulse_response_data`.
 /// The `impulse_response_data` pointer is passed to the `impulse_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
-pub extern "C" fn convolve_complex64(vector: Box<VecBuf>,
+pub extern "C" fn convolve_complex32(vector: Box<VecBuf>,
                                      impulse_response: extern "C" fn(*const c_void, f64)
                                                                      -> Complex64,
                                      impulse_response_data: *const c_void,
@@ -949,7 +962,7 @@ pub extern "C" fn convolve_complex64(vector: Box<VecBuf>,
 ///
 /// `rolloff` is only used if this is a valid parameter for the selected `impulse_response`
 #[no_mangle]
-pub extern "C" fn convolve64(vector: Box<VecBuf>,
+pub extern "C" fn convolve32(vector: Box<VecBuf>,
                              impulse_response: i32,
                              rolloff: f64,
                              ratio: f64,
@@ -959,7 +972,8 @@ pub extern "C" fn convolve64(vector: Box<VecBuf>,
     vector.convert_vec(|v, b| Ok(v.convolve(b, function.as_ref(), ratio, len)))
 }
 
-/// Convolves the vector with an impulse response defined by `frequency_response` and the void pointer `frequency_response_data`.
+/// Convolves the vector with an impulse response defined by `frequency_response` and
+/// the void pointer `frequency_response_data`.
 /// The `frequency_response_data` pointer is passed to the `frequency_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
@@ -978,7 +992,8 @@ pub extern fn multiply_frequency_response_real64(vector: Box<VecBuf>,
     }
 }
 
-/// Convolves the vector with an impulse response defined by `frequency_response` and the void pointer `frequency_response_data`.
+/// Convolves the vector with an impulse response defined by `frequency_response`
+/// and the void pointer `frequency_response_data`.
 /// The `frequency_response` pointer is passed to the `frequency_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
@@ -1004,7 +1019,7 @@ pub extern fn multiply_frequency_response_complex64(vector: Box<VecBuf>,
 ///
 /// `rolloff` is only used if this is a valid parameter for the selected `frequency_response`
 #[no_mangle]
-pub extern "C" fn multiply_frequency_response64(vector: Box<VecBuf>,
+pub extern "C" fn multiply_frequency_response32(vector: Box<VecBuf>,
                                                 frequency_response: i32,
                                                 rolloff: f64,
                                                 ratio: f64)
@@ -1013,11 +1028,12 @@ pub extern "C" fn multiply_frequency_response64(vector: Box<VecBuf>,
     vector.convert_vec(|v, _| Ok(v.multiply_frequency_response(function.as_ref(), ratio)))
 }
 
-/// Convolves the vector with an impulse response defined by `impulse_response` and the void pointer `impulse_response_data`.
+/// Convolves the vector with an impulse response defined by `impulse_response` and
+/// the void pointer `impulse_response_data`.
 /// The `impulse_response_data` pointer is passed to the `impulse_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
-pub extern "C" fn interpolatef_custom64(vector: Box<VecBuf>,
+pub extern "C" fn interpolatef_custom32(vector: Box<VecBuf>,
                                         impulse_response: extern "C" fn(*const c_void, f64) -> f64,
                                         impulse_response_data: *const c_void,
                                         is_symmetric: bool,
@@ -1055,11 +1071,12 @@ pub extern "C" fn interpolatef64(vector: Box<VecBuf>,
     })
 }
 
-/// Convolves the vector with an impulse response defined by `frequency_response` and the void pointer `frequency_response_data`.
+/// Convolves the vector with an impulse response defined by `frequency_response` and
+/// the void pointer `frequency_response_data`.
 /// The `frequency_response_data` pointer is passed to the `frequency_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
-pub extern "C" fn interpolatei_custom64(vector: Box<VecBuf>,
+pub extern "C" fn interpolatei_custom32(vector: Box<VecBuf>,
                                         frequency_response: extern "C" fn(*const c_void, f64)
                                                                           -> f64,
                                         frequency_response_data: *const c_void,
@@ -1083,7 +1100,7 @@ pub extern "C" fn interpolatei_custom64(vector: Box<VecBuf>,
 ///
 /// `rolloff` is only used if this is a valid parameter for the selected `frequency_response`
 #[no_mangle]
-pub extern "C" fn interpolatei64(vector: Box<VecBuf>,
+pub extern "C" fn interpolatei32(vector: Box<VecBuf>,
                                  frequency_response: i32,
                                  rolloff: f64,
                                  interpolation_factor: i32)
@@ -1093,7 +1110,7 @@ pub extern "C" fn interpolatei64(vector: Box<VecBuf>,
 }
 
 #[no_mangle]
-pub extern "C" fn interpolate_lin64(vector: Box<VecBuf>,
+pub extern "C" fn interpolate_lin32(vector: Box<VecBuf>,
                                     interpolation_factor: f64,
                                     delay: f64)
                                     -> VectorInteropResult<VecBuf> {
@@ -1101,7 +1118,7 @@ pub extern "C" fn interpolate_lin64(vector: Box<VecBuf>,
 }
 
 #[no_mangle]
-pub extern "C" fn interpolate_hermite64(vector: Box<VecBuf>,
+pub extern "C" fn interpolate_hermite32(vector: Box<VecBuf>,
                                         interpolation_factor: f64,
                                         delay: f64)
                                         -> VectorInteropResult<VecBuf> {

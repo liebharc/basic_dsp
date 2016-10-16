@@ -156,7 +156,9 @@ macro_rules! add_linear_table_lookup_impl {
 
                 impl $name<$data_type> {
 /// Creates a lookup table by putting the pieces together.
-                    pub fn from_raw_parts(table: &[$result_type], delta: $data_type, is_symmetric: bool) -> Self {
+                    pub fn from_raw_parts(table: &[$result_type],
+                                          delta: $data_type,
+                                          is_symmetric: bool) -> Self {
                         let owned_table = Vec::from(table);
                         $name { table: owned_table, delta: delta, is_symmetric: is_symmetric }
                     }
@@ -164,7 +166,9 @@ macro_rules! add_linear_table_lookup_impl {
 
 /// Creates a lookup table from another convolution function. The `delta` argument
 /// can be used to balance performance vs. accuracy.
-                    pub fn from_conv_function(other: &$conv_type<$data_type>, delta: $data_type, len: usize) -> Self {
+                    pub fn from_conv_function(other: &$conv_type<$data_type>,
+                                              delta: $data_type,
+                                              len: usize) -> Self {
                         let center = len as isize;
                         let len = 2 * len + 1;
                         let is_symmetric = other.is_symmetric();
@@ -258,7 +262,10 @@ macro_rules! add_complex_time_linear_table_impl {
                     for n in freq {
                         table.push(*n);
                     }
-                    ComplexFrequencyLinearTableLookup { table: table, delta: delta, is_symmetric: is_symmetric }
+                    ComplexFrequencyLinearTableLookup {
+                        table: table,
+                        delta: delta,
+                        is_symmetric: is_symmetric }
                 }
             }
         )*
@@ -284,7 +291,10 @@ macro_rules! add_real_time_linear_table_impl {
                     for n in freq {
                         table.push(*n);
                     }
-                    RealFrequencyLinearTableLookup { table: table, delta: delta, is_symmetric: is_symmetric }
+                    RealFrequencyLinearTableLookup {
+                        table: table,
+                        delta: delta,
+                        is_symmetric: is_symmetric }
                 }
             }
         )*
@@ -310,7 +320,10 @@ macro_rules! add_complex_frequency_linear_table_impl {
                     for n in time {
                         table.push(*n);
                     }
-                    ComplexTimeLinearTableLookup { table: table, delta: delta, is_symmetric: is_symmetric }
+                    ComplexTimeLinearTableLookup {
+                        table: table,
+                        delta: delta,
+                        is_symmetric: is_symmetric }
                 }
             }
         )*
@@ -448,8 +461,10 @@ pub struct ForeignRealConvolutionFunction<T>
 
     /// The data which is passed to the function.
     ///
-    /// Actual data type is a `const* c_void`, but Rust doesn't allow that because it's unsafe so we store
-    /// it as `usize` and transmute it when necessary. Callers should make very sure safety is guaranteed.
+    /// Actual data type is a `const* c_void`, but Rust doesn't allow that
+    /// because it's unsafe so we store
+    /// it as `usize` and transmute it when necessary. Callers should make
+    /// very sure safety is guaranteed.
     pub conv_data: usize,
 
     /// Indicates whether this function is symmetric around 0 or not.
@@ -510,8 +525,10 @@ pub struct ForeignComplexConvolutionFunction<T>
 
     /// The data which is passed to the window function
     ///
-    /// Actual data type is a `const* c_void`, but Rust doesn't allow that because it's unsafe so we store
-    /// it as `usize` and transmute it when necessary. Callers should make very sure safety is guaranteed.
+    /// Actual data type is a `const* c_void`, but Rust doesn't allow that
+    /// because it's unsafe so we store
+    /// it as `usize` and transmute it when necessary. Callers should make very
+    /// sure safety is guaranteed.
     pub conv_data: usize,
 
     /// Indicates whether this function is symmetric around 0 or not.

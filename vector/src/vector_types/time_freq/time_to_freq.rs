@@ -56,8 +56,8 @@ pub trait TimeToFrequencyDomainOperations<S, T>: ToFreqResult
     /// ```
     fn fft<B>(self, buffer: &mut B) -> Self::FreqResult where B: Buffer<S, T>;
 
-    /// Applies a FFT window and performs a Fast Fourier Transformation transforming a time domain vector
-    /// into a frequency domain vector.
+    /// Applies a FFT window and performs a Fast Fourier Transformation transforming a time
+    /// domain vector into a frequency domain vector.
     fn windowed_fft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> Self::FreqResult
         where B: Buffer<S, T>;
 }
@@ -120,7 +120,9 @@ pub trait SymmetricTimeToFrequencyDomainOperations<S, T>: ToFreqResult
 
 impl<S, T, N, D> TimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToFreqResult,
-          <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>> + FrequencyDomainOperations<S, T>,
+          <DspVec<S, T, N, D> as ToFreqResult>::FreqResult:
+            RededicateForceOps<DspVec<S, T, N, D>>
+            + FrequencyDomainOperations<S, T>,
           S: ToSliceMut<T> + Owner,
           T: RealNumber,
           N: NumberSpace,
@@ -171,7 +173,8 @@ macro_rules! unmirror {
 
 impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToFreqResult,
-          <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>> + FrequencyDomainOperations<S, T> + Vector<T>,
+          <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>>
+            + FrequencyDomainOperations<S, T> + Vector<T>,
           S: ToSliceMut<T> + Owner,
           T: RealNumber,
           N: RealNumberSpace,
@@ -183,14 +186,16 @@ impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T,
           self.valid_len = 0;
           self.number_space.to_complex();
           self.domain.to_freq();
-          return Err((ErrorReason::InputMustBeInTimeDomain, Self::FreqResult::rededicate_from_force(self)));
+          return Err((ErrorReason::InputMustBeInTimeDomain,
+                      Self::FreqResult::rededicate_from_force(self)));
       }
 
       if self.points() % 2 == 0 {
           self.valid_len = 0;
           self.number_space.to_complex();
           self.domain.to_freq();
-          return Err((ErrorReason::InputMustHaveAnOddLength, Self::FreqResult::rededicate_from_force(self)));
+          return Err((ErrorReason::InputMustHaveAnOddLength,
+                      Self::FreqResult::rededicate_from_force(self)));
       }
 
       self.zero_interleave_b(buffer, 2);
@@ -207,14 +212,16 @@ impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T,
           self.valid_len = 0;
           self.number_space.to_complex();
           self.domain.to_freq();
-          return Err((ErrorReason::InputMustBeInTimeDomain, Self::FreqResult::rededicate_from_force(self)));
+          return Err((ErrorReason::InputMustBeInTimeDomain,
+                      Self::FreqResult::rededicate_from_force(self)));
       }
 
       if self.points() % 2 == 0 {
           self.valid_len = 0;
           self.number_space.to_complex();
           self.domain.to_freq();
-          return Err((ErrorReason::InputMustHaveAnOddLength, Self::FreqResult::rededicate_from_force(self)));
+          return Err((ErrorReason::InputMustHaveAnOddLength,
+                      Self::FreqResult::rededicate_from_force(self)));
       }
 
       self.zero_interleave_b(buffer, 2);
@@ -224,21 +231,24 @@ impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T,
       Ok(result)
     }
 
-    fn windowed_sfft<B>(mut self, buffer: &mut B, window: &WindowFunction<T>) -> TransRes<Self::FreqResult>
+    fn windowed_sfft<B>(mut self, buffer: &mut B, window: &WindowFunction<T>)
+        -> TransRes<Self::FreqResult>
       where B: Buffer<S, T> {
       if self.domain() != DataDomain::Time ||
          self.is_complex() {
           self.valid_len = 0;
           self.number_space.to_complex();
           self.domain.to_freq();
-          return Err((ErrorReason::InputMustBeInTimeDomain, Self::FreqResult::rededicate_from_force(self)));
+          return Err((ErrorReason::InputMustBeInTimeDomain,
+                      Self::FreqResult::rededicate_from_force(self)));
       }
 
       if self.points() % 2 == 0 {
           self.valid_len = 0;
           self.number_space.to_complex();
           self.domain.to_freq();
-          return Err((ErrorReason::InputMustHaveAnOddLength, Self::FreqResult::rededicate_from_force(self)));
+          return Err((ErrorReason::InputMustHaveAnOddLength,
+                      Self::FreqResult::rededicate_from_force(self)));
       }
 
       self.zero_interleave_b(buffer, 2);

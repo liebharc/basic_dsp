@@ -202,11 +202,14 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
             // In general (number_of_shifts - i) indicates which prepared vector we need to use
             // if we later calculate end % number_of_shifts. Some examples:
-            // number_of_shifts: 4, end: 13 -> mod: 1. The code will round end to the next SIMD register
+            // number_of_shifts: 4, end: 13 -> mod: 1. The code will round end to the next
+            // SIMD register
             // which ends at 16. In order to get back to 13 we therefore have to ignore 3 numbers.
-            // Ignoring is done by shifting and inserting zeros. So in this example the correct shift is 3
+            // Ignoring is done by shifting and inserting zeros. So in this example the correct
+            // shift is 3
             // which equals number_of_shifts(4) - mod(1).
-            // Now mod: 0 is a special case. This is because if we round up to the next SIMD register then
+            // Now mod: 0 is a special case. This is because if we round up to the next SIMD
+            // register then
             // we still don't need to add any offset and so for the case 0, 0 is the right shift.
             let shift = match i {
                 0 => 0,
@@ -304,7 +307,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
             let shifts = Self::create_shifted_copies(vector);
 
-            let scalar_len = conv_len + T::Reg::len(); // + $reg::len() due to rounding of odd numbers
+            // The next lines uses + $reg::len() due to rounding of odd numbers
+            let scalar_len = conv_len + T::Reg::len();
             let conv_len = conv_len as isize;
             let mut i = 0;
             for num in &mut dest[0..scalar_len] {

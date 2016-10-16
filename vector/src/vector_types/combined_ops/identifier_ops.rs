@@ -12,14 +12,14 @@ use std::sync::Arc;
 /// Operations for all kind of vectors which can be used in combination
 /// with multi ops or prepared ops.
 pub trait IdentifierOps {
-    /// The domain in which the data vector resides. Basically specifies the x-axis and the type of operations which
-    /// are valid on this vector.
+    /// The domain in which the data vector resides. Basically specifies the x-axis and
+    /// the type of operations which are valid on this vector.
     ///
     /// The domain can be changed using the `RededicateOps` trait.
     fn domain(&self) -> DataDomain;
 
-    /// Indicates whether the vector contains complex data. This also specifies the type of operations which are valid
-    /// on this vector.
+    /// Indicates whether the vector contains complex data. This also specifies
+    /// the type of operations which are valid on this vector.
     ///
     /// The number space can be changed using the `RededicateOps` trait.
     fn is_complex(&self) -> bool;
@@ -550,7 +550,8 @@ impl<T, N, D> IdentifierOps for Identifier<T, N, D>
 
 impl<T, N, D> RealToComplexTransformsOps<T> for Identifier<T, N, D>
 	where Identifier<T, N, D>: ToComplexResult,
-	 	  <Identifier<T, N, D> as ToComplexResult>::ComplexResult: RededicateForceOps<Identifier<T, N, D>>,
+	 	  <Identifier<T, N, D> as ToComplexResult>::ComplexResult:
+            RededicateForceOps<Identifier<T, N, D>>,
 		  T: RealNumber,
 		  N: RealNumberSpace,
 		  D: Domain {

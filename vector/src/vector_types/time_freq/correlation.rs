@@ -10,9 +10,11 @@ use super::fft;
 
 /// Cross-correlation of data vectors. See also https://en.wikipedia.org/wiki/Cross-correlation
 ///
-/// The correlation is calculated in two steps. This is done to give you more control over two things:
+/// The correlation is calculated in two steps. This is done to give you more control
+/// over two things:
 ///
-/// 1. Should the correlation use zero padding or not? This is done by calling either `prepare_argument`
+/// 1. Should the correlation use zero padding or not? This is done by calling either
+///    `prepare_argument`
 ///    or `prepare_argument_padded`.
 /// 2. The lifetime of the argument. The argument needs to be transformed for the correlation and
 ///    depending on the application that might be just fine, or a clone needs to be created or
@@ -36,13 +38,14 @@ use super::fft;
 /// }
 /// ```
 /// # Unstable
-/// This functionality has been recently added in order to find out if the definitions are consistent.
-/// However the actual implementation is lacking tests.
+/// This functionality has been recently added in order to find out if the definitions are
+/// consistent. However the actual implementation is lacking tests.
 /// # Failures
 /// TransRes may report the following `ErrorReason` members:
 ///
 /// 1. `VectorMustBeComplex`: if `self` is in real number space.
-/// 3. `VectorMetaDataMustAgree`: in case `self` and `function` are not in the same number space and same domain.
+/// 3. `VectorMetaDataMustAgree`: in case `self` and `function` are not
+///    in the same number space and same domain.
 pub trait CrossCorrelationOps<S, T>: ToFreqResult
     where S: ToSliceMut<T>,
           T: RealNumber
@@ -53,22 +56,27 @@ pub trait CrossCorrelationOps<S, T>: ToFreqResult
     /// 2. Calculate the complex conjugate
     fn prepare_argument<B>(self, buffer: &mut B) -> Self::FreqResult where B: Buffer<S, T>;
 
-    /// Prepares an argument to be used for convolution. The argument is zero padded to length of `2 * self.points() - 1`
+    /// Prepares an argument to be used for convolution. The argument is zero padded to
+    /// length of `2 * self.points() - 1`
     /// and then the same operations are performed as described for `prepare_argument`.
     fn prepare_argument_padded<B>(self, buffer: &mut B) -> Self::FreqResult where B: Buffer<S, T>;
 
-    /// Calculates the correlation between `self` and `other`. `other` needs to be a time vector which
-    /// went through one of the prepare functions `prepare_argument` or `prepare_argument_padded`. See also the
-    /// trait description for more details.
+    /// Calculates the correlation between `self` and `other`. `other`
+    /// needs to be a time vector which
+    /// went through one of the prepare functions `prepare_argument` or `prepare_argument_padded`.
+    /// See also the trait description for more details.
     fn correlate<B>(&mut self, buffer: &mut B, other: &Self::FreqResult) -> VoidResult
         where B: Buffer<S, T>;
 }
 
 impl<S, T, N, D> CrossCorrelationOps<S, T> for DspVec<S, T, N, D>
-	where DspVec<S, T, N, D>: ToFreqResult + TimeToFrequencyDomainOperations<S, T> + ScaleOps<Complex<T>>
+	where DspVec<S, T, N, D>: ToFreqResult
+        + TimeToFrequencyDomainOperations<S, T>
+        + ScaleOps<Complex<T>>
 		+ ReorganizeDataOpsBuffered<S, T> + Clone,
 	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>> +
-	  	FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T> + ElementaryOps + FromVector<T, Output=S>,
+	  	FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T> + ElementaryOps
+        + FromVector<T, Output=S>,
 	  S: ToSliceMut<T> + Owner,
 	  T: RealNumber,
 	  N: ComplexNumberSpace,

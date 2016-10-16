@@ -21,8 +21,13 @@ macro_rules! add_mat_impl {
                     }
                 }
 
-                fn rededicate_with_runtime_data(origin: $matrix<O, S, T>, is_complex: bool, domain: DataDomain) -> Self {
-					let rows = origin.rows.transform(|v|V::rededicate_with_runtime_data(v, is_complex, domain));
+                fn rededicate_with_runtime_data(
+                        origin: $matrix<O, S, T>,
+                        is_complex: bool,
+                        domain: DataDomain) -> Self {
+					let rows =
+                        origin.rows.transform(
+                            |v|V::rededicate_with_runtime_data(v, is_complex, domain));
 					$matrix {
                         rows: rows,
                         storage_type: marker::PhantomData,

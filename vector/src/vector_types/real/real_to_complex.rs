@@ -6,7 +6,8 @@ use super::super::{Owner, ToComplexResult, TransRes, Buffer, InsertZerosOps,
 /// Defines transformations from real to complex number space.
 ///
 /// # Failures
-/// All operations in this trait set `self.len()` to `0` if the type isn't in the real number space.
+/// All operations in this trait set `self.len()` to `0` if the type isn't in
+/// the real number space.
 pub trait RealToComplexTransformsOps<T>: ToComplexResult
     where T: RealNumber
 {
@@ -26,7 +27,8 @@ pub trait RealToComplexTransformsOps<T>: ToComplexResult
 /// Defines transformations from real to complex number space.
 ///
 /// # Failures
-/// All operations in this trait set `self.len()` to `0` if the type isn't in the real number space.
+/// All operations in this trait set `self.len()` to `0` if the type isn't
+/// in the real number space.
 pub trait RealToComplexTransformsOpsBuffered<S, T>: ToComplexResult
     where S: ToSliceMut<T>,
           T: RealNumber
@@ -48,7 +50,8 @@ pub trait RealToComplexTransformsOpsBuffered<S, T>: ToComplexResult
 
 impl<S, T, N, D> RealToComplexTransformsOps<T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToComplexResult + InsertZerosOps<T>,
-          <DspVec<S, T, N, D> as ToComplexResult>::ComplexResult: RededicateForceOps<DspVec<S, T, N, D>>,
+          <DspVec<S, T, N, D> as ToComplexResult>::ComplexResult:
+            RededicateForceOps<DspVec<S, T, N, D>>,
           S: ToSliceMut<T> + Owner,
           T: RealNumber,
           N: RealNumberSpace,
@@ -56,21 +59,26 @@ impl<S, T, N, D> RealToComplexTransformsOps<T> for DspVec<S, T, N, D>
       fn to_complex(mut self) -> TransRes<Self::ComplexResult> {
           if self.is_complex() {
               self.number_space.to_complex();
-              return Err((ErrorReason::InputMustBeReal, Self::ComplexResult::rededicate_from_force(self)));
+              return Err((ErrorReason::InputMustBeReal,
+                          Self::ComplexResult::rededicate_from_force(self)));
           }
 
           let result = self.zero_interleave(2);
           let domain = self.domain();
           match result {
-              Err(reason) => Err((reason, Self::ComplexResult::rededicate_with_runtime_data(self, true, domain))),
-              Ok(()) =>  Ok(Self::ComplexResult::rededicate_with_runtime_data(self, true, domain))
+              Err(reason) =>
+                Err((reason,
+                    Self::ComplexResult::rededicate_with_runtime_data(self, true, domain))),
+              Ok(()) =>
+                Ok(Self::ComplexResult::rededicate_with_runtime_data(self, true, domain))
           }
       }
 }
 
 impl<S, T, N, D> RealToComplexTransformsOpsBuffered<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToComplexResult + InsertZerosOpsBuffered<S, T>,
-          <DspVec<S, T, N, D> as ToComplexResult>::ComplexResult: RededicateForceOps<DspVec<S, T, N, D>>,
+          <DspVec<S, T, N, D> as ToComplexResult>::ComplexResult:
+            RededicateForceOps<DspVec<S, T, N, D>>,
           S: ToSliceMut<T> + Owner,
           T: RealNumber,
           N: RealNumberSpace,

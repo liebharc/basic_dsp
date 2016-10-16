@@ -1,4 +1,5 @@
-//! Functions for 32bit floating point number based vectors. Please refer to the other chapters of the help for documentation of the functions.
+//! Functions for 32bit floating point number based vectors.
+//! Please refer to the other chapters of the help for documentation of the functions.
 use super::*;
 use basic_dsp_vector::*;
 use basic_dsp_vector::combined_ops::*;

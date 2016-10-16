@@ -40,7 +40,8 @@ mod slow_test {
     #[test]
     fn compare_interpolatef_and_interpolatef_optimized() {
         for iteration in 0..3 {
-            let offset = 1.0001e-6; // This offset is just enough to trigger the non optimized code path
+            // This offset is just enough to trigger the non optimized code path
+            let offset = 1.0001e-6;
             let a = create_data_even(201602221, iteration, 2002, 4000);
             let delta = create_delta(201602222, iteration);
             let mut time = a.to_complex_time_vec();
@@ -74,7 +75,8 @@ mod slow_test {
     #[test]
     fn compare_interpolatef_and_interpolatef_optimized_with_delay() {
         for iteration in 0..3 {
-            let offset = 1.0001e-6; // This offset is just enough to trigger the non optimized code path
+            // This offset is just enough to trigger the non optimized code path
+            let offset = 1.0001e-6;
             let a = create_data_even(201602221, iteration, 2002, 4000);
             let delta = create_delta(201602222, iteration);
             let mut time = a.to_complex_time_vec();

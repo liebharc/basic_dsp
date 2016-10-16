@@ -21,7 +21,8 @@ mod slow_test {
             let mut buffer = SingleBuffer::new();
             let mut freq = time.clone().fft(&mut buffer);
             let points = time.points();
-            let ratio = create_delta(20160229, iteration).abs() / 10.0; // Should get us a range [0.0 .. 1.0] and hopefully we are not that unlucky to get 0.0
+            // Should get us a range [0.0 .. 1.0] and hopefully we are not that unlucky to get 0.0
+            let ratio = create_delta(20160229, iteration).abs() / 10.0;
             time.convolve(&mut buffer,
                           &fun as &RealImpulseResponse<f32>,
                           ratio,
@@ -47,7 +48,8 @@ mod slow_test {
             let mut buffer = SingleBuffer::new();
             let mut freq = time.clone().fft(&mut buffer);
             let points = time.points();
-            let ratio = create_delta(201602216, iteration).abs() / 20.0 + 0.5; // Should get us a range [0.5 .. 1.0]
+            // Should get us a range [0.5 .. 1.0]
+            let ratio = create_delta(201602216, iteration).abs() / 20.0 + 0.5;
             time.convolve(&mut buffer,
                           &fun as &RealImpulseResponse<f32>,
                           ratio,
@@ -65,8 +67,10 @@ mod slow_test {
     #[test]
     fn compare_optimized_and_non_optimized_conv() {
         for iteration in 0..3 {
-            // This offset is small enough to now have a big impact on the results (for the RC function)
-            // but the code will use a different non-optimized branch since it won't recognize ratio as an
+            // This offset is small enough to now have a big impact on the results
+            // (for the RC function)
+            // but the code will use a different non-optimized branch since it won't
+            // recognize ratio as an
             // integer
             let offset = 2e-6;
             let a = create_data_even(201602217, iteration, 2002, 4000);
@@ -273,11 +277,14 @@ mod slow_test {
             freq.set_delta(delta);
             let rc_sym: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
             let rc_unsym = unsym_rc_mul();
-            let ratio = create_delta(201601164, iteration).abs() / 20.0 + 0.5; // Should get us a range [0.5 .. 1.0]
+            // Should get us a range [0.5 .. 1.0]
+            let ratio = create_delta(201601164, iteration).abs() / 20.0 + 0.5;
             let mut result_sym = freq.clone();
-            result_sym.multiply_frequency_response(&rc_sym as &RealFrequencyResponse<f32>, 1.0 / ratio);
+            result_sym.multiply_frequency_response(
+                &rc_sym as &RealFrequencyResponse<f32>, 1.0 / ratio);
             let mut result_unsym = freq;
-            result_unsym.multiply_frequency_response(&rc_unsym as &RealFrequencyResponse<f32>, 1.0 / ratio);
+            result_unsym.multiply_frequency_response(
+                &rc_unsym as &RealFrequencyResponse<f32>, 1.0 / ratio);
             assert_vector_eq_with_reason_and_tolerance(&result_sym[..],
                                                        &result_unsym[..],
                                                        1e-2,

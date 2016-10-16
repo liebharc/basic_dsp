@@ -10,7 +10,8 @@ use super::super::{Owner, ToRealResult, ErrorReason, Buffer, Vector, Resize, Met
 /// Defines transformations from complex to real number space.
 ///
 /// # Failures
-/// All operations in this trait set `self.len()` to `0` if the type isn't in the complex number space.
+/// All operations in this trait set `self.len()` to `0` if the type isn't in
+/// the complex number space.
 pub trait ComplexToRealTransformsOps<T>: ToRealResult
     where T: RealNumber
 {
@@ -94,7 +95,8 @@ pub trait ComplexToRealTransformsOps<T>: ToRealResult
 /// Defines transformations from complex to real number space.
 ///
 /// # Failures
-/// All operations in this trait set `self.len()` to `0` if the type isn't in the complex number space.
+/// All operations in this trait set `self.len()` to `0` if the type isn't in
+/// the complex number space.
 pub trait ComplexToRealTransformsOpsBuffered<S, T>: ToRealResult
     where S: ToSliceMut<T>,
           T: RealNumber
@@ -185,7 +187,8 @@ pub trait ComplexToRealTransformsOpsBuffered<S, T>: ToRealResult
 /// Defines getters to get real data from complex types.
 ///
 /// # Failures
-/// All operations in this trait set the arguments `len()` to `0` if the type isn't in the complex number space.
+/// All operations in this trait set the arguments `len()` to `0` if the type isn't in
+/// the complex number space.
 pub trait ComplexToRealGetterOps<T>: ToRealResult
     where T: RealNumber
 {
@@ -237,10 +240,12 @@ pub trait ComplexToRealGetterOps<T>: ToRealResult
     /// ```
     fn get_magnitude(&self, destination: &mut Self::RealResult);
 
-    /// Copies the absolute value squared or magnitude squared of all vector elements into the given target vector.
+    /// Copies the absolute value squared or magnitude squared of all vector elements
+    /// into the given target vector.
     /// # Example
     ///
-    /// Copies the absolute value or magnitude of all vector elements into the given target vector.
+    /// Copies the absolute value or magnitude of all vector elements into the
+    /// given target vector.
     /// # Example
     ///
     /// ```
@@ -265,7 +270,8 @@ pub trait ComplexToRealGetterOps<T>: ToRealResult
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
-    /// let vector = vec!(1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0).to_complex_time_vec();
+    /// let vector =
+    ///     vec!(1.0, 0.0, 0.0, 4.0, -2.0, 0.0, 0.0, -3.0, 1.0, 1.0).to_complex_time_vec();
     /// let mut target = Vec::new().to_real_time_vec();
     /// vector.get_phase(&mut target);
     /// let actual = &target[..];
@@ -294,7 +300,8 @@ pub trait ComplexToRealGetterOps<T>: ToRealResult
 /// Defines setters to create complex data from real data.
 ///
 /// # Failures
-/// All operations in this trait set `self.len()` to `0` if the type isn't in the complex number space.
+/// All operations in this trait set `self.len()` to `0` if the type isn't in
+/// the complex number space.
 pub trait ComplexToRealSetterOps<T>: ToRealResult
     where T: RealNumber
 {
@@ -303,8 +310,8 @@ pub trait ComplexToRealSetterOps<T>: ToRealResult
     fn set_real_imag(&mut self, real: &Self::RealResult, imag: &Self::RealResult) -> VoidResult;
 
     /// Overrides the `self` vectors data with the magnitude and phase data in the given vectors.
-    /// Note that `self` vector will immediately convert the data into a real and imaginary representation
-    /// of the complex numbers which is its default format.
+    /// Note that `self` vector will immediately convert the data into a real and
+    /// imaginary representation of the complex numbers which is its default format.
     /// `mag` and `phase` must have the same size.
     fn set_mag_phase(&mut self, mag: &Self::RealResult, phase: &Self::RealResult) -> VoidResult;
 }
@@ -538,7 +545,10 @@ macro_rules! assert_self_complex_and_targets_real {
 
 impl<S, T, N, D> ComplexToRealGetterOps<T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToRealResult,
-          <DspVec<S, T, N, D> as ToRealResult>::RealResult: Vector<T> + Index<Range<usize>, Output=[T]> + IndexMut<Range<usize>>,
+          <DspVec<S, T, N, D> as ToRealResult>::RealResult:
+            Vector<T>
+            + Index<Range<usize>, Output=[T]>
+            + IndexMut<Range<usize>>,
           S: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
@@ -546,38 +556,48 @@ impl<S, T, N, D> ComplexToRealGetterOps<T> for DspVec<S, T, N, D>
     fn get_real(&self, destination: &mut Self::RealResult) {
         assert_self_complex_and_target_real!(self, destination);
         destination.resize(self.len()).expect("Target is real and thus all values are valid");
-        self.pure_complex_into_real_target_operation(destination, |x,_arg|x.re, (), Complexity::Small);
+        self.pure_complex_into_real_target_operation(
+            destination, |x,_arg|x.re, (), Complexity::Small);
     }
 
     fn get_imag(&self, destination: &mut Self::RealResult) {
         assert_self_complex_and_target_real!(self, destination);
         destination.resize(self.len()).expect("Target is real and thus all values are valid");
-        self.pure_complex_into_real_target_operation(destination, |x,_arg|x.im, (), Complexity::Small);
+        self.pure_complex_into_real_target_operation(
+            destination, |x,_arg|x.im, (), Complexity::Small);
     }
 
     fn get_magnitude(&self, destination: &mut Self::RealResult) {
         assert_self_complex_and_target_real!(self, destination);
         destination.resize(self.len()).expect("Target is real and thus all values are valid");
-        self.simd_complex_into_real_target_operation(destination, |x|x.complex_abs(), |x|x.norm(), Complexity::Small);
+        self.simd_complex_into_real_target_operation(
+            destination, |x|x.complex_abs(), |x|x.norm(), Complexity::Small);
     }
 
     fn get_magnitude_squared(&self, destination: &mut Self::RealResult) {
         assert_self_complex_and_target_real!(self, destination);
         destination.resize(self.len()).expect("Target is real and thus all values are valid");
-        self.simd_complex_into_real_target_operation(destination, |x|x.complex_abs_squared(), |x|x.re * x.re + x.im * x.im, Complexity::Small);
+        self.simd_complex_into_real_target_operation(
+            destination,
+            |x|x.complex_abs_squared(),
+            |x|x.re * x.re + x.im * x.im,
+            Complexity::Small);
     }
 
     fn get_phase(&self, destination: &mut Self::RealResult) {
         assert_self_complex_and_target_real!(self, destination);
         destination.resize(self.len()).expect("Target is real and thus all values are valid");
-        self.pure_complex_into_real_target_operation(destination, |x,_arg|x.arg(), (), Complexity::Small)
+        self.pure_complex_into_real_target_operation(
+            destination, |x,_arg|x.arg(), (), Complexity::Small)
     }
 
     fn get_real_imag(&self, real: &mut Self::RealResult, imag: &mut Self::RealResult) {
         assert_self_complex_and_targets_real!(self, real, imag);
         let data_length = self.len();
-        real.resize(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");
-        imag.resize(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");
+        real.resize(data_length / 2).expect(
+            "Target should be real and thus all values for len / 2 should be valid");
+        imag.resize(data_length / 2).expect(
+            "Target should be real and thus all values for len / 2 should be valid");
         let real = &mut real[0..data_length / 2];
         let imag = &mut imag[0..data_length / 2];
         let data = self.data.to_slice();
@@ -593,8 +613,10 @@ impl<S, T, N, D> ComplexToRealGetterOps<T> for DspVec<S, T, N, D>
     fn get_mag_phase(&self, mag: &mut Self::RealResult, phase: &mut Self::RealResult) {
         assert_self_complex_and_targets_real!(self, mag, phase);
         let data_length = self.len();
-        mag.resize(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");
-        phase.resize(data_length / 2).expect("Target should be real and thus all values for len / 2 should be valid");
+        mag.resize(data_length / 2).expect(
+            "Target should be real and thus all values for len / 2 should be valid");
+        phase.resize(data_length / 2).expect(
+            "Target should be real and thus all values for len / 2 should be valid");
         let mag = &mut mag[0..data_length / 2];
         let phase = &mut phase[0..data_length / 2];
         let data = self.data.to_slice();
@@ -611,7 +633,9 @@ impl<S, T, N, D> ComplexToRealGetterOps<T> for DspVec<S, T, N, D>
 
 impl<S, T, N, D> ComplexToRealSetterOps<T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToRealResult,
-          <DspVec<S, T, N, D> as ToRealResult>::RealResult: Index<Range<usize>, Output=[T]> + Vector<T>,
+          <DspVec<S, T, N, D> as ToRealResult>::RealResult:
+            Index<Range<usize>, Output=[T]>
+            + Vector<T>,
           S: ToSliceMut<T> + Owner + Resize,
           T: RealNumber,
           N: ComplexNumberSpace,

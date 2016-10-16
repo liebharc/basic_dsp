@@ -13,24 +13,27 @@ use num::complex::Complex;
 
 /// Provides interpolation operations for real and complex data vectors.
 /// # Unstable
-/// This functionality has been recently added in order to find out if the definitions are consistent.
-/// However the actual implementation is lacking tests.
+/// This functionality has been recently added in order to find out if the definitions
+/// are consistent. However the actual implementation is lacking tests.
 pub trait InterpolationOps<S, T>
     where S: ToSliceMut<T>,
           T: RealNumber
 {
-    /// Interpolates `self` with the convolution function `function` by the real value `interpolation_factor`.
-    /// InterpolationOps is done in time domain and the argument `conv_len` can be used to balance accuracy
-    /// and computational performance.
-    /// A `delay` can be used to delay or phase shift the vector. The `delay` considers `self.delta()`.
+    /// Interpolates `self` with the convolution function `function` by the real value
+    /// `interpolation_factor`. InterpolationOps is done in time domain and the argument
+    /// `conv_len` can be used to balance accuracy and computational performance.
+    /// A `delay` can be used to delay or phase shift the vector.
+    /// The `delay` considers `self.delta()`.
     ///
-    /// The complexity of this `interpolatef` is `O(self.points() * conv_len)`, while for `interpolatei` it's
-    /// `O(self.points() * log(self.points()))`. If computational performance is important you should therefore decide
-    /// how large `conv_len` needs to be to yield the desired accuracy. If you compare `conv_len` to `log(self.points)` you should
-    /// get a feeling for the expected performance difference. More important is however to do a test
-    /// run to compare the speed of `interpolatef` and `interpolatei`. Together with the information that
-    /// changing the vectors size change `log(self.points()` but not `conv_len` gives the indication that `interpolatef`
-    /// performs faster for larger vectors while `interpolatei` performs faster for smaller vectors.
+    /// The complexity of this `interpolatef` is `O(self.points() * conv_len)`,
+    /// while for `interpolatei` it's `O(self.points() * log(self.points()))`. If computational
+    /// performance is important you should therefore decide how large `conv_len` needs to be
+    /// to yield the desired accuracy. If you compare `conv_len` to `log(self.points)` you should
+    /// get a feeling for the expected performance difference. More important is however to do a
+    /// test run to compare the speed of `interpolatef` and `interpolatei`.
+    /// Together with the information that changing the vectors size change `log(self.points()`
+    /// but not `conv_len` gives the indication that `interpolatef` performs faster for larger
+    /// vectors while `interpolatei` performs faster for smaller vectors.
     fn interpolatef<B>(&mut self,
                        buffer: &mut B,
                        function: &RealImpulseResponse<T>,
@@ -39,15 +42,16 @@ pub trait InterpolationOps<S, T>
                        conv_len: usize)
         where B: Buffer<S, T>;
 
-    /// Interpolates `self` with the convolution function `function` by the interger value `interpolation_factor`.
-    /// InterpolationOps is done in in frequency domain.
+    /// Interpolates `self` with the convolution function `function` by the interger value
+    /// `interpolation_factor`. InterpolationOps is done in in frequency domain.
     ///
     /// See the description of `interpolatef` for some basic performance considerations.
     /// # Failures
     /// TransRes may report the following `ErrorReason` members:
     ///
-    /// 1. `ArgumentFunctionMustBeSymmetric`: if `!self.is_complex() && !function.is_symmetric()` or in words if `self` is a real
-    ///    vector and `function` is asymmetric. Converting the vector into a complex vector before the interpolation is one way
+    /// 1. `ArgumentFunctionMustBeSymmetric`: if `!self.is_complex() && !function.is_symmetric()`
+    ///    or in words if `self` is a real vector and `function` is asymmetric.
+    ///    Converting the vector into a complex vector before the interpolation is one way
     ///    to resolve this error.
     fn interpolatei<B>(&mut self,
                        buffer: &mut B,
@@ -62,7 +66,8 @@ pub trait InterpolationOps<S, T>
 
 /// Provides interpolation operations which are only applicable for real data vectors.
 /// # Failures
-/// All operations in this trait fail with `VectorMustBeReal` if the vector isn't in the real number space.
+/// All operations in this trait fail with `VectorMustBeReal` if the vector isn't in the
+/// real number space.
 pub trait RealInterpolationOps<S, T>
     where S: ToSliceMut<T>,
           T: RealNumber
@@ -70,13 +75,15 @@ pub trait RealInterpolationOps<S, T>
     /// Piecewise cubic hermite interpolation between samples.
     /// # Unstable
     /// Algorithm might need to be revised.
-    /// This operation and `interpolate_lin` might be merged into one function with an additional argument in future.
+    /// This operation and `interpolate_lin` might be merged into one function with an
+    /// additional argument in future.
     fn interpolate_hermite<B>(&mut self, buffer: &mut B, interpolation_factor: T, delay: T)
         where B: Buffer<S, T>;
 
     /// Linear interpolation between samples.
     /// # Unstable
-    /// This operation and `interpolate_hermite` might be merged into one function with an additional argument in future.
+    /// This operation and `interpolate_hermite` might be merged into one function with an
+    /// additional argument in future.
     fn interpolate_lin<B>(&mut self, buffer: &mut B, interpolation_factor: T, delay: T)
         where B: Buffer<S, T>;
 }
@@ -453,8 +460,10 @@ impl<S, T, N, D> RealInterpolationOps<S, T> for DspVec<S, T, N, D>
         where B: Buffer<S, T>
     {
         let data_len = self.len();
-        let dest_len =
-            (T::from(data_len - 1).unwrap() * interpolation_factor).round().to_usize().unwrap() + 1;
+        let dest_len = (T::from(data_len - 1).unwrap() * interpolation_factor)
+            .round()
+            .to_usize()
+            .unwrap() + 1;
         let mut temp = buffer.get(dest_len);
         {
             if self.is_complex() {
@@ -490,8 +499,10 @@ impl<S, T, N, D> RealInterpolationOps<S, T> for DspVec<S, T, N, D>
         where B: Buffer<S, T>
     {
         let data_len = self.len();
-        let dest_len =
-            (T::from(data_len - 1).unwrap() * interpolation_factor).round().to_usize().unwrap() + 1;
+        let dest_len = (T::from(data_len - 1).unwrap() * interpolation_factor)
+            .round()
+            .to_usize()
+            .unwrap() + 1;
         let mut temp = buffer.get(dest_len);
         {
             if self.is_complex() {

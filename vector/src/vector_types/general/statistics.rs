@@ -50,7 +50,8 @@ pub trait StatisticsOps<T>: Sized
     fn statistics(&self) -> Statistics<T>;
 
     /// Calculates the statistics of the data contained in the vector as if the vector would
-    /// have been split into `len` pieces. `self.len` should be dividable by `len` without a remainder,
+    /// have been split into `len` pieces. `self.len` should be dividable by
+    /// `len` without a remainder,
     /// but this isn't enforced by the implementation.
     ///
     /// # Example
@@ -237,7 +238,8 @@ impl<T> Stats<Complex<T>> for Statistics<Complex<T>>
             average: Complex::<T>::new(T::zero(), T::zero()),
             min: Complex::<T>::new(T::infinity(), T::infinity()),
             max: Complex::<T>::new(T::zero(), T::zero()),
-            rms: Complex::<T>::new(T::zero(), T::zero()), /* this field therefore has a different meaning inside this function */
+            // the rms field has a different meaning inside this function
+            rms: Complex::<T>::new(T::zero(), T::zero()),
             min_index: 0,
             max_index: 0,
         }

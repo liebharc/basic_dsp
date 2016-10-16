@@ -30,7 +30,8 @@ pub trait MapAggregateOps<T>: Sized
 {
     /// Transforms all vector elements using the function `map` and then aggregates
     /// all the results with `aggregate`. `aggregate` must be a commutativity and associativity;
-    /// that's because there is no guarantee that the numbers will be aggregated in any deterministic order.
+    /// that's because there is no guarantee that the numbers will
+    /// be aggregated in any deterministic order.
     fn map_aggregate<'a, A, FMap, FAggr, R>(&self,
                                             argument: A,
                                             map: FMap,

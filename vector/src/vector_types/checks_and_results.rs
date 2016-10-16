@@ -37,10 +37,12 @@ pub enum ErrorReason {
 
     /// The operations is only valid if the data input contains half of a symmetric spectrum.
     /// The symmetry definition follows soon however more important is that the element at 0 Hz
-    /// which happens to be the first vector element must be real. The error message is raised if this
+    /// which happens to be the first vector element must be real. The error message is raised
+    /// if this
     /// is violated, the rest of the definition is only listed here for completeness snce it can't
     /// be checked.
-    /// The required symmetry for a vector is that for every point `vector[x].conj() == vector[-x]`(pseudocode)
+    /// The required symmetry for a vector is that for every point
+    /// `vector[x].conj() == vector[-x]`(pseudocode)
     /// where `x` is the x-axis position relative to 0 Hz and `conj` is the complex conjugate.
     InputMustBeConjSymmetric,
 

@@ -1,4 +1,5 @@
-//! Functions for 32bit floating point number based vectors. Please refer to the other chapters of the help for documentation of the functions.
+//! Functions for 32bit floating point number based vectors.
+//! Please refer to the other chapters of the help for documentation of the functions.
 use super::*;
 use basic_dsp_vector::*;
 use basic_dsp_vector::window_functions::*;
@@ -435,12 +436,14 @@ pub extern "C" fn map_aggregate_real32(vector: &VecBuf,
                                                                 -> *const c_void)
                                        -> ScalarResult<*const c_void> {
     unsafe {
-        let result = vector.convert_scalar(|v|{
-            v.map_aggregate(
-                (),
-                move|v, i, _| mem::transmute(map(v, i)),
-                move|a: usize, b: usize| mem::transmute(aggregate(mem::transmute(a), mem::transmute(b))))
-        }, mem::transmute(0usize));
+        let result = vector.convert_scalar(|v| {
+            v.map_aggregate((),
+                            move |v, i, _| mem::transmute(map(v, i)),
+                            move |a: usize, b: usize| {
+                                mem::transmute(aggregate(mem::transmute(a), mem::transmute(b)))
+                            })
+        },
+                                           mem::transmute(0usize));
         mem::transmute(result)
     }
 }
@@ -454,12 +457,14 @@ pub extern "C" fn map_aggregate_complex32(vector: &VecBuf,
                                                                    -> *const c_void)
                                           -> ScalarResult<*const c_void> {
     unsafe {
-        let result = vector.convert_scalar(|v|{
-            v.map_aggregate(
-                (),
-                move|v, i, _| mem::transmute(map(v, i)),
-                move|a: usize, b: usize| mem::transmute(aggregate(mem::transmute(a), mem::transmute(b))))
-        }, mem::transmute(0usize));
+        let result = vector.convert_scalar(|v| {
+            v.map_aggregate((),
+                            move |v, i, _| mem::transmute(map(v, i)),
+                            move |a: usize, b: usize| {
+                                mem::transmute(aggregate(mem::transmute(a), mem::transmute(b)))
+                            })
+        },
+                                           mem::transmute(0usize));
         mem::transmute(result)
     }
 }
@@ -760,7 +765,8 @@ pub extern "C" fn windowed_sifft32(vector: Box<VecBuf>,
     vector.trans_vec(|v, b| v.windowed_sifft(b, window.as_ref()))
 }
 
-/// Creates a window from the function `window` and the void pointer `window_data`. The `window_data` pointer is passed to the `window`
+/// Creates a window from the function `window` and the void pointer `window_data`.
+/// The `window_data` pointer is passed to the `window`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
 pub extern "C" fn apply_custom_window32(vector: Box<VecBuf>,
@@ -778,7 +784,8 @@ pub extern "C" fn apply_custom_window32(vector: Box<VecBuf>,
     }
 }
 
-/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.
+/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the
+/// `window` and `window_data` parameter.
 #[no_mangle]
 pub extern "C" fn unapply_custom_window32(vector: Box<VecBuf>,
                                           window: extern "C" fn(*const c_void, usize, usize) -> f32,
@@ -795,7 +802,8 @@ pub extern "C" fn unapply_custom_window32(vector: Box<VecBuf>,
     }
 }
 
-/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.
+/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the
+/// `window` and `window_data` parameter.
 #[no_mangle]
 pub extern "C" fn windowed_custom_fft32(vector: Box<VecBuf>,
                                         window: extern "C" fn(*const c_void, usize, usize) -> f32,
@@ -812,7 +820,8 @@ pub extern "C" fn windowed_custom_fft32(vector: Box<VecBuf>,
     }
 }
 
-/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.
+/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the
+/// `window` and `window_data` parameter.
 #[no_mangle]
 pub extern "C" fn windowed_custom_sfft32(vector: Box<VecBuf>,
                                          window: extern "C" fn(*const c_void, usize, usize) -> f32,
@@ -829,7 +838,8 @@ pub extern "C" fn windowed_custom_sfft32(vector: Box<VecBuf>,
     }
 }
 
-/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.
+/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the
+/// `window` and `window_data` parameter.
 #[no_mangle]
 pub extern "C" fn windowed_custom_ifft32(vector: Box<VecBuf>,
                                          window: extern "C" fn(*const c_void, usize, usize) -> f32,
@@ -846,7 +856,8 @@ pub extern "C" fn windowed_custom_ifft32(vector: Box<VecBuf>,
     }
 }
 
-/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the `window` and `window_data` parameter.
+/// See [`apply_custom_window32`](fn.apply_custom_window32.html) for a description of the
+/// `window` and `window_data` parameter.
 #[no_mangle]
 pub extern "C" fn windowed_custom_sifft32(vector: Box<VecBuf>,
                                           window: extern "C" fn(*const c_void, usize, usize) -> f32,
@@ -898,7 +909,8 @@ pub extern "C" fn convolve_vector32(vector: Box<VecBuf>,
     vector.convert_vec(|v, b| v.convolve_vector(b, &impulse_response.vec))
 }
 
-/// Convolves the vector with an impulse response defined by `impulse_response` and the void pointer `impulse_response_data`.
+/// Convolves the vector with an impulse response defined by `impulse_response` and
+/// the void pointer `impulse_response_data`.
 /// The `impulse_response_data` pointer is passed to the `impulse_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
@@ -919,7 +931,8 @@ pub extern "C" fn convolve_real32(vector: Box<VecBuf>,
     }
 }
 
-/// Convolves the vector with an impulse response defined by `impulse_response` and the void pointer `impulse_response_data`.
+/// Convolves the vector with an impulse response defined by `impulse_response` and the
+/// void pointer `impulse_response_data`.
 /// The `impulse_response_data` pointer is passed to the `impulse_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
@@ -958,7 +971,8 @@ pub extern "C" fn convolve32(vector: Box<VecBuf>,
     vector.convert_vec(|v, b| Ok(v.convolve(b, function.as_ref(), ratio, len)))
 }
 
-/// Convolves the vector with an impulse response defined by `frequency_response` and the void pointer `frequency_response_data`.
+/// Convolves the vector with an impulse response defined by `frequency_response` and
+/// the void pointer `frequency_response_data`.
 /// The `frequency_response_data` pointer is passed to the `frequency_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
@@ -977,7 +991,8 @@ pub extern fn multiply_frequency_response_real32(vector: Box<VecBuf>,
     }
 }
 
-/// Convolves the vector with an impulse response defined by `frequency_response` and the void pointer `frequency_response_data`.
+/// Convolves the vector with an impulse response defined by `frequency_response`
+/// and the void pointer `frequency_response_data`.
 /// The `frequency_response` pointer is passed to the `frequency_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
@@ -1012,7 +1027,8 @@ pub extern "C" fn multiply_frequency_response32(vector: Box<VecBuf>,
     vector.convert_vec(|v, _| Ok(v.multiply_frequency_response(function.as_ref(), ratio)))
 }
 
-/// Convolves the vector with an impulse response defined by `impulse_response` and the void pointer `impulse_response_data`.
+/// Convolves the vector with an impulse response defined by `impulse_response` and
+/// the void pointer `impulse_response_data`.
 /// The `impulse_response_data` pointer is passed to the `impulse_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]
@@ -1054,7 +1070,8 @@ pub extern "C" fn interpolatef32(vector: Box<VecBuf>,
     })
 }
 
-/// Convolves the vector with an impulse response defined by `frequency_response` and the void pointer `frequency_response_data`.
+/// Convolves the vector with an impulse response defined by `frequency_response` and
+/// the void pointer `frequency_response_data`.
 /// The `frequency_response_data` pointer is passed to the `frequency_response`
 /// function at every call and can be used to store parameters.
 #[no_mangle]

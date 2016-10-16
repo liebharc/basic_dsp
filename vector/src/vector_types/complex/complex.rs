@@ -12,7 +12,8 @@ use super::super::{array_to_complex_mut, Vector, DspVec, ToSliceMut, MetaData, D
 /// If one of the methods is called on real data then `self.len()` will be set to `0`.
 /// To avoid this it's recommended to use the `to_real_time_vec`, `to_real_freq_vec`
 /// `to_complex_time_vec` and `to_complex_freq_vec` constructor methods since
-/// the resulting types will already check at compile time (using the type system) that the data is complex.
+/// the resulting types will already check at compile time (using the type system) that the
+/// data is complex.
 pub trait ComplexOps<T>
     where T: RealNumber
 {

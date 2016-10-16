@@ -33,14 +33,14 @@ pub trait ComplexIndexMut<Idx>: ComplexIndex<Idx>
 
 /// A trait which provides information about number space and domain.
 pub trait MetaData {
-    /// The domain in which the data vector resides. Basically specifies the x-axis and the type of operations which
-    /// are valid on this vector.
+    /// The domain in which the data vector resides. Basically specifies the x-axis and the
+    /// type of operations which are valid on this vector.
     ///
     /// The domain can be changed using the `RededicateOps` trait.
     fn domain(&self) -> DataDomain;
 
-    /// Indicates whether the vector contains complex data. This also specifies the type of operations which are valid
-    /// on this vector.
+    /// Indicates whether the vector contains complex data. This also specifies the type
+    /// of operations which are valid on this vector.
     ///
     /// The number space can be changed using the `RededicateOps` trait.
     fn is_complex(&self) -> bool;
@@ -58,17 +58,20 @@ pub trait ResizeOps {
 pub trait Vector<T>: MetaData + ResizeOps
     where T: RealNumber
 {
-    /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
+    /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`,
+    /// in frequency domain `delta` is in `[Hz]`.
     fn delta(&self) -> T;
 
-    /// Sets the x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
+    /// Sets the x-axis delta. If `domain` is time domain then `delta` is in `[s]`,
+    /// in frequency domain `delta` is in `[Hz]`.
     fn set_delta(&mut self, delta: T);
 
     /// The number of valid elements in the vector. This can be changed
     /// with the `Resize` trait.
     fn len(&self) -> usize;
 
-    /// The number of valid points. If the vector is complex then every valid point consists of two floating point numbers,
+    /// The number of valid points. If the vector is complex then every valid
+    /// point consists of two floating point numbers,
     /// while for real vectors every point only consists of one floating point number.
     fn points(&self) -> usize;
 

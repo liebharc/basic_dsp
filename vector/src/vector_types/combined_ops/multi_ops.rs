@@ -182,7 +182,8 @@ impl<S, T, NO, DO> MultiOperation1<S, T, NO, DO>
 
     /// Adds new operations which will be executed with the next call to `get`
     ///
-    /// As a background: The function `operation` will be executed immediately. It only operated on `Identifier` types and these serve as
+    /// As a background: The function `operation` will be executed immediately.
+    /// It only operated on `Identifier` types and these serve as
     /// placeholder for vectors. Every operation done to an `Identifier`
     /// is recorded and will be executed on vectors if `get` is called.
     pub fn add_ops<F, NT, DT>(self, operation: F) -> MultiOperation1<S, T, NT, DT>
@@ -235,7 +236,8 @@ impl<S, T, NO1, DO1, NO2, DO2> MultiOperation2<S, T, NO1, DO1, NO2, DO2>
 
     /// Adds new operations which will be executed with the next call to `get`
     ///
-    /// As a background: The function `operation` will be executed immediately. It only operated on `Identifier` types and these serve as
+    /// As a background: The function `operation` will be executed immediately.
+    /// It only operated on `Identifier` types and these serve as
     /// placeholder for vectors. Every operation done to an `Identifier`
     /// is recorded and will be executed on vectors if `get` is called.
     pub fn add_ops<F, NT1, DT1, NT2, DT2>(self,

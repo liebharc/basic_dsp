@@ -11,15 +11,18 @@ pub trait Convolution<S, T, C>
     where S: ToSliceMut<T>,
           T: RealNumber
 {
-    /// Convolves `self` with the convolution function `impulse_response`. For performance consider to
+    /// Convolves `self` with the convolution function `impulse_response`.
+    /// For performance consider to
     /// to use `FrequencyMultiplication` instead of this operation depending on `len`.
     ///
-    /// An optimized convolution algorithm is used if  `1.0 / ratio` is an integer (inside a `1e-6` tolerance)
+    /// An optimized convolution algorithm is used if  `1.0 / ratio`
+    /// is an integer (inside a `1e-6` tolerance)
     /// and `len` is smaller than a threshold (`202` right now).
     /// # Failures
     /// TransRes may report the following `ErrorReason` members:
     ///
-    /// 1. `VectorMustBeComplex`: if `self` is in real number space but `impulse_response` is in complex number space.
+    /// 1. `VectorMustBeComplex`: if `self` is in real number space but
+    ///    `impulse_response` is in complex number space.
     /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
     fn convolve<B>(&mut self, buffer: &mut B, impulse_response: C, ratio: T, len: usize)
         where B: Buffer<S, T>;
@@ -30,13 +33,15 @@ pub trait ConvolutionOps<S, T>
     where S: ToSliceMut<T>,
           T: RealNumber
 {
-    /// Convolves `self` with the convolution function `impulse_response`. For performance it's recommended
+    /// Convolves `self` with the convolution function `impulse_response`.
+    /// For performance it's recommended
     /// to use multiply both vectors in frequency domain instead of this operation.
     /// # Failures
     /// TransRes may report the following `ErrorReason` members:
     ///
     /// 1. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
-    /// 2. `VectorMetaDataMustAgree`: in case `self` and `impulse_response` are not in the same number space and same domain.
+    /// 2. `VectorMetaDataMustAgree`: in case `self` and `impulse_response`
+    ///    are not in the same number space and same domain.
     /// 3. `InvalidArgumentLength`: if `self.points() < impulse_response.points()`.
     fn convolve_vector<B>(&mut self, buffer: &mut B, impulse_response: &Self) -> VoidResult
         where B: Buffer<S, T>;
@@ -51,12 +56,14 @@ pub trait FrequencyMultiplication<S, T, C>
     ///
     /// In order to multiply a vector with another vector in frequency response use `mul`.
     /// # Assumptions
-    /// The operation assumes that the vector contains a full spectrum centered at 0 Hz. If half a spectrum
+    /// The operation assumes that the vector contains a full spectrum centered at 0 Hz.
+    /// If half a spectrum
     /// or a FFT shifted spectrum is provided the operation will come back with invalid results.
     /// # Failures
     /// TransRes may report the following `ErrorReason` members:
     ///
-    /// 1. `VectorMustBeComplex`: if `self` is in real number space but `frequency_response` is in complex number space.
+    /// 1. `VectorMustBeComplex`: if `self` is in real number space but `frequency_response`
+    ///    is in complex number space.
     /// 2. `VectorMustBeInFreqDomain`: if `self` is in time domain.
     fn multiply_frequency_response(&mut self, frequency_response: C, ratio: T);
 }

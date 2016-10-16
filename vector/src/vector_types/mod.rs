@@ -195,8 +195,9 @@ impl Domain for TimeOrFrequencyData {
 impl TimeDomain for TimeOrFrequencyData {}
 impl FrequencyDomain for TimeOrFrequencyData {}
 
-/// A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing (DSP) operations.
-/// All data vector operations consume the vector they operate on and return a new vector. A consumed vector
+/// A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing
+/// (DSP) operations. All data vector operations consume the vector they operate on and return a
+/// new vector. A consumed vector
 /// must not be accessed again.
 ///
 /// Vectors come in different flavors:
@@ -205,16 +206,17 @@ impl FrequencyDomain for TimeOrFrequencyData {}
 /// 2. Real or Complex numbers
 /// 3. 32bit or 64bit floating point numbers
 ///
-/// The first two flavors define meta information about the vector and provide compile time information what
-/// operations are available with the given vector and how this will transform the vector. This makes sure that
-/// some invalid operations are already discovered at compile time. In case that this isn't desired or the information
-/// about the vector isn't known at compile time there are the generic [`DataVec32`](type.DataVec32.html) and [`DataVec64`](type.DataVec64.html) vectors
-/// available.
+/// The first two flavors define meta information about the vector and provide compile time
+/// information what operations are available with the given vector and how this will transform
+/// the vector. This makes sure that some invalid operations are already discovered at compile
+/// time. In case that this isn't desired or the information about the vector isn't known at
+/// compile time there are the generic [`DataVec32`](type.DataVec32.html) and
+/// [`DataVec64`](type.DataVec64.html) vectors available.
 ///
-/// 32bit and 64bit flavors trade performance and memory consumption against accuracy. 32bit vectors are roughly
-/// two times faster than 64bit vectors for most operations. But remember that you should benchmark first
-/// before you give away accuracy for performance unless however you are sure that 32bit accuracy is certainly good
-/// enough.
+/// 32bit and 64bit flavors trade performance and memory consumption against accuracy.
+/// 32bit vectors are roughly two times faster than 64bit vectors for most operations.
+/// But remember that you should benchmark first before you give away accuracy for performance
+/// unless however you are sure that 32bit accuracy is certainly good enough.
 pub struct DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,

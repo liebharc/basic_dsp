@@ -179,7 +179,8 @@ pub fn translate_to_padding_option(value: i32) -> PaddingOption {
 #[repr(C)]
 pub struct VectorInteropResult<T> {
     /// This value is zero in case of error. All other values mean that an error
-    /// occurred and the data in the vector might be unchanged or invalid. Error codes are described in `translate_error`.
+    /// occurred and the data in the vector might be unchanged or invalid.
+    /// Error codes are described in `translate_error`.
     pub result_code: i32,
 
     /// A pointer to a data vector.
@@ -190,7 +191,8 @@ pub struct VectorInteropResult<T> {
 #[repr(C)]
 pub struct BinaryVectorInteropResult<T> {
     /// This value is zero in case of error. All other values mean that an error
-    /// occurred and the data in the vector might be unchanged or invalid. Error codes are described in `translate_error`.
+    /// occurred and the data in the vector might be unchanged or invalid.
+    /// Error codes are described in `translate_error`.
     pub result_code: i32,
 
     /// A pointer to a data vector.
@@ -206,7 +208,8 @@ pub struct ScalarInteropResult<T>
     where T: Sized
 {
     /// This value is zero in case of error. All other values mean that an error
-    /// occurred and the data in the vector might be unchanged or invalid. Error codes are described in `translate_error`.
+    /// occurred and the data in the vector might be unchanged or invalid.
+    /// Error codes are described in `translate_error`.
     pub result_code: i32,
 
     /// The result

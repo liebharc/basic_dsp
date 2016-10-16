@@ -57,7 +57,8 @@ pub trait TrigOps {
     /// Calculates the principal value of the inverse hyperbolic cosine of each element in radians.
     fn acosh(&mut self);
 
-    /// Calculates the principal value of the inverse hyperbolic tangent of each element in radians.
+    /// Calculates the principal value of the inverse hyperbolic
+    /// tangent of each element in radians.
     fn atanh(&mut self);
 }
 
@@ -96,7 +97,8 @@ pub trait PowerOps<T>
 
     /// Calculates the n-th root of every vector element.
     ///
-    /// If the result would be a complex number then the vector will contain a NaN instead. So the vector
+    /// If the result would be a complex number then the vector will contain a NaN instead.
+    /// So the vector
     /// will never convert itself to a complex vector during this operation.
     ///
     /// # Example

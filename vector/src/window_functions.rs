@@ -10,7 +10,8 @@ use std::mem;
 ///
 /// The contract for window functions is as follows:
 ///
-/// 1. The second argument is of the function is always `self.points()` and the possible values for the first argument ranges from `0..self.points()`.
+/// 1. The second argument is of the function is always `self.points()` and the possible values
+///    for the first argument ranges from `0..self.points()`.
 /// 2. A window function must be symmetric about the y-axis.
 /// 3. All real return values are allowed
 pub trait WindowFunction<T>: Sync
@@ -92,8 +93,10 @@ pub struct ForeignWindowFunction<T>
 
     /// The data which is passed to the window function
     ///
-    /// Actual data type is a `const* c_void`, but Rust doesn't allow that because it's unsafe so we store
-    /// it as `usize` and transmute it when necessary. Callers should make very sure safety is guaranteed.
+    /// Actual data type is a `const* c_void`, but Rust doesn't allow that because it's
+    /// unsafe so we store
+    /// it as `usize` and transmute it when necessary. Callers should make very sure safety
+    /// is guaranteed.
     pub window_data: usize,
 
     /// Indicates whether this function is symmetric around 0 or not.

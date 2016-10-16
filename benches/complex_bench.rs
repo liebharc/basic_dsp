@@ -75,13 +75,14 @@ mod complex {
     fn convolve_vector_with_signal_32s_benchmark(b: &mut Bencher) {
         let mut vector = ComplexTime32Box::new(Size::Small);
         b.iter(|| {
-            vector.execute(|mut v, buffer|
-                {
-                    let sinc: SincFunction<f32> = SincFunction::new();
-                    let table = RealTimeLinearTableLookup::<f32>::from_conv_function(&sinc as &RealImpulseResponse<f32>, 0.2, 5);
-                    v.convolve(buffer, &table as &RealImpulseResponse<f32>, 0.5, 10);
-                    v
-                })
+            vector.execute(|mut v, buffer| {
+                let sinc: SincFunction<f32> = SincFunction::new();
+                let table =
+                        RealTimeLinearTableLookup::<f32>::from_conv_function(
+                            &sinc as &RealImpulseResponse<f32>, 0.2, 5);
+                v.convolve(buffer, &table as &RealImpulseResponse<f32>, 0.5, 10);
+                v
+            })
         });
     }
 

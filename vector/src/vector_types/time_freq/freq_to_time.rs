@@ -78,7 +78,8 @@ pub trait SymmetricFrequencyToTimeDomainOperations<S, T>: ToRealTimeResult
     /// isn't verified and no error is raised if the spectrum isn't symmetric. The reason
     /// for this is that there is no robust verification possible.
     ///
-    /// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1` points.
+    /// The argument indicates whether the resulting real vector should have `2*N`
+    /// or `2*N-1` points.
     ///
     /// This version of the IFFT neither applies a window nor does it scale the
     /// vector.
@@ -89,16 +90,18 @@ pub trait SymmetricFrequencyToTimeDomainOperations<S, T>: ToRealTimeResult
     /// isn't verified and no error is raised if the spectrum isn't symmetric. The reason
     /// for this is that there is no robust verification possible.
     ///
-    /// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1` points.
+    /// The argument indicates whether the resulting real vector should have `2*N` or
+    /// `2*N-1` points.
     fn sifft<B>(self, buffer: &mut B) -> TransRes<Self::RealTimeResult> where B: Buffer<S, T>;
 
-    /// Performs a Symmetric Inverse Fast Fourier Transformation (SIFFT) and removes the FFT window.
-    /// The SIFFT is performed under the assumption that `self`
+    /// Performs a Symmetric Inverse Fast Fourier Transformation (SIFFT) and removes the FFT
+    /// window. The SIFFT is performed under the assumption that `self`
     /// contains half of a symmetric spectrum starting from 0 Hz. This assumption
     /// isn't verified and no error is raised if the spectrum isn't symmetric. The reason
     /// for this is that there is no robust verification possible.
     ///
-    /// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1` points.
+    /// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1`
+    /// points.
     fn windowed_sifft<B>(self,
                          buffer: &mut B,
                          window: &WindowFunction<T>)
@@ -108,7 +111,8 @@ pub trait SymmetricFrequencyToTimeDomainOperations<S, T>: ToRealTimeResult
 
 impl<S, T, N, D> FrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToTimeResult,
-          <DspVec<S, T, N, D> as ToTimeResult>::TimeResult: RededicateForceOps<DspVec<S, T, N, D>> + TimeDomainOperations<S, T>,
+          <DspVec<S, T, N, D> as ToTimeResult>::TimeResult:
+                RededicateForceOps<DspVec<S, T, N, D>> + TimeDomainOperations<S, T>,
           S: ToSliceMut<T> + Owner,
           T: RealNumber,
           N: ComplexNumberSpace,
@@ -151,7 +155,8 @@ impl<S, T, N, D> FrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
 
 impl<S, T, N, D> SymmetricFrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
      where DspVec<S, T, N, D>: ToRealTimeResult + ToTimeResult + FrequencyDomainOperations<S, T>,
-           <DspVec<S, T, N, D> as ToRealTimeResult>::RealTimeResult: RededicateForceOps<DspVec<S, T, N, D>> + TimeDomainOperations<S, T>,
+           <DspVec<S, T, N, D> as ToRealTimeResult>::RealTimeResult:
+                RededicateForceOps<DspVec<S, T, N, D>> + TimeDomainOperations<S, T>,
            S: ToSliceMut<T> + Owner,
            T: RealNumber,
            N: ComplexNumberSpace,
@@ -163,14 +168,16 @@ impl<S, T, N, D> SymmetricFrequencyToTimeDomainOperations<S, T> for DspVec<S, T,
            self.valid_len = 0;
            self.number_space.to_complex();
            self.domain.to_freq();
-           return Err((ErrorReason::InputMustBeInFrequencyDomain, Self::RealTimeResult::rededicate_from_force(self)));
+           return Err((ErrorReason::InputMustBeInFrequencyDomain,
+                       Self::RealTimeResult::rededicate_from_force(self)));
        }
 
        if self.points() > 0 && self[1].abs() > T::from(1e-10).unwrap() {
            self.valid_len = 0;
            self.number_space.to_complex();
            self.domain.to_freq();
-           return Err((ErrorReason::InputMustBeConjSymmetric, Self::RealTimeResult::rededicate_from_force(self)));
+           return Err((ErrorReason::InputMustBeConjSymmetric,
+                       Self::RealTimeResult::rededicate_from_force(self)));
        }
 
        self.mirror(buffer);
@@ -190,7 +197,8 @@ impl<S, T, N, D> SymmetricFrequencyToTimeDomainOperations<S, T> for DspVec<S, T,
        self.plain_sifft(buffer)
    }
 
-   fn windowed_sifft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> TransRes<Self::RealTimeResult>
+   fn windowed_sifft<B>(self, buffer: &mut B, window: &WindowFunction<T>)
+        -> TransRes<Self::RealTimeResult>
        where B: Buffer<S, T> {
            let mut result = try!(self.sifft(buffer));
            result.unapply_window(window);

@@ -15,7 +15,8 @@ pub trait FrequencyDomainOperations<S, T>: ToTimeResult
     /// This function mirrors the spectrum vector to transform a symmetric spectrum
     /// into a full spectrum with the DC element at index 0 (no FFT shift/swap halves).
     ///
-    /// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1` points.
+    /// The argument indicates whether the resulting real vector should have `2*N` or `2*N-1`
+    /// points.
     ///
     /// # Example
     ///

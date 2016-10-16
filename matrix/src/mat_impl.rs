@@ -10,17 +10,20 @@ pub trait Matrix<V, T>: MetaData + ResizeOps
     where V: Vector<T>,
           T: RealNumber
 {
-    /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
+    /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`,
+    /// in frequency domain `delta` is in `[Hz]`.
     fn delta(&self) -> T;
 
-    /// Sets the x-axis delta. If `domain` is time domain then `delta` is in `[s]`, in frequency domain `delta` is in `[Hz]`.
+    /// Sets the x-axis delta. If `domain` is time domain then `delta` is in `[s]`,
+    /// in frequency domain `delta` is in `[Hz]`.
     fn set_delta(&mut self, delta: T);
 
     /// The number of valid elements in each row of the matrix. This can be changed
     /// with the `Resize` trait.
     fn row_len(&self) -> usize;
 
-    /// The number of valid points in a row. If the matrix is complex then every valid point consists of two floating point numbers,
+    /// The number of valid points in a row. If the matrix is complex then every valid point
+    /// consists of two floating point numbers,
     /// while for real vectors every point only consists of one floating point number.
     fn row_points(&self) -> usize;
 

@@ -136,7 +136,8 @@ impl<T, NI, DI, NO, DO> PreparedOperation1<T, NI, DI, NO, DO>
 
     /// Adds new operations which will be executed with the next call to `exec`
     ///
-    /// As a background: The function `operation` will be executed immediately. It only operated on `Identifier` types and these serve as
+    /// As a background: The function `operation` will be executed immediately.
+    /// It only operated on `Identifier` types and these serve as
     /// placeholder for vectors. Every operation done to an `Identifier`
     /// is recorded and will be executed on vectors if `exec` is called.
     pub fn add_ops<F, NT, DT>(self, operation: F) -> PreparedOperation1<T, NI, DI, NT, DT>
@@ -178,7 +179,8 @@ impl<T, NI, DI, NO, DO> PreparedOperation1<T, NI, DI, NO, DO>
     }
 }
 
-impl<T, S, B, NI, DI, NO, DO> PreparedOperation1Exec<B, DspVec<S, T, NI, DI>, DspVec<S, T, NO, DO>> for PreparedOperation1<T, NI, DI, NO, DO>
+impl<T, S, B, NI, DI, NO, DO> PreparedOperation1Exec<B, DspVec<S, T, NI, DI>, DspVec<S, T, NO, DO>>
+    for PreparedOperation1<T, NI, DI, NO, DO>
 	where T: RealNumber + 'static,
         S: ToSliceMut<T> + Owner,
         DspVec<S, T, NO, DO>: RededicateForceOps<DspVec<S, T, NI, DI>>,
@@ -186,14 +188,17 @@ impl<T, S, B, NI, DI, NO, DO> PreparedOperation1Exec<B, DspVec<S, T, NI, DI>, Ds
 		NO: NumberSpace, DO: Domain,
         B: Buffer<S, T> {
 	/// Executes all recorded operations on the input vectors.
-	fn exec(&self, buffer: &mut B, a: DspVec<S, T, NI, DI>) -> result::Result<DspVec<S, T, NO, DO>, (ErrorReason, DspVec<S, T, NO, DO>)> {
+	fn exec(&self, buffer: &mut B, a: DspVec<S, T, NI, DI>)
+        -> result::Result<DspVec<S, T, NO, DO>, (ErrorReason, DspVec<S, T, NO, DO>)> {
 		let mut vec = Vec::new();
 		let (number_space, domain, gen) = generic_vector_from_any_vector(a);
 		vec.push(gen);
 
 
 		// at this point we would execute all ops and cast the result to the right types
-		let result = DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(buffer, vec, &self.ops);
+		let result =
+            DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(
+                buffer, vec, &self.ops);
 
 		match result {
 			Err((reason, mut vec)) => {
@@ -236,7 +241,8 @@ impl<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2<T,
 {
     /// Adds new operations which will be executed with the next call to `exec`
     ///
-    /// As a background: The function `operation` will be executed immediately. It only operated on `Identifier` types and these serve as
+    /// As a background: The function `operation` will be executed immediately.
+    /// It only operated on `Identifier` types and these serve as
     /// placeholder for vectors. Every operation done to an `Identifier`
     /// is recorded and will be executed on vectors if `exec` is called.
     pub fn add_ops<F, NT1, DT1, NT2, DT2>
@@ -323,7 +329,9 @@ impl<T, S, B, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2Exec<
 
     /// Executes all recorded operations on the input vectors.
     fn exec(&self, buffer: &mut B, a: DspVec<S, T, NI1, DI1>, b: DspVec<S, T, NI2, DI2>)
-        -> result::Result<(DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>), (ErrorReason, DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>)> {
+        -> result::Result<
+            (DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>),
+            (ErrorReason, DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>)> {
         // First "cast" the vectors to generic vectors. This is done with the
         // the rededicate trait since in contrast to the to_gen method it
         // can be used in a generic context.
@@ -335,7 +343,9 @@ impl<T, S, B, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2Exec<
 		vec.push(gen2);
 
         // at this point we would execute all ops and cast the result to the right types
-		let result = DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(buffer, vec, &self.ops);
+		let result =
+            DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(
+                buffer, vec, &self.ops);
 
         match result {
 			Err((reason, mut vec)) => {
