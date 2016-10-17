@@ -7,7 +7,7 @@ use window_functions::*;
 /// Defines all operations which are valid on `DataVecs` containing time domain data.
 /// # Failures
 /// All operations in this trait set `self.len()` to `0` if the vector isn't in time domain.
-pub trait TimeDomainOperations<S, T>: ToFreqResult
+pub trait TimeDomainOperations<S, T>
     where S: ToSliceMut<T>,
           T: RealNumber
 {

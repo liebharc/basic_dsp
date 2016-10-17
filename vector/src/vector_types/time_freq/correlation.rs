@@ -46,7 +46,7 @@ use super::fft;
 /// 1. `VectorMustBeComplex`: if `self` is in real number space.
 /// 3. `VectorMetaDataMustAgree`: in case `self` and `function` are not
 ///    in the same number space and same domain.
-pub trait CrossCorrelationOps<S, T>: ToFreqResult
+pub trait CrossCorrelationArgumentOps<S, T>: ToFreqResult
     where S: ToSliceMut<T>,
           T: RealNumber
 {
@@ -60,16 +60,21 @@ pub trait CrossCorrelationOps<S, T>: ToFreqResult
     /// length of `2 * self.points() - 1`
     /// and then the same operations are performed as described for `prepare_argument`.
     fn prepare_argument_padded<B>(self, buffer: &mut B) -> Self::FreqResult where B: Buffer<S, T>;
+}
 
+pub trait CrossCorrelationOps<S, T, A>
+    where S: ToSliceMut<T>,
+          T: RealNumber
+{
     /// Calculates the correlation between `self` and `other`. `other`
     /// needs to be a time vector which
     /// went through one of the prepare functions `prepare_argument` or `prepare_argument_padded`.
     /// See also the trait description for more details.
-    fn correlate<B>(&mut self, buffer: &mut B, other: &Self::FreqResult) -> VoidResult
+    fn correlate<B>(&mut self, buffer: &mut B, other: &A) -> VoidResult
         where B: Buffer<S, T>;
 }
 
-impl<S, T, N, D> CrossCorrelationOps<S, T> for DspVec<S, T, N, D>
+impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
 	where DspVec<S, T, N, D>: ToFreqResult
         + TimeToFrequencyDomainOperations<S, T>
         + ScaleOps<Complex<T>>
@@ -98,8 +103,27 @@ impl<S, T, N, D> CrossCorrelationOps<S, T> for DspVec<S, T, N, D>
 		result.conj();
 		result
 	}
+}
 
-	fn correlate<B>(&mut self, buffer: &mut B, other: &Self::FreqResult) -> VoidResult
+impl<S, T, N, D> CrossCorrelationOps<S, T, <DspVec<S, T, N, D> as ToFreqResult>::FreqResult>
+    for DspVec<S, T, N, D>
+	where DspVec<S, T, N, D>: ToFreqResult
+        + TimeToFrequencyDomainOperations<S, T>
+        + ScaleOps<Complex<T>>
+		+ ReorganizeDataOpsBuffered<S, T> + Clone,
+	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>>
+        + FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T>
+        + ElementaryOps<<DspVec<S, T, N, D> as ToFreqResult>::FreqResult>
+        + FromVector<T, Output=S>,
+	  S: ToSliceMut<T> + Owner,
+	  T: RealNumber,
+	  N: ComplexNumberSpace,
+	  D: TimeDomain {
+
+	fn correlate<B>(
+            &mut self,
+            buffer: &mut B,
+            other: &<DspVec<S, T, N, D> as ToFreqResult>::FreqResult) -> VoidResult
 	 	where B: Buffer<S, T> {
 		if self.domain() != DataDomain::Time
 		   || !self.is_complex() {
@@ -116,7 +140,8 @@ impl<S, T, N, D> CrossCorrelationOps<S, T> for DspVec<S, T, N, D>
 			mem::swap(&mut temp, &mut self.data);
 			let mut clone = self.clone();
 			mem::swap(&mut temp, &mut clone.data);
-			let mut clone = Self::FreqResult::rededicate_from_force(clone);
+			let mut clone =
+                <DspVec<S, T, N, D> as ToFreqResult>::FreqResult::rededicate_from_force(clone);
 			try!(clone.mul(other));
 			let (mut temp, _) = clone.get();
 			mem::swap(&mut temp, &mut self.data);

@@ -8,7 +8,7 @@ use super::super::{ToTimeResult, DspVec, Vector, Buffer, ToSliceMut, RededicateF
 /// # Failures
 /// All operations in this trait set `self.len()` to `0`
 /// if the vector isn't in frequency domain and complex number space.
-pub trait FrequencyDomainOperations<S, T>: ToTimeResult
+pub trait FrequencyDomainOperations<S, T>
     where S: ToSliceMut<T>,
           T: RealNumber
 {

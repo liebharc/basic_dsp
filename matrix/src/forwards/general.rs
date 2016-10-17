@@ -836,3 +836,35 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> SumOps<[T; 4]>
         result.into_fixed_length()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::super::*;
+    use basic_dsp_vector::*;
+
+    #[test]
+    fn sum_test() {
+        let mat = vec![vec![0.0, 1.0], vec![2.0, 3.0]].to_real_time_mat();
+        let sum = mat.sum();
+        assert_eq!(sum, &[1.0, 5.0]);
+    }
+
+    #[test]
+    fn add_mat() {
+        let mut mat1 = vec![vec![0.0, 1.0], vec![2.0, 3.0]].to_real_time_mat();
+        let mat2 = vec![vec![3.0, 7.0], vec![-1.0, 4.0]].to_real_time_mat();
+        mat1.add(&mat2).unwrap();
+        assert_eq!(&mat1.rows[0][..], &[3.0, 8.0]);
+        assert_eq!(&mat1.rows[1][..], &[1.0, 7.0]);
+    }
+
+
+    #[test]
+    fn add_vec() {
+        let mut mat = vec![vec![0.0, 1.0], vec![2.0, 3.0]].to_real_time_mat();
+        let vec = vec![3.0, 7.0].to_real_time_vec();
+        mat.add(&vec).unwrap();
+        assert_eq!(&mat.rows[0][..], &[3.0, 8.0]);
+        assert_eq!(&mat.rows[1][..], &[5.0, 10.0]);
+    }
+}
