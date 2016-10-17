@@ -25,22 +25,23 @@ pub trait MapInplaceNoArgsOps<T>: Sized
     fn map_inplace<F>(&mut self, map: F) where F: Fn(T, usize) -> T + 'static + Sync + Send;
 }
 
-pub trait MapAggregateOps<T>: Sized
-    where T: Sized
+pub trait MapAggregateOps<T, R>: Sized
+    where T: Sized,
+          R: Send
 {
+    type Output;
     /// Transforms all vector elements using the function `map` and then aggregates
     /// all the results with `aggregate`. `aggregate` must be a commutativity and associativity;
     /// that's because there is no guarantee that the numbers will
     /// be aggregated in any deterministic order.
-    fn map_aggregate<'a, A, FMap, FAggr, R>(&self,
+    fn map_aggregate<'a, A, FMap, FAggr>(&self,
                                             argument: A,
                                             map: FMap,
                                             aggregate: FAggr)
-                                            -> ScalarResult<R>
+                                            -> Self::Output
         where A: Sync + Copy + Send,
               FMap: Fn(T, usize, A) -> R + 'a + Sync,
-              FAggr: Fn(R, R) -> R + 'a + Sync + Send,
-              R: Send;
+              FAggr: Fn(R, R) -> R + 'a + Sync + Send;
 }
 
 impl<S, T, N, D> MapInplaceOps<T> for DspVec<S, T, N, D>
@@ -75,21 +76,22 @@ impl<S, T, N, D> MapInplaceOps<T> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, T, N, D> MapAggregateOps<T> for DspVec<S, T, N, D>
+impl<S, T, N, D, R> MapAggregateOps<T, R> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: RealNumberSpace,
-          D: Domain
+          D: Domain,
+          R: Send
 {
-    fn map_aggregate<'a, A, FMap, FAggr, R>(&self,
+    type Output = ScalarResult<R>;
+    fn map_aggregate<'a, A, FMap, FAggr>(&self,
                                             argument: A,
                                             map: FMap,
                                             aggregate: FAggr)
                                             -> ScalarResult<R>
         where A: Sync + Copy + Send,
               FMap: Fn(T, usize, A) -> R + 'a + Sync,
-              FAggr: Fn(R, R) -> R + 'a + Sync + Send,
-              R: Send
+              FAggr: Fn(R, R) -> R + 'a + Sync + Send
     {
         let aggregate = Arc::new(aggregate);
         let mut result = {
@@ -179,21 +181,23 @@ impl<S, T, N, D> MapInplaceOps<Complex<T>> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, T, N, D> MapAggregateOps<Complex<T>> for DspVec<S, T, N, D>
+impl<S, T, N, D, R> MapAggregateOps<Complex<T>, R> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
-          D: Domain
+          D: Domain,
+          R: Send
 {
-    fn map_aggregate<'a, A, FMap, FAggr, R>(&self,
+    type Output = ScalarResult<R>;
+
+    fn map_aggregate<'a, A, FMap, FAggr>(&self,
                                             argument: A,
                                             map: FMap,
                                             aggregate: FAggr)
                                             -> ScalarResult<R>
         where A: Sync + Copy + Send,
               FMap: Fn(Complex<T>, usize, A) -> R + 'a + Sync,
-              FAggr: Fn(R, R) -> R + 'a + Sync + Send,
-              R: Send
+              FAggr: Fn(R, R) -> R + 'a + Sync + Send
     {
         let aggregate = Arc::new(aggregate);
         let mut result = {

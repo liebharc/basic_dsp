@@ -1,5 +1,6 @@
 use basic_dsp_vector::*;
 use super::super::*;
+use IntoFixedLength;
 use num::complex::Complex;
 
 macro_rules! add_mat_impl {
@@ -382,28 +383,456 @@ macro_rules! add_mat_impl {
 					}
 				}
 			}
-// impl<S: ToSlice<T>, V: Vector<T> + MapAggregateOps<T>, T: RealNumber>
-// MapAggregateOps<T> for $matrix<V, S, T> {
-// fn map_aggregate<'a, A, F>(
-// &self,
-// argument: A,
-// map: FMap,
-// aggregate: FAggr) -> ScalarResult<R>
-// where A: Sync + Copy + Send,
-// FMap: Fn(T, usize, A) -> R + 'a + Sync,
-// FAggr: Fn(R, R) -> R + 'a + Sync + Send,
-// R: Send {
-// for v in self.rows_mut() {
-// v.map_inplace(argument, |v, i, a|map(v, i, a))
-// }
-// }
-// }
-
-// TODO DotProductOps, MapAggregateOps, Statistics, Add/sub/mul/div vector to matu
-
-
 		)*
 	}
 }
 
 add_mat_impl!(MatrixMxN; Matrix2xN; Matrix3xN; Matrix4xN);
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<T, MatrixMxN<V, S, T>>
+   for MatrixMxN<V, S, T>
+    where V: DotProductOps<T, V, Output=ScalarResult<T>> {
+    type Output = ScalarResult<Vec<T>>;
+
+    fn dot_product(&self, factor: &MatrixMxN<V, S, T>) -> ScalarResult<Vec<T>> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for (v, o) in self.rows().iter().zip(factor.rows()) {
+            let res = try!(v.dot_product(o));
+            result.push(res);
+        }
+
+        Ok(result)
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<T, Matrix2xN<V, S, T>>
+   for Matrix2xN<V, S, T>
+    where V: DotProductOps<T, V, Output=ScalarResult<T>> {
+    type Output = ScalarResult<Vec<T>>;
+
+    fn dot_product(&self, factor: &Matrix2xN<V, S, T>) -> ScalarResult<Vec<T>> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for (v, o) in self.rows().iter().zip(factor.rows()) {
+            let res = try!(v.dot_product(o));
+            result.push(res);
+        }
+
+        Ok(result.into_fixed_length())
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<T, Matrix3xN<V, S, T>>
+   for Matrix3xN<V, S, T>
+    where V: DotProductOps<T, V, Output=ScalarResult<T>> {
+    type Output = ScalarResult<Vec<T>>;
+
+    fn dot_product(&self, factor: &Matrix3xN<V, S, T>) -> ScalarResult<Vec<T>> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for (v, o) in self.rows().iter().zip(factor.rows()) {
+            let res = try!(v.dot_product(o));
+            result.push(res);
+        }
+
+        Ok(result.into_fixed_length())
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<T, Matrix4xN<V, S, T>>
+   for Matrix4xN<V, S, T>
+    where V: DotProductOps<T, V, Output=ScalarResult<T>> {
+    type Output = ScalarResult<Vec<T>>;
+
+    fn dot_product(&self, factor: &Matrix4xN<V, S, T>) -> ScalarResult<Vec<T>> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for (v, o) in self.rows().iter().zip(factor.rows()) {
+            let res = try!(v.dot_product(o));
+            result.push(res);
+        }
+
+        Ok(result.into_fixed_length())
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<T, V>
+   for MatrixMxN<V, S, T>
+    where V: DotProductOps<T, V, Output=ScalarResult<T>> {
+    type Output = ScalarResult<Vec<T>>;
+
+    fn dot_product(&self, factor: &V) -> ScalarResult<Vec<T>> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = try!(v.dot_product(factor));
+            result.push(res);
+        }
+
+        Ok(result)
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<T, V>
+   for Matrix2xN<V, S, T>
+    where V: DotProductOps<T, V, Output=ScalarResult<T>> {
+    type Output = ScalarResult<[T; 2]>;
+
+    fn dot_product(&self, factor: &V) -> ScalarResult<[T; 2]> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = try!(v.dot_product(factor));
+            result.push(res);
+        }
+
+        Ok(result.into_fixed_length())
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<T, V>
+   for Matrix3xN<V, S, T>
+    where V: DotProductOps<T, V, Output=ScalarResult<T>> {
+    type Output = ScalarResult<[T; 3]>;
+
+    fn dot_product(&self, factor: &V) -> ScalarResult<[T; 3]> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = try!(v.dot_product(factor));
+            result.push(res);
+        }
+
+        Ok(result.into_fixed_length())
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<T, V>
+   for Matrix4xN<V, S, T>
+    where V: DotProductOps<T, V, Output=ScalarResult<T>> {
+    type Output = ScalarResult<[T; 4]>;
+
+    fn dot_product(&self, factor: &V) -> ScalarResult<[T; 4]> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = try!(v.dot_product(factor));
+            result.push(res);
+        }
+
+        Ok(result.into_fixed_length())
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send>
+        MapAggregateOps<T, R> for MatrixMxN<V, S, T>
+        where V: MapAggregateOps<T, R, Output=ScalarResult<R>> {
+    type Output = ScalarResult<Vec<R>>;
+
+    fn map_aggregate<'a, A, FMap, FAggr>(
+        &self,
+        argument: A,
+        map: FMap,
+        aggregate: FAggr) -> ScalarResult<Vec<R>>
+    where A: Sync + Copy + Send,
+          FMap: Fn(T, usize, A) -> R + 'a + Sync,
+          FAggr: Fn(R, R) -> R + 'a + Sync + Send,
+          R: Send {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res =
+            try!(
+                v.map_aggregate(
+                    argument,
+                    |v, i, a|map(v, i, a),
+                    |a, b|aggregate(a, b)));
+            result.push(res);
+        }
+
+        Ok(result)
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send>
+        MapAggregateOps<T, R> for Matrix2xN<V, S, T>
+        where V: MapAggregateOps<T, R, Output=ScalarResult<R>> {
+    type Output = ScalarResult<[R; 2]>;
+
+    fn map_aggregate<'a, A, FMap, FAggr>(
+        &self,
+        argument: A,
+        map: FMap,
+        aggregate: FAggr) -> ScalarResult<[R; 2]>
+    where A: Sync + Copy + Send,
+          FMap: Fn(T, usize, A) -> R + 'a + Sync,
+          FAggr: Fn(R, R) -> R + 'a + Sync + Send,
+          R: Send {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res =
+            try!(
+                v.map_aggregate(
+                    argument,
+                    |v, i, a|map(v, i, a),
+                    |a, b|aggregate(a, b)));
+            result.push(res);
+        }
+
+        Ok(result.into_fixed_length())
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send>
+        MapAggregateOps<T, R> for Matrix3xN<V, S, T>
+        where V: MapAggregateOps<T, R, Output=ScalarResult<R>> {
+    type Output = ScalarResult<[R; 3]>;
+
+    fn map_aggregate<'a, A, FMap, FAggr>(
+        &self,
+        argument: A,
+        map: FMap,
+        aggregate: FAggr) -> ScalarResult<[R; 3]>
+    where A: Sync + Copy + Send,
+          FMap: Fn(T, usize, A) -> R + 'a + Sync,
+          FAggr: Fn(R, R) -> R + 'a + Sync + Send,
+          R: Send {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res =
+            try!(
+                v.map_aggregate(
+                    argument,
+                    |v, i, a|map(v, i, a),
+                    |a, b|aggregate(a, b)));
+            result.push(res);
+        }
+
+        Ok(result.into_fixed_length())
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send>
+        MapAggregateOps<T, R> for Matrix4xN<V, S, T>
+        where V: MapAggregateOps<T, R, Output=ScalarResult<R>> {
+    type Output = ScalarResult<[R; 4]>;
+
+    fn map_aggregate<'a, A, FMap, FAggr>(
+        &self,
+        argument: A,
+        map: FMap,
+        aggregate: FAggr) -> ScalarResult<[R; 4]>
+    where A: Sync + Copy + Send,
+          FMap: Fn(T, usize, A) -> R + 'a + Sync,
+          FAggr: Fn(R, R) -> R + 'a + Sync + Send,
+          R: Send {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res =
+            try!(
+                v.map_aggregate(
+                    argument,
+                    |v, i, a|map(v, i, a),
+                    |a, b|aggregate(a, b)));
+            result.push(res);
+        }
+
+        Ok(result.into_fixed_length())
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
+   for MatrixMxN<V, S, T>
+    where V: StatisticsOps<T, Output=Statistics<T>> {
+    type Output = Vec<Statistics<T>>;
+
+    fn statistics(&self) -> Self::Output {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.statistics();
+            result.push(res);
+        }
+
+        result
+    }
+
+    fn statistics_splitted(&self, len: usize) -> Vec<Self::Output> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.statistics_splitted(len);
+            result.push(res);
+        }
+
+        result
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
+   for Matrix2xN<V, S, T>
+    where V: StatisticsOps<T, Output=Statistics<T>> {
+    type Output = [Statistics<T>; 2];
+
+    fn statistics(&self) -> Self::Output {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.statistics();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+
+    fn statistics_splitted(&self, len: usize) -> Vec<Self::Output> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.statistics_splitted(len);
+            result.push(res.into_fixed_length());
+        }
+
+        result
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
+   for Matrix3xN<V, S, T>
+    where V: StatisticsOps<T, Output=Statistics<T>> {
+    type Output = [Statistics<T>; 3];
+
+    fn statistics(&self) -> Self::Output {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.statistics();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+
+    fn statistics_splitted(&self, len: usize) -> Vec<Self::Output> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.statistics_splitted(len);
+            result.push(res.into_fixed_length());
+        }
+
+        result
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
+   for Matrix4xN<V, S, T>
+    where V: StatisticsOps<T, Output=Statistics<T>> {
+    type Output = [Statistics<T>; 4];
+
+    fn statistics(&self) -> Self::Output {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.statistics();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+
+    fn statistics_splitted(&self, len: usize) -> Vec<Self::Output> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.statistics_splitted(len);
+            result.push(res.into_fixed_length());
+        }
+
+        result
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> SumOps<Vec<T>>
+   for MatrixMxN<V, S, T>
+    where V: SumOps<T> {
+
+    fn sum(&self) -> Vec<T> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.sum();
+            result.push(res);
+        }
+
+        result
+    }
+
+    fn sum_sq(&self) -> Vec<T> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.sum_sq();
+            result.push(res);
+        }
+
+        result
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> SumOps<[T; 2]>
+   for Matrix2xN<V, S, T>
+    where V: SumOps<T> {
+
+    fn sum(&self) -> [T; 2] {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.sum();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+
+    fn sum_sq(&self) -> [T; 2] {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.sum_sq();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> SumOps<[T; 3]>
+   for Matrix2xN<V, S, T>
+    where V: SumOps<T> {
+
+    fn sum(&self) -> [T; 3] {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.sum();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+
+    fn sum_sq(&self) -> [T; 3] {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.sum_sq();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> SumOps<[T; 4]>
+   for Matrix2xN<V, S, T>
+    where V: SumOps<T> {
+
+    fn sum(&self) -> [T; 4] {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.sum();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+
+    fn sum_sq(&self) -> [T; 4] {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.sum_sq();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+}

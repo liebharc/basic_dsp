@@ -6,9 +6,11 @@ use super::super::{Vector, ScalarResult, ErrorReason, DspVec, ToSlice, MetaData,
                    RealNumberSpace, ComplexNumberSpace};
 
 /// An operation which multiplies each vector element with a constant
-pub trait DotProductOps<R>: Sized
+pub trait DotProductOps<R, A>: Sized
     where R: Sized
 {
+    type Output;
+
     /// Calculates the dot product of self and factor. Self and factor remain unchanged.
     ///
     /// # Example
@@ -20,15 +22,17 @@ pub trait DotProductOps<R>: Sized
     /// let product = vector1.dot_product(&vector2).expect("Ignoring error handling in examples");
     /// assert_eq!(3.0, product);
     /// ```
-    fn dot_product(&self, factor: &Self) -> ScalarResult<R>;
+    fn dot_product(&self, factor: &A) -> Self::Output;
 }
 
-impl<S, T, N, D> DotProductOps<T> for DspVec<S, T, N, D>
+impl<S, T, N, D> DotProductOps<T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: RealNumberSpace,
           D: Domain
 {
+    type Output = ScalarResult<T>;
+
     fn dot_product(&self, factor: &Self) -> ScalarResult<T> {
         if self.is_complex() {
             return Err(ErrorReason::InputMustBeReal);
@@ -78,12 +82,14 @@ impl<S, T, N, D> DotProductOps<T> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, T, N, D> DotProductOps<Complex<T>> for DspVec<S, T, N, D>
+impl<S, T, N, D> DotProductOps<Complex<T>, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
           D: Domain
 {
+    type Output = ScalarResult<Complex<T>>;
+
     fn dot_product(&self, factor: &Self) -> ScalarResult<Complex<T>> {
         if !self.is_complex() {
             return Err(ErrorReason::InputMustBeComplex);

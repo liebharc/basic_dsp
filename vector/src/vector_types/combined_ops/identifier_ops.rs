@@ -473,7 +473,7 @@ impl<T, N, D> ComplexOps<T> for Identifier<T, N, D>
     }
 }
 
-impl<T, N, D> ElementaryOps for Identifier<T, N, D>
+impl<T, N, D> ElementaryOps<Identifier<T, N, D>> for Identifier<T, N, D>
     where T: RealNumber,
           N: NumberSpace,
           D: Domain

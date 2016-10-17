@@ -69,7 +69,11 @@ pub trait StatisticsOps<T>: Sized
     /// }
     /// ```
     fn statistics_splitted(&self, len: usize) -> Vec<Statistics<T>>;
+}
 
+pub trait SumOps<T>: Sized
+    where T: Sized
+{
     /// Calculates the sum of the data contained in the vector.
     /// # Example
     ///
@@ -370,7 +374,14 @@ impl<S, T, N, D> StatisticsOps<T> for DspVec<S, T, N, D>
 
         Statistics::merge_cols(&chunks)
     }
+}
 
+impl<S, T, N, D> SumOps<T> for DspVec<S, T, N, D>
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: RealNumberSpace,
+          D: Domain
+{
     fn sum(&self) -> T {
         let data_length = self.len();
         let array = self.data.to_slice();
@@ -495,7 +506,14 @@ impl<S, T, N, D> StatisticsOps<Complex<T>> for DspVec<S, T, N, D>
 
         Statistics::merge_cols(&chunks)
     }
+}
 
+impl<S, T, N, D> SumOps<Complex<T>> for DspVec<S, T, N, D>
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: ComplexNumberSpace,
+          D: Domain
+{
     fn sum(&self) -> Complex<T> {
         let data_length = self.len();
         let array = self.data.to_slice();

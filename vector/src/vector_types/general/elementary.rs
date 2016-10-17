@@ -59,7 +59,7 @@ pub trait OffsetOps<T>: Sized
     fn offset(&mut self, offset: T);
 }
 
-pub trait ElementaryOps {
+pub trait ElementaryOps<A> {
     /// Calculates the sum of `self + summand`. It consumes self and returns the result.
     /// # Failures
     /// TransRes may report the following `ErrorReason` members:
@@ -81,7 +81,7 @@ pub trait ElementaryOps {
     /// assert_eq!([11.0, 13.0], vector1[0..]);
     /// # }
     /// ```
-    fn add(&mut self, summand: &Self) -> VoidResult;
+    fn add(&mut self, summand: &A) -> VoidResult;
 
     /// Calculates the difference of `self - subtrahend`. It consumes self and returns the result.
     /// # Failures
@@ -104,7 +104,7 @@ pub trait ElementaryOps {
     /// assert_eq!([-9.0, -9.0], vector1[0..]);
     /// # }
     /// ```
-    fn sub(&mut self, subtrahend: &Self) -> VoidResult;
+    fn sub(&mut self, subtrahend: &A) -> VoidResult;
 
     /// Calculates the product of `self * factor`. It consumes self and returns the result.
     /// # Failures
@@ -127,7 +127,7 @@ pub trait ElementaryOps {
     /// assert_eq!([10.0, 22.0], vector1[0..]);
     /// # }
     /// ```
-    fn mul(&mut self, factor: &Self) -> VoidResult;
+    fn mul(&mut self, factor: &A) -> VoidResult;
 
     /// Calculates the quotient of `self / summand`. It consumes self and returns the result.
     /// # Failures
@@ -150,10 +150,10 @@ pub trait ElementaryOps {
     /// assert_eq!([5.0, 2.0], vector1[0..]);
     /// # }
     /// ```
-    fn div(&mut self, divisor: &Self) -> VoidResult;
+    fn div(&mut self, divisor: &A) -> VoidResult;
 }
 
-pub trait ElementaryWrapAroundOps {
+pub trait ElementaryWrapAroundOps<A> {
     /// Calculates the sum of `self + summand`. `summand` may be smaller than `self` as long
     /// as `self.len() % summand.len() == 0`. THe result is the same as it would be if
     /// you would repeat `summand` until it has the same length as `self`.
@@ -178,7 +178,7 @@ pub trait ElementaryWrapAroundOps {
     /// assert_eq!([11.0, 13.0, 13.0, 15.0], vector1[0..]);
     /// # }
     /// ```
-    fn add_smaller(&mut self, summand: &Self) -> VoidResult;
+    fn add_smaller(&mut self, summand: &A) -> VoidResult;
 
     /// Calculates the sum of `self - subtrahend`. `subtrahend` may be smaller than `self` as long
     /// as `self.len() % subtrahend.len() == 0`. THe result is the same as it would be if
@@ -204,7 +204,7 @@ pub trait ElementaryWrapAroundOps {
     /// assert_eq!([9.0, 9.0, 11.0, 11.0], vector1[0..]);
     /// # }
     /// ```
-    fn sub_smaller(&mut self, summand: &Self) -> VoidResult;
+    fn sub_smaller(&mut self, summand: &A) -> VoidResult;
 
     /// Calculates the sum of `self - factor`. `factor` may be smaller than `self` as long
     /// as `self.len() % factor.len() == 0`. THe result is the same as it would be if
@@ -230,7 +230,7 @@ pub trait ElementaryWrapAroundOps {
     /// assert_eq!([10.0, 22.0, 12.0, 26.0], vector1[0..]);
     /// # }
     /// ```
-    fn mul_smaller(&mut self, factor: &Self) -> VoidResult;
+    fn mul_smaller(&mut self, factor: &A) -> VoidResult;
 
     /// Calculates the sum of `self - divisor`. `divisor` may be smaller than `self` as long
     /// as `self.len() % divisor.len() == 0`. THe result is the same as it would be if
@@ -256,7 +256,7 @@ pub trait ElementaryWrapAroundOps {
     /// assert_eq!([10.0, 6.0, 12.0, 7.0], vector1[0..]);
     /// # }
     /// ```
-    fn div_smaller(&mut self, divisor: &Self) -> VoidResult;
+    fn div_smaller(&mut self, divisor: &A) -> VoidResult;
 }
 
 macro_rules! assert_complex {
@@ -539,7 +539,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     impl_binary_smaller_vector_operation!(fn div_smaller_real, divisor, div, div);
 }
 
-impl<S, T, N, D> ElementaryOps for DspVec<S, T, N, D>
+impl<S, T, N, D> ElementaryOps<DspVec<S, T, N, D>> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
@@ -573,7 +573,7 @@ impl<S, T, N, D> ElementaryOps for DspVec<S, T, N, D>
     }
 }
 
-impl<S, T, N, D> ElementaryWrapAroundOps for DspVec<S, T, N, D>
+impl<S, T, N, D> ElementaryWrapAroundOps<DspVec<S, T, N, D>> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,

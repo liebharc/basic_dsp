@@ -74,8 +74,9 @@ impl<S, T, N, D> CrossCorrelationOps<S, T> for DspVec<S, T, N, D>
         + TimeToFrequencyDomainOperations<S, T>
         + ScaleOps<Complex<T>>
 		+ ReorganizeDataOpsBuffered<S, T> + Clone,
-	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>> +
-	  	FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T> + ElementaryOps
+	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>>
+        + FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T>
+        + ElementaryOps<<DspVec<S, T, N, D> as ToFreqResult>::FreqResult>
         + FromVector<T, Output=S>,
 	  S: ToSliceMut<T> + Owner,
 	  T: RealNumber,
