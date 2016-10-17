@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `basic_dsp_matrix` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, basic_dsp_matrix">
+
+    <title>basic_dsp_matrix - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'basic_dsp_matrix', ty: 'mod', relpath: '../'};</script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>basic_dsp_matrix</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-0' class='srclink' href='../src/basic_dsp_matrix/matrix/src/lib.rs.html#1-303' title='goto source code'>[src]</a></span></h1>
+<h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.Matrix2xN.html'
+                                  title='basic_dsp_matrix::Matrix2xN'>Matrix2xN</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.Matrix3xN.html'
+                                  title='basic_dsp_matrix::Matrix3xN'>Matrix3xN</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.Matrix4xN.html'
+                                  title='basic_dsp_matrix::Matrix4xN'>Matrix4xN</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.MatrixMxN.html'
+                                  title='basic_dsp_matrix::MatrixMxN'>MatrixMxN</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.FromMatrix.html'
+                                  title='basic_dsp_matrix::FromMatrix'>FromMatrix</a></td>
+                           <td class='docblock-short'>
+                                <p>Retrieves the underlying storage from a matrix.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.Matrix.html'
+                                  title='basic_dsp_matrix::Matrix'>Matrix</a></td>
+                           <td class='docblock-short'>
+                                <p>A trait for matrix types. In this lib a matrix is simply a collection of
+vectors. The idea is that the matrix types can be used to reduce the size
+of a large matrix and that the return types are basic enough
+so that other specialized matrix libs can do the rest of the work, e.g.
+inverting the resulting matrix.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.ToComplexFreqMatrix.html'
+                                  title='basic_dsp_matrix::ToComplexFreqMatrix'>ToComplexFreqMatrix</a></td>
+                           <td class='docblock-short'>
+                                <p>Conversion from a generic data type into a dsp vector with complex data.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.ToComplexTimeMatrix.html'
+                                  title='basic_dsp_matrix::ToComplexTimeMatrix'>ToComplexTimeMatrix</a></td>
+                           <td class='docblock-short'>
+                                <p>Conversion from a generic data type into a dsp vector with complex data.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.ToDspMatrix.html'
+                                  title='basic_dsp_matrix::ToDspMatrix'>ToDspMatrix</a></td>
+                           <td class='docblock-short'>
+                                <p>Conversion from a generic data type into a dsp matrix which tracks
+its meta information (domain and number space)
+only at runtime. See <code>ToRealMatrix</code> and
+<code>ToComplexMatrix</code> for alternatives which track most of the meta data
+with the type system and therefore avoid runtime errors.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.ToMatrix.html'
+                                  title='basic_dsp_matrix::ToMatrix'>ToMatrix</a></td>
+                           <td class='docblock-short'>
+                                <p>Conversion from a collection of vectors to a matrix.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.ToRealFreqMatrix.html'
+                                  title='basic_dsp_matrix::ToRealFreqMatrix'>ToRealFreqMatrix</a></td>
+                           <td class='docblock-short'>
+                                <p>Conversion from a generic data type into a dsp matrix with real data.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.ToRealTimeMatrix.html'
+                                  title='basic_dsp_matrix::ToRealTimeMatrix'>ToRealTimeMatrix</a></td>
+                           <td class='docblock-short'>
+                                <p>Conversion from a generic data type into a dsp matrix with real data.</p>
+                           </td>
+                       </tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexFreqMatrix32x2.html'
+                                  title='basic_dsp_matrix::ComplexFreqMatrix32x2'>ComplexFreqMatrix32x2</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexFreqMatrix32x3.html'
+                                  title='basic_dsp_matrix::ComplexFreqMatrix32x3'>ComplexFreqMatrix32x3</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexFreqMatrix32x4.html'
+                                  title='basic_dsp_matrix::ComplexFreqMatrix32x4'>ComplexFreqMatrix32x4</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexFreqMatrix32xN.html'
+                                  title='basic_dsp_matrix::ComplexFreqMatrix32xN'>ComplexFreqMatrix32xN</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexFreqMatrix64x2.html'
+                                  title='basic_dsp_matrix::ComplexFreqMatrix64x2'>ComplexFreqMatrix64x2</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexFreqMatrix64x3.html'
+                                  title='basic_dsp_matrix::ComplexFreqMatrix64x3'>ComplexFreqMatrix64x3</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexFreqMatrix64x4.html'
+                                  title='basic_dsp_matrix::ComplexFreqMatrix64x4'>ComplexFreqMatrix64x4</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexFreqMatrix64xN.html'
+                                  title='basic_dsp_matrix::ComplexFreqMatrix64xN'>ComplexFreqMatrix64xN</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexTimeMatrix32x2.html'
+                                  title='basic_dsp_matrix::ComplexTimeMatrix32x2'>ComplexTimeMatrix32x2</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexTimeMatrix32x3.html'
+                                  title='basic_dsp_matrix::ComplexTimeMatrix32x3'>ComplexTimeMatrix32x3</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexTimeMatrix32x4.html'
+                                  title='basic_dsp_matrix::ComplexTimeMatrix32x4'>ComplexTimeMatrix32x4</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexTimeMatrix32xN.html'
+                                  title='basic_dsp_matrix::ComplexTimeMatrix32xN'>ComplexTimeMatrix32xN</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexTimeMatrix64x2.html'
+                                  title='basic_dsp_matrix::ComplexTimeMatrix64x2'>ComplexTimeMatrix64x2</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexTimeMatrix64x3.html'
+                                  title='basic_dsp_matrix::ComplexTimeMatrix64x3'>ComplexTimeMatrix64x3</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexTimeMatrix64x4.html'
+                                  title='basic_dsp_matrix::ComplexTimeMatrix64x4'>ComplexTimeMatrix64x4</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexTimeMatrix64xN.html'
+                                  title='basic_dsp_matrix::ComplexTimeMatrix64xN'>ComplexTimeMatrix64xN</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.Matrix32x2.html'
+                                  title='basic_dsp_matrix::Matrix32x2'>Matrix32x2</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.Matrix32x3.html'
+                                  title='basic_dsp_matrix::Matrix32x3'>Matrix32x3</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.Matrix32x4.html'
+                                  title='basic_dsp_matrix::Matrix32x4'>Matrix32x4</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.Matrix32xN.html'
+                                  title='basic_dsp_matrix::Matrix32xN'>Matrix32xN</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.Matrix64x2.html'
+                                  title='basic_dsp_matrix::Matrix64x2'>Matrix64x2</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.Matrix64x3.html'
+                                  title='basic_dsp_matrix::Matrix64x3'>Matrix64x3</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.Matrix64x4.html'
+                                  title='basic_dsp_matrix::Matrix64x4'>Matrix64x4</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.Matrix64xN.html'
+                                  title='basic_dsp_matrix::Matrix64xN'>Matrix64xN</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealFreqMatrix32x2.html'
+                                  title='basic_dsp_matrix::RealFreqMatrix32x2'>RealFreqMatrix32x2</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealFreqMatrix32x3.html'
+                                  title='basic_dsp_matrix::RealFreqMatrix32x3'>RealFreqMatrix32x3</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealFreqMatrix32x4.html'
+                                  title='basic_dsp_matrix::RealFreqMatrix32x4'>RealFreqMatrix32x4</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealFreqMatrix32xN.html'
+                                  title='basic_dsp_matrix::RealFreqMatrix32xN'>RealFreqMatrix32xN</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealFreqMatrix64x2.html'
+                                  title='basic_dsp_matrix::RealFreqMatrix64x2'>RealFreqMatrix64x2</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealFreqMatrix64x3.html'
+                                  title='basic_dsp_matrix::RealFreqMatrix64x3'>RealFreqMatrix64x3</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealFreqMatrix64x4.html'
+                                  title='basic_dsp_matrix::RealFreqMatrix64x4'>RealFreqMatrix64x4</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealFreqMatrix64xN.html'
+                                  title='basic_dsp_matrix::RealFreqMatrix64xN'>RealFreqMatrix64xN</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealTimeMatrix32x2.html'
+                                  title='basic_dsp_matrix::RealTimeMatrix32x2'>RealTimeMatrix32x2</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealTimeMatrix32x3.html'
+                                  title='basic_dsp_matrix::RealTimeMatrix32x3'>RealTimeMatrix32x3</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealTimeMatrix32x4.html'
+                                  title='basic_dsp_matrix::RealTimeMatrix32x4'>RealTimeMatrix32x4</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealTimeMatrix32xN.html'
+                                  title='basic_dsp_matrix::RealTimeMatrix32xN'>RealTimeMatrix32xN</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealTimeMatrix64x2.html'
+                                  title='basic_dsp_matrix::RealTimeMatrix64x2'>RealTimeMatrix64x2</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealTimeMatrix64x3.html'
+                                  title='basic_dsp_matrix::RealTimeMatrix64x3'>RealTimeMatrix64x3</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealTimeMatrix64x4.html'
+                                  title='basic_dsp_matrix::RealTimeMatrix64x4'>RealTimeMatrix64x4</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealTimeMatrix64xN.html'
+                                  title='basic_dsp_matrix::RealTimeMatrix64xN'>RealTimeMatrix64xN</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "basic_dsp_matrix";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    <script src="../extra.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>
