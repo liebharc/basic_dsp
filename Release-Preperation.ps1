@@ -49,7 +49,7 @@ if ($missing_ops_in_facade -gt 0) {
 
 # Interop facade64 must be cloned from facade32
 perl facade64_create.pl | Write-Verbose
-$facade64_diff = $(git diff .\facade64.rs)
+$facade64_diff = $(git diff --ignore-space-change .\facade64.rs)
 if ($facade64_diff -gt 0) {
     $Host.UI.WriteErrorLine("facade64.rs seems to miss updates. Please review the changes and check them in.")
     $all_okay = $false
