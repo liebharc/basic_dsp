@@ -1,6 +1,6 @@
 # `basic_dsp`
 
-[![Build Status](https://api.travis-ci.org/liebharc/basic_dsp.png)](https://travis-ci.org/liebharc/basic_dsp)
+[![Build Status](https://travis-ci.org/liebharc/basic_dsp.svg?branch=master)](https://travis-ci.org/liebharc/basic_dsp)
 [![Crates.io](https://img.shields.io/crates/v/basic_dsp.svg)](https://crates.io/crates/basic_dsp)
 
 Digital signal processing based on real or complex vectors in time or frequency domain. Vectors come with basic arithmetic, convolution, Fourier transformation and interpolation operations.
