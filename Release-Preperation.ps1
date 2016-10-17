@@ -4,7 +4,7 @@ $last_master_update = $(git show --format="%ci" "origin/master" | Select -First 
 $last_master_update = $(Get-Date $last_master_update)
 
 # Release needs to be tagged
-$current_version = $(Get-Content Cargo.toml | Select-String -Pattern "version\s+=\s+""(\d+\.\d+\.\d+)""" -AllMatches | % { $_.Matches.Groups[1].Value })
+$current_version = $(Get-Content Cargo.toml | Select-String -Pattern "version\s+=\s+""(\d+\.\d+\.\d+)""" -AllMatches | Select -First 1 | % { $_.Matches.Groups[1].Value })
 $current_tag = "v$current_version"
 $tag_matches =  $(git tag | Where { $_ -eq "$current_tag" } | Measure).Count
 if ($tag_matches -eq 0) {
@@ -39,7 +39,7 @@ if ($age_difference_days -gt 3.0) {
 
 # Interop facade32 (which is the "master") needs to be complete
 $cwd = $(Get-Location)
-cd interop_facade/src
+cd interop/src
 $facade_status = $(perl facade32_check_completness.pl)
 $missing_ops_in_facade = $(echo $facade_status | Select-String -Pattern "missing:\s*(\d+)" -AllMatches | % { $_.Matches.Groups[1].Value })
 if ($missing_ops_in_facade -gt 0) {

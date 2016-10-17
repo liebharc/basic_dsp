@@ -326,9 +326,9 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T>, S: ToSliceMut<T>, T: RealNumber, C> Convolution<S, T, C>
+			impl<'a, V: Vector<T>, S: ToSliceMut<T>, T: RealNumber, C: 'a> Convolution<'a, S, T, C>
                     for $matrix<V, S, T>
-                    where V: Convolution<S, T, C> {
+                    where V: Convolution<'a, S, T, C> {
 				fn convolve<B>(
 						&mut self,
 						buffer: &mut B,
@@ -342,9 +342,10 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T>, S: ToSliceMut<T>, T: RealNumber, C> FrequencyMultiplication<S, T, C>
+			impl<'a, V: Vector<T>, S: ToSliceMut<T>, T: RealNumber, C: 'a>
+                        FrequencyMultiplication<'a, S, T, C>
                     for $matrix<V, S, T>
-                    where V: FrequencyMultiplication<S, T, C> {
+                    where V: FrequencyMultiplication<'a, S, T, C> {
 				fn multiply_frequency_response(
 						&mut self,
 						frequency_response: &C,

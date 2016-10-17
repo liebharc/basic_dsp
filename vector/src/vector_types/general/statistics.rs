@@ -25,8 +25,6 @@ pub struct Statistics<T> {
 pub trait StatisticsOps<T>: Sized
     where T: Sized
 {
-    type Output;
-
     /// Calculates the statistics of the data contained in the vector.
     ///
     /// # Example
@@ -49,7 +47,7 @@ pub trait StatisticsOps<T>: Sized
     /// assert_eq!(result.max_index, 2);
     /// }
     /// ```
-    fn statistics(&self) -> Self::Output;
+    fn statistics(&self) -> T;
 
     /// Calculates the statistics of the data contained in the vector as if the vector would
     /// have been split into `len` pieces. `self.len` should be dividable by
@@ -70,7 +68,7 @@ pub trait StatisticsOps<T>: Sized
     /// assert_eq!(result[1].sum, Complex32::new(3.0, 4.0));
     /// }
     /// ```
-    fn statistics_splitted(&self, len: usize) -> Vec<Self::Output>;
+    fn statistics_splitted(&self, len: usize) -> Vec<T>;
 }
 
 pub trait SumOps<T>: Sized
@@ -323,14 +321,12 @@ impl<T> Stats<Complex<T>> for Statistics<Complex<T>>
     }
 }
 
-impl<S, T, N, D> StatisticsOps<T> for DspVec<S, T, N, D>
+impl<S, T, N, D> StatisticsOps<Statistics<T>> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: RealNumberSpace,
           D: Domain
 {
-    type Output = Statistics<T>;
-
     fn statistics(&self) -> Statistics<T> {
         let data_length = self.len();
         let array = self.data.to_slice();
@@ -455,14 +451,12 @@ impl<S, T, N, D> SumOps<T> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, T, N, D> StatisticsOps<Complex<T>> for DspVec<S, T, N, D>
+impl<S, T, N, D> StatisticsOps<Statistics<Complex<T>>> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
           D: Domain
 {
-    type Output = Statistics<Complex<T>>;
-
     fn statistics(&self) -> Statistics<Complex<T>> {
         let data_length = self.len();
         let array = self.data.to_slice();

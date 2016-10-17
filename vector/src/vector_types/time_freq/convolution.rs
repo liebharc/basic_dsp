@@ -7,7 +7,7 @@ use super::super::{array_to_complex, array_to_complex_mut, VoidResult, ToSliceMu
                    ComplexNumberSpace, Buffer, ErrorReason};
 
 /// Provides a convolution operations.
-pub trait Convolution<S, T, C>
+pub trait Convolution<'a, S, T, C: ?Sized + 'a>
     where S: ToSliceMut<T>,
           T: RealNumber
 {
@@ -24,12 +24,12 @@ pub trait Convolution<S, T, C>
     /// 1. `VectorMustBeComplex`: if `self` is in real number space but
     ///    `impulse_response` is in complex number space.
     /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
-    fn convolve<B>(&mut self, buffer: &mut B, impulse_response: C, ratio: T, len: usize)
+    fn convolve<B>(&mut self, buffer: &mut B, impulse_response: &C, ratio: T, len: usize)
         where B: Buffer<S, T>;
 }
 
 /// Provides a convolution operation for types which at some point are slice based.
-pub trait ConvolutionOps<S, T>
+pub trait ConvolutionOps<S, T, A>
     where S: ToSliceMut<T>,
           T: RealNumber
 {
@@ -43,12 +43,12 @@ pub trait ConvolutionOps<S, T>
     /// 2. `VectorMetaDataMustAgree`: in case `self` and `impulse_response`
     ///    are not in the same number space and same domain.
     /// 3. `InvalidArgumentLength`: if `self.points() < impulse_response.points()`.
-    fn convolve_vector<B>(&mut self, buffer: &mut B, impulse_response: &Self) -> VoidResult
+    fn convolve_vector<B>(&mut self, buffer: &mut B, impulse_response: &A) -> VoidResult
         where B: Buffer<S, T>;
 }
 
 /// Provides a frequency response multiplication operations.
-pub trait FrequencyMultiplication<S, T, C>
+pub trait FrequencyMultiplication<'a, S, T, C: ?Sized + 'a>
     where S: ToSliceMut<T>,
           T: RealNumber
 {
@@ -65,7 +65,7 @@ pub trait FrequencyMultiplication<S, T, C>
     /// 1. `VectorMustBeComplex`: if `self` is in real number space but `frequency_response`
     ///    is in complex number space.
     /// 2. `VectorMustBeInFreqDomain`: if `self` is in time domain.
-    fn multiply_frequency_response(&mut self, frequency_response: C, ratio: T);
+    fn multiply_frequency_response(&mut self, frequency_response: &C, ratio: T);
 }
 
 macro_rules! assert_complex {
@@ -86,9 +86,9 @@ macro_rules! assert_time {
     }
 }
 
-impl<'a, S, T, N, D> Convolution<S, T, &'a RealImpulseResponse<T>> for DspVec<S, T, N, D>
+impl<'a, S, T, N, D> Convolution<'a, S, T, RealImpulseResponse<T>> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
-          T: RealNumber,
+          T: RealNumber + 'a,
           N: NumberSpace,
           D: TimeDomain
 {
@@ -184,9 +184,9 @@ impl<'a, S, T, N, D> Convolution<S, T, &'a RealImpulseResponse<T>> for DspVec<S,
     }
 }
 
-impl<'a, S, T, N, D> Convolution<S, T, &'a ComplexImpulseResponse<T>> for DspVec<S, T, N, D>
+impl<'a, S, T, N, D> Convolution<'a, S, T, ComplexImpulseResponse<T>> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
-          T: RealNumber,
+          T: RealNumber + 'a,
           N: ComplexNumberSpace,
           D: TimeDomain
 {
@@ -257,7 +257,7 @@ macro_rules! assert_meta_data {
     }
 }
 
-impl<S, T, N, D> ConvolutionOps<S, T> for DspVec<S, T, N, D>
+impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
@@ -290,10 +290,10 @@ impl<S, T, N, D> ConvolutionOps<S, T> for DspVec<S, T, N, D>
     }
 }
 
-impl<'a, S, T, N, D> FrequencyMultiplication<S, T, &'a ComplexFrequencyResponse<T>>
+impl<'a, S, T, N, D> FrequencyMultiplication<'a, S, T, ComplexFrequencyResponse<T>>
     for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
-          T: RealNumber,
+          T: RealNumber + 'a,
           N: ComplexNumberSpace,
           D: FrequencyDomain
 {
@@ -312,10 +312,10 @@ impl<'a, S, T, N, D> FrequencyMultiplication<S, T, &'a ComplexFrequencyResponse<
     }
 }
 
-impl<'a, S, T, N, D> FrequencyMultiplication<S, T, &'a RealFrequencyResponse<T>>
+impl<'a, S, T, N, D> FrequencyMultiplication<'a, S, T, RealFrequencyResponse<T>>
     for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
-          T: RealNumber,
+          T: RealNumber + 'a,
           N: NumberSpace,
           D: FrequencyDomain
 {

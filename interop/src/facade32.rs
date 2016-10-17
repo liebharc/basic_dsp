@@ -148,14 +148,20 @@ pub extern "C" fn mul32(vector: Box<VecBuf>, operand: &VecBuf) -> VectorInteropR
 pub extern "C" fn real_dot_product32(vector: &VecBuf,
                                      operand: &VecBuf)
                                      -> ScalarInteropResult<f32> {
-    vector.convert_scalar(|v| v.dot_product(&operand.vec), 0.0)
+    vector.convert_scalar(|v| {
+        DotProductOps::<f32, GenDspVec<Vec<f32>, f32>>::dot_product(v, &operand.vec)
+    },
+    0.0)
 }
 
 #[no_mangle]
 pub extern "C" fn complex_dot_product32(vector: &VecBuf,
                                         operand: &VecBuf)
                                         -> ScalarInteropResult<Complex32> {
-    vector.convert_scalar(|v| v.dot_product(&operand.vec), Complex32::new(0.0, 0.0))
+    vector.convert_scalar(|v| {
+        DotProductOps::<Complex32, GenDspVec<Vec<f32>, f32>>::dot_product(v, &operand.vec)
+    },
+    Complex32::new(0.0, 0.0))
 }
 
 #[no_mangle]
@@ -391,6 +397,11 @@ pub extern "C" fn magnitude32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf
 #[no_mangle]
 pub extern "C" fn get_magnitude32(vector: Box<VecBuf>, destination: &mut VecBuf) -> i32 {
     convert_void(Ok(vector.vec.get_magnitude(&mut destination.vec)))
+}
+
+#[no_mangle]
+pub extern "C" fn get_magnitude_squared32(vector: Box<VecBuf>, destination: &mut VecBuf) -> i32 {
+    convert_void(Ok(vector.vec.get_magnitude_squared(&mut destination.vec)))
 }
 
 #[no_mangle]

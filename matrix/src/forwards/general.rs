@@ -633,12 +633,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<Vec<Statistics<T>>>
    for MatrixMxN<V, S, T>
-    where V: StatisticsOps<T, Output=Statistics<T>> {
-    type Output = Vec<Statistics<T>>;
-
-    fn statistics(&self) -> Self::Output {
+    where V: StatisticsOps<Statistics<T>> {
+    fn statistics(&self) -> Vec<Statistics<T>> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
             let res = v.statistics();
@@ -648,7 +646,7 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
         result
     }
 
-    fn statistics_splitted(&self, len: usize) -> Vec<Self::Output> {
+    fn statistics_splitted(&self, len: usize) -> Vec<Vec<Statistics<T>>> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
             let res = v.statistics_splitted(len);
@@ -659,12 +657,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<[Statistics<T>; 2]>
    for Matrix2xN<V, S, T>
-    where V: StatisticsOps<T, Output=Statistics<T>> {
-    type Output = [Statistics<T>; 2];
-
-    fn statistics(&self) -> Self::Output {
+    where V: StatisticsOps<Statistics<T>> {
+    fn statistics(&self) -> [Statistics<T>; 2] {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
             let res = v.statistics();
@@ -674,7 +670,7 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
         result.into_fixed_length()
     }
 
-    fn statistics_splitted(&self, len: usize) -> Vec<Self::Output> {
+    fn statistics_splitted(&self, len: usize) -> Vec<[Statistics<T>; 2]> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
             let res = v.statistics_splitted(len);
@@ -685,12 +681,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<[Statistics<T>; 3]>
    for Matrix3xN<V, S, T>
-    where V: StatisticsOps<T, Output=Statistics<T>> {
-    type Output = [Statistics<T>; 3];
-
-    fn statistics(&self) -> Self::Output {
+    where V: StatisticsOps<Statistics<T>> {
+    fn statistics(&self) -> [Statistics<T>; 3] {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
             let res = v.statistics();
@@ -700,7 +694,7 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
         result.into_fixed_length()
     }
 
-    fn statistics_splitted(&self, len: usize) -> Vec<Self::Output> {
+    fn statistics_splitted(&self, len: usize) -> Vec<[Statistics<T>; 3]> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
             let res = v.statistics_splitted(len);
@@ -711,12 +705,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<[Statistics<T>; 4]>
    for Matrix4xN<V, S, T>
-    where V: StatisticsOps<T, Output=Statistics<T>> {
-    type Output = [Statistics<T>; 4];
-
-    fn statistics(&self) -> Self::Output {
+    where V: StatisticsOps<Statistics<T>> {
+    fn statistics(&self) -> [Statistics<T>; 4] {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
             let res = v.statistics();
@@ -726,7 +718,7 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
         result.into_fixed_length()
     }
 
-    fn statistics_splitted(&self, len: usize) -> Vec<Self::Output> {
+    fn statistics_splitted(&self, len: usize) -> Vec<[Statistics<T>; 4]> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
             let res = v.statistics_splitted(len);

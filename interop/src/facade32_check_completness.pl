@@ -18,7 +18,7 @@ sub parse_trait_definition {
         chomp $line;
         if ($level == 0 and $line =~ /^pub trait (\w+)/) {
             my $trait = $1;
-            $record = $trait =~ /\W($traits)\W/;
+            $record = $trait =~ /^($traits)$/;
             push @traits_found, $trait;
         }
         if ($line =~ /\{/) {
@@ -108,7 +108,7 @@ sub parse_facade {
     while (<FACADE32>) {
         my $line = $_;
         chomp $line;
-        if ($line =~ /^(\/\/)?\s*pub extern fn (\w+)32.*$type/) {
+        if ($line =~ /^(\/\/)?\s*pub extern "C" fn (\w+)32.*$type/) {
            push @methods, $2;
         }
     }
@@ -128,7 +128,7 @@ sub camel_to_snake {
 }
 
 # DataVector32
-my $root = "../../vector/src/vector_types2/";
+my $root = "../../vector/src/vector_types/";
 my @definitions = parse_trait_definition("$root/complex/complex.rs", "ComplexOps");
 push @definitions, parse_trait_definition("$root/complex/complex_to_real.rs", "ComplexToRealTransformsOps", "ComplexToRealGetterOps", "ComplexToRealSetterOps");
 push @definitions, parse_trait_definition("$root/general/data_reorganization.rs", "ReorganizeDataOps", "InsertZerosOps", "SplitOps", "MergeOps");
@@ -152,6 +152,21 @@ my $found = 0;
 my $missing = 0;
 for my $def (@definitions) {
     if (grep(/^$def$/, @impl)) {
+        $found++;
+    }
+    elsif (grep(/^real_$def$/, @impl)) {
+        $found++;
+    }
+    elsif (grep(/^complex_$def$/, @impl)) {
+        $found++;
+    }
+    elsif (grep(/^${def}_real$/, @impl)) {
+        $found++;
+    }
+    elsif (grep(/^${def}_complex$/, @impl)) {
+        $found++;
+    }
+    elsif (grep(/^${def}_vector$/, @impl)) {
         $found++;
     }
     else {
