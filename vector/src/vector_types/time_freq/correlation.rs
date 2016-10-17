@@ -70,8 +70,7 @@ pub trait CrossCorrelationOps<S, T, A>
     /// needs to be a time vector which
     /// went through one of the prepare functions `prepare_argument` or `prepare_argument_padded`.
     /// See also the trait description for more details.
-    fn correlate<B>(&mut self, buffer: &mut B, other: &A) -> VoidResult
-        where B: Buffer<S, T>;
+    fn correlate<B>(&mut self, buffer: &mut B, other: &A) -> VoidResult where B: Buffer<S, T>;
 }
 
 impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>

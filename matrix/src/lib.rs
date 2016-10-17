@@ -153,7 +153,7 @@ impl<S, D> TransformContent<S, D> for Vec<S> {
 
         match error {
             None => Ok(rows),
-            Some(err) => Err((err, rows))
+            Some(err) => Err((err, rows)),
         }
     }
 }
@@ -187,7 +187,7 @@ impl<S, D> TransformContent<S, D> for [S; 2] {
 
             match error {
                 None => Ok([first, second]),
-                Some(err) => Err((err, [first, second]))
+                Some(err) => Err((err, [first, second])),
             }
         }
     }
@@ -226,7 +226,7 @@ impl<S, D> TransformContent<S, D> for [S; 3] {
 
             match error {
                 None => Ok([first, second, third]),
-                Some(err) => Err((err, [first, second, third]))
+                Some(err) => Err((err, [first, second, third])),
             }
         }
     }
@@ -269,7 +269,7 @@ impl<S, D> TransformContent<S, D> for [S; 4] {
 
             match error {
                 None => Ok([first, second, third, fourth]),
-                Some(err) => Err((err, [first, second, third, fourth]))
+                Some(err) => Err((err, [first, second, third, fourth])),
             }
         }
     }

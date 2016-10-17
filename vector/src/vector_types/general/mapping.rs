@@ -35,10 +35,10 @@ pub trait MapAggregateOps<T, R>: Sized
     /// that's because there is no guarantee that the numbers will
     /// be aggregated in any deterministic order.
     fn map_aggregate<'a, A, FMap, FAggr>(&self,
-                                            argument: A,
-                                            map: FMap,
-                                            aggregate: FAggr)
-                                            -> Self::Output
+                                         argument: A,
+                                         map: FMap,
+                                         aggregate: FAggr)
+                                         -> Self::Output
         where A: Sync + Copy + Send,
               FMap: Fn(T, usize, A) -> R + 'a + Sync,
               FAggr: Fn(R, R) -> R + 'a + Sync + Send;
@@ -85,10 +85,10 @@ impl<S, T, N, D, R> MapAggregateOps<T, R> for DspVec<S, T, N, D>
 {
     type Output = ScalarResult<R>;
     fn map_aggregate<'a, A, FMap, FAggr>(&self,
-                                            argument: A,
-                                            map: FMap,
-                                            aggregate: FAggr)
-                                            -> ScalarResult<R>
+                                         argument: A,
+                                         map: FMap,
+                                         aggregate: FAggr)
+                                         -> ScalarResult<R>
         where A: Sync + Copy + Send,
               FMap: Fn(T, usize, A) -> R + 'a + Sync,
               FAggr: Fn(R, R) -> R + 'a + Sync + Send
@@ -191,10 +191,10 @@ impl<S, T, N, D, R> MapAggregateOps<Complex<T>, R> for DspVec<S, T, N, D>
     type Output = ScalarResult<R>;
 
     fn map_aggregate<'a, A, FMap, FAggr>(&self,
-                                            argument: A,
-                                            map: FMap,
-                                            aggregate: FAggr)
-                                            -> ScalarResult<R>
+                                         argument: A,
+                                         map: FMap,
+                                         aggregate: FAggr)
+                                         -> ScalarResult<R>
         where A: Sync + Copy + Send,
               FMap: Fn(Complex<T>, usize, A) -> R + 'a + Sync,
               FAggr: Fn(R, R) -> R + 'a + Sync + Send
