@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Vector` trait in crate `basic_dsp_vector`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Vector">
+
+    <title>basic_dsp_vector::Vector - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>basic_dsp_vector</a></p><script>window.sidebarCurrent = {name: 'Vector', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class='trait' href=''>Vector</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-428' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/vec_impl_and_indexers.rs.html#58-92' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait Vector&lt;T&gt;: <a class='trait' href='../basic_dsp_vector/trait.MetaData.html' title='basic_dsp_vector::MetaData'>MetaData</a> + <a class='trait' href='../basic_dsp_vector/trait.ResizeOps.html' title='basic_dsp_vector::ResizeOps'>ResizeOps</a> <span class='where'>where T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span> {
+    fn <a href='#tymethod.delta' class='fnname'>delta</a>(&amp;self) -&gt; T;
+    fn <a href='#tymethod.set_delta' class='fnname'>set_delta</a>(&amp;mut self, delta: T);
+    fn <a href='#tymethod.len' class='fnname'>len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>;
+    fn <a href='#tymethod.points' class='fnname'>points</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>;
+    fn <a href='#tymethod.get_multicore_settings' class='fnname'>get_multicore_settings</a>(&amp;self) -&gt; &amp;<a class='struct' href='../basic_dsp_vector/struct.MultiCoreSettings.html' title='basic_dsp_vector::MultiCoreSettings'>MultiCoreSettings</a>;
+    fn <a href='#tymethod.set_multicore_settings' class='fnname'>set_multicore_settings</a>(&amp;mut self, settings: <a class='struct' href='../basic_dsp_vector/struct.MultiCoreSettings.html' title='basic_dsp_vector::MultiCoreSettings'>MultiCoreSettings</a>);
+    fn <a href='#tymethod.alloc_len' class='fnname'>alloc_len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>;
+}</pre><div class='docblock'><p>A trait for vector types.</p>
+</div>
+            <h2 id='required-methods'>Required Methods</h2>
+            <div class='methods'>
+        <h3 id='tymethod.delta' class='method stab '><span id='delta.v' class='invisible'><code>fn <a href='#tymethod.delta' class='fnname'>delta</a>(&amp;self) -&gt; T</code></span></h3><div class='docblock'><p>The x-axis delta. If <code>domain</code> is time domain then <code>delta</code> is in <code>[s]</code>,
+in frequency domain <code>delta</code> is in <code>[Hz]</code>.</p>
+</div><h3 id='tymethod.set_delta' class='method stab '><span id='set_delta.v' class='invisible'><code>fn <a href='#tymethod.set_delta' class='fnname'>set_delta</a>(&amp;mut self, delta: T)</code></span></h3><div class='docblock'><p>Sets the x-axis delta. If <code>domain</code> is time domain then <code>delta</code> is in <code>[s]</code>,
+in frequency domain <code>delta</code> is in <code>[Hz]</code>.</p>
+</div><h3 id='tymethod.len' class='method stab '><span id='len.v' class='invisible'><code>fn <a href='#tymethod.len' class='fnname'>len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></span></h3><div class='docblock'><p>The number of valid elements in the vector. This can be changed
+with the <code>Resize</code> trait.</p>
+</div><h3 id='tymethod.points' class='method stab '><span id='points.v' class='invisible'><code>fn <a href='#tymethod.points' class='fnname'>points</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></span></h3><div class='docblock'><p>The number of valid points. If the vector is complex then every valid
+point consists of two floating point numbers,
+while for real vectors every point only consists of one floating point number.</p>
+</div><h3 id='tymethod.get_multicore_settings' class='method stab '><span id='get_multicore_settings.v' class='invisible'><code>fn <a href='#tymethod.get_multicore_settings' class='fnname'>get_multicore_settings</a>(&amp;self) -&gt; &amp;<a class='struct' href='../basic_dsp_vector/struct.MultiCoreSettings.html' title='basic_dsp_vector::MultiCoreSettings'>MultiCoreSettings</a></code></span></h3><div class='docblock'><p>Gets the multi core settings which determine how the
+work is split between several cores if the amount of data
+gets larger.</p>
+</div><h3 id='tymethod.set_multicore_settings' class='method stab '><span id='set_multicore_settings.v' class='invisible'><code>fn <a href='#tymethod.set_multicore_settings' class='fnname'>set_multicore_settings</a>(&amp;mut self, settings: <a class='struct' href='../basic_dsp_vector/struct.MultiCoreSettings.html' title='basic_dsp_vector::MultiCoreSettings'>MultiCoreSettings</a>)</code></span></h3><div class='docblock'><p>Sets the multi core settings which determine how the
+work is split between several cores if the amount of data
+gets larger.</p>
+</div><h3 id='tymethod.alloc_len' class='method stab '><span id='alloc_len.v' class='invisible'><code>fn <a href='#tymethod.alloc_len' class='fnname'>alloc_len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></span></h3><div class='docblock'><p>Gets the number of allocated elements in the underlying vector.
+The allocated length may be larger than the length of valid points.
+In most cases you likely want to have <code>len</code>or <code>points</code> instead.</p>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><code>impl&lt;S, T, N, D&gt; Vector&lt;T&gt; for <a class='struct' href='../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, N, D&gt; <span class='where'>where S: <a class='trait' href='../basic_dsp_vector/trait.ToSlice.html' title='basic_dsp_vector::ToSlice'>ToSlice</a>&lt;T&gt;, T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a>, D: <a class='trait' href='../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></li>
+</ul><script type="text/javascript" async
+                         src="../implementors/basic_dsp_vector/trait.Vector.js">
+                 </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "basic_dsp_vector";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    <script src="../extra.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

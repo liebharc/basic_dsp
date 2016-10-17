@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Identifier` struct in crate `basic_dsp_vector`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Identifier">
+
+    <title>basic_dsp_vector::combined_ops::Identifier - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>basic_dsp_vector</a>::<wbr><a href='index.html'>combined_ops</a></p><script>window.sidebarCurrent = {name: 'Identifier', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>basic_dsp_vector</a>::<wbr><a href='index.html'>combined_ops</a>::<wbr><a class='struct' href=''>Identifier</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-3243' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/mod.rs.html#22-32' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Identifier&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, D: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a>, N: <a class='trait' href='../../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a></span> { /* fields omitted */ }</pre><div class='docblock'><p>An identifier is just a placeholder for a data type
+used to ensure already at compile time that operations are valid.</p>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl&lt;T, N, D&gt; <a class='trait' href='../../basic_dsp_vector/trait.OffsetOps.html' title='basic_dsp_vector::OffsetOps'>OffsetOps</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a>, D: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-3019' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/identifier_ops.rs.html#258-271' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.offset' class='method'><span id='offset.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.OffsetOps.html#tymethod.offset' class='fnname'>offset</a>(&amp;mut self, offset: T)</code></span></h4>
+<div class='docblock'><p>Adds a scalar to each vector element. <a href="../../basic_dsp_vector/trait.OffsetOps.html#tymethod.offset">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T, N, D&gt; <a class='trait' href='../../basic_dsp_vector/trait.ScaleOps.html' title='basic_dsp_vector::ScaleOps'>ScaleOps</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a>, D: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-3027' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/identifier_ops.rs.html#273-286' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.scale' class='method'><span id='scale.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.ScaleOps.html#tymethod.scale' class='fnname'>scale</a>(&amp;mut self, offset: T)</code></span></h4>
+<div class='docblock'><p>Multiplies the vector element with a scalar. <a href="../../basic_dsp_vector/trait.ScaleOps.html#tymethod.scale">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T, N, D&gt; <a class='trait' href='../../basic_dsp_vector/trait.OffsetOps.html' title='basic_dsp_vector::OffsetOps'>OffsetOps</a>&lt;<a class='struct' href='../../num_complex/struct.Complex.html' title='num_complex::Complex'>Complex</a>&lt;T&gt;&gt; for <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../../basic_dsp_vector/trait.ComplexNumberSpace.html' title='basic_dsp_vector::ComplexNumberSpace'>ComplexNumberSpace</a>, D: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-3035' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/identifier_ops.rs.html#288-297' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.offset-1' class='method'><span id='offset.v-1' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.OffsetOps.html#tymethod.offset' class='fnname'>offset</a>(&amp;mut self, offset: <a class='struct' href='../../num_complex/struct.Complex.html' title='num_complex::Complex'>Complex</a>&lt;T&gt;)</code></span></h4>
+<div class='docblock'><p>Adds a scalar to each vector element. <a href="../../basic_dsp_vector/trait.OffsetOps.html#tymethod.offset">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T, N, D&gt; <a class='trait' href='../../basic_dsp_vector/trait.ScaleOps.html' title='basic_dsp_vector::ScaleOps'>ScaleOps</a>&lt;<a class='struct' href='../../num_complex/struct.Complex.html' title='num_complex::Complex'>Complex</a>&lt;T&gt;&gt; for <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../../basic_dsp_vector/trait.ComplexNumberSpace.html' title='basic_dsp_vector::ComplexNumberSpace'>ComplexNumberSpace</a>, D: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-3043' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/identifier_ops.rs.html#299-308' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.scale-1' class='method'><span id='scale.v-1' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.ScaleOps.html#tymethod.scale' class='fnname'>scale</a>(&amp;mut self, offset: <a class='struct' href='../../num_complex/struct.Complex.html' title='num_complex::Complex'>Complex</a>&lt;T&gt;)</code></span></h4>
+<div class='docblock'><p>Multiplies the vector element with a scalar. <a href="../../basic_dsp_vector/trait.ScaleOps.html#tymethod.scale">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T, N, D&gt; <a class='trait' href='../../basic_dsp_vector/trait.TrigOps.html' title='basic_dsp_vector::TrigOps'>TrigOps</a> for <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a>, D: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-3051' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/identifier_ops.rs.html#310-374' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.sin' class='method'><span id='sin.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.TrigOps.html#tymethod.sin' class='fnname'>sin</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Calculates the sine of each element in radians. <a href="../../basic_dsp_vector/trait.TrigOps.html#tymethod.sin">Read more</a></p>
+</div><h4 id='method.cos' class='method'><span id='cos.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.TrigOps.html#tymethod.cos' class='fnname'>cos</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Calculates the cosine of each element in radians. <a href="../../basic_dsp_vector/trait.TrigOps.html#tymethod.cos">Read more</a></p>
+</div><h4 id='method.tan' class='method'><span id='tan.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.TrigOps.html#tymethod.tan' class='fnname'>tan</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Calculates the tangent of each element in radians.</p>
+</div><h4 id='method.asin' class='method'><span id='asin.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.TrigOps.html#tymethod.asin' class='fnname'>asin</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Calculates the principal value of the inverse sine of each element in radians.</p>
+</div><h4 id='method.acos' class='method'><span id='acos.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.TrigOps.html#tymethod.acos' class='fnname'>acos</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Calculates the principal value of the inverse cosine of each element in radians.</p>
+</div><h4 id='method.atan' class='method'><span id='atan.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.TrigOps.html#tymethod.atan' class='fnname'>atan</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Calculates the principal value of the inverse tangent of each element in radians.</p>
+</div><h4 id='method.sinh' class='method'><span id='sinh.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.TrigOps.html#tymethod.sinh' class='fnname'>sinh</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Calculates the hyperbolic sine each element in radians.</p>
+</div><h4 id='method.cosh' class='method'><span id='cosh.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.TrigOps.html#tymethod.cosh' class='fnname'>cosh</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Calculates the hyperbolic cosine each element in radians.</p>
+</div><h4 id='method.tanh' class='method'><span id='tanh.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.TrigOps.html#tymethod.tanh' class='fnname'>tanh</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Calculates the hyperbolic tangent each element in radians.</p>
+</div><h4 id='method.asinh' class='method'><span id='asinh.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.TrigOps.html#tymethod.asinh' class='fnname'>asinh</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Calculates the principal value of the inverse hyperbolic sine of each element in radians.</p>
+</div><h4 id='method.acosh' class='method'><span id='acosh.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.TrigOps.html#tymethod.acosh' class='fnname'>acosh</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Calculates the principal value of the inverse hyperbolic cosine of each element in radians.</p>
+</div><h4 id='method.atanh' class='method'><span id='atanh.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.TrigOps.html#tymethod.atanh' class='fnname'>atanh</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Calculates the principal value of the inverse hyperbolic tangent of each element in radians. <a href="../../basic_dsp_vector/trait.TrigOps.html#tymethod.atanh">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T, N, D&gt; <a class='trait' href='../../basic_dsp_vector/trait.PowerOps.html' title='basic_dsp_vector::PowerOps'>PowerOps</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a>, D: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-3091' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/identifier_ops.rs.html#376-420' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.sqrt' class='method'><span id='sqrt.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.PowerOps.html#tymethod.sqrt' class='fnname'>sqrt</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Gets the square root of all vector elements. <a href="../../basic_dsp_vector/trait.PowerOps.html#tymethod.sqrt">Read more</a></p>
+</div><h4 id='method.square' class='method'><span id='square.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.PowerOps.html#tymethod.square' class='fnname'>square</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Squares all vector elements. <a href="../../basic_dsp_vector/trait.PowerOps.html#tymethod.square">Read more</a></p>
+</div><h4 id='method.root' class='method'><span id='root.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.PowerOps.html#tymethod.root' class='fnname'>root</a>(&amp;mut self, degree: T)</code></span></h4>
+<div class='docblock'><p>Calculates the n-th root of every vector element. <a href="../../basic_dsp_vector/trait.PowerOps.html#tymethod.root">Read more</a></p>
+</div><h4 id='method.powf' class='method'><span id='powf.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.PowerOps.html#tymethod.powf' class='fnname'>powf</a>(&amp;mut self, exponent: T)</code></span></h4>
+<div class='docblock'><p>Raises every vector element to a floating point power. <a href="../../basic_dsp_vector/trait.PowerOps.html#tymethod.powf">Read more</a></p>
+</div><h4 id='method.ln' class='method'><span id='ln.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.PowerOps.html#tymethod.ln' class='fnname'>ln</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Computes the principal value of natural logarithm of every element in the vector. <a href="../../basic_dsp_vector/trait.PowerOps.html#tymethod.ln">Read more</a></p>
+</div><h4 id='method.exp' class='method'><span id='exp.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.PowerOps.html#tymethod.exp' class='fnname'>exp</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Calculates the natural exponential for every vector element. <a href="../../basic_dsp_vector/trait.PowerOps.html#tymethod.exp">Read more</a></p>
+</div><h4 id='method.log' class='method'><span id='log.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.PowerOps.html#tymethod.log' class='fnname'>log</a>(&amp;mut self, base: T)</code></span></h4>
+<div class='docblock'><p>Calculates the logarithm to the given base for every vector element. <a href="../../basic_dsp_vector/trait.PowerOps.html#tymethod.log">Read more</a></p>
+</div><h4 id='method.expf' class='method'><span id='expf.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.PowerOps.html#tymethod.expf' class='fnname'>expf</a>(&amp;mut self, base: T)</code></span></h4>
+<div class='docblock'><p>Calculates the exponential to the given base for every vector element. <a href="../../basic_dsp_vector/trait.PowerOps.html#tymethod.expf">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T, N, D&gt; <a class='trait' href='../../basic_dsp_vector/trait.RealOps.html' title='basic_dsp_vector::RealOps'>RealOps</a> for <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a>, D: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-3123' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/identifier_ops.rs.html#422-431' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.abs' class='method'><span id='abs.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.RealOps.html#tymethod.abs' class='fnname'>abs</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Gets the absolute value of all vector elements. # Example <a href="../../basic_dsp_vector/trait.RealOps.html#tymethod.abs">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T, N, D&gt; <a class='trait' href='../../basic_dsp_vector/trait.MapInplaceNoArgsOps.html' title='basic_dsp_vector::MapInplaceNoArgsOps'>MapInplaceNoArgsOps</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../../basic_dsp_vector/trait.RealNumberSpace.html' title='basic_dsp_vector::RealNumberSpace'>RealNumberSpace</a>, D: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-3130' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/identifier_ops.rs.html#433-444' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.map_inplace' class='method'><span id='map_inplace.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.MapInplaceNoArgsOps.html#tymethod.map_inplace' class='fnname'>map_inplace</a>&lt;F&gt;(&amp;mut self, map: F) <span class='where'>where F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Fn.html' title='core::ops::Fn'>Fn</a>(T, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; T + 'static + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a></span></code></span></h4>
+<div class='docblock'><p>Transforms all vector elements using the function <code>map</code>.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T, N, D&gt; <a class='trait' href='../../basic_dsp_vector/trait.MapInplaceNoArgsOps.html' title='basic_dsp_vector::MapInplaceNoArgsOps'>MapInplaceNoArgsOps</a>&lt;<a class='struct' href='../../num_complex/struct.Complex.html' title='num_complex::Complex'>Complex</a>&lt;T&gt;&gt; for <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../../basic_dsp_vector/trait.ComplexNumberSpace.html' title='basic_dsp_vector::ComplexNumberSpace'>ComplexNumberSpace</a>, D: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-3139' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/identifier_ops.rs.html#447-458' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.map_inplace-1' class='method'><span id='map_inplace.v-1' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.MapInplaceNoArgsOps.html#tymethod.map_inplace' class='fnname'>map_inplace</a>&lt;F&gt;(&amp;mut self, map: F) <span class='where'>where F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Fn.html' title='core::ops::Fn'>Fn</a>(<a class='struct' href='../../num_complex/struct.Complex.html' title='num_complex::Complex'>Complex</a>&lt;T&gt;, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='../../num_complex/struct.Complex.html' title='num_complex::Complex'>Complex</a>&lt;T&gt; + 'static + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a></span></code></span></h4>
+<div class='docblock'><p>Transforms all vector elements using the function <code>map</code>.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T, N, D&gt; <a class='trait' href='../../basic_dsp_vector/trait.ComplexOps.html' title='basic_dsp_vector::ComplexOps'>ComplexOps</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../../basic_dsp_vector/trait.ComplexNumberSpace.html' title='basic_dsp_vector::ComplexNumberSpace'>ComplexNumberSpace</a>, D: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-3148' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/identifier_ops.rs.html#460-474' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.multiply_complex_exponential' class='method'><span id='multiply_complex_exponential.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.ComplexOps.html#tymethod.multiply_complex_exponential' class='fnname'>multiply_complex_exponential</a>(&amp;mut self, a: T, b: T)</code></span></h4>
+<div class='docblock'><p>Multiplies each vector element with <code>exp(j*(a*idx*self.delta() + b))</code> where <code>a</code> and <code>b</code> are arguments and <code>idx</code> is the index of the data points in the vector ranging from <code>0 to self.points() - 1</code>. <code>j</code> is the imaginary number and <code>exp</code> the exponential function. <a href="../../basic_dsp_vector/trait.ComplexOps.html#tymethod.multiply_complex_exponential">Read more</a></p>
+</div><h4 id='method.conj' class='method'><span id='conj.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.ComplexOps.html#tymethod.conj' class='fnname'>conj</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Calculates the complex conjugate of the vector. # Example <a href="../../basic_dsp_vector/trait.ComplexOps.html#tymethod.conj">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T, N, D&gt; <a class='trait' href='../../basic_dsp_vector/trait.ElementaryOps.html' title='basic_dsp_vector::ElementaryOps'>ElementaryOps</a>&lt;<a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt;&gt; for <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a>, D: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-3160' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/identifier_ops.rs.html#476-508' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.add' class='method'><span id='add.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.ElementaryOps.html#tymethod.add' class='fnname'>add</a>(&amp;mut self, summand: &amp;Self) -&gt; <a class='type' href='../../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a></code></span></h4>
+<div class='docblock'><p>Calculates the sum of <code>self + summand</code>. It consumes self and returns the result. # Failures TransRes may report the following <code>ErrorReason</code> members: <a href="../../basic_dsp_vector/trait.ElementaryOps.html#tymethod.add">Read more</a></p>
+</div><h4 id='method.sub' class='method'><span id='sub.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.ElementaryOps.html#tymethod.sub' class='fnname'>sub</a>(&amp;mut self, subtrahend: &amp;Self) -&gt; <a class='type' href='../../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a></code></span></h4>
+<div class='docblock'><p>Calculates the difference of <code>self - subtrahend</code>. It consumes self and returns the result. # Failures TransRes may report the following <code>ErrorReason</code> members: <a href="../../basic_dsp_vector/trait.ElementaryOps.html#tymethod.sub">Read more</a></p>
+</div><h4 id='method.mul' class='method'><span id='mul.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.ElementaryOps.html#tymethod.mul' class='fnname'>mul</a>(&amp;mut self, factor: &amp;Self) -&gt; <a class='type' href='../../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a></code></span></h4>
+<div class='docblock'><p>Calculates the product of <code>self * factor</code>. It consumes self and returns the result. # Failures TransRes may report the following <code>ErrorReason</code> members: <a href="../../basic_dsp_vector/trait.ElementaryOps.html#tymethod.mul">Read more</a></p>
+</div><h4 id='method.div' class='method'><span id='div.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.ElementaryOps.html#tymethod.div' class='fnname'>div</a>(&amp;mut self, divisor: &amp;Self) -&gt; <a class='type' href='../../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a></code></span></h4>
+<div class='docblock'><p>Calculates the quotient of <code>self / summand</code>. It consumes self and returns the result. # Failures TransRes may report the following <code>ErrorReason</code> members: <a href="../../basic_dsp_vector/trait.ElementaryOps.html#tymethod.div">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T, N, D&gt; <a class='trait' href='../../basic_dsp_vector/combined_ops/trait.IdentifierOps.html' title='basic_dsp_vector::combined_ops::IdentifierOps'>IdentifierOps</a> for <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a>, D: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-3184' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/identifier_ops.rs.html#510-548' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.domain' class='method'><span id='domain.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/combined_ops/trait.IdentifierOps.html#tymethod.domain' class='fnname'>domain</a>(&amp;self) -&gt; <a class='enum' href='../../basic_dsp_vector/enum.DataDomain.html' title='basic_dsp_vector::DataDomain'>DataDomain</a></code></span></h4>
+<div class='docblock'><p>The domain in which the data vector resides. Basically specifies the x-axis and the type of operations which are valid on this vector. <a href="../../basic_dsp_vector/combined_ops/trait.IdentifierOps.html#tymethod.domain">Read more</a></p>
+</div><h4 id='method.is_complex' class='method'><span id='is_complex.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/combined_ops/trait.IdentifierOps.html#tymethod.is_complex' class='fnname'>is_complex</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></span></h4>
+<div class='docblock'><p>Indicates whether the vector contains complex data. This also specifies the type of operations which are valid on this vector. <a href="../../basic_dsp_vector/combined_ops/trait.IdentifierOps.html#tymethod.is_complex">Read more</a></p>
+</div><h4 id='method.clone_from' class='method'><span id='clone_from.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/combined_ops/trait.IdentifierOps.html#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></span></h4>
+<div class='docblock'><p>Copies data from another vector.</p>
+</div><h4 id='method.add_points' class='method'><span id='add_points.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/combined_ops/trait.IdentifierOps.html#tymethod.add_points' class='fnname'>add_points</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Adds its length to the vector elements # Example <a href="../../basic_dsp_vector/combined_ops/trait.IdentifierOps.html#tymethod.add_points">Read more</a></p>
+</div><h4 id='method.sub_points' class='method'><span id='sub_points.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/combined_ops/trait.IdentifierOps.html#tymethod.sub_points' class='fnname'>sub_points</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Subtracts its length from the vector elements # Example <a href="../../basic_dsp_vector/combined_ops/trait.IdentifierOps.html#tymethod.sub_points">Read more</a></p>
+</div><h4 id='method.div_points' class='method'><span id='div_points.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/combined_ops/trait.IdentifierOps.html#tymethod.div_points' class='fnname'>div_points</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>divides the vector elements by its length Subtracts its length from the vector elements # Example <a href="../../basic_dsp_vector/combined_ops/trait.IdentifierOps.html#tymethod.div_points">Read more</a></p>
+</div><h4 id='method.mul_points' class='method'><span id='mul_points.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/combined_ops/trait.IdentifierOps.html#tymethod.mul_points' class='fnname'>mul_points</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>Multiplies the vector elements with its length # Example <a href="../../basic_dsp_vector/combined_ops/trait.IdentifierOps.html#tymethod.mul_points">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T, N, D&gt; <a class='trait' href='../../basic_dsp_vector/trait.RealToComplexTransformsOps.html' title='basic_dsp_vector::RealToComplexTransformsOps'>RealToComplexTransformsOps</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt;: <a class='trait' href='../../basic_dsp_vector/trait.ToComplexResult.html' title='basic_dsp_vector::ToComplexResult'>ToComplexResult</a>, <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt;::ComplexResult: <a class='trait' href='../../basic_dsp_vector/trait.RededicateForceOps.html' title='basic_dsp_vector::RededicateForceOps'>RededicateForceOps</a>&lt;<a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt;&gt;, T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../../basic_dsp_vector/trait.RealNumberSpace.html' title='basic_dsp_vector::RealNumberSpace'>RealNumberSpace</a>, D: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-3209' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/identifier_ops.rs.html#551-564' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.to_complex' class='method'><span id='to_complex.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.RealToComplexTransformsOps.html#tymethod.to_complex' class='fnname'>to_complex</a>(self) -&gt; <a class='type' href='../../basic_dsp_vector/type.TransRes.html' title='basic_dsp_vector::TransRes'>TransRes</a>&lt;Self::ComplexResult&gt;</code></span></h4>
+<div class='docblock'><p>Converts the real vector into a complex vector. <a href="../../basic_dsp_vector/trait.RealToComplexTransformsOps.html#tymethod.to_complex">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T, N, D&gt; <a class='trait' href='../../basic_dsp_vector/trait.ComplexToRealTransformsOps.html' title='basic_dsp_vector::ComplexToRealTransformsOps'>ComplexToRealTransformsOps</a>&lt;T&gt; for <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt;: <a class='trait' href='../../basic_dsp_vector/trait.ToRealResult.html' title='basic_dsp_vector::ToRealResult'>ToRealResult</a>, <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt;::RealResult: <a class='trait' href='../../basic_dsp_vector/trait.RededicateForceOps.html' title='basic_dsp_vector::RededicateForceOps'>RededicateForceOps</a>&lt;<a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt;&gt;, T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../../basic_dsp_vector/trait.ComplexNumberSpace.html' title='basic_dsp_vector::ComplexNumberSpace'>ComplexNumberSpace</a>, D: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-3216' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/identifier_ops.rs.html#566-607' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.magnitude' class='method'><span id='magnitude.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.ComplexToRealTransformsOps.html#tymethod.magnitude' class='fnname'>magnitude</a>(self) -&gt; Self::RealResult</code></span></h4>
+<div class='docblock'><p>Gets the absolute value, magnitude or norm of all vector elements. # Example <a href="../../basic_dsp_vector/trait.ComplexToRealTransformsOps.html#tymethod.magnitude">Read more</a></p>
+</div><h4 id='method.magnitude_squared' class='method'><span id='magnitude_squared.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.ComplexToRealTransformsOps.html#tymethod.magnitude_squared' class='fnname'>magnitude_squared</a>(self) -&gt; Self::RealResult</code></span></h4>
+<div class='docblock'><p>Gets the square root of the absolute value of all vector elements. # Example <a href="../../basic_dsp_vector/trait.ComplexToRealTransformsOps.html#tymethod.magnitude_squared">Read more</a></p>
+</div><h4 id='method.to_real' class='method'><span id='to_real.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.ComplexToRealTransformsOps.html#tymethod.to_real' class='fnname'>to_real</a>(self) -&gt; Self::RealResult</code></span></h4>
+<div class='docblock'><p>Gets all real elements. # Example <a href="../../basic_dsp_vector/trait.ComplexToRealTransformsOps.html#tymethod.to_real">Read more</a></p>
+</div><h4 id='method.to_imag' class='method'><span id='to_imag.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.ComplexToRealTransformsOps.html#tymethod.to_imag' class='fnname'>to_imag</a>(self) -&gt; Self::RealResult</code></span></h4>
+<div class='docblock'><p>Gets all imag elements. # Example <a href="../../basic_dsp_vector/trait.ComplexToRealTransformsOps.html#tymethod.to_imag">Read more</a></p>
+</div><h4 id='method.phase' class='method'><span id='phase.v' class='invisible'><code>fn <a href='../../basic_dsp_vector/trait.ComplexToRealTransformsOps.html#tymethod.phase' class='fnname'>phase</a>(self) -&gt; Self::RealResult</code></span></h4>
+<div class='docblock'><p>Gets the phase of all elements in [rad]. # Example <a href="../../basic_dsp_vector/trait.ComplexToRealTransformsOps.html#tymethod.phase">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl&lt;T, N, D&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, D: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a>, N: <a class='trait' href='../../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-3252' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/mod.rs.html#34-45' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class='method'><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></span></h4>
+<div class='docblock'><p>Formats the value using the given formatter.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "basic_dsp_vector";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    <script src="../../extra.js"></script>
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

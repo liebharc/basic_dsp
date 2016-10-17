@@ -48,16 +48,14 @@
                        [<span class='inner'>&#x2212;</span>]
                    </a>
                </span><a id='src-66' class='srclink' href='../src/rustfft/lib.rs.html#13-18' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct FFT&lt;T&gt; {
-    // some fields omitted
-}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;T&gt; <a class='struct' href='../rustfft/struct.FFT.html' title='rustfft::FFT'>FFT</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../num_traits/sign/trait.Signed.html' title='num_traits::sign::Signed'>Signed</a> + <a class='trait' href='../num_traits/cast/trait.FromPrimitive.html' title='num_traits::cast::FromPrimitive'>FromPrimitive</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-72' class='srclink' href='../src/rustfft/lib.rs.html#20-59' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, inverse: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; Self</code></h4>
+<pre class='rust struct'>pub struct FFT&lt;T&gt; { /* fields omitted */ }</pre><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;T&gt; <a class='struct' href='../rustfft/struct.FFT.html' title='rustfft::FFT'>FFT</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../num_traits/sign/trait.Signed.html' title='num_traits::sign::Signed'>Signed</a> + <a class='trait' href='../num_traits/cast/trait.FromPrimitive.html' title='num_traits::cast::FromPrimitive'>FromPrimitive</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-72' class='srclink' href='../src/rustfft/lib.rs.html#20-59' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, inverse: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; Self</code></span></h4>
 <div class='docblock'><p>Creates a new FFT context that will process signal of length
 <code>len</code>. If <code>inverse</code> is <code>true</code>, then this struct will run inverse
 FFTs. This implementation of the FFT doesn&#39;t do any scaling on both
 the forward and backward transforms, so doing a forward then backward
 FFT on a signal will scale the signal by its length.</p>
-</div><h4 id='method.process' class='method'><code>fn <a href='#method.process' class='fnname'>process</a>(&amp;mut self, signal: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../num_complex/struct.Complex.html' title='num_complex::Complex'>Complex</a>&lt;T&gt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, spectrum: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;mut [</a><a class='struct' href='../num_complex/struct.Complex.html' title='num_complex::Complex'>Complex</a>&lt;T&gt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>)</code></h4>
+</div><h4 id='method.process' class='method'><span id='process.v' class='invisible'><code>fn <a href='#method.process' class='fnname'>process</a>(&amp;mut self, signal: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../num_complex/struct.Complex.html' title='num_complex::Complex'>Complex</a>&lt;T&gt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, spectrum: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;mut [</a><a class='struct' href='../num_complex/struct.Complex.html' title='num_complex::Complex'>Complex</a>&lt;T&gt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>)</code></span></h4>
 <div class='docblock'><p>Runs the FFT on the input <code>signal</code> buffer, and places the output in the
 <code>spectrum</code> buffer.</p>
 
@@ -124,7 +122,7 @@ specified in the struct&#39;s constructor.</p>
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    
+    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

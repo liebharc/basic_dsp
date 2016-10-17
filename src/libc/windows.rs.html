@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-1ecc6299db9ec823\libc-0.2.14\src\windows.rs`.">
+    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-1ecc6299db9ec823\libc-0.2.16\src\windows.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>windows.rs.html -- source</title>
@@ -224,6 +224,17 @@
 <span id="180">180</span>
 <span id="181">181</span>
 <span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Windows CRT definitions</span>
 
@@ -325,6 +336,13 @@
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>S_IWRITE</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>128</span>;
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>S_IREAD</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>256</span>;
 
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LC_ALL</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>0</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LC_COLLATE</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>1</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LC_CTYPE</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>2</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LC_MONETARY</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>3</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LC_NUMERIC</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>4</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LC_TIME</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>5</span>;
+
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>target_env</span> <span class='op'>=</span> <span class='string'>&quot;msvc&quot;</span>)]</span> <span class='comment'>// &quot; if &quot; -- appease style checker</span>
 <span class='attribute'>#[<span class='ident'>link</span>(<span class='ident'>name</span> <span class='op'>=</span> <span class='string'>&quot;msvcrt&quot;</span>)]</span>
 <span class='kw'>extern</span> {}
@@ -406,6 +424,10 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_osfhandle</span>(<span class='ident'>fd</span>: ::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> ::<span class='ident'>intptr_t</span>;
     <span class='attribute'>#[<span class='ident'>link_name</span> <span class='op'>=</span> <span class='string'>&quot;_open_osfhandle&quot;</span>]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>open_osfhandle</span>(<span class='ident'>osfhandle</span>: ::<span class='ident'>intptr_t</span>, <span class='ident'>flags</span>: ::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>setlocale</span>(<span class='ident'>category</span>: ::<span class='ident'>c_int</span>, <span class='ident'>locale</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>) <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>c_char</span>;
+    <span class='attribute'>#[<span class='ident'>link_name</span> <span class='op'>=</span> <span class='string'>&quot;_wsetlocale&quot;</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>wsetlocale</span>(<span class='ident'>category</span>: ::<span class='ident'>c_int</span>,
+                      <span class='ident'>locale</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>wchar_t</span>) <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>wchar_t</span>;
 }
 </pre>
 </section>
@@ -468,7 +490,7 @@
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
+    <script src="../../extra.js"></script>
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `combined_ops` mod in crate `basic_dsp_vector`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, combined_ops">
+
+    <title>basic_dsp_vector::combined_ops - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>basic_dsp_vector</a></p><script>window.sidebarCurrent = {name: 'combined_ops', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>basic_dsp_vector</a>::<wbr><a class='mod' href=''>combined_ops</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-2249' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/mod.rs.html#1-638' title='goto source code'>[src]</a></span></h1>
+<h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.Identifier.html'
+                                  title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a></td>
+                           <td class='docblock-short'>
+                                <p>An identifier is just a placeholder for a data type
+used to ensure already at compile time that operations are valid.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.MultiOperation1.html'
+                                  title='basic_dsp_vector::combined_ops::MultiOperation1'>MultiOperation1</a></td>
+                           <td class='docblock-short'>
+                                <p>A multi operation which holds a vector and records all changes
+which need to be done to the vectors. By calling <code>get</code> on the struct
+all operations will be executed in one run.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.MultiOperation2.html'
+                                  title='basic_dsp_vector::combined_ops::MultiOperation2'>MultiOperation2</a></td>
+                           <td class='docblock-short'>
+                                <p>A multi operation which holds a vector and records all changes
+which need to be done to the vectors. By calling <code>get</code> on the struct
+all operations will be executed in one run.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.PreparedOperation1.html'
+                                  title='basic_dsp_vector::combined_ops::PreparedOperation1'>PreparedOperation1</a></td>
+                           <td class='docblock-short'>
+                                <p>An operation on one data vector which has been prepared in
+advance.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.PreparedOperation2.html'
+                                  title='basic_dsp_vector::combined_ops::PreparedOperation2'>PreparedOperation2</a></td>
+                           <td class='docblock-short'>
+                                <p>An operation on two data vectors which has been prepared in
+advance.</p>
+                           </td>
+                       </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class='enum' href='enum.Operation.html'
+                                  title='basic_dsp_vector::combined_ops::Operation'>Operation</a></td>
+                           <td class='docblock-short'>
+                                <p>An alternative way to define operations on a vector.</p>
+                           </td>
+                       </tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.IdentifierOps.html'
+                                  title='basic_dsp_vector::combined_ops::IdentifierOps'>IdentifierOps</a></td>
+                           <td class='docblock-short'>
+                                <p>Operations for all kind of vectors which can be used in combination
+with multi ops or prepared ops.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.PerformOperationSimd.html'
+                                  title='basic_dsp_vector::combined_ops::PerformOperationSimd'>PerformOperationSimd</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.PreparedOperation1Exec.html'
+                                  title='basic_dsp_vector::combined_ops::PreparedOperation1Exec'>PreparedOperation1Exec</a></td>
+                           <td class='docblock-short'>
+                                <p>Executes the prepared operations to convert <code>S</code>to <code>D</code>.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.PreparedOperation2Exec.html'
+                                  title='basic_dsp_vector::combined_ops::PreparedOperation2Exec'>PreparedOperation2Exec</a></td>
+                           <td class='docblock-short'>
+                                <p>Executes the prepared operations to convert <code>S1</code> and <code>S2</code> to <code>D1</code> and <code>D2</code>.</p>
+                           </td>
+                       </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.evaluate_number_space_transition.html'
+                                  title='basic_dsp_vector::combined_ops::evaluate_number_space_transition'>evaluate_number_space_transition</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.get_argument.html'
+                                  title='basic_dsp_vector::combined_ops::get_argument'>get_argument</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.multi_ops1.html'
+                                  title='basic_dsp_vector::combined_ops::multi_ops1'>multi_ops1</a></td>
+                           <td class='docblock-short'>
+                                <p>Creates a new multi operation for one vectors.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.multi_ops2.html'
+                                  title='basic_dsp_vector::combined_ops::multi_ops2'>multi_ops2</a></td>
+                           <td class='docblock-short'>
+                                <p>Creates a new multi operation for two vectors.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.prepare32_1.html'
+                                  title='basic_dsp_vector::combined_ops::prepare32_1'>prepare32_1</a></td>
+                           <td class='docblock-short'>
+                                <p>Prepares an operation with one input and one output.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.prepare32_2.html'
+                                  title='basic_dsp_vector::combined_ops::prepare32_2'>prepare32_2</a></td>
+                           <td class='docblock-short'>
+                                <p>Prepares an operation with one input and one output.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.prepare64_1.html'
+                                  title='basic_dsp_vector::combined_ops::prepare64_1'>prepare64_1</a></td>
+                           <td class='docblock-short'>
+                                <p>Prepares an operation with one input and one output.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.prepare64_2.html'
+                                  title='basic_dsp_vector::combined_ops::prepare64_2'>prepare64_2</a></td>
+                           <td class='docblock-short'>
+                                <p>Prepares an operation with one input and one output.</p>
+                           </td>
+                       </tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexFreqIdent.html'
+                                  title='basic_dsp_vector::combined_ops::ComplexFreqIdent'>ComplexFreqIdent</a></td>
+                           <td class='docblock-short'>
+                                <p>A identifier with complex numbers in frequency domain.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ComplexTimeIdent.html'
+                                  title='basic_dsp_vector::combined_ops::ComplexTimeIdent'>ComplexTimeIdent</a></td>
+                           <td class='docblock-short'>
+                                <p>A identifier with complex numbers in time domain.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.GenDspIdent.html'
+                                  title='basic_dsp_vector::combined_ops::GenDspIdent'>GenDspIdent</a></td>
+                           <td class='docblock-short'>
+                                <p>A identifier with no information about number space or domain at compile time.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealFreqIdent.html'
+                                  title='basic_dsp_vector::combined_ops::RealFreqIdent'>RealFreqIdent</a></td>
+                           <td class='docblock-short'>
+                                <p>A identifier with real numbers in frequency domain.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RealTimeIdent.html'
+                                  title='basic_dsp_vector::combined_ops::RealTimeIdent'>RealTimeIdent</a></td>
+                           <td class='docblock-short'>
+                                <p>A identifier with real numbers in time domain.</p>
+                           </td>
+                       </tr></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "basic_dsp_vector";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    <script src="../../extra.js"></script>
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>
