@@ -9,7 +9,7 @@ Digital signal processing based on real or complex vectors in time or frequency 
 
 [Documentation](https://liebharc.github.io/basic_dsp/basic_dsp/)
 
-[Example](https://github.com/liebharc/basic_dsp/blob/master/examples/modulation.rs)
+[Examples](https://github.com/liebharc/basic_dsp/blob/master/examples/)
 
 [Changelog](https://github.com/liebharc/basic_dsp/blob/master/Changelog.md)
 

@@ -7,6 +7,11 @@ use std::io::prelude::*;
 use std::io;
 use std::f64::consts::PI;
 
+// In this example start with creating some data using a PRBS15 which is a standard way to create 
+// pseudo random data. Afterwards we interpolate the data to get a waveform which fits in a small 
+// frequency block and finally we shift this frequency block to a desired target frequency. 
+// Modern communication technologies like UMTS and LTE use similar approaches in order to 
+// transmit data, however needless to say that those technologies are far more complicated. 
 fn main() {
     let number_of_symbols = 10000;
     let mut prbs = Prbs15::new();
