@@ -36,6 +36,10 @@ pub trait ConvolutionOps<S, T, A>
     /// Convolves `self` with the convolution function `impulse_response`.
     /// For performance it's recommended
     /// to use multiply both vectors in frequency domain instead of this operation.
+    ///
+    /// # Upcoming shanges
+    /// With version `0.5` this method might get renamed.
+    ///
     /// # Failures
     /// TransRes may report the following `ErrorReason` members:
     ///
@@ -44,7 +48,7 @@ pub trait ConvolutionOps<S, T, A>
     ///    are not in the same number space and same domain.
     /// 3. `InvalidArgumentLength`: if `self.points() < impulse_response.points()`.
     fn convolve_vector<B>(&mut self, buffer: &mut B, impulse_response: &A) -> VoidResult
-        where B: Buffer<S, T>;
+        where B: Buffer<S, T>; // TODO: Consider to rename this function with 0.5
 }
 
 /// Provides a frequency response multiplication operations.
