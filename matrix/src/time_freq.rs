@@ -2,7 +2,7 @@
 use basic_dsp_vector::*;
 use basic_dsp_vector::window_functions::*;
 use basic_dsp_vector::conv_types::*;
-use super::super::*;
+use super::*;
 use TransformContent;
 use std::marker;
 
@@ -416,28 +416,9 @@ macro_rules! add_mat_impl {
 
 add_mat_impl!(MatrixMxN; Matrix2xN; Matrix3xN; Matrix4xN);
 
-
-
-impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
-        ConvolutionOps<S, T, Vec<&'a Vec<&'a DspVec<S, T, N, D>>>>
-        for MatrixMxN<DspVec<S, T, N, D>, S, T>
-        where DspVec<S, T, N, D>: ConvolutionOps<S, T, Vec<&'a DspVec<S, T, N, D>>> {
-    fn convolve_vector<B>(
-            &mut self,
-            buffer: &mut B,
-            impulse_response: &Vec<&Vec<&DspVec<S, T, N, D>>>) -> VoidResult
-                where B: Buffer<S, T> {
-        for v in self.rows_mut() {
-            try!(v.convolve_vector(buffer, impulse_response));
-        }
-
-        Ok(())
-    }
-}
-
 #[cfg(test)]
 mod tests {
-    use super::super::super::*;
+    use super::super::*;
     use basic_dsp_vector::conv_types::*;
     use basic_dsp_vector::*;
     use std::fmt::Debug;
@@ -484,39 +465,5 @@ mod tests {
         let (res, _) = res.get();
         assert_eq_tol(&res[0][..], &expected, 1e-4);
         assert_eq_tol(&res[1][..], &expected, 1e-4);
-    }
-
-    #[test]
-    fn convolve_mat32() {
-        let mut mat = {
-            let len = 11;
-            let mut time = vec!(0.0; len).to_real_time_vec();
-            time[len / 2] = 1.0;
-            let time2 = time.clone();
-            vec!(time, time2).to_mat()
-        };
-
-        let len = 3;
-        let mut empty = vec!(0.0; len).to_real_time_vec();
-        let mut delay = vec!(0.0; len).to_real_time_vec();
-        delay[0] = 1.0;
-        let conv1 = vec!(&delay, &empty);
-        let conv2 = vec!(&empty, &delay);
-        let conv = vec!(&conv1, &conv2);
-
-        let mut buffer = SingleBuffer::new();
-        mat.convolve_vector(&mut buffer, &conv);
-
-        let expected = {
-            let len = 11;
-            let mut time = vec!(0.0; len).to_real_time_vec();
-            time[len / 2 - 1] = 1.0;
-            let time2 = time.clone();
-            vec!(time, time2)
-        };
-
-        let (res, _) = mat.get();
-        assert_eq_tol(&res[0][..], &expected[0][..], 1e-4);
-        assert_eq_tol(&res[1][..], &expected[1][..], 1e-4);
     }
 }

@@ -1,5 +1,5 @@
 use basic_dsp_vector::*;
-use super::super::*;
+use super::*;
 use IntoFixedLength;
 use num::complex::Complex;
 
@@ -823,7 +823,7 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> SumOps<[T; 4]> for Matrix2xN<V,
 
 #[cfg(test)]
 mod tests {
-    use super::super::super::*;
+    use super::super::*;
     use basic_dsp_vector::*;
 
     #[test]

@@ -8,8 +8,17 @@ mod mat_impl;
 pub use self::mat_impl::*;
 mod to_from_mat_conversions;
 pub use self::to_from_mat_conversions::*;
-mod forwards;
-pub use self::forwards::*;
+mod general;
+pub use self::general::*;
+mod rededicate;
+pub use self::rededicate::*;
+mod complex;
+pub use self::complex::*;
+mod real;
+pub use self::real::*;
+mod time_freq;
+pub use self::time_freq::*;
+
 
 pub struct MatrixMxN<V, S, T>
     where T: RealNumber,

@@ -1,5 +1,5 @@
 use basic_dsp_vector::*;
-use super::super::*;
+use super::*;
 use TransformContent;
 use std::marker;
 
