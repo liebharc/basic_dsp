@@ -19,7 +19,6 @@ pub use self::real::*;
 mod time_freq;
 pub use self::time_freq::*;
 
-
 pub struct MatrixMxN<V, S, T>
     where T: RealNumber,
           S: ToSlice<T>,

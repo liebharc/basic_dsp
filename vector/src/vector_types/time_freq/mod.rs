@@ -22,6 +22,8 @@ use simd_extensions::*;
 use multicore_support::*;
 use super::{array_to_complex, array_to_complex_mut, Buffer, Vector, MetaData, DspVec, ToSliceMut,
             NumberSpace, Domain};
+use num::Complex;
+use std::fmt::Debug;
 
 fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: bool)
     where S: ToSliceMut<T>,
@@ -152,6 +154,71 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
+    /// Convolves a vector of vectors (in this lib also considered a matrix) with a vector
+    /// of impulse responses and stores the result in `target`.
+    pub fn convolve_mat_scalar(
+        matrix: &[&Self],
+        impulse_response: &[&Self],
+        target: &mut S)
+    {
+        if impulse_response.len() == 0 || matrix.len() == 0 {
+            return;
+        }
+
+        let points = matrix[0].points();
+        let other_points = impulse_response[0].points();
+        let (other_start, other_end, full_conv_len, conv_len) = if other_points > points {
+            let center = other_points / 2;
+            let conv_len = points / 2;
+            (center - conv_len, center + conv_len, points, conv_len)
+        } else {
+            (0, other_points, other_points, other_points - other_points / 2)
+        };
+        if matrix[0].is_complex() {
+            let len = matrix[0].len();
+            let others: Vec<&[T]> = impulse_response.iter().map(|v|v.data.to_slice()).collect();
+            let data_vecs: Vec<&[T]> = matrix.iter().map(|v|v.data.to_slice()).collect();
+            let target = target.to_slice_mut();
+            let others: Vec<&[Complex<T>]>
+                = others.iter().map(|o| {
+                    let c = array_to_complex(&o[0..impulse_response[0].len()]);
+                    &c[other_start..other_end]
+                }).collect();
+            let data_vecs: Vec<&[Complex<T>]>
+                = data_vecs.iter().map(|o| {
+                    array_to_complex(&o[0..impulse_response[0].len()])
+                }).collect();
+            let dest = array_to_complex_mut(&mut target[0..len]);
+            let conv_len = conv_len as isize;
+            let mut i = 0;
+            for num in dest {
+                *num =
+                    Self::convolve_mat_iteration(&data_vecs, &others, i, conv_len, full_conv_len);
+                i += 1;
+            }
+        } else {
+            let len = matrix[0].len();
+            let others: Vec<&[T]> = impulse_response.iter().map(|v|v.data.to_slice()).collect();
+            let data_vecs: Vec<&[T]> = matrix.iter().map(|v|v.data.to_slice()).collect();
+            let target = target.to_slice_mut();
+            let others: Vec<&[T]>
+                = others.iter().map(|o| {
+                    &o[other_start..other_end]
+                }).collect();
+            let data_vecs: Vec<&[T]>
+                = data_vecs.iter().map(|o| {
+                    &o[0..len]
+                }).collect();
+            let dest = &mut target[0..len];
+            let conv_len = conv_len as isize;
+            let mut i = 0;
+            for num in dest {
+                *num = Self::convolve_mat_iteration(&data_vecs, &others, i, conv_len, full_conv_len);
+                i += 1;
+            }
+        }
+    }
+
     #[inline]
     fn convolve_iteration<TT>(data: &[TT],
                               other_iter: &[TT],
@@ -167,6 +234,27 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         for (this, other) in iteration {
             sum = sum + this * (*other);
         }
+        sum
+    }
+
+    #[inline]
+    fn convolve_mat_iteration<TT>(matrix: &Vec<&[TT]>,
+                              imp_resp: &Vec<&[TT]>,
+                              i: isize,
+                              conv_len: isize,
+                              full_conv_len: usize)
+                              -> TT
+        where TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT> + Debug
+    {
+        let mut sum = TT::zero();
+        for (data, other_iter) in matrix.iter().zip(imp_resp.iter()) {
+            let data_iter = ReverseWrappingIterator::new(data, i + conv_len, full_conv_len);
+            let iteration = data_iter.zip(*other_iter);
+            for (this, other) in iteration {
+                sum = sum + this * (*other);
+            }
+        }
+
         sum
     }
 

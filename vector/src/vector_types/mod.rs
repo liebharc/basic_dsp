@@ -223,7 +223,7 @@ pub struct DspVec<S, T, N, D>
           N: NumberSpace,
           D: Domain
 {
-    data: S,
+    pub data: S,
     delta: T,
     domain: D,
     number_space: N,
