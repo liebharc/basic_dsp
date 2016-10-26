@@ -417,6 +417,29 @@ macro_rules! add_mat_impl {
 
 add_mat_impl!(MatrixMxN; Matrix2xN; Matrix3xN; Matrix4xN);
 
+macro_rules! convolve_vector {
+    ($self_: expr, $buffer: ident, $impulse_response: ident) => {
+        {
+            let mut result: Vec<S> = {
+                let rows: Vec<&DspVec<S, T, N, D>> = $self_.rows().iter().map(|v|v).collect();
+                $impulse_response.iter().map(|i| {
+                    let mut target = $buffer.get($self_.row_len());
+                    DspVec::<S, T, N, D>::convolve_mat_scalar(&rows, i, &mut target);
+                    target
+                }).collect()
+           };
+
+            for i in 0..$self_.col_len() {
+                mem::swap(&mut result[i], &mut $self_.rows[i].data)
+            }
+
+            $buffer.free(result.pop().expect("Result should not be empty"));
+
+            Ok(())
+        }
+    }
+}
+
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
         ConvolutionOps<S, T, Vec<&'a Vec<&'a DspVec<S, T, N, D>>>>
         for MatrixMxN<DspVec<S, T, N, D>, S, T> {
@@ -425,22 +448,43 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
             buffer: &mut B,
             impulse_response: &Vec<&Vec<&DspVec<S, T, N, D>>>) -> VoidResult
                 where B: Buffer<S, T> {
-        let mut result: Vec<S> = {
-            let rows: Vec<&DspVec<S, T, N, D>> = self.rows().iter().map(|v|v).collect();
-            impulse_response.iter().map(|i| {
-                let mut target = buffer.get(self.row_len());
-                DspVec::<S, T, N, D>::convolve_mat_scalar(&rows, i, &mut target);
-                target
-            }).collect()
-       };
+        convolve_vector!(self, buffer, impulse_response)
+    }
+}
 
-        for i in 0..self.col_len() {
-            mem::swap(&mut result[i], &mut self.rows[i].data)
-        }
+impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
+        ConvolutionOps<S, T, [[&'a DspVec<S, T, N, D>; 2]; 2]>
+        for Matrix2xN<DspVec<S, T, N, D>, S, T> {
+    fn convolve_vector<B>(
+            &mut self,
+            buffer: &mut B,
+            impulse_response: &[[&'a DspVec<S, T, N, D>; 2]; 2]) -> VoidResult
+                where B: Buffer<S, T> {
+        convolve_vector!(self, buffer, impulse_response)
+    }
+}
 
-        buffer.free(result.pop().expect("Result should not be empty"));
+impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
+        ConvolutionOps<S, T, [[&'a DspVec<S, T, N, D>; 3]; 3]>
+        for Matrix3xN<DspVec<S, T, N, D>, S, T> {
+    fn convolve_vector<B>(
+            &mut self,
+            buffer: &mut B,
+            impulse_response: &[[&'a DspVec<S, T, N, D>; 3]; 3]) -> VoidResult
+                where B: Buffer<S, T> {
+        convolve_vector!(self, buffer, impulse_response)
+    }
+}
 
-        Ok(())
+impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
+        ConvolutionOps<S, T, [[&'a DspVec<S, T, N, D>; 4]; 4]>
+        for Matrix4xN<DspVec<S, T, N, D>, S, T> {
+    fn convolve_vector<B>(
+            &mut self,
+            buffer: &mut B,
+            impulse_response: &[[&'a DspVec<S, T, N, D>; 4]; 4]) -> VoidResult
+                where B: Buffer<S, T> {
+        convolve_vector!(self, buffer, impulse_response)
     }
 }
 
@@ -496,7 +540,7 @@ mod tests {
     }
 
     #[test]
-    fn convolve_mat32() {
+    fn delay_convolve() {
         let mut mat = {
             let len = 11;
             let mut time = vec!(0.0; len).to_real_time_vec();
@@ -521,6 +565,43 @@ mod tests {
             let mut time = vec!(0.0; len).to_real_time_vec();
             time[len / 2 - 1] = 1.0;
             let time2 = time.clone();
+            vec!(time, time2)
+        };
+
+        let (res, _) = mat.get();
+        assert_eq_tol(&res[0][..], &expected[0][..], 1e-4);
+        assert_eq_tol(&res[1][..], &expected[1][..], 1e-4);
+    }
+
+    #[test]
+    fn delay_swap_convolve() {
+        let mut mat = {
+            let len = 11;
+            let mut time = vec!(0.0; len).to_real_time_vec();
+            time[len / 2] = 0.5;
+            let mut time2 = vec!(0.0; len).to_real_time_vec();
+            time2[len / 2] = 2.0;
+            [time, time2].to_mat()
+        };
+
+        let len = 3;
+        let empty = vec!(0.0; len).to_real_time_vec();
+        let mut delay = vec!(0.0; len).to_real_time_vec();
+        delay[0] = 1.0;
+
+        // This impulse response will swap both channels
+        // and then delay them
+        let conv = [[&empty, &delay], [&delay, &empty]];
+
+        let mut buffer = SingleBuffer::new();
+        mat.convolve_vector(&mut buffer, &conv).unwrap();
+
+        let expected = {
+            let len = 11;
+            let mut time = vec!(0.0; len).to_real_time_vec();
+            time[len / 2 - 1] = 2.0;
+            let mut time2 = vec!(0.0; len).to_real_time_vec();
+            time2[len / 2 - 1] = 0.5;
             vec!(time, time2)
         };
 
