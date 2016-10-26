@@ -233,14 +233,20 @@ macro_rules! add_mat_impl {
 				}
 			}
 
+            // We haven't implemented this for an argument of type vector
+            // since there is no guarantee that FreqResult of a matrix wouldn't
+            // be a vector. Thus Rust fails since there could be a case where two
+            // implementations of CrossCorrelationOps exists for a matrix. For
+            // now this is what it is, until a) we figure out a solution for this
+            // or b) Rust adds a new feature so that we can specify that FreqResult is
+            // either a matrix or a vecor but never both (Negative bounds could be helpful).
 			impl<S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
 					CrossCorrelationOps<
 						S,
 						T,
 						$matrix<<DspVec<S, T, N, D> as ToFreqResult>::FreqResult, S, T>>
 					for $matrix<DspVec<S, T, N, D>, S, T>
-					where $matrix<DspVec<S, T, N, D>, S, T>: ToFreqResult,
-						  DspVec<S, T, N, D>:
+					where DspVec<S, T, N, D>:
 						  	ToFreqResult
 							+ CrossCorrelationOps<
 								S,
@@ -326,13 +332,14 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<'a, V: Vector<T>, S: ToSliceMut<T>, T: RealNumber, C: 'a> Convolution<'a, S, T, C>
+			impl<'a, V: Vector<T>, S: ToSliceMut<T>, T: RealNumber>
+                    Convolution<'a, S, T, &'a RealImpulseResponse<T>>
                     for $matrix<V, S, T>
-                    where V: Convolution<'a, S, T, C> {
+                    where V: Convolution<'a, S, T, &'a RealImpulseResponse<T>> {
 				fn convolve<B>(
 						&mut self,
 						buffer: &mut B,
-						impulse_response: &C,
+						impulse_response: &'a RealImpulseResponse<T>,
 						ratio: T,
 						len: usize)
 				 	where B: Buffer<S, T> {
@@ -342,13 +349,30 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<'a, V: Vector<T>, S: ToSliceMut<T>, T: RealNumber, C: 'a>
-                        FrequencyMultiplication<'a, S, T, C>
+			impl<'a, V: Vector<T>, S: ToSliceMut<T>, T: RealNumber>
+                    Convolution<'a, S, T, &'a ComplexImpulseResponse<T>>
                     for $matrix<V, S, T>
-                    where V: FrequencyMultiplication<'a, S, T, C> {
+                    where V: Convolution<'a, S, T, &'a ComplexImpulseResponse<T>> {
+				fn convolve<B>(
+						&mut self,
+						buffer: &mut B,
+						impulse_response: &'a ComplexImpulseResponse<T>,
+						ratio: T,
+						len: usize)
+				 	where B: Buffer<S, T> {
+                    for v in self.rows_mut() {
+                        v.convolve(buffer, impulse_response, ratio, len);
+                    }
+				}
+			}
+
+			impl<'a, V: Vector<T>, S: ToSliceMut<T>, T: RealNumber>
+                        FrequencyMultiplication<'a, S, T, &'a RealFrequencyResponse<T>>
+                    for $matrix<V, S, T>
+                    where V: FrequencyMultiplication<'a, S, T, &'a RealFrequencyResponse<T>> {
 				fn multiply_frequency_response(
 						&mut self,
-						frequency_response: &C,
+						frequency_response: &'a RealFrequencyResponse<T>,
 						ratio: T) {
                     for v in self.rows_mut() {
                         v.multiply_frequency_response(frequency_response, ratio);
@@ -356,13 +380,28 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T>, S: ToSliceMut<T>, T: RealNumber> ConvolutionOps<S, T, V>
+			impl<'a, V: Vector<T>, S: ToSliceMut<T>, T: RealNumber>
+                        FrequencyMultiplication<'a, S, T, &'a ComplexFrequencyResponse<T>>
                     for $matrix<V, S, T>
-                    where V: ConvolutionOps<S, T, V> {
+                    where V: FrequencyMultiplication<'a, S, T, &'a ComplexFrequencyResponse<T>> {
+				fn multiply_frequency_response(
+						&mut self,
+						frequency_response: &'a ComplexFrequencyResponse<T>,
+						ratio: T) {
+                    for v in self.rows_mut() {
+                        v.multiply_frequency_response(frequency_response, ratio);
+                    }
+				}
+			}
+
+			impl<S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
+                    ConvolutionOps<S, T, DspVec<S, T, N, D>>
+                    for $matrix<DspVec<S, T, N, D>, S, T>
+                    where DspVec<S, T, N, D>: ConvolutionOps<S, T, DspVec<S, T, N, D>> {
 				fn convolve_vector<B>(
 						&mut self,
 						buffer: &mut B,
-						impulse_response: &V) -> VoidResult
+						impulse_response: &DspVec<S, T, N, D>) -> VoidResult
 							where B: Buffer<S, T> {
                     for v in self.rows_mut() {
                         try!(v.convolve_vector(buffer, impulse_response));
@@ -376,3 +415,108 @@ macro_rules! add_mat_impl {
 }
 
 add_mat_impl!(MatrixMxN; Matrix2xN; Matrix3xN; Matrix4xN);
+
+
+
+impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
+        ConvolutionOps<S, T, Vec<&'a Vec<&'a DspVec<S, T, N, D>>>>
+        for MatrixMxN<DspVec<S, T, N, D>, S, T>
+        where DspVec<S, T, N, D>: ConvolutionOps<S, T, Vec<&'a DspVec<S, T, N, D>>> {
+    fn convolve_vector<B>(
+            &mut self,
+            buffer: &mut B,
+            impulse_response: &Vec<&Vec<&DspVec<S, T, N, D>>>) -> VoidResult
+                where B: Buffer<S, T> {
+        for v in self.rows_mut() {
+            try!(v.convolve_vector(buffer, impulse_response));
+        }
+
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::super::super::*;
+    use basic_dsp_vector::conv_types::*;
+    use basic_dsp_vector::*;
+    use std::fmt::Debug;
+
+    fn assert_eq_tol<T>(left: &[T], right: &[T], tol: T)
+        where T: RealNumber + Debug
+    {
+        assert_eq!(left.len(), right.len());
+        for i in 0..left.len() {
+            if (left[i] - right[i]).abs() > tol {
+                panic!("assertion failed: {:?} != {:?}", left, right);
+            }
+        }
+    }
+
+    #[test]
+    fn convolve_complex_time_and_time32() {
+        let res = {
+            let len = 11;
+            let mut time = vec!(0.0; 2 * len).to_complex_time_vec();
+            time[len] = 1.0;
+            let time2 = time.clone();
+            let mut mat = [time, time2].to_mat();
+            let sinc: SincFunction<f32> = SincFunction::new();
+            let mut buffer = SingleBuffer::new();
+            mat.convolve(&mut buffer,
+                          &sinc as &RealImpulseResponse<f32>,
+                          0.5,
+                          len / 2);
+            mat.magnitude()
+        };
+
+        let expected = [0.12732396,
+                        0.000000027827534,
+                        0.21220659,
+                        0.000000027827534,
+                        0.63661975,
+                        1.0,
+                        0.63661975,
+                        0.000000027827534,
+                        0.21220659,
+                        0.000000027827534,
+                        0.12732396];
+        let (res, _) = res.get();
+        assert_eq_tol(&res[0][..], &expected, 1e-4);
+        assert_eq_tol(&res[1][..], &expected, 1e-4);
+    }
+
+    #[test]
+    fn convolve_mat32() {
+        let mut mat = {
+            let len = 11;
+            let mut time = vec!(0.0; len).to_real_time_vec();
+            time[len / 2] = 1.0;
+            let time2 = time.clone();
+            vec!(time, time2).to_mat()
+        };
+
+        let len = 3;
+        let mut empty = vec!(0.0; len).to_real_time_vec();
+        let mut delay = vec!(0.0; len).to_real_time_vec();
+        delay[0] = 1.0;
+        let conv1 = vec!(&delay, &empty);
+        let conv2 = vec!(&empty, &delay);
+        let conv = vec!(&conv1, &conv2);
+
+        let mut buffer = SingleBuffer::new();
+        mat.convolve_vector(&mut buffer, &conv);
+
+        let expected = {
+            let len = 11;
+            let mut time = vec!(0.0; len).to_real_time_vec();
+            time[len / 2 - 1] = 1.0;
+            let time2 = time.clone();
+            vec!(time, time2)
+        };
+
+        let (res, _) = mat.get();
+        assert_eq_tol(&res[0][..], &expected[0][..], 1e-4);
+        assert_eq_tol(&res[1][..], &expected[1][..], 1e-4);
+    }
+}

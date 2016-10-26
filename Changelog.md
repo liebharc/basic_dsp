@@ -1,5 +1,10 @@
 # `basic_dsp`
 Changes:
+
+## Version 0.4.1
+
+- Added a method to convolve a matrix with a matrix of impulse responses.
+
 ## Version 0.4.0 (Breaking changes)
 Added support for matrix operations. In order to allow matrices and vectors to implement the same traits the existing traits had to be renamed and restructured.
 

@@ -7,7 +7,7 @@ use super::super::{array_to_complex, array_to_complex_mut, VoidResult, ToSliceMu
                    ComplexNumberSpace, Buffer, ErrorReason};
 
 /// Provides a convolution operations.
-pub trait Convolution<'a, S, T, C: ?Sized + 'a>
+pub trait Convolution<'a, S, T, C: 'a>
     where S: ToSliceMut<T>,
           T: RealNumber
 {
@@ -24,7 +24,7 @@ pub trait Convolution<'a, S, T, C: ?Sized + 'a>
     /// 1. `VectorMustBeComplex`: if `self` is in real number space but
     ///    `impulse_response` is in complex number space.
     /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
-    fn convolve<B>(&mut self, buffer: &mut B, impulse_response: &C, ratio: T, len: usize)
+    fn convolve<B>(&mut self, buffer: &mut B, impulse_response: C, ratio: T, len: usize)
         where B: Buffer<S, T>;
 }
 
@@ -48,7 +48,7 @@ pub trait ConvolutionOps<S, T, A>
 }
 
 /// Provides a frequency response multiplication operations.
-pub trait FrequencyMultiplication<'a, S, T, C: ?Sized + 'a>
+pub trait FrequencyMultiplication<'a, S, T, C: 'a>
     where S: ToSliceMut<T>,
           T: RealNumber
 {
@@ -65,7 +65,7 @@ pub trait FrequencyMultiplication<'a, S, T, C: ?Sized + 'a>
     /// 1. `VectorMustBeComplex`: if `self` is in real number space but `frequency_response`
     ///    is in complex number space.
     /// 2. `VectorMustBeInFreqDomain`: if `self` is in time domain.
-    fn multiply_frequency_response(&mut self, frequency_response: &C, ratio: T);
+    fn multiply_frequency_response(&mut self, frequency_response: C, ratio: T);
 }
 
 macro_rules! assert_complex {
@@ -86,9 +86,9 @@ macro_rules! assert_time {
     }
 }
 
-impl<'a, S, T, N, D> Convolution<'a, S, T, RealImpulseResponse<T>> for DspVec<S, T, N, D>
+impl<'a, S, T, N, D> Convolution<'a, S, T, &'a RealImpulseResponse<T>> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
-          T: RealNumber + 'a,
+          T: RealNumber,
           N: NumberSpace,
           D: TimeDomain
 {
@@ -184,9 +184,9 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, RealImpulseResponse<T>> for DspVec<S,
     }
 }
 
-impl<'a, S, T, N, D> Convolution<'a, S, T, ComplexImpulseResponse<T>> for DspVec<S, T, N, D>
+impl<'a, S, T, N, D> Convolution<'a, S, T, &'a ComplexImpulseResponse<T>> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
-          T: RealNumber + 'a,
+          T: RealNumber,
           N: ComplexNumberSpace,
           D: TimeDomain
 {
@@ -290,10 +290,10 @@ impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
     }
 }
 
-impl<'a, S, T, N, D> FrequencyMultiplication<'a, S, T, ComplexFrequencyResponse<T>>
+impl<'a, S, T, N, D> FrequencyMultiplication<'a, S, T, &'a ComplexFrequencyResponse<T>>
     for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
-          T: RealNumber + 'a,
+          T: RealNumber,
           N: ComplexNumberSpace,
           D: FrequencyDomain
 {
@@ -312,10 +312,10 @@ impl<'a, S, T, N, D> FrequencyMultiplication<'a, S, T, ComplexFrequencyResponse<
     }
 }
 
-impl<'a, S, T, N, D> FrequencyMultiplication<'a, S, T, RealFrequencyResponse<T>>
+impl<'a, S, T, N, D> FrequencyMultiplication<'a, S, T, &'a RealFrequencyResponse<T>>
     for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
-          T: RealNumber + 'a,
+          T: RealNumber,
           N: NumberSpace,
           D: FrequencyDomain
 {
@@ -385,7 +385,7 @@ mod tests {
         let mut vector = vec![0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0].to_real_time_vec();
         let rc: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
         let mut buffer = SingleBuffer::new();
-        vector.convolve(&mut buffer, &rc as &RealImpulseResponse<f32>, 0.2, 5);
+        vector.convolve(&mut buffer, &rc, 0.2, 5);
         let expected = [0.0,
                         0.2171850639713355,
                         0.4840621929215732,
@@ -401,16 +401,19 @@ mod tests {
 
     #[test]
     fn convolve_complex_time_and_time32() {
-        let len = 11;
-        let mut time = vec!(0.0; 2 * len).to_complex_time_vec();
-        time[len] = 1.0;
-        let sinc: SincFunction<f32> = SincFunction::new();
-        let mut buffer = SingleBuffer::new();
-        time.convolve(&mut buffer,
-                      &sinc as &RealImpulseResponse<f32>,
-                      0.5,
-                      len / 2);
-        let res = time.magnitude();
+        let res = {
+            let len = 11;
+            let mut time = vec!(0.0; 2 * len).to_complex_time_vec();
+            time[len] = 1.0;
+            let sinc: SincFunction<f32> = SincFunction::new();
+            let mut buffer = SingleBuffer::new();
+            time.convolve(&mut buffer,
+                          &sinc as &RealImpulseResponse<f32>,
+                          0.5,
+                          len / 2);
+            time.magnitude()
+        };
+
         let expected = [0.12732396,
                         0.000000027827534,
                         0.21220659,
