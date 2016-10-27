@@ -420,14 +420,24 @@ add_mat_impl!(MatrixMxN; Matrix2xN; Matrix3xN; Matrix4xN);
 macro_rules! convolve_vector {
     ($self_: expr, $buffer: ident, $impulse_response: ident) => {
         {
+            let mut error = None;
             let mut result: Vec<S> = {
                 let rows: Vec<&DspVec<S, T, N, D>> = $self_.rows().iter().map(|v|v).collect();
                 $impulse_response.iter().map(|i| {
                     let mut target = $buffer.get($self_.row_len());
-                    DspVec::<S, T, N, D>::convolve_mat_scalar(&rows, i, &mut target);
+                    let res = DspVec::<S, T, N, D>::convolve_mat(&rows, i, &mut target);
+                    match res {
+                        Ok(()) => (),
+                        Err(reason) => error = Some(reason)
+                    };
                     target
                 }).collect()
            };
+
+           match error {
+               None => (),
+               Some(err) => return Err(err)
+           }
 
             for i in 0..$self_.col_len() {
                 mem::swap(&mut result[i], &mut $self_.rows[i].data)

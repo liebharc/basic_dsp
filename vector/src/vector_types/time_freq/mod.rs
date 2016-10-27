@@ -21,7 +21,7 @@ use std::ops::*;
 use simd_extensions::*;
 use multicore_support::*;
 use super::{array_to_complex, array_to_complex_mut, Buffer, Vector, MetaData, DspVec, ToSliceMut,
-            NumberSpace, Domain};
+            NumberSpace, Domain, ErrorReason, VoidResult};
 use num::Complex;
 use std::fmt::Debug;
 
@@ -156,13 +156,30 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
     /// Convolves a vector of vectors (in this lib also considered a matrix) with a vector
     /// of impulse responses and stores the result in `target`.
-    pub fn convolve_mat_scalar(
+    pub fn convolve_mat(
         matrix: &[&Self],
         impulse_response: &[&Self],
-        target: &mut S)
+        target: &mut S) -> VoidResult
     {
-        if impulse_response.len() == 0 || matrix.len() == 0 {
-            return;
+        // Since this function mainly exists to be used by the matrix lib
+        // we just decide to ignore invalid calls.
+        if impulse_response.len() != matrix.len() ||
+           impulse_response.len() == 0 {
+            return Err(ErrorReason::InvalidArgumentLength);
+        }
+
+        let expected_len = matrix[0].len();
+        for v in &matrix[..] {
+            if v.len() != expected_len {
+                return Err(ErrorReason::InvalidArgumentLength);
+            }
+        }
+
+        let expected_len = impulse_response[0].len();
+        for v in &impulse_response[..] {
+            if v.len() != expected_len {
+                return Err(ErrorReason::InvalidArgumentLength);
+            }
         }
 
         let points = matrix[0].points();
@@ -217,6 +234,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 i += 1;
             }
         }
+
+        Ok(())
     }
 
     #[inline]
