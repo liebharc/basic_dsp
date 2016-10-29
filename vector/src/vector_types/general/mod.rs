@@ -12,3 +12,5 @@ mod mapping;
 pub use self::mapping::*;
 mod statistics;
 pub use self::statistics::*;
+mod precise_stats;
+pub use self::precise_stats::*;
