@@ -3,7 +3,7 @@ extern crate rand;
 extern crate num;
 pub mod tools;
 
-mod slow_test {
+mod inter_test {
     use basic_dsp::*;
     use basic_dsp::conv_types::*;
     use tools::*;

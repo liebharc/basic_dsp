@@ -3,7 +3,7 @@ extern crate rand;
 extern crate num;
 pub mod tools;
 
-mod slow_test {
+mod complex_test {
     use basic_dsp::*;
     use basic_dsp::combined_ops::*;
     use num::complex::*;
@@ -234,6 +234,29 @@ mod slow_test {
         });
     }
 
+    #[test]
+    fn complex_dot_product_prec32() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data_even(201511171, iteration, range.start, range.end);
+            let b = create_data_with_len(201511172, iteration, a.len());
+            let expected = to_complex(&complex_vector_mul(&a, &b))
+                .iter()
+                .fold(Complex64::new(0.0, 0.0), |a, b| {
+                    let a = Complex64::new(a.re as f64, a.im as f64);
+                    let b = Complex64::new(b.re as f64, b.im as f64);
+                    a + b}
+                );
+            let delta = create_delta(3561159, iteration);
+            let mut vector1 = a.to_complex_time_vec();
+            vector1.set_delta(delta);
+            let mut vector2 = b.to_complex_time_vec();
+            vector2.set_delta(delta);
+            let result = vector1.dot_product_prec(&vector2).unwrap();
+            assert_in_tolerance(expected.re as f32, result.re, 1e-2);
+            assert_in_tolerance(expected.im as f32, result.im, 1e-2);
+        });
+    }
+
     fn complex_vector_div(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32> {
         let a = to_complex(a);
         let b = to_complex(b);
@@ -443,6 +466,59 @@ mod slow_test {
             let result = vector.statistics();
             assert_complex_in_tolerance(result.sum, sum, 0.5);
             assert_complex_in_tolerance(result.rms, rms, 0.5);
+        });
+    }
+
+    #[test]
+    fn statistics_prec_test32() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data_even(201511210, iteration, range.start, range.end);
+            let delta = create_delta(3561159, iteration);
+            let c = to_complex(&a);
+            let mut vector = a.clone().to_complex_time_vec();
+            vector.set_delta(delta);
+            let sum = c.iter().fold(Complex64::new(0.0, 0.0), |a, b| {
+                let a = Complex64::new(a.re as f64, a.im as f64);
+                let b = Complex64::new(b.re as f64, b.im as f64);
+                a + b
+            });
+            let sum_sq = c.iter().map(|v| v * v).fold(Complex64::new(0.0, 0.0), |a, b| {
+                let a = Complex64::new(a.re as f64, a.im as f64);
+                let b = Complex64::new(b.re as f64, b.im as f64);
+                a + b
+            });
+            let rms = (sum_sq / a.len() as f64).sqrt();
+            let result = vector.statistics_prec();
+            assert_complex_in_tolerance(
+                Complex32::new(result.sum.re as f32, result.sum.im as f32), 
+                Complex32::new(sum.re as f32, sum.im as f32), 
+                1e-2);
+            assert_complex_in_tolerance(
+                Complex32::new(result.rms.re as f32, result.rms.im as f32), 
+                Complex32::new(rms.re as f32, rms.im as f32), 
+                1e-2);
+        });
+    }
+
+    #[test]
+    fn statistics_prec_vs_sum_prec_test32() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data_even(201511210, iteration, range.start, range.end);
+            let delta = create_delta(3561159, iteration);
+            let mut vector = a.clone().to_complex_time_vec();
+            vector.set_delta(delta);
+            let sum = vector.sum_prec();
+            let sum_sq = vector.sum_sq_prec();
+            let rms = (sum_sq / a.len() as f64).sqrt();
+            let result = vector.statistics_prec();
+            assert_complex_in_tolerance(
+                Complex32::new(result.sum.re as f32, result.sum.im as f32), 
+                Complex32::new(sum.re as f32, sum.im as f32), 
+                1e-2);
+            assert_complex_in_tolerance(
+                Complex32::new(result.rms.re as f32, result.rms.im as f32), 
+                Complex32::new(rms.re as f32, rms.im as f32), 
+                1e-2);
         });
     }
 

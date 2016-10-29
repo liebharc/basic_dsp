@@ -3,7 +3,7 @@ extern crate rand;
 extern crate num;
 pub mod tools;
 
-mod slow_test {
+mod time_freq_test {
     use basic_dsp::*;
     use num::complex::*;
     use basic_dsp::window_functions::*;

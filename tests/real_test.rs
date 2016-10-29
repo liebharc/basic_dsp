@@ -3,7 +3,7 @@ extern crate rand;
 extern crate num;
 pub mod tools;
 
-mod slow_test {
+mod real_test {
     use basic_dsp::*;
     use basic_dsp::combined_ops::*;
     use tools::*;
@@ -361,6 +361,22 @@ mod slow_test {
         });
     }
 
+    #[test]
+    fn real_dot_product_prec32() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data(201511171, iteration, range.start, range.end);
+            let b = create_data_with_len(201511172, iteration, a.len());
+            let expected = real_vector_mul(&a, &b).iter().map(|v|*v as f64).fold(0.0, |a, b| a + b);
+            let delta = create_delta(3561159, iteration);
+            let mut vector1 = a.to_real_time_vec();
+            vector1.set_delta(delta);
+            let mut vector2 = b.to_real_time_vec();
+            vector2.set_delta(delta);
+            let result = vector1.dot_product_prec(&vector2).unwrap();
+            assert_in_tolerance(expected as f32, result, 1e-2);
+        });
+    }
+
     fn real_vector_div(a: &Vec<f32>, b: &Vec<f32>) -> Vec<f32> {
         let mut result = vec![0.0; a.len()];
         for i in 0..a.len() {
@@ -543,6 +559,38 @@ mod slow_test {
             let result = vector.statistics();
             assert_in_tolerance(result.sum, sum, 1e-1);
             assert_in_tolerance(result.rms, rms, 1e-1);
+        });
+    }
+
+    #[test]
+    fn statistics_prec_test32() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data(201511210, iteration, range.start, range.end);
+            let delta = create_delta(3561159, iteration);
+            let mut vector = a.clone().to_real_time_vec();
+            vector.set_delta(delta);
+            let sum: f64 = a.iter().map(|v|*v as f64).fold(0.0, |a, b| a + b);
+            let sum_sq: f64 = a.iter().map(|v|*v as f64).map(|v| v * v).fold(0.0, |a, b| a + b);
+            let rms = (sum_sq / a.len() as f64).sqrt();
+            let result = vector.statistics_prec();
+            assert_eq!(result.sum as f32, sum as f32);
+            assert_eq!(result.rms as f32, rms as f32);
+        });
+    }
+
+    #[test]
+    fn statistics_prec_vs_sum_prec_test32() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data(201511210, iteration, range.start, range.end);
+            let delta = create_delta(3561159, iteration);
+            let mut vector = a.clone().to_real_time_vec();
+            vector.set_delta(delta);
+            let sum: f64 = vector.sum_prec();
+            let sum_sq: f64 = vector.sum_sq_prec();
+            let rms = (sum_sq / a.len() as f64).sqrt();
+            let result = vector.statistics_prec();
+            assert_in_tolerance(result.sum as f32, sum as f32, 1e-2);
+            assert_in_tolerance(result.rms as f32, rms as f32, 1e-2);
         });
     }
 

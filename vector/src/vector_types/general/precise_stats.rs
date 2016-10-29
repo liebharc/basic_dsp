@@ -9,7 +9,8 @@ use super::{kahan_sum, kahan_sumb};
 pub trait PreciseStatisticsOps<T>: Sized
     where T: Sized
 {
-    /// Calculates the statistics of the data contained in the vector.
+    /// Calculates the statistics of the data contained in the vector using
+    /// a more precise but slower algorithm.
     ///
     /// # Example
     ///
@@ -19,7 +20,8 @@ pub trait PreciseStatisticsOps<T>: Sized
     /// # use num::complex::Complex64;
     /// use basic_dsp_vector::*;
     /// # fn main() {
-    /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
+    /// let vector: Vec<f32> = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
+    /// let vector = vector.to_complex_time_vec();
     /// let result = vector.statistics_prec();
     /// assert_eq!(result.sum, Complex64::new(9.0, 12.0));
     /// assert_eq!(result.count, 3);
@@ -34,7 +36,8 @@ pub trait PreciseStatisticsOps<T>: Sized
     fn statistics_prec(&self) -> T;
 
     /// Calculates the statistics of the data contained in the vector as if the vector would
-    /// have been split into `len` pieces. `self.len` should be dividable by
+    /// have been split into `len` pieces 
+    /// using a more precise but slower algorithm. `self.len` should be dividable by
     /// `len` without a remainder,
     /// but this isn't enforced by the implementation.
     ///
@@ -46,7 +49,8 @@ pub trait PreciseStatisticsOps<T>: Sized
     /// # use num::complex::Complex64;
     /// use basic_dsp_vector::*;
     /// # fn main() {
-    /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
+    /// let vector: Vec<f32> = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
+    /// let vector = vector.to_complex_time_vec();
     /// let result = vector.statistics_splitted_prec(2);
     /// assert_eq!(result[0].sum, Complex64::new(6.0, 8.0));
     /// assert_eq!(result[1].sum, Complex64::new(3.0, 4.0));
@@ -58,7 +62,8 @@ pub trait PreciseStatisticsOps<T>: Sized
 pub trait PreciseSumOps<T>: Sized
     where T: Sized
 {
-    /// Calculates the sum of the data contained in the vector.
+    /// Calculates the sum of the data contained in the vector 
+    /// using a more precise but slower algorithm.
     /// # Example
     ///
     /// ```
@@ -74,7 +79,8 @@ pub trait PreciseSumOps<T>: Sized
     /// ```
     fn sum_prec(&self) -> T;
 
-    /// Calculates the sum of the squared data contained in the vector.
+    /// Calculates the sum of the squared data contained in the vector 
+    /// using a more precise but slower algorithm.
     /// # Example
     ///
     /// ```
@@ -92,7 +98,7 @@ pub trait PreciseSumOps<T>: Sized
 }
 
 pub trait PreciseStats<T>: Sized {
-    fn add_prec(&mut self, elem: T, index: usize);
+    fn add_prec(&mut self, elem: T, index: usize, sumc: &mut T, rmsc: &mut T);
 }
 
 impl<S, N, D> PreciseStatisticsOps<Statistics<f64>> for DspVec<S, f32, N, D>
@@ -139,6 +145,64 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<f64>> for DspVec<S, f32, N, D>
             for num in array {
                 let stats = &mut results[j % len];
                 stats.add(*num as f64, j / len);
+                j += 1;
+            }
+
+            results
+        });
+
+        Statistics::merge_cols(&chunks)
+    }
+}
+
+impl<S, N, D> PreciseStatisticsOps<Statistics<f64>> for DspVec<S, f64, N, D>
+    where S: ToSlice<f64>,
+          N: RealNumberSpace,
+          D: Domain
+{
+    fn statistics_prec(&self) -> Statistics<f64> {
+        let data_length = self.len();
+        let array = self.data.to_slice();
+        let chunks = Chunk::get_chunked_results(Complexity::Small,
+                                                &self.multicore_settings,
+                                                &array[0..data_length],
+                                                1,
+                                                (),
+                                                |array, range, _arg| {
+            let mut stats = Statistics::empty();
+            let mut j = range.start;
+            let mut sumc = 0.0;
+            let mut rmsc = 0.0;
+            for num in array {
+                stats.add_prec(*num, j, &mut sumc, &mut rmsc);
+                j += 1;
+            }
+            stats
+        });
+
+        Statistics::merge(&chunks)
+    }
+
+    fn statistics_splitted_prec(&self, len: usize) -> Vec<Statistics<f64>> {
+        if len == 0 {
+            return Vec::new();
+        }
+
+        let data_length = self.len();
+        let array = self.data.to_slice();
+        let chunks = Chunk::get_chunked_results(Complexity::Small,
+                                                &self.multicore_settings,
+                                                &array[0..data_length],
+                                                1,
+                                                len,
+                                                |array, range, len| {
+            let mut results = Statistics::empty_vec(len);
+            let mut j = range.start;
+            let mut sumc = 0.0;
+            let mut rmsc = 0.0;
+            for num in array {
+                let stats = &mut results[j % len];
+                stats.add_prec(*num, j / len, &mut sumc, &mut rmsc);
                 j += 1;
             }
 
@@ -230,13 +294,12 @@ impl<S, N, D> PreciseSumOps<f64> for DspVec<S, f64, N, D>
     }
 }
 
-impl<S, T, N, D> PreciseStatisticsOps<Statistics<Complex<T>>> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
+impl<S, N, D> PreciseStatisticsOps<Statistics<Complex<f64>>> for DspVec<S, f32, N, D>
+    where S: ToSlice<f32>,
           N: ComplexNumberSpace,
           D: Domain
 {
-    fn statistics_prec(&self) -> Statistics<Complex<T>> {
+    fn statistics_prec(&self) -> Statistics<Complex<f64>> {
         let data_length = self.len();
         let array = self.data.to_slice();
         let chunks = Chunk::get_chunked_results(Complexity::Small,
@@ -245,11 +308,11 @@ impl<S, T, N, D> PreciseStatisticsOps<Statistics<Complex<T>>> for DspVec<S, T, N
                                                 2,
                                                 (),
                                                 |array, range, _arg| {
-            let mut stat = Statistics::<Complex<T>>::empty();
+            let mut stat = Statistics::<Complex64>::empty();
             let mut j = range.start / 2;
             let array = array_to_complex(array);
             for num in array {
-                stat.add(*num, j);
+                stat.add(Complex64::new(num.re as f64, num.im as f64), j);
                 j += 1;
             }
             stat
@@ -258,7 +321,7 @@ impl<S, T, N, D> PreciseStatisticsOps<Statistics<Complex<T>>> for DspVec<S, T, N
         Statistics::merge(&chunks)
     }
 
-    fn statistics_splitted_prec(&self, len: usize) -> Vec<Statistics<Complex<T>>> {
+    fn statistics_splitted_prec(&self, len: usize) -> Vec<Statistics<Complex<f64>>> {
         if len == 0 {
             return Vec::new();
         }
@@ -271,12 +334,72 @@ impl<S, T, N, D> PreciseStatisticsOps<Statistics<Complex<T>>> for DspVec<S, T, N
                                                 2,
                                                 len,
                                                 |array, range, len| {
-            let mut results = Statistics::<Complex<T>>::empty_vec(len);
+            let mut results = Statistics::<Complex<f64>>::empty_vec(len);
             let mut j = range.start / 2;
             let array = array_to_complex(array);
             for num in array {
                 let stat = &mut results[j % len];
-                stat.add(*num, j / len);
+                stat.add(Complex64::new(num.re as f64, num.im as f64), j / len);
+                j += 1;
+            }
+
+            results
+        });
+
+        Statistics::merge_cols(&chunks)
+    }
+}
+
+impl<S, N, D> PreciseStatisticsOps<Statistics<Complex<f64>>> for DspVec<S, f64, N, D>
+    where S: ToSlice<f64>,
+          N: ComplexNumberSpace,
+          D: Domain
+{
+    fn statistics_prec(&self) -> Statistics<Complex<f64>> {
+        let data_length = self.len();
+        let array = self.data.to_slice();
+        let chunks = Chunk::get_chunked_results(Complexity::Small,
+                                                &self.multicore_settings,
+                                                &array[0..data_length],
+                                                2,
+                                                (),
+                                                |array, range, _arg| {
+            let mut stat = Statistics::<Complex64>::empty();
+            let mut j = range.start / 2;
+            let array = array_to_complex(array);
+            let mut sumc = Complex64::zero();
+            let mut rmsc = Complex64::zero();
+            for num in array {
+                stat.add_prec(*num, j, &mut sumc, &mut rmsc);
+                j += 1;
+            }
+            stat
+        });
+
+        Statistics::merge(&chunks)
+    }
+
+    fn statistics_splitted_prec(&self, len: usize) -> Vec<Statistics<Complex<f64>>> {
+        if len == 0 {
+            return Vec::new();
+        }
+
+        let data_length = self.len();
+        let array = self.data.to_slice();
+        let chunks = Chunk::get_chunked_results(Complexity::Small,
+                                                &self.multicore_settings,
+                                                &array[0..data_length],
+                                                2,
+                                                len,
+                                                |array, range, len| {
+            let mut results = Statistics::<Complex<f64>>::empty_vec(len);
+            let mut j = range.start / 2;
+            let array = array_to_complex(array);
+            let mut sumc = Complex64::zero();
+            let mut rmsc = Complex64::zero();
+            for num in array {
+                let stat = &mut results[j % len];
+                stat.add_prec(*num, j / len, &mut sumc, &mut rmsc);
                 j += 1;
             }
 
@@ -338,10 +461,19 @@ impl<T> PreciseStats<T> for Statistics<T>
     where T: RealNumber
 {
     #[inline]
-    fn add_prec(&mut self, elem: T, index: usize) {
-        self.sum = self.sum + elem;
+    fn add_prec(&mut self, elem: T, index: usize, sumc: &mut T, rmsc: &mut T) {
+        let y = elem - *sumc;
+        let t = self.sum + y;
+        *sumc = (t - self.sum) - y;
+        self.sum = t;
+    
         self.count += 1;
-        self.rms = self.rms + elem * elem;
+        
+        let y = elem * elem - *rmsc;
+        let t = self.rms + y;
+        *rmsc = (t - self.rms) - y;
+        self.rms = t;
+        
         if elem > self.max {
             self.max = elem;
             self.max_index = index;
@@ -357,10 +489,18 @@ impl<T> PreciseStats<Complex<T>> for Statistics<Complex<T>>
     where T: RealNumber
 {
     #[inline]
-    fn add_prec(&mut self, elem: Complex<T>, index: usize) {
-        self.sum = self.sum + elem;
+    fn add_prec(&mut self, elem: Complex<T>, index: usize, sumc: &mut Complex<T>, rmsc: &mut Complex<T>) {
+        let y = elem - *sumc;
+        let t = self.sum + y;
+        *sumc = (t - self.sum) - y;
+        self.sum = t;
+    
         self.count += 1;
-        self.rms = self.rms + elem * elem;
+        
+        let y = elem * elem - *rmsc;
+        let t = self.rms + y;
+        *rmsc = (t - self.rms) - y;
+        self.rms = t;
         if elem.norm() > self.max.norm() {
             self.max = elem;
             self.max_index = index;

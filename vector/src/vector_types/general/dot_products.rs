@@ -32,7 +32,8 @@ pub trait PreciseDotProductOps<R, A>: Sized
 {
     type Output;
 
-    /// Calculates the dot product of self and factor. Self and factor remain unchanged.
+    /// Calculates the dot product of self and factor using a more precise
+    /// but slower algorithm. Self and factor remain unchanged.
     ///
     /// # Example
     ///
