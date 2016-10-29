@@ -1,4 +1,5 @@
 use num::complex::Complex;
+use num::Zero;
 use std::mem;
 
 pub trait Simd<T>: Sized
@@ -72,6 +73,24 @@ macro_rules! simd_generic_impl {
     ($data_type:ident, $reg:ident)
     =>
     {
+        impl Zero for $reg{
+            fn zero() -> $reg {
+                $reg::splat(0.0)
+            }
+            
+            fn is_zero(&self) -> bool {
+                // A better implementation is likely necessary as soon
+                // as this method is truely used
+                for n in &self.clone().to_array() {
+                    if *n != 0.0 {
+                        return false;
+                    }
+                }
+                
+                true
+            }
+        }
+    
         impl SimdGeneric<$data_type> for $reg {
             #[inline]
             fn calc_data_alignment_reqs(array: &[$data_type]) -> (usize, usize, usize) {

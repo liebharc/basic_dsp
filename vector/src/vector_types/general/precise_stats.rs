@@ -4,6 +4,7 @@ use num::complex::{Complex64};
 use multicore_support::*;
 use super::super::{array_to_complex, Vector, DspVec, ToSlice, Domain, RealNumberSpace,
                    ComplexNumberSpace, Statistics, Stats};
+use super::{kahan_sum, kahan_sumb};               
 
 pub trait PreciseStatisticsOps<T>: Sized
     where T: Sized
@@ -91,8 +92,6 @@ pub trait PreciseSumOps<T>: Sized
 }
 
 pub trait PreciseStats<T>: Sized {
-    fn merge_prec(stats: &[Self]) -> Self;
-    fn merge_cols_prec(stats: &[Vec<Self>]) -> Vec<Self>;
     fn add_prec(&mut self, elem: T, index: usize);
 }
 
@@ -119,7 +118,7 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<f64>> for DspVec<S, f32, N, D>
             stats
         });
 
-        Statistics::merge_prec(&chunks)
+        Statistics::merge(&chunks)
     }
 
     fn statistics_splitted_prec(&self, len: usize) -> Vec<Statistics<f64>> {
@@ -139,14 +138,14 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<f64>> for DspVec<S, f32, N, D>
             let mut j = range.start;
             for num in array {
                 let stats = &mut results[j % len];
-                stats.add_prec(*num as f64, j / len);
+                stats.add(*num as f64, j / len);
                 j += 1;
             }
 
             results
         });
 
-        Statistics::merge_cols_prec(&chunks)
+        Statistics::merge_cols(&chunks)
     }
 }
 
@@ -195,6 +194,42 @@ impl<S, N, D> PreciseSumOps<f64> for DspVec<S, f32, N, D>
     }
 }
 
+impl<S, N, D> PreciseSumOps<f64> for DspVec<S, f64, N, D>
+    where S: ToSlice<f64>,
+          N: RealNumberSpace,
+          D: Domain
+{
+    fn sum_prec(&self) -> f64 {
+        let data_length = self.len();
+        let array = self.data.to_slice();
+        let chunks = Chunk::get_chunked_results(Complexity::Small,
+                                                &self.multicore_settings,
+                                                &array[0..data_length],
+                                                1,
+                                                (),
+                                                move |array, _, _| {
+            kahan_sumb(array.iter())
+        });
+        chunks.iter()
+            .fold(0.0, |a, b| a + b)
+    }
+
+    fn sum_sq_prec(&self) -> f64 {
+        let data_length = self.len();
+        let array = self.data.to_slice();
+        let chunks = Chunk::get_chunked_results(Complexity::Small,
+                                                &self.multicore_settings,
+                                                &array[0..data_length],
+                                                1,
+                                                (),
+                                                move |array, _, _| {
+            kahan_sum(array.iter().map(|x|x*x))
+        });
+        chunks.iter()
+            .fold(0.0, |a, b| a + b)
+    }
+}
+
 impl<S, T, N, D> PreciseStatisticsOps<Statistics<Complex<T>>> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
@@ -220,7 +255,7 @@ impl<S, T, N, D> PreciseStatisticsOps<Statistics<Complex<T>>> for DspVec<S, T, N
             stat
         });
 
-        Statistics::merge_prec(&chunks)
+        Statistics::merge(&chunks)
     }
 
     fn statistics_splitted_prec(&self, len: usize) -> Vec<Statistics<Complex<T>>> {
@@ -248,7 +283,7 @@ impl<S, T, N, D> PreciseStatisticsOps<Statistics<Complex<T>>> for DspVec<S, T, N
             results
         });
 
-        Statistics::merge_cols_prec(&chunks)
+        Statistics::merge_cols(&chunks)
     }
 }
 
@@ -299,72 +334,9 @@ impl<S, N, D> PreciseSumOps<Complex<f64>> for DspVec<S, f32, N, D>
     }
 }
 
-macro_rules! impl_common_stats {
-    () => {
-        fn merge_cols_prec(stats: &[Vec<Self>]) -> Vec<Self> {
-            if stats.len() == 0 {
-                return Vec::new();
-            }
-
-            let len = stats[0].len();
-            let mut results = Vec::with_capacity(len);
-            for i in 0..len {
-                let mut reordered = Vec::with_capacity(stats.len());
-                for j in 0..stats.len()
-                {
-                    reordered.push(stats[j][i]);
-                }
-
-                let merged = Statistics::merge_prec(&reordered);
-                results.push(merged);
-            }
-            results
-        }
-    }
-}
-
 impl<T> PreciseStats<T> for Statistics<T>
     where T: RealNumber
 {
-    fn merge_prec(stats: &[Statistics<T>]) -> Statistics<T> {
-        if stats.len() == 0 {
-            return Statistics::<T>::invalid();
-        }
-
-        let mut sum = T::zero();
-        let mut max = stats[0].max;
-        let mut min = stats[0].min;
-        let mut max_index = stats[0].max_index;
-        let mut min_index = stats[0].min_index;
-        let mut sum_squared = T::zero();
-        let mut len = 0;
-        for stat in stats {
-            sum = sum + stat.sum;
-            len += stat.count;
-            sum_squared = sum_squared + stat.rms; // We stored sum_squared in the field rms
-            if stat.max > max {
-                max = stat.max;
-                max_index = stat.max_index;
-            } else if stat.min < min {
-                min = stat.min;
-                min_index = stat.min_index;
-            }
-        }
-
-        Statistics {
-            sum: sum,
-            count: len,
-            average: sum / (T::from(len).unwrap()),
-            min: min,
-            max: max,
-            rms: (sum_squared / (T::from(len).unwrap())).sqrt(),
-            min_index: min_index,
-            max_index: max_index,
-        }
-    }
-
-    impl_common_stats!();
-
     #[inline]
     fn add_prec(&mut self, elem: T, index: usize) {
         self.sum = self.sum + elem;
@@ -384,49 +356,6 @@ impl<T> PreciseStats<T> for Statistics<T>
 impl<T> PreciseStats<Complex<T>> for Statistics<Complex<T>>
     where T: RealNumber
 {
-    fn merge_prec(stats: &[Statistics<Complex<T>>]) -> Statistics<Complex<T>> {
-        if stats.len() == 0 {
-            return Statistics::<Complex<T>>::invalid();
-        }
-
-        let mut sum = Complex::<T>::new(T::zero(), T::zero());
-        let mut max = stats[0].max;
-        let mut min = stats[0].min;
-        let mut count = 0;
-        let mut max_index = stats[0].max_index;
-        let mut min_index = stats[0].min_index;
-        let mut max_norm = max.norm();
-        let mut min_norm = min.norm();
-        let mut sum_squared = Complex::<T>::new(T::zero(), T::zero());
-        for stat in stats {
-            sum = sum + stat.sum;
-            count = count + stat.count;
-            sum_squared = sum_squared + stat.rms; // We stored sum_squared in the field rms
-            if stat.max.norm() > max_norm {
-                max = stat.max;
-                max_norm = max.norm();
-                max_index = stat.max_index;
-            } else if stat.min.norm() < min_norm {
-                min = stat.min;
-                min_norm = min.norm();
-                min_index = stat.min_index;
-            }
-        }
-
-        Statistics {
-            sum: sum,
-            count: count,
-            average: sum / (T::from(count).unwrap()),
-            min: min,
-            max: max,
-            rms: (sum_squared / (T::from(count).unwrap())).sqrt(),
-            min_index: min_index,
-            max_index: max_index,
-        }
-    }
-
-    impl_common_stats!();
-
     #[inline]
     fn add_prec(&mut self, elem: Complex<T>, index: usize) {
         self.sum = self.sum + elem;

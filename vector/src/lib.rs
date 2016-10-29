@@ -46,7 +46,7 @@ pub mod conv_types;
 pub use vector_types::*;
 pub use multicore_support::MultiCoreSettings;
 use num::traits::Float;
-use num::{FromPrimitive, Signed};
+use num::{FromPrimitive, Signed, Zero};
 use std::fmt::Debug;
 use std::ops::*;
 
@@ -54,7 +54,7 @@ use simd_extensions::*;
 
 /// Associates a number type with a SIMD register type.
 pub trait ToSimd: Sized + Sync + Send {
-    type Reg: Simd<Self> + SimdGeneric<Self> + Copy + Sync + Send + Add<Output = Self::Reg> + Sub<Output = Self::Reg> + Mul<Output = Self::Reg> + Div<Output = Self::Reg>;
+    type Reg: Simd<Self> + SimdGeneric<Self> + Copy + Sync + Send + Add<Output = Self::Reg> + Sub<Output = Self::Reg> + Mul<Output = Self::Reg> + Div<Output = Self::Reg> + Zero;
 }
 
 impl ToSimd for f32 {
