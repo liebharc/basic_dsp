@@ -753,6 +753,202 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send> MapAggregateOps<T, R>
     }
 }
 
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<Vec<Statistics<T>>>
+    for MatrixMxN<V, S, T>
+    where V: StatisticsOps<Statistics<T>>
+{
+    fn statistics(&self) -> Vec<Statistics<T>> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.statistics();
+            result.push(res);
+        }
+
+        result
+    }
+
+    fn statistics_splitted(&self, len: usize) -> Vec<Vec<Statistics<T>>> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.statistics_splitted(len);
+            result.push(res);
+        }
+
+        result
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<[Statistics<T>; 2]>
+    for Matrix2xN<V, S, T>
+    where V: StatisticsOps<Statistics<T>>
+{
+    fn statistics(&self) -> [Statistics<T>; 2] {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.statistics();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+
+    fn statistics_splitted(&self, len: usize) -> Vec<[Statistics<T>; 2]> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.statistics_splitted(len);
+            result.push(res.into_fixed_length());
+        }
+
+        result
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<[Statistics<T>; 3]>
+    for Matrix3xN<V, S, T>
+    where V: StatisticsOps<Statistics<T>>
+{
+    fn statistics(&self) -> [Statistics<T>; 3] {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.statistics();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+
+    fn statistics_splitted(&self, len: usize) -> Vec<[Statistics<T>; 3]> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.statistics_splitted(len);
+            result.push(res.into_fixed_length());
+        }
+
+        result
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<[Statistics<T>; 4]>
+    for Matrix4xN<V, S, T>
+    where V: StatisticsOps<Statistics<T>>
+{
+    fn statistics(&self) -> [Statistics<T>; 4] {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.statistics();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+
+    fn statistics_splitted(&self, len: usize) -> Vec<[Statistics<T>; 4]> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.statistics_splitted(len);
+            result.push(res.into_fixed_length());
+        }
+
+        result
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> SumOps<Vec<T>> for MatrixMxN<V, S, T>
+    where V: SumOps<T>
+{
+    fn sum(&self) -> Vec<T> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.sum();
+            result.push(res);
+        }
+
+        result
+    }
+
+    fn sum_sq(&self) -> Vec<T> {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.sum_sq();
+            result.push(res);
+        }
+
+        result
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> SumOps<[T; 2]> for Matrix2xN<V, S, T>
+    where V: SumOps<T>
+{
+    fn sum(&self) -> [T; 2] {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.sum();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+
+    fn sum_sq(&self) -> [T; 2] {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.sum_sq();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> SumOps<[T; 3]> for Matrix2xN<V, S, T>
+    where V: SumOps<T>
+{
+    fn sum(&self) -> [T; 3] {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.sum();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+
+    fn sum_sq(&self) -> [T; 3] {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.sum_sq();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+}
+
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> SumOps<[T; 4]> for Matrix2xN<V, S, T>
+    where V: SumOps<T>
+{
+    fn sum(&self) -> [T; 4] {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.sum();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+
+    fn sum_sq(&self) -> [T; 4] {
+        let mut result = Vec::with_capacity(self.col_len());
+        for v in self.rows() {
+            let res = v.sum_sq();
+            result.push(res);
+        }
+
+        result.into_fixed_length()
+    }
+}
+
 impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, O: RealNumber> 
     PreciseStatisticsOps<Vec<Statistics<O>>>
     for MatrixMxN<V, S, T>
