@@ -595,6 +595,34 @@ mod real_test {
     }
 
     #[test]
+    fn statistics_prec_test64() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data64(201511210, iteration, range.start, range.end);
+            let vector = a.clone().to_real_time_vec();
+            let sum: f64 = a.iter().fold(0.0, |a, b| a + b);
+            let sum_sq: f64 = a.iter().map(|v| v * v).fold(0.0, |a, b| a + b);
+            let rms = (sum_sq / a.len() as f64).sqrt();
+            let result = vector.statistics_prec();
+            assert_eq!(result.sum as f32, sum as f32);
+            assert_eq!(result.rms as f32, rms as f32);
+        });
+    }
+
+    #[test]
+    fn statistics_prec_vs_sum_prec_test64() {
+        parameterized_vector_test(|iteration, range| {
+            let a = create_data64(201511210, iteration, range.start, range.end);
+            let vector = a.clone().to_real_time_vec();
+            let sum: f64 = vector.sum_prec();
+            let sum_sq: f64 = vector.sum_sq_prec();
+            let rms = (sum_sq / a.len() as f64).sqrt();
+            let result = vector.statistics_prec();
+            assert_in_tolerance(result.sum as f32, sum as f32, 1e-2);
+            assert_in_tolerance(result.rms as f32, rms as f32, 1e-2);
+        });
+    }
+
+    #[test]
     fn split_merge_test32() {
         let a = create_data(201511210, 0, 1000, 1000);
         let vector = a.clone().to_real_time_vec();

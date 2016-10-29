@@ -100,6 +100,17 @@ pub fn create_data(seed: usize, iteration: usize, from: usize, to: usize) -> Vec
     create_data_with_len(seed, iteration, len)
 }
 
+pub fn create_data64(seed: usize, iteration: usize, from: usize, to: usize) -> Vec<f64> {
+    let len_seed: &[_] = &[seed, iteration];
+    let mut rng: StdRng = SeedableRng::from_seed(len_seed);
+    let len = if from == to {
+        from
+    } else {
+        rng.gen_range(from, to)
+    };
+    create_data_with_len64(seed, iteration, len)
+}
+
 pub fn create_data_even(seed: usize, iteration: usize, from: usize, to: usize) -> Vec<f32> {
     let len_seed: &[_] = &[seed, iteration];
     let mut rng: StdRng = SeedableRng::from_seed(len_seed);
@@ -109,6 +120,16 @@ pub fn create_data_even(seed: usize, iteration: usize, from: usize, to: usize) -
 }
 
 pub fn create_data_with_len(seed: usize, iteration: usize, len: usize) -> Vec<f32> {
+    let seed: &[_] = &[seed, iteration];
+    let mut rng: StdRng = SeedableRng::from_seed(seed);
+    let mut data = vec![0.0; len];
+    for i in 0..len {
+        data[i] = rng.gen_range(-10.0, 10.0);
+    }
+    data
+}
+
+pub fn create_data_with_len64(seed: usize, iteration: usize, len: usize) -> Vec<f64> {
     let seed: &[_] = &[seed, iteration];
     let mut rng: StdRng = SeedableRng::from_seed(seed);
     let mut data = vec![0.0; len];
