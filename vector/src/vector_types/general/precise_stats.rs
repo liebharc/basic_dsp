@@ -457,6 +457,44 @@ impl<S, N, D> PreciseSumOps<Complex<f64>> for DspVec<S, f32, N, D>
     }
 }
 
+impl<S, N, D> PreciseSumOps<Complex<f64>> for DspVec<S, f64, N, D>
+    where S: ToSlice<f64>,
+          N: ComplexNumberSpace,
+          D: Domain
+{
+    fn sum_prec(&self) -> Complex<f64> {
+        let data_length = self.len();
+        let array = self.data.to_slice();
+        let chunks = Chunk::get_chunked_results(Complexity::Small,
+                                                &self.multicore_settings,
+                                                &array[0..data_length],
+                                                2,
+                                                (),
+                                                move |array, _, _| {
+            let array = array_to_complex(&array[0..array.len()]);
+            kahan_sumb(array.iter())
+        });
+        chunks.iter()
+            .fold(Complex64::zero(), |a, b| a + b)
+    }
+
+    fn sum_sq_prec(&self) -> Complex<f64> {
+        let data_length = self.len();
+        let array = self.data.to_slice();
+        let chunks = Chunk::get_chunked_results(Complexity::Small,
+                                                &self.multicore_settings,
+                                                &array[0..data_length],
+                                                2,
+                                                (),
+                                                move |array, _, _| {
+            let array = array_to_complex(&array[0..array.len()]);
+            kahan_sum(array.iter().map(|x|x*x))
+        });
+        chunks.iter()
+            .fold(Complex64::zero(), |a, b| a + b)
+    }
+}
+
 impl<T> PreciseStats<T> for Statistics<T>
     where T: RealNumber
 {

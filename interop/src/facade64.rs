@@ -5,7 +5,7 @@ use super::*;
 use basic_dsp_vector::*;
 use basic_dsp_vector::window_functions::*;
 use basic_dsp_vector::conv_types::*;
-use num::complex::Complex64;
+use num::complex::*;
 use std::slice;
 use std::os::raw::c_void;
 use std::mem;
@@ -193,6 +193,55 @@ pub extern "C" fn complex_sum64(vector: &VecBuf) -> Complex64 {
 #[no_mangle]
 pub extern "C" fn complex_sum_sq64(vector: &VecBuf) -> Complex64 {
     vector.vec.sum_sq()
+}
+#[no_mangle]
+pub extern "C" fn real_dot_product_prec64(vector: &VecBuf,
+                                     operand: &VecBuf)
+                                     -> ScalarInteropResult<f64> {
+    vector.convert_scalar(|v| {
+        PreciseDotProductOps::<f64, GenDspVec<Vec<f64>, f64>>::dot_product_prec(v, &operand.vec)
+    },
+    0.0)
+}
+
+#[no_mangle]
+pub extern "C" fn complex_dot_product_prec64(vector: &VecBuf,
+                                        operand: &VecBuf)
+                                        -> ScalarInteropResult<Complex64> {
+    vector.convert_scalar(|v| {
+        PreciseDotProductOps::<Complex64, GenDspVec<Vec<f64>, f64>>::dot_product_prec(v, &operand.vec)
+    },
+    Complex64::new(0.0, 0.0))
+}
+
+#[no_mangle]
+pub extern "C" fn real_statistics_prec64(vector: &VecBuf) -> Statistics<f64> {
+    vector.vec.statistics_prec()
+}
+
+#[no_mangle]
+pub extern "C" fn complex_statistics_prec64(vector: &VecBuf) -> Statistics<Complex64> {
+    vector.vec.statistics_prec()
+}
+
+#[no_mangle]
+pub extern "C" fn real_sum_prec64(vector: &VecBuf) -> f64 {
+    vector.vec.sum_prec()
+}
+
+#[no_mangle]
+pub extern "C" fn real_sum_sq_prec64(vector: &VecBuf) -> f64 {
+    vector.vec.sum_sq_prec()
+}
+
+#[no_mangle]
+pub extern "C" fn complex_sum_prec64(vector: &VecBuf) -> Complex64 {
+    vector.vec.sum_prec()
+}
+
+#[no_mangle]
+pub extern "C" fn complex_sum_sq_prec64(vector: &VecBuf) -> Complex64 {
+    vector.vec.sum_sq_prec()
 }
 
 /// `padding_option` argument is translated to:
