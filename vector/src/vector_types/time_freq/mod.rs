@@ -122,11 +122,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 let dest = array_to_complex_mut(&mut temp[0..len]);
                 let other_iter = &other[other_start..other_end];
                 let conv_len = conv_len as isize;
-                let mut i = 0;
-                for num in dest {
+                for (num, i) in dest.iter_mut().zip(0..) {
                     *num =
                         Self::convolve_iteration(complex, other_iter, i, conv_len, full_conv_len);
-                    i += 1;
                 }
             }
             mem::swap(&mut temp, &mut self.data);
@@ -143,10 +141,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 let dest = &mut temp[0..len];
                 let other_iter = &other[other_start..other_end];
                 let conv_len = conv_len as isize;
-                let mut i = 0;
-                for num in dest {
+                for (num, i) in dest.iter_mut().zip(0..) {
                     *num = Self::convolve_iteration(data, other_iter, i, conv_len, full_conv_len);
-                    i += 1;
                 }
             }
             mem::swap(&mut temp, &mut self.data);
@@ -207,11 +203,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 }).collect();
             let dest = array_to_complex_mut(&mut target[0..len]);
             let conv_len = conv_len as isize;
-            let mut i = 0;
-            for num in dest {
+            for (num, i) in dest.iter_mut().zip(0..) {
                 *num =
                     Self::convolve_mat_iteration(&data_vecs, &others, i, conv_len, full_conv_len);
-                i += 1;
             }
         } else {
             let len = matrix[0].len();
@@ -228,10 +222,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 }).collect();
             let dest = &mut target[0..len];
             let conv_len = conv_len as isize;
-            let mut i = 0;
-            for num in dest {
+            for (num, i) in dest.iter_mut().zip(0..) {
                 *num = Self::convolve_mat_iteration(&data_vecs, &others, i, conv_len, full_conv_len);
-                i += 1;
             }
         }
 
@@ -257,8 +249,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     }
 
     #[inline]
-    fn convolve_mat_iteration<TT>(matrix: &Vec<&[TT]>,
-                              imp_resp: &Vec<&[TT]>,
+    fn convolve_mat_iteration<TT>(matrix: &[&[TT]],
+                              imp_resp: &[&[TT]],
                               i: isize,
                               conv_len: isize,
                               full_conv_len: usize)
@@ -346,29 +338,27 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                             k = 0;
                         }
                     }
+                } else if step > 1 {
+                    let im = *data.next().unwrap();
+                    let re = *data.next().unwrap();
+                    current[k] = re;
+                    k += 1;
+                    if k >= current.len() {
+                        copy.push(T::Reg::load_unchecked(&current, 0));
+                        k = 0;
+                    }
+                    current[k] = im;
+                    k += 1;
+                    if k >= current.len() {
+                        copy.push(T::Reg::load_unchecked(&current, 0));
+                        k = 0;
+                    }
                 } else {
-                    if step > 1 {
-                        let im = *data.next().unwrap();
-                        let re = *data.next().unwrap();
-                        current[k] = re;
-                        k += 1;
-                        if k >= current.len() {
-                            copy.push(T::Reg::load_unchecked(&current, 0));
-                            k = 0;
-                        }
-                        current[k] = im;
-                        k += 1;
-                        if k >= current.len() {
-                            copy.push(T::Reg::load_unchecked(&current, 0));
-                            k = 0;
-                        }
-                    } else {
-                        current[k] = *data.next().unwrap();
-                        k += 1;
-                        if k >= current.len() {
-                            copy.push(T::Reg::load_unchecked(&current, 0));
-                            k = 0;
-                        }
+                    current[k] = *data.next().unwrap();
+                    k += 1;
+                    if k >= current.len() {
+                        copy.push(T::Reg::load_unchecked(&current, 0));
+                        k = 0;
                     }
                 }
             }

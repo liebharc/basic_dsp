@@ -664,21 +664,21 @@ impl<S, T, N, D> Clone for DspVec<S, T, N, D>
     fn clone(&self) -> Self {
         DspVec {
             data: self.data.clone(),
-            delta: self.delta.clone(),
+            delta: self.delta,
             domain: self.domain.clone(),
             number_space: self.number_space.clone(),
             valid_len: self.valid_len,
-            multicore_settings: self.multicore_settings.clone(),
+            multicore_settings: self.multicore_settings,
         }
     }
 
     fn clone_from(&mut self, source: &Self) {
         self.data = source.data.clone();
-        self.delta = source.delta.clone();
+        self.delta = source.delta;
         self.domain = source.domain.clone();
         self.number_space = source.number_space.clone();
         self.valid_len = source.valid_len;
-        self.multicore_settings = source.multicore_settings.clone();
+        self.multicore_settings = source.multicore_settings;
     }
 }
 
@@ -687,12 +687,11 @@ fn complex_to_array<T>(complex: &[Complex<T>]) -> &[T]
 {
     use std::slice;
     use std::mem;
-    let data = unsafe {
+    unsafe {
         let len = complex.len();
         let trans: &[T] = mem::transmute(complex);
         slice::from_raw_parts(&trans[0] as *const T, len * 2)
-    };
-    data
+    }
 }
 
 fn complex_to_array_mut<T>(complex: &mut [Complex<T>]) -> &mut [T]
@@ -700,12 +699,11 @@ fn complex_to_array_mut<T>(complex: &mut [Complex<T>]) -> &mut [T]
 {
     use std::slice;
     use std::mem;
-    let data = unsafe {
+    unsafe {
         let len = complex.len();
         let mut trans: &mut [T] = mem::transmute(complex);
         slice::from_raw_parts_mut(&mut trans[0] as *mut T, len * 2)
-    };
-    data
+    }
 }
 
 fn expand_to_full_capacity<T>(vec: &mut Vec<T>)
@@ -724,13 +722,12 @@ fn complex_vec_to_interleaved_vec<T>(mut vec: Vec<Complex<T>>) -> Vec<T>
     expand_to_full_capacity(&mut vec);
     let boxed = vec.into_boxed_slice();
     let len = boxed.len();
-    let data = unsafe {
+    unsafe {
         let mut trans: Box<[T]> = mem::transmute(boxed);
         let vec = Vec::<T>::from_raw_parts(&mut trans[0] as *mut T, len * 2, len * 2);
         mem::forget(trans); // TODO memory leak?
         vec
-    };
-    data
+    }
 }
 
 #[cfg(test)]

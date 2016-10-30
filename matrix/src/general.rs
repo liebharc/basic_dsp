@@ -368,7 +368,7 @@ macro_rules! add_mat_impl {
 					where A: Sync + Copy + Send,
 					  	  F: Fn(T, usize, A) -> T + 'a + Sync {
 					for v in self.rows_mut() {
-						v.map_inplace(argument, |v, i, a|map(v, i, a))
+						v.map_inplace(argument, &map)
 					}
 				}
 			}
@@ -379,7 +379,7 @@ macro_rules! add_mat_impl {
 					where A: Sync + Copy + Send,
 					  	  F: Fn(Complex<T>, usize, A) -> Complex<T> + 'a + Sync {
 					for v in self.rows_mut() {
-						v.map_inplace(argument, |v, i, a|map(v, i, a))
+						v.map_inplace(argument, &map)
 					}
 				}
 			}
@@ -664,7 +664,7 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send> MapAggregateOps<T, R>
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
             let res =
-                try!(v.map_aggregate(argument, |v, i, a| map(v, i, a), |a, b| aggregate(a, b)));
+                try!(v.map_aggregate(argument, &map, &aggregate));
             result.push(res);
         }
 
@@ -691,7 +691,7 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send> MapAggregateOps<T, R>
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
             let res =
-                try!(v.map_aggregate(argument, |v, i, a| map(v, i, a), |a, b| aggregate(a, b)));
+                try!(v.map_aggregate(argument, &map, &aggregate));
             result.push(res);
         }
 
@@ -718,7 +718,7 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send> MapAggregateOps<T, R>
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
             let res =
-                try!(v.map_aggregate(argument, |v, i, a| map(v, i, a), |a, b| aggregate(a, b)));
+                try!(v.map_aggregate(argument, &map, &aggregate));
             result.push(res);
         }
 
@@ -745,7 +745,7 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send> MapAggregateOps<T, R>
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
             let res =
-                try!(v.map_aggregate(argument, |v, i, a| map(v, i, a), |a, b| aggregate(a, b)));
+                try!(v.map_aggregate(argument, &map, &aggregate));
             result.push(res);
         }
 

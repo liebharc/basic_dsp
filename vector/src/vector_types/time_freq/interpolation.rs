@@ -101,7 +101,7 @@ fn interpolate_priv_scalar<T, TT>(temp: &mut [TT],
     for num in temp {
         let center = T::from(i).unwrap() / interpolation_factor;
         let rounded = center.floor();
-        let iter = WrappingIterator::new(&data,
+        let iter = WrappingIterator::new(data,
                                          rounded.to_isize().unwrap() - conv_len as isize - 1,
                                          2 * conv_len + 1);
         let mut sum = TT::zero();
@@ -190,7 +190,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                               delay);
             let mut shifts = Vec::with_capacity(vectors.len() * number_of_shifts);
             for vector in &vectors {
-                let shifted_copies = DspVec::create_shifted_copies(&vector);
+                let shifted_copies = DspVec::create_shifted_copies(vector);
                 for shift in shifted_copies {
                     shifts.push(shift);
                 }
@@ -268,12 +268,12 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                       interpolation_factor: usize,
                                       conv_len: usize,
                                       data: &[TT],
-                                      vectors: &Vec<GenDspVec<Vec<T>, T>>)
+                                      vectors: &[GenDspVec<Vec<T>, T>])
                                       -> TT
         where TT: Zero + Clone + From<T> + Copy + Add<Output = TT> + Mul<Output = TT>
     {
         let rounded = i / interpolation_factor;
-        let iter = WrappingIterator::new(&data,
+        let iter = WrappingIterator::new(data,
                                          rounded as isize - conv_len as isize,
                                          2 * conv_len + 1);
         let vector = &vectors[i % interpolation_factor];

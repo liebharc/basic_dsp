@@ -4,7 +4,7 @@ use RealNumber;
 use std::os::raw::c_void;
 use std::mem;
 
-/// A window function for FFT windows. See https://en.wikipedia.org/wiki/Window_function
+/// A window function for FFT windows. See `https://en.wikipedia.org/wiki/Window_function`
 /// for details. Window functions should document if they aren't applicable for
 /// Inverse Fourier Transformations.
 ///
@@ -24,7 +24,7 @@ pub trait WindowFunction<T>: Sync
     fn window(&self, n: usize, length: usize) -> T;
 }
 
-/// A triangular window: https://en.wikipedia.org/wiki/Window_function#Triangular_window
+/// A triangular window: `https://en.wikipedia.org/wiki/Window_function#Triangular_window`
 pub struct TriangularWindow;
 impl<T> WindowFunction<T> for TriangularWindow
     where T: RealNumber
@@ -42,7 +42,7 @@ impl<T> WindowFunction<T> for TriangularWindow
     }
 }
 
-/// A generalized Hamming window: https://en.wikipedia.org/wiki/Window_function#Hamming_window
+/// A generalized Hamming window: `https://en.wikipedia.org/wiki/Window_function#Hamming_window`
 pub struct HammingWindow<T>
     where T: RealNumber
 {
@@ -108,16 +108,14 @@ impl<T> ForeignWindowFunction<T>
     where T: RealNumber
 {
     /// Creates a new window function
-    pub fn new(window: extern "C" fn(*const c_void, usize, usize) -> T,
+    pub unsafe fn new(window: extern "C" fn(*const c_void, usize, usize) -> T,
                window_data: *const c_void,
                is_symmetric: bool)
                -> Self {
-        unsafe {
-            ForeignWindowFunction {
-                window_function: window,
-                window_data: mem::transmute(window_data),
-                is_symmetric: is_symmetric,
-            }
+        ForeignWindowFunction {
+            window_function: window,
+            window_data: mem::transmute(window_data),
+            is_symmetric: is_symmetric,
         }
     }
 }
@@ -131,7 +129,7 @@ impl<T> WindowFunction<T> for ForeignWindowFunction<T>
 
     fn window(&self, idx: usize, points: usize) -> T {
         let fun = self.window_function;
-        unsafe { fun(mem::transmute(self.window_data), idx, points) }
+        fun(self.window_data as *const c_void, idx, points)
     }
 }
 

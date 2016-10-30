@@ -69,6 +69,9 @@ pub trait Vector<T>: MetaData + ResizeOps
     /// The number of valid elements in the vector. This can be changed
     /// with the `Resize` trait.
     fn len(&self) -> usize;
+    
+    /// Indicates whether or not the vector is empty.
+    fn is_empty(&self) -> bool;
 
     /// The number of valid points. If the vector is complex then every valid
     /// point consists of two floating point numbers,
@@ -144,6 +147,10 @@ impl<S, T, N, D> Vector<T> for DspVec<S, T, N, D>
     fn len(&self) -> usize {
         self.valid_len
     }
+    
+    fn is_empty(&self) -> bool {
+        self.valid_len == 0
+    }
 
     fn points(&self) -> usize {
         self.valid_len / if self.is_complex() { 2 } else { 1 }
@@ -203,8 +210,7 @@ impl<S, T, N, D> Index<RangeFull> for DspVec<S, T, N, D>
     fn index(&self, _index: RangeFull) -> &[T] {
         let len = self.valid_len;
         let slice = self.data.to_slice();
-        let slice = &slice[0..len];
-        slice
+        &slice[0..len]
     }
 }
 
@@ -217,8 +223,7 @@ impl<S, T, N, D> IndexMut<RangeFull> for DspVec<S, T, N, D>
     fn index_mut(&mut self, _index: RangeFull) -> &mut [T] {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
-        let slice = &mut slice[0..len];
-        slice
+        &mut slice[0..len]
     }
 }
 
@@ -353,8 +358,7 @@ impl<S, T, N, D> ComplexIndex<RangeFull> for DspVec<S, T, N, D>
     fn complex(&self, _index: RangeFull) -> &[Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice();
-        let slice = array_to_complex(&slice[0..len]);
-        slice
+        array_to_complex(&slice[0..len])
     }
 }
 
@@ -367,8 +371,7 @@ impl<S, T, N, D> ComplexIndexMut<RangeFull> for DspVec<S, T, N, D>
     fn complex_mut(&mut self, _index: RangeFull) -> &mut [Complex<T>] {
         let len = self.valid_len;
         let slice = self.data.to_slice_mut();
-        let slice = array_to_complex_mut(&mut slice[0..len]);
-        slice
+        array_to_complex_mut(&mut slice[0..len])
     }
 }
 

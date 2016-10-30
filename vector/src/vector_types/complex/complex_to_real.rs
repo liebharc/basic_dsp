@@ -487,7 +487,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         destination.set_delta(self.delta);
         let mut temp = &mut destination[0..data_length / 2];
         let (scalar_left, scalar_right, vectorization_length) =
-            T::Reg::calc_data_alignment_reqs(&temp);
+            T::Reg::calc_data_alignment_reqs(temp);
         let array = &self.data.to_slice();
         if vectorization_length > 0 {
             Chunk::from_src_to_dest(complexity,
@@ -601,11 +601,11 @@ impl<S, T, N, D> ComplexToRealGetterOps<T> for DspVec<S, T, N, D>
         let real = &mut real[0..data_length / 2];
         let imag = &mut imag[0..data_length / 2];
         let data = self.data.to_slice();
-        for i in 0..data_length {
+        for (i, n) in (&data[0..data_length]).iter().enumerate() {
             if i % 2 == 0 {
-                real[i / 2] = data[i];
+                real[i / 2] = *n;
             } else {
-                imag[i / 2] = data[i];
+                imag[i / 2] = *n;
             }
         }
     }
@@ -651,11 +651,11 @@ impl<S, T, N, D> ComplexToRealSetterOps<T> for DspVec<S, T, N, D>
             let data = self.data.to_slice_mut();
             let real = &real[0..real.len()];
             let imag = &imag[0..imag.len()];
-            for i in 0..data_length {
+            for (i, n) in (&mut data[0..data_length]).iter_mut().enumerate() {
                 if i % 2 == 0 {
-                    data[i] = real[i / 2];
+                    *n = real[i / 2];
                 } else {
-                    data[i] = imag[i / 2];
+                    *n = imag[i / 2];
                 }
             }
         }

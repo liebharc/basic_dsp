@@ -83,7 +83,7 @@ pub trait Domain: fmt::Debug + cmp::PartialEq + Clone {
 /// Trait for types containing real data.
 pub trait RealNumberSpace: NumberSpace {}
 
-/// TWorait for types containing complex data.
+/// Trait for types containing complex data.
 pub trait ComplexNumberSpace: NumberSpace {}
 
 /// Trait for types containing time domain data.
@@ -470,11 +470,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let data_length = self.len();
             let mut result = buffer.get(data_length / 2);
             {
-                let mut array = self.data.to_slice_mut();
+                let array = self.data.to_slice_mut();
                 let mut temp = result.to_slice_mut();
                 Chunk::from_src_to_dest(complexity,
                                         &self.multicore_settings,
-                                        &mut array[0..data_length],
+                                        &array[0..data_length],
                                         2,
                                         &mut temp[0..data_length / 2],
                                         1,
@@ -501,12 +501,13 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         {
             let data_length = self.len();
             let mut array = self.data.to_slice_mut();
+             #[allow(needless_range_loop)]
             for i in 0..data_length / 2 {
                 let input = Complex::new(array[2 * i], array[2 * i + 1]);
                 array[i] = op(input, argument);
             }
 
-            self.valid_len = self.valid_len / 2;
+            self.valid_len /= 2;
         }
     }
 
@@ -525,14 +526,14 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         let data_length = self.len();
         let mut result = buffer.get(data_length / 2);
         {
-            let mut array = self.data.to_slice_mut();
+            let array = self.data.to_slice_mut();
             let mut temp = result.to_slice_mut();
             let (scalar_left, scalar_right, vectorization_length) =
                 T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if vectorization_length > 0 {
                 Chunk::from_src_to_dest(complexity,
                                         &self.multicore_settings,
-                                        &mut array[scalar_left..vectorization_length],
+                                        &array[scalar_left..vectorization_length],
                                         T::Reg::len(),
                                         &mut temp[scalar_left / 2..vectorization_length / 2],
                                         T::Reg::len() / 2,
@@ -562,7 +563,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 }
             }
 
-            self.valid_len = self.valid_len / 2;
+            self.valid_len /= 2;
         }
         mem::swap(&mut self.data, &mut result);
         buffer.free(result);

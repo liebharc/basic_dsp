@@ -422,7 +422,7 @@ macro_rules! convolve_vector {
         {
             let mut error = None;
             let mut result: Vec<S> = {
-                let rows: Vec<&DspVec<S, T, N, D>> = $self_.rows().iter().map(|v|v).collect();
+                let rows: Vec<&DspVec<S, T, N, D>> = $self_.rows().iter().collect();
                 $impulse_response.iter().map(|i| {
                     let mut target = $buffer.get($self_.row_len());
                     let res = DspVec::<S, T, N, D>::convolve_mat(&rows, i, &mut target);
@@ -439,13 +439,13 @@ macro_rules! convolve_vector {
                Some(err) => return Err(err)
            }
 
-            for i in 0..$self_.col_len() {
-                mem::swap(&mut result[i], &mut $self_.rows[i].data)
-            }
+           for (res, row) in result.iter_mut().zip($self_.rows.iter_mut()) {
+               mem::swap(res, &mut row.data)
+           }
 
-            $buffer.free(result.pop().expect("Result should not be empty"));
+           $buffer.free(result.pop().expect("Result should not be empty"));
 
-            Ok(())
+           Ok(())
         }
     }
 }

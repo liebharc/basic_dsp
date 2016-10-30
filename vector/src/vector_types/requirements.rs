@@ -10,6 +10,9 @@ pub trait ToSlice<T> {
 
     /// Length of a slice.
     fn len(&self) -> usize;
+    
+    /// Indicates whether or not this storage type is empty.
+    fn is_empty(&self) -> bool;
 
     /// Gets the allocated length of a storage.
     /// It's expected that `self.alloc_len() >= self.len()`
@@ -53,6 +56,10 @@ impl<'a, T> ToSlice<T> for &'a [T] {
     fn len(&self) -> usize {
         (*self).len()
     }
+    
+    fn is_empty(&self) -> bool {
+        (*self).is_empty()
+    }
 
     fn alloc_len(&self) -> usize {
         self.len()
@@ -74,6 +81,10 @@ impl<T> ToSlice<T> for [T] {
 
     fn len(&self) -> usize {
         self.len()
+    }
+    
+    fn is_empty(&self) -> bool {
+        self.is_empty()
     }
 
     fn alloc_len(&self) -> usize {
@@ -105,6 +116,10 @@ impl<T> ToSlice<T> for Box<[T]> {
     fn len(&self) -> usize {
         (**self).len()
     }
+    
+    fn is_empty(&self) -> bool {
+        (**self).is_empty()
+    }
 
     fn alloc_len(&self) -> usize {
         self.len()
@@ -135,6 +150,10 @@ impl<'a, T> ToSlice<T> for &'a mut [T] {
     fn len(&self) -> usize {
         (**self).len()
     }
+    
+    fn is_empty(&self) -> bool {
+        (**self).is_empty()
+    }
 
     fn alloc_len(&self) -> usize {
         self.len()
@@ -159,11 +178,15 @@ impl<T> ToSlice<T> for Vec<T>
     where T: RealNumber
 {
     fn to_slice(&self) -> &[T] {
-        &self
+        self
     }
 
     fn len(&self) -> usize {
         self.len()
+    }
+    
+    fn is_empty(&self) -> bool {
+        self.is_empty()
     }
 
     fn alloc_len(&self) -> usize {

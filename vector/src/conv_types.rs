@@ -11,41 +11,49 @@ use std::os::raw::c_void;
 use std::mem;
 use vector_types::*;
 
-macro_rules! define_real_conv_trait {
-    ($($name: ident, $domain_comment:ident);*) => {
-        $(
-            /// A convolution function in $domain_comment domain and real number space
-            pub trait $name<T> : Sync
-                where T: RealNumber {
-                /// Indicates whether this function is symmetric around 0 or not.
-                /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
-                fn is_symmetric(&self) -> bool;
+/// A convolution function in time domain and real number space
+pub trait RealImpulseResponse<T> : Sync
+    where T: RealNumber {
+    /// Indicates whether this function is symmetric around 0 or not.
+    /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
+    fn is_symmetric(&self) -> bool;
 
-                /// Calculates the convolution for a data point
-                fn calc(&self, x: T) -> T;
-            }
-        )*
-    }
+    /// Calculates the convolution for a data point
+    fn calc(&self, x: T) -> T;
 }
-define_real_conv_trait!(RealImpulseResponse, time; RealFrequencyResponse, frequency);
 
-macro_rules! define_complex_conv_trait {
-    ($($name: ident, $domain_comment:ident);*) => {
-        $(
-            /// A convolution function in $domain_comment domain and complex number space
-            pub trait $name<T> : Sync
-                where T: RealNumber {
-                /// Indicates whether this function is symmetric around 0 or not.
-                /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
-                fn is_symmetric(&self) -> bool;
+/// A convolution function in frequency domain and real number space
+pub trait RealFrequencyResponse<T> : Sync
+    where T: RealNumber {
+    /// Indicates whether this function is symmetric around 0 or not.
+    /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
+    fn is_symmetric(&self) -> bool;
 
-                /// Calculates the convolution for a data point
-                fn calc(&self, x: T) -> Complex<T>;
-            }
-        )*
-    }
+    /// Calculates the convolution for a data point
+    fn calc(&self, x: T) -> T;
 }
-define_complex_conv_trait!(ComplexImpulseResponse, time; ComplexFrequencyResponse, frequency);
+
+/// A convolution function in time domain and complex number space
+pub trait ComplexImpulseResponse<T> : Sync
+    where T: RealNumber {
+    /// Indicates whether this function is symmetric around 0 or not.
+    /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
+    fn is_symmetric(&self) -> bool;
+
+    /// Calculates the convolution for a data point
+    fn calc(&self, x: T) -> Complex<T>;
+}
+
+/// A convolution function in frequency domain and complex number space
+pub trait ComplexFrequencyResponse<T> : Sync
+    where T: RealNumber {
+    /// Indicates whether this function is symmetric around 0 or not.
+    /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
+    fn is_symmetric(&self) -> bool;
+
+    /// Calculates the convolution for a data point
+    fn calc(&self, x: T) -> Complex<T>;
+}
 
 macro_rules! define_real_lookup_table {
     ($($name: ident);*) => {
@@ -140,7 +148,7 @@ macro_rules! add_linear_table_lookup_impl {
                             let y0 = self.table[round];
                             let x0 = round_float;
                             let y1 = self.table[other];
-                            return y0 + (y1 - y0) * (x - x0);
+                            y0 + (y1 - y0) * (x - x0)
                         } else {
                             if round == 0 {
                                 return self.table[round];
@@ -149,7 +157,7 @@ macro_rules! add_linear_table_lookup_impl {
                             let y0 = self.table[round];
                             let x0 = round_float;
                             let y1 = self.table[other];
-                            return y0 + (y1 - y0) * (x0 - x);
+                            y0 + (y1 - y0) * (x0 - x)
                         }
                     }
                 }
@@ -249,7 +257,7 @@ macro_rules! add_complex_time_linear_table_impl {
     ($($data_type: ident),*) => {
         $(
             impl ComplexTimeLinearTableLookup<$data_type> {
-/// Convert the lookup table into frequency domain
+                /// Convert the lookup table into frequency domain
                 pub fn fft(self) -> ComplexFrequencyLinearTableLookup<$data_type> {
                     let mut vector = self.table.clone().to_complex_time_vec();
                     vector.set_delta(self.delta);
@@ -331,7 +339,7 @@ macro_rules! add_complex_frequency_linear_table_impl {
 }
 add_complex_frequency_linear_table_impl!(f32, f64);
 
-/// Raised cosine function according to https://en.wikipedia.org/wiki/Raised-cosine_filter
+/// Raised cosine function according to `https://en.wikipedia.org/wiki/Raised-cosine_filter`
 pub struct RaisedCosineFunction<T>
     where T: RealNumber
 {
@@ -361,7 +369,7 @@ impl<T> RealImpulseResponse<T> for RaisedCosineFunction<T>
 
         let pi_x = pi * x;
         let arg = two * self.rolloff * x;
-        return pi_x.sin() * (pi_x * self.rolloff).cos() / pi_x / (one - (arg * arg));
+        pi_x.sin() * (pi_x * self.rolloff).cos() / pi_x / (one - (arg * arg))
     }
 }
 
@@ -386,7 +394,7 @@ impl<T> RealFrequencyResponse<T> for RaisedCosineFunction<T>
                    (one + (pi / self.rolloff * (x.abs() - (one - self.rolloff)) / two).cos());
         }
 
-        return T::zero();
+        T::zero()
     }
 }
 
@@ -399,7 +407,7 @@ impl<T> RaisedCosineFunction<T>
     }
 }
 
-/// Sinc function according to https://en.wikipedia.org/wiki/Sinc_function
+/// Sinc function according to `https://en.wikipedia.org/wiki/Sinc_function`
 pub struct SincFunction<T>
     where T: RealNumber
 {
@@ -422,7 +430,7 @@ impl<T> RealImpulseResponse<T> for SincFunction<T>
         let two = T::from(2.0).unwrap();
         let pi = two * one.asin();
         let pi_x = pi * x;
-        return pi_x.sin() / pi_x;
+        pi_x.sin() / pi_x
     }
 }
 
@@ -439,7 +447,7 @@ impl<T> RealFrequencyResponse<T> for SincFunction<T>
             return one;
         }
 
-        return T::zero();
+        T::zero()
     }
 }
 
@@ -476,16 +484,14 @@ impl<T> ForeignRealConvolutionFunction<T>
     where T: RealNumber
 {
     /// Creates a new real function
-    pub fn new(function: extern "C" fn(*const c_void, T) -> T,
+    pub unsafe fn new(function: extern "C" fn(*const c_void, T) -> T,
                function_data: *const c_void,
                is_symmetric: bool)
                -> Self {
-        unsafe {
-            ForeignRealConvolutionFunction {
-                conv_function: function,
-                conv_data: mem::transmute(function_data),
-                is_symmetric: is_symmetric,
-            }
+        ForeignRealConvolutionFunction {
+            conv_function: function,
+            conv_data: mem::transmute(function_data),
+            is_symmetric: is_symmetric,
         }
     }
 }
@@ -499,7 +505,7 @@ impl<T> RealImpulseResponse<T> for ForeignRealConvolutionFunction<T>
 
     fn calc(&self, x: T) -> T {
         let fun = self.conv_function;
-        unsafe { fun(mem::transmute(self.conv_data), x) }
+        fun(self.conv_data as *const c_void, x)
     }
 }
 
@@ -512,7 +518,7 @@ impl<T> RealFrequencyResponse<T> for ForeignRealConvolutionFunction<T>
 
     fn calc(&self, x: T) -> T {
         let fun = self.conv_function;
-        unsafe { fun(mem::transmute(self.conv_data), x) }
+        fun(self.conv_data as *const c_void, x)
     }
 }
 
@@ -540,16 +546,14 @@ impl<T> ForeignComplexConvolutionFunction<T>
     where T: RealNumber
 {
     /// Creates a new real function
-    pub fn new(function: extern "C" fn(*const c_void, T) -> Complex<T>,
+    pub unsafe fn new(function: extern "C" fn(*const c_void, T) -> Complex<T>,
                function_data: *const c_void,
                is_symmetric: bool)
                -> Self {
-        unsafe {
-            ForeignComplexConvolutionFunction {
-                conv_function: function,
-                conv_data: mem::transmute(function_data),
-                is_symmetric: is_symmetric,
-            }
+        ForeignComplexConvolutionFunction {
+            conv_function: function,
+            conv_data: mem::transmute(function_data),
+            is_symmetric: is_symmetric,
         }
     }
 }
@@ -563,7 +567,7 @@ impl<T> ComplexImpulseResponse<T> for ForeignComplexConvolutionFunction<T>
 
     fn calc(&self, x: T) -> Complex<T> {
         let fun = self.conv_function;
-        unsafe { fun(mem::transmute(self.conv_data), x) }
+        fun(self.conv_data as *const c_void, x)
     }
 }
 
@@ -578,7 +582,7 @@ impl<T> ComplexFrequencyResponse<T> for ForeignComplexConvolutionFunction<T>
     /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
     fn calc(&self, x: T) -> Complex<T> {
         let fun = self.conv_function;
-        unsafe { fun(mem::transmute(self.conv_data), x) }
+        fun(self.conv_data as *const c_void, x)
     }
 }
 

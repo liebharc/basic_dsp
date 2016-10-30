@@ -229,7 +229,7 @@ impl<S, N, D> PreciseSumOps<f64> for DspVec<S, f32, N, D>
                                                 move |array, _, _| {
             let mut sum = 0.0;
             for n in array {
-                sum = sum + *n as f64;
+                sum += *n as f64;
             }
             sum
         });
@@ -249,7 +249,7 @@ impl<S, N, D> PreciseSumOps<f64> for DspVec<S, f32, N, D>
             let mut sum = 0.0;
             for n in array {
                 let t = *n as f64;
-                sum = sum + t * t;
+                sum += t * t;
             }
             sum
         });

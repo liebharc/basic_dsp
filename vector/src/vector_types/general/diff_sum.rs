@@ -113,10 +113,7 @@ impl<S, T, N, D> DiffSumOps for DspVec<S, T, N, D>
     fn cum_sum(&mut self) {
         let data_length = self.len();
         let mut i = 0;
-        let mut j = 1;
-        if self.is_complex() {
-            j = 2;
-        }
+        let mut j = if self.is_complex() { 1 } else { 2 };
 
         let mut data = self.data.to_slice_mut();
         while j < data_length {

@@ -255,7 +255,7 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
                              -> TransRes<Vec<Self>>
         where B: Buffer<S, T>
     {
-        if vectors.len() == 0 {
+        if vectors.is_empty() {
             return Err((ErrorReason::InvalidNumberOfArgumentsForCombinedOp, vectors));
         }
 
@@ -357,12 +357,12 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
 
         if scalar_length > 0 {
             let mut last_elems = Vec::with_capacity(vectors.len());
-            for j in 0..vectors.len() {
+            for v in &vectors {
                 let reg = T::Reg::splat(T::zero());
                 let mut i = 0;
                 let reg = reg.iter_over_vector(|_| {
                     let res = if i < scalar_length {
-                        vectors[j][vectorization_length + i]
+                        v[vectorization_length + i]
                     } else {
                         T::zero()
                     };
@@ -408,9 +408,9 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
         if any_complex_ops {
             let mut correct_domain = Vec::with_capacity(vectors.len());
             vectors.reverse();
-            for i in 0..vectors.len() {
+            for num_space in &final_number_space {
                 let vector = vectors.pop().unwrap();
-                let right_domain = if final_number_space[i] {
+                let right_domain = if *num_space {
                     vector
                 } else {
                     vector.to_real()

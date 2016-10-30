@@ -230,17 +230,13 @@ impl<S, T, N, D> ReorganizeDataOps<T> for DspVec<S, T, N, D>
             let mut data = self.data.to_slice_mut();
             let mut data = array_to_complex_mut(&mut data[..]);
             for i in 0..len / 2 {
-                let temp = data[i];
-                data[i] = data[len - 1 - i];
-                data[len - 1 - i] = temp;
+                data.swap(i, len - 1 - i);
             }
         } else {
             let len = self.len();
             let mut data = self.data.to_slice_mut();
             for i in 0..len / 2 {
-                let temp = data[i];
-                data[i] = data[len - 1 - i];
-                data[len - 1 - i] = temp;
+                data.swap(i, len - 1 - i);
             }
         }
     }
@@ -255,18 +251,14 @@ impl<S, T, N, D> ReorganizeDataOps<T> for DspVec<S, T, N, D>
             let mut data = array_to_complex_mut(&mut data[..]);
             if len % 2 == 0 {
                 for i in 0..len / 2 {
-                    let temp = data[i];
-                    data[i] = data[len / 2 + i];
-                    data[len / 2 + i] = temp;
+                    data.swap(i, len / 2 + i);
                 }
             } else {
                 let mut temp = data[0];
                 let mut pos = len / 2;
                 for _ in 0..len {
                     let pos_new = (pos + len / 2) % len;
-                    let temp_new = data[pos];
-                    data[pos] = temp;
-                    temp = temp_new;
+                    mem::swap(&mut data[pos], &mut temp);
                     pos = pos_new;
                 }
             }
@@ -279,18 +271,14 @@ impl<S, T, N, D> ReorganizeDataOps<T> for DspVec<S, T, N, D>
             let mut data = self.data.to_slice_mut();
             if len % 2 == 0 {
                 for i in 0..len / 2 {
-                    let temp = data[i];
-                    data[i] = data[len / 2 + i];
-                    data[len / 2 + i] = temp;
+                    data.swap(i, len / 2 + i);
                 }
             } else {
                 let mut temp = data[0];
                 let mut pos = len / 2;
                 for _ in 0..len {
                     let pos_new = (pos + len / 2) % len;
-                    let temp_new = data[pos];
-                    data[pos] = temp;
-                    temp = temp_new;
+                    mem::swap(&mut data[pos], &mut temp);
                     pos = pos_new;
                 }
             }
@@ -564,8 +552,8 @@ impl<S, T, N, D> SplitOps for DspVec<S, T, N, D>
             return Err(ErrorReason::InvalidArgumentLength);
         }
 
-        for i in 0..num_targets {
-            try!(targets[i].resize(data_length / num_targets));
+        for t in targets.iter_mut() {
+            try!(t.resize(data_length / num_targets));
         }
 
         let data = &self.data.to_slice();
@@ -577,10 +565,10 @@ impl<S, T, N, D> SplitOps for DspVec<S, T, N, D>
                 target[2 * pos + 1] = data[2 * i + 1];
             }
         } else {
-            for i in 0..data_length {
+            for (i, d) in data.iter().enumerate() {
                 let target = targets[i % num_targets].data.to_slice_mut();
                 let pos = i / num_targets;
-                target[pos] = data[i];
+                target[pos] = *d;
             }
         }
 
@@ -601,8 +589,8 @@ impl<S, T, N, D> MergeOps for DspVec<S, T, N, D>
                 return Err(ErrorReason::InvalidArgumentLength);
             }
 
-            for i in 1..num_sources {
-                if sources[0].len() != sources[i].len() {
+            for src in sources.iter().take(num_sources).skip(1) {
+                if sources[0].len() != src.len() {
                     return Err(ErrorReason::InvalidArgumentLength);
                 }
             }
@@ -620,10 +608,10 @@ impl<S, T, N, D> MergeOps for DspVec<S, T, N, D>
                     data[2 * i + 1] = source[2 * pos + 1];
                 }
             } else {
-                for i in 0..data_length {
+                for (i, d) in data.iter_mut().enumerate() {
                     let source = sources[i % num_sources].data.to_slice();
                     let pos = i / num_sources;
-                    data[i] = source[pos];
+                    *d = source[pos];
                 }
             }
         }

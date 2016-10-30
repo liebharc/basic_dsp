@@ -13,7 +13,7 @@ macro_rules! add_mat_impl {
                       O: Vector<T> {
 
                 fn rededicate_from_force(origin: $matrix<O, S, T>) -> Self {
-					let rows = origin.rows.transform(|v|V::rededicate_from_force(v));
+					let rows = origin.rows.transform(V::rededicate_from_force);
 					$matrix {
                         rows: rows,
                         storage_type: marker::PhantomData,

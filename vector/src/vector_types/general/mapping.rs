@@ -137,7 +137,7 @@ impl<S, T, N, D, R> MapAggregateOps<T, R> for DspVec<S, T, N, D>
             };
         }
 
-        if only_valid_options.len() == 0 {
+        if only_valid_options.is_empty() {
             return Err(ErrorReason::InputMustNotBeEmpty);
         }
         let mut aggregated = only_valid_options.pop().unwrap();
@@ -244,7 +244,7 @@ impl<S, T, N, D, R> MapAggregateOps<Complex<T>, R> for DspVec<S, T, N, D>
             };
         }
 
-        if only_valid_options.len() == 0 {
+        if only_valid_options.is_empty() {
             return Err(ErrorReason::InputMustNotBeEmpty);
         }
         let mut aggregated = only_valid_options.pop().unwrap();

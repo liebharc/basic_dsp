@@ -23,7 +23,7 @@ pub enum Complexity {
 
 /// Holds parameters which specify how multiple cores are used
 /// to execute an operation.
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 #[repr(C)]
 pub struct MultiCoreSettings {
     /// All operations will be limited to not create more threads than specified here
@@ -48,19 +48,6 @@ impl MultiCoreSettings {
             core_limit: if core_limit >= 1 { core_limit } else { 1 },
             early_temp_allocation: early_temp_allocation,
         }
-    }
-}
-
-impl Clone for MultiCoreSettings {
-    fn clone(&self) -> Self {
-        MultiCoreSettings {
-            core_limit: self.core_limit,
-            early_temp_allocation: self.early_temp_allocation,
-        }
-    }
-
-    fn clone_from(&mut self, source: &Self) {
-        self.core_limit = source.core_limit;
     }
 }
 
@@ -97,25 +84,33 @@ impl Chunk {
         if cores > settings.core_limit {
             cores = settings.core_limit;
         }
-        if cores == 1 {
-            cores
-        } else if complexity == Complexity::Small {
-            if array_length < 500000 {
-                1
-            } else {
-                if cores >= 2 { 2 } else { 1 }
-            }
-        } else if complexity == Complexity::Medium {
-            if array_length < 10000 {
-                1
-            } else if array_length < 50000 {
-                if cores >= 2 { 2 } else { 1 }
-            } else {
+        
+        #[allow(if_same_then_else)] // The most likely cases are handled first
+        {
+            if cores == 1 {
                 cores
+            } else if complexity == Complexity::Small {
+                if array_length < 500000 {
+                    1
+                } else if cores >= 2 { 
+                    2 
+                } else { 
+                    1 
+                }
+            } else if complexity == Complexity::Medium {
+                if array_length < 10000 {
+                    1
+                } else if array_length < 50000 {
+                    if cores >= 2 { 2 } else { 1 }
+                } else {
+                    cores
+                }
+            } else if array_length < 30000 {
+                // complexity == Complexity::Large
+                1
+            } else { 
+                cores 
             }
-        } else {
-            // complexity == Complexity::Large
-            if array_length < 30000 { 1 } else { cores }
         }
     }
 

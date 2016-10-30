@@ -119,7 +119,7 @@ pub trait Stats<T>: Sized {
 macro_rules! impl_common_stats {
     () => {
         fn merge_cols(stats: &[Vec<Self>]) -> Vec<Self> {
-            if stats.len() == 0 {
+            if stats.is_empty() {
                 return Vec::new();
             }
 
@@ -127,9 +127,9 @@ macro_rules! impl_common_stats {
             let mut results = Vec::with_capacity(len);
             for i in 0..len {
                 let mut reordered = Vec::with_capacity(stats.len());
-                for j in 0..stats.len()
+                for s in stats.iter()
                 {
-                    reordered.push(stats[j][i]);
+                    reordered.push(s[i]);
                 }
 
                 let merged = Statistics::merge(&reordered);
@@ -278,7 +278,7 @@ impl<T> Stats<Complex<T>> for Statistics<Complex<T>>
         let mut sum_squared = Complex::<T>::new(T::zero(), T::zero());
         for stat in stats {
             sum = sum + stat.sum;
-            count = count + stat.count;
+            count += stat.count;
             sum_squared = sum_squared + stat.rms; // We stored sum_squared in the field rms
             if stat.max.norm() > max_norm {
                 max = stat.max;

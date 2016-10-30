@@ -94,108 +94,113 @@ pub fn evaluate_number_space_transition<T>(is_complex: bool,
                                            -> Result<bool, ErrorReason>
     where T: RealNumber
 {
-    match operation {
+    match *operation {
         // Real Ops
-        &Operation::AddReal(_, _) => require_real(is_complex),
-        &Operation::MultiplyReal(_, _) => require_real(is_complex),
-        &Operation::Abs(_) => require_real(is_complex),
-        &Operation::ToComplex(_) => real_to_complex(is_complex),
-        &Operation::MapReal(_, _) => require_real(is_complex),
+        Operation::AddReal(_, _) |
+        Operation::MultiplyReal(_, _) |
+        Operation::Abs(_) |
+        Operation::MapReal(_, _)
+            => require_real(is_complex),
+        Operation::ToComplex(_) => real_to_complex(is_complex),
         // Complex Ops
-        &Operation::AddComplex(_, _) => require_complex(is_complex),
-        &Operation::MultiplyComplex(_, _) => require_complex(is_complex),
-        &Operation::Magnitude(_) => complex_to_real(is_complex),
-        &Operation::MagnitudeSquared(_) => complex_to_real(is_complex),
-        &Operation::ComplexConj(_) => require_complex(is_complex),
-        &Operation::ToReal(_) => complex_to_real(is_complex),
-        &Operation::ToImag(_) => complex_to_real(is_complex),
-        &Operation::Phase(_) => complex_to_real(is_complex),
-        &Operation::MultiplyComplexExponential(_, _, _) => require_complex(is_complex),
-        &Operation::MapComplex(_, _) => require_complex(is_complex),
+        Operation::AddComplex(_, _) |
+        Operation::MultiplyComplex(_, _) |
+        Operation::ComplexConj(_) |
+        Operation::MultiplyComplexExponential(_, _, _) |
+        Operation::MapComplex(_, _)
+            => require_complex(is_complex),
+        Operation::Magnitude(_) |
+        Operation::MagnitudeSquared(_) |
+        Operation::ToReal(_) |
+        Operation::ToImag(_) | 
+        Operation::Phase(_)
+            => complex_to_real(is_complex),
         // General Ops
-        &Operation::AddPoints(_) => Ok(is_complex),
-        &Operation::SubPoints(_) => Ok(is_complex),
-        &Operation::MulPoints(_) => Ok(is_complex),
-        &Operation::DivPoints(_) => Ok(is_complex),
-        &Operation::AddVector(_, _) => Ok(is_complex),
-        &Operation::SubVector(_, _) => Ok(is_complex),
-        &Operation::MulVector(_, _) => Ok(is_complex),
-        &Operation::DivVector(_, _) => Ok(is_complex),
-        &Operation::Sqrt(_) => Ok(is_complex),
-        &Operation::Square(_) => Ok(is_complex),
-        &Operation::Root(_, _) => Ok(is_complex),
-        &Operation::Powf(_, _) => Ok(is_complex),
-        &Operation::Ln(_) => Ok(is_complex),
-        &Operation::Exp(_) => Ok(is_complex),
-        &Operation::Log(_, _) => Ok(is_complex),
-        &Operation::Expf(_, _) => Ok(is_complex),
-        &Operation::Sin(_) => Ok(is_complex),
-        &Operation::Cos(_) => Ok(is_complex),
-        &Operation::Tan(_) => Ok(is_complex),
-        &Operation::ASin(_) => Ok(is_complex),
-        &Operation::ACos(_) => Ok(is_complex),
-        &Operation::ATan(_) => Ok(is_complex),
-        &Operation::Sinh(_) => Ok(is_complex),
-        &Operation::Cosh(_) => Ok(is_complex),
-        &Operation::Tanh(_) => Ok(is_complex),
-        &Operation::ASinh(_) => Ok(is_complex),
-        &Operation::ACosh(_) => Ok(is_complex),
-        &Operation::ATanh(_) => Ok(is_complex),
-        &Operation::CloneFrom(_, _) => Ok(is_complex),
+        Operation::AddPoints(_) |
+        Operation::SubPoints(_) |
+        Operation::MulPoints(_) |
+        Operation::DivPoints(_) |
+        Operation::AddVector(_, _) |
+        Operation::SubVector(_, _) |
+        Operation::MulVector(_, _) |
+        Operation::DivVector(_, _) |
+        Operation::Sqrt(_) |
+        Operation::Square(_) |
+        Operation::Root(_, _) |
+        Operation::Powf(_, _) |
+        Operation::Ln(_) |
+        Operation::Exp(_) |
+        Operation::Log(_, _) |
+        Operation::Expf(_, _) |
+        Operation::Sin(_) |
+        Operation::Cos(_) |
+        Operation::Tan(_) |
+        Operation::ASin(_) |
+        Operation::ACos(_) |
+        Operation::ATan(_) |
+        Operation::Sinh(_) |
+        Operation::Cosh(_) |
+        Operation::Tanh(_) |
+        Operation::ASinh(_) |
+        Operation::ACosh(_) |
+        Operation::ATanh(_) |
+        Operation::CloneFrom(_, _)
+            => Ok(is_complex)
     }
 }
 
 pub fn get_argument<T>(operation: &Operation<T>) -> usize
     where T: RealNumber
 {
-    match operation {
+    match *operation {
         // Real Ops
-        &Operation::AddReal(arg, _) => arg,
-        &Operation::MultiplyReal(arg, _) => arg,
-        &Operation::Abs(arg) => arg,
-        &Operation::ToComplex(arg) => arg,
-        &Operation::MapReal(arg, _) => arg,
+        Operation::AddReal(arg, _) |
+        Operation::MultiplyReal(arg, _) |
+        Operation::Abs(arg) |
+        Operation::ToComplex(arg) |
+        Operation::MapReal(arg, _) |
         // Complex Ops
-        &Operation::AddComplex(arg, _) => arg,
-        &Operation::MultiplyComplex(arg, _) => arg,
-        &Operation::Magnitude(arg) => arg,
-        &Operation::MagnitudeSquared(arg) => arg,
-        &Operation::ComplexConj(arg) => arg,
-        &Operation::ToReal(arg) => arg,
-        &Operation::ToImag(arg) => arg,
-        &Operation::Phase(arg) => arg,
-        &Operation::MultiplyComplexExponential(arg, _, _) => arg,
-        &Operation::MapComplex(arg, _) => arg,
+        Operation::AddComplex(arg, _) |
+        Operation::MultiplyComplex(arg, _) |
+        Operation::Magnitude(arg) |
+        Operation::MagnitudeSquared(arg) |
+        Operation::ComplexConj(arg) |
+        Operation::ToReal(arg) |
+        Operation::ToImag(arg) |
+        Operation::Phase(arg) |
+        Operation::MultiplyComplexExponential(arg, _, _) |
+        Operation::MapComplex(arg, _) |
         // General Ops
-        &Operation::AddPoints(arg) => arg,
-        &Operation::SubPoints(arg) => arg,
-        &Operation::MulPoints(arg) => arg,
-        &Operation::DivPoints(arg) => arg,
-        &Operation::AddVector(arg, _) => arg,
-        &Operation::SubVector(arg, _) => arg,
-        &Operation::MulVector(arg, _) => arg,
-        &Operation::DivVector(arg, _) => arg,
-        &Operation::Sqrt(arg) => arg,
-        &Operation::Square(arg) => arg,
-        &Operation::Root(arg, _) => arg,
-        &Operation::Powf(arg, _) => arg,
-        &Operation::Ln(arg) => arg,
-        &Operation::Exp(arg) => arg,
-        &Operation::Log(arg, _) => arg,
-        &Operation::Expf(arg, _) => arg,
-        &Operation::Sin(arg) => arg,
-        &Operation::Cos(arg) => arg,
-        &Operation::Tan(arg) => arg,
-        &Operation::ASin(arg) => arg,
-        &Operation::ACos(arg) => arg,
-        &Operation::ATan(arg) => arg,
-        &Operation::Sinh(arg) => arg,
-        &Operation::Cosh(arg) => arg,
-        &Operation::Tanh(arg) => arg,
-        &Operation::ASinh(arg) => arg,
-        &Operation::ACosh(arg) => arg,
-        &Operation::ATanh(arg) => arg,
-        &Operation::CloneFrom(arg, _) => arg,
+        Operation::AddPoints(arg) |
+        Operation::SubPoints(arg) |
+        Operation::MulPoints(arg) |
+        Operation::DivPoints(arg) |
+        Operation::AddVector(arg, _) |
+        Operation::SubVector(arg, _) |
+        Operation::MulVector(arg, _) |
+        Operation::DivVector(arg, _) |
+        Operation::Sqrt(arg) |
+        Operation::Square(arg) |
+        Operation::Root(arg, _) |
+        Operation::Powf(arg, _) |
+        Operation::Ln(arg) |
+        Operation::Exp(arg) |
+        Operation::Log(arg, _) |
+        Operation::Expf(arg, _) |
+        Operation::Sin(arg) |
+        Operation::Cos(arg) |
+        Operation::Tan(arg) |
+        Operation::ASin(arg) |
+        Operation::ACos(arg) |
+        Operation::ATan(arg) |
+        Operation::Sinh(arg) |
+        Operation::Cosh(arg) |
+        Operation::Tanh(arg) |
+        Operation::ASinh(arg) |
+        Operation::ACosh(arg) |
+        Operation::ATanh(arg) |
+        Operation::CloneFrom(arg, _)
+            => arg
     }
 }
 
@@ -223,68 +228,68 @@ impl<T> PerformOperationSimd<T> for T::Reg
                                  operation: &Operation<T>,
                                  index: usize,
                                  points: usize) {
-        match operation {
+        match *operation {
             // Real Ops
-            &Operation::AddReal(idx, value) => {
+            Operation::AddReal(idx, value) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.add_real(value);
             }
-            &Operation::MultiplyReal(idx, value) => {
+            Operation::MultiplyReal(idx, value) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.scale_real(value);
             }
-            &Operation::Abs(idx) => {
+            Operation::Abs(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.abs());
             }
-            &Operation::ToComplex(_) => {
+            Operation::ToComplex(_) => {
                 // Number space conversions should already been done
                 // before the operations are executed, so there is nothing
                 // to do anymore
             }
-            &Operation::MapReal(_, _) => {
+            Operation::MapReal(_, _) => {
                 panic!("real operation on complex vector indicates a bug");
             }
             // Complex Ops
-            &Operation::AddComplex(idx, value) => {
+            Operation::AddComplex(idx, value) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.add_complex(value);
             }
-            &Operation::MultiplyComplex(idx, value) => {
+            Operation::MultiplyComplex(idx, value) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.scale_complex(value);
             }
-            &Operation::Magnitude(idx) => {
+            Operation::Magnitude(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.complex_abs2();
             }
-            &Operation::MagnitudeSquared(idx) => {
+            Operation::MagnitudeSquared(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.complex_abs_squared2();
             }
-            &Operation::ComplexConj(idx) => {
+            Operation::ComplexConj(idx) => {
                 let arg = T::Reg::from_complex(Complex::<T>::new(T::one(), -T::one()));
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.mul(arg);
             }
-            &Operation::ToReal(idx) => {
+            Operation::ToReal(idx) => {
                 // We don't have to reorganize the data and just need to zero the imag part
                 let arg = T::Reg::from_complex(Complex::<T>::new(T::one(), T::zero()));
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.mul(arg);
             }
-            &Operation::ToImag(idx) => {
+            Operation::ToImag(idx) => {
                 let arg = T::Reg::from_complex(Complex::<T>::new(T::zero(), -T::one()));
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 let swapped = v.mul_complex(arg);
                 let arg = T::Reg::from_complex(Complex::<T>::new(T::one(), T::zero()));
                 *v = swapped.mul(arg);
             }
-            &Operation::Phase(idx) => {
+            Operation::Phase(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x| Complex::new(x.arg(), T::zero()));
             }
-            &Operation::MultiplyComplexExponential(idx, a, b) => {
+            Operation::MultiplyComplexExponential(idx, a, b) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 let mut exponential = Complex::<T>::from_polar(&T::one(), &b) *
                                       Complex::<T>::from_polar(&T::one(),
@@ -296,7 +301,7 @@ impl<T> PerformOperationSimd<T> for T::Reg
                     res
                 });
             }
-            &Operation::MapComplex(idx, ref op) => {
+            Operation::MapComplex(idx, ref op) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 let mut i = index;
                 *v = v.iter_over_complex_vector(|x| {
@@ -306,124 +311,124 @@ impl<T> PerformOperationSimd<T> for T::Reg
                 });
             }
             // General Ops
-            &Operation::AddPoints(idx) => {
+            Operation::AddPoints(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.add_complex(Complex::<T>::new(T::from(points).unwrap(), T::zero()));
             }
-            &Operation::SubPoints(idx) => {
+            Operation::SubPoints(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.add_complex(Complex::<T>::new(-(T::from(points).unwrap()), T::zero()));
             }
-            &Operation::MulPoints(idx) => {
+            Operation::MulPoints(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.scale_complex(Complex::<T>::new(T::from(points).unwrap(), T::zero()));
             }
-            &Operation::DivPoints(idx) => {
+            Operation::DivPoints(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.scale_complex(Complex::<T>::new(T::one() / (T::from(points).unwrap()),
                                                        T::zero()));
             }
-            &Operation::AddVector(idx1, idx2) => {
+            Operation::AddVector(idx1, idx2) => {
                 let v2 = unsafe { *vectors.get_unchecked(idx2) };
                 let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
                 *v1 = v1.add(v2);
             }
-            &Operation::SubVector(idx1, idx2) => {
+            Operation::SubVector(idx1, idx2) => {
                 let v2 = unsafe { *vectors.get_unchecked(idx2) };
                 let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
                 *v1 = v1.sub(v2);
             }
-            &Operation::MulVector(idx1, idx2) => {
+            Operation::MulVector(idx1, idx2) => {
                 let v2 = unsafe { *vectors.get_unchecked(idx2) };
                 let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
                 *v1 = v1.mul_complex(v2);
             }
-            &Operation::DivVector(idx1, idx2) => {
+            Operation::DivVector(idx1, idx2) => {
                 let v2 = unsafe { *vectors.get_unchecked(idx2) };
                 let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
                 *v1 = v1.div_complex(v2);
             }
-            &Operation::Sqrt(idx) => {
+            Operation::Sqrt(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.sqrt());
             }
-            &Operation::Square(idx) => {
+            Operation::Square(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.mul_complex(*v);
             }
-            &Operation::Root(idx, value) => {
+            Operation::Root(idx, value) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x| x.powf(T::one() / value));
             }
-            &Operation::Powf(idx, value) => {
+            Operation::Powf(idx, value) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x| x.powf(value));
             }
-            &Operation::Ln(idx) => {
+            Operation::Ln(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.ln());
             }
-            &Operation::Exp(idx) => {
+            Operation::Exp(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.exp());
             }
-            &Operation::Log(idx, value) => {
+            Operation::Log(idx, value) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.log(value));
             }
-            &Operation::Expf(idx, value) => {
+            Operation::Expf(idx, value) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.expf(value));
             }
-            &Operation::Sin(idx) => {
+            Operation::Sin(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.sin());
             }
-            &Operation::Cos(idx) => {
+            Operation::Cos(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.cos());
             }
-            &Operation::Tan(idx) => {
+            Operation::Tan(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.tan());
             }
-            &Operation::ASin(idx) => {
+            Operation::ASin(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.asin());
             }
-            &Operation::ACos(idx) => {
+            Operation::ACos(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.acos());
             }
-            &Operation::ATan(idx) => {
+            Operation::ATan(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.atan());
             }
-            &Operation::Sinh(idx) => {
+            Operation::Sinh(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.sinh());
             }
-            &Operation::Cosh(idx) => {
+            Operation::Cosh(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.cosh());
             }
-            &Operation::Tanh(idx) => {
+            Operation::Tanh(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.tanh());
             }
-            &Operation::ASinh(idx) => {
+            Operation::ASinh(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.asinh());
             }
-            &Operation::ACosh(idx) => {
+            Operation::ACosh(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.acosh());
             }
-            &Operation::ATanh(idx) => {
+            Operation::ATanh(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_complex_vector(|x: Complex<T>| x.atanh());
             }
-            &Operation::CloneFrom(idx1, idx2) => {
+            Operation::CloneFrom(idx1, idx2) => {
                 let v2 = unsafe { *vectors.get_unchecked(idx2) };
                 let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
                 *v1 = v2;
@@ -436,24 +441,24 @@ impl<T> PerformOperationSimd<T> for T::Reg
                               operation: &Operation<T>,
                               index: usize,
                               points: usize) {
-        match operation {
+        match *operation {
             // Real Ops
-            &Operation::AddReal(idx, value) => {
+            Operation::AddReal(idx, value) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.add_real(value);
             }
-            &Operation::MultiplyReal(idx, value) => {
+            Operation::MultiplyReal(idx, value) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.scale_real(value);
             }
-            &Operation::Abs(idx) => {
+            Operation::Abs(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.abs());
             }
-            &Operation::ToComplex(_) => {
+            Operation::ToComplex(_) => {
                 panic!("number space conversions should have already been completed");
             }
-            &Operation::MapReal(idx, ref op) => {
+            Operation::MapReal(idx, ref op) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 let mut i = index;
                 *v = v.iter_over_vector(|x| {
@@ -463,154 +468,154 @@ impl<T> PerformOperationSimd<T> for T::Reg
                 });
             }
             // Complex Ops
-            &Operation::AddComplex(_, _) => {
+            Operation::AddComplex(_, _) => {
                 panic!("complex operation on real vector indicates a bug");
             }
-            &Operation::MultiplyComplex(_, _) => {
+            Operation::MultiplyComplex(_, _) => {
                 panic!("complex operation on real vector indicates a bug");
             }
-            &Operation::Magnitude(_) => {
+            Operation::Magnitude(_) => {
                 panic!("complex operation on real vector indicates a bug");
             }
-            &Operation::MagnitudeSquared(_) => {
+            Operation::MagnitudeSquared(_) => {
                 panic!("complex operation on real vector indicates a bug");
             }
-            &Operation::ComplexConj(_) => {
+            Operation::ComplexConj(_) => {
                 panic!("complex operation on real vector indicates a bug");
             }
-            &Operation::ToReal(_) => {
+            Operation::ToReal(_) => {
                 panic!("complex operation on real vector indicates a bug");
             }
-            &Operation::ToImag(_) => {
+            Operation::ToImag(_) => {
                 panic!("complex operation on real vector indicates a bug");
             }
-            &Operation::Phase(_) => {
+            Operation::Phase(_) => {
                 panic!("complex operation on real vector indicates a bug");
             }
-            &Operation::MultiplyComplexExponential(_, _, _) => {
+            Operation::MultiplyComplexExponential(_, _, _) => {
                 panic!("complex operation on real vector indicates a bug");
             }
-            &Operation::MapComplex(_, _) => {
+            Operation::MapComplex(_, _) => {
                 panic!("complex operation on real vector indicates a bug");
             }
             // General Ops
-            &Operation::AddPoints(idx) => {
+            Operation::AddPoints(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.add_real(T::from(points).unwrap());
             }
-            &Operation::SubPoints(idx) => {
+            Operation::SubPoints(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.add_real(-(T::from(points).unwrap()));
             }
-            &Operation::MulPoints(idx) => {
+            Operation::MulPoints(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.scale_real(T::from(points).unwrap());
             }
-            &Operation::DivPoints(idx) => {
+            Operation::DivPoints(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.scale_real(T::one() / T::from(points).unwrap());
             }
-            &Operation::AddVector(idx1, idx2) => {
+            Operation::AddVector(idx1, idx2) => {
                 let v2 = unsafe { *vectors.get_unchecked(idx2) };
                 let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
                 *v1 = v1.add(v2);
             }
-            &Operation::SubVector(idx1, idx2) => {
+            Operation::SubVector(idx1, idx2) => {
                 let v2 = unsafe { *vectors.get_unchecked(idx2) };
                 let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
                 *v1 = v1.sub(v2);
             }
-            &Operation::MulVector(idx1, idx2) => {
+            Operation::MulVector(idx1, idx2) => {
                 let v2 = unsafe { *vectors.get_unchecked(idx2) };
                 let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
                 *v1 = v1.mul(v2);
             }
-            &Operation::DivVector(idx1, idx2) => {
+            Operation::DivVector(idx1, idx2) => {
                 let v2 = unsafe { *vectors.get_unchecked(idx2) };
                 let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
                 *v1 = v1.div(v2);
             }
-            &Operation::Sqrt(idx) => {
+            Operation::Sqrt(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.sqrt();
             }
-            &Operation::Square(idx) => {
+            Operation::Square(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.mul(*v);
             }
-            &Operation::Root(idx, value) => {
+            Operation::Root(idx, value) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.powf(T::one() / value));
             }
-            &Operation::Powf(idx, value) => {
+            Operation::Powf(idx, value) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.powf(value));
             }
-            &Operation::Ln(idx) => {
+            Operation::Ln(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.ln());
             }
-            &Operation::Exp(idx) => {
+            Operation::Exp(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.exp());
             }
-            &Operation::Log(idx, value) => {
+            Operation::Log(idx, value) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.log(value));
             }
-            &Operation::Expf(idx, value) => {
+            Operation::Expf(idx, value) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| value.powf(x));
             }
-            &Operation::Sin(idx) => {
+            Operation::Sin(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.sin());
             }
-            &Operation::Cos(idx) => {
+            Operation::Cos(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.cos());
             }
-            &Operation::Tan(idx) => {
+            Operation::Tan(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.tan());
             }
-            &Operation::ASin(idx) => {
+            Operation::ASin(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.asin());
             }
-            &Operation::ACos(idx) => {
+            Operation::ACos(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.acos());
             }
-            &Operation::ATan(idx) => {
+            Operation::ATan(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.atan());
             }
-            &Operation::Sinh(idx) => {
+            Operation::Sinh(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.sinh());
             }
-            &Operation::Cosh(idx) => {
+            Operation::Cosh(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.cosh());
             }
-            &Operation::Tanh(idx) => {
+            Operation::Tanh(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.tanh());
             }
-            &Operation::ASinh(idx) => {
+            Operation::ASinh(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.asinh());
             }
-            &Operation::ACosh(idx) => {
+            Operation::ACosh(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.acosh());
             }
-            &Operation::ATanh(idx) => {
+            Operation::ATanh(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = (*v).iter_over_vector(|x: T| x.atanh());
             }
-            &Operation::CloneFrom(idx1, idx2) => {
+            Operation::CloneFrom(idx1, idx2) => {
                 let v2 = unsafe { *vectors.get_unchecked(idx2) };
                 let v1 = unsafe { vectors.get_unchecked_mut(idx1) };
                 *v1 = v2;

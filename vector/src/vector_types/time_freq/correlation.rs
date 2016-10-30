@@ -41,7 +41,7 @@ use super::fft;
 /// This functionality has been recently added in order to find out if the definitions are
 /// consistent. However the actual implementation is lacking tests.
 /// # Failures
-/// TransRes may report the following `ErrorReason` members:
+/// `TransRes` may report the following `ErrorReason` members:
 ///
 /// 1. `VectorMustBeComplex`: if `self` is in real number space.
 /// 3. `VectorMetaDataMustAgree`: in case `self` and `function` are not

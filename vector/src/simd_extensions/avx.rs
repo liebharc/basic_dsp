@@ -26,8 +26,8 @@ impl Simd<f32> for f32x8 {
     #[inline]
     fn load_wrap_unchecked(array: &[f32], idx: usize) -> f32x8 {
         let mut temp = [0.0; 8];
-        for i in 0..temp.len() {
-            temp[i] = unsafe { *array.get_unchecked((idx + i) % array.len()) };
+        for (i, t) in temp.iter_mut().enumerate() {
+            *t = unsafe { *array.get_unchecked((idx + i) % array.len()) };
         }
         f32x8::load(&temp, 0)
     }
@@ -233,8 +233,8 @@ impl Simd<f64> for f64x4 {
     #[inline]
     fn load_wrap_unchecked(array: &[f64], idx: usize) -> f64x4 {
         let mut temp = [0.0; 4];
-        for i in 0..temp.len() {
-            temp[i] = unsafe { *array.get_unchecked((idx + i) % array.len()) };
+        for (i, t) in temp.iter_mut().enumerate() {
+            *t = unsafe { *array.get_unchecked((idx + i) % array.len()) };
         }
         f64x4::load(&temp, 0)
     }

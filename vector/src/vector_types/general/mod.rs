@@ -19,7 +19,7 @@ use std::ops::{Add, Sub};
 use num::Zero;
 
 /// Sums up the given values using a more precise
-/// summation algorithm: https://en.wikipedia.org/wiki/Kahan_summation_algorithm
+/// summation algorithm: `https://en.wikipedia.org/wiki/Kahan_summation_algorithm`
 fn kahan_sum<I, T>(values: I) -> T
     where I: Iterator<Item=T>,
         T: Add<Output=T> + Sub<Output=T> + Zero + Copy {
@@ -35,7 +35,7 @@ fn kahan_sum<I, T>(values: I) -> T
 }
 
 /// Sums up the given values using a more precise
-/// summation algorithm: https://en.wikipedia.org/wiki/Kahan_summation_algorithm
+/// summation algorithm: `https://en.wikipedia.org/wiki/Kahan_summation_algorithm`
 fn kahan_sumb<'a, I, T>(values: I) -> T
     where I: Iterator<Item=&'a T>,
         T: 'a + Add<Output=T> + Sub<Output=T> + Zero + Copy {
