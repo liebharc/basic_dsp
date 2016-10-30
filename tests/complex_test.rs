@@ -496,7 +496,7 @@ mod complex_test {
             assert_complex_in_tolerance(
                 Complex32::new(result.rms.re as f32, result.rms.im as f32), 
                 Complex32::new(rms.re as f32, rms.im as f32), 
-                1e-2);
+                0.3);
         });
     }
 
@@ -518,7 +518,7 @@ mod complex_test {
             assert_complex_in_tolerance(
                 Complex32::new(result.rms.re as f32, result.rms.im as f32), 
                 Complex32::new(rms.re as f32, rms.im as f32), 
-                1e-2);
+                0.3);
         });
     }
 
