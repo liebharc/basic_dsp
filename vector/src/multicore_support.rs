@@ -85,32 +85,29 @@ impl Chunk {
             cores = settings.core_limit;
         }
         
-        #[allow(if_same_then_else)] // The most likely cases are handled first
-        {
-            if cores == 1 {
-                cores
-            } else if complexity == Complexity::Small {
-                if array_length < 500000 {
-                    1
-                } else if cores >= 2 { 
-                    2 
-                } else { 
-                    1 
-                }
-            } else if complexity == Complexity::Medium {
-                if array_length < 10000 {
-                    1
-                } else if array_length < 50000 {
-                    if cores >= 2 { 2 } else { 1 }
-                } else {
-                    cores
-                }
-            } else if array_length < 30000 {
-                // complexity == Complexity::Large
+        if cores == 1 {
+            cores
+        } else if complexity == Complexity::Small {
+            if array_length < 500000 {
                 1
+            } else if cores >= 2 { 
+                2 
             } else { 
-                cores 
+                1 
             }
+        } else if complexity == Complexity::Medium {
+            if array_length < 10000 {
+                1
+            } else if array_length < 50000 {
+                if cores >= 2 { 2 } else { 1 }
+            } else {
+                cores
+            }
+        } else if array_length < 30000 {
+            // complexity == Complexity::Large
+            1
+        } else { 
+            cores 
         }
     }
 

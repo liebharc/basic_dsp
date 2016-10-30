@@ -501,7 +501,6 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         {
             let data_length = self.len();
             let mut array = self.data.to_slice_mut();
-             #[allow(needless_range_loop)]
             for i in 0..data_length / 2 {
                 let input = Complex::new(array[2 * i], array[2 * i + 1]);
                 array[i] = op(input, argument);
