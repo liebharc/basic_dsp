@@ -49,6 +49,7 @@ pub trait StatisticsOps<T>: Sized
     /// ```
     fn statistics(&self) -> T;
 
+
     /// Calculates the statistics of the data contained in the vector as if the vector would
     /// have been split into `len` pieces. `self.len` should be dividable by
     /// `len` without a remainder,
@@ -63,11 +64,14 @@ pub trait StatisticsOps<T>: Sized
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
-    /// let result = vector.statistics_splitted(2);
+    /// let result = vector.statistics_split(2);
     /// assert_eq!(result[0].sum, Complex32::new(6.0, 8.0));
     /// assert_eq!(result[1].sum, Complex32::new(3.0, 4.0));
     /// }
     /// ```
+    fn statistics_split(&self, len: usize) -> Vec<T>;
+
+    #[deprecated(since="0.4.1", note="Use `statistics_split` which is the same method but comes with correct spelling")]
     fn statistics_splitted(&self, len: usize) -> Vec<T>;
 }
 
@@ -348,7 +352,7 @@ impl<S, T, N, D> StatisticsOps<Statistics<T>> for DspVec<S, T, N, D>
         Statistics::merge(&chunks)
     }
 
-    fn statistics_splitted(&self, len: usize) -> Vec<Statistics<T>> {
+    fn statistics_split(&self, len: usize) -> Vec<Statistics<T>> {
         if len == 0 {
             return Vec::new();
         }
@@ -373,6 +377,10 @@ impl<S, T, N, D> StatisticsOps<Statistics<T>> for DspVec<S, T, N, D>
         });
 
         Statistics::merge_cols(&chunks)
+    }
+
+    fn statistics_splitted(&self, len: usize) -> Vec<Statistics<T>> {
+        self.statistics_split(len)
     }
 }
 
@@ -479,7 +487,7 @@ impl<S, T, N, D> StatisticsOps<Statistics<Complex<T>>> for DspVec<S, T, N, D>
         Statistics::merge(&chunks)
     }
 
-    fn statistics_splitted(&self, len: usize) -> Vec<Statistics<Complex<T>>> {
+    fn statistics_split(&self, len: usize) -> Vec<Statistics<Complex<T>>> {
         if len == 0 {
             return Vec::new();
         }
@@ -505,6 +513,10 @@ impl<S, T, N, D> StatisticsOps<Statistics<Complex<T>>> for DspVec<S, T, N, D>
         });
 
         Statistics::merge_cols(&chunks)
+    }
+
+    fn statistics_splitted(&self, len: usize) -> Vec<Statistics<Complex<T>>> {
+        self.statistics_split(len)
     }
 }
 
