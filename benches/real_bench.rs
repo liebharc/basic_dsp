@@ -316,11 +316,24 @@ mod real {
     }
 
     #[bench]
-    fn swap_halves_32s_benchmark(b: &mut Bencher) {
-        let mut vector = RealTime32Box::new(Size::Small);
+    fn swap_halves_32m_even_benchmark(b: &mut Bencher) {
+        let mut vector = Gen32Box::with_size(10000);
         b.iter(|| {
-            vector.execute(|mut v, b| {
-                v.swap_halves_b(b);
+            vector.execute(|mut v, _| {
+                v.swap_halves();
+                v
+            })
+        });
+    }
+
+
+
+    #[bench]
+    fn swap_halves_32m_odd_benchmark(b: &mut Bencher) {
+        let mut vector = Gen32Box::with_size(10000);
+        b.iter(|| {
+            vector.execute(|mut v, _| {
+                v.swap_halves();
                 v
             })
         });

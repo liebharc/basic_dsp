@@ -37,6 +37,7 @@ pub trait ReorganizeDataOps<T>
     fn swap_halves(&mut self);
 }
 
+#[deprecated(since="0.4.1", note="please use `ReorganizeDataOps` instead which offers the same performance without a buffer")]
 pub trait ReorganizeDataOpsBuffered<S, T>
     where T: RealNumber,
           S: ToSliceMut<T>
@@ -218,6 +219,17 @@ pub trait MergeOps {
     fn merge(&mut self, sources: &[&Self]) -> VoidResult;
 }
 
+fn reverse_array<T>(data: &mut [T])
+    where T: Copy {
+    let len = data.len();
+    // +1 makes sure that for odd numbers the first `lo` gets the extra item
+    // (which is later on ignored)
+    let (lo, up) = data.split_at_mut((len + 1) / 2);
+    for (lo, up) in lo.iter_mut().zip(up.iter_mut().rev()) {
+        mem::swap(lo, up);
+    }
+}
+
 impl<S, T, N, D> ReorganizeDataOps<T> for DspVec<S, T, N, D>
     where S: ToSliceMut<T> + Owner,
           T: RealNumber,
@@ -225,77 +237,33 @@ impl<S, T, N, D> ReorganizeDataOps<T> for DspVec<S, T, N, D>
           D: Domain
 {
     fn reverse(&mut self) {
+        let len = self.len();
         if self.is_complex() {
-            let len = self.points();
             let mut data = self.data.to_slice_mut();
-            let mut data = array_to_complex_mut(&mut data[..]);
-            for i in 0..len / 2 {
-                data.swap(i, len - 1 - i);
-            }
+            let mut data = array_to_complex_mut(&mut data[0..len]);
+            reverse_array(data);
         } else {
-            let len = self.len();
             let mut data = self.data.to_slice_mut();
-            for i in 0..len / 2 {
-                data.swap(i, len - 1 - i);
-            }
+            reverse_array(&mut data[0..len]);
         }
     }
 
     fn swap_halves(&mut self) {
-        if self.is_complex() {
-            let len = self.points();
-            if len == 0 {
-                return;
-            }
-            let mut data = self.data.to_slice_mut();
-            let mut data = array_to_complex_mut(&mut data[..]);
-            if len % 2 == 0 {
-                for i in 0..len / 2 {
-                    data.swap(i, len / 2 + i);
-                }
-            } else {
-                let mut temp = data[0];
-                let mut pos = len / 2;
-                for _ in 0..len {
-                    let pos_new = (pos + len / 2) % len;
-                    mem::swap(&mut data[pos], &mut temp);
-                    pos = pos_new;
-                }
-            }
-
-        } else {
-            let len = self.len();
-            if len == 0 {
-                return;
-            }
-            let mut data = self.data.to_slice_mut();
-            if len % 2 == 0 {
-                for i in 0..len / 2 {
-                    data.swap(i, len / 2 + i);
-                }
-            } else {
-                let mut temp = data[0];
-                let mut pos = len / 2;
-                for _ in 0..len {
-                    let pos_new = (pos + len / 2) % len;
-                    mem::swap(&mut data[pos], &mut temp);
-                    pos = pos_new;
-                }
-            }
-        }
+        self.swap_halves_priv(true);
     }
 }
 
+#[allow(deprecated)]
 impl<S, T, N, D> ReorganizeDataOpsBuffered<S, T> for DspVec<S, T, N, D>
     where S: ToSliceMut<T> + Owner,
           T: RealNumber,
           N: NumberSpace,
           D: Domain
 {
-    fn swap_halves_b<B>(&mut self, buffer: &mut B)
+    fn swap_halves_b<B>(&mut self, _: &mut B)
         where B: Buffer<S, T>
     {
-        self.swap_halves_priv(buffer, true);
+        self.swap_halves_priv(true);
     }
 }
 
@@ -670,40 +638,6 @@ mod tests {
         let expected = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                         10.0, 0.0, 0.0, 0.0, 0.0];
         assert_eq!(&v[..], &expected);
-    }
-
-    #[test]
-    fn swap_halves_b_real_even_test() {
-        let mut v = vec![1.0, 2.0, 3.0, 4.0].to_real_time_vec();
-        let mut buffer = SingleBuffer::new();
-        v.swap_halves_b(&mut buffer);
-        assert_eq!(&v[..], &[3.0, 4.0, 1.0, 2.0]);
-    }
-
-    #[test]
-    fn swap_halves_b_real_odd_test() {
-        let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0]
-            .to_real_time_vec();
-        let mut buffer = SingleBuffer::new();
-        v.swap_halves_b(&mut buffer);
-        assert_eq!(&v[..],
-                   &[7.0, 8.0, 9.0, 10.0, 11.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
-    }
-
-    #[test]
-    fn swap_halves_b_complex_even_test() {
-        let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0].to_complex_time_vec();
-        let mut buffer = SingleBuffer::new();
-        v.swap_halves_b(&mut buffer);
-        assert_eq!(&v[..], &[5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0]);
-    }
-
-    #[test]
-    fn swap_halves_b_complex_odd_test() {
-        let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0].to_complex_time_vec();
-        let mut buffer = SingleBuffer::new();
-        v.swap_halves_b(&mut buffer);
-        assert_eq!(&v[..], &[7.0, 8.0, 9.0, 10.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
     }
 
     #[test]

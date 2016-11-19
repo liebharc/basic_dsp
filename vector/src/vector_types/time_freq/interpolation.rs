@@ -402,7 +402,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
         // Vector is always complex from here on
 
         fft(self, buffer, false); // fft
-        self.swap_halves_priv(buffer, true); // fft shift
+        self.swap_halves_priv(true); // fft shift
         let points = self.len() / 2;
         let interpolation_factorf = T::from(interpolation_factor).unwrap();
         self.multiply_function_priv(function.is_symmetric(),
@@ -410,7 +410,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                                     |array| array_to_complex_mut(array),
                                     function,
                                     |f, x| Complex::<T>::new(f.calc(x), T::zero()));
-        self.swap_halves_priv(buffer, false); // ifft shift
+        self.swap_halves_priv(false); // ifft shift
         fft(self, buffer, true); // ifft
         self.scale(T::one() / T::from(points).unwrap());
         if !is_complex {

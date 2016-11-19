@@ -327,6 +327,29 @@ fn round_len(len: usize) -> usize {
     ((len + Reg32::len() - 1) / Reg32::len()) * Reg32::len()
 }
 
+fn swap_array_halves<T>(data: &mut [T], forward: bool)
+    where T: Copy
+{
+    let len = data.len();
+    if len % 2 == 0 {
+        let (lo, up) = data.split_at_mut(len / 2);
+        for (lo, up) in lo.iter_mut().zip(up.iter_mut()) {
+            mem::swap(lo, up);
+        }
+    } else {
+        let step =
+            if forward { len / 2 }
+            else { len / 2 + 1 };
+        let mut temp = data[0];
+        let mut pos = step;
+        for _ in 0..len {
+            let pos_new = (pos + step) % len;
+            unsafe { mem::swap(&mut temp, data.get_unchecked_mut(pos)) };
+            pos = pos_new;
+        }
+    }
+}
+
 impl<S, T, N, D> DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
@@ -569,42 +592,21 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     }
 
     #[inline]
-    fn swap_halves_priv<B>(&mut self, buffer: &mut B, forward: bool)
-        where B: Buffer<S, T>
+    fn swap_halves_priv(&mut self, forward: bool)
     {
-        use std::ptr;
-        let data_length = self.len();
-        let points = self.points();
-        let complex = self.is_complex();
-        let elems_per_point = if complex { 2 } else { 1 };
-        let mut temp = buffer.get(data_length);
-        {
-            let mut temp = temp.to_slice_mut();
-            let data = self.data.to_slice();
-            // First half
-            let len = if forward {
-                points / 2 * elems_per_point
-            } else {
-                data_length - points / 2 * elems_per_point
-            };
-            let start = data_length - len;
-            let src = &data[start] as *const T;
-            let dest = &mut temp[0] as *mut T;
-            unsafe {
-                ptr::copy(src, dest, len);
-            }
-
-            // Second half
-            let src = &data[0] as *const T;
-            let start = len;
-            let len = data_length - len;
-            let dest = &mut temp[start] as *mut T;
-            unsafe {
-                ptr::copy(src, dest, len);
-            }
+        let len = self.len();
+        if len == 0 {
+            return;
         }
-        mem::swap(&mut self.data, &mut temp);
-        buffer.free(temp);
+
+        if self.is_complex() {
+            let mut data = self.data.to_slice_mut();
+            let mut data = array_to_complex_mut(&mut data[0..len]);
+            swap_array_halves(data, forward);
+        } else {
+            let mut data = self.data.to_slice_mut();
+            swap_array_halves(&mut data[0..len], forward);
+        }
     }
 
     #[inline]
@@ -671,5 +673,31 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 });
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::swap_array_halves;
+
+    #[test]
+    fn swap_halves_even_test() {
+        let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+        swap_array_halves(&mut v, false);
+        assert_eq!(&v[..], &[5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0]);
+    }
+
+    #[test]
+    fn swap_halves_odd_foward_test() {
+        let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
+        swap_array_halves(&mut v, true);
+        assert_eq!(&v[..], &[6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0]);
+    }
+
+    #[test]
+    fn swap_halves_odd_inverse_test() {
+        let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
+        swap_array_halves(&mut v, false);
+        assert_eq!(&v[..], &[5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0]);
     }
 }

@@ -411,7 +411,7 @@ pub extern "C" fn unwrap32(vector: Box<VecBuf>, value: f32) -> VectorInteropResu
 
 #[no_mangle]
 pub extern "C" fn swap_halves32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
-    vector.convert_vec(|v, b| Ok(v.swap_halves_b(b)))
+    vector.convert_vec(|v, _| Ok(v.swap_halves()))
 }
 
 #[no_mangle]

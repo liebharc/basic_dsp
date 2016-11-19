@@ -89,15 +89,15 @@ impl<S, T, N, D> FrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
         buffer.free(temp);
     }
 
-    fn fft_shift<B>(&mut self, buffer: &mut B)
+    fn fft_shift<B>(&mut self, _: &mut B)
         where B: Buffer<S, T>
     {
-        self.swap_halves_priv(buffer, true)
+        self.swap_halves_priv(true)
     }
 
-    fn ifft_shift<B>(&mut self, buffer: &mut B)
+    fn ifft_shift<B>(&mut self, _: &mut B)
         where B: Buffer<S, T>
     {
-        self.swap_halves_priv(buffer, false)
+        self.swap_halves_priv(false)
     }
 }

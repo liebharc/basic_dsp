@@ -4,7 +4,7 @@ use super::super::{DspVec, Buffer, ComplexOps, ScaleOps, FrequencyDomainOperatio
                    TimeToFrequencyDomainOperations, RededicateForceOps, ToSliceMut, Owner,
                    PaddingOption, VoidResult, Vector, FromVector, MetaData, ComplexNumberSpace,
                    TimeDomain, ElementaryOps, ToFreqResult, InsertZerosOpsBuffered, DataDomain,
-                   ErrorReason, ReorganizeDataOpsBuffered};
+                   ErrorReason, ReorganizeDataOps};
 use std::mem;
 use super::fft;
 
@@ -77,7 +77,7 @@ impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
 	where DspVec<S, T, N, D>: ToFreqResult
         + TimeToFrequencyDomainOperations<S, T>
         + ScaleOps<Complex<T>>
-		+ ReorganizeDataOpsBuffered<S, T> + Clone,
+		+ ReorganizeDataOps<T> + Clone,
 	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>>
         + FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T>
         + ElementaryOps<<DspVec<S, T, N, D> as ToFreqResult>::FreqResult>
@@ -109,7 +109,7 @@ impl<S, T, N, D> CrossCorrelationOps<S, T, <DspVec<S, T, N, D> as ToFreqResult>:
 	where DspVec<S, T, N, D>: ToFreqResult
         + TimeToFrequencyDomainOperations<S, T>
         + ScaleOps<Complex<T>>
-		+ ReorganizeDataOpsBuffered<S, T> + Clone,
+		+ ReorganizeDataOps<T> + Clone,
 	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>>
         + FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T>
         + ElementaryOps<<DspVec<S, T, N, D> as ToFreqResult>::FreqResult>
@@ -149,7 +149,7 @@ impl<S, T, N, D> CrossCorrelationOps<S, T, <DspVec<S, T, N, D> as ToFreqResult>:
 		let p = self.points();
 		self.scale(Complex::<T>::new(T::one() / T::from(p).unwrap(), T::zero()));
 		fft(self, buffer, true);
-		self.swap_halves_b(buffer);
+		self.swap_halves();
 		Ok(())
 	}
 }

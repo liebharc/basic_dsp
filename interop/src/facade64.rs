@@ -412,7 +412,7 @@ pub extern "C" fn unwrap64(vector: Box<VecBuf>, value: f64) -> VectorInteropResu
 
 #[no_mangle]
 pub extern "C" fn swap_halves64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
-    vector.convert_vec(|v, b| Ok(v.swap_halves_b(b)))
+    vector.convert_vec(|v, _| Ok(v.swap_halves()))
 }
 
 #[no_mangle]

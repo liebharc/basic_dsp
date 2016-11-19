@@ -2,14 +2,19 @@
 Changes:
 
 ## Version 0.4.1
+Minor additions and improvements.
 
 - Added a method to convolve a matrix with a matrix of impulse responses.
+<<<<<<< HEAD
 - Added traits with more precise versions of sum, statistics and dot products.
+=======
+- Performance improvement for `swap_halves` and `swap_halves_b`, `swap_halves_b` at the same time has been marked as deprecated since it offers no advantage to `swap_halves`
+>>>>>>> Performance improvement for swap_halves
 
 ## Version 0.4.0 (Breaking changes)
 Added support for matrix operations. In order to allow matrices and vectors to implement the same traits the existing traits had to be renamed and restructured.
 
-- Breaking change: Reorganized existing interfaces so that they can be reused for the matrix types. For that traits have been renamed and sometimes traits have been splitted in several smaller traits.
+- Breaking change: Reorganized existing interfaces so that they can be reused for the matrix types. For that traits have been renamed and sometimes traits have been split in several smaller traits.
 - Breaking change: Interop facade is now only compiled with `--features interop`
 - Breaking change: Removed `complex_data`, `data` and `override_data` (which also had a spelling mistake) in favor for implementations of several Indexer traits.
 - Crate now compiles with Rust stable
