@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-2653' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/prepared_ops.rs.html#47-54' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-2731' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/prepared_ops.rs.html#47-54' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait PreparedOperation2Exec&lt;B, S1, S2, D1, D2&gt; {
     fn <a href='#tymethod.exec' class='fnname'>exec</a>(&amp;self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buffer: &amp;mut B,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; source1: S1,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; source2: S2)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a>D1, D2<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='enum' href='../../basic_dsp_vector/enum.ErrorReason.html' title='basic_dsp_vector::ErrorReason'>ErrorReason</a>, D1, D2<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>&gt;;
 }</pre><div class='docblock'><p>Executes the prepared operations to convert <code>S1</code> and <code>S2</code> to <code>D1</code> and <code>D2</code>.</p>

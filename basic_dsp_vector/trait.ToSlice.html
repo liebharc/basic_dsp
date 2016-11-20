@@ -47,10 +47,11 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-22' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/requirements.rs.html#7-22' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-22' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/requirements.rs.html#7-25' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait ToSlice&lt;T&gt; {
     fn <a href='#tymethod.to_slice' class='fnname'>to_slice</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a>T<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>;
     fn <a href='#tymethod.len' class='fnname'>len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>;
+    fn <a href='#tymethod.is_empty' class='fnname'>is_empty</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
     fn <a href='#tymethod.alloc_len' class='fnname'>alloc_len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>;
     fn <a href='#tymethod.try_resize' class='fnname'>try_resize</a>(&amp;mut self, len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='type' href='../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a>;
 }</pre><div class='docblock'><p>A trait to convert a type into a slice.</p>
@@ -59,6 +60,7 @@
             <div class='methods'>
         <h3 id='tymethod.to_slice' class='method stab '><span id='to_slice.v' class='invisible'><code>fn <a href='#tymethod.to_slice' class='fnname'>to_slice</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a>T<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a></code></span></h3><div class='docblock'><p>Convert to a slice.</p>
 </div><h3 id='tymethod.len' class='method stab '><span id='len.v' class='invisible'><code>fn <a href='#tymethod.len' class='fnname'>len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></span></h3><div class='docblock'><p>Length of a slice.</p>
+</div><h3 id='tymethod.is_empty' class='method stab '><span id='is_empty.v' class='invisible'><code>fn <a href='#tymethod.is_empty' class='fnname'>is_empty</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></span></h3><div class='docblock'><p>Indicates whether or not this storage type is empty.</p>
 </div><h3 id='tymethod.alloc_len' class='method stab '><span id='alloc_len.v' class='invisible'><code>fn <a href='#tymethod.alloc_len' class='fnname'>alloc_len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></span></h3><div class='docblock'><p>Gets the allocated length of a storage.
 It&#39;s expected that <code>self.alloc_len() &gt;= self.len()</code>
 in all cases.</p>

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-1ecc6299db9ec823\libc-0.2.15\src\windows.rs`.">
+    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-1ecc6299db9ec823\libc-0.2.17\src\windows.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>windows.rs.html -- source</title>
@@ -235,6 +235,47 @@
 <span id="191">191</span>
 <span id="192">192</span>
 <span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Windows CRT definitions</span>
 
@@ -342,6 +383,47 @@
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LC_MONETARY</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>3</span>;
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LC_NUMERIC</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>4</span>;
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>LC_TIME</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>5</span>;
+
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EPERM</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>1</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ENOENT</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>2</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ESRCH</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>3</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EINTR</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>4</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EIO</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>5</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ENXIO</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>6</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>E2BIG</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>7</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ENOEXEC</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>8</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EBADF</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>9</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ECHILD</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>10</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EAGAIN</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>11</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ENOMEM</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>12</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EACCES</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>13</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EFAULT</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>14</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EBUSY</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>16</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EEXIST</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>17</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EXDEV</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>18</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ENODEV</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>19</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ENOTDIR</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>20</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EISDIR</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>21</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EINVAL</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>22</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ENFILE</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>23</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EMFILE</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>24</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ENOTTY</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>25</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EFBIG</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>27</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ENOSPC</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>28</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ESPIPE</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>29</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EROFS</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>30</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EMLINK</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>31</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EPIPE</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>32</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EDOM</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>33</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ERANGE</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>34</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EDEADLK</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>36</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EDEADLOCK</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>36</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ENAMETOOLONG</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>38</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ENOLCK</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>39</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ENOSYS</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>40</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>ENOTEMPTY</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>41</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>EILSEQ</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>42</span>;
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>STRUNCATE</span>: ::<span class='ident'>c_int</span> <span class='op'>=</span> <span class='number'>80</span>;
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>target_env</span> <span class='op'>=</span> <span class='string'>&quot;msvc&quot;</span>)]</span> <span class='comment'>// &quot; if &quot; -- appease style checker</span>
 <span class='attribute'>#[<span class='ident'>link</span>(<span class='ident'>name</span> <span class='op'>=</span> <span class='string'>&quot;msvcrt&quot;</span>)]</span>

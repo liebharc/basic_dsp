@@ -662,6 +662,11 @@
 <span id="618">618</span>
 <span id="619">619</span>
 <span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>RealNumber</span>;
 <span class='kw'>use</span> <span class='kw'>super</span>::<span class='kw'>super</span>::<span class='ident'>ErrorReason</span>;
@@ -759,108 +764,113 @@
                                            <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>bool</span>, <span class='ident'>ErrorReason</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>
 {
-    <span class='kw'>match</span> <span class='ident'>operation</span> {
+    <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>operation</span> {
         <span class='comment'>// Real Ops</span>
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>AddReal</span>(_, _) <span class='op'>=&gt;</span> <span class='ident'>require_real</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MultiplyReal</span>(_, _) <span class='op'>=&gt;</span> <span class='ident'>require_real</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Abs</span>(_) <span class='op'>=&gt;</span> <span class='ident'>require_real</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ToComplex</span>(_) <span class='op'>=&gt;</span> <span class='ident'>real_to_complex</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MapReal</span>(_, _) <span class='op'>=&gt;</span> <span class='ident'>require_real</span>(<span class='ident'>is_complex</span>),
+        <span class='ident'>Operation</span>::<span class='ident'>AddReal</span>(_, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>MultiplyReal</span>(_, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Abs</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>MapReal</span>(_, _)
+            <span class='op'>=&gt;</span> <span class='ident'>require_real</span>(<span class='ident'>is_complex</span>),
+        <span class='ident'>Operation</span>::<span class='ident'>ToComplex</span>(_) <span class='op'>=&gt;</span> <span class='ident'>real_to_complex</span>(<span class='ident'>is_complex</span>),
         <span class='comment'>// Complex Ops</span>
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>AddComplex</span>(_, _) <span class='op'>=&gt;</span> <span class='ident'>require_complex</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MultiplyComplex</span>(_, _) <span class='op'>=&gt;</span> <span class='ident'>require_complex</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Magnitude</span>(_) <span class='op'>=&gt;</span> <span class='ident'>complex_to_real</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MagnitudeSquared</span>(_) <span class='op'>=&gt;</span> <span class='ident'>complex_to_real</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ComplexConj</span>(_) <span class='op'>=&gt;</span> <span class='ident'>require_complex</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ToReal</span>(_) <span class='op'>=&gt;</span> <span class='ident'>complex_to_real</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ToImag</span>(_) <span class='op'>=&gt;</span> <span class='ident'>complex_to_real</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Phase</span>(_) <span class='op'>=&gt;</span> <span class='ident'>complex_to_real</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MultiplyComplexExponential</span>(_, _, _) <span class='op'>=&gt;</span> <span class='ident'>require_complex</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MapComplex</span>(_, _) <span class='op'>=&gt;</span> <span class='ident'>require_complex</span>(<span class='ident'>is_complex</span>),
+        <span class='ident'>Operation</span>::<span class='ident'>AddComplex</span>(_, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>MultiplyComplex</span>(_, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ComplexConj</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>MultiplyComplexExponential</span>(_, _, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>MapComplex</span>(_, _)
+            <span class='op'>=&gt;</span> <span class='ident'>require_complex</span>(<span class='ident'>is_complex</span>),
+        <span class='ident'>Operation</span>::<span class='ident'>Magnitude</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>MagnitudeSquared</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ToReal</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ToImag</span>(_) <span class='op'>|</span> 
+        <span class='ident'>Operation</span>::<span class='ident'>Phase</span>(_)
+            <span class='op'>=&gt;</span> <span class='ident'>complex_to_real</span>(<span class='ident'>is_complex</span>),
         <span class='comment'>// General Ops</span>
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>AddPoints</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>SubPoints</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MulPoints</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>DivPoints</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>AddVector</span>(_, _) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>SubVector</span>(_, _) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MulVector</span>(_, _) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>DivVector</span>(_, _) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Sqrt</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Square</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Root</span>(_, _) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Powf</span>(_, _) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Ln</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Exp</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Log</span>(_, _) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Expf</span>(_, _) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Sin</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Cos</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Tan</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ASin</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ACos</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ATan</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Sinh</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Cosh</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Tanh</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ASinh</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ACosh</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ATanh</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>CloneFrom</span>(_, _) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>),
+        <span class='ident'>Operation</span>::<span class='ident'>AddPoints</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>SubPoints</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>MulPoints</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>DivPoints</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>AddVector</span>(_, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>SubVector</span>(_, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>MulVector</span>(_, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>DivVector</span>(_, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Sqrt</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Square</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Root</span>(_, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Powf</span>(_, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Ln</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Exp</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Log</span>(_, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Expf</span>(_, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Sin</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Cos</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Tan</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ASin</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ACos</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ATan</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Sinh</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Cosh</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Tanh</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ASinh</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ACosh</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ATanh</span>(_) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>CloneFrom</span>(_, _)
+            <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>is_complex</span>)
     }
 }
 
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_argument</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>operation</span>: <span class='kw-2'>&amp;</span><span class='ident'>Operation</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>
 {
-    <span class='kw'>match</span> <span class='ident'>operation</span> {
+    <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>operation</span> {
         <span class='comment'>// Real Ops</span>
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>AddReal</span>(<span class='ident'>arg</span>, _) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MultiplyReal</span>(<span class='ident'>arg</span>, _) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Abs</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ToComplex</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MapReal</span>(<span class='ident'>arg</span>, _) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
+        <span class='ident'>Operation</span>::<span class='ident'>AddReal</span>(<span class='ident'>arg</span>, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>MultiplyReal</span>(<span class='ident'>arg</span>, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Abs</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ToComplex</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>MapReal</span>(<span class='ident'>arg</span>, _) <span class='op'>|</span>
         <span class='comment'>// Complex Ops</span>
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>AddComplex</span>(<span class='ident'>arg</span>, _) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MultiplyComplex</span>(<span class='ident'>arg</span>, _) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Magnitude</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MagnitudeSquared</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ComplexConj</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ToReal</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ToImag</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Phase</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MultiplyComplexExponential</span>(<span class='ident'>arg</span>, _, _) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MapComplex</span>(<span class='ident'>arg</span>, _) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
+        <span class='ident'>Operation</span>::<span class='ident'>AddComplex</span>(<span class='ident'>arg</span>, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>MultiplyComplex</span>(<span class='ident'>arg</span>, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Magnitude</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>MagnitudeSquared</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ComplexConj</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ToReal</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ToImag</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Phase</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>MultiplyComplexExponential</span>(<span class='ident'>arg</span>, _, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>MapComplex</span>(<span class='ident'>arg</span>, _) <span class='op'>|</span>
         <span class='comment'>// General Ops</span>
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>AddPoints</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>SubPoints</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MulPoints</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>DivPoints</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>AddVector</span>(<span class='ident'>arg</span>, _) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>SubVector</span>(<span class='ident'>arg</span>, _) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MulVector</span>(<span class='ident'>arg</span>, _) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>DivVector</span>(<span class='ident'>arg</span>, _) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Sqrt</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Square</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Root</span>(<span class='ident'>arg</span>, _) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Powf</span>(<span class='ident'>arg</span>, _) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Ln</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Exp</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Log</span>(<span class='ident'>arg</span>, _) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Expf</span>(<span class='ident'>arg</span>, _) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Sin</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Cos</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Tan</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ASin</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ACos</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ATan</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Sinh</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Cosh</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Tanh</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ASinh</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ACosh</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ATanh</span>(<span class='ident'>arg</span>) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
-        <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>CloneFrom</span>(<span class='ident'>arg</span>, _) <span class='op'>=&gt;</span> <span class='ident'>arg</span>,
+        <span class='ident'>Operation</span>::<span class='ident'>AddPoints</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>SubPoints</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>MulPoints</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>DivPoints</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>AddVector</span>(<span class='ident'>arg</span>, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>SubVector</span>(<span class='ident'>arg</span>, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>MulVector</span>(<span class='ident'>arg</span>, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>DivVector</span>(<span class='ident'>arg</span>, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Sqrt</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Square</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Root</span>(<span class='ident'>arg</span>, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Powf</span>(<span class='ident'>arg</span>, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Ln</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Exp</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Log</span>(<span class='ident'>arg</span>, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Expf</span>(<span class='ident'>arg</span>, _) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Sin</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Cos</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Tan</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ASin</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ACos</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ATan</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Sinh</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Cosh</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>Tanh</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ASinh</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ACosh</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>ATanh</span>(<span class='ident'>arg</span>) <span class='op'>|</span>
+        <span class='ident'>Operation</span>::<span class='ident'>CloneFrom</span>(<span class='ident'>arg</span>, _)
+            <span class='op'>=&gt;</span> <span class='ident'>arg</span>
     }
 }
 
@@ -888,68 +898,68 @@
                                  <span class='ident'>operation</span>: <span class='kw-2'>&amp;</span><span class='ident'>Operation</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
                                  <span class='ident'>index</span>: <span class='ident'>usize</span>,
                                  <span class='ident'>points</span>: <span class='ident'>usize</span>) {
-        <span class='kw'>match</span> <span class='ident'>operation</span> {
+        <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>operation</span> {
             <span class='comment'>// Real Ops</span>
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>AddReal</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>AddReal</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>add_real</span>(<span class='ident'>value</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MultiplyReal</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>MultiplyReal</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>scale_real</span>(<span class='ident'>value</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Abs</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Abs</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>abs</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ToComplex</span>(_) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ToComplex</span>(_) <span class='op'>=&gt;</span> {
                 <span class='comment'>// Number space conversions should already been done</span>
                 <span class='comment'>// before the operations are executed, so there is nothing</span>
                 <span class='comment'>// to do anymore</span>
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MapReal</span>(_, _) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>MapReal</span>(_, _) <span class='op'>=&gt;</span> {
                 <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;real operation on complex vector indicates a bug&quot;</span>);
             }
             <span class='comment'>// Complex Ops</span>
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>AddComplex</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>AddComplex</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>add_complex</span>(<span class='ident'>value</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MultiplyComplex</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>MultiplyComplex</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>scale_complex</span>(<span class='ident'>value</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Magnitude</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Magnitude</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>complex_abs2</span>();
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MagnitudeSquared</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>MagnitudeSquared</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>complex_abs_squared2</span>();
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ComplexConj</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ComplexConj</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>arg</span> <span class='op'>=</span> <span class='ident'>T</span>::<span class='ident'>Reg</span>::<span class='ident'>from_complex</span>(<span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>T</span>::<span class='ident'>one</span>(), <span class='op'>-</span><span class='ident'>T</span>::<span class='ident'>one</span>()));
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>mul</span>(<span class='ident'>arg</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ToReal</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ToReal</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='comment'>// We don&#39;t have to reorganize the data and just need to zero the imag part</span>
                 <span class='kw'>let</span> <span class='ident'>arg</span> <span class='op'>=</span> <span class='ident'>T</span>::<span class='ident'>Reg</span>::<span class='ident'>from_complex</span>(<span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>T</span>::<span class='ident'>one</span>(), <span class='ident'>T</span>::<span class='ident'>zero</span>()));
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>mul</span>(<span class='ident'>arg</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ToImag</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ToImag</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>arg</span> <span class='op'>=</span> <span class='ident'>T</span>::<span class='ident'>Reg</span>::<span class='ident'>from_complex</span>(<span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>T</span>::<span class='ident'>zero</span>(), <span class='op'>-</span><span class='ident'>T</span>::<span class='ident'>one</span>()));
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='kw'>let</span> <span class='ident'>swapped</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>mul_complex</span>(<span class='ident'>arg</span>);
                 <span class='kw'>let</span> <span class='ident'>arg</span> <span class='op'>=</span> <span class='ident'>T</span>::<span class='ident'>Reg</span>::<span class='ident'>from_complex</span>(<span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>T</span>::<span class='ident'>one</span>(), <span class='ident'>T</span>::<span class='ident'>zero</span>()));
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>swapped</span>.<span class='ident'>mul</span>(<span class='ident'>arg</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Phase</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Phase</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>Complex</span>::<span class='ident'>new</span>(<span class='ident'>x</span>.<span class='ident'>arg</span>(), <span class='ident'>T</span>::<span class='ident'>zero</span>()));
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MultiplyComplexExponential</span>(<span class='ident'>idx</span>, <span class='ident'>a</span>, <span class='ident'>b</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>MultiplyComplexExponential</span>(<span class='ident'>idx</span>, <span class='ident'>a</span>, <span class='ident'>b</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>exponential</span> <span class='op'>=</span> <span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>::<span class='ident'>from_polar</span>(<span class='kw-2'>&amp;</span><span class='ident'>T</span>::<span class='ident'>one</span>(), <span class='kw-2'>&amp;</span><span class='ident'>b</span>) <span class='op'>*</span>
                                       <span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>::<span class='ident'>from_polar</span>(<span class='kw-2'>&amp;</span><span class='ident'>T</span>::<span class='ident'>one</span>(),
@@ -961,7 +971,7 @@
                     <span class='ident'>res</span>
                 });
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MapComplex</span>(<span class='ident'>idx</span>, <span class='kw-2'>ref</span> <span class='ident'>op</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>MapComplex</span>(<span class='ident'>idx</span>, <span class='kw-2'>ref</span> <span class='ident'>op</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='ident'>index</span>;
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> {
@@ -971,124 +981,124 @@
                 });
             }
             <span class='comment'>// General Ops</span>
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>AddPoints</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>AddPoints</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>add_complex</span>(<span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>T</span>::<span class='ident'>from</span>(<span class='ident'>points</span>).<span class='ident'>unwrap</span>(), <span class='ident'>T</span>::<span class='ident'>zero</span>()));
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>SubPoints</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>SubPoints</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>add_complex</span>(<span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='op'>-</span>(<span class='ident'>T</span>::<span class='ident'>from</span>(<span class='ident'>points</span>).<span class='ident'>unwrap</span>()), <span class='ident'>T</span>::<span class='ident'>zero</span>()));
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MulPoints</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>MulPoints</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>scale_complex</span>(<span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>T</span>::<span class='ident'>from</span>(<span class='ident'>points</span>).<span class='ident'>unwrap</span>(), <span class='ident'>T</span>::<span class='ident'>zero</span>()));
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>DivPoints</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>DivPoints</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>scale_complex</span>(<span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>T</span>::<span class='ident'>one</span>() <span class='op'>/</span> (<span class='ident'>T</span>::<span class='ident'>from</span>(<span class='ident'>points</span>).<span class='ident'>unwrap</span>()),
                                                        <span class='ident'>T</span>::<span class='ident'>zero</span>()));
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>AddVector</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>AddVector</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v2</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='op'>*</span><span class='ident'>vectors</span>.<span class='ident'>get_unchecked</span>(<span class='ident'>idx2</span>) };
                 <span class='kw'>let</span> <span class='ident'>v1</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx1</span>) };
                 <span class='op'>*</span><span class='ident'>v1</span> <span class='op'>=</span> <span class='ident'>v1</span>.<span class='ident'>add</span>(<span class='ident'>v2</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>SubVector</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>SubVector</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v2</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='op'>*</span><span class='ident'>vectors</span>.<span class='ident'>get_unchecked</span>(<span class='ident'>idx2</span>) };
                 <span class='kw'>let</span> <span class='ident'>v1</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx1</span>) };
                 <span class='op'>*</span><span class='ident'>v1</span> <span class='op'>=</span> <span class='ident'>v1</span>.<span class='ident'>sub</span>(<span class='ident'>v2</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MulVector</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>MulVector</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v2</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='op'>*</span><span class='ident'>vectors</span>.<span class='ident'>get_unchecked</span>(<span class='ident'>idx2</span>) };
                 <span class='kw'>let</span> <span class='ident'>v1</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx1</span>) };
                 <span class='op'>*</span><span class='ident'>v1</span> <span class='op'>=</span> <span class='ident'>v1</span>.<span class='ident'>mul_complex</span>(<span class='ident'>v2</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>DivVector</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>DivVector</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v2</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='op'>*</span><span class='ident'>vectors</span>.<span class='ident'>get_unchecked</span>(<span class='ident'>idx2</span>) };
                 <span class='kw'>let</span> <span class='ident'>v1</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx1</span>) };
                 <span class='op'>*</span><span class='ident'>v1</span> <span class='op'>=</span> <span class='ident'>v1</span>.<span class='ident'>div_complex</span>(<span class='ident'>v2</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Sqrt</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Sqrt</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>sqrt</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Square</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Square</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>mul_complex</span>(<span class='op'>*</span><span class='ident'>v</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Root</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Root</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>powf</span>(<span class='ident'>T</span>::<span class='ident'>one</span>() <span class='op'>/</span> <span class='ident'>value</span>));
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Powf</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Powf</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>powf</span>(<span class='ident'>value</span>));
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Ln</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Ln</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>ln</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Exp</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Exp</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>exp</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Log</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Log</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>log</span>(<span class='ident'>value</span>));
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Expf</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Expf</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>expf</span>(<span class='ident'>value</span>));
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Sin</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Sin</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>sin</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Cos</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Cos</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>cos</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Tan</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Tan</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>tan</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ASin</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ASin</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>asin</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ACos</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ACos</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>acos</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ATan</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ATan</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>atan</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Sinh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Sinh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>sinh</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Cosh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Cosh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>cosh</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Tanh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Tanh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>tanh</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ASinh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ASinh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>asinh</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ACosh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ACosh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>acosh</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ATanh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ATanh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_complex_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>atanh</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>CloneFrom</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>CloneFrom</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v2</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='op'>*</span><span class='ident'>vectors</span>.<span class='ident'>get_unchecked</span>(<span class='ident'>idx2</span>) };
                 <span class='kw'>let</span> <span class='ident'>v1</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx1</span>) };
                 <span class='op'>*</span><span class='ident'>v1</span> <span class='op'>=</span> <span class='ident'>v2</span>;
@@ -1101,24 +1111,24 @@
                               <span class='ident'>operation</span>: <span class='kw-2'>&amp;</span><span class='ident'>Operation</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
                               <span class='ident'>index</span>: <span class='ident'>usize</span>,
                               <span class='ident'>points</span>: <span class='ident'>usize</span>) {
-        <span class='kw'>match</span> <span class='ident'>operation</span> {
+        <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>operation</span> {
             <span class='comment'>// Real Ops</span>
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>AddReal</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>AddReal</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>add_real</span>(<span class='ident'>value</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MultiplyReal</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>MultiplyReal</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>scale_real</span>(<span class='ident'>value</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Abs</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Abs</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>abs</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ToComplex</span>(_) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ToComplex</span>(_) <span class='op'>=&gt;</span> {
                 <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;number space conversions should have already been completed&quot;</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MapReal</span>(<span class='ident'>idx</span>, <span class='kw-2'>ref</span> <span class='ident'>op</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>MapReal</span>(<span class='ident'>idx</span>, <span class='kw-2'>ref</span> <span class='ident'>op</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='ident'>index</span>;
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> {
@@ -1128,154 +1138,154 @@
                 });
             }
             <span class='comment'>// Complex Ops</span>
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>AddComplex</span>(_, _) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>AddComplex</span>(_, _) <span class='op'>=&gt;</span> {
                 <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;complex operation on real vector indicates a bug&quot;</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MultiplyComplex</span>(_, _) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>MultiplyComplex</span>(_, _) <span class='op'>=&gt;</span> {
                 <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;complex operation on real vector indicates a bug&quot;</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Magnitude</span>(_) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Magnitude</span>(_) <span class='op'>=&gt;</span> {
                 <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;complex operation on real vector indicates a bug&quot;</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MagnitudeSquared</span>(_) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>MagnitudeSquared</span>(_) <span class='op'>=&gt;</span> {
                 <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;complex operation on real vector indicates a bug&quot;</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ComplexConj</span>(_) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ComplexConj</span>(_) <span class='op'>=&gt;</span> {
                 <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;complex operation on real vector indicates a bug&quot;</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ToReal</span>(_) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ToReal</span>(_) <span class='op'>=&gt;</span> {
                 <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;complex operation on real vector indicates a bug&quot;</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ToImag</span>(_) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ToImag</span>(_) <span class='op'>=&gt;</span> {
                 <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;complex operation on real vector indicates a bug&quot;</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Phase</span>(_) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Phase</span>(_) <span class='op'>=&gt;</span> {
                 <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;complex operation on real vector indicates a bug&quot;</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MultiplyComplexExponential</span>(_, _, _) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>MultiplyComplexExponential</span>(_, _, _) <span class='op'>=&gt;</span> {
                 <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;complex operation on real vector indicates a bug&quot;</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MapComplex</span>(_, _) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>MapComplex</span>(_, _) <span class='op'>=&gt;</span> {
                 <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;complex operation on real vector indicates a bug&quot;</span>);
             }
             <span class='comment'>// General Ops</span>
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>AddPoints</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>AddPoints</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>add_real</span>(<span class='ident'>T</span>::<span class='ident'>from</span>(<span class='ident'>points</span>).<span class='ident'>unwrap</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>SubPoints</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>SubPoints</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>add_real</span>(<span class='op'>-</span>(<span class='ident'>T</span>::<span class='ident'>from</span>(<span class='ident'>points</span>).<span class='ident'>unwrap</span>()));
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MulPoints</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>MulPoints</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>scale_real</span>(<span class='ident'>T</span>::<span class='ident'>from</span>(<span class='ident'>points</span>).<span class='ident'>unwrap</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>DivPoints</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>DivPoints</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>scale_real</span>(<span class='ident'>T</span>::<span class='ident'>one</span>() <span class='op'>/</span> <span class='ident'>T</span>::<span class='ident'>from</span>(<span class='ident'>points</span>).<span class='ident'>unwrap</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>AddVector</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>AddVector</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v2</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='op'>*</span><span class='ident'>vectors</span>.<span class='ident'>get_unchecked</span>(<span class='ident'>idx2</span>) };
                 <span class='kw'>let</span> <span class='ident'>v1</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx1</span>) };
                 <span class='op'>*</span><span class='ident'>v1</span> <span class='op'>=</span> <span class='ident'>v1</span>.<span class='ident'>add</span>(<span class='ident'>v2</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>SubVector</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>SubVector</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v2</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='op'>*</span><span class='ident'>vectors</span>.<span class='ident'>get_unchecked</span>(<span class='ident'>idx2</span>) };
                 <span class='kw'>let</span> <span class='ident'>v1</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx1</span>) };
                 <span class='op'>*</span><span class='ident'>v1</span> <span class='op'>=</span> <span class='ident'>v1</span>.<span class='ident'>sub</span>(<span class='ident'>v2</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>MulVector</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>MulVector</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v2</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='op'>*</span><span class='ident'>vectors</span>.<span class='ident'>get_unchecked</span>(<span class='ident'>idx2</span>) };
                 <span class='kw'>let</span> <span class='ident'>v1</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx1</span>) };
                 <span class='op'>*</span><span class='ident'>v1</span> <span class='op'>=</span> <span class='ident'>v1</span>.<span class='ident'>mul</span>(<span class='ident'>v2</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>DivVector</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>DivVector</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v2</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='op'>*</span><span class='ident'>vectors</span>.<span class='ident'>get_unchecked</span>(<span class='ident'>idx2</span>) };
                 <span class='kw'>let</span> <span class='ident'>v1</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx1</span>) };
                 <span class='op'>*</span><span class='ident'>v1</span> <span class='op'>=</span> <span class='ident'>v1</span>.<span class='ident'>div</span>(<span class='ident'>v2</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Sqrt</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Sqrt</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>sqrt</span>();
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Square</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Square</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>mul</span>(<span class='op'>*</span><span class='ident'>v</span>);
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Root</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Root</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>powf</span>(<span class='ident'>T</span>::<span class='ident'>one</span>() <span class='op'>/</span> <span class='ident'>value</span>));
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Powf</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Powf</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>powf</span>(<span class='ident'>value</span>));
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Ln</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Ln</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>ln</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Exp</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Exp</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>exp</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Log</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Log</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>log</span>(<span class='ident'>value</span>));
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Expf</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Expf</span>(<span class='ident'>idx</span>, <span class='ident'>value</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>value</span>.<span class='ident'>powf</span>(<span class='ident'>x</span>));
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Sin</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Sin</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>sin</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Cos</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Cos</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>cos</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Tan</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Tan</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>tan</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ASin</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ASin</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>asin</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ACos</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ACos</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>acos</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ATan</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ATan</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>atan</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Sinh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Sinh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>sinh</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Cosh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Cosh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>cosh</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>Tanh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>Tanh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>tanh</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ASinh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ASinh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>asinh</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ACosh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ACosh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>acosh</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>ATanh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>ATanh</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx</span>) };
                 <span class='op'>*</span><span class='ident'>v</span> <span class='op'>=</span> (<span class='op'>*</span><span class='ident'>v</span>).<span class='ident'>iter_over_vector</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>T</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>atanh</span>());
             }
-            <span class='kw-2'>&amp;</span><span class='ident'>Operation</span>::<span class='ident'>CloneFrom</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
+            <span class='ident'>Operation</span>::<span class='ident'>CloneFrom</span>(<span class='ident'>idx1</span>, <span class='ident'>idx2</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='ident'>v2</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='op'>*</span><span class='ident'>vectors</span>.<span class='ident'>get_unchecked</span>(<span class='ident'>idx2</span>) };
                 <span class='kw'>let</span> <span class='ident'>v1</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>vectors</span>.<span class='ident'>get_unchecked_mut</span>(<span class='ident'>idx1</span>) };
                 <span class='op'>*</span><span class='ident'>v1</span> <span class='op'>=</span> <span class='ident'>v2</span>;

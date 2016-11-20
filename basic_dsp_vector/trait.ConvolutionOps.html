@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1478' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/time_freq/convolution.rs.html#32-48' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-1487' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/time_freq/convolution.rs.html#32-52' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait ConvolutionOps&lt;S, T, A&gt; <span class='where'>where S: <a class='trait' href='../basic_dsp_vector/trait.ToSliceMut.html' title='basic_dsp_vector::ToSliceMut'>ToSliceMut</a>&lt;T&gt;, T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span> {
     fn <a href='#tymethod.convolve_vector' class='fnname'>convolve_vector</a>&lt;B&gt;(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buffer: &amp;mut B,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; impulse_response: &amp;A)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='type' href='../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a> <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span>;
 }</pre><div class='docblock'><p>Provides a convolution operation for types which at some point are slice based.</p>
@@ -57,6 +57,9 @@
         <h3 id='tymethod.convolve_vector' class='method stab '><span id='convolve_vector.v' class='invisible'><code>fn <a href='#tymethod.convolve_vector' class='fnname'>convolve_vector</a>&lt;B&gt;(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buffer: &amp;mut B,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; impulse_response: &amp;A)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='type' href='../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a> <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></span></h3><div class='docblock'><p>Convolves <code>self</code> with the convolution function <code>impulse_response</code>.
 For performance it&#39;s recommended
 to use multiply both vectors in frequency domain instead of this operation.</p>
+
+<h1 id='upcoming-shanges' class='section-header'><a href='#upcoming-shanges'>Upcoming shanges</a></h1>
+<p>With version <code>0.5</code> this method might get renamed.</p>
 
 <h1 id='failures' class='section-header'><a href='#failures'>Failures</a></h1>
 <p>TransRes may report the following <code>ErrorReason</code> members:</p>

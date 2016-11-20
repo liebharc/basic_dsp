@@ -644,14 +644,6 @@
 <span id="600">600</span>
 <span id="601">601</span>
 <span id="602">602</span>
-<span id="603">603</span>
-<span id="604">604</span>
-<span id="605">605</span>
-<span id="606">606</span>
-<span id="607">607</span>
-<span id="608">608</span>
-<span id="609">609</span>
-<span id="610">610</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>num_cpus</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>::{<span class='ident'>Chunks</span>, <span class='ident'>ChunksMut</span>};
@@ -678,7 +670,7 @@
 
 <span class='doccomment'>/// Holds parameters which specify how multiple cores are used</span>
 <span class='doccomment'>/// to execute an operation.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>Copy</span>, <span class='ident'>Clone</span>)]</span>
 <span class='attribute'>#[<span class='ident'>repr</span>(<span class='ident'>C</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>MultiCoreSettings</span> {
     <span class='doccomment'>/// All operations will be limited to not create more threads than specified here</span>
@@ -703,19 +695,6 @@
             <span class='ident'>core_limit</span>: <span class='kw'>if</span> <span class='ident'>core_limit</span> <span class='op'>&gt;=</span> <span class='number'>1</span> { <span class='ident'>core_limit</span> } <span class='kw'>else</span> { <span class='number'>1</span> },
             <span class='ident'>early_temp_allocation</span>: <span class='ident'>early_temp_allocation</span>,
         }
-    }
-}
-
-<span class='kw'>impl</span> <span class='ident'>Clone</span> <span class='kw'>for</span> <span class='ident'>MultiCoreSettings</span> {
-    <span class='kw'>fn</span> <span class='ident'>clone</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
-        <span class='ident'>MultiCoreSettings</span> {
-            <span class='ident'>core_limit</span>: <span class='self'>self</span>.<span class='ident'>core_limit</span>,
-            <span class='ident'>early_temp_allocation</span>: <span class='self'>self</span>.<span class='ident'>early_temp_allocation</span>,
-        }
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>clone_from</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>source</span>: <span class='kw-2'>&amp;</span><span class='self'>Self</span>) {
-        <span class='self'>self</span>.<span class='ident'>core_limit</span> <span class='op'>=</span> <span class='ident'>source</span>.<span class='ident'>core_limit</span>;
     }
 }
 
@@ -752,13 +731,16 @@
         <span class='kw'>if</span> <span class='ident'>cores</span> <span class='op'>&gt;</span> <span class='ident'>settings</span>.<span class='ident'>core_limit</span> {
             <span class='ident'>cores</span> <span class='op'>=</span> <span class='ident'>settings</span>.<span class='ident'>core_limit</span>;
         }
+        
         <span class='kw'>if</span> <span class='ident'>cores</span> <span class='op'>==</span> <span class='number'>1</span> {
             <span class='ident'>cores</span>
         } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>complexity</span> <span class='op'>==</span> <span class='ident'>Complexity</span>::<span class='ident'>Small</span> {
             <span class='kw'>if</span> <span class='ident'>array_length</span> <span class='op'>&lt;</span> <span class='number'>500000</span> {
                 <span class='number'>1</span>
-            } <span class='kw'>else</span> {
-                <span class='kw'>if</span> <span class='ident'>cores</span> <span class='op'>&gt;=</span> <span class='number'>2</span> { <span class='number'>2</span> } <span class='kw'>else</span> { <span class='number'>1</span> }
+            } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>cores</span> <span class='op'>&gt;=</span> <span class='number'>2</span> { 
+                <span class='number'>2</span> 
+            } <span class='kw'>else</span> { 
+                <span class='number'>1</span> 
             }
         } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>complexity</span> <span class='op'>==</span> <span class='ident'>Complexity</span>::<span class='ident'>Medium</span> {
             <span class='kw'>if</span> <span class='ident'>array_length</span> <span class='op'>&lt;</span> <span class='number'>10000</span> {
@@ -768,9 +750,11 @@
             } <span class='kw'>else</span> {
                 <span class='ident'>cores</span>
             }
-        } <span class='kw'>else</span> {
+        } <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>array_length</span> <span class='op'>&lt;</span> <span class='number'>30000</span> {
             <span class='comment'>// complexity == Complexity::Large</span>
-            <span class='kw'>if</span> <span class='ident'>array_length</span> <span class='op'>&lt;</span> <span class='number'>30000</span> { <span class='number'>1</span> } <span class='kw'>else</span> { <span class='ident'>cores</span> }
+            <span class='number'>1</span>
+        } <span class='kw'>else</span> { 
+            <span class='ident'>cores</span> 
         }
     }
 

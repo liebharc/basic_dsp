@@ -213,8 +213,6 @@
 <span id="169">169</span>
 <span id="170">170</span>
 <span id="171">171</span>
-<span id="172">172</span>
-<span id="173">173</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! This mod contains a definition for window functions and provides implementations for a</span>
 <span class='doccomment'>//! few standard windows. See the `WindowFunction` type for more information.</span>
@@ -222,7 +220,7 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>os</span>::<span class='ident'>raw</span>::<span class='ident'>c_void</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 
-<span class='doccomment'>/// A window function for FFT windows. See https://en.wikipedia.org/wiki/Window_function</span>
+<span class='doccomment'>/// A window function for FFT windows. See `https://en.wikipedia.org/wiki/Window_function`</span>
 <span class='doccomment'>/// for details. Window functions should document if they aren&#39;t applicable for</span>
 <span class='doccomment'>/// Inverse Fourier Transformations.</span>
 <span class='doccomment'>///</span>
@@ -242,7 +240,7 @@
     <span class='kw'>fn</span> <span class='ident'>window</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>n</span>: <span class='ident'>usize</span>, <span class='ident'>length</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span>;
 }
 
-<span class='doccomment'>/// A triangular window: https://en.wikipedia.org/wiki/Window_function#Triangular_window</span>
+<span class='doccomment'>/// A triangular window: `https://en.wikipedia.org/wiki/Window_function#Triangular_window`</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>TriangularWindow</span>;
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>WindowFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>TriangularWindow</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>
@@ -260,7 +258,7 @@
     }
 }
 
-<span class='doccomment'>/// A generalized Hamming window: https://en.wikipedia.org/wiki/Window_function#Hamming_window</span>
+<span class='doccomment'>/// A generalized Hamming window: `https://en.wikipedia.org/wiki/Window_function#Hamming_window`</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>HammingWindow</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>
 {
@@ -326,16 +324,14 @@
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>
 {
     <span class='doccomment'>/// Creates a new window function</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>window</span>: <span class='kw'>extern</span> <span class='string'>&quot;C&quot;</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span>,
+    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>window</span>: <span class='kw'>extern</span> <span class='string'>&quot;C&quot;</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>usize</span>, <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span>,
                <span class='ident'>window_data</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>,
                <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>)
                <span class='op'>-&gt;</span> <span class='self'>Self</span> {
-        <span class='kw'>unsafe</span> {
-            <span class='ident'>ForeignWindowFunction</span> {
-                <span class='ident'>window_function</span>: <span class='ident'>window</span>,
-                <span class='ident'>window_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>window_data</span>),
-                <span class='ident'>is_symmetric</span>: <span class='ident'>is_symmetric</span>,
-            }
+        <span class='ident'>ForeignWindowFunction</span> {
+            <span class='ident'>window_function</span>: <span class='ident'>window</span>,
+            <span class='ident'>window_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>window_data</span>),
+            <span class='ident'>is_symmetric</span>: <span class='ident'>is_symmetric</span>,
         }
     }
 }
@@ -349,7 +345,7 @@
 
     <span class='kw'>fn</span> <span class='ident'>window</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>idx</span>: <span class='ident'>usize</span>, <span class='ident'>points</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
         <span class='kw'>let</span> <span class='ident'>fun</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>window_function</span>;
-        <span class='kw'>unsafe</span> { <span class='ident'>fun</span>(<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>.<span class='ident'>window_data</span>), <span class='ident'>idx</span>, <span class='ident'>points</span>) }
+        <span class='ident'>fun</span>(<span class='self'>self</span>.<span class='ident'>window_data</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>idx</span>, <span class='ident'>points</span>)
     }
 }
 

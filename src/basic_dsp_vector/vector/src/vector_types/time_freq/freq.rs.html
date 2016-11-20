@@ -237,16 +237,16 @@
         <span class='ident'>buffer</span>.<span class='ident'>free</span>(<span class='ident'>temp</span>);
     }
 
-    <span class='kw'>fn</span> <span class='ident'>fft_shift</span><span class='op'>&lt;</span><span class='ident'>B</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>buffer</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>B</span>)
+    <span class='kw'>fn</span> <span class='ident'>fft_shift</span><span class='op'>&lt;</span><span class='ident'>B</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, _: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>B</span>)
         <span class='kw'>where</span> <span class='ident'>B</span>: <span class='ident'>Buffer</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span>
     {
-        <span class='self'>self</span>.<span class='ident'>swap_halves_priv</span>(<span class='ident'>buffer</span>, <span class='bool-val'>true</span>)
+        <span class='self'>self</span>.<span class='ident'>swap_halves_priv</span>(<span class='bool-val'>true</span>)
     }
 
-    <span class='kw'>fn</span> <span class='ident'>ifft_shift</span><span class='op'>&lt;</span><span class='ident'>B</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>buffer</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>B</span>)
+    <span class='kw'>fn</span> <span class='ident'>ifft_shift</span><span class='op'>&lt;</span><span class='ident'>B</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, _: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>B</span>)
         <span class='kw'>where</span> <span class='ident'>B</span>: <span class='ident'>Buffer</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span>
     {
-        <span class='self'>self</span>.<span class='ident'>swap_halves_priv</span>(<span class='ident'>buffer</span>, <span class='bool-val'>false</span>)
+        <span class='self'>self</span>.<span class='ident'>swap_halves_priv</span>(<span class='bool-val'>false</span>)
     }
 }
 </pre>

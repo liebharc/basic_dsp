@@ -345,6 +345,14 @@
 <span id="301">301</span>
 <span id="302">302</span>
 <span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
 </pre><pre class='rust '>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>basic_dsp_vector</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>num</span>;
@@ -356,8 +364,16 @@
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>mat_impl</span>::<span class='op'>*</span>;
 <span class='kw'>mod</span> <span class='ident'>to_from_mat_conversions</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>to_from_mat_conversions</span>::<span class='op'>*</span>;
-<span class='kw'>mod</span> <span class='ident'>forwards</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>forwards</span>::<span class='op'>*</span>;
+<span class='kw'>mod</span> <span class='ident'>general</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>general</span>::<span class='op'>*</span>;
+<span class='kw'>mod</span> <span class='ident'>rededicate</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>rededicate</span>::<span class='op'>*</span>;
+<span class='kw'>mod</span> <span class='ident'>complex</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>complex</span>::<span class='op'>*</span>;
+<span class='kw'>mod</span> <span class='ident'>real</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>real</span>::<span class='op'>*</span>;
+<span class='kw'>mod</span> <span class='ident'>time_freq</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>time_freq</span>::<span class='op'>*</span>;
 
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>MatrixMxN</span><span class='op'>&lt;</span><span class='ident'>V</span>, <span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>,

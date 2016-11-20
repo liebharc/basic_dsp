@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1244' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/time_freq/time_to_freq.rs.html#12-63' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-1253' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/time_freq/time_to_freq.rs.html#12-63' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait TimeToFrequencyDomainOperations&lt;S, T&gt;: <a class='trait' href='../basic_dsp_vector/trait.ToFreqResult.html' title='basic_dsp_vector::ToFreqResult'>ToFreqResult</a> <span class='where'>where S: <a class='trait' href='../basic_dsp_vector/trait.ToSliceMut.html' title='basic_dsp_vector::ToSliceMut'>ToSliceMut</a>&lt;T&gt;, T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span> {
     fn <a href='#tymethod.plain_fft' class='fnname'>plain_fft</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; Self::FreqResult <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span>;
     fn <a href='#tymethod.fft' class='fnname'>fft</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; Self::FreqResult <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span>;

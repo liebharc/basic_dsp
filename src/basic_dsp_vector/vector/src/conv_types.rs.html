@@ -798,6 +798,10 @@
 <span id="754">754</span>
 <span id="755">755</span>
 <span id="756">756</span>
+<span id="757">757</span>
+<span id="758">758</span>
+<span id="759">759</span>
+<span id="760">760</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Types around a convolution, see also https://en.wikipedia.org/wiki/Convolution.</span>
 <span class='doccomment'>//!</span>
@@ -812,41 +816,49 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 <span class='kw'>use</span> <span class='ident'>vector_types</span>::<span class='op'>*</span>;
 
-<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>define_real_conv_trait</span> {
-    ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>: <span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>domain_comment</span>:<span class='ident'>ident</span>);<span class='op'>*</span>) <span class='op'>=&gt;</span> {
-        $(
-            <span class='doccomment'>/// A convolution function in $domain_comment domain and real number space</span>
-            <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> : <span class='ident'>Sync</span>
-                <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
-                <span class='doccomment'>/// Indicates whether this function is symmetric around 0 or not.</span>
-                <span class='doccomment'>/// Symmetry is defined as `self.calc(x) == self.calc(-x)`.</span>
-                <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span>;
+<span class='doccomment'>/// A convolution function in time domain and real number space</span>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>RealImpulseResponse</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> : <span class='ident'>Sync</span>
+    <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
+    <span class='doccomment'>/// Indicates whether this function is symmetric around 0 or not.</span>
+    <span class='doccomment'>/// Symmetry is defined as `self.calc(x) == self.calc(-x)`.</span>
+    <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span>;
 
-                <span class='doccomment'>/// Calculates the convolution for a data point</span>
-                <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span>;
-            }
-        )<span class='op'>*</span>
-    }
+    <span class='doccomment'>/// Calculates the convolution for a data point</span>
+    <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span>;
 }
-<span class='macro'>define_real_conv_trait</span><span class='macro'>!</span>(<span class='ident'>RealImpulseResponse</span>, <span class='ident'>time</span>; <span class='ident'>RealFrequencyResponse</span>, <span class='ident'>frequency</span>);
 
-<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>define_complex_conv_trait</span> {
-    ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>: <span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>domain_comment</span>:<span class='ident'>ident</span>);<span class='op'>*</span>) <span class='op'>=&gt;</span> {
-        $(
-            <span class='doccomment'>/// A convolution function in $domain_comment domain and complex number space</span>
-            <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> : <span class='ident'>Sync</span>
-                <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
-                <span class='doccomment'>/// Indicates whether this function is symmetric around 0 or not.</span>
-                <span class='doccomment'>/// Symmetry is defined as `self.calc(x) == self.calc(-x)`.</span>
-                <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span>;
+<span class='doccomment'>/// A convolution function in frequency domain and real number space</span>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>RealFrequencyResponse</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> : <span class='ident'>Sync</span>
+    <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
+    <span class='doccomment'>/// Indicates whether this function is symmetric around 0 or not.</span>
+    <span class='doccomment'>/// Symmetry is defined as `self.calc(x) == self.calc(-x)`.</span>
+    <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span>;
 
-                <span class='doccomment'>/// Calculates the convolution for a data point</span>
-                <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>;
-            }
-        )<span class='op'>*</span>
-    }
+    <span class='doccomment'>/// Calculates the convolution for a data point</span>
+    <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span>;
 }
-<span class='macro'>define_complex_conv_trait</span><span class='macro'>!</span>(<span class='ident'>ComplexImpulseResponse</span>, <span class='ident'>time</span>; <span class='ident'>ComplexFrequencyResponse</span>, <span class='ident'>frequency</span>);
+
+<span class='doccomment'>/// A convolution function in time domain and complex number space</span>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>ComplexImpulseResponse</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> : <span class='ident'>Sync</span>
+    <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
+    <span class='doccomment'>/// Indicates whether this function is symmetric around 0 or not.</span>
+    <span class='doccomment'>/// Symmetry is defined as `self.calc(x) == self.calc(-x)`.</span>
+    <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span>;
+
+    <span class='doccomment'>/// Calculates the convolution for a data point</span>
+    <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>;
+}
+
+<span class='doccomment'>/// A convolution function in frequency domain and complex number space</span>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>ComplexFrequencyResponse</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> : <span class='ident'>Sync</span>
+    <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span> {
+    <span class='doccomment'>/// Indicates whether this function is symmetric around 0 or not.</span>
+    <span class='doccomment'>/// Symmetry is defined as `self.calc(x) == self.calc(-x)`.</span>
+    <span class='kw'>fn</span> <span class='ident'>is_symmetric</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span>;
+
+    <span class='doccomment'>/// Calculates the convolution for a data point</span>
+    <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>;
+}
 
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>define_real_lookup_table</span> {
     ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>: <span class='ident'>ident</span>);<span class='op'>*</span>) <span class='op'>=&gt;</span> {
@@ -941,7 +953,7 @@
                             <span class='kw'>let</span> <span class='ident'>y0</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>table</span>[<span class='ident'>round</span>];
                             <span class='kw'>let</span> <span class='ident'>x0</span> <span class='op'>=</span> <span class='ident'>round_float</span>;
                             <span class='kw'>let</span> <span class='ident'>y1</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>table</span>[<span class='ident'>other</span>];
-                            <span class='kw'>return</span> <span class='ident'>y0</span> <span class='op'>+</span> (<span class='ident'>y1</span> <span class='op'>-</span> <span class='ident'>y0</span>) <span class='op'>*</span> (<span class='ident'>x</span> <span class='op'>-</span> <span class='ident'>x0</span>);
+                            <span class='ident'>y0</span> <span class='op'>+</span> (<span class='ident'>y1</span> <span class='op'>-</span> <span class='ident'>y0</span>) <span class='op'>*</span> (<span class='ident'>x</span> <span class='op'>-</span> <span class='ident'>x0</span>)
                         } <span class='kw'>else</span> {
                             <span class='kw'>if</span> <span class='ident'>round</span> <span class='op'>==</span> <span class='number'>0</span> {
                                 <span class='kw'>return</span> <span class='self'>self</span>.<span class='ident'>table</span>[<span class='ident'>round</span>];
@@ -950,7 +962,7 @@
                             <span class='kw'>let</span> <span class='ident'>y0</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>table</span>[<span class='ident'>round</span>];
                             <span class='kw'>let</span> <span class='ident'>x0</span> <span class='op'>=</span> <span class='ident'>round_float</span>;
                             <span class='kw'>let</span> <span class='ident'>y1</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>table</span>[<span class='ident'>other</span>];
-                            <span class='kw'>return</span> <span class='ident'>y0</span> <span class='op'>+</span> (<span class='ident'>y1</span> <span class='op'>-</span> <span class='ident'>y0</span>) <span class='op'>*</span> (<span class='ident'>x0</span> <span class='op'>-</span> <span class='ident'>x</span>);
+                            <span class='ident'>y0</span> <span class='op'>+</span> (<span class='ident'>y1</span> <span class='op'>-</span> <span class='ident'>y0</span>) <span class='op'>*</span> (<span class='ident'>x0</span> <span class='op'>-</span> <span class='ident'>x</span>)
                         }
                     }
                 }
@@ -1050,7 +1062,7 @@
     ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>: <span class='ident'>ident</span>),<span class='op'>*</span>) <span class='op'>=&gt;</span> {
         $(
             <span class='kw'>impl</span> <span class='ident'>ComplexTimeLinearTableLookup</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> {
-<span class='doccomment'>/// Convert the lookup table into frequency domain</span>
+                <span class='doccomment'>/// Convert the lookup table into frequency domain</span>
                 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>fft</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>ComplexFrequencyLinearTableLookup</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span><span class='op'>&gt;</span> {
                     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>table</span>.<span class='ident'>clone</span>().<span class='ident'>to_complex_time_vec</span>();
                     <span class='ident'>vector</span>.<span class='ident'>set_delta</span>(<span class='self'>self</span>.<span class='ident'>delta</span>);
@@ -1132,7 +1144,7 @@
 }
 <span class='macro'>add_complex_frequency_linear_table_impl</span><span class='macro'>!</span>(<span class='ident'>f32</span>, <span class='ident'>f64</span>);
 
-<span class='doccomment'>/// Raised cosine function according to https://en.wikipedia.org/wiki/Raised-cosine_filter</span>
+<span class='doccomment'>/// Raised cosine function according to `https://en.wikipedia.org/wiki/Raised-cosine_filter`</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>RaisedCosineFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>
 {
@@ -1162,7 +1174,7 @@
 
         <span class='kw'>let</span> <span class='ident'>pi_x</span> <span class='op'>=</span> <span class='ident'>pi</span> <span class='op'>*</span> <span class='ident'>x</span>;
         <span class='kw'>let</span> <span class='ident'>arg</span> <span class='op'>=</span> <span class='ident'>two</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>rolloff</span> <span class='op'>*</span> <span class='ident'>x</span>;
-        <span class='kw'>return</span> <span class='ident'>pi_x</span>.<span class='ident'>sin</span>() <span class='op'>*</span> (<span class='ident'>pi_x</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>rolloff</span>).<span class='ident'>cos</span>() <span class='op'>/</span> <span class='ident'>pi_x</span> <span class='op'>/</span> (<span class='ident'>one</span> <span class='op'>-</span> (<span class='ident'>arg</span> <span class='op'>*</span> <span class='ident'>arg</span>));
+        <span class='ident'>pi_x</span>.<span class='ident'>sin</span>() <span class='op'>*</span> (<span class='ident'>pi_x</span> <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>rolloff</span>).<span class='ident'>cos</span>() <span class='op'>/</span> <span class='ident'>pi_x</span> <span class='op'>/</span> (<span class='ident'>one</span> <span class='op'>-</span> (<span class='ident'>arg</span> <span class='op'>*</span> <span class='ident'>arg</span>))
     }
 }
 
@@ -1187,7 +1199,7 @@
                    (<span class='ident'>one</span> <span class='op'>+</span> (<span class='ident'>pi</span> <span class='op'>/</span> <span class='self'>self</span>.<span class='ident'>rolloff</span> <span class='op'>*</span> (<span class='ident'>x</span>.<span class='ident'>abs</span>() <span class='op'>-</span> (<span class='ident'>one</span> <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>rolloff</span>)) <span class='op'>/</span> <span class='ident'>two</span>).<span class='ident'>cos</span>());
         }
 
-        <span class='kw'>return</span> <span class='ident'>T</span>::<span class='ident'>zero</span>();
+        <span class='ident'>T</span>::<span class='ident'>zero</span>()
     }
 }
 
@@ -1200,7 +1212,7 @@
     }
 }
 
-<span class='doccomment'>/// Sinc function according to https://en.wikipedia.org/wiki/Sinc_function</span>
+<span class='doccomment'>/// Sinc function according to `https://en.wikipedia.org/wiki/Sinc_function`</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>SincFunction</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>
 {
@@ -1223,7 +1235,7 @@
         <span class='kw'>let</span> <span class='ident'>two</span> <span class='op'>=</span> <span class='ident'>T</span>::<span class='ident'>from</span>(<span class='number'>2.0</span>).<span class='ident'>unwrap</span>();
         <span class='kw'>let</span> <span class='ident'>pi</span> <span class='op'>=</span> <span class='ident'>two</span> <span class='op'>*</span> <span class='ident'>one</span>.<span class='ident'>asin</span>();
         <span class='kw'>let</span> <span class='ident'>pi_x</span> <span class='op'>=</span> <span class='ident'>pi</span> <span class='op'>*</span> <span class='ident'>x</span>;
-        <span class='kw'>return</span> <span class='ident'>pi_x</span>.<span class='ident'>sin</span>() <span class='op'>/</span> <span class='ident'>pi_x</span>;
+        <span class='ident'>pi_x</span>.<span class='ident'>sin</span>() <span class='op'>/</span> <span class='ident'>pi_x</span>
     }
 }
 
@@ -1240,7 +1252,7 @@
             <span class='kw'>return</span> <span class='ident'>one</span>;
         }
 
-        <span class='kw'>return</span> <span class='ident'>T</span>::<span class='ident'>zero</span>();
+        <span class='ident'>T</span>::<span class='ident'>zero</span>()
     }
 }
 
@@ -1277,16 +1289,14 @@
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>
 {
     <span class='doccomment'>/// Creates a new real function</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>function</span>: <span class='kw'>extern</span> <span class='string'>&quot;C&quot;</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span>,
+    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>function</span>: <span class='kw'>extern</span> <span class='string'>&quot;C&quot;</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span>,
                <span class='ident'>function_data</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>,
                <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>)
                <span class='op'>-&gt;</span> <span class='self'>Self</span> {
-        <span class='kw'>unsafe</span> {
-            <span class='ident'>ForeignRealConvolutionFunction</span> {
-                <span class='ident'>conv_function</span>: <span class='ident'>function</span>,
-                <span class='ident'>conv_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>function_data</span>),
-                <span class='ident'>is_symmetric</span>: <span class='ident'>is_symmetric</span>,
-            }
+        <span class='ident'>ForeignRealConvolutionFunction</span> {
+            <span class='ident'>conv_function</span>: <span class='ident'>function</span>,
+            <span class='ident'>conv_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>function_data</span>),
+            <span class='ident'>is_symmetric</span>: <span class='ident'>is_symmetric</span>,
         }
     }
 }
@@ -1300,7 +1310,7 @@
 
     <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
         <span class='kw'>let</span> <span class='ident'>fun</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>conv_function</span>;
-        <span class='kw'>unsafe</span> { <span class='ident'>fun</span>(<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>.<span class='ident'>conv_data</span>), <span class='ident'>x</span>) }
+        <span class='ident'>fun</span>(<span class='self'>self</span>.<span class='ident'>conv_data</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>x</span>)
     }
 }
 
@@ -1313,7 +1323,7 @@
 
     <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
         <span class='kw'>let</span> <span class='ident'>fun</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>conv_function</span>;
-        <span class='kw'>unsafe</span> { <span class='ident'>fun</span>(<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>.<span class='ident'>conv_data</span>), <span class='ident'>x</span>) }
+        <span class='ident'>fun</span>(<span class='self'>self</span>.<span class='ident'>conv_data</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>x</span>)
     }
 }
 
@@ -1341,16 +1351,14 @@
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>
 {
     <span class='doccomment'>/// Creates a new real function</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>function</span>: <span class='kw'>extern</span> <span class='string'>&quot;C&quot;</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>function</span>: <span class='kw'>extern</span> <span class='string'>&quot;C&quot;</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
                <span class='ident'>function_data</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>,
                <span class='ident'>is_symmetric</span>: <span class='ident'>bool</span>)
                <span class='op'>-&gt;</span> <span class='self'>Self</span> {
-        <span class='kw'>unsafe</span> {
-            <span class='ident'>ForeignComplexConvolutionFunction</span> {
-                <span class='ident'>conv_function</span>: <span class='ident'>function</span>,
-                <span class='ident'>conv_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>function_data</span>),
-                <span class='ident'>is_symmetric</span>: <span class='ident'>is_symmetric</span>,
-            }
+        <span class='ident'>ForeignComplexConvolutionFunction</span> {
+            <span class='ident'>conv_function</span>: <span class='ident'>function</span>,
+            <span class='ident'>conv_data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>function_data</span>),
+            <span class='ident'>is_symmetric</span>: <span class='ident'>is_symmetric</span>,
         }
     }
 }
@@ -1364,7 +1372,7 @@
 
     <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>fun</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>conv_function</span>;
-        <span class='kw'>unsafe</span> { <span class='ident'>fun</span>(<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>.<span class='ident'>conv_data</span>), <span class='ident'>x</span>) }
+        <span class='ident'>fun</span>(<span class='self'>self</span>.<span class='ident'>conv_data</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>x</span>)
     }
 }
 
@@ -1379,7 +1387,7 @@
     <span class='doccomment'>/// Symmetry is defined as `self.calc(x) == self.calc(-x)`.</span>
     <span class='kw'>fn</span> <span class='ident'>calc</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>fun</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>conv_function</span>;
-        <span class='kw'>unsafe</span> { <span class='ident'>fun</span>(<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>.<span class='ident'>conv_data</span>), <span class='ident'>x</span>) }
+        <span class='ident'>fun</span>(<span class='self'>self</span>.<span class='ident'>conv_data</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_void</span>, <span class='ident'>x</span>)
     }
 }
 

@@ -252,7 +252,7 @@
                    <span class='ident'>TimeToFrequencyDomainOperations</span>, <span class='ident'>RededicateForceOps</span>, <span class='ident'>ToSliceMut</span>, <span class='ident'>Owner</span>,
                    <span class='ident'>PaddingOption</span>, <span class='ident'>VoidResult</span>, <span class='ident'>Vector</span>, <span class='ident'>FromVector</span>, <span class='ident'>MetaData</span>, <span class='ident'>ComplexNumberSpace</span>,
                    <span class='ident'>TimeDomain</span>, <span class='ident'>ElementaryOps</span>, <span class='ident'>ToFreqResult</span>, <span class='ident'>InsertZerosOpsBuffered</span>, <span class='ident'>DataDomain</span>,
-                   <span class='ident'>ErrorReason</span>, <span class='ident'>ReorganizeDataOpsBuffered</span>};
+                   <span class='ident'>ErrorReason</span>, <span class='ident'>ReorganizeDataOps</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 <span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>fft</span>;
 
@@ -289,7 +289,7 @@
 <span class='doccomment'>/// This functionality has been recently added in order to find out if the definitions are</span>
 <span class='doccomment'>/// consistent. However the actual implementation is lacking tests.</span>
 <span class='doccomment'>/// # Failures</span>
-<span class='doccomment'>/// TransRes may report the following `ErrorReason` members:</span>
+<span class='doccomment'>/// `TransRes` may report the following `ErrorReason` members:</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// 1. `VectorMustBeComplex`: if `self` is in real number space.</span>
 <span class='doccomment'>/// 3. `VectorMetaDataMustAgree`: in case `self` and `function` are not</span>
@@ -325,7 +325,7 @@
 	<span class='kw'>where</span> <span class='ident'>DspVec</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span>, <span class='ident'>N</span>, <span class='ident'>D</span><span class='op'>&gt;</span>: <span class='ident'>ToFreqResult</span>
         <span class='op'>+</span> <span class='ident'>TimeToFrequencyDomainOperations</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span>
         <span class='op'>+</span> <span class='ident'>ScaleOps</span><span class='op'>&lt;</span><span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>
-		<span class='op'>+</span> <span class='ident'>ReorganizeDataOpsBuffered</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Clone</span>,
+		<span class='op'>+</span> <span class='ident'>ReorganizeDataOps</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Clone</span>,
 	  <span class='op'>&lt;</span><span class='ident'>DspVec</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span>, <span class='ident'>N</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='kw'>as</span> <span class='ident'>ToFreqResult</span><span class='op'>&gt;</span>::<span class='ident'>FreqResult</span>: <span class='ident'>RededicateForceOps</span><span class='op'>&lt;</span><span class='ident'>DspVec</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span>, <span class='ident'>N</span>, <span class='ident'>D</span><span class='op'>&gt;&gt;</span>
         <span class='op'>+</span> <span class='ident'>FrequencyDomainOperations</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>ComplexOps</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Vector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
         <span class='op'>+</span> <span class='ident'>ElementaryOps</span><span class='op'>&lt;&lt;</span><span class='ident'>DspVec</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span>, <span class='ident'>N</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='kw'>as</span> <span class='ident'>ToFreqResult</span><span class='op'>&gt;</span>::<span class='ident'>FreqResult</span><span class='op'>&gt;</span>
@@ -357,7 +357,7 @@
 	<span class='kw'>where</span> <span class='ident'>DspVec</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span>, <span class='ident'>N</span>, <span class='ident'>D</span><span class='op'>&gt;</span>: <span class='ident'>ToFreqResult</span>
         <span class='op'>+</span> <span class='ident'>TimeToFrequencyDomainOperations</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span>
         <span class='op'>+</span> <span class='ident'>ScaleOps</span><span class='op'>&lt;</span><span class='ident'>Complex</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>
-		<span class='op'>+</span> <span class='ident'>ReorganizeDataOpsBuffered</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Clone</span>,
+		<span class='op'>+</span> <span class='ident'>ReorganizeDataOps</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Clone</span>,
 	  <span class='op'>&lt;</span><span class='ident'>DspVec</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span>, <span class='ident'>N</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='kw'>as</span> <span class='ident'>ToFreqResult</span><span class='op'>&gt;</span>::<span class='ident'>FreqResult</span>: <span class='ident'>RededicateForceOps</span><span class='op'>&lt;</span><span class='ident'>DspVec</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span>, <span class='ident'>N</span>, <span class='ident'>D</span><span class='op'>&gt;&gt;</span>
         <span class='op'>+</span> <span class='ident'>FrequencyDomainOperations</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>ComplexOps</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Vector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
         <span class='op'>+</span> <span class='ident'>ElementaryOps</span><span class='op'>&lt;&lt;</span><span class='ident'>DspVec</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span>, <span class='ident'>N</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='kw'>as</span> <span class='ident'>ToFreqResult</span><span class='op'>&gt;</span>::<span class='ident'>FreqResult</span><span class='op'>&gt;</span>
@@ -397,7 +397,7 @@
 		<span class='kw'>let</span> <span class='ident'>p</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>points</span>();
 		<span class='self'>self</span>.<span class='ident'>scale</span>(<span class='ident'>Complex</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>T</span>::<span class='ident'>one</span>() <span class='op'>/</span> <span class='ident'>T</span>::<span class='ident'>from</span>(<span class='ident'>p</span>).<span class='ident'>unwrap</span>(), <span class='ident'>T</span>::<span class='ident'>zero</span>()));
 		<span class='ident'>fft</span>(<span class='self'>self</span>, <span class='ident'>buffer</span>, <span class='bool-val'>true</span>);
-		<span class='self'>self</span>.<span class='ident'>swap_halves_b</span>(<span class='ident'>buffer</span>);
+		<span class='self'>self</span>.<span class='ident'>swap_halves</span>();
 		<span class='prelude-val'>Ok</span>(())
 	}
 }
