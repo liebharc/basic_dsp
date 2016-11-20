@@ -129,7 +129,7 @@ sub camel_to_snake {
 
 # DataVector32
 my $root = "../../vector/src/vector_types/";
-my @definitions = parse_trait_definition("$root/complex/complex.rs", "ComplexOps");
+my @definitions = parse_trait_definition("$root/complex/complex_ops.rs", "ComplexOps");
 push @definitions, parse_trait_definition("$root/complex/complex_to_real.rs", "ComplexToRealTransformsOps", "ComplexToRealGetterOps", "ComplexToRealSetterOps");
 push @definitions, parse_trait_definition("$root/general/data_reorganization.rs", "ReorganizeDataOps", "InsertZerosOps", "SplitOps", "MergeOps");
 push @definitions, parse_trait_definition("$root/general/diff_sum.rs", "DiffSumOps");
@@ -138,7 +138,7 @@ push @definitions, parse_trait_definition("$root/general/elementary.rs", "ScaleO
 push @definitions, parse_trait_definition("$root/general/mapping.rs", "MapInplaceOps", "MapAggregateOps");
 push @definitions, parse_trait_definition("$root/general/statistics.rs", "StatisticsOps");
 push @definitions, parse_trait_definition("$root/general/trigonometry_and_powers.rs", "TrigOps", "PowerOps");
-push @definitions, parse_trait_definition("$root/real/real.rs", "RealOps", "ModuloOps");
+push @definitions, parse_trait_definition("$root/real/real_ops.rs", "RealOps", "ModuloOps");
 push @definitions, parse_trait_definition("$root/real/real_to_complex.rs", "RealToComplexTransformsOps");
 push @definitions, parse_trait_definition("$root/time_freq/convolution.rs", "ConvolutionOps", "FrequencyMultiplication");
 push @definitions, parse_trait_definition("$root/time_freq/correlation.rs", "CrossCorrelationOps");

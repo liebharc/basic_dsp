@@ -738,6 +738,35 @@ pub extern "C" fn complex_statistics_split32(vector: &VecBuf,
     0
 }
 
+
+#[no_mangle]
+pub extern "C" fn real_statistics_splitted32(vector: &VecBuf,
+                                             data: *mut Statistics<f32>,
+                                             len: usize)
+                                             -> i32 {
+    let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
+    let stats = vector.vec.statistics_split(data.len());
+    for i in 0..stats.len() {
+        data[i] = stats[i];
+    }
+
+    0
+}
+
+#[no_mangle]
+pub extern "C" fn complex_statistics_splitted32(vector: &VecBuf,
+                                                data: *mut Statistics<Complex32>,
+                                                len: usize)
+                                                -> i32 {
+    let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
+    let stats = vector.vec.statistics_split(data.len());
+    for i in 0..stats.len() {
+        data[i] = stats[i];
+    }
+
+    0
+}
+
 #[no_mangle]
 pub extern "C" fn fft32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| Ok(v.fft(b)))
