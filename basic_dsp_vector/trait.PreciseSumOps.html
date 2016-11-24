@@ -47,11 +47,13 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-4767' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/precise_stats.rs.html#62-98' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-4766' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/precise_stats.rs.html#66-102' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait PreciseSumOps&lt;T&gt;: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> <span class='where'>where T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span> {
     fn <a href='#tymethod.sum_prec' class='fnname'>sum_prec</a>(&amp;self) -&gt; T;
     fn <a href='#tymethod.sum_sq_prec' class='fnname'>sum_sq_prec</a>(&amp;self) -&gt; T;
-}</pre>
+}</pre><div class='docblock'><p>Offers the same functionality as the <code>SumOps</code> trait but
+the sums are calculated in a more precise (and slower) way.</p>
+</div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
         <h3 id='tymethod.sum_prec' class='method stab '><span id='sum_prec.v' class='invisible'><code>fn <a href='#tymethod.sum_prec' class='fnname'>sum_prec</a>(&amp;self) -&gt; T</code></span></h3><div class='docblock'><p>Calculates the sum of the data contained in the vector
@@ -63,7 +65,7 @@ using a more precise but slower algorithm.</p>
 <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>, <span class='number'>5.0</span>, <span class='number'>6.0</span>).<span class='ident'>to_complex_time_vec</span>();
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>sum_prec</span>();
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>result</span>, <span class='ident'>Complex64</span>::<span class='ident'>new</span>(<span class='number'>9.0</span>, <span class='number'>12.0</span>));
-}<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+}</pre>
 </div><h3 id='tymethod.sum_sq_prec' class='method stab '><span id='sum_sq_prec.v' class='invisible'><code>fn <a href='#tymethod.sum_sq_prec' class='fnname'>sum_sq_prec</a>(&amp;self) -&gt; T</code></span></h3><div class='docblock'><p>Calculates the sum of the squared data contained in the vector
 using a more precise but slower algorithm.</p>
 
@@ -73,7 +75,7 @@ using a more precise but slower algorithm.</p>
 <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>, <span class='number'>5.0</span>, <span class='number'>6.0</span>).<span class='ident'>to_complex_time_vec</span>();
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>sum_sq_prec</span>();
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>result</span>, <span class='ident'>Complex64</span>::<span class='ident'>new</span>(<span class='op'>-</span><span class='number'>21.0</span>, <span class='number'>88.0</span>));
-}<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+}</pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
@@ -139,11 +141,9 @@ using a more precise but slower algorithm.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

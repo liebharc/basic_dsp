@@ -47,11 +47,13 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-4760' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/precise_stats.rs.html#9-60' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-4759' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/precise_stats.rs.html#11-62' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait PreciseStatisticsOps&lt;T&gt;: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> <span class='where'>where T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span> {
     fn <a href='#tymethod.statistics_prec' class='fnname'>statistics_prec</a>(&amp;self) -&gt; T;
     fn <a href='#tymethod.statistics_splitted_prec' class='fnname'>statistics_splitted_prec</a>(&amp;self, len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;T&gt;;
-}</pre>
+}</pre><div class='docblock'><p>Offers the same functionality as the <code>StatisticsOps</code> trait but
+the statistics are calculated in a more precise (and slower) way.</p>
+</div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
         <h3 id='tymethod.statistics_prec' class='method stab '><span id='statistics_prec.v' class='invisible'><code>fn <a href='#tymethod.statistics_prec' class='fnname'>statistics_prec</a>(&amp;self) -&gt; T</code></span></h3><div class='docblock'><p>Calculates the statistics of the data contained in the vector using
@@ -71,7 +73,7 @@ a more precise but slower algorithm.</p>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>result</span>.<span class='ident'>min_index</span>, <span class='number'>0</span>);
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>result</span>.<span class='ident'>max</span>, <span class='ident'>Complex64</span>::<span class='ident'>new</span>(<span class='number'>5.0</span>, <span class='number'>6.0</span>));
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>result</span>.<span class='ident'>max_index</span>, <span class='number'>2</span>);
-}<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+}</pre>
 </div><h3 id='tymethod.statistics_splitted_prec' class='method stab '><span id='statistics_splitted_prec.v' class='invisible'><code>fn <a href='#tymethod.statistics_splitted_prec' class='fnname'>statistics_splitted_prec</a>(&amp;self, len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;T&gt;</code></span></h3><div class='docblock'><p>Calculates the statistics of the data contained in the vector as if the vector would
 have been split into <code>len</code> pieces 
 using a more precise but slower algorithm. <code>self.len</code> should be dividable by
@@ -86,7 +88,7 @@ but this isn&#39;t enforced by the implementation.</p>
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>statistics_splitted_prec</span>(<span class='number'>2</span>);
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>result</span>[<span class='number'>0</span>].<span class='ident'>sum</span>, <span class='ident'>Complex64</span>::<span class='ident'>new</span>(<span class='number'>6.0</span>, <span class='number'>8.0</span>));
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>result</span>[<span class='number'>1</span>].<span class='ident'>sum</span>, <span class='ident'>Complex64</span>::<span class='ident'>new</span>(<span class='number'>3.0</span>, <span class='number'>4.0</span>));
-}<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+}</pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
@@ -152,11 +154,9 @@ but this isn&#39;t enforced by the implementation.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

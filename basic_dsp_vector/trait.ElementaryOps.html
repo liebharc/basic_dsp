@@ -47,13 +47,14 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-3625' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/elementary.rs.html#62-154' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-3624' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/elementary.rs.html#63-155' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait ElementaryOps&lt;A&gt; {
     fn <a href='#tymethod.add' class='fnname'>add</a>(&amp;mut self, summand: &amp;A) -&gt; <a class='type' href='../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a>;
     fn <a href='#tymethod.sub' class='fnname'>sub</a>(&amp;mut self, subtrahend: &amp;A) -&gt; <a class='type' href='../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a>;
     fn <a href='#tymethod.mul' class='fnname'>mul</a>(&amp;mut self, factor: &amp;A) -&gt; <a class='type' href='../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a>;
     fn <a href='#tymethod.div' class='fnname'>div</a>(&amp;mut self, divisor: &amp;A) -&gt; <a class='type' href='../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a>;
-}</pre>
+}</pre><div class='docblock'><p>Elementary algebra on types: addition, subtraction, multiplication and division</p>
+</div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
         <h3 id='tymethod.add' class='method stab '><span id='add.v' class='invisible'><code>fn <a href='#tymethod.add' class='fnname'>add</a>(&amp;mut self, summand: &amp;A) -&gt; <a class='type' href='../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a></code></span></h3><div class='docblock'><p>Calculates the sum of <code>self + summand</code>. It consumes self and returns the result.</p>
@@ -73,7 +74,7 @@ and number space</li>
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector1</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>).<span class='ident'>to_real_time_vec</span>();
 <span class='kw'>let</span> <span class='ident'>vector2</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>10.0</span>, <span class='number'>11.0</span>).<span class='ident'>to_real_time_vec</span>();
 <span class='ident'>vector1</span>.<span class='ident'>add</span>(<span class='kw-2'>&amp;</span><span class='ident'>vector2</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>11.0</span>, <span class='number'>13.0</span>], <span class='ident'>vector1</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>11.0</span>, <span class='number'>13.0</span>], <span class='ident'>vector1</span>[<span class='number'>0</span>..]);</pre>
 </div><h3 id='tymethod.sub' class='method stab '><span id='sub.v' class='invisible'><code>fn <a href='#tymethod.sub' class='fnname'>sub</a>(&amp;mut self, subtrahend: &amp;A) -&gt; <a class='type' href='../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a></code></span></h3><div class='docblock'><p>Calculates the difference of <code>self - subtrahend</code>. It consumes self and returns the result.</p>
 
 <h1 id='failures-1' class='section-header'><a href='#failures-1'>Failures</a></h1>
@@ -91,7 +92,7 @@ and number space</li>
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector1</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>).<span class='ident'>to_real_time_vec</span>();
 <span class='kw'>let</span> <span class='ident'>vector2</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>10.0</span>, <span class='number'>11.0</span>).<span class='ident'>to_real_time_vec</span>();
 <span class='ident'>vector1</span>.<span class='ident'>sub</span>(<span class='kw-2'>&amp;</span><span class='ident'>vector2</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='op'>-</span><span class='number'>9.0</span>, <span class='op'>-</span><span class='number'>9.0</span>], <span class='ident'>vector1</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='op'>-</span><span class='number'>9.0</span>, <span class='op'>-</span><span class='number'>9.0</span>], <span class='ident'>vector1</span>[<span class='number'>0</span>..]);</pre>
 </div><h3 id='tymethod.mul' class='method stab '><span id='mul.v' class='invisible'><code>fn <a href='#tymethod.mul' class='fnname'>mul</a>(&amp;mut self, factor: &amp;A) -&gt; <a class='type' href='../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a></code></span></h3><div class='docblock'><p>Calculates the product of <code>self * factor</code>. It consumes self and returns the result.</p>
 
 <h1 id='failures-2' class='section-header'><a href='#failures-2'>Failures</a></h1>
@@ -109,7 +110,7 @@ number space</li>
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector1</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>).<span class='ident'>to_real_time_vec</span>();
 <span class='kw'>let</span> <span class='ident'>vector2</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>10.0</span>, <span class='number'>11.0</span>).<span class='ident'>to_real_time_vec</span>();
 <span class='ident'>vector1</span>.<span class='ident'>mul</span>(<span class='kw-2'>&amp;</span><span class='ident'>vector2</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>10.0</span>, <span class='number'>22.0</span>], <span class='ident'>vector1</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>10.0</span>, <span class='number'>22.0</span>], <span class='ident'>vector1</span>[<span class='number'>0</span>..]);</pre>
 </div><h3 id='tymethod.div' class='method stab '><span id='div.v' class='invisible'><code>fn <a href='#tymethod.div' class='fnname'>div</a>(&amp;mut self, divisor: &amp;A) -&gt; <a class='type' href='../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a></code></span></h3><div class='docblock'><p>Calculates the quotient of <code>self / summand</code>. It consumes self and returns the result.</p>
 
 <h1 id='failures-3' class='section-header'><a href='#failures-3'>Failures</a></h1>
@@ -127,7 +128,7 @@ and number space</li>
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector1</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>10.0</span>, <span class='number'>22.0</span>).<span class='ident'>to_real_time_vec</span>();
 <span class='kw'>let</span> <span class='ident'>vector2</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>2.0</span>, <span class='number'>11.0</span>).<span class='ident'>to_real_time_vec</span>();
 <span class='ident'>vector1</span>.<span class='ident'>div</span>(<span class='kw-2'>&amp;</span><span class='ident'>vector2</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>5.0</span>, <span class='number'>2.0</span>], <span class='ident'>vector1</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>5.0</span>, <span class='number'>2.0</span>], <span class='ident'>vector1</span>[<span class='number'>0</span>..]);</pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
@@ -191,11 +192,9 @@ and number space</li>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

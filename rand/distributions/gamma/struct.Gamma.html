@@ -68,7 +68,7 @@ falling back to directly sampling from an Exponential for <code>shape == 1</code
 
 <span class='kw'>let</span> <span class='ident'>gamma</span> <span class='op'>=</span> <span class='ident'>Gamma</span>::<span class='ident'>new</span>(<span class='number'>2.0</span>, <span class='number'>5.0</span>);
 <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>gamma</span>.<span class='ident'>ind_sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rand</span>::<span class='ident'>thread_rng</span>());
-<span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{} is from a Gamma(2, 5) distribution&quot;</span>, <span class='ident'>v</span>);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{} is from a Gamma(2, 5) distribution&quot;</span>, <span class='ident'>v</span>);</pre>
 
 <p>[1]: George Marsaglia and Wai Wan Tsang. 2000. &quot;A Simple Method
 for Generating Gamma Variables&quot; <em>ACM Trans. Math. Softw.</em> 26, 3
@@ -148,11 +148,9 @@ distribution.</p>
     <script>
         window.rootPath = "../../../";
         window.currentCrate = "rand";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
-    <script src="../../../extra.js"></script>
     <script defer src="../../../search-index.js"></script>
 </body>
 </html>

@@ -78,7 +78,7 @@ vector.</p>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>actual</span>.<span class='ident'>len</span>(), <span class='ident'>expected</span>.<span class='ident'>len</span>());
 <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>actual</span>.<span class='ident'>len</span>() {
        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>f32</span>::<span class='ident'>abs</span>(<span class='ident'>actual</span>[<span class='ident'>i</span>] <span class='op'>-</span> <span class='ident'>expected</span>[<span class='ident'>i</span>]) <span class='op'>&lt;</span> <span class='number'>1e-4</span>);
-}<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+}</pre>
 </div><h3 id='tymethod.ifft' class='method stab '><span id='ifft.v' class='invisible'><code>fn <a href='#tymethod.ifft' class='fnname'>ifft</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; Self::TimeResult <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></span></h3><div class='docblock'><p>Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
 into a time domain vector.</p>
 
@@ -94,7 +94,7 @@ into a time domain vector.</p>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>actual</span>.<span class='ident'>len</span>(), <span class='ident'>expected</span>.<span class='ident'>len</span>());
 <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>actual</span>.<span class='ident'>len</span>() {
        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>f32</span>::<span class='ident'>abs</span>(<span class='ident'>actual</span>[<span class='ident'>i</span>] <span class='op'>-</span> <span class='ident'>expected</span>[<span class='ident'>i</span>]) <span class='op'>&lt;</span> <span class='number'>1e-4</span>);
-}<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+}</pre>
 </div><h3 id='tymethod.windowed_ifft' class='method stab '><span id='windowed_ifft.v' class='invisible'><code>fn <a href='#tymethod.windowed_ifft' class='fnname'>windowed_ifft</a>&lt;B&gt;(self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buffer: &amp;mut B,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; window: &amp;<a class='trait' href='../basic_dsp_vector/window_functions/trait.WindowFunction.html' title='basic_dsp_vector::window_functions::WindowFunction'>WindowFunction</a>&lt;T&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; Self::TimeResult <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></span></h3><div class='docblock'><p>Performs an Inverse Fast Fourier Transformation transforming a frequency domain vector
 into a time domain vector and removes the FFT window.</p>
 </div></div>
@@ -159,11 +159,9 @@ into a time domain vector and removes the FFT window.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

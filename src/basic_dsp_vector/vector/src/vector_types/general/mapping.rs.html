@@ -317,8 +317,7 @@
               <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='ident'>T</span>, <span class='ident'>usize</span>, <span class='ident'>A</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> <span class='op'>+</span> <span class='lifetime'>&#39;a</span> <span class='op'>+</span> <span class='ident'>Sync</span>;
 }
 
-<span class='doccomment'>/// Operations which allow to iterate over the vector and to derive results</span>
-<span class='doccomment'>/// or to change the vector.</span>
+<span class='doccomment'>/// Operations which allow to iterate over the vector change the vector contents.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>MapInplaceNoArgsOps</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>: <span class='ident'>Sized</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>Sized</span>
 {
@@ -326,6 +325,7 @@
     <span class='kw'>fn</span> <span class='ident'>map_inplace</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>map</span>: <span class='ident'>F</span>) <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>Fn</span>(<span class='ident'>T</span>, <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> <span class='op'>+</span> <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Send</span>;
 }
 
+<span class='doccomment'>/// Operations which allow to iterate over the vector and to derive results.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>MapAggregateOps</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>R</span><span class='op'>&gt;</span>: <span class='ident'>Sized</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>Sized</span>,
           <span class='ident'>R</span>: <span class='ident'>Send</span>
@@ -612,11 +612,9 @@
     <script>
         window.rootPath = "../../../../../../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../../../../jquery.js"></script>
     <script src="../../../../../../main.js"></script>
-    <script src="../../../../../../extra.js"></script>
     <script defer src="../../../../../../search-index.js"></script>
 </body>
 </html>

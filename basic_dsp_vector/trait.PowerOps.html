@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-3785' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/trigonometry_and_powers.rs.html#66-191' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-3784' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/trigonometry_and_powers.rs.html#66-191' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait PowerOps&lt;T&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span> {
     fn <a href='#tymethod.sqrt' class='fnname'>sqrt</a>(&amp;mut self);
     fn <a href='#tymethod.square' class='fnname'>square</a>(&amp;mut self);
@@ -73,7 +73,7 @@
 <span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>, <span class='number'>5.0</span>], <span class='ident'>vector</span>[..]);
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='op'>-</span><span class='number'>1.0</span>).<span class='ident'>to_real_time_vec</span>();
 <span class='ident'>vector</span>.<span class='ident'>sqrt</span>();
-<span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>f64</span>::<span class='ident'>is_nan</span>(<span class='ident'>vector</span>[<span class='number'>0</span>]));<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>f64</span>::<span class='ident'>is_nan</span>(<span class='ident'>vector</span>[<span class='number'>0</span>]));</pre>
 </div><h3 id='tymethod.square' class='method stab '><span id='square.v' class='invisible'><code>fn <a href='#tymethod.square' class='fnname'>square</a>(&amp;mut self)</code></span></h3><div class='docblock'><p>Squares all vector elements.</p>
 
 <h1 id='example-1' class='section-header'><a href='#example-1'>Example</a></h1>
@@ -81,7 +81,7 @@
 <span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>, <span class='number'>5.0</span>).<span class='ident'>to_real_time_vec</span>();
 <span class='ident'>vector</span>.<span class='ident'>square</span>();
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>4.0</span>, <span class='number'>9.0</span>, <span class='number'>16.0</span>, <span class='number'>25.0</span>], <span class='ident'>vector</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>4.0</span>, <span class='number'>9.0</span>, <span class='number'>16.0</span>, <span class='number'>25.0</span>], <span class='ident'>vector</span>[..]);</pre>
 </div><h3 id='tymethod.root' class='method stab '><span id='root.v' class='invisible'><code>fn <a href='#tymethod.root' class='fnname'>root</a>(&amp;mut self, degree: T)</code></span></h3><div class='docblock'><p>Calculates the n-th root of every vector element.</p>
 
 <p>If the result would be a complex number then the vector will contain a NaN instead.
@@ -93,7 +93,7 @@ will never convert itself to a complex vector during this operation.</p>
 <span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>8.0</span>, <span class='number'>27.0</span>).<span class='ident'>to_real_time_vec</span>();
 <span class='ident'>vector</span>.<span class='ident'>root</span>(<span class='number'>3.0</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>], <span class='ident'>vector</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>], <span class='ident'>vector</span>[..]);</pre>
 </div><h3 id='tymethod.powf' class='method stab '><span id='powf.v' class='invisible'><code>fn <a href='#tymethod.powf' class='fnname'>powf</a>(&amp;mut self, exponent: T)</code></span></h3><div class='docblock'><p>Raises every vector element to a floating point power.</p>
 
 <h1 id='example-3' class='section-header'><a href='#example-3'>Example</a></h1>
@@ -101,7 +101,7 @@ will never convert itself to a complex vector during this operation.</p>
 <span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>).<span class='ident'>to_real_time_vec</span>();
 <span class='ident'>vector</span>.<span class='ident'>powf</span>(<span class='number'>3.0</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>8.0</span>, <span class='number'>27.0</span>], <span class='ident'>vector</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>8.0</span>, <span class='number'>27.0</span>], <span class='ident'>vector</span>[..]);</pre>
 </div><h3 id='tymethod.ln' class='method stab '><span id='ln.v' class='invisible'><code>fn <a href='#tymethod.ln' class='fnname'>ln</a>(&amp;mut self)</code></span></h3><div class='docblock'><p>Computes the principal value of natural logarithm of every element in the vector.</p>
 
 <h1 id='example-4' class='section-header'><a href='#example-4'>Example</a></h1>
@@ -114,7 +114,7 @@ will never convert itself to a complex vector during this operation.</p>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>actual</span>.<span class='ident'>len</span>(), <span class='ident'>expected</span>.<span class='ident'>len</span>());
 <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>actual</span>.<span class='ident'>len</span>() {
        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>f64</span>::<span class='ident'>abs</span>(<span class='ident'>actual</span>[<span class='ident'>i</span>] <span class='op'>-</span> <span class='ident'>expected</span>[<span class='ident'>i</span>]) <span class='op'>&lt;</span> <span class='number'>1e-4</span>);
-}<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+}</pre>
 </div><h3 id='tymethod.exp' class='method stab '><span id='exp.v' class='invisible'><code>fn <a href='#tymethod.exp' class='fnname'>exp</a>(&amp;mut self)</code></span></h3><div class='docblock'><p>Calculates the natural exponential for every vector element.</p>
 
 <h1 id='example-5' class='section-header'><a href='#example-5'>Example</a></h1>
@@ -127,7 +127,7 @@ will never convert itself to a complex vector during this operation.</p>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>actual</span>.<span class='ident'>len</span>(), <span class='ident'>expected</span>.<span class='ident'>len</span>());
 <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>actual</span>.<span class='ident'>len</span>() {
        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>f64</span>::<span class='ident'>abs</span>(<span class='ident'>actual</span>[<span class='ident'>i</span>] <span class='op'>-</span> <span class='ident'>expected</span>[<span class='ident'>i</span>]) <span class='op'>&lt;</span> <span class='number'>1e-4</span>);
-}<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+}</pre>
 </div><h3 id='tymethod.log' class='method stab '><span id='log.v' class='invisible'><code>fn <a href='#tymethod.log' class='fnname'>log</a>(&amp;mut self, base: T)</code></span></h3><div class='docblock'><p>Calculates the logarithm to the given base for every vector element.</p>
 
 <h1 id='example-6' class='section-header'><a href='#example-6'>Example</a></h1>
@@ -140,7 +140,7 @@ will never convert itself to a complex vector during this operation.</p>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>actual</span>.<span class='ident'>len</span>(), <span class='ident'>expected</span>.<span class='ident'>len</span>());
 <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>actual</span>.<span class='ident'>len</span>() {
        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>f64</span>::<span class='ident'>abs</span>(<span class='ident'>actual</span>[<span class='ident'>i</span>] <span class='op'>-</span> <span class='ident'>expected</span>[<span class='ident'>i</span>]) <span class='op'>&lt;</span> <span class='number'>1e-4</span>);
-}<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+}</pre>
 </div><h3 id='tymethod.expf' class='method stab '><span id='expf.v' class='invisible'><code>fn <a href='#tymethod.expf' class='fnname'>expf</a>(&amp;mut self, base: T)</code></span></h3><div class='docblock'><p>Calculates the exponential to the given base for every vector element.</p>
 
 <h1 id='example-7' class='section-header'><a href='#example-7'>Example</a></h1>
@@ -148,7 +148,7 @@ will never convert itself to a complex vector during this operation.</p>
 <span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>).<span class='ident'>to_real_time_vec</span>();
 <span class='ident'>vector</span>.<span class='ident'>expf</span>(<span class='number'>10.0</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>10.0</span>, <span class='number'>100.0</span>, <span class='number'>1000.0</span>], <span class='ident'>vector</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>10.0</span>, <span class='number'>100.0</span>, <span class='number'>1000.0</span>], <span class='ident'>vector</span>[..]);</pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
@@ -212,11 +212,9 @@ will never convert itself to a complex vector during this operation.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

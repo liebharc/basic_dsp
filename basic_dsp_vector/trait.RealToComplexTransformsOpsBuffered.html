@@ -67,7 +67,7 @@ this operation to succeed even if the storage type doesn&#39;t allow resizing.</
 <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>).<span class='ident'>to_real_time_vec</span>();
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buffer</span> <span class='op'>=</span> <span class='ident'>SingleBuffer</span>::<span class='ident'>new</span>();
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>to_complex_b</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buffer</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>0.0</span>, <span class='number'>2.0</span>, <span class='number'>0.0</span>], <span class='ident'>result</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>0.0</span>, <span class='number'>2.0</span>, <span class='number'>0.0</span>], <span class='ident'>result</span>[..]);</pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
@@ -130,11 +130,9 @@ this operation to succeed even if the storage type doesn&#39;t allow resizing.</
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

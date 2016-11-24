@@ -47,11 +47,13 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-3988' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/data_reorganization.rs.html#123-173' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-3987' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/data_reorganization.rs.html#129-179' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait InsertZerosOpsBuffered&lt;S, T&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, S: <a class='trait' href='../basic_dsp_vector/trait.ToSliceMut.html' title='basic_dsp_vector::ToSliceMut'>ToSliceMut</a>&lt;T&gt;</span> {
     fn <a href='#tymethod.zero_pad_b' class='fnname'>zero_pad_b</a>&lt;B&gt;(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buffer: &amp;mut B,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; points: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; option: <a class='enum' href='../basic_dsp_vector/enum.PaddingOption.html' title='basic_dsp_vector::PaddingOption'>PaddingOption</a>) <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span>;
     fn <a href='#tymethod.zero_interleave_b' class='fnname'>zero_interleave_b</a>&lt;B&gt;(&amp;mut self, buffer: &amp;mut B, factor: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span>;
-}</pre>
+}</pre><div class='docblock'><p>A trait to insert zeros into the data at some specified positions. A buffer is used
+for types which can&#39;t be resized and/or to speed up the calculation.</p>
+</div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
         <h3 id='tymethod.zero_pad_b' class='method stab '><span id='zero_pad_b.v' class='invisible'><code>fn <a href='#tymethod.zero_pad_b' class='fnname'>zero_pad_b</a>&lt;B&gt;(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buffer: &amp;mut B,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; points: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; option: <a class='enum' href='../basic_dsp_vector/enum.PaddingOption.html' title='basic_dsp_vector::PaddingOption'>PaddingOption</a>) <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></span></h3><div class='docblock'><p>Appends zeros add the end of the vector until the vector has the size given in the
@@ -75,7 +77,7 @@ application.</p>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>], <span class='ident'>vector</span>[..]);
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>).<span class='ident'>to_complex_time_vec</span>();
 <span class='ident'>vector</span>.<span class='ident'>zero_pad_b</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buffer</span>, <span class='number'>2</span>, <span class='ident'>PaddingOption</span>::<span class='ident'>End</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>], <span class='ident'>vector</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>], <span class='ident'>vector</span>[..]);</pre>
 </div><h3 id='tymethod.zero_interleave_b' class='method stab '><span id='zero_interleave_b.v' class='invisible'><code>fn <a href='#tymethod.zero_interleave_b' class='fnname'>zero_interleave_b</a>&lt;B&gt;(&amp;mut self, buffer: &amp;mut B, factor: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></span></h3><div class='docblock'><p>Interleaves zeros <code>factor - 1</code>times after every vector element, so that the resulting
 vector will have a length of <code>self.len() * factor</code>.</p>
 
@@ -93,7 +95,7 @@ will take that into account.</p>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>0.0</span>, <span class='number'>2.0</span>, <span class='number'>0.0</span>], <span class='ident'>vector</span>[..]);
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>).<span class='ident'>to_complex_time_vec</span>();
 <span class='ident'>vector</span>.<span class='ident'>zero_interleave_b</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buffer</span>, <span class='number'>2</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>], <span class='ident'>vector</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>], <span class='ident'>vector</span>[..]);</pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
@@ -156,11 +158,9 @@ will take that into account.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

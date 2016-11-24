@@ -353,7 +353,63 @@
 <span id="309">309</span>
 <span id="310">310</span>
 <span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
 </pre><pre class='rust '>
+<span class='doccomment'>//! In this lib a matrix is simply a collection of</span>
+<span class='doccomment'>//! vectors. The idea is that the matrix types can be used to reduce the size</span>
+<span class='doccomment'>//! of a large matrix and that the return types are basic enough</span>
+<span class='doccomment'>//! so that other specialized matrix libs can do the rest of the work, e.g.</span>
+<span class='doccomment'>//! inverting the resulting matrix.</span>
+
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>basic_dsp_vector</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>num</span>;
 
@@ -375,6 +431,7 @@
 <span class='kw'>mod</span> <span class='ident'>time_freq</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>time_freq</span>::<span class='op'>*</span>;
 
+<span class='doccomment'>/// A matrix which can hold 1 to N vectors.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>MatrixMxN</span><span class='op'>&lt;</span><span class='ident'>V</span>, <span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>,
           <span class='ident'>S</span>: <span class='ident'>ToSlice</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
@@ -385,6 +442,7 @@
     <span class='ident'>number_type</span>: <span class='ident'>std</span>::<span class='ident'>marker</span>::<span class='ident'>PhantomData</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
 }
 
+<span class='doccomment'>/// A matrix which can hold exactly 2 vectors.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Matrix2xN</span><span class='op'>&lt;</span><span class='ident'>V</span>, <span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>,
           <span class='ident'>V</span>: <span class='ident'>Vector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
@@ -394,6 +452,7 @@
     <span class='ident'>number_type</span>: <span class='ident'>std</span>::<span class='ident'>marker</span>::<span class='ident'>PhantomData</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
 }
 
+<span class='doccomment'>/// A matrix which can hold exactly 3 vectors.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Matrix3xN</span><span class='op'>&lt;</span><span class='ident'>V</span>, <span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>,
           <span class='ident'>V</span>: <span class='ident'>Vector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
@@ -403,6 +462,7 @@
     <span class='ident'>number_type</span>: <span class='ident'>std</span>::<span class='ident'>marker</span>::<span class='ident'>PhantomData</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
 }
 
+<span class='doccomment'>/// A matrix which can hold exactly 4 vectors.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Matrix4xN</span><span class='op'>&lt;</span><span class='ident'>V</span>, <span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>,
           <span class='ident'>V</span>: <span class='ident'>Vector</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
@@ -412,48 +472,88 @@
     <span class='ident'>number_type</span>: <span class='ident'>std</span>::<span class='ident'>marker</span>::<span class='ident'>PhantomData</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
 }
 
+<span class='doccomment'>/// A matrix which can hold 1 to N vectors of 32 bit floating point numbers in any number space or domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Matrix32xN</span> <span class='op'>=</span> <span class='ident'>MatrixMxN</span><span class='op'>&lt;</span><span class='ident'>GenDspVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold 1 to N vectors of 64 bit floating point numbers in any number space or domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Matrix64xN</span> <span class='op'>=</span> <span class='ident'>MatrixMxN</span><span class='op'>&lt;</span><span class='ident'>GenDspVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold 1 to N vectors of 32 bit floating point numbers in real number space and time domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RealTimeMatrix32xN</span> <span class='op'>=</span> <span class='ident'>MatrixMxN</span><span class='op'>&lt;</span><span class='ident'>RealTimeVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold 1 to N vectors of 64 bit floating point numbers in real number space and time domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RealTimeMatrix64xN</span> <span class='op'>=</span> <span class='ident'>MatrixMxN</span><span class='op'>&lt;</span><span class='ident'>RealTimeVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold 1 to N vectors of 32 bit floating point numbers in complex number space and time domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ComplexTimeMatrix32xN</span> <span class='op'>=</span> <span class='ident'>MatrixMxN</span><span class='op'>&lt;</span><span class='ident'>ComplexTimeVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold 1 to N vectors of 64 bit floating point numbers in complex number space and time domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ComplexTimeMatrix64xN</span> <span class='op'>=</span> <span class='ident'>MatrixMxN</span><span class='op'>&lt;</span><span class='ident'>ComplexTimeVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold 1 to N vectors of 32 bit floating point numbers in real number space and frequency domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RealFreqMatrix32xN</span> <span class='op'>=</span> <span class='ident'>MatrixMxN</span><span class='op'>&lt;</span><span class='ident'>RealFreqVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold 1 to N vectors of 64 bit floating point numbers in real number space and frequency domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RealFreqMatrix64xN</span> <span class='op'>=</span> <span class='ident'>MatrixMxN</span><span class='op'>&lt;</span><span class='ident'>RealFreqVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold 1 to N vectors of 32 bit floating point numbers in complex number space and frequency domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ComplexFreqMatrix32xN</span> <span class='op'>=</span> <span class='ident'>MatrixMxN</span><span class='op'>&lt;</span><span class='ident'>ComplexFreqVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold 1 to N vectors of 64 bit floating point numbers in complex number space and frequency domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ComplexFreqMatrix64xN</span> <span class='op'>=</span> <span class='ident'>MatrixMxN</span><span class='op'>&lt;</span><span class='ident'>ComplexFreqVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
 
+<span class='doccomment'>/// A matrix which can hold exactly 2 vectors of 32 bit floating point numbers in any number space or domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Matrix32x2</span> <span class='op'>=</span> <span class='ident'>Matrix2xN</span><span class='op'>&lt;</span><span class='ident'>GenDspVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 2 vectors of 64 bit floating point numbers in any number space or domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Matrix64x2</span> <span class='op'>=</span> <span class='ident'>Matrix2xN</span><span class='op'>&lt;</span><span class='ident'>GenDspVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 2 vectors of 32 bit floating point numbers in real number space and time domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RealTimeMatrix32x2</span> <span class='op'>=</span> <span class='ident'>Matrix2xN</span><span class='op'>&lt;</span><span class='ident'>RealTimeVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 2 vectors of 64 bit floating point numbers in real number space and time domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RealTimeMatrix64x2</span> <span class='op'>=</span> <span class='ident'>Matrix2xN</span><span class='op'>&lt;</span><span class='ident'>RealTimeVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 2 vectors of 32 bit floating point numbers in complex number space and time domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ComplexTimeMatrix32x2</span> <span class='op'>=</span> <span class='ident'>Matrix2xN</span><span class='op'>&lt;</span><span class='ident'>ComplexTimeVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 2 vectors of 64 bit floating point numbers in complex number space and time domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ComplexTimeMatrix64x2</span> <span class='op'>=</span> <span class='ident'>Matrix2xN</span><span class='op'>&lt;</span><span class='ident'>ComplexTimeVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 2 vectors of 32 bit floating point numbers in real number space and frequency domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RealFreqMatrix32x2</span> <span class='op'>=</span> <span class='ident'>Matrix2xN</span><span class='op'>&lt;</span><span class='ident'>RealFreqVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 2 vectors of 64 bit floating point numbers in real number space and frequency domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RealFreqMatrix64x2</span> <span class='op'>=</span> <span class='ident'>Matrix2xN</span><span class='op'>&lt;</span><span class='ident'>RealFreqVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 2 vectors of 32 bit floating point numbers in complex number space and frequency domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ComplexFreqMatrix32x2</span> <span class='op'>=</span> <span class='ident'>Matrix2xN</span><span class='op'>&lt;</span><span class='ident'>ComplexFreqVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 2 vectors of 64 bit floating point numbers in complex number space and frequency domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ComplexFreqMatrix64x2</span> <span class='op'>=</span> <span class='ident'>Matrix2xN</span><span class='op'>&lt;</span><span class='ident'>ComplexFreqVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
 
+<span class='doccomment'>/// A matrix which can hold exactly 3 vectors of 32 bit floating point numbers in any number space or domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Matrix32x3</span> <span class='op'>=</span> <span class='ident'>Matrix3xN</span><span class='op'>&lt;</span><span class='ident'>GenDspVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 3 vectors of 64 bit floating point numbers in any number space or domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Matrix64x3</span> <span class='op'>=</span> <span class='ident'>Matrix3xN</span><span class='op'>&lt;</span><span class='ident'>GenDspVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 3 vectors of 32 bit floating point numbers in real number space and time domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RealTimeMatrix32x3</span> <span class='op'>=</span> <span class='ident'>Matrix3xN</span><span class='op'>&lt;</span><span class='ident'>RealTimeVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 3 vectors of 64 bit floating point numbers in real number space and time domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RealTimeMatrix64x3</span> <span class='op'>=</span> <span class='ident'>Matrix3xN</span><span class='op'>&lt;</span><span class='ident'>RealTimeVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 3 vectors of 32 bit floating point numbers in complex number space and time domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ComplexTimeMatrix32x3</span> <span class='op'>=</span> <span class='ident'>Matrix3xN</span><span class='op'>&lt;</span><span class='ident'>ComplexTimeVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 3 vectors of 64 bit floating point numbers in complex number space and time domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ComplexTimeMatrix64x3</span> <span class='op'>=</span> <span class='ident'>Matrix3xN</span><span class='op'>&lt;</span><span class='ident'>ComplexTimeVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 3 vectors of 32 bit floating point numbers in real number space and frequency domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RealFreqMatrix32x3</span> <span class='op'>=</span> <span class='ident'>Matrix3xN</span><span class='op'>&lt;</span><span class='ident'>RealFreqVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 4 vectors of 64 bit floating point numbers in real number space and frequency domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RealFreqMatrix64x3</span> <span class='op'>=</span> <span class='ident'>Matrix3xN</span><span class='op'>&lt;</span><span class='ident'>RealFreqVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 4 vectors of 32 bit floating point numbers in complex number space and frequency domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ComplexFreqMatrix32x3</span> <span class='op'>=</span> <span class='ident'>Matrix3xN</span><span class='op'>&lt;</span><span class='ident'>ComplexFreqVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 4 vectors of 64 bit floating point numbers in complex number space and frequency domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ComplexFreqMatrix64x3</span> <span class='op'>=</span> <span class='ident'>Matrix3xN</span><span class='op'>&lt;</span><span class='ident'>ComplexFreqVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
 
+<span class='doccomment'>/// A matrix which can hold exactly 4 vectors of 32 bit floating point numbers in any number space or domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Matrix32x4</span> <span class='op'>=</span> <span class='ident'>Matrix4xN</span><span class='op'>&lt;</span><span class='ident'>GenDspVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 4 vectors of 64 bit floating point numbers in any number space or domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Matrix64x4</span> <span class='op'>=</span> <span class='ident'>Matrix4xN</span><span class='op'>&lt;</span><span class='ident'>GenDspVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 4 vectors of 32 bit floating point numbers in real number space and time domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RealTimeMatrix32x4</span> <span class='op'>=</span> <span class='ident'>Matrix4xN</span><span class='op'>&lt;</span><span class='ident'>RealTimeVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 4 vectors of 64 bit floating point numbers in real number space and time domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RealTimeMatrix64x4</span> <span class='op'>=</span> <span class='ident'>Matrix4xN</span><span class='op'>&lt;</span><span class='ident'>RealTimeVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 4 vectors of 32 bit floating point numbers in complex number space and time domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ComplexTimeMatrix32x4</span> <span class='op'>=</span> <span class='ident'>Matrix4xN</span><span class='op'>&lt;</span><span class='ident'>ComplexTimeVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 4 vectors of 64 bit floating point numbers in complex number space and time domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ComplexTimeMatrix64x4</span> <span class='op'>=</span> <span class='ident'>Matrix4xN</span><span class='op'>&lt;</span><span class='ident'>ComplexTimeVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 4 vectors of 32 bit floating point numbers in real number space and frequency domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RealFreqMatrix32x4</span> <span class='op'>=</span> <span class='ident'>Matrix4xN</span><span class='op'>&lt;</span><span class='ident'>RealFreqVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 4 vectors of 64 bit floating point numbers in real number space and frequency domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RealFreqMatrix64x4</span> <span class='op'>=</span> <span class='ident'>Matrix4xN</span><span class='op'>&lt;</span><span class='ident'>RealFreqVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 4 vectors of 32 bit floating point numbers in complex number space and frequency domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ComplexFreqMatrix32x4</span> <span class='op'>=</span> <span class='ident'>Matrix4xN</span><span class='op'>&lt;</span><span class='ident'>ComplexFreqVec32</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span>, <span class='ident'>f32</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// A matrix which can hold exactly 4 vectors of 64 bit floating point numbers in complex number space and frequency domain.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ComplexFreqMatrix64x4</span> <span class='op'>=</span> <span class='ident'>Matrix4xN</span><span class='op'>&lt;</span><span class='ident'>ComplexFreqVec64</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f64</span><span class='op'>&gt;</span>, <span class='ident'>f64</span><span class='op'>&gt;</span>;
 
 <span class='doccomment'>/// Internal trait to transform a row storage type to another</span>
@@ -722,11 +822,9 @@
     <script>
         window.rootPath = "../../../../";
         window.currentCrate = "basic_dsp_matrix";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../../jquery.js"></script>
     <script src="../../../../main.js"></script>
-    <script src="../../../../extra.js"></script>
     <script defer src="../../../../search-index.js"></script>
 </body>
 </html>

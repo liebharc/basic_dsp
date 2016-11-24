@@ -167,10 +167,14 @@
 <span id="123">123</span>
 <span id="124">124</span>
 <span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>RealNumber</span>;
 <span class='kw'>use</span> <span class='kw'>super</span>::<span class='kw'>super</span>::{<span class='ident'>array_to_complex_mut</span>, <span class='ident'>Vector</span>, <span class='ident'>DspVec</span>, <span class='ident'>ToSliceMut</span>, <span class='ident'>Domain</span>, <span class='ident'>NumberSpace</span>, <span class='ident'>MetaData</span>};
 
+<span class='doccomment'>/// A trait to calculate the diff (1st derivative in a discrete number space) or cumulative sum </span>
+<span class='doccomment'>/// (integral  in a discrete number space).</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>DiffSumOps</span> {
     <span class='doccomment'>/// Calculates the delta of each elements to its previous element. This will decrease</span>
     <span class='doccomment'>/// the vector length by one point.</span>
@@ -350,11 +354,9 @@
     <script>
         window.rootPath = "../../../../../../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../../../../jquery.js"></script>
     <script src="../../../../../../main.js"></script>
-    <script src="../../../../../../extra.js"></script>
     <script defer src="../../../../../../search-index.js"></script>
 </body>
 </html>

@@ -245,6 +245,7 @@
 <span id="201">201</span>
 <span id="202">202</span>
 <span id="203">203</span>
+<span id="204">204</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>RealNumber</span>;
 <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>Complex</span>;
@@ -310,6 +311,7 @@
     <span class='kw'>fn</span> <span class='ident'>prepare_argument_padded</span><span class='op'>&lt;</span><span class='ident'>B</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>buffer</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>B</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>FreqResult</span> <span class='kw'>where</span> <span class='ident'>B</span>: <span class='ident'>Buffer</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span>;
 }
 
+<span class='doccomment'>/// A trait to calculate the cross correlation.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>CrossCorrelationOps</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span>, <span class='ident'>A</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>ToSliceMut</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
           <span class='ident'>T</span>: <span class='ident'>RealNumber</span>
@@ -506,11 +508,9 @@
     <script>
         window.rootPath = "../../../../../../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../../../../jquery.js"></script>
     <script src="../../../../../../main.js"></script>
-    <script src="../../../../../../extra.js"></script>
     <script defer src="../../../../../../search-index.js"></script>
 </body>
 </html>

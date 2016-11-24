@@ -47,11 +47,12 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-4530' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/statistics.rs.html#78-112' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-4529' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/statistics.rs.html#88-122' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait SumOps&lt;T&gt;: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> <span class='where'>where T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span> {
     fn <a href='#tymethod.sum' class='fnname'>sum</a>(&amp;self) -&gt; T;
     fn <a href='#tymethod.sum_sq' class='fnname'>sum_sq</a>(&amp;self) -&gt; T;
-}</pre>
+}</pre><div class='docblock'><p>Offers operations to calculate the sum or the sum of squares.</p>
+</div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
         <h3 id='tymethod.sum' class='method stab '><span id='sum.v' class='invisible'><code>fn <a href='#tymethod.sum' class='fnname'>sum</a>(&amp;self) -&gt; T</code></span></h3><div class='docblock'><p>Calculates the sum of the data contained in the vector.</p>
@@ -62,7 +63,7 @@
 <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>, <span class='number'>5.0</span>, <span class='number'>6.0</span>).<span class='ident'>to_complex_time_vec</span>();
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>sum</span>();
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>result</span>, <span class='ident'>Complex32</span>::<span class='ident'>new</span>(<span class='number'>9.0</span>, <span class='number'>12.0</span>));
-}<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+}</pre>
 </div><h3 id='tymethod.sum_sq' class='method stab '><span id='sum_sq.v' class='invisible'><code>fn <a href='#tymethod.sum_sq' class='fnname'>sum_sq</a>(&amp;self) -&gt; T</code></span></h3><div class='docblock'><p>Calculates the sum of the squared data contained in the vector.</p>
 
 <h1 id='example-1' class='section-header'><a href='#example-1'>Example</a></h1>
@@ -71,7 +72,7 @@
 <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>, <span class='number'>5.0</span>, <span class='number'>6.0</span>).<span class='ident'>to_complex_time_vec</span>();
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>sum_sq</span>();
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>result</span>, <span class='ident'>Complex64</span>::<span class='ident'>new</span>(<span class='op'>-</span><span class='number'>21.0</span>, <span class='number'>88.0</span>));
-}<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+}</pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
@@ -135,11 +136,9 @@
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

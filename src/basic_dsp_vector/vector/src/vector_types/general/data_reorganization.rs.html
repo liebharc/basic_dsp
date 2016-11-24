@@ -761,6 +761,13 @@
 <span id="717">717</span>
 <span id="718">718</span>
 <span id="719">719</span>
+<span id="720">720</span>
+<span id="721">721</span>
+<span id="722">722</span>
+<span id="723">723</span>
+<span id="724">724</span>
+<span id="725">725</span>
+<span id="726">726</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ptr</span>;
@@ -770,6 +777,7 @@
 <span class='kw'>use</span> <span class='kw'>super</span>::<span class='kw'>super</span>::{<span class='ident'>array_to_complex_mut</span>, <span class='ident'>VoidResult</span>, <span class='ident'>Buffer</span>, <span class='ident'>Owner</span>, <span class='ident'>ErrorReason</span>, <span class='ident'>NumberSpace</span>,
                    <span class='ident'>Domain</span>, <span class='ident'>ResizeOps</span>, <span class='ident'>DspVec</span>, <span class='ident'>Vector</span>, <span class='ident'>ToSliceMut</span>, <span class='ident'>MetaData</span>};
 
+<span class='doccomment'>/// This trait allows to reorganize the data by changing positions of the individual elements.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>ReorganizeDataOps</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>
 {
@@ -801,6 +809,8 @@
     <span class='kw'>fn</span> <span class='ident'>swap_halves</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>);
 }
 
+<span class='doccomment'>/// This trait allows to reorganize the data by changing positions of the individual elements. </span>
+<span class='doccomment'>/// Deprecated since it requires a buffer which is never used since there would be no beneifit in using it.</span>
 <span class='attribute'>#[<span class='ident'>deprecated</span>(<span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.4.1&quot;</span>, <span class='ident'>note</span><span class='op'>=</span><span class='string'>&quot;please use `ReorganizeDataOps` instead which offers the same performance without a buffer&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>ReorganizeDataOpsBuffered</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>,
@@ -836,6 +846,7 @@
     <span class='ident'>Center</span>,
 }
 
+<span class='doccomment'>/// A trait to insert zeros into the data at some specified positions.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>InsertZerosOps</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>
 {
@@ -884,6 +895,8 @@
     <span class='kw'>fn</span> <span class='ident'>zero_interleave</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>factor</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>VoidResult</span>;
 }
 
+<span class='doccomment'>/// A trait to insert zeros into the data at some specified positions. A buffer is used</span>
+<span class='doccomment'>/// for types which can&#39;t be resized and/or to speed up the calculation.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>InsertZerosOpsBuffered</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>RealNumber</span>,
           <span class='ident'>S</span>: <span class='ident'>ToSliceMut</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
@@ -936,7 +949,7 @@
     <span class='kw'>fn</span> <span class='ident'>zero_interleave_b</span><span class='op'>&lt;</span><span class='ident'>B</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>buffer</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>B</span>, <span class='ident'>factor</span>: <span class='ident'>u32</span>) <span class='kw'>where</span> <span class='ident'>B</span>: <span class='ident'>Buffer</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>T</span><span class='op'>&gt;</span>;
 }
 
-
+<span class='doccomment'>/// Splits the data into several smaller pieces of equal size.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>SplitOps</span> {
     <span class='doccomment'>/// Splits the vector into several smaller vectors. `self.len()` must be dividable by</span>
     <span class='doccomment'>/// `targets.len()` without a remainder and this condition must be true too</span>
@@ -961,6 +974,7 @@
     <span class='kw'>fn</span> <span class='ident'>split_into</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>targets</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>Self</span>]) <span class='op'>-&gt;</span> <span class='ident'>VoidResult</span>;
 }
 
+<span class='doccomment'>/// Merges several pieces of equal size into one data chunk.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>MergeOps</span> {
     <span class='doccomment'>/// Merges several vectors into `self`. All vectors must have the same size and</span>
     <span class='doccomment'>/// at least one vector must be provided.</span>
@@ -1538,11 +1552,9 @@
     <script>
         window.rootPath = "../../../../../../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../../../../jquery.js"></script>
     <script src="../../../../../../main.js"></script>
-    <script src="../../../../../../extra.js"></script>
     <script defer src="../../../../../../search-index.js"></script>
 </body>
 </html>

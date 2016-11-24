@@ -87,7 +87,12 @@ for every (common) operation and to spent little time with memory allocations.</
                            <td><a class='mod' href='combined_ops/index.html'
                                   title='basic_dsp_vector::combined_ops'>combined_ops</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>This module allows to combine certain operations into one operation. Since one
+many machines the speed of many DSP operations is limited by the memory bus speed
+this approach may result in better register and cache usage and thus decrease
+the pressure on the memory bus. As with all performance hints remember
+rule number 1: Benchmark your code. This is especially true at this very early
+state of the library.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -296,14 +301,15 @@ accessor for complex data.</p>
                            <td><a class='trait' href='trait.CrossCorrelationOps.html'
                                   title='basic_dsp_vector::CrossCorrelationOps'>CrossCorrelationOps</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>A trait to calculate the cross correlation.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='trait' href='trait.DiffSumOps.html'
                                   title='basic_dsp_vector::DiffSumOps'>DiffSumOps</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>A trait to calculate the diff (1st derivative in a discrete number space) or cumulative sum
+(integral  in a discrete number space).</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -324,14 +330,14 @@ accessor for complex data.</p>
                            <td><a class='trait' href='trait.ElementaryOps.html'
                                   title='basic_dsp_vector::ElementaryOps'>ElementaryOps</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>Elementary algebra on types: addition, subtraction, multiplication and division</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='trait' href='trait.ElementaryWrapAroundOps.html'
                                   title='basic_dsp_vector::ElementaryWrapAroundOps'>ElementaryWrapAroundOps</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>Elementary algebra on types where the argument might contain less data points than <code>self</code>.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -373,14 +379,15 @@ accessor for complex data.</p>
                            <td><a class='trait' href='trait.InsertZerosOps.html'
                                   title='basic_dsp_vector::InsertZerosOps'>InsertZerosOps</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>A trait to insert zeros into the data at some specified positions.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='trait' href='trait.InsertZerosOpsBuffered.html'
                                   title='basic_dsp_vector::InsertZerosOpsBuffered'>InsertZerosOpsBuffered</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>A trait to insert zeros into the data at some specified positions. A buffer is used
+for types which can&#39;t be resized and/or to speed up the calculation.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -401,15 +408,14 @@ accessor for complex data.</p>
                            <td><a class='trait' href='trait.MapAggregateOps.html'
                                   title='basic_dsp_vector::MapAggregateOps'>MapAggregateOps</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>Operations which allow to iterate over the vector and to derive results.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='trait' href='trait.MapInplaceNoArgsOps.html'
                                   title='basic_dsp_vector::MapInplaceNoArgsOps'>MapInplaceNoArgsOps</a></td>
                            <td class='docblock-short'>
-                                <p>Operations which allow to iterate over the vector and to derive results
-or to change the vector.</p>
+                                <p>Operations which allow to iterate over the vector change the vector contents.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -424,7 +430,7 @@ or to change the vector.</p>
                            <td><a class='trait' href='trait.MergeOps.html'
                                   title='basic_dsp_vector::MergeOps'>MergeOps</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>Merges several pieces of equal size into one data chunk.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -480,21 +486,24 @@ or to change the vector.</p>
                            <td><a class='trait' href='trait.PreciseStatisticsOps.html'
                                   title='basic_dsp_vector::PreciseStatisticsOps'>PreciseStatisticsOps</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>Offers the same functionality as the <code>StatisticsOps</code> trait but
+the statistics are calculated in a more precise (and slower) way.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='trait' href='trait.PreciseStats.html'
                                   title='basic_dsp_vector::PreciseStats'>PreciseStats</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>A trait for statistics which allows to add new values in a way so that the numerical
+uncertainty has less impact on the final results.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='trait' href='trait.PreciseSumOps.html'
                                   title='basic_dsp_vector::PreciseSumOps'>PreciseSumOps</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>Offers the same functionality as the <code>SumOps</code> trait but
+the sums are calculated in a more precise (and slower) way.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -573,14 +582,15 @@ is to allow to reuse the memory of a vector for different operations.</p>
                            <td><a class='trait' href='trait.ReorganizeDataOps.html'
                                   title='basic_dsp_vector::ReorganizeDataOps'>ReorganizeDataOps</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>This trait allows to reorganize the data by changing positions of the individual elements.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='trait' href='trait.ReorganizeDataOpsBuffered.html'
                                   title='basic_dsp_vector::ReorganizeDataOpsBuffered'>ReorganizeDataOpsBuffered</a></td>
                            <td class='docblock-short'>
-                               [<em class='stab deprecated'>Deprecated</em>] 
+                               [<em class='stab deprecated'>Deprecated</em>] <p>This trait allows to reorganize the data by changing positions of the individual elements.
+Deprecated since it requires a buffer which is never used since there would be no beneifit in using it.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -608,28 +618,28 @@ is to allow to reuse the memory of a vector for different operations.</p>
                            <td><a class='trait' href='trait.SplitOps.html'
                                   title='basic_dsp_vector::SplitOps'>SplitOps</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>Splits the data into several smaller pieces of equal size.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='trait' href='trait.StatisticsOps.html'
                                   title='basic_dsp_vector::StatisticsOps'>StatisticsOps</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>This trait offers operations to calculate statistics about the data in a type.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='trait' href='trait.Stats.html'
                                   title='basic_dsp_vector::Stats'>Stats</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>Operations on statistics.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='trait' href='trait.SumOps.html'
                                   title='basic_dsp_vector::SumOps'>SumOps</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>Offers operations to calculate the sum or the sum of squares.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -747,7 +757,7 @@ with the type system and therefore avoid runtime errors.</p>
                            <td><a class='trait' href='trait.ToTimeResult.html'
                                   title='basic_dsp_vector::ToTimeResult'>ToTimeResult</a></td>
                            <td class='docblock-short'>
-                                
+                                <p>Specifies what the the result is if a type is transformed to time domain.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -1019,11 +1029,9 @@ which still can be used in order to avoid memory allocation.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

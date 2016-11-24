@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-3008' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/identifier_ops.rs.html#14-101' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-2948' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/identifier_ops.rs.html#14-101' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait IdentifierOps {
     fn <a href='#tymethod.domain' class='fnname'>domain</a>(&amp;self) -&gt; <a class='enum' href='../../basic_dsp_vector/enum.DataDomain.html' title='basic_dsp_vector::DataDomain'>DataDomain</a>;
     fn <a href='#tymethod.is_complex' class='fnname'>is_complex</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
@@ -84,7 +84,7 @@ the type of operations which are valid on this vector.</p>
 });
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buffer</span> <span class='op'>=</span> <span class='ident'>SingleBuffer</span>::<span class='ident'>new</span>();
 <span class='kw'>let</span> <span class='ident'>complex</span> <span class='op'>=</span> <span class='ident'>ops</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buffer</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>3.0</span>, <span class='number'>2.0</span>, <span class='number'>5.0</span>, <span class='number'>4.0</span>], <span class='kw-2'>&amp;</span><span class='ident'>complex</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>3.0</span>, <span class='number'>2.0</span>, <span class='number'>5.0</span>, <span class='number'>4.0</span>], <span class='kw-2'>&amp;</span><span class='ident'>complex</span>[..]);</pre>
 </div><h3 id='tymethod.sub_points' class='method stab '><span id='sub_points.v' class='invisible'><code>fn <a href='#tymethod.sub_points' class='fnname'>sub_points</a>(&amp;mut self)</code></span></h3><div class='docblock'><p>Subtracts its length from the vector elements</p>
 
 <h1 id='example-1' class='section-header'><a href='#example-1'>Example</a></h1>
@@ -99,7 +99,7 @@ the type of operations which are valid on this vector.</p>
 });
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buffer</span> <span class='op'>=</span> <span class='ident'>SingleBuffer</span>::<span class='ident'>new</span>();
 <span class='kw'>let</span> <span class='ident'>complex</span> <span class='op'>=</span> <span class='ident'>ops</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buffer</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>], <span class='kw-2'>&amp;</span><span class='ident'>complex</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>], <span class='kw-2'>&amp;</span><span class='ident'>complex</span>[..]);</pre>
 </div><h3 id='tymethod.div_points' class='method stab '><span id='div_points.v' class='invisible'><code>fn <a href='#tymethod.div_points' class='fnname'>div_points</a>(&amp;mut self)</code></span></h3><div class='docblock'><p>divides the vector elements by its length
 Subtracts its length from the vector elements</p>
 
@@ -115,7 +115,7 @@ Subtracts its length from the vector elements</p>
 });
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buffer</span> <span class='op'>=</span> <span class='ident'>SingleBuffer</span>::<span class='ident'>new</span>();
 <span class='kw'>let</span> <span class='ident'>complex</span> <span class='op'>=</span> <span class='ident'>ops</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buffer</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>], <span class='kw-2'>&amp;</span><span class='ident'>complex</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>], <span class='kw-2'>&amp;</span><span class='ident'>complex</span>[..]);</pre>
 </div><h3 id='tymethod.mul_points' class='method stab '><span id='mul_points.v' class='invisible'><code>fn <a href='#tymethod.mul_points' class='fnname'>mul_points</a>(&amp;mut self)</code></span></h3><div class='docblock'><p>Multiplies the vector elements with its length</p>
 
 <h1 id='example-3' class='section-header'><a href='#example-3'>Example</a></h1>
@@ -130,7 +130,7 @@ Subtracts its length from the vector elements</p>
 });
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buffer</span> <span class='op'>=</span> <span class='ident'>SingleBuffer</span>::<span class='ident'>new</span>();
 <span class='kw'>let</span> <span class='ident'>complex</span> <span class='op'>=</span> <span class='ident'>ops</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buffer</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>2.0</span>, <span class='number'>4.0</span>, <span class='number'>6.0</span>, <span class='number'>8.0</span>], <span class='kw-2'>&amp;</span><span class='ident'>complex</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>2.0</span>, <span class='number'>4.0</span>, <span class='number'>6.0</span>, <span class='number'>8.0</span>], <span class='kw-2'>&amp;</span><span class='ident'>complex</span>[..]);</pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
@@ -193,11 +193,9 @@ Subtracts its length from the vector elements</p>
     <script>
         window.rootPath = "../../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    <script src="../../extra.js"></script>
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

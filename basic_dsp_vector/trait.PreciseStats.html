@@ -47,13 +47,17 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-4773' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/precise_stats.rs.html#100-102' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-4772' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/precise_stats.rs.html#106-110' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait PreciseStats&lt;T&gt;: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> {
     fn <a href='#tymethod.add_prec' class='fnname'>add_prec</a>(&amp;mut self, elem: T, index: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, sumc: &amp;mut T, rmsc: &amp;mut T);
-}</pre>
+}</pre><div class='docblock'><p>A trait for statistics which allows to add new values in a way so that the numerical
+uncertainty has less impact on the final results.</p>
+</div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.add_prec' class='method stab '><span id='add_prec.v' class='invisible'><code>fn <a href='#tymethod.add_prec' class='fnname'>add_prec</a>(&amp;mut self, elem: T, index: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, sumc: &amp;mut T, rmsc: &amp;mut T)</code></span></h3></div>
+        <h3 id='tymethod.add_prec' class='method stab '><span id='add_prec.v' class='invisible'><code>fn <a href='#tymethod.add_prec' class='fnname'>add_prec</a>(&amp;mut self, elem: T, index: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, sumc: &amp;mut T, rmsc: &amp;mut T)</code></span></h3><div class='docblock'><p>Adds a new values to the statistics using the Kahan summation algorithm
+described here: <a href="https://en.wikipedia.org/wiki/Kahan_summation_algorithm">https://en.wikipedia.org/wiki/Kahan_summation_algorithm</a></p>
+</div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
     <li><code>impl&lt;T&gt; PreciseStats&lt;T&gt; for <a class='struct' href='../basic_dsp_vector/struct.Statistics.html' title='basic_dsp_vector::Statistics'>Statistics</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span></code></li>
@@ -116,11 +120,9 @@
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

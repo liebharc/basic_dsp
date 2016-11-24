@@ -60,7 +60,7 @@ open interval <code>(0,1)</code> (not including either endpoint).</p>
 <span class='kw'>use</span> <span class='ident'>rand</span>::{<span class='ident'>random</span>, <span class='ident'>Open01</span>};
 
 <span class='kw'>let</span> <span class='ident'>Open01</span>(<span class='ident'>val</span>) <span class='op'>=</span> <span class='ident'>random</span>::<span class='op'>&lt;</span><span class='ident'>Open01</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;&gt;</span>();
-<span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;f32 from (0,1): {}&quot;</span>, <span class='ident'>val</span>);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;f32 from (0,1): {}&quot;</span>, <span class='ident'>val</span>);</pre>
 </div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='../rand/trait.Rand.html' title='rand::Rand'>Rand</a> for <a class='struct' href='../rand/struct.Open01.html' title='rand::Open01'>Open01</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1286' class='srclink' href='../src/rand/rand_impls.rs.html#114-123' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.rand' class='method'><span id='rand.v' class='invisible'><code>fn <a href='../rand/trait.Rand.html#tymethod.rand' class='fnname'>rand</a>&lt;R:&nbsp;<a class='trait' href='../rand/trait.Rng.html' title='rand::Rng'>Rng</a>&gt;(rng: &amp;mut R) -&gt; <a class='struct' href='../rand/struct.Open01.html' title='rand::Open01'>Open01</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>&gt;</code></span></h4>
 <div class='docblock'><p>Generates a random instance of this type using the specified source of randomness. <a href="../rand/trait.Rand.html#tymethod.rand">Read more</a></p>
@@ -123,11 +123,9 @@ open interval <code>(0,1)</code> (not including either endpoint).</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "rand";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

@@ -70,7 +70,7 @@ the complex number space.</p>
 <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>3.0</span>, <span class='op'>-</span><span class='number'>4.0</span>, <span class='op'>-</span><span class='number'>3.0</span>, <span class='number'>4.0</span>).<span class='ident'>to_complex_time_vec</span>();
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buffer</span> <span class='op'>=</span> <span class='ident'>SingleBuffer</span>::<span class='ident'>new</span>();
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>magnitude_b</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buffer</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>5.0</span>, <span class='number'>5.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>5.0</span>, <span class='number'>5.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);</pre>
 </div><h3 id='tymethod.magnitude_squared_b' class='method stab '><span id='magnitude_squared_b.v' class='invisible'><code>fn <a href='#tymethod.magnitude_squared_b' class='fnname'>magnitude_squared_b</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; Self::RealResult <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></span></h3><div class='docblock'><p>Gets the square root of the absolute value of all vector elements.</p>
 
 <h1 id='example-1' class='section-header'><a href='#example-1'>Example</a></h1>
@@ -79,7 +79,7 @@ the complex number space.</p>
 <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>3.0</span>, <span class='op'>-</span><span class='number'>4.0</span>, <span class='op'>-</span><span class='number'>3.0</span>, <span class='number'>4.0</span>).<span class='ident'>to_complex_time_vec</span>();
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buffer</span> <span class='op'>=</span> <span class='ident'>SingleBuffer</span>::<span class='ident'>new</span>();
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>magnitude_squared_b</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buffer</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>25.0</span>, <span class='number'>25.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>25.0</span>, <span class='number'>25.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);</pre>
 </div><h3 id='tymethod.to_real_b' class='method stab '><span id='to_real_b.v' class='invisible'><code>fn <a href='#tymethod.to_real_b' class='fnname'>to_real_b</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; Self::RealResult <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></span></h3><div class='docblock'><p>Gets all real elements.</p>
 
 <h1 id='example-2' class='section-header'><a href='#example-2'>Example</a></h1>
@@ -88,7 +88,7 @@ the complex number space.</p>
 <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>).<span class='ident'>to_complex_time_vec</span>();
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buffer</span> <span class='op'>=</span> <span class='ident'>SingleBuffer</span>::<span class='ident'>new</span>();
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>to_real_b</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buffer</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>3.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>3.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);</pre>
 </div><h3 id='tymethod.to_imag_b' class='method stab '><span id='to_imag_b.v' class='invisible'><code>fn <a href='#tymethod.to_imag_b' class='fnname'>to_imag_b</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; Self::RealResult <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></span></h3><div class='docblock'><p>Gets all imag elements.</p>
 
 <h1 id='example-3' class='section-header'><a href='#example-3'>Example</a></h1>
@@ -97,7 +97,7 @@ the complex number space.</p>
 <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>).<span class='ident'>to_complex_time_vec</span>();
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buffer</span> <span class='op'>=</span> <span class='ident'>SingleBuffer</span>::<span class='ident'>new</span>();
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>to_imag_b</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buffer</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>2.0</span>, <span class='number'>4.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>2.0</span>, <span class='number'>4.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);</pre>
 </div><h3 id='tymethod.phase_b' class='method stab '><span id='phase_b.v' class='invisible'><code>fn <a href='#tymethod.phase_b' class='fnname'>phase_b</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; Self::RealResult <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></span></h3><div class='docblock'><p>Gets the phase of all elements in [rad].</p>
 
 <h1 id='example-4' class='section-header'><a href='#example-4'>Example</a></h1>
@@ -107,7 +107,7 @@ the complex number space.</p>
 <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='ident'>data</span>.<span class='ident'>to_complex_time_vec</span>();
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buffer</span> <span class='op'>=</span> <span class='ident'>SingleBuffer</span>::<span class='ident'>new</span>();
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>phase_b</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buffer</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>0.0</span>, <span class='number'>1.5707964</span>, <span class='number'>3.1415927</span>, <span class='op'>-</span><span class='number'>1.5707964</span>, <span class='number'>0.7853982</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>0.0</span>, <span class='number'>1.5707964</span>, <span class='number'>3.1415927</span>, <span class='op'>-</span><span class='number'>1.5707964</span>, <span class='number'>0.7853982</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);</pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
@@ -170,11 +170,9 @@ the complex number space.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

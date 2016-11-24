@@ -80,7 +80,7 @@ called before doing the correlation. See also the example section for how to do 
 <span class='kw'>let</span> <span class='ident'>expected</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span>[<span class='number'>2.0</span>, <span class='number'>0.0</span>, <span class='number'>8.0</span>, <span class='number'>0.0</span>, <span class='number'>20.0</span>, <span class='number'>0.0</span>, <span class='number'>24.0</span>, <span class='number'>0.0</span>, <span class='number'>18.0</span>, <span class='number'>0.0</span>];
 <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>vector</span>.<span class='ident'>len</span>() {
     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>f32</span>::<span class='ident'>abs</span>(<span class='ident'>vector</span>[<span class='ident'>i</span>] <span class='op'>-</span> <span class='ident'>expected</span>[<span class='ident'>i</span>]) <span class='op'>&lt;</span> <span class='number'>1e-4</span>);
-}<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+}</pre>
 
 <h1 id='unstable' class='section-header'><a href='#unstable'>Unstable</a></h1>
 <p>This functionality has been recently added in order to find out if the definitions are
@@ -168,11 +168,9 @@ and then the same operations are performed as described for <code>prepare_argume
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

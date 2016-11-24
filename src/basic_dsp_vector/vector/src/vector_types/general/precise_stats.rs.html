@@ -593,6 +593,14 @@
 <span id="549">549</span>
 <span id="550">550</span>
 <span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>RealNumber</span>;
 <span class='kw'>use</span> <span class='ident'>num</span>::{<span class='ident'>Complex</span>, <span class='ident'>Zero</span>};
@@ -602,6 +610,8 @@
                    <span class='ident'>ComplexNumberSpace</span>, <span class='ident'>Statistics</span>, <span class='ident'>Stats</span>};
 <span class='kw'>use</span> <span class='kw'>super</span>::{<span class='ident'>kahan_sum</span>, <span class='ident'>kahan_sumb</span>};               
 
+<span class='doccomment'>/// Offers the same functionality as the `StatisticsOps` trait but</span>
+<span class='doccomment'>/// the statistics are calculated in a more precise (and slower) way.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>PreciseStatisticsOps</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>: <span class='ident'>Sized</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>Sized</span>
 {
@@ -655,6 +665,8 @@
     <span class='kw'>fn</span> <span class='ident'>statistics_splitted_prec</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>len</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>;
 }
 
+<span class='doccomment'>/// Offers the same functionality as the `SumOps` trait but</span>
+<span class='doccomment'>/// the sums are calculated in a more precise (and slower) way.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>PreciseSumOps</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>: <span class='ident'>Sized</span>
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>Sized</span>
 {
@@ -693,7 +705,11 @@
     <span class='kw'>fn</span> <span class='ident'>sum_sq_prec</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span>;
 }
 
+<span class='doccomment'>/// A trait for statistics which allows to add new values in a way so that the numerical</span>
+<span class='doccomment'>/// uncertainty has less impact on the final results.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>PreciseStats</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>: <span class='ident'>Sized</span> {
+    <span class='doccomment'>/// Adds a new values to the statistics using the Kahan summation algorithm</span>
+    <span class='doccomment'>/// described here: https://en.wikipedia.org/wiki/Kahan_summation_algorithm</span>
     <span class='kw'>fn</span> <span class='ident'>add_prec</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>elem</span>: <span class='ident'>T</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>, <span class='ident'>sumc</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>T</span>, <span class='ident'>rmsc</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>T</span>);
 }
 
@@ -1201,11 +1217,9 @@
     <script>
         window.rootPath = "../../../../../../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../../../../jquery.js"></script>
     <script src="../../../../../../main.js"></script>
-    <script src="../../../../../../extra.js"></script>
     <script defer src="../../../../../../search-index.js"></script>
 </body>
 </html>
