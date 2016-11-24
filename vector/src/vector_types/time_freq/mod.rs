@@ -122,10 +122,17 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 let dest = array_to_complex_mut(&mut temp[0..len]);
                 let other_iter = &other[other_start..other_end];
                 let conv_len = conv_len as isize;
-                for (num, i) in dest.iter_mut().zip(0..) {
+                Chunk::execute_with_range(Complexity::Large,
+                                      &self.multicore_settings,
+                                      dest,
+                                      1,
+                                      (complex, other_iter),
+                                      move |dest, range, (complex, other_iter)| {
+                    for (num, i) in dest.iter_mut().zip(range) {
                     *num =
-                        Self::convolve_iteration(complex, other_iter, i, conv_len, full_conv_len);
-                }
+                        Self::convolve_iteration(complex, other_iter, i as isize, conv_len, full_conv_len);
+                    }
+                });
             }
             mem::swap(&mut temp, &mut self.data);
             buffer.free(temp);
@@ -141,9 +148,17 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 let dest = &mut temp[0..len];
                 let other_iter = &other[other_start..other_end];
                 let conv_len = conv_len as isize;
-                for (num, i) in dest.iter_mut().zip(0..) {
-                    *num = Self::convolve_iteration(data, other_iter, i, conv_len, full_conv_len);
-                }
+                Chunk::execute_with_range(Complexity::Large,
+                                      &self.multicore_settings,
+                                      dest,
+                                      1,
+                                      (data, other_iter),
+                                      move |dest, range, (data, other_iter)| {
+                    for (num, i) in dest.iter_mut().zip(range) {
+                    *num =
+                        Self::convolve_iteration(data, other_iter, i as isize, conv_len, full_conv_len);
+                    }
+                });
             }
             mem::swap(&mut temp, &mut self.data);
             buffer.free(temp);
@@ -379,11 +394,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                                              simd_mul: RMul,
                                                              simd_sum: RSum)
         where B: Buffer<S, T>,
-              TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT>,
+              TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT> + Send + Sync,
               C: Fn(&[T]) -> &[TT],
               CMut: Fn(&mut [T]) -> &mut [TT],
-              RMul: Fn(T::Reg, T::Reg) -> T::Reg,
-              RSum: Fn(T::Reg) -> TT
+              RMul: Fn(T::Reg, T::Reg) -> T::Reg + Sync,
+              RSum: Fn(T::Reg) -> TT + Sync
     {
         let points = self.points();
         let other_points = vector.points();
@@ -416,21 +431,30 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let (scalar_left, _, vectorization_length) =
                 T::Reg::calc_data_alignment_reqs(&data[0..len]);
             let simd = T::Reg::array_to_regs(&data[scalar_left..vectorization_length]);
-            for num in &mut dest[scalar_len..points - scalar_len] {
-                let end = (i + conv_len) as usize;
-                let shift = end % shifts.len();
-                let end = (end + shifts.len() - 1) / shifts.len();
-                let mut sum = T::Reg::splat(T::zero());
-                let shifted = &shifts[shift];
-                let simd_iter = simd[end - shifted.len()..end].iter();
-                let iteration = simd_iter.zip(shifted);
-                for (this, other) in iteration {
-                    sum = sum + simd_mul(*this, *other);
-                }
-                (*num) = simd_sum(sum);
-                i += 1;
-            }
+            Chunk::execute_with_range(Complexity::Large,
+                                      &self.multicore_settings,
+                                      &mut dest[scalar_len..points - scalar_len],
+                                      1,
+                                      simd,
+                                      move |dest_range, range, simd| {
+                      let mut i = (scalar_len + range.start) as isize;
+                      for num in dest_range {
+                          let end = (i + conv_len) as usize;
+                          let shift = end % shifts.len();
+                          let end = (end + shifts.len() - 1) / shifts.len();
+                          let mut sum = T::Reg::splat(T::zero());
+                          let shifted = &shifts[shift];
+                          let simd_iter = simd[end - shifted.len()..end].iter();
+                          let iteration = simd_iter.zip(shifted);
+                          for (this, other) in iteration {
+                              sum = sum + simd_mul(*this, *other);
+                          }
+                          (*num) = simd_sum(sum);
+                          i += 1;
+                      }
+                });
 
+            let mut i = (points - scalar_len) as isize;
             for num in &mut dest[points - scalar_len..points] {
                 *num = Self::convolve_iteration(complex, other_iter, i, conv_len, full_conv_len);
                 i += 1;
