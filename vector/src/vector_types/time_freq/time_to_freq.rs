@@ -150,7 +150,7 @@ impl<S, T, N, D> TimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
     fn fft<B>(self, buffer: &mut B) -> Self::FreqResult
         where B: Buffer<S, T> {
         let mut result = self.plain_fft(buffer);
-        result.fft_shift(buffer);
+        result.fft_shift();
         result
     }
 
@@ -158,7 +158,7 @@ impl<S, T, N, D> TimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
         where B: Buffer<S, T> {
         self.apply_window(window);
         let mut result = self.plain_fft(buffer);
-        result.fft_shift(buffer);
+        result.fft_shift();
         result
     }
 }

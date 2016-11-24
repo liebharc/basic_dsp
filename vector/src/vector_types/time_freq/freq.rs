@@ -30,10 +30,10 @@ pub trait FrequencyDomainOperations<S, T>
     fn mirror<B>(&mut self, buffer: &mut B) where B: Buffer<S, T>;
 
     /// Swaps vector halves after a Fourier Transformation.
-    fn fft_shift<B>(&mut self, buffer: &mut B) where B: Buffer<S, T>;
+    fn fft_shift(&mut self);
 
     /// Swaps vector halves before an Inverse Fourier Transformation.
-    fn ifft_shift<B>(&mut self, buffer: &mut B) where B: Buffer<S, T>;
+    fn ifft_shift(&mut self);
 }
 
 impl<S, T, N, D> FrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
@@ -89,14 +89,12 @@ impl<S, T, N, D> FrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
         buffer.free(temp);
     }
 
-    fn fft_shift<B>(&mut self, _: &mut B)
-        where B: Buffer<S, T>
+    fn fft_shift(&mut self)
     {
         self.swap_halves_priv(true)
     }
 
-    fn ifft_shift<B>(&mut self, _: &mut B)
-        where B: Buffer<S, T>
+    fn ifft_shift(&mut self)
     {
         self.swap_halves_priv(false)
     }

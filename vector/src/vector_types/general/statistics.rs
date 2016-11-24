@@ -70,9 +70,6 @@ pub trait StatisticsOps<T>: Sized
     /// }
     /// ```
     fn statistics_split(&self, len: usize) -> Vec<T>;
-
-    #[deprecated(since="0.4.1", note="Use `statistics_split` which is the same method but comes with correct spelling")]
-    fn statistics_splitted(&self, len: usize) -> Vec<T>;
 }
 
 pub trait SumOps<T>: Sized
@@ -378,10 +375,6 @@ impl<S, T, N, D> StatisticsOps<Statistics<T>> for DspVec<S, T, N, D>
 
         Statistics::merge_cols(&chunks)
     }
-
-    fn statistics_splitted(&self, len: usize) -> Vec<Statistics<T>> {
-        self.statistics_split(len)
-    }
 }
 
 impl<S, T, N, D> SumOps<T> for DspVec<S, T, N, D>
@@ -513,10 +506,6 @@ impl<S, T, N, D> StatisticsOps<Statistics<Complex<T>>> for DspVec<S, T, N, D>
         });
 
         Statistics::merge_cols(&chunks)
-    }
-
-    fn statistics_splitted(&self, len: usize) -> Vec<Statistics<Complex<T>>> {
-        self.statistics_split(len)
     }
 }
 

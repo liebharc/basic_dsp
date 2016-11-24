@@ -180,15 +180,15 @@ macro_rules! add_mat_impl {
                     }
 				}
 
-				fn fft_shift<B>(&mut self, buffer: &mut B) where B: Buffer<S, T> {
+				fn fft_shift(&mut self) {
                     for v in self.rows_mut() {
-                        v.fft_shift(buffer);
+                        v.fft_shift();
                     }
 				}
 
-				fn ifft_shift<B>(&mut self, buffer: &mut B) where B: Buffer<S, T> {
+				fn ifft_shift(&mut self) {
                     for v in self.rows_mut() {
-                        v.ifft_shift(buffer);
+                        v.ifft_shift();
                     }
 				}
 			}

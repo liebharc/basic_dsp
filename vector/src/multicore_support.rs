@@ -27,11 +27,7 @@ pub enum Complexity {
 #[repr(C)]
 pub struct MultiCoreSettings {
     /// All operations will be limited to not create more threads than specified here
-    pub core_limit: usize,
-
-    /// Indicates whether the temp arrays of a vector should already be allocated during
-    /// construction
-    pub early_temp_allocation: bool,
+    pub core_limit: usize
 }
 
 impl MultiCoreSettings {
@@ -39,14 +35,13 @@ impl MultiCoreSettings {
     pub fn default() -> MultiCoreSettings {
         // Half because we assume hyper threading and that we will keep a core so busy
         // that hyper threading isn't of any use
-        Self::new(num_cpus::get() / 2, false)
+        Self::new(num_cpus::get() / 2)
     }
 
     /// Creates multi core settings with the given values.
-    pub fn new(core_limit: usize, early_temp_allocation: bool) -> MultiCoreSettings {
+    pub fn new(core_limit: usize) -> MultiCoreSettings {
         MultiCoreSettings {
-            core_limit: if core_limit >= 1 { core_limit } else { 1 },
-            early_temp_allocation: early_temp_allocation,
+            core_limit: if core_limit >= 1 { core_limit } else { 1 }
         }
     }
 }

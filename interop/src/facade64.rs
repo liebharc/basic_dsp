@@ -47,8 +47,7 @@ pub extern "C" fn new_with_performance_options64(is_complex: i32,
                                                  init_value: f64,
                                                  length: usize,
                                                  delta: f64,
-                                                 core_limit: usize,
-                                                 early_temp_allocation: bool)
+                                                 core_limit: usize)
                                                  -> VecBox {
     let domain = if domain == 0 {
         DataDomain::Time
@@ -61,7 +60,7 @@ pub extern "C" fn new_with_performance_options64(is_complex: i32,
         buffer: SingleBuffer::new(),
     });
     vector.vec.set_delta(delta);
-    vector.vec.set_multicore_settings(MultiCoreSettings::new(core_limit, early_temp_allocation));
+    vector.vec.set_multicore_settings(MultiCoreSettings::new(core_limit));
     vector
 
 }
@@ -739,35 +738,6 @@ pub extern "C" fn complex_statistics_split64(vector: &VecBuf,
     0
 }
 
-
-#[no_mangle]
-pub extern "C" fn real_statistics_splitted64(vector: &VecBuf,
-                                             data: *mut Statistics<f64>,
-                                             len: usize)
-                                             -> i32 {
-    let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
-    let stats = vector.vec.statistics_split(data.len());
-    for i in 0..stats.len() {
-        data[i] = stats[i];
-    }
-
-    0
-}
-
-#[no_mangle]
-pub extern "C" fn complex_statistics_splitted64(vector: &VecBuf,
-                                                data: *mut Statistics<Complex64>,
-                                                len: usize)
-                                                -> i32 {
-    let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
-    let stats = vector.vec.statistics_split(data.len());
-    for i in 0..stats.len() {
-        data[i] = stats[i];
-    }
-
-    0
-}
-
 #[no_mangle]
 pub extern "C" fn fft64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.trans_vec(|v, b| Ok(v.fft(b)))
@@ -799,11 +769,11 @@ pub extern "C" fn mirror64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
 }
 
 pub extern "C" fn fft_shift64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
-    vector.convert_vec(|v, b| Ok(v.fft_shift(b)))
+    vector.convert_vec(|v, _| Ok(v.fft_shift()))
 }
 
 pub extern "C" fn ifft_shift64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
-    vector.convert_vec(|v, b| Ok(v.ifft_shift(b)))
+    vector.convert_vec(|v, _| Ok(v.ifft_shift()))
 }
 
 /// `window` argument is translated to:

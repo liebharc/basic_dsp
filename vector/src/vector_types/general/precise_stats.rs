@@ -51,12 +51,12 @@ pub trait PreciseStatisticsOps<T>: Sized
     /// # fn main() {
     /// let vector: Vec<f32> = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
     /// let vector = vector.to_complex_time_vec();
-    /// let result = vector.statistics_splitted_prec(2);
+    /// let result = vector.statistics_split_prec(2);
     /// assert_eq!(result[0].sum, Complex64::new(6.0, 8.0));
     /// assert_eq!(result[1].sum, Complex64::new(3.0, 4.0));
     /// }
     /// ```
-    fn statistics_splitted_prec(&self, len: usize) -> Vec<T>;
+    fn statistics_split_prec(&self, len: usize) -> Vec<T>;
 }
 
 pub trait PreciseSumOps<T>: Sized
@@ -127,7 +127,7 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<f64>> for DspVec<S, f32, N, D>
         Statistics::merge(&chunks)
     }
 
-    fn statistics_splitted_prec(&self, len: usize) -> Vec<Statistics<f64>> {
+    fn statistics_split_prec(&self, len: usize) -> Vec<Statistics<f64>> {
         if len == 0 {
             return Vec::new();
         }
@@ -183,7 +183,7 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<f64>> for DspVec<S, f64, N, D>
         Statistics::merge(&chunks)
     }
 
-    fn statistics_splitted_prec(&self, len: usize) -> Vec<Statistics<f64>> {
+    fn statistics_split_prec(&self, len: usize) -> Vec<Statistics<f64>> {
         if len == 0 {
             return Vec::new();
         }
@@ -321,7 +321,7 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<Complex<f64>>> for DspVec<S, f32, 
         Statistics::merge(&chunks)
     }
 
-    fn statistics_splitted_prec(&self, len: usize) -> Vec<Statistics<Complex<f64>>> {
+    fn statistics_split_prec(&self, len: usize) -> Vec<Statistics<Complex<f64>>> {
         if len == 0 {
             return Vec::new();
         }
@@ -379,7 +379,7 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<Complex<f64>>> for DspVec<S, f64, 
         Statistics::merge(&chunks)
     }
 
-    fn statistics_splitted_prec(&self, len: usize) -> Vec<Statistics<Complex<f64>>> {
+    fn statistics_split_prec(&self, len: usize) -> Vec<Statistics<Complex<f64>>> {
         if len == 0 {
             return Vec::new();
         }

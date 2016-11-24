@@ -141,7 +141,7 @@ impl<S, T, N, D> FrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
       where B: Buffer<S, T> {
           let points = self.points();
           self.scale(Complex::<T>::new(T::one() / T::from(points).unwrap(), T::zero()));
-          self.ifft_shift(buffer);
+          self.ifft_shift();
           self.plain_ifft(buffer)
     }
 
@@ -193,7 +193,7 @@ impl<S, T, N, D> SymmetricFrequencyToTimeDomainOperations<S, T> for DspVec<S, T,
        where B: Buffer<S, T> {
        let points = self.points();
        self.scale(Complex::<T>::new(T::one() / T::from(points).unwrap(), T::zero()));
-       self.ifft_shift(buffer);
+       self.ifft_shift();
        self.plain_sifft(buffer)
    }
 

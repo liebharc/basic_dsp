@@ -37,26 +37,6 @@ pub trait ReorganizeDataOps<T>
     fn swap_halves(&mut self);
 }
 
-#[deprecated(since="0.4.1", note="please use `ReorganizeDataOps` instead which offers the same performance without a buffer")]
-pub trait ReorganizeDataOpsBuffered<S, T>
-    where T: RealNumber,
-          S: ToSliceMut<T>
-{
-    /// This function swaps both halves of the vector. This operation is also called FFT shift
-    /// Use it after a `plain_fft` to get a spectrum which is centered at `0 Hz`.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use basic_dsp_vector::*;
-    /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();
-    /// let mut buffer = SingleBuffer::new();
-    /// vector.swap_halves_b(&mut buffer);
-    /// assert_eq!([5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0], vector[..]);
-    /// ```
-    fn swap_halves_b<B>(&mut self, buffer: &mut B) where B: Buffer<S, T>;
-}
-
 /// An option which defines how a vector should be padded
 #[derive(Copy)]
 #[derive(Clone)]
@@ -249,20 +229,6 @@ impl<S, T, N, D> ReorganizeDataOps<T> for DspVec<S, T, N, D>
     }
 
     fn swap_halves(&mut self) {
-        self.swap_halves_priv(true);
-    }
-}
-
-#[allow(deprecated)]
-impl<S, T, N, D> ReorganizeDataOpsBuffered<S, T> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T> + Owner,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
-{
-    fn swap_halves_b<B>(&mut self, _: &mut B)
-        where B: Buffer<S, T>
-    {
         self.swap_halves_priv(true);
     }
 }
