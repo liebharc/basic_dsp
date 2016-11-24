@@ -892,6 +892,9 @@
 <span id="848">848</span>
 <span id="849">849</span>
 <span id="850">850</span>
+<span id="851">851</span>
+<span id="852">852</span>
+<span id="853">853</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! This module allows to combine certain operations into one operation. Since one</span>
 <span class='doccomment'>//! many machines the speed of many DSP operations is limited by the memory bus speed</span>
@@ -938,23 +941,26 @@
 <span class='doccomment'>//! #       assert!((left[i] - right[i]) &lt; 1e-2);</span>
 <span class='doccomment'>//! #   }</span>
 <span class='doccomment'>//! # }</span>
-<span class='doccomment'>//! let a = RealTimeVector32::from_array(&amp;[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]);</span>
-<span class='doccomment'>//! let b = RealTimeVector32::from_constant(0.0, 8);</span>
+<span class='doccomment'>//! let a = vec!(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8).to_real_time_vec();</span>
+<span class='doccomment'>//! let b = vec!(0.0; 8).to_real_time_vec();</span>
 <span class='doccomment'>//! let ops = multi_ops2(a, b);</span>
-<span class='doccomment'>//! let ops = ops.add_ops(|a, b| {</span>
-<span class='doccomment'>//!     let a = a.scale(2.0 * PI);</span>
-<span class='doccomment'>//!     let b = b.clone_from(&amp;a);</span>
-<span class='doccomment'>//!     let a = a.sin();</span>
-<span class='doccomment'>//!     let b = b.cos();</span>
-<span class='doccomment'>//!     let a = a.mul(&amp;b).abs();</span>
-<span class='doccomment'>//!     let a_db = a.log(10.0).scale(10.0);</span>
-<span class='doccomment'>//!     (a_db, b)</span>
+<span class='doccomment'>//! let ops = ops.add_ops(|mut a, mut b| {</span>
+<span class='doccomment'>//!     a.scale(2.0 * PI);</span>
+<span class='doccomment'>//!     b.clone_from(&amp;a);</span>
+<span class='doccomment'>//!     a.sin();</span>
+<span class='doccomment'>//!     b.cos();</span>
+<span class='doccomment'>//!     a.mul(&amp;b);</span>
+<span class='doccomment'>//!     a.abs();</span>
+<span class='doccomment'>//!     a.log(10.0);</span>
+<span class='doccomment'>//!     a.scale(10.0);</span>
+<span class='doccomment'>//!     (a, b)</span>
 <span class='doccomment'>//! });</span>
-<span class='doccomment'>//! let (a, b) = ops.get().expect(&quot;Ignoring error handling in examples&quot;);</span>
+<span class='doccomment'>//! let mut buffer = SingleBuffer::new();</span>
+<span class='doccomment'>//! let (a, b) = ops.get(&amp;mut buffer).expect(&quot;Ignoring error handling in examples&quot;);</span>
 <span class='doccomment'>//! close(&amp;[0.80902, 0.30902, -0.30902, -0.80902, -1.00000, -0.80902, -0.30902, 0.30902],</span>
-<span class='doccomment'>//! 		  b.real(0..));</span>
+<span class='doccomment'>//! 		  &amp;b[..]);</span>
 <span class='doccomment'>//! close(&amp;[-3.2282, -5.3181, -5.3181, -3.2282, -159.1199, -3.2282, -5.3181, -5.3181],</span>
-<span class='doccomment'>//! 	      a.real(0..));</span>
+<span class='doccomment'>//! 	      &amp;a[..]);</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
 
