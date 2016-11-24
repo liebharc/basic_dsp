@@ -443,7 +443,9 @@ macro_rules! convolve_vector {
                mem::swap(res, &mut row.data)
            }
 
-           $buffer.free(result.pop().expect("Result should not be empty"));
+           while result.len() > 0 {
+            $buffer.free(result.pop().expect("Result should not be empty"));
+           } 
 
            Ok(())
         }

@@ -1,6 +1,10 @@
 # `basic_dsp`
 Changes:
 
+## Version 0.4.2
+
+- Fix: Buffer `convolve_vector` for matrices now returns all buffers back to the pool.
+
 ## Version 0.4.1
 Minor additions and improvements.
 
