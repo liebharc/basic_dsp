@@ -1,3 +1,68 @@
+//! This module allows to combine certain operations into one operation. Since one
+//! many machines the speed of many DSP operations is limited by the memory bus speed
+//! this approach may result in better register and cache usage and thus decrease
+//! the pressure on the memory bus. As with all performance hints remember
+//! rule number 1: Benchmark your code. This is especially true at this very early
+//! state of the library.
+//!
+//! With this approach we change how we operate on vectors. If you perform
+//! `M` operations on a vector with the length `N` you iterate wit hall other methods like this:
+//!
+//! ```no_run
+//! // pseudocode:
+//! // for m in M:
+//! //  for n in N:
+//! //    execute m on n
+//! ```
+//!
+//! with this method the pattern is changed slightly:
+//!
+//! ```no_run
+//! // pseudocode:
+//! // for n in N:
+//! //  for m in M:
+//! //    execute m on n
+//! ```
+//!
+//! Both variants have the same complexity however the second one is beneficial since we
+//! have increased locality this way. This should help us by making better use of registers and
+//! CPU caches.
+//!
+//! Only operations can be combined where the result of every element in the vector
+//! is independent from any other element in the vector.
+//!
+//! # Examples
+//!
+//! ```
+//! use std::f32::consts::PI;
+//! use basic_dsp_vector::*;
+//! use basic_dsp_vector::combined_ops::*;
+//! # fn close(left: &[f32], right: &[f32]) {
+//! #   assert_eq!(left.len(), right.len());
+//! #   for i in 0..left.len() {
+//! #       assert!((left[i] - right[i]) < 1e-2);
+//! #   }
+//! # }
+//! let a = RealTimeVector32::from_array(&[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]);
+//! let b = RealTimeVector32::from_constant(0.0, 8);
+//! let ops = multi_ops2(a, b);
+//! let ops = ops.add_ops(|a, b| {
+//!     let a = a.scale(2.0 * PI);
+//!     let b = b.clone_from(&a);
+//!     let a = a.sin();
+//!     let b = b.cos();
+//!     let a = a.mul(&b).abs();
+//!     let a_db = a.log(10.0).scale(10.0);
+//!     (a_db, b)
+//! });
+//! let (a, b) = ops.get().expect("Ignoring error handling in examples");
+//! close(&[0.80902, 0.30902, -0.30902, -0.80902, -1.00000, -0.80902, -0.30902, 0.30902],
+//! 		  b.real(0..));
+//! close(&[-3.2282, -5.3181, -5.3181, -3.2282, -159.1199, -3.2282, -5.3181, -5.3181],
+//! 	      a.real(0..));
+//! ```
+//!
+
 mod operations_enum;
 pub use self::operations_enum::*;
 mod prepared_ops;
@@ -16,6 +81,153 @@ use super::{round_len, ToSliceMut, DspVec, ErrorReason, MetaData, TransRes, Vect
             RealOrComplexData, TimeOrFrequencyData, Domain, NumberSpace, DataDomain};
 use std::sync::{Arc, Mutex};
 use std::fmt;
+
+fn require_complex(is_complex: bool) -> Result<bool, ErrorReason> {
+    if is_complex {
+        Ok(is_complex)
+    } else {
+        Err(ErrorReason::InputMustBeComplex)
+    }
+}
+
+fn complex_to_real(is_complex: bool) -> Result<bool, ErrorReason> {
+    if is_complex {
+        Ok(false)
+    } else {
+        Err(ErrorReason::InputMustBeComplex)
+    }
+}
+
+fn real_to_complex(is_complex: bool) -> Result<bool, ErrorReason> {
+    if is_complex {
+        Err(ErrorReason::InputMustBeReal)
+    } else {
+        Ok(true)
+    }
+}
+
+fn require_real(is_complex: bool) -> Result<bool, ErrorReason> {
+    if is_complex {
+        Err(ErrorReason::InputMustBeReal)
+    } else {
+        Ok(is_complex)
+    }
+}
+
+fn evaluate_number_space_transition<T>(is_complex: bool,
+                                           operation: &Operation<T>)
+                                           -> Result<bool, ErrorReason>
+    where T: RealNumber
+{
+    match *operation {
+        // Real Ops
+        Operation::AddReal(_, _) |
+        Operation::MultiplyReal(_, _) |
+        Operation::Abs(_) |
+        Operation::MapReal(_, _)
+            => require_real(is_complex),
+        Operation::ToComplex(_) => real_to_complex(is_complex),
+        // Complex Ops
+        Operation::AddComplex(_, _) |
+        Operation::MultiplyComplex(_, _) |
+        Operation::ComplexConj(_) |
+        Operation::MultiplyComplexExponential(_, _, _) |
+        Operation::MapComplex(_, _)
+            => require_complex(is_complex),
+        Operation::Magnitude(_) |
+        Operation::MagnitudeSquared(_) |
+        Operation::ToReal(_) |
+        Operation::ToImag(_) | 
+        Operation::Phase(_)
+            => complex_to_real(is_complex),
+        // General Ops
+        Operation::AddPoints(_) |
+        Operation::SubPoints(_) |
+        Operation::MulPoints(_) |
+        Operation::DivPoints(_) |
+        Operation::AddVector(_, _) |
+        Operation::SubVector(_, _) |
+        Operation::MulVector(_, _) |
+        Operation::DivVector(_, _) |
+        Operation::Sqrt(_) |
+        Operation::Square(_) |
+        Operation::Root(_, _) |
+        Operation::Powf(_, _) |
+        Operation::Ln(_) |
+        Operation::Exp(_) |
+        Operation::Log(_, _) |
+        Operation::Expf(_, _) |
+        Operation::Sin(_) |
+        Operation::Cos(_) |
+        Operation::Tan(_) |
+        Operation::ASin(_) |
+        Operation::ACos(_) |
+        Operation::ATan(_) |
+        Operation::Sinh(_) |
+        Operation::Cosh(_) |
+        Operation::Tanh(_) |
+        Operation::ASinh(_) |
+        Operation::ACosh(_) |
+        Operation::ATanh(_) |
+        Operation::CloneFrom(_, _)
+            => Ok(is_complex)
+    }
+}
+
+fn get_argument<T>(operation: &Operation<T>) -> usize
+    where T: RealNumber
+{
+    match *operation {
+        // Real Ops
+        Operation::AddReal(arg, _) |
+        Operation::MultiplyReal(arg, _) |
+        Operation::Abs(arg) |
+        Operation::ToComplex(arg) |
+        Operation::MapReal(arg, _) |
+        // Complex Ops
+        Operation::AddComplex(arg, _) |
+        Operation::MultiplyComplex(arg, _) |
+        Operation::Magnitude(arg) |
+        Operation::MagnitudeSquared(arg) |
+        Operation::ComplexConj(arg) |
+        Operation::ToReal(arg) |
+        Operation::ToImag(arg) |
+        Operation::Phase(arg) |
+        Operation::MultiplyComplexExponential(arg, _, _) |
+        Operation::MapComplex(arg, _) |
+        // General Ops
+        Operation::AddPoints(arg) |
+        Operation::SubPoints(arg) |
+        Operation::MulPoints(arg) |
+        Operation::DivPoints(arg) |
+        Operation::AddVector(arg, _) |
+        Operation::SubVector(arg, _) |
+        Operation::MulVector(arg, _) |
+        Operation::DivVector(arg, _) |
+        Operation::Sqrt(arg) |
+        Operation::Square(arg) |
+        Operation::Root(arg, _) |
+        Operation::Powf(arg, _) |
+        Operation::Ln(arg) |
+        Operation::Exp(arg) |
+        Operation::Log(arg, _) |
+        Operation::Expf(arg, _) |
+        Operation::Sin(arg) |
+        Operation::Cos(arg) |
+        Operation::Tan(arg) |
+        Operation::ASin(arg) |
+        Operation::ACos(arg) |
+        Operation::ATan(arg) |
+        Operation::Sinh(arg) |
+        Operation::Cosh(arg) |
+        Operation::Tanh(arg) |
+        Operation::ASinh(arg) |
+        Operation::ACosh(arg) |
+        Operation::ATanh(arg) |
+        Operation::CloneFrom(arg, _)
+            => arg
+    }
+}
 
 /// An identifier is just a placeholder for a data type
 /// used to ensure already at compile time that operations are valid.
