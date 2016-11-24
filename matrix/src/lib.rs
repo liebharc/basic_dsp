@@ -1,3 +1,9 @@
+//! In this lib a matrix is simply a collection of
+//! vectors. The idea is that the matrix types can be used to reduce the size
+//! of a large matrix and that the return types are basic enough
+//! so that other specialized matrix libs can do the rest of the work, e.g.
+//! inverting the resulting matrix.
+
 extern crate basic_dsp_vector;
 extern crate num;
 
@@ -19,6 +25,7 @@ pub use self::real::*;
 mod time_freq;
 pub use self::time_freq::*;
 
+/// A matrix which can hold 1 to N vectors.
 pub struct MatrixMxN<V, S, T>
     where T: RealNumber,
           S: ToSlice<T>,
@@ -29,6 +36,7 @@ pub struct MatrixMxN<V, S, T>
     number_type: std::marker::PhantomData<T>,
 }
 
+/// A matrix which can hold exactly 2 vectors.
 pub struct Matrix2xN<V, S, T>
     where T: RealNumber,
           V: Vector<T>
@@ -38,6 +46,7 @@ pub struct Matrix2xN<V, S, T>
     number_type: std::marker::PhantomData<T>,
 }
 
+/// A matrix which can hold exactly 3 vectors.
 pub struct Matrix3xN<V, S, T>
     where T: RealNumber,
           V: Vector<T>
@@ -47,6 +56,7 @@ pub struct Matrix3xN<V, S, T>
     number_type: std::marker::PhantomData<T>,
 }
 
+/// A matrix which can hold exactly 4 vectors.
 pub struct Matrix4xN<V, S, T>
     where T: RealNumber,
           V: Vector<T>
@@ -56,48 +66,88 @@ pub struct Matrix4xN<V, S, T>
     number_type: std::marker::PhantomData<T>,
 }
 
+/// A matrix which can hold 1 to N vectors of 32 bit floating point numbers in any number space or domain.
 pub type Matrix32xN = MatrixMxN<GenDspVec32, Vec<f32>, f32>;
+/// A matrix which can hold 1 to N vectors of 64 bit floating point numbers in any number space or domain.
 pub type Matrix64xN = MatrixMxN<GenDspVec64, Vec<f64>, f64>;
+/// A matrix which can hold 1 to N vectors of 32 bit floating point numbers in real number space and time domain.
 pub type RealTimeMatrix32xN = MatrixMxN<RealTimeVec32, Vec<f32>, f32>;
+/// A matrix which can hold 1 to N vectors of 64 bit floating point numbers in real number space and time domain.
 pub type RealTimeMatrix64xN = MatrixMxN<RealTimeVec64, Vec<f64>, f64>;
+/// A matrix which can hold 1 to N vectors of 32 bit floating point numbers in complex number space and time domain.
 pub type ComplexTimeMatrix32xN = MatrixMxN<ComplexTimeVec32, Vec<f32>, f32>;
+/// A matrix which can hold 1 to N vectors of 64 bit floating point numbers in complex number space and time domain.
 pub type ComplexTimeMatrix64xN = MatrixMxN<ComplexTimeVec64, Vec<f64>, f64>;
+/// A matrix which can hold 1 to N vectors of 32 bit floating point numbers in real number space and frequency domain.
 pub type RealFreqMatrix32xN = MatrixMxN<RealFreqVec32, Vec<f32>, f32>;
+/// A matrix which can hold 1 to N vectors of 64 bit floating point numbers in real number space and frequency domain.
 pub type RealFreqMatrix64xN = MatrixMxN<RealFreqVec64, Vec<f64>, f64>;
+/// A matrix which can hold 1 to N vectors of 32 bit floating point numbers in complex number space and frequency domain.
 pub type ComplexFreqMatrix32xN = MatrixMxN<ComplexFreqVec32, Vec<f32>, f32>;
+/// A matrix which can hold 1 to N vectors of 64 bit floating point numbers in complex number space and frequency domain.
 pub type ComplexFreqMatrix64xN = MatrixMxN<ComplexFreqVec64, Vec<f64>, f64>;
 
+/// A matrix which can hold exactly 2 vectors of 32 bit floating point numbers in any number space or domain.
 pub type Matrix32x2 = Matrix2xN<GenDspVec32, Vec<f32>, f32>;
+/// A matrix which can hold exactly 2 vectors of 64 bit floating point numbers in any number space or domain.
 pub type Matrix64x2 = Matrix2xN<GenDspVec64, Vec<f64>, f64>;
+/// A matrix which can hold exactly 2 vectors of 32 bit floating point numbers in real number space and time domain.
 pub type RealTimeMatrix32x2 = Matrix2xN<RealTimeVec32, Vec<f32>, f32>;
+/// A matrix which can hold exactly 2 vectors of 64 bit floating point numbers in real number space and time domain.
 pub type RealTimeMatrix64x2 = Matrix2xN<RealTimeVec64, Vec<f64>, f64>;
+/// A matrix which can hold exactly 2 vectors of 32 bit floating point numbers in complex number space and time domain.
 pub type ComplexTimeMatrix32x2 = Matrix2xN<ComplexTimeVec32, Vec<f32>, f32>;
+/// A matrix which can hold exactly 2 vectors of 64 bit floating point numbers in complex number space and time domain.
 pub type ComplexTimeMatrix64x2 = Matrix2xN<ComplexTimeVec64, Vec<f64>, f64>;
+/// A matrix which can hold exactly 2 vectors of 32 bit floating point numbers in real number space and frequency domain.
 pub type RealFreqMatrix32x2 = Matrix2xN<RealFreqVec32, Vec<f32>, f32>;
+/// A matrix which can hold exactly 2 vectors of 64 bit floating point numbers in real number space and frequency domain.
 pub type RealFreqMatrix64x2 = Matrix2xN<RealFreqVec64, Vec<f64>, f64>;
+/// A matrix which can hold exactly 2 vectors of 32 bit floating point numbers in complex number space and frequency domain.
 pub type ComplexFreqMatrix32x2 = Matrix2xN<ComplexFreqVec32, Vec<f32>, f32>;
+/// A matrix which can hold exactly 2 vectors of 64 bit floating point numbers in complex number space and frequency domain.
 pub type ComplexFreqMatrix64x2 = Matrix2xN<ComplexFreqVec64, Vec<f64>, f64>;
 
+/// A matrix which can hold exactly 3 vectors of 32 bit floating point numbers in any number space or domain.
 pub type Matrix32x3 = Matrix3xN<GenDspVec32, Vec<f32>, f32>;
+/// A matrix which can hold exactly 3 vectors of 64 bit floating point numbers in any number space or domain.
 pub type Matrix64x3 = Matrix3xN<GenDspVec64, Vec<f64>, f64>;
+/// A matrix which can hold exactly 3 vectors of 32 bit floating point numbers in real number space and time domain.
 pub type RealTimeMatrix32x3 = Matrix3xN<RealTimeVec32, Vec<f32>, f32>;
+/// A matrix which can hold exactly 3 vectors of 64 bit floating point numbers in real number space and time domain.
 pub type RealTimeMatrix64x3 = Matrix3xN<RealTimeVec64, Vec<f64>, f64>;
+/// A matrix which can hold exactly 3 vectors of 32 bit floating point numbers in complex number space and time domain.
 pub type ComplexTimeMatrix32x3 = Matrix3xN<ComplexTimeVec32, Vec<f32>, f32>;
+/// A matrix which can hold exactly 3 vectors of 64 bit floating point numbers in complex number space and time domain.
 pub type ComplexTimeMatrix64x3 = Matrix3xN<ComplexTimeVec64, Vec<f64>, f64>;
+/// A matrix which can hold exactly 3 vectors of 32 bit floating point numbers in real number space and frequency domain.
 pub type RealFreqMatrix32x3 = Matrix3xN<RealFreqVec32, Vec<f32>, f32>;
+/// A matrix which can hold exactly 4 vectors of 64 bit floating point numbers in real number space and frequency domain.
 pub type RealFreqMatrix64x3 = Matrix3xN<RealFreqVec64, Vec<f64>, f64>;
+/// A matrix which can hold exactly 4 vectors of 32 bit floating point numbers in complex number space and frequency domain.
 pub type ComplexFreqMatrix32x3 = Matrix3xN<ComplexFreqVec32, Vec<f32>, f32>;
+/// A matrix which can hold exactly 4 vectors of 64 bit floating point numbers in complex number space and frequency domain.
 pub type ComplexFreqMatrix64x3 = Matrix3xN<ComplexFreqVec64, Vec<f64>, f64>;
 
+/// A matrix which can hold exactly 4 vectors of 32 bit floating point numbers in any number space or domain.
 pub type Matrix32x4 = Matrix4xN<GenDspVec32, Vec<f32>, f32>;
+/// A matrix which can hold exactly 4 vectors of 64 bit floating point numbers in any number space or domain.
 pub type Matrix64x4 = Matrix4xN<GenDspVec64, Vec<f64>, f64>;
+/// A matrix which can hold exactly 4 vectors of 32 bit floating point numbers in real number space and time domain.
 pub type RealTimeMatrix32x4 = Matrix4xN<RealTimeVec32, Vec<f32>, f32>;
+/// A matrix which can hold exactly 4 vectors of 64 bit floating point numbers in real number space and time domain.
 pub type RealTimeMatrix64x4 = Matrix4xN<RealTimeVec64, Vec<f64>, f64>;
+/// A matrix which can hold exactly 4 vectors of 32 bit floating point numbers in complex number space and time domain.
 pub type ComplexTimeMatrix32x4 = Matrix4xN<ComplexTimeVec32, Vec<f32>, f32>;
+/// A matrix which can hold exactly 4 vectors of 64 bit floating point numbers in complex number space and time domain.
 pub type ComplexTimeMatrix64x4 = Matrix4xN<ComplexTimeVec64, Vec<f64>, f64>;
+/// A matrix which can hold exactly 4 vectors of 32 bit floating point numbers in real number space and frequency domain.
 pub type RealFreqMatrix32x4 = Matrix4xN<RealFreqVec32, Vec<f32>, f32>;
+/// A matrix which can hold exactly 4 vectors of 64 bit floating point numbers in real number space and frequency domain.
 pub type RealFreqMatrix64x4 = Matrix4xN<RealFreqVec64, Vec<f64>, f64>;
+/// A matrix which can hold exactly 4 vectors of 32 bit floating point numbers in complex number space and frequency domain.
 pub type ComplexFreqMatrix32x4 = Matrix4xN<ComplexFreqVec32, Vec<f32>, f32>;
+/// A matrix which can hold exactly 4 vectors of 64 bit floating point numbers in complex number space and frequency domain.
 pub type ComplexFreqMatrix64x4 = Matrix4xN<ComplexFreqVec64, Vec<f64>, f64>;
 
 /// Internal trait to transform a row storage type to another
