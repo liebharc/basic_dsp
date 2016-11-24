@@ -43,23 +43,26 @@
 //! #       assert!((left[i] - right[i]) < 1e-2);
 //! #   }
 //! # }
-//! let a = RealTimeVector32::from_array(&[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]);
-//! let b = RealTimeVector32::from_constant(0.0, 8);
+//! let a = vec!(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8).to_real_time_vec();
+//! let b = vec!(0.0; 8).to_real_time_vec();
 //! let ops = multi_ops2(a, b);
-//! let ops = ops.add_ops(|a, b| {
-//!     let a = a.scale(2.0 * PI);
-//!     let b = b.clone_from(&a);
-//!     let a = a.sin();
-//!     let b = b.cos();
-//!     let a = a.mul(&b).abs();
-//!     let a_db = a.log(10.0).scale(10.0);
-//!     (a_db, b)
+//! let ops = ops.add_ops(|mut a, mut b| {
+//!     a.scale(2.0 * PI);
+//!     b.clone_from(&a);
+//!     a.sin();
+//!     b.cos();
+//!     a.mul(&b);
+//!     a.abs();
+//!     a.log(10.0);
+//!     a.scale(10.0);
+//!     (a, b)
 //! });
-//! let (a, b) = ops.get().expect("Ignoring error handling in examples");
+//! let mut buffer = SingleBuffer::new();
+//! let (a, b) = ops.get(&mut buffer).expect("Ignoring error handling in examples");
 //! close(&[0.80902, 0.30902, -0.30902, -0.80902, -1.00000, -0.80902, -0.30902, 0.30902],
-//! 		  b.real(0..));
+//! 		  &b[..]);
 //! close(&[-3.2282, -5.3181, -5.3181, -3.2282, -159.1199, -3.2282, -5.3181, -5.3181],
-//! 	      a.real(0..));
+//! 	      &a[..]);
 //! ```
 //!
 
