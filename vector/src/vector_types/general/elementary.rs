@@ -59,6 +59,7 @@ pub trait OffsetOps<T>: Sized
     fn offset(&mut self, offset: T);
 }
 
+/// Elementary algebra on types: addition, subtraction, multiplication and division
 pub trait ElementaryOps<A> {
     /// Calculates the sum of `self + summand`. It consumes self and returns the result.
     /// # Failures
@@ -153,6 +154,7 @@ pub trait ElementaryOps<A> {
     fn div(&mut self, divisor: &A) -> VoidResult;
 }
 
+/// Elementary algebra on types where the argument might contain less data points than `self`.
 pub trait ElementaryWrapAroundOps<A> {
     /// Calculates the sum of `self + summand`. `summand` may be smaller than `self` as long
     /// as `self.len() % summand.len() == 0`. THe result is the same as it would be if

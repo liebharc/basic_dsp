@@ -5,27 +5,36 @@ use simd_extensions::*;
 use super::super::{array_to_complex, Vector, DspVec, ToSlice, Domain, RealNumberSpace,
                    ComplexNumberSpace};
 
-/// Statistics about numeric data
 #[repr(C)]
 #[derive(Copy)]
 #[derive(Clone)]
 #[derive(PartialEq)]
 #[derive(Debug)]
+/// Statistics about numeric data
 pub struct Statistics<T> {
+    /// Sum of all values
     pub sum: T,
+    /// How many numbers have been considered for the stats
     pub count: usize,
+    /// Average value
     pub average: T,
+    /// Root-mean-square or rms over all values.
     pub rms: T,
+    /// The smallest value.
     pub min: T,
+    /// The index of the smallest value.
     pub min_index: usize,
+    /// The largest value.
     pub max: T,
+    /// The index of the largest value.
     pub max_index: usize,
 }
 
+/// This trait offers operations to calculate statistics about the data in a type.
 pub trait StatisticsOps<T>: Sized
     where T: Sized
 {
-    /// Calculates the statistics of the data contained in the vector.
+    /// Calculates the statistics of the data.
     ///
     /// # Example
     ///
@@ -75,6 +84,7 @@ pub trait StatisticsOps<T>: Sized
     fn statistics_splitted(&self, len: usize) -> Vec<T>;
 }
 
+/// Offers operations to calculate the sum or the sum of squares.
 pub trait SumOps<T>: Sized
     where T: Sized
 {
@@ -111,12 +121,19 @@ pub trait SumOps<T>: Sized
     fn sum_sq(&self) -> T;
 }
 
+/// Operations on statistics.
 pub trait Stats<T>: Sized {
+    /// Creates an empty statistics struct.
     fn empty() -> Self;
+    /// Creates a vector of empty statistics structs.
     fn empty_vec(len: usize) -> Vec<Self>;
+    /// Creates a statistics struct which resembles an invalid result.
     fn invalid() -> Self;
+    /// Merges several statistics into one.
     fn merge(stats: &[Self]) -> Self;
+    /// Merges several vectors of statistics into one vector.
     fn merge_cols(stats: &[Vec<Self>]) -> Vec<Self>;
+    /// Adds a new value to the statistics, all statistic fields get updated.
     fn add(&mut self, elem: T, index: usize);
 }
 

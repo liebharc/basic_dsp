@@ -6,6 +6,8 @@ use super::super::{array_to_complex, Vector, DspVec, ToSlice, Domain, RealNumber
                    ComplexNumberSpace, Statistics, Stats};
 use super::{kahan_sum, kahan_sumb};               
 
+/// Offers the same functionality as the `StatisticsOps` trait but
+/// the statistics are calculated in a more precise (and slower) way.
 pub trait PreciseStatisticsOps<T>: Sized
     where T: Sized
 {
@@ -59,6 +61,8 @@ pub trait PreciseStatisticsOps<T>: Sized
     fn statistics_splitted_prec(&self, len: usize) -> Vec<T>;
 }
 
+/// Offers the same functionality as the `SumOps` trait but
+/// the sums are calculated in a more precise (and slower) way.
 pub trait PreciseSumOps<T>: Sized
     where T: Sized
 {
@@ -97,7 +101,11 @@ pub trait PreciseSumOps<T>: Sized
     fn sum_sq_prec(&self) -> T;
 }
 
+/// A trait for statistics which allows to add new values in a way so that the numerical
+/// uncertainty has less impact on the final results.
 pub trait PreciseStats<T>: Sized {
+    /// Adds a new values to the statistics using the Kahan summation algorithm
+    /// described here: https://en.wikipedia.org/wiki/Kahan_summation_algorithm
     fn add_prec(&mut self, elem: T, index: usize, sumc: &mut T, rmsc: &mut T);
 }
 

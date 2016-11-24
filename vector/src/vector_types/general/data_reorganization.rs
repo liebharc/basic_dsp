@@ -6,6 +6,7 @@ use multicore_support::*;
 use super::super::{array_to_complex_mut, VoidResult, Buffer, Owner, ErrorReason, NumberSpace,
                    Domain, ResizeOps, DspVec, Vector, ToSliceMut, MetaData};
 
+/// This trait allows to reorganize the data by changing positions of the individual elements.
 pub trait ReorganizeDataOps<T>
     where T: RealNumber
 {
@@ -37,6 +38,8 @@ pub trait ReorganizeDataOps<T>
     fn swap_halves(&mut self);
 }
 
+/// This trait allows to reorganize the data by changing positions of the individual elements. 
+/// Deprecated since it requires a buffer which is never used since there would be no beneifit in using it.
 #[deprecated(since="0.4.1", note="please use `ReorganizeDataOps` instead which offers the same performance without a buffer")]
 pub trait ReorganizeDataOpsBuffered<S, T>
     where T: RealNumber,
@@ -72,6 +75,7 @@ pub enum PaddingOption {
     Center,
 }
 
+/// A trait to insert zeros into the data at some specified positions.
 pub trait InsertZerosOps<T>
     where T: RealNumber
 {
@@ -120,6 +124,8 @@ pub trait InsertZerosOps<T>
     fn zero_interleave(&mut self, factor: u32) -> VoidResult;
 }
 
+/// A trait to insert zeros into the data at some specified positions. A buffer is used
+/// for types which can't be resized and/or to speed up the calculation.
 pub trait InsertZerosOpsBuffered<S, T>
     where T: RealNumber,
           S: ToSliceMut<T>
@@ -172,7 +178,7 @@ pub trait InsertZerosOpsBuffered<S, T>
     fn zero_interleave_b<B>(&mut self, buffer: &mut B, factor: u32) where B: Buffer<S, T>;
 }
 
-
+/// Splits the data into several smaller pieces of equal size.
 pub trait SplitOps {
     /// Splits the vector into several smaller vectors. `self.len()` must be dividable by
     /// `targets.len()` without a remainder and this condition must be true too
@@ -197,6 +203,7 @@ pub trait SplitOps {
     fn split_into(&self, targets: &mut [&mut Self]) -> VoidResult;
 }
 
+/// Merges several pieces of equal size into one data chunk.
 pub trait MergeOps {
     /// Merges several vectors into `self`. All vectors must have the same size and
     /// at least one vector must be provided.

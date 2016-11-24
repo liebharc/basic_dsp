@@ -1,6 +1,8 @@
 use RealNumber;
 use super::super::{array_to_complex_mut, Vector, DspVec, ToSliceMut, Domain, NumberSpace, MetaData};
 
+/// A trait to calculate the diff (1st derivative in a discrete number space) or cumulative sum 
+/// (integral  in a discrete number space).
 pub trait DiffSumOps {
     /// Calculates the delta of each elements to its previous element. This will decrease
     /// the vector length by one point.

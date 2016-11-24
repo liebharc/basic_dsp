@@ -66,6 +66,7 @@ pub trait ToComplexResult {
     type ComplexResult;
 }
 
+/// Specifies what the the result is if a type is transformed to time domain.
 pub trait ToTimeResult {
     /// Specifies what the the result is if a type is transformed to time domain.
     type TimeResult;
