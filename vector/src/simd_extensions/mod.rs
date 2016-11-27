@@ -1,5 +1,5 @@
 use num::complex::Complex;
-use num::Zero;
+use super::Zero;
 use std::mem;
 
 pub trait Simd<T>: Sized
@@ -62,7 +62,7 @@ pub trait SimdGeneric<T>: Simd<T>
 
     fn splat(value: T) -> Self;
 
-    fn store(&self, array: &mut [T], index: usize);
+    fn store(self, array: &mut [T], index: usize);
 }
 
 #[repr(packed)]
@@ -73,21 +73,9 @@ macro_rules! simd_generic_impl {
     ($data_type:ident, $reg:ident)
     =>
     {
-        impl Zero for $reg{
+        impl Zero for $reg {
             fn zero() -> $reg {
                 $reg::splat(0.0)
-            }
-            
-            fn is_zero(&self) -> bool {
-                // A better implementation is likely necessary as soon
-                // as this method is truely used
-                for n in &self.clone().to_array() {
-                    if *n != 0.0 {
-                        return false;
-                    }
-                }
-                
-                true
             }
         }
     
@@ -195,7 +183,7 @@ macro_rules! simd_generic_impl {
             }
 
             #[inline]
-            fn store(&self, array: &mut [$data_type], index: usize) {
+            fn store(self, array: &mut [$data_type], index: usize) {
                 $reg::store(self, array, index);
             }
         }
