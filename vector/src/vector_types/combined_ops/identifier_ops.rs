@@ -33,7 +33,7 @@ pub trait IdentifierOps {
     /// ```
     /// use basic_dsp_vector::*;
     /// use basic_dsp_vector::combined_ops::*;
-    /// let complex = vec!(1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let complex = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
     /// let ops = multi_ops1(complex);
     /// let ops = ops.add_ops(|mut v| {
     /// 	v.add_points();
@@ -41,7 +41,7 @@ pub trait IdentifierOps {
     /// });
     /// let mut buffer = SingleBuffer::new();
     /// let complex = ops.get(&mut buffer).expect("Ignoring error handling in examples");
-    /// assert_eq!([3.0, 2.0, 5.0, 4.0, 3.0, 2.0, 5.0, 4.0], &complex[..]);
+    /// assert_eq!([3.0, 2.0, 5.0, 4.0], &complex[..]);
     /// ```
     fn add_points(&mut self);
 
@@ -51,7 +51,7 @@ pub trait IdentifierOps {
     /// ```
     /// use basic_dsp_vector::*;
     /// use basic_dsp_vector::combined_ops::*;
-    /// let complex = vec!(3.0, 2.0, 5.0, 4.0, 3.0, 2.0, 5.0, 4.0).to_complex_time_vec();
+    /// let complex = vec!(3.0, 2.0, 5.0, 4.0).to_complex_time_vec();
     /// let ops = multi_ops1(complex);
     /// let ops = ops.add_ops(|mut v| {
     /// 	v.sub_points();
@@ -59,7 +59,7 @@ pub trait IdentifierOps {
     /// });
     /// let mut buffer = SingleBuffer::new();
     /// let complex = ops.get(&mut buffer).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 4.0], &complex[..]);
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0], &complex[..]);
     /// ```
     fn sub_points(&mut self);
 
@@ -70,7 +70,7 @@ pub trait IdentifierOps {
     /// ```
     /// use basic_dsp_vector::*;
     /// use basic_dsp_vector::combined_ops::*;
-    /// let complex = vec!(2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0).to_complex_time_vec();
+    /// let complex = vec!(2.0, 4.0, 6.0, 8.0).to_complex_time_vec();
     /// let ops = multi_ops1(complex);
     /// let ops = ops.add_ops(|mut v| {
     /// 	v.div_points();
@@ -78,7 +78,7 @@ pub trait IdentifierOps {
     /// });
     /// let mut buffer = SingleBuffer::new();
     /// let complex = ops.get(&mut buffer).expect("Ignoring error handling in examples");
-    /// assert_eq!([1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 4.0], &complex[..]);
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0], &complex[..]);
     /// ```
     fn div_points(&mut self);
 
@@ -88,7 +88,7 @@ pub trait IdentifierOps {
     /// ```
     /// use basic_dsp_vector::*;
     /// use basic_dsp_vector::combined_ops::*;
-    /// let complex = vec!(1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
+    /// let complex = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
     /// let ops = multi_ops1(complex);
     /// let ops = ops.add_ops(|mut v| {
     /// 	v.mul_points();
@@ -96,7 +96,7 @@ pub trait IdentifierOps {
     /// });
     /// let mut buffer = SingleBuffer::new();
     /// let complex = ops.get(&mut buffer).expect("Ignoring error handling in examples");
-    /// assert_eq!([2.0, 4.0, 6.0, 8.0, 2.0, 4.0, 6.0, 8.0], &complex[..]);
+    /// assert_eq!([2.0, 4.0, 6.0, 8.0], &complex[..]);
     fn mul_points(&mut self);
 }
 
