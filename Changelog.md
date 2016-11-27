@@ -5,6 +5,7 @@ Changes:
 
 - Fix: Buffer `convolve_vector` for matrices now returns all buffers back to the pool.
 - Convolution and interpolation now spawn worker threads for larger data sizes.
+- Fix: `use_sse` and `use_avx` failed to pick the faster implementations.
 
 ## Version 0.4.1
 Minor additions and improvements.
