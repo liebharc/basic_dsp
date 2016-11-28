@@ -96,9 +96,9 @@ impl Chunk {
                 1 
             }
         } else if complexity == Complexity::Medium {
-            if array_length < 10000 {
+            if array_length < 50000 {
                 1
-            } else if array_length < 50000 {
+            } else if array_length < 100000 {
                 if cores >= 2 { 2 } else { 1 }
             } else {
                 cores
