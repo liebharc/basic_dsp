@@ -201,6 +201,12 @@ pub mod sse;
 #[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
 pub use self::sse::{Reg32, Reg64};
 
+#[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
+pub mod approximations;
+
+#[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
+pub use self::approximations::*;
+
 #[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
 pub mod fallback;
 
