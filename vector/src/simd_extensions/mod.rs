@@ -190,25 +190,25 @@ macro_rules! simd_generic_impl {
     }
 }
 #[cfg(any(feature = "doc", feature="use_avx"))]
-pub mod avx;
+mod avx;
 
 #[cfg(any(feature = "doc", feature="use_avx"))]
 pub use self::avx::{Reg32, Reg64};
 
 #[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
-pub mod sse;
+mod sse;
 
 #[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
-pub use self::sse::{Reg32, Reg64};
+pub use self::sse::{Reg32, Reg64, IntReg32, IntReg64, UIntReg32, UIntReg64};
 
 #[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
-pub mod approximations;
+mod approximations;
 
 #[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
 pub use self::approximations::*;
 
 #[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
-pub mod fallback;
+mod fallback;
 
 #[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
 pub use self::fallback::{Reg32, Reg64};

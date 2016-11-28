@@ -1,12 +1,20 @@
-use simd::f32x4;
+use simd::{f32x4, i32x4, u32x4};
 use simd::x86::sse3::Sse3F32x4;
 use num::complex::Complex;
 use super::Simd;
-use simd::x86::sse2::f64x2;
+use simd::x86::sse2::{f64x2, i64x2, u64x2};
 
 pub type Reg32 = f32x4;
 
 pub type Reg64 = f64x2;
+
+pub type IntReg32 = i32x4;
+
+pub type IntReg64 = i64x2;
+
+pub type UIntReg32 = u32x4;
+
+pub type UIntReg64 = u64x2;
 
 impl Simd<f32> for f32x4 {
     type Array = [f32; 4];
