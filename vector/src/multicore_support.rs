@@ -87,14 +87,11 @@ impl Chunk {
         
         if cores == 1 {
             cores
-        } else if complexity == Complexity::Small {
-            if array_length < 500000 {
-                1
-            } else if cores >= 2 { 
-                2 
-            } else { 
-                1 
-            }
+        } else if complexity == Complexity::Small {.
+            // Recent tests seem to indicate that even for large arrays it never makes
+            // sense to spawn threads for trivial instructions. A single CPU core with SIMD
+            // is already fast enough to occupy the max memory bandwidth
+            1
         } else if complexity == Complexity::Medium {
             if array_length < 50000 {
                 1
