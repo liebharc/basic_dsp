@@ -388,7 +388,7 @@ macro_rules! impl_binary_vector_operation {
                             let original =
                                 T::Reg::array_to_regs(&original[range.start .. range.end]);
                             let mut target =
-                                T::Reg::array_to_regs_mut(&mut target[range.start .. range.end]);
+                                T::Reg::array_to_regs_mut(&mut target[..]);
                             for (dst, src) in &mut target.iter_mut().zip(original) {
                                 *dst = dst.$simd_op(*src);
                             }
@@ -397,7 +397,6 @@ macro_rules! impl_binary_vector_operation {
                 for i in 0..scalar_left {
                     array[i] = array[i].$scal_op(other[i]);
                 }
-
                 for i in scalar_right..data_length {
                     array[i] = array[i].$scal_op(other[i]);
                 }
