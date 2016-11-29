@@ -999,6 +999,14 @@ pub extern "C" fn convolve_vector64(vector: Box<VecBuf>,
     vector.convert_vec(|v, b| v.convolve_vector(b, &impulse_response.vec))
 }
 
+#[no_mangle]
+pub extern "C" fn overlap_discard64(vector: Box<VecBuf>,
+                                    impulse_response: &VecBuf,
+                                    fft_len: usize)
+                                    -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, b| v.overlap_discard(b, &impulse_response.vec, fft_len))
+}
+
 /// Convolves the vector with an impulse response defined by `impulse_response` and
 /// the void pointer `impulse_response_data`.
 /// The `impulse_response_data` pointer is passed to the `impulse_response`
