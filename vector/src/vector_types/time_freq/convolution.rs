@@ -297,7 +297,9 @@ impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
         // For the SIMD operation we need to clone `vector` several
         // times and this only is worthwhile if `vector.len() << self.len()`
         // where `<<` means "significant smaller".
-        if self.len() > 1000 && impulse_response.len() <= 202 {
+        if self.len() > 1000 
+           && impulse_response.len() <= 202 
+           &&impulse_response.len() > 11 {
             self.convolve_vector_simd(buffer, impulse_response);
         } else {
             self.convolve_vector_scalar(buffer, impulse_response);
@@ -331,6 +333,10 @@ impl<S, T, N, D> ConvolutionOverlapOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T
     fn overlap_discard<B>(&mut self, buffer: &mut B, impulse_response: &Self, fft_len: usize) -> VoidResult
         where B: Buffer<S, T>
     {
+        if !self.is_complex() {
+            return Err(ErrorReason::InputMustBeComplex);
+        }
+    
         assert_meta_data!(self, impulse_response);
         let h_time = impulse_response;
         let imp_len = h_time.points();
