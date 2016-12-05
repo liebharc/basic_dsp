@@ -28,14 +28,6 @@ and this to your crate root:
 extern crate basic_dsp;
 ```
 
-On CPUs with SSE instructions (should be all somewhat recent Intel or AMD desktop CPUs) and with Rust nightly performance can be improved by compiling the crate with the respective `rustc` options:
-
-1. Make sure that you have Rust nightly installed. Make yourself aware that Rust nightly and the required `simd` crate are unstable.
-2. Create a `RUSTC` environment variable and set the value of the variable to the `rustc.sh` or `rustc.bat` script. This sets the `target_feature` for the `simd` crate.
-3. Compile this lib with `cargo build --release --features use_sse` or `cargo build --release --features use_avx`. You might need to add the `use_sse` or `use_avx` feature definitions to your crate too. This tells the lib to actually use the `simd` crate.
-
-See `rustc.sh` or `rustc.bat` for an example.
-
 ## Vector flavors
 This crate brings vectors in different flavors.
 

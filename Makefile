@@ -5,7 +5,7 @@ packages = vector interop matrix
 RUST_VERSION=$(shell rustc --version)
 RUST_NIGHTLY = $(findstring nightly,$(RUST_VERSION))
 ifeq ($(RUST_NIGHTLY), nightly)
-CARGO_FLAGS ?= --features use_sse
+CARGO_FLAGS ?= ""
 endif
 
 test:
