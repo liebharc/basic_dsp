@@ -52,18 +52,6 @@ pub trait ConvolutionOps<S, T, A>
         where B: Buffer<S, T>; // TODO: Consider to rename this function with 0.5
 }
 
-/// Do not use this: This trait exists to run more extensive test on a new convolution variant. 
-/// It will likely be an alternative convolution implementation which will automatically
-/// be picked by `convolve_vector` under certain conditions 
-/// (or might even be the default implementation).
-pub trait ConvolutionOverlapOps<S, T, A>
-    where S: ToSliceMut<T>,
-          T: RealNumber
-{       
-    fn overlap_discard<B>(&mut self, buffer: &mut B, impulse_response: &A, fft_len: usize) -> VoidResult
-        where B: Buffer<S, T>; // TODO: Better naming!
-}
-
 /// Provides a frequency response multiplication operations.
 pub trait FrequencyMultiplication<'a, S, T, C: 'a>
     where S: ToSliceMut<T>,
@@ -107,7 +95,8 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a RealImpulseResponse<T>> for DspVe
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: TimeDomain
+          D: TimeDomain,
+          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone
 {
     fn convolve<B>(&mut self,
                    buffer: &mut B,
@@ -205,7 +194,8 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a ComplexImpulseResponse<T>> for Ds
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
-          D: TimeDomain
+          D: TimeDomain,
+          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone
 {
     fn convolve<B>(&mut self,
                    buffer: &mut B,
@@ -274,41 +264,6 @@ macro_rules! assert_meta_data {
     }
 }
 
-impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: TimeDomain
-{
-    fn convolve_vector<B>(&mut self, buffer: &mut B, impulse_response: &Self) -> VoidResult
-        where B: Buffer<S, T>
-    {
-        assert_meta_data!(self, impulse_response);
-        if self.domain() != DataDomain::Time {
-            return Err(ErrorReason::InputMustBeInTimeDomain);
-        }
-
-        if self.points() < impulse_response.points() {
-            return Err(ErrorReason::InvalidArgumentLength);
-        }
-
-        // The values in this condition are nothing more than a
-        // ... guess. The reasoning is basically this:
-        // For the SIMD operation we need to clone `vector` several
-        // times and this only is worthwhile if `vector.len() << self.len()`
-        // where `<<` means "significant smaller".
-        if self.len() > 1000 
-           && impulse_response.len() <= 202 
-           &&impulse_response.len() > 11 {
-            self.convolve_vector_simd(buffer, impulse_response);
-        } else {
-            self.convolve_vector_scalar(buffer, impulse_response);
-        }
-
-        Ok(())
-    }
-}
-
 fn next_power_of_two(value: usize) -> usize {
     let mut count = 0;
     let mut n = value;
@@ -323,10 +278,10 @@ fn next_power_of_two(value: usize) -> usize {
     1 << count
 }
     
-impl<S, T, N, D> ConvolutionOverlapOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
+impl<S, T, N, D> DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
-          N: ComplexNumberSpace,
+          N: NumberSpace,
           D: TimeDomain,
           DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone
 {    
@@ -353,47 +308,128 @@ impl<S, T, N, D> ConvolutionOverlapOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T
         let mut h_freq = buffer.get(2*fft_len); 
         let mut x_freq = buffer.get(2*fft_len);
         let mut tmp = buffer.get(2*fft_len);
+        let remainder_len = x_len - x_len % fft_len;
+        let mut end = buffer.get(remainder_len);
         {
             let mut h_freq = h_freq.to_slice_mut();
             let mut x_freq = x_freq.to_slice_mut();
             let mut tmp = tmp.to_slice_mut();
+            let mut end = end.to_slice_mut();
             let h_time = h_time.data.to_slice();
             let mut h_time_padded = h_time_padded.to_slice_mut();
             (&mut h_time_padded[0..2*imp_len]).copy_from_slice(&h_time[0..2*imp_len]);
-            // TODO: zero remaining part of h_time_padded in a faster way
-            for n in &mut h_time_padded[2*imp_len..2*fft_len] {
+            for n in &mut h_time_padded[2*imp_len..] {
                 *n = T::zero();
             }
+            
             let x_time = self.data.to_slice_mut();
+            let h_time: &[Complex<T>] = array_to_complex(&h_time[..]);
             let h_time_padded: &[Complex<T>] = array_to_complex(&h_time_padded[0..2*fft_len]);
             let x_time: &mut [Complex<T>] = array_to_complex_mut(&mut x_time[0..2*x_len]);
             let h_freq: &mut [Complex<T>] = array_to_complex_mut(&mut h_freq[0..2*fft_len]);
             let x_freq: &mut [Complex<T>] = array_to_complex_mut(&mut x_freq[0..2*fft_len]);
             let tmp: &mut [Complex<T>] = array_to_complex_mut(&mut tmp[0..2*fft_len]);
+            let end: &mut [Complex<T>] = array_to_complex_mut(&mut end[0..remainder_len]);
             fft.process(h_time_padded, h_freq);
+            
+            let mut position = 0;
+            {
+                // (1) Scalar convolution of the beginning
+                for num in &mut tmp[0..imp_len/2] {
+                    *num = Self::convolve_iteration(x_time, h_time, position, (imp_len/2) as isize, imp_len);
+                    position += 1;
+                }
+                
+                // (2) Scalar convolution of the end/tail
+                position = (x_time.len() - end.len()) as isize;
+                for num in &mut end[0..remainder_len/2] {
+                    *num = Self::convolve_iteration(x_time, h_time, position, (imp_len/2) as isize, imp_len);
+                    position += 1;
+                }
+            }
+            
             let mut position = 0;
             let scaling = T::from(fft_len).unwrap();
-            // TODO: Special treatment of beginning and end (up to imp_len)
-            // might require more copies
-            while position+fft_len < x_len { // loop can be replaced with the std windows(size) function
+            {
+                // (3) The first iteration is different since it copies over the results which have been calculated for the beginning
                 let range = position .. fft_len+position;
                 fft.process(&x_time[range], x_freq);
-                // Multiplication can be speed up with our SIMD implementation (however we likely need to reimplemnt it)
+                (&mut x_time[0..imp_len/2]).copy_from_slice(&tmp[0..imp_len/2]); // Copy over the results of the scalar convolution (1)
                 for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_freq.iter()) {
                     *n = *n * *v / scaling;
                 }
                 ifft.process(x_freq, tmp);
-                // We could likely tackle the output shift by copying over tmp AFTER we calculated the NEXT 
-                // fft. Since after that happened we don't need the samples anymore and can overwrite them safely.
-                (&mut x_time[position .. step_size+position]).copy_from_slice(&tmp[imp_len-1..fft_len]);
                 position += step_size;
             }
+            
+            while position+fft_len < x_len {
+                // (4) Same as (3) except that the results of the previous iteration gets copied over
+                let range = position .. fft_len+position;
+                fft.process(&x_time[range], x_freq);
+                (&mut x_time[position-step_size+imp_len/2 .. position+imp_len/2]).copy_from_slice(&tmp[imp_len-1..fft_len]);
+                for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_freq.iter()) {
+                    *n = *n * *v / scaling;
+                }
+                ifft.process(x_freq, tmp);
+                position += step_size;
+            }
+            
+            // (5) now store the result of the last iteration
+            (&mut x_time[position-step_size+imp_len/2 .. position+imp_len/2]).copy_from_slice(&tmp[imp_len-1..fft_len]);
+            
+            // (6) Copy over the end result which was calculated at the beginning (2)
+            (&mut x_time[x_len - remainder_len / 2 .. ]).copy_from_slice(&end[..]);
         }
         buffer.free(h_time_padded);
         buffer.free(h_freq);
         buffer.free(x_freq);
         buffer.free(tmp);
+        buffer.free(end);
         
+        Ok(())
+    }
+}
+
+impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
+    where S: ToSliceMut<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: TimeDomain,
+          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone
+{
+    fn convolve_vector<B>(&mut self, buffer: &mut B, impulse_response: &Self) -> VoidResult
+        where B: Buffer<S, T>
+    {
+        assert_meta_data!(self, impulse_response);
+        if self.domain() != DataDomain::Time {
+            return Err(ErrorReason::InputMustBeInTimeDomain);
+        }
+
+        if self.points() < impulse_response.points() {
+            return Err(ErrorReason::InvalidArgumentLength);
+        }
+
+        // The values in this condition are nothing more than a
+        // ... guess. The reasoning is basically this:
+        // For the SIMD operation we need to clone `vector` several
+        // times and this only is worthwhile if `vector.len() << self.len()`
+        // where `<<` means "significant smaller".
+        if self.len() > 1000 
+           && impulse_response.len() <= 202 
+           &&impulse_response.len() > 11 {
+            self.convolve_vector_simd(buffer, impulse_response);
+        if self.len() > 10000     
+            && impulse_response.len() > 11
+            // Overlap-discard creates a lot of copies of the size of impulse_response
+            // and that only seems to be worthwhile if the vector is long enough
+            && self.len() > 10 * impulse_response.len()
+            && self.is_complex() {
+            return self.overlap_discard(buffer, impulse_response, 1024);
+        }
+        } else {
+            self.convolve_vector_scalar(buffer, impulse_response);
+        }
+
         Ok(())
     }
 }
@@ -713,7 +749,7 @@ mod tests {
     #[test]
     fn overlap_discard_test() {
         let a: Vec<f32> = (0..100).map(|x|x as f32).collect();
-        let b: Vec<f32> = (32..38).map(|x|x as f32).collect();
+        let b: Vec<f32> = vec![0.1, 0.2, 0.3, 0.5, 0.1, 0.2];
         let a = a.to_real_time_vec();
         let b = b.to_real_time_vec();
         let mut buffer = SingleBuffer::new();
@@ -724,9 +760,6 @@ mod tests {
         
         let mut overlap_discard = a;
         overlap_discard.overlap_discard(&mut buffer, &b, 0).unwrap();
-        // We only look at parts of the slice (and shift one of them)
-        // since right now the implementation isn't finished and we accept that as
-        // drawbacks for now.
-        assert_eq_tol(&overlap_discard[0..90], &conv[6..96], 0.1);
+        assert_eq_tol(&overlap_discard[..], &conv[..], 1e-4);
     }
 }
