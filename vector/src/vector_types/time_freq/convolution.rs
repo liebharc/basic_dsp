@@ -22,7 +22,7 @@ pub trait Convolution<'a, S, T, C: 'a>
     /// # Failures
     /// TransRes may report the following `ErrorReason` members:
     ///
-    /// 1. `VectorMustBeComplex`: if `self` is in real number space but
+    /// 1. `VectorMustBeComplex`: if `self` is in real number space overlap_discard
     ///    `impulse_response` is in complex number space.
     /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
     fn convolve<B>(&mut self, buffer: &mut B, impulse_response: C, ratio: T, len: usize)
@@ -302,21 +302,20 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         let mut fft = FFT::new(fft_len, false);
         let mut ifft = FFT::new(fft_len, true);
         let step_size = fft_len - overlap;
-        // TODO: all these small arrays might now work well with our buffering, might be better to request one 
-        // large one and split it in pieces
-        let mut h_time_padded = buffer.get(2*fft_len); 
-        let mut h_freq = buffer.get(2*fft_len); 
-        let mut x_freq = buffer.get(2*fft_len);
-        let mut tmp = buffer.get(2*fft_len);
+        let h_time_padded_len = 2*fft_len; 
+        let h_freq_len = 2*fft_len; 
+        let x_freq_len = 2*fft_len;
+        let tmp_len = 2*fft_len;
         let remainder_len = x_len - x_len % fft_len;
-        let mut end = buffer.get(remainder_len);
+        let mut array = buffer.get(h_time_padded_len + h_freq_len + x_freq_len + tmp_len + remainder_len);
         {
-            let mut h_freq = h_freq.to_slice_mut();
-            let mut x_freq = x_freq.to_slice_mut();
-            let mut tmp = tmp.to_slice_mut();
-            let mut end = end.to_slice_mut();
+            let mut array = array.to_slice_mut();
+            let (mut h_freq, mut array) = array.split_at_mut(h_freq_len);
+            let (mut x_freq, mut array) = array.split_at_mut(x_freq_len);
+            let (mut tmp, mut array) = array.split_at_mut(tmp_len);
+            let (mut h_time_padded, array) = array.split_at_mut(h_time_padded_len);
+            let mut end = array;
             let h_time = h_time.data.to_slice();
-            let mut h_time_padded = h_time_padded.to_slice_mut();
             (&mut h_time_padded[0..2*imp_len]).copy_from_slice(&h_time[0..2*imp_len]);
             for n in &mut h_time_padded[2*imp_len..] {
                 *n = T::zero();
@@ -380,11 +379,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             // (6) Copy over the end result which was calculated at the beginning (2)
             (&mut x_time[x_len - remainder_len / 2 .. ]).copy_from_slice(&end[..]);
         }
-        buffer.free(h_time_padded);
-        buffer.free(h_freq);
-        buffer.free(x_freq);
-        buffer.free(tmp);
-        buffer.free(end);
+        buffer.free(array);
         
         Ok(())
     }
@@ -424,7 +419,11 @@ impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
             // and that only seems to be worthwhile if the vector is long enough
             && self.len() > 10 * impulse_response.len()
             && self.is_complex() {
-            return self.overlap_discard(buffer, impulse_response, 1024);
+            let mut fft_len = next_power_of_two(self.len() / 10);
+            if fft_len > 4096 {
+                fft_len = 4096;
+            }
+            return self.overlap_discard(buffer, impulse_response, fft_len);
         }
         } else {
             self.convolve_vector_scalar(buffer, impulse_response);
