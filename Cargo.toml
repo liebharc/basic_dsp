@@ -40,8 +40,8 @@ docopt = "^0.6.86"
 num = "^0.1.35"
 
 [features]
-use_avx = []
-use_sse = []
+use_avx = ["basic_dsp_vector/use_avx"]
+use_sse = ["basic_dsp_vector/use_sse"]
 matrix = ["basic_dsp_matrix"]
 interop= ["basic_dsp_interop"]
 default = ["matrix"]

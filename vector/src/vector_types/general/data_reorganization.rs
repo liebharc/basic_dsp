@@ -6,6 +6,7 @@ use multicore_support::*;
 use super::super::{array_to_complex_mut, VoidResult, Buffer, Owner, ErrorReason, NumberSpace,
                    Domain, ResizeOps, DspVec, Vector, ToSliceMut, MetaData};
 
+/// This trait allows to reorganize the data by changing positions of the individual elements.
 pub trait ReorganizeDataOps<T>
     where T: RealNumber
 {
@@ -52,12 +53,13 @@ pub enum PaddingOption {
     Center,
 }
 
+/// A trait to insert zeros into the data at some specified positions.
 pub trait InsertZerosOps<T>
     where T: RealNumber
 {
     /// Appends zeros add the end of the vector until the vector has the size given
     /// in the points argument.
-    /// If `points` smaller than the `self.len()` then this operation won't do anything.
+    /// If `points` smaller than the `self.len()` then this operation will return an error.
     ///
     /// Note: Each point is two floating point numbers if the vector is complex.
     /// Note2: Adding zeros to the signal changes its power. If this function is used to
@@ -100,6 +102,8 @@ pub trait InsertZerosOps<T>
     fn zero_interleave(&mut self, factor: u32) -> VoidResult;
 }
 
+/// A trait to insert zeros into the data at some specified positions. A buffer is used
+/// for types which can't be resized and/or to speed up the calculation.
 pub trait InsertZerosOpsBuffered<S, T>
     where T: RealNumber,
           S: ToSliceMut<T>
@@ -152,7 +156,7 @@ pub trait InsertZerosOpsBuffered<S, T>
     fn zero_interleave_b<B>(&mut self, buffer: &mut B, factor: u32) where B: Buffer<S, T>;
 }
 
-
+/// Splits the data into several smaller pieces of equal size.
 pub trait SplitOps {
     /// Splits the vector into several smaller vectors. `self.len()` must be dividable by
     /// `targets.len()` without a remainder and this condition must be true too
@@ -177,6 +181,7 @@ pub trait SplitOps {
     fn split_into(&self, targets: &mut [&mut Self]) -> VoidResult;
 }
 
+/// Merges several pieces of equal size into one data chunk.
 pub trait MergeOps {
     /// Merges several vectors into `self`. All vectors must have the same size and
     /// at least one vector must be provided.
@@ -291,7 +296,7 @@ impl<S, T, N, D> InsertZerosOps<T> for DspVec<S, T, N, D>
         let is_complex = self.is_complex();
         let len = if is_complex { 2 * points } else { points };
         if len <= len_before {
-            return Ok(());
+            return Err(ErrorReason::InvalidArgumentLength);
         }
 
         try!(self.resize(len));

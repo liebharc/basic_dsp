@@ -4,6 +4,7 @@ use num::traits::Zero;
 use std::ops::{Add, Mul};
 use super::WrappingIterator;
 use simd_extensions::*;
+use multicore_support::*;
 use super::super::{array_to_complex, array_to_complex_mut, VoidResult, DspVec, Domain,
                    NumberSpace, ToSliceMut, GenDspVec, ToDspVector, DataDomain, Buffer, Vector,
                    RealNumberSpace, ErrorReason, InsertZerosOpsBuffered, ScaleOps, MetaData};
@@ -93,26 +94,34 @@ fn interpolate_priv_scalar<T, TT>(temp: &mut [TT],
                                   function: &RealImpulseResponse<T>,
                                   interpolation_factor: T,
                                   delay: T,
-                                  conv_len: usize)
+                                  conv_len: usize,
+                                  multicore_settings: &MultiCoreSettings)
     where T: RealNumber,
           TT: Zero + Mul<Output = TT> + Copy + Send + Sync + From<T>
 {
-    let mut i = 0;
-    for num in temp {
-        let center = T::from(i).unwrap() / interpolation_factor;
-        let rounded = center.floor();
-        let iter = WrappingIterator::new(data,
-                                         rounded.to_isize().unwrap() - conv_len as isize - 1,
-                                         2 * conv_len + 1);
-        let mut sum = TT::zero();
-        let mut j = -T::from(conv_len).unwrap() - (center - rounded) + delay;
-        for c in iter {
-            sum = sum + c * TT::from(function.calc(j));
-            j = j + T::one();
-        }
-        (*num) = sum;
-        i += 1;
-    }
+    Chunk::execute_with_range(Complexity::Large,
+                              &multicore_settings,
+                              temp,
+                              1,
+                              data,
+                              move |dest_range, range, data| {
+          let mut i = range.start as isize;
+          for num in dest_range {
+              let center = T::from(i).unwrap() / interpolation_factor;
+              let rounded = center.floor();
+              let iter = WrappingIterator::new(data,
+                                               rounded.to_isize().unwrap() - conv_len as isize - 1,
+                                               2 * conv_len + 1);
+              let mut sum = TT::zero();
+              let mut j = -T::from(conv_len).unwrap() - (center - rounded) + delay;
+              for c in iter {
+                  sum = sum + c * TT::from(function.calc(j));
+                  j = j + T::one();
+              }
+              (*num) = sum;
+              i += 1;
+          }
+    });
 }
 
 fn function_to_vectors<T>(function: &RealImpulseResponse<T>,
@@ -171,11 +180,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                                          convert_mut: CMut,
                                                          simd_mul: RMul,
                                                          simd_sum: RSum)
-        where TT: Zero + Clone + From<T> + Copy + Add<Output = TT> + Mul<Output = TT>,
+        where TT: Zero + Clone + From<T> + Copy + Add<Output = TT> + Mul<Output = TT> + Send + Sync,
               C: Fn(&[T]) -> &[TT],
               CMut: Fn(&mut [T]) -> &mut [TT],
-              RMul: Fn(T::Reg, T::Reg) -> T::Reg,
-              RSum: Fn(T::Reg) -> TT,
+              RMul: Fn(T::Reg, T::Reg) -> T::Reg + Sync,
+              RSum: Fn(T::Reg) -> TT + Sync,
               B: Buffer<S, T>
     {
         let data_len = self.len();
@@ -220,30 +229,38 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             // Length of a SIMD reg relative to the length of type T
             // which is 1 for real numbers or 2 for complex numbers
             let simd_len_in_t = T::Reg::len() / step;
-            for num in &mut dest[scalar_len..len - scalar_len] {
-                let rounded = (i + interpolation_factor - 1) / interpolation_factor;
-                let end = (rounded + conv_len) as usize;
-                let simd_end = (end + simd_len_in_t - 1) / simd_len_in_t;
-                let simd_shift = end % simd_len_in_t;
-                let factor_shift = i % interpolation_factor;
-                // The reasoning for the next match is analog to the explanation in the
-                // create_shifted_copies function.
-                // We need the inverse of the mod unless we start with zero
-                let factor_shift = match factor_shift {
-                    0 => 0,
-                    x => interpolation_factor - x,
-                };
-                let selection = factor_shift * simd_len_in_t + simd_shift;
-                let shifted = &shifts[selection];
-                let mut sum = T::Reg::splat(T::zero());
-                let simd_iter = simd[simd_end - shifted.len()..simd_end].iter();
-                let iteration = simd_iter.zip(shifted);
-                for (this, other) in iteration {
-                    sum = sum + simd_mul(*this, *other);
-                }
-                (*num) = simd_sum(sum);
-                i += 1;
-            }
+            Chunk::execute_with_range(Complexity::Large,
+                                      &self.multicore_settings,
+                                      &mut dest[scalar_len..len - scalar_len],
+                                      1,
+                                      simd,
+                                      move |dest_range, range, simd| {
+                  let mut i = range.start + scalar_len;
+                  for num in dest_range {
+                      let rounded = (i + interpolation_factor - 1) / interpolation_factor;
+                      let end = rounded + conv_len;
+                      let simd_end = (end + simd_len_in_t - 1) / simd_len_in_t;
+                      let simd_shift = end % simd_len_in_t;
+                      let factor_shift = i % interpolation_factor;
+                      // The reasoning for the next match is analog to the explanation in the
+                      // create_shifted_copies function.
+                      // We need the inverse of the mod unless we start with zero
+                      let factor_shift = match factor_shift {
+                          0 => 0,
+                          x => interpolation_factor - x,
+                      };
+                      let selection = factor_shift * simd_len_in_t + simd_shift;
+                      let shifted = &shifts[selection];
+                      let mut sum = T::Reg::splat(T::zero());
+                      let simd_iter = simd[simd_end - shifted.len()..simd_end].iter();
+                      let iteration = simd_iter.zip(shifted);
+                      for (this, other) in iteration {
+                          sum = sum + simd_mul(*this, *other);
+                      }
+                      (*num) = simd_sum(sum);
+                      i += 1;
+                  }
+            });
 
             i = len - scalar_len;
             {
@@ -353,7 +370,8 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                                         function,
                                         interpolation_factor,
                                         delay,
-                                        conv_len);
+                                        conv_len,
+                                        &self.multicore_settings);
             }
             mem::swap(&mut temp, &mut self.data);
             buffer.free(temp);
@@ -368,7 +386,8 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                                         function,
                                         interpolation_factor,
                                         delay,
-                                        conv_len);
+                                        conv_len,
+                                        &self.multicore_settings);
             }
             mem::swap(&mut temp, &mut self.data);
             buffer.free(temp);

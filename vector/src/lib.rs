@@ -32,7 +32,7 @@
 //! memory available so that the optimization focus is on decreasing the processing time
 //! for every (common) operation and to spent little time with memory allocations.
 
-#[cfg(any(feature = "doc", feature="sse", feature="avx"))]
+#[cfg(any(feature = "doc", feature="use_sse", feature="use_avx"))]
 extern crate simd;
 extern crate num_cpus;
 extern crate crossbeam;
@@ -46,7 +46,6 @@ pub mod conv_types;
 pub use vector_types::*;
 pub use multicore_support::MultiCoreSettings;
 use num::traits::Float;
-use num::{FromPrimitive, Signed, Zero};
 use std::fmt::Debug;
 use std::ops::*;
 
@@ -67,13 +66,33 @@ impl ToSimd for f64 {
 
 /// A real floating pointer number intended to abstract over `f32` and `f64`.
 pub trait RealNumber
-    : Float + Copy + Clone + Send + Sync + ToSimd + Debug + Signed + FromPrimitive
+    : Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive
     {
 }
 impl<T> RealNumber for T
-    where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug + Signed + FromPrimitive
+    where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive
 {
 }
+
+/// This trait is necessary so that we can define zero for types outside this crate.
+/// It calls the `num::Zero` trait where possible.
+pub trait Zero {
+    fn zero() -> Self;
+}
+
+impl<T> Zero for T
+    where T: RealNumber {
+    fn zero() -> Self {
+        <Self as num::Zero>::zero()
+    }
+}
+
+impl<T> Zero for num::Complex<T> 
+    where T: RealNumber {
+    fn zero() -> Self {
+        <Self as num::Zero>::zero()
+    }
+}   
 
 #[cfg(test)]
 mod tests {

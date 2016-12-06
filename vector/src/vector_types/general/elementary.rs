@@ -59,6 +59,7 @@ pub trait OffsetOps<T>: Sized
     fn offset(&mut self, offset: T);
 }
 
+/// Elementary algebra on types: addition, subtraction, multiplication and division
 pub trait ElementaryOps<A> {
     /// Calculates the sum of `self + summand`. It consumes self and returns the result.
     /// # Failures
@@ -153,6 +154,7 @@ pub trait ElementaryOps<A> {
     fn div(&mut self, divisor: &A) -> VoidResult;
 }
 
+/// Elementary algebra on types where the argument might contain less data points than `self`.
 pub trait ElementaryWrapAroundOps<A> {
     /// Calculates the sum of `self + summand`. `summand` may be smaller than `self` as long
     /// as `self.len() % summand.len() == 0`. THe result is the same as it would be if
@@ -386,7 +388,7 @@ macro_rules! impl_binary_vector_operation {
                             let original =
                                 T::Reg::array_to_regs(&original[range.start .. range.end]);
                             let mut target =
-                                T::Reg::array_to_regs_mut(&mut target[range.start .. range.end]);
+                                T::Reg::array_to_regs_mut(&mut target[..]);
                             for (dst, src) in &mut target.iter_mut().zip(original) {
                                 *dst = dst.$simd_op(*src);
                             }
@@ -395,7 +397,6 @@ macro_rules! impl_binary_vector_operation {
                 for i in 0..scalar_left {
                     array[i] = array[i].$scal_op(other[i]);
                 }
-
                 for i in scalar_right..data_length {
                     array[i] = array[i].$scal_op(other[i]);
                 }

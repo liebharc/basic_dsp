@@ -62,6 +62,7 @@ pub trait CrossCorrelationArgumentOps<S, T>: ToFreqResult
     fn prepare_argument_padded<B>(self, buffer: &mut B) -> Self::FreqResult where B: Buffer<S, T>;
 }
 
+/// A trait to calculate the cross correlation.
 pub trait CrossCorrelationOps<S, T, A>
     where S: ToSliceMut<T>,
           T: RealNumber

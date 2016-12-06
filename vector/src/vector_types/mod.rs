@@ -223,6 +223,8 @@ pub struct DspVec<S, T, N, D>
           N: NumberSpace,
           D: Domain
 {
+    /// The underlying storage. `self.len()` should be called to find out how many 
+    /// elements in `data` contain valid data.
     pub data: S,
     delta: T,
     domain: D,

@@ -36,7 +36,7 @@ impl f32x4 {
     }
 
     #[inline]
-    pub fn store(&self, array: &mut [f32], index: usize) {
+    pub fn store(self, array: &mut [f32], index: usize) {
         let array = &mut array[index..index + 4];
         unsafe {
             *array.get_unchecked_mut(0) = self.0;
@@ -76,7 +76,7 @@ impl f64x2 {
     }
 
     #[inline]
-    pub fn store(&self, array: &mut [f64], index: usize) {
+    pub fn store(self, array: &mut [f64], index: usize) {
         let array = &mut array[index..index + 2];
         unsafe {
             *array.get_unchecked_mut(0) = self.0;

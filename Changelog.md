@@ -1,13 +1,19 @@
 # `basic_dsp`
 Changes:
 
+## Version 0.4.2
+
+- Fix: Buffer `convolve_vector` for matrices now returns all buffers back to the pool.
+- Performance: Convolution and interpolation now rely on the overlap and add algorithm or spawn worker threads for larger data sizes.
+- Fix: `use_sse` and `use_avx` failed to pick the faster implementations. However with the current status of the `simd` crate it's not recommended to use those feature flags. The Rust lib team is right now discussing about the future of the `simd`crate.
+- Fix: Out or range panic in `add`, `sub`, `mul` and `div` for large vectors.
+
 ## Version 0.4.1
 Minor additions and improvements.
 
-- New feature: Added a method to convolve a matrix with a matrix of impulse responses. This allows cross channel effects to be applied to a signal (there is an example for that).
-- New feature: Added traits with more precise versions of sum, statistics and dot products.
-- Performance improvement: `swap_halves`, `swap_halves_b` and `reverse` are now considerable faster, `swap_halves_b` at the same time has been marked as deprecated since it by now offers no advantage to `swap_halves`.
-- Fix: Marked `statistics_splitted` as deprecated in favor for `statistics_split` which is the same function but with corrected spelling.
+- Added a method to convolve a matrix with a matrix of impulse responses.
+- Added traits with more precise versions of sum, statistics and dot products.
+- Performance improvement for `swap_halves` and `swap_halves_b`, `swap_halves_b` at the same time has been marked as deprecated since it offers no advantage to `swap_halves`
 
 ## Version 0.4.0 (Breaking changes)
 Added support for matrix operations. In order to allow matrices and vectors to implement the same traits the existing traits had to be renamed and restructured.
@@ -32,7 +38,7 @@ Bugfix release with a minor enhancement:
 ## Version 0.3.0 (Breaking changes)
 Added prepared operations/multi operations, see [combined_ops](https://liebharc.github.io/basic_dsp/basic_dsp/combined_ops)
 
-- Breaking change: Renamed a lot of operations so that their names match (more closely) with the `num` crate. Also renamed traits so that all traits which mainly implement operations have similar names.
+- Breaking change: Renamed a lot of operations so that their names match (more closely) with the `num` crate. Also renamed traits so that all traits which mainly implement operations have similiar names.
 - Breaking change: RededicateVector trait now defines exactly one conversion. Vectors implement the trait several times so the same functionality is still available.
 - Breaking change: perform_operations and related types appear on the API differently now.
 

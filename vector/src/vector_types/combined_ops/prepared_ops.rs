@@ -190,6 +190,7 @@ impl<T, S, B, NI, DI, NO, DO> PreparedOperation1Exec<B, DspVec<S, T, NI, DI>, Ds
 	/// Executes all recorded operations on the input vectors.
 	fn exec(&self, buffer: &mut B, a: DspVec<S, T, NI, DI>)
         -> result::Result<DspVec<S, T, NO, DO>, (ErrorReason, DspVec<S, T, NO, DO>)> {
+
 		let mut vec = Vec::new();
 		let (number_space, domain, gen) = generic_vector_from_any_vector(a);
 		vec.push(gen);

@@ -1,5 +1,5 @@
 use num::complex::Complex;
-use num::Zero;
+use super::Zero;
 use std::mem;
 
 pub trait Simd<T>: Sized
@@ -62,7 +62,7 @@ pub trait SimdGeneric<T>: Simd<T>
 
     fn splat(value: T) -> Self;
 
-    fn store(&self, array: &mut [T], index: usize);
+    fn store(self, array: &mut [T], index: usize);
 }
 
 #[repr(packed)]
@@ -73,21 +73,9 @@ macro_rules! simd_generic_impl {
     ($data_type:ident, $reg:ident)
     =>
     {
-        impl Zero for $reg{
+        impl Zero for $reg {
             fn zero() -> $reg {
                 $reg::splat(0.0)
-            }
-            
-            fn is_zero(&self) -> bool {
-                // A better implementation is likely necessary as soon
-                // as this method is truely used
-                for n in &self.clone().to_array() {
-                    if *n != 0.0 {
-                        return false;
-                    }
-                }
-                
-                true
             }
         }
     
@@ -195,28 +183,34 @@ macro_rules! simd_generic_impl {
             }
 
             #[inline]
-            fn store(&self, array: &mut [$data_type], index: usize) {
+            fn store(self, array: &mut [$data_type], index: usize) {
                 $reg::store(self, array, index);
             }
         }
     }
 }
-#[cfg(any(feature = "doc", feature="avx"))]
-pub mod avx;
+#[cfg(any(feature = "doc", feature="use_avx"))]
+mod avx;
 
-#[cfg(any(feature = "doc", feature="avx"))]
+#[cfg(any(feature = "doc", feature="use_avx"))]
 pub use self::avx::{Reg32, Reg64};
 
-#[cfg(any(feature = "doc", all(feature = "sse", not(feature = "avx"))))]
-pub mod sse;
+#[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
+mod sse;
 
-#[cfg(any(feature = "doc", all(feature = "sse", not(feature = "avx"))))]
-pub use self::sse::{Reg32, Reg64};
+#[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
+pub use self::sse::{Reg32, Reg64, IntReg32, IntReg64, UIntReg32, UIntReg64};
 
-#[cfg(any(feature = "doc", not(any(feature = "avx", feature="sse"))))]
-pub mod fallback;
+#[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
+mod approximations;
 
-#[cfg(any(feature = "doc", not(any(feature = "avx", feature="sse"))))]
+#[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
+pub use self::approximations::*;
+
+#[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
+mod fallback;
+
+#[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
 pub use self::fallback::{Reg32, Reg64};
 
 simd_generic_impl!(f32, Reg32);
