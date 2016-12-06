@@ -98,7 +98,8 @@ impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
 	fn prepare_argument_padded<B>(mut self, buffer: &mut B) -> Self::FreqResult
 		where B: Buffer<S, T> {
 		let points = self.points();
-		self.zero_pad_b(buffer, 2 * points - 1, PaddingOption::Surround);
+		self.zero_pad_b(buffer, 2 * points - 1, PaddingOption::Surround)
+            .expect("zero_pad_b shouldn't fail since the argument is always larger than the vector");
 		let mut result = self.plain_fft(buffer);
 		result.conj();
 		result
@@ -133,7 +134,7 @@ impl<S, T, N, D> CrossCorrelationOps<S, T, <DspVec<S, T, N, D> as ToFreqResult>:
             return Err(ErrorReason::InputMustBeInTimeDomain);
         }
 		let points = other.points();
-		self.zero_pad_b(buffer, points, PaddingOption::Surround);
+		try!(self.zero_pad_b(buffer, points, PaddingOption::Surround));
 		fft(self, buffer, false);
 		{
 			let mut temp = buffer.construct_new(0);

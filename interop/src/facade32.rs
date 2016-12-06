@@ -254,7 +254,7 @@ pub extern "C" fn zero_pad32(vector: Box<VecBuf>,
                              padding_option: i32)
                              -> VectorInteropResult<VecBuf> {
     let padding_option = translate_to_padding_option(padding_option);
-    vector.convert_vec(|v, b| Ok(v.zero_pad_b(b, points, padding_option)))
+    vector.convert_vec(|v, b| v.zero_pad_b(b, points, padding_option))
 }
 
 #[no_mangle]

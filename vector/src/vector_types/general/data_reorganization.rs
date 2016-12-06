@@ -110,7 +110,7 @@ pub trait InsertZerosOpsBuffered<S, T>
 {
     /// Appends zeros add the end of the vector until the vector has the size given in the
     /// points argument.
-    /// If `points` smaller than the `self.len()` then this operation won't do anything.
+    /// If `points` smaller than the `self.len()` then this operation will return an error.
     ///
     /// Note: Each point is two floating point numbers if the vector is complex.
     /// Note2: Adding zeros to the signal changes its power. If this function is used to
@@ -125,13 +125,13 @@ pub trait InsertZerosOpsBuffered<S, T>
     /// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, 2.0).to_real_time_vec();
     /// let mut buffer = SingleBuffer::new();
-    /// vector.zero_pad_b(&mut buffer, 4, PaddingOption::End);
+    /// vector.zero_pad_b(&mut buffer, 4, PaddingOption::End).expect("Ignoring error handling in examples");
     /// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
     /// let mut vector = vec!(1.0, 2.0).to_complex_time_vec();
-    /// vector.zero_pad_b(&mut buffer, 2, PaddingOption::End);
+    /// vector.zero_pad_b(&mut buffer, 2, PaddingOption::End).expect("Ignoring error handling in examples");
     /// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
     /// ```
-    fn zero_pad_b<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption)
+    fn zero_pad_b<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption) -> VoidResult
         where B: Buffer<S, T>;
 
     /// Interleaves zeros `factor - 1`times after every vector element, so that the resulting
@@ -397,14 +397,14 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
           N: NumberSpace,
           D: Domain
 {
-    fn zero_pad_b<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption)
+    fn zero_pad_b<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption) -> VoidResult
         where B: Buffer<S, T>
     {
         let len_before = self.len();
         let is_complex = self.is_complex();
         let len = if is_complex { 2 * points } else { points };
         if len <= len_before {
-            return;
+            return Err(ErrorReason::InvalidArgumentLength);
         }
 
         let mut target = buffer.get(len);
@@ -465,6 +465,7 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
 
         mem::swap(&mut self.data, &mut target);
         buffer.free(target);
+        Ok(())
     }
 
     fn zero_interleave_b<B>(&mut self, buffer: &mut B, factor: u32)
@@ -615,7 +616,7 @@ mod tests {
     fn zero_pad_b_end_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0].to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
-        v.zero_pad_b(&mut buffer, 9, PaddingOption::End);
+        v.zero_pad_b(&mut buffer, 9, PaddingOption::End).unwrap();
         let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 0.0, 0.0, 0.0, 0.0,
                         0.0, 0.0, 0.0, 0.0];
         assert_eq!(&v[..], &expected);
@@ -625,7 +626,7 @@ mod tests {
     fn zero_pad_b_surround_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0].to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
-        v.zero_pad_b(&mut buffer, 10, PaddingOption::Surround);
+        v.zero_pad_b(&mut buffer, 10, PaddingOption::Surround).unwrap();
         let expected = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                         10.0, 0.0, 0.0, 0.0, 0.0];
         assert_eq!(&v[..], &expected);
