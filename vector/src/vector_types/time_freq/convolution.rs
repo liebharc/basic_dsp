@@ -413,7 +413,8 @@ impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
            && impulse_response.len() <= 202 
            &&impulse_response.len() > 11 {
             self.convolve_vector_simd(buffer, impulse_response);
-        if self.len() > 10000     
+        }
+        else if self.len() > 10000     
             && impulse_response.len() > 11
             // Overlap-discard creates a lot of copies of the size of impulse_response
             // and that only seems to be worthwhile if the vector is long enough
@@ -425,7 +426,7 @@ impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
             }
             return self.overlap_discard(buffer, impulse_response, fft_len);
         }
-        } else {
+        else {
             self.convolve_vector_scalar(buffer, impulse_response);
         }
 
