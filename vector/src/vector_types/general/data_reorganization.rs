@@ -59,7 +59,8 @@ pub trait InsertZerosOps<T>
 {
     /// Appends zeros add the end of the vector until the vector has the size given
     /// in the points argument.
-    /// If `points` smaller than the `self.len()` then this operation will return an error.
+    /// If `points` smaller than the `self.len()` then this operation won't do anything, however
+    /// in future it will raise an error.
     ///
     /// Note: Each point is two floating point numbers if the vector is complex.
     /// Note2: Adding zeros to the signal changes its power. If this function is used to
@@ -295,6 +296,7 @@ impl<S, T, N, D> InsertZerosOps<T> for DspVec<S, T, N, D>
         let len_before = self.len();
         let is_complex = self.is_complex();
         let len = if is_complex { 2 * points } else { points };
+        
         if len <= len_before {
             return Err(ErrorReason::InvalidArgumentLength);
         }
