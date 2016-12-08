@@ -4,7 +4,6 @@ Changes:
 ## Version 0.4.2
 
 - Fix: Phase error in `zero_pad` if `Surround` was chosen and the original vector length is odd.
-- Fix: Phase error in `convolve_vector` if the convolution length is odd.
 - Fix: Buffer `convolve_vector` for matrices now returns all buffers back to the pool.
 - Performance: Convolution and interpolation now rely on the overlap and add algorithm or spawn worker threads for larger data sizes.
 - Fix: `use_sse` and `use_avx` failed to pick the faster implementations. However with the current status of the `simd` crate it's not recommended to use those feature flags. The Rust lib team is right now discussing about the future of the `simd`crate.
