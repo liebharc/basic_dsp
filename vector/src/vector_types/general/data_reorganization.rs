@@ -38,7 +38,7 @@ pub trait ReorganizeDataOps<T>
     fn swap_halves(&mut self);
 }
 
-/// This trait allows to reorganize the data by changing positions of the individual elements. 
+/// This trait allows to reorganize the data by changing positions of the individual elements.
 /// Deprecated since it requires a buffer which is never used since there would be no beneifit in using it.
 #[deprecated(since="0.4.1", note="please use `ReorganizeDataOps` instead which offers the same performance without a buffer")]
 pub trait ReorganizeDataOpsBuffered<S, T>
@@ -347,8 +347,8 @@ impl<S, T, N, D> InsertZerosOps<T> for DspVec<S, T, N, D>
             }
             PaddingOption::Surround => {
                 let diff = (len - len_before) / if is_complex { 2 } else { 1 };
-                let mut right = diff / 2;
-                let mut left = diff - right;
+                let mut right = (diff - 1) / 2;
+                let mut left = diff - right ;
                 if is_complex {
                     right *= 2;
                     left *= 2;
@@ -358,8 +358,10 @@ impl<S, T, N, D> InsertZerosOps<T> for DspVec<S, T, N, D>
                     let src = &data[0] as *const T;
                     let dest = &mut data[left] as *mut T;
                     ptr::copy(src, dest, len_before);
-                    let dest = &mut data[len - right] as *mut T;
-                    ptr::write_bytes(dest, 0, right);
+                    if right > 0 {
+                        let dest = &mut data[len - right] as *mut T;
+                        ptr::write_bytes(dest, 0, right);
+                    }
                     let dest = &mut data[0] as *mut T;
                     ptr::write_bytes(dest, 0, left);
                 }
@@ -367,8 +369,8 @@ impl<S, T, N, D> InsertZerosOps<T> for DspVec<S, T, N, D>
             }
             PaddingOption::Center => {
                 let mut diff = (len - len_before) / if is_complex { 2 } else { 1 };
-                let mut right = diff / 2;
-                let mut left = diff - right;
+                let mut left = diff / 2;
+                let mut right = diff - left;
                 if is_complex {
                     right *= 2;
                     left *= 2;
@@ -460,7 +462,7 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
                 }
                 PaddingOption::Surround => {
                     let diff = (len - len_before) / if is_complex { 2 } else { 1 };
-                    let mut right = diff / 2;
+                    let mut right = (diff - 1) / 2;
                     let mut left = diff - right;
                     if is_complex {
                         right *= 2;
@@ -471,8 +473,10 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
                         let src = &data[0] as *const T;
                         let dest = &mut target[left] as *mut T;
                         ptr::copy(src, dest, len_before);
-                        let dest = &mut target[len - right] as *mut T;
-                        ptr::write_bytes(dest, 0, right);
+                        if right > 0 {
+                            let dest = &mut target[len - right] as *mut T;
+                            ptr::write_bytes(dest, 0, right);
+                        }
                         let dest = &mut target[0] as *mut T;
                         ptr::write_bytes(dest, 0, left);
                     }
@@ -647,6 +651,15 @@ mod tests {
     }
 
     #[test]
+    fn zero_pad_surround_odd_signal_test() {
+        let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0].to_complex_time_vec();
+        v.zero_pad(10, PaddingOption::Surround).unwrap();
+        let expected = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
+                        10.0, 11.0, 0.0, 0.0, 0.0];
+        assert_eq!(&v[..], &expected);
+    }
+
+    #[test]
     fn zero_pad_b_end_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0].to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
@@ -663,6 +676,16 @@ mod tests {
         v.zero_pad_b(&mut buffer, 10, PaddingOption::Surround);
         let expected = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                         10.0, 0.0, 0.0, 0.0, 0.0];
+        assert_eq!(&v[..], &expected);
+    }
+
+    #[test]
+    fn zero_pad_b_surround_odd_signal_test() {
+        let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0].to_complex_time_vec();
+        let mut buffer = SingleBuffer::new();
+        v.zero_pad_b(&mut buffer, 10, PaddingOption::Surround);
+        let expected = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
+                        10.0, 11.0, 0.0, 0.0, 0.0];
         assert_eq!(&v[..], &expected);
     }
 

@@ -707,7 +707,7 @@ mod tests {
     }
 
     #[test]
-    fn vector_conv_vs_freq_multiplication_pure_real_data() {
+    fn vector_conv_vs_freq_multiplication_pure_real_data_even() {
         let a = vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0].to_real_time_vec();
         let b = vec![15.0, 14.0, 13.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0].to_real_time_vec();
         let mut buffer = SingleBuffer::new();
