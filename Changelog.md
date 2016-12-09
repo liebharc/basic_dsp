@@ -2,8 +2,12 @@
 Changes:
 
 ## Version 0.4.2
+Bugfix release.
 
-- Fix: Phase error in `zero_pad` if `Surround` was chosen and the original vector length is odd.
+- Fix: Not all implementations of `to_complex_time_vec` and `to_complex_freq_vec` set the vector length to 0 if a storage of odd length is passed.
+- Fix: Offset in `zero_pad` if `Surround` or `Center` was chosen and the original vector length is odd. As a result the convolution theorem didn't hold true, that means a multiplication in frequency domain didn't give the same results as a convolution.
+- Fix: `zero_pad_b` failed to copy the vector completely if `Center` was the selected option.
+- Fix: Convolution for vectors produced random results if the allocated size of a vector was different than it's actual size.
 - Fix: Buffer `convolve_vector` for matrices now returns all buffers back to the pool.
 - Performance: Convolution and interpolation now rely on the overlap and add algorithm or spawn worker threads for larger data sizes.
 - Fix: `use_sse` and `use_avx` failed to pick the faster implementations. However with the current status of the `simd` crate it's not recommended to use those feature flags. The Rust lib team is right now discussing about the future of the `simd`crate.

@@ -311,8 +311,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         let number_of_shifts = T::Reg::len() / step;
         let mut shifted_copies = Vec::with_capacity(number_of_shifts);
         let mut i = 0;
+        let len = self.len();
+        let data = self.data.to_slice();
+        let data = &data[0..len];
         while i < number_of_shifts {
-            let mut data = self.data.to_slice().iter().rev();
+            let mut data = data.iter().rev();
 
             // In general (number_of_shifts - i) indicates which prepared vector we need to use
             // if we later calculate end % number_of_shifts. Some examples:
@@ -339,6 +342,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             while j > 0 {
                 j -= step;
                 if j < shift || j >= min_len {
+                    // Insert zeros
                     current[k] = T::zero();
                     k += 1;
                     if k >= current.len() {
@@ -354,6 +358,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                         }
                     }
                 } else if step > 1 {
+                    // Push complex number onto vector
                     let im = *data.next().unwrap();
                     let re = *data.next().unwrap();
                     current[k] = re;
@@ -369,6 +374,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                         k = 0;
                     }
                 } else {
+                    // Push real number onto vector
                     current[k] = *data.next().unwrap();
                     k += 1;
                     if k >= current.len() {

@@ -146,7 +146,7 @@ impl<T> ToComplexVector<Vec<T>, T> for Vec<T>
             delta: T::one(),
             domain: TimeData,
             number_space: ComplexData,
-            valid_len: len,
+            valid_len: if len % 2 == 0 { len } else { 0 },
             multicore_settings: MultiCoreSettings::default(),
         }
     }
@@ -159,7 +159,7 @@ impl<T> ToComplexVector<Vec<T>, T> for Vec<T>
             delta: T::one(),
             domain: FrequencyData,
             number_space: ComplexData,
-            valid_len: len,
+            valid_len: if len % 2 == 0 { len } else { 0 },
             multicore_settings: MultiCoreSettings::default(),
         }
     }
@@ -243,31 +243,25 @@ impl<'a, T> ToComplexVector<&'a [T], T> for &'a [T]
     where T: RealNumber
 {
     fn to_complex_time_vec(self) -> ComplexTimeVec<Self, T> {
-        let mut len = self.len();
-        if len % 2 != 0 {
-            len = 0;
-        }
+        let len = self.len();
         ComplexTimeVec {
             data: self,
             delta: T::one(),
             domain: TimeData,
             number_space: ComplexData,
-            valid_len: len,
+            valid_len: if len % 2 == 0 { len } else { 0 },
             multicore_settings: MultiCoreSettings::default(),
         }
     }
 
     fn to_complex_freq_vec(self) -> ComplexFreqVec<Self, T> {
-        let mut len = self.len();
-        if len % 2 != 0 {
-            len = 0;
-        }
+        let len = self.len();
         ComplexFreqVec {
             data: self,
             delta: T::one(),
             domain: FrequencyData,
             number_space: ComplexData,
-            valid_len: len,
+            valid_len: if len % 2 == 0 { len } else { 0 },
             multicore_settings: MultiCoreSettings::default(),
         }
     }
@@ -354,31 +348,25 @@ impl<'a, T> ToComplexVector<&'a mut [T], T> for &'a mut [T]
     where T: RealNumber
 {
     fn to_complex_time_vec(self) -> ComplexTimeVec<Self, T> {
-        let mut len = self.len();
-        if len % 2 != 0 {
-            len = 0;
-        }
+        let len = self.len();
         ComplexTimeVec {
             data: self,
             delta: T::one(),
             domain: TimeData,
             number_space: ComplexData,
-            valid_len: len,
+            valid_len: if len % 2 == 0 { len } else { 0 },
             multicore_settings: MultiCoreSettings::default(),
         }
     }
 
     fn to_complex_freq_vec(self) -> ComplexFreqVec<Self, T> {
-        let mut len = self.len();
-        if len % 2 != 0 {
-            len = 0;
-        }
+        let len = self.len();
         ComplexFreqVec {
             data: self,
             delta: T::one(),
             domain: FrequencyData,
             number_space: ComplexData,
-            valid_len: len,
+            valid_len: if len % 2 == 0 { len } else { 0 },
             multicore_settings: MultiCoreSettings::default(),
         }
     }

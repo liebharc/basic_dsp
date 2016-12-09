@@ -5,7 +5,8 @@ use multicore_support::*;
 use rustfft::FFT;
 use super::super::{array_to_complex, array_to_complex_mut, VoidResult, ToSliceMut, MetaData,
                    DspVec, NumberSpace, TimeDomain, FrequencyDomain, DataDomain, Vector,
-                   ComplexNumberSpace, Buffer, ErrorReason, TimeToFrequencyDomainOperations};
+                   ComplexNumberSpace, Buffer, ErrorReason, TimeToFrequencyDomainOperations, ToComplexVector,
+                   FromVector, PaddingOption, ResizeOps, InsertZerosOps};
 
 /// Provides a convolution operations.
 pub trait Convolution<'a, S, T, C: 'a>
@@ -274,24 +275,24 @@ fn next_power_of_two(value: usize) -> usize {
         n = n >> 1;
         count += 1;
     }
-    
+
     1 << count
 }
-    
+
 impl<S, T, N, D> DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
           D: TimeDomain,
           DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone
-{    
+{
     fn overlap_discard<B>(&mut self, buffer: &mut B, impulse_response: &Self, fft_len: usize) -> VoidResult
         where B: Buffer<S, T>
     {
         if !self.is_complex() {
             return Err(ErrorReason::InputMustBeComplex);
         }
-    
+
         assert_meta_data!(self, impulse_response);
         let h_time = impulse_response;
         let imp_len = h_time.points();
@@ -302,8 +303,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         let mut fft = FFT::new(fft_len, false);
         let mut ifft = FFT::new(fft_len, true);
         let step_size = fft_len - overlap;
-        let h_time_padded_len = 2*fft_len; 
-        let h_freq_len = 2*fft_len; 
+        let h_time_padded_len = 2*fft_len;
+        let h_freq_len = 2*fft_len;
         let x_freq_len = 2*fft_len;
         let tmp_len = 2*fft_len;
         let remainder_len = x_len - x_len % fft_len;
@@ -317,10 +318,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let mut end = array;
             let h_time = h_time.data.to_slice();
             (&mut h_time_padded[0..2*imp_len]).copy_from_slice(&h_time[0..2*imp_len]);
-            for n in &mut h_time_padded[2*imp_len..] {
-                *n = T::zero();
-            }
-            
+            let mut h_time_padded = (&mut h_time_padded[..]).to_complex_time_vec();
+            h_time_padded.resize(2 * imp_len).expect("Shrinking a vector should always succeed");
+            h_time_padded.zero_pad(fft_len, PaddingOption::End).expect("zero padding should always have enough space");
+            let (h_time_padded, _) = h_time_padded.get();
+
             let x_time = self.data.to_slice_mut();
             let h_time: &[Complex<T>] = array_to_complex(&h_time[..]);
             let h_time_padded: &[Complex<T>] = array_to_complex(&h_time_padded[0..2*fft_len]);
@@ -330,41 +332,42 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let tmp: &mut [Complex<T>] = array_to_complex_mut(&mut tmp[0..2*fft_len]);
             let end: &mut [Complex<T>] = array_to_complex_mut(&mut end[0..remainder_len]);
             fft.process(h_time_padded, h_freq);
-            
+
             let mut position = 0;
             {
                 // (1) Scalar convolution of the beginning
                 for num in &mut tmp[0..imp_len/2] {
-                    *num = Self::convolve_iteration(x_time, h_time, position, (imp_len/2) as isize, imp_len);
+                    *num = Self::convolve_iteration(x_time, h_time, position, ((imp_len + 1) / 2) as isize, imp_len);
                     position += 1;
                 }
-                
+
                 // (2) Scalar convolution of the end/tail
                 position = (x_time.len() - end.len()) as isize;
                 for num in &mut end[0..remainder_len/2] {
-                    *num = Self::convolve_iteration(x_time, h_time, position, (imp_len/2) as isize, imp_len);
+                    *num = Self::convolve_iteration(x_time, h_time, position, ((imp_len + 1) / 2) as isize, imp_len);
                     position += 1;
                 }
             }
-            
+
             let mut position = 0;
             let scaling = T::from(fft_len).unwrap();
             {
                 // (3) The first iteration is different since it copies over the results which have been calculated for the beginning
                 let range = position .. fft_len+position;
                 fft.process(&x_time[range], x_freq);
-                (&mut x_time[0..imp_len/2]).copy_from_slice(&tmp[0..imp_len/2]); // Copy over the results of the scalar convolution (1)
+                // Copy over the results of the scalar convolution (1)
+                (&mut x_time[0..imp_len/2]).copy_from_slice(&tmp[0..imp_len/2]); 
                 for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_freq.iter()) {
                     *n = *n * *v / scaling;
                 }
                 ifft.process(x_freq, tmp);
                 position += step_size;
             }
-            
+
             while position+fft_len < x_len {
-                // (4) Same as (3) except that the results of the previous iteration gets copied over
                 let range = position .. fft_len+position;
                 fft.process(&x_time[range], x_freq);
+                // (4) Same as (3) except that the results of the previous iteration gets copied over
                 (&mut x_time[position-step_size+imp_len/2 .. position+imp_len/2]).copy_from_slice(&tmp[imp_len-1..fft_len]);
                 for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_freq.iter()) {
                     *n = *n * *v / scaling;
@@ -372,15 +375,15 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 ifft.process(x_freq, tmp);
                 position += step_size;
             }
-            
+
             // (5) now store the result of the last iteration
             (&mut x_time[position-step_size+imp_len/2 .. position+imp_len/2]).copy_from_slice(&tmp[imp_len-1..fft_len]);
-            
+
             // (6) Copy over the end result which was calculated at the beginning (2)
             (&mut x_time[x_len - remainder_len / 2 .. ]).copy_from_slice(&end[..]);
         }
         buffer.free(array);
-        
+
         Ok(())
     }
 }
@@ -409,12 +412,12 @@ impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
         // For the SIMD operation we need to clone `vector` several
         // times and this only is worthwhile if `vector.len() << self.len()`
         // where `<<` means "significant smaller".
-        if self.len() > 1000 
-           && impulse_response.len() <= 202 
-           &&impulse_response.len() > 11 {
+        if self.len() > 1000
+           && impulse_response.len() <= 202
+           && impulse_response.len() > 11 {
             self.convolve_vector_simd(buffer, impulse_response);
         }
-        else if self.len() > 10000     
+        else if self.len() > 10000
             && impulse_response.len() > 11
             // Overlap-discard creates a lot of copies of the size of impulse_response
             // and that only seems to be worthwhile if the vector is long enough
@@ -745,7 +748,7 @@ mod tests {
         let conv = conv.magnitude();
         assert_eq_tol(&mul[..], &conv[..], 1e-4);
     }
-    
+
     #[test]
     fn overlap_discard_test() {
         let a: Vec<f32> = (0..100).map(|x|x as f32).collect();
@@ -756,8 +759,8 @@ mod tests {
         let a = a.to_complex().unwrap();
         let b = b.to_complex().unwrap();
         let mut conv = a.clone();
-        conv.convolve_vector(&mut buffer, &b).unwrap();
-        
+        conv.convolve_vector_scalar(&mut buffer, &b);
+
         let mut overlap_discard = a;
         overlap_discard.overlap_discard(&mut buffer, &b, 0).unwrap();
         assert_eq_tol(&overlap_discard[..], &conv[..], 1e-4);
