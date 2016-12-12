@@ -372,23 +372,27 @@ impl<S, T, N, D> InsertZerosOps<T> for DspVec<S, T, N, D>
                 Ok(())
             }
             PaddingOption::Center => {
-                let mut diff = (len - len_before) / step;
                 let points_before = len_before / step;
                 let mut right = (points_before - 1) / 2;
                 let mut left = points_before - right ;
                 if is_complex {
                     right *= 2;
                     left *= 2;
-                    diff *= 2;
                 }
 
-                for i in 0..right {
-                    data[len - 1 - i] = data[len_before - 1 - i];
+                if right > 0 {
+                    unsafe {
+                        let src = &data[left] as *const T;
+                        let dest = &mut data[len - right] as *mut T;
+                        // src and dest may overload with copy, a unit test covers this case
+                        ptr::copy(src, dest, right);
+                    }
                 }
+
                 unsafe {
                     let dest = &mut data[left] as *mut T;
-                    ptr::write_bytes(dest, 0, len - diff);
-                    
+                    ptr::write_bytes(dest, 0, len - left - right);
+
                 }
                 Ok(())
             }
@@ -663,27 +667,27 @@ mod tests {
     fn zero_pad_center_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0].to_complex_time_vec();
         v.zero_pad(10, PaddingOption::Center).unwrap();
-        let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+        let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
             0.0, 0.0, 7.0, 8.0, 9.0, 10.0];
         assert_eq!(&v[..], &expected);
     }
-        
+
 
     #[test]
     fn zero_pad_b_center_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0].to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
         v.zero_pad_b(&mut buffer, 10, PaddingOption::Center);
-        let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+        let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
             0.0, 0.0, 7.0, 8.0, 9.0, 10.0];
         assert_eq!(&v[..], &expected);
     }
-    
+
     #[test]
     fn zero_pad_surround_odd_signal_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0].to_real_time_vec();
         v.zero_pad(20, PaddingOption::Surround).unwrap();
-        // The expected result is required so that the convolution theorem holds true 
+        // The expected result is required so that the convolution theorem holds true
         // (mul in freq is the same as conv)
         let expected = [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                         10.0, 11.0, 0.0, 0.0, 0.0, 0.0];
@@ -715,7 +719,7 @@ mod tests {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0].to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
         v.zero_pad_b(&mut buffer, 10, PaddingOption::Surround);
-        // The expected result is required so that the convolution theorem holds true 
+        // The expected result is required so that the convolution theorem holds true
         // (mul in freq is the same as conv)
         let expected = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
                         10.0, 11.0, 12.0, 0.0, 0.0];
@@ -741,6 +745,23 @@ mod tests {
                         0.0, 0.0, 0.0, 0.0];
         assert_eq!(&v[..], &expected);
     }
+
+    #[test]
+    fn zero_pad_surround_overlap_test() {
+        let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0].to_complex_time_vec();
+        v.zero_pad(8, PaddingOption::Surround).unwrap();
+        let expected = [0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 0.0, 0.0];
+        assert_eq!(&v[..], &expected);
+    }
+
+    #[test]
+    fn zero_pad_center_overlap_test() {
+        let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0].to_complex_time_vec();
+        v.zero_pad(8, PaddingOption::Center).unwrap();
+        let expected = [ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 7.0, 8.0, 9.0, 10.0];
+        assert_eq!(&v[..], &expected);
+    }
+
 
     #[test]
     fn zero_interleave_test() {
