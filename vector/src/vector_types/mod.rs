@@ -223,13 +223,23 @@ pub struct DspVec<S, T, N, D>
           N: NumberSpace,
           D: Domain
 {
-    /// The underlying storage. `self.len()` should be called to find out how many 
+    /// The underlying storage. `self.len()` should be called to find out how many
     /// elements in `data` contain valid data.
     pub data: S,
     delta: T,
     domain: D,
     number_space: N,
     valid_len: usize,
+    multicore_settings: MultiCoreSettings,
+}
+
+/// Holds meta data about a type.
+#[derive(Clone)]
+#[derive(Copy)]
+pub struct TypeMetaData<T, N, D> {
+    delta: T,
+    domain: D,
+    number_space: N,
     multicore_settings: MultiCoreSettings,
 }
 

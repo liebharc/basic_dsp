@@ -12,6 +12,7 @@ Bugfix release.
 - Performance: Convolution and interpolation now rely on the overlap and add algorithm or spawn worker threads for larger data sizes.
 - Fix: `use_sse` and `use_avx` failed to pick the faster implementations. However with the current status of the `simd` crate it's not recommended to use those feature flags. The Rust lib team is right now discussing about the future of the `simd`crate.
 - Fix: Out or range panic in `add`, `sub`, `mul` and `div` for large vectors.
+- New feature: Added a `TypeMetaData` struct which allows to create a new vector with the same meta data as an existing vector.
 
 ## Version 0.4.1
 Minor additions and improvements.

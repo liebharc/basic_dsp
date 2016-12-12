@@ -4,7 +4,8 @@ use num::{Complex, Zero};
 use std::result;
 use super::{round_len, DataDomain, NumberSpace, Domain, ErrorReason, DspVec, GenDspVec,
             RealTimeVec, RealFreqVec, ComplexTimeVec, ComplexFreqVec, RealData, ComplexData,
-            RealOrComplexData, TimeData, FrequencyData, TimeOrFrequencyData, ToSlice};
+            RealOrComplexData, TimeData, FrequencyData, TimeOrFrequencyData, ToSlice,
+            TypeMetaData, MetaData};
 use multicore_support::MultiCoreSettings;
 use std::convert::From;
 
@@ -21,6 +22,12 @@ pub trait ToDspVector<T>: Sized + ToSlice<T>
     ///
     /// For complex vectors with an odd length the resulting value will have a zero length.
     fn to_gen_dsp_vec(self, is_complex: bool, domain: DataDomain) -> GenDspVec<Self, T>;
+
+    /// Create a new vector from the given meta data. The meta data can be
+    /// retrieved from an existing vector. If no existing vector is available
+    /// then one of the other constructor methods should be used.
+    fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
+        where N: NumberSpace, D: Domain;
 }
 
 /// Conversion from a generic data type into a dsp vector with real data.
@@ -101,6 +108,22 @@ impl<T> ToDspVector<T> for Vec<T>
             number_space: RealOrComplexData { is_complex_current: is_complex },
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
+        }
+    }
+
+    fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
+        where N: NumberSpace, D: Domain {
+        let mut len = self.len();
+        if len % 2 != 0 && meta_data.is_complex() {
+            len = 0;
+        }
+        DspVec {
+            data: self,
+            delta: meta_data.delta,
+            domain: meta_data.domain.clone(),
+            number_space: meta_data.number_space.clone(),
+            valid_len: len,
+            multicore_settings: meta_data.multicore_settings
         }
     }
 }
@@ -209,6 +232,22 @@ impl<'a, T> ToDspVector<T> for &'a [T]
             multicore_settings: MultiCoreSettings::default(),
         }
     }
+
+    fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
+        where N: NumberSpace, D: Domain {
+        let mut len = self.len();
+        if len % 2 != 0 && meta_data.is_complex() {
+            len = 0;
+        }
+        DspVec {
+            data: self,
+            delta: meta_data.delta,
+            domain: meta_data.domain.clone(),
+            number_space: meta_data.number_space.clone(),
+            valid_len: len,
+            multicore_settings: meta_data.multicore_settings
+        }
+    }
 }
 
 impl<'a, T> ToRealVector<T> for &'a [T]
@@ -314,6 +353,22 @@ impl<'a, T> ToDspVector<T> for &'a mut [T]
             multicore_settings: MultiCoreSettings::default(),
         }
     }
+
+    fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
+        where N: NumberSpace, D: Domain {
+        let mut len = self.len();
+        if len % 2 != 0 && meta_data.is_complex() {
+            len = 0;
+        }
+        DspVec {
+            data: self,
+            delta: meta_data.delta,
+            domain: meta_data.domain.clone(),
+            number_space: meta_data.number_space.clone(),
+            valid_len: len,
+            multicore_settings: meta_data.multicore_settings
+        }
+    }
 }
 
 impl<'a, T> ToRealVector<T> for &'a mut [T]
@@ -417,6 +472,22 @@ impl<T> ToDspVector<T> for Box<[T]>
             number_space: RealOrComplexData { is_complex_current: is_complex },
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
+        }
+    }
+
+    fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
+        where N: NumberSpace, D: Domain {
+        let mut len = self.len();
+        if len % 2 != 0 && meta_data.is_complex() {
+            len = 0;
+        }
+        DspVec {
+            data: self,
+            delta: meta_data.delta,
+            domain: meta_data.domain.clone(),
+            number_space: meta_data.number_space.clone(),
+            valid_len: len,
+            multicore_settings: meta_data.multicore_settings
         }
     }
 }
