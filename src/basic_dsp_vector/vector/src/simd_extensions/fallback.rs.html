@@ -506,7 +506,7 @@
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>store</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>array</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>f32</span>], <span class='ident'>index</span>: <span class='ident'>usize</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>store</span>(<span class='self'>self</span>, <span class='ident'>array</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>f32</span>], <span class='ident'>index</span>: <span class='ident'>usize</span>) {
         <span class='kw'>let</span> <span class='ident'>array</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>array</span>[<span class='ident'>index</span>..<span class='ident'>index</span> <span class='op'>+</span> <span class='number'>4</span>];
         <span class='kw'>unsafe</span> {
             <span class='op'>*</span><span class='ident'>array</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='number'>0</span>;
@@ -546,7 +546,7 @@
     }
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>store</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>array</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>f64</span>], <span class='ident'>index</span>: <span class='ident'>usize</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>store</span>(<span class='self'>self</span>, <span class='ident'>array</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>f64</span>], <span class='ident'>index</span>: <span class='ident'>usize</span>) {
         <span class='kw'>let</span> <span class='ident'>array</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>array</span>[<span class='ident'>index</span>..<span class='ident'>index</span> <span class='op'>+</span> <span class='number'>2</span>];
         <span class='kw'>unsafe</span> {
             <span class='op'>*</span><span class='ident'>array</span>.<span class='ident'>get_unchecked_mut</span>(<span class='number'>0</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='number'>0</span>;
@@ -950,9 +950,11 @@
     <script>
         window.rootPath = "../../../../../";
         window.currentCrate = "basic_dsp_vector";
+        window.playgroundUrl = "";
     </script>
     <script src="../../../../../jquery.js"></script>
     <script src="../../../../../main.js"></script>
+    <script src="../../../../../extra.js"></script>
     <script defer src="../../../../../search-index.js"></script>
 </body>
 </html>

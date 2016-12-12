@@ -1,5 +1,5 @@
 (function() {var implementors = {};
-implementors["libc"] = [];implementors["num"] = [];
+implementors["basic_dsp_vector"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

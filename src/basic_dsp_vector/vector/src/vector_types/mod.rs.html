@@ -747,6 +747,16 @@
 <span id="703">703</span>
 <span id="704">704</span>
 <span id="705">705</span>
+<span id="706">706</span>
+<span id="707">707</span>
+<span id="708">708</span>
+<span id="709">709</span>
+<span id="710">710</span>
+<span id="711">711</span>
+<span id="712">712</span>
+<span id="713">713</span>
+<span id="714">714</span>
+<span id="715">715</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>RealNumber</span>;
 <span class='kw'>use</span> <span class='ident'>multicore_support</span>::{<span class='ident'>Chunk</span>, <span class='ident'>MultiCoreSettings</span>, <span class='ident'>Complexity</span>};
@@ -973,13 +983,23 @@
           <span class='ident'>N</span>: <span class='ident'>NumberSpace</span>,
           <span class='ident'>D</span>: <span class='ident'>Domain</span>
 {
-    <span class='doccomment'>/// The underlying storage. `self.len()` should be called to find out how many </span>
+    <span class='doccomment'>/// The underlying storage. `self.len()` should be called to find out how many</span>
     <span class='doccomment'>/// elements in `data` contain valid data.</span>
     <span class='kw'>pub</span> <span class='ident'>data</span>: <span class='ident'>S</span>,
     <span class='ident'>delta</span>: <span class='ident'>T</span>,
     <span class='ident'>domain</span>: <span class='ident'>D</span>,
     <span class='ident'>number_space</span>: <span class='ident'>N</span>,
     <span class='ident'>valid_len</span>: <span class='ident'>usize</span>,
+    <span class='ident'>multicore_settings</span>: <span class='ident'>MultiCoreSettings</span>,
+}
+
+<span class='doccomment'>/// Holds meta data about a type.</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>TypeMetaData</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>N</span>, <span class='ident'>D</span><span class='op'>&gt;</span> {
+    <span class='ident'>delta</span>: <span class='ident'>T</span>,
+    <span class='ident'>domain</span>: <span class='ident'>D</span>,
+    <span class='ident'>number_space</span>: <span class='ident'>N</span>,
     <span class='ident'>multicore_settings</span>: <span class='ident'>MultiCoreSettings</span>,
 }
 
@@ -1510,9 +1530,11 @@
     <script>
         window.rootPath = "../../../../../";
         window.currentCrate = "basic_dsp_vector";
+        window.playgroundUrl = "";
     </script>
     <script src="../../../../../jquery.js"></script>
     <script src="../../../../../main.js"></script>
+    <script src="../../../../../extra.js"></script>
     <script defer src="../../../../../search-index.js"></script>
 </body>
 </html>

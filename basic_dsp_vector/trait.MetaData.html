@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-428' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/vec_impl_and_indexers.rs.html#35-47' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-457' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/vec_impl_and_indexers.rs.html#35-47' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait MetaData {
     fn <a href='#tymethod.domain' class='fnname'>domain</a>(&amp;self) -&gt; <a class='enum' href='../basic_dsp_vector/enum.DataDomain.html' title='basic_dsp_vector::DataDomain'>DataDomain</a>;
     fn <a href='#tymethod.is_complex' class='fnname'>is_complex</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
@@ -67,6 +67,7 @@ of operations which are valid on this vector.</p>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
     <li><code>impl&lt;S, T, N, D&gt; MetaData for <a class='struct' href='../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, N, D&gt; <span class='where'>where S: <a class='trait' href='../basic_dsp_vector/trait.ToSlice.html' title='basic_dsp_vector::ToSlice'>ToSlice</a>&lt;T&gt;, T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a>, D: <a class='trait' href='../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></li>
+<li><code>impl&lt;T, N, D&gt; MetaData for <a class='struct' href='../basic_dsp_vector/struct.TypeMetaData.html' title='basic_dsp_vector::TypeMetaData'>TypeMetaData</a>&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a>, D: <a class='trait' href='../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></li>
 </ul><script type="text/javascript" async
                          src="../implementors/basic_dsp_vector/trait.MetaData.js">
                  </script></section>
@@ -125,9 +126,11 @@ of operations which are valid on this vector.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
+        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
+    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

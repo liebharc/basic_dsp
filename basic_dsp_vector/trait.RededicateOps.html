@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-3461' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/rededicate_and_relations.rs.html#14-29' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-3605' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/rededicate_and_relations.rs.html#14-29' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait RededicateOps&lt;Other&gt;: <a class='trait' href='../basic_dsp_vector/trait.RededicateForceOps.html' title='basic_dsp_vector::RededicateForceOps'>RededicateForceOps</a>&lt;Other&gt; {
     fn <a href='#tymethod.rededicate_from' class='fnname'>rededicate_from</a>(origin: Other) -&gt; Self;
 }</pre><div class='docblock'><p>This trait allows to change a data type. The operations will
@@ -71,7 +71,7 @@ trait provides option for that.</p>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='bool-val'>true</span>, <span class='ident'>complex</span>.<span class='ident'>is_complex</span>());
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataDomain</span>::<span class='ident'>Time</span>, <span class='ident'>complex</span>.<span class='ident'>domain</span>());
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>0</span>, <span class='ident'>complex</span>.<span class='ident'>len</span>());
-<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>4</span>, <span class='ident'>complex</span>.<span class='ident'>alloc_len</span>());</pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>4</span>, <span class='ident'>complex</span>.<span class='ident'>alloc_len</span>());<a class='test-arrow' target='_blank' href=''>Run</a></pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
@@ -134,9 +134,11 @@ trait provides option for that.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
+        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
+    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

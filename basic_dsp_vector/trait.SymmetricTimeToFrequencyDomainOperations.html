@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1269' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/time_freq/time_to_freq.rs.html#69-118' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-1319' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/time_freq/time_to_freq.rs.html#69-118' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait SymmetricTimeToFrequencyDomainOperations&lt;S, T&gt;: <a class='trait' href='../basic_dsp_vector/trait.ToFreqResult.html' title='basic_dsp_vector::ToFreqResult'>ToFreqResult</a> <span class='where'>where S: <a class='trait' href='../basic_dsp_vector/trait.ToSliceMut.html' title='basic_dsp_vector::ToSliceMut'>ToSliceMut</a>&lt;T&gt;, T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span> {
     fn <a href='#tymethod.plain_sfft' class='fnname'>plain_sfft</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; <a class='type' href='../basic_dsp_vector/type.TransRes.html' title='basic_dsp_vector::TransRes'>TransRes</a>&lt;Self::FreqResult&gt; <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span>;
     fn <a href='#tymethod.sfft' class='fnname'>sfft</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; <a class='type' href='../basic_dsp_vector/type.TransRes.html' title='basic_dsp_vector::TransRes'>TransRes</a>&lt;Self::FreqResult&gt; <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span>;
@@ -167,9 +167,11 @@ isn&#39;t verified and no error is raised if the vector isn&#39;t symmetric.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
+        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
+    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

@@ -259,15 +259,9 @@
 <span id="215">215</span>
 <span id="216">216</span>
 <span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
-<span id="220">220</span>
-<span id="221">221</span>
-<span id="222">222</span>
-<span id="223">223</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>complex</span>::<span class='ident'>Complex</span>;
-<span class='kw'>use</span> <span class='ident'>num</span>::<span class='ident'>Zero</span>;
+<span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>Zero</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Simd</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>: <span class='ident'>Sized</span>
@@ -330,7 +324,7 @@
 
     <span class='kw'>fn</span> <span class='ident'>splat</span>(<span class='ident'>value</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
 
-    <span class='kw'>fn</span> <span class='ident'>store</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>array</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='ident'>index</span>: <span class='ident'>usize</span>);
+    <span class='kw'>fn</span> <span class='ident'>store</span>(<span class='self'>self</span>, <span class='ident'>array</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>], <span class='ident'>index</span>: <span class='ident'>usize</span>);
 }
 
 <span class='attribute'>#[<span class='ident'>repr</span>(<span class='ident'>packed</span>)]</span>
@@ -341,21 +335,9 @@
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>:<span class='ident'>ident</span>)
     <span class='op'>=&gt;</span>
     {
-        <span class='kw'>impl</span> <span class='ident'>Zero</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>{
+        <span class='kw'>impl</span> <span class='ident'>Zero</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span> {
             <span class='kw'>fn</span> <span class='ident'>zero</span>() <span class='op'>-&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span> {
                 <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>::<span class='ident'>splat</span>(<span class='number'>0.0</span>)
-            }
-            
-            <span class='kw'>fn</span> <span class='ident'>is_zero</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-                <span class='comment'>// A better implementation is likely necessary as soon</span>
-                <span class='comment'>// as this method is truely used</span>
-                <span class='kw'>for</span> <span class='ident'>n</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>clone</span>().<span class='ident'>to_array</span>() {
-                    <span class='kw'>if</span> <span class='op'>*</span><span class='ident'>n</span> <span class='op'>!=</span> <span class='number'>0.0</span> {
-                        <span class='kw'>return</span> <span class='bool-val'>false</span>;
-                    }
-                }
-                
-                <span class='bool-val'>true</span>
             }
         }
     
@@ -463,28 +445,34 @@
             }
 
             <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-            <span class='kw'>fn</span> <span class='ident'>store</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>array</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>], <span class='ident'>index</span>: <span class='ident'>usize</span>) {
+            <span class='kw'>fn</span> <span class='ident'>store</span>(<span class='self'>self</span>, <span class='ident'>array</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>data_type</span>], <span class='ident'>index</span>: <span class='ident'>usize</span>) {
                 <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>reg</span>::<span class='ident'>store</span>(<span class='self'>self</span>, <span class='ident'>array</span>, <span class='ident'>index</span>);
             }
         }
     }
 }
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;doc&quot;</span>, <span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;avx&quot;</span>))]</span>
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>avx</span>;
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;doc&quot;</span>, <span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;use_avx&quot;</span>))]</span>
+<span class='kw'>mod</span> <span class='ident'>avx</span>;
 
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;doc&quot;</span>, <span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;avx&quot;</span>))]</span>
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;doc&quot;</span>, <span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;use_avx&quot;</span>))]</span>
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>avx</span>::{<span class='ident'>Reg32</span>, <span class='ident'>Reg64</span>};
 
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;doc&quot;</span>, <span class='ident'>all</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;sse&quot;</span>, <span class='ident'>not</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;avx&quot;</span>))))]</span>
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>sse</span>;
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;doc&quot;</span>, <span class='ident'>all</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;use_sse&quot;</span>, <span class='ident'>not</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;use_avx&quot;</span>))))]</span>
+<span class='kw'>mod</span> <span class='ident'>sse</span>;
 
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;doc&quot;</span>, <span class='ident'>all</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;sse&quot;</span>, <span class='ident'>not</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;avx&quot;</span>))))]</span>
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>sse</span>::{<span class='ident'>Reg32</span>, <span class='ident'>Reg64</span>};
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;doc&quot;</span>, <span class='ident'>all</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;use_sse&quot;</span>, <span class='ident'>not</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;use_avx&quot;</span>))))]</span>
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>sse</span>::{<span class='ident'>Reg32</span>, <span class='ident'>Reg64</span>, <span class='ident'>IntReg32</span>, <span class='ident'>IntReg64</span>, <span class='ident'>UIntReg32</span>, <span class='ident'>UIntReg64</span>};
 
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;doc&quot;</span>, <span class='ident'>not</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;avx&quot;</span>, <span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;sse&quot;</span>))))]</span>
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>fallback</span>;
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;doc&quot;</span>, <span class='ident'>all</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;use_sse&quot;</span>, <span class='ident'>not</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;use_avx&quot;</span>))))]</span>
+<span class='kw'>mod</span> <span class='ident'>approximations</span>;
 
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;doc&quot;</span>, <span class='ident'>not</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;avx&quot;</span>, <span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;sse&quot;</span>))))]</span>
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;doc&quot;</span>, <span class='ident'>all</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;use_sse&quot;</span>, <span class='ident'>not</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;use_avx&quot;</span>))))]</span>
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>approximations</span>::<span class='op'>*</span>;
+
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;doc&quot;</span>, <span class='ident'>not</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;use_avx&quot;</span>, <span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;use_sse&quot;</span>))))]</span>
+<span class='kw'>mod</span> <span class='ident'>fallback</span>;
+
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;doc&quot;</span>, <span class='ident'>not</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;use_avx&quot;</span>, <span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;use_sse&quot;</span>))))]</span>
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>fallback</span>::{<span class='ident'>Reg32</span>, <span class='ident'>Reg64</span>};
 
 <span class='macro'>simd_generic_impl</span><span class='macro'>!</span>(<span class='ident'>f32</span>, <span class='ident'>Reg32</span>);
@@ -546,9 +534,11 @@
     <script>
         window.rootPath = "../../../../../";
         window.currentCrate = "basic_dsp_vector";
+        window.playgroundUrl = "";
     </script>
     <script src="../../../../../jquery.js"></script>
     <script src="../../../../../main.js"></script>
+    <script src="../../../../../extra.js"></script>
     <script defer src="../../../../../search-index.js"></script>
 </body>
 </html>

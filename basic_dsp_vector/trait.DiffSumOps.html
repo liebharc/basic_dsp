@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-4159' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/diff_sum.rs.html#6-53' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-4306' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/diff_sum.rs.html#6-53' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait DiffSumOps {
     fn <a href='#tymethod.diff' class='fnname'>diff</a>(&amp;mut self);
     fn <a href='#tymethod.diff_with_start' class='fnname'>diff_with_start</a>(&amp;mut self);
@@ -69,7 +69,7 @@ the vector length by one point.</p>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='op'>-</span><span class='number'>1.0</span>, <span class='number'>4.0</span>], <span class='ident'>vector</span>[..]);
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>2.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>3.0</span>, <span class='number'>5.0</span>, <span class='number'>5.0</span>).<span class='ident'>to_complex_time_vec</span>();
 <span class='ident'>vector</span>.<span class='ident'>diff</span>();
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>2.0</span>], <span class='ident'>vector</span>[..]);</pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>2.0</span>], <span class='ident'>vector</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
 </div><h3 id='tymethod.diff_with_start' class='method stab '><span id='diff_with_start.v' class='invisible'><code>fn <a href='#tymethod.diff_with_start' class='fnname'>diff_with_start</a>(&amp;mut self)</code></span></h3><div class='docblock'><p>Calculates the delta of each elements to its previous element. The first element
 will remain unchanged.</p>
 
@@ -81,7 +81,7 @@ will remain unchanged.</p>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>2.0</span>, <span class='number'>1.0</span>, <span class='op'>-</span><span class='number'>1.0</span>, <span class='number'>4.0</span>], <span class='ident'>vector</span>[..]);
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>2.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>3.0</span>, <span class='number'>5.0</span>, <span class='number'>5.0</span>).<span class='ident'>to_complex_time_vec</span>();
 <span class='ident'>vector</span>.<span class='ident'>diff_with_start</span>();
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>2.0</span>, <span class='number'>2.0</span>, <span class='number'>1.0</span>, <span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>2.0</span>], <span class='ident'>vector</span>[..]);</pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>2.0</span>, <span class='number'>2.0</span>, <span class='number'>1.0</span>, <span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>2.0</span>], <span class='ident'>vector</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
 </div><h3 id='tymethod.cum_sum' class='method stab '><span id='cum_sum.v' class='invisible'><code>fn <a href='#tymethod.cum_sum' class='fnname'>cum_sum</a>(&amp;mut self)</code></span></h3><div class='docblock'><p>Calculates the cumulative sum of all elements. This operation undoes the
 <code>diff_with_start</code>operation.</p>
 
@@ -90,7 +90,7 @@ will remain unchanged.</p>
 <span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>2.0</span>, <span class='number'>1.0</span>, <span class='op'>-</span><span class='number'>1.0</span>, <span class='number'>4.0</span>).<span class='ident'>to_real_time_vec</span>();
 <span class='ident'>vector</span>.<span class='ident'>cum_sum</span>();
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>2.0</span>, <span class='number'>6.0</span>], <span class='ident'>vector</span>[..]);</pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>2.0</span>, <span class='number'>6.0</span>], <span class='ident'>vector</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
@@ -153,9 +153,11 @@ will remain unchanged.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
+        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
+    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

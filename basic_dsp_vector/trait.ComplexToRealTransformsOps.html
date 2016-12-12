@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-732' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/complex/complex_to_real.rs.html#15-93' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-782' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/complex/complex_to_real.rs.html#15-93' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait ComplexToRealTransformsOps&lt;T&gt;: <a class='trait' href='../basic_dsp_vector/trait.ToRealResult.html' title='basic_dsp_vector::ToRealResult'>ToRealResult</a> <span class='where'>where T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span> {
     fn <a href='#tymethod.magnitude' class='fnname'>magnitude</a>(self) -&gt; Self::RealResult;
     fn <a href='#tymethod.magnitude_squared' class='fnname'>magnitude_squared</a>(self) -&gt; Self::RealResult;
@@ -69,7 +69,7 @@ the complex number space.</p>
 <span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
 <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>3.0</span>, <span class='op'>-</span><span class='number'>4.0</span>, <span class='op'>-</span><span class='number'>3.0</span>, <span class='number'>4.0</span>).<span class='ident'>to_complex_time_vec</span>();
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>magnitude</span>();
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>5.0</span>, <span class='number'>5.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);</pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>5.0</span>, <span class='number'>5.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
 </div><h3 id='tymethod.magnitude_squared' class='method stab '><span id='magnitude_squared.v' class='invisible'><code>fn <a href='#tymethod.magnitude_squared' class='fnname'>magnitude_squared</a>(self) -&gt; Self::RealResult</code></span></h3><div class='docblock'><p>Gets the square root of the absolute value of all vector elements.</p>
 
 <h1 id='example-1' class='section-header'><a href='#example-1'>Example</a></h1>
@@ -77,7 +77,7 @@ the complex number space.</p>
 <span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
 <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>3.0</span>, <span class='op'>-</span><span class='number'>4.0</span>, <span class='op'>-</span><span class='number'>3.0</span>, <span class='number'>4.0</span>).<span class='ident'>to_complex_time_vec</span>();
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>magnitude_squared</span>();
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>25.0</span>, <span class='number'>25.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);</pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>25.0</span>, <span class='number'>25.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
 </div><h3 id='tymethod.to_real' class='method stab '><span id='to_real.v' class='invisible'><code>fn <a href='#tymethod.to_real' class='fnname'>to_real</a>(self) -&gt; Self::RealResult</code></span></h3><div class='docblock'><p>Gets all real elements.</p>
 
 <h1 id='example-2' class='section-header'><a href='#example-2'>Example</a></h1>
@@ -85,7 +85,7 @@ the complex number space.</p>
 <span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
 <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>).<span class='ident'>to_complex_time_vec</span>();
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>to_real</span>();
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>3.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);</pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>3.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
 </div><h3 id='tymethod.to_imag' class='method stab '><span id='to_imag.v' class='invisible'><code>fn <a href='#tymethod.to_imag' class='fnname'>to_imag</a>(self) -&gt; Self::RealResult</code></span></h3><div class='docblock'><p>Gets all imag elements.</p>
 
 <h1 id='example-3' class='section-header'><a href='#example-3'>Example</a></h1>
@@ -93,7 +93,7 @@ the complex number space.</p>
 <span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
 <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>).<span class='ident'>to_complex_time_vec</span>();
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>to_imag</span>();
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>2.0</span>, <span class='number'>4.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);</pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>2.0</span>, <span class='number'>4.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
 </div><h3 id='tymethod.phase' class='method stab '><span id='phase.v' class='invisible'><code>fn <a href='#tymethod.phase' class='fnname'>phase</a>(self) -&gt; Self::RealResult</code></span></h3><div class='docblock'><p>Gets the phase of all elements in [rad].</p>
 
 <h1 id='example-4' class='section-header'><a href='#example-4'>Example</a></h1>
@@ -102,7 +102,7 @@ the complex number space.</p>
 <span class='kw'>let</span> <span class='ident'>data</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>4.0</span>, <span class='op'>-</span><span class='number'>2.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='op'>-</span><span class='number'>3.0</span>, <span class='number'>1.0</span>, <span class='number'>1.0</span>);
 <span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='ident'>data</span>.<span class='ident'>to_complex_time_vec</span>();
 <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>phase</span>();
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>0.0</span>, <span class='number'>1.5707964</span>, <span class='number'>3.1415927</span>, <span class='op'>-</span><span class='number'>1.5707964</span>, <span class='number'>0.7853982</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);</pre>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>0.0</span>, <span class='number'>1.5707964</span>, <span class='number'>3.1415927</span>, <span class='op'>-</span><span class='number'>1.5707964</span>, <span class='number'>0.7853982</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
@@ -166,9 +166,11 @@ the complex number space.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
+        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
+    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

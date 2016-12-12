@@ -47,9 +47,10 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-147' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/to_from_vec_conversions.rs.html#16-24' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-147' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/to_from_vec_conversions.rs.html#17-31' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait ToDspVector&lt;T&gt;: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> + <a class='trait' href='../basic_dsp_vector/trait.ToSlice.html' title='basic_dsp_vector::ToSlice'>ToSlice</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span> {
     fn <a href='#tymethod.to_gen_dsp_vec' class='fnname'>to_gen_dsp_vec</a>(self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; is_complex: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; domain: <a class='enum' href='../basic_dsp_vector/enum.DataDomain.html' title='basic_dsp_vector::DataDomain'>DataDomain</a>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='type' href='../basic_dsp_vector/type.GenDspVec.html' title='basic_dsp_vector::GenDspVec'>GenDspVec</a>&lt;Self, T&gt;;
+    fn <a href='#tymethod.to_dsp_vec' class='fnname'>to_dsp_vec</a>&lt;N, D&gt;(self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; meta_data: &amp;<a class='struct' href='../basic_dsp_vector/struct.TypeMetaData.html' title='basic_dsp_vector::TypeMetaData'>TypeMetaData</a>&lt;T, N, D&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='struct' href='../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;Self, T, N, D&gt; <span class='where'>where N: <a class='trait' href='../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a>, D: <a class='trait' href='../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span>;
 }</pre><div class='docblock'><p>Conversion from a generic data type into a dsp vector which tracks
 its meta information (domain and number space)
 only at runtime. See <code>ToRealVector</code> and
@@ -62,6 +63,9 @@ with the type system and therefore avoid runtime errors.</p>
 <code>delta</code> can be changed after construction with a call of <code>set_delta</code>.</p>
 
 <p>For complex vectors with an odd length the resulting value will have a zero length.</p>
+</div><h3 id='tymethod.to_dsp_vec' class='method stab '><span id='to_dsp_vec.v' class='invisible'><code>fn <a href='#tymethod.to_dsp_vec' class='fnname'>to_dsp_vec</a>&lt;N, D&gt;(self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; meta_data: &amp;<a class='struct' href='../basic_dsp_vector/struct.TypeMetaData.html' title='basic_dsp_vector::TypeMetaData'>TypeMetaData</a>&lt;T, N, D&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='struct' href='../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;Self, T, N, D&gt; <span class='where'>where N: <a class='trait' href='../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a>, D: <a class='trait' href='../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></span></h3><div class='docblock'><p>Create a new vector from the given meta data. The meta data can be
+retrieved from an existing vector. If no existing vector is available
+then one of the other constructor methods should be used.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
@@ -127,9 +131,11 @@ with the type system and therefore avoid runtime errors.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
+        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
+    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

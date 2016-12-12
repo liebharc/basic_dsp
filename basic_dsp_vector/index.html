@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-0' class='srclink' href='../src/basic_dsp_vector/vector/src/lib.rs.html#1-92' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-0' class='srclink' href='../src/basic_dsp_vector/vector/src/lib.rs.html#1-111' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Basic digital signal processing (DSP) operations</p>
 
 <p>Digital signal processing based on real or complex vectors in time or frequency domain.
@@ -183,6 +183,13 @@ to execute an operation.</p>
                                   title='basic_dsp_vector::TimeOrFrequencyData'>TimeOrFrequencyData</a></td>
                            <td class='docblock-short'>
                                 <p>Marker for types containing time or frequency data.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.TypeMetaData.html'
+                                  title='basic_dsp_vector::TypeMetaData'>TypeMetaData</a></td>
+                           <td class='docblock-short'>
+                                <p>Holds meta data about a type.</p>
                            </td>
                        </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
@@ -373,6 +380,14 @@ accessor for complex data.</p>
                                   title='basic_dsp_vector::FromVector'>FromVector</a></td>
                            <td class='docblock-short'>
                                 <p>Retrieves the underlying storage from a vector.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.GetMetaData.html'
+                                  title='basic_dsp_vector::GetMetaData'>GetMetaData</a></td>
+                           <td class='docblock-short'>
+                                <p>Gets the meta data of a type. This can be used to create a new type with the same
+meta data.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -773,6 +788,14 @@ with the type system and therefore avoid runtime errors.</p>
                            <td class='docblock-short'>
                                 <p>A trait for vector types.</p>
                            </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.Zero.html'
+                                  title='basic_dsp_vector::Zero'>Zero</a></td>
+                           <td class='docblock-short'>
+                                <p>This trait is necessary so that we can define zero for types outside this crate.
+It calls the <code>num::Zero</code> trait where possible.</p>
+                           </td>
                        </tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
 <table>
                        <tr class=' module-item'>
@@ -1029,9 +1052,11 @@ which still can be used in order to avoid memory allocation.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
+        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
+    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

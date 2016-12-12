@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-2327' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/mod.rs.html#1-1275' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-2471' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/mod.rs.html#1-1275' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>This module allows to combine certain operations into one operation. Since one
 many machines the speed of many DSP operations is limited by the memory bus speed
 this approach may result in better register and cache usage and thus decrease
@@ -62,7 +62,7 @@ state of the library.</p>
 <span class='comment'>// pseudocode:</span>
 <span class='comment'>// for m in M:</span>
 <span class='comment'>//  for n in N:</span>
-<span class='comment'>//    execute m on n</span></pre>
+<span class='comment'>//    execute m on n</span><a class='test-arrow' target='_blank' href=''>Run</a></pre>
 
 <p>with this method the pattern is changed slightly:</p>
 
@@ -70,7 +70,7 @@ state of the library.</p>
 <span class='comment'>// pseudocode:</span>
 <span class='comment'>// for n in N:</span>
 <span class='comment'>//  for m in M:</span>
-<span class='comment'>//    execute m on n</span></pre>
+<span class='comment'>//    execute m on n</span><a class='test-arrow' target='_blank' href=''>Run</a></pre>
 
 <p>Both variants have the same complexity however the second one is beneficial since we
 have increased locality this way. This should help us by making better use of registers and
@@ -103,7 +103,7 @@ is independent from any other element in the vector.</p>
 <span class='ident'>close</span>(<span class='kw-2'>&amp;</span>[<span class='number'>0.80902</span>, <span class='number'>0.30902</span>, <span class='op'>-</span><span class='number'>0.30902</span>, <span class='op'>-</span><span class='number'>0.80902</span>, <span class='op'>-</span><span class='number'>1.00000</span>, <span class='op'>-</span><span class='number'>0.80902</span>, <span class='op'>-</span><span class='number'>0.30902</span>, <span class='number'>0.30902</span>],
           <span class='kw-2'>&amp;</span><span class='ident'>b</span>[..]);
 <span class='ident'>close</span>(<span class='kw-2'>&amp;</span>[<span class='op'>-</span><span class='number'>3.2282</span>, <span class='op'>-</span><span class='number'>5.3181</span>, <span class='op'>-</span><span class='number'>5.3181</span>, <span class='op'>-</span><span class='number'>3.2282</span>, <span class='op'>-</span><span class='number'>159.1199</span>, <span class='op'>-</span><span class='number'>3.2282</span>, <span class='op'>-</span><span class='number'>5.3181</span>, <span class='op'>-</span><span class='number'>5.3181</span>],
-          <span class='kw-2'>&amp;</span><span class='ident'>a</span>[..]);</pre>
+          <span class='kw-2'>&amp;</span><span class='ident'>a</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                        <tr class=' module-item'>
@@ -313,9 +313,11 @@ with multi ops or prepared ops.</p>
     <script>
         window.rootPath = "../../";
         window.currentCrate = "basic_dsp_vector";
+        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
+    <script src="../../extra.js"></script>
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

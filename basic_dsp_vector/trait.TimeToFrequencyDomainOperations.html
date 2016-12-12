@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1253' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/time_freq/time_to_freq.rs.html#12-63' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-1303' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/time_freq/time_to_freq.rs.html#12-63' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait TimeToFrequencyDomainOperations&lt;S, T&gt;: <a class='trait' href='../basic_dsp_vector/trait.ToFreqResult.html' title='basic_dsp_vector::ToFreqResult'>ToFreqResult</a> <span class='where'>where S: <a class='trait' href='../basic_dsp_vector/trait.ToSliceMut.html' title='basic_dsp_vector::ToSliceMut'>ToSliceMut</a>&lt;T&gt;, T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span> {
     fn <a href='#tymethod.plain_fft' class='fnname'>plain_fft</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; Self::FreqResult <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span>;
     fn <a href='#tymethod.fft' class='fnname'>fft</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; Self::FreqResult <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span>;
@@ -77,7 +77,7 @@ vector.</p>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>actual</span>.<span class='ident'>len</span>(), <span class='ident'>expected</span>.<span class='ident'>len</span>());
 <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>actual</span>.<span class='ident'>len</span>() {
        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>f32</span>::<span class='ident'>abs</span>(<span class='ident'>actual</span>[<span class='ident'>i</span>] <span class='op'>-</span> <span class='ident'>expected</span>[<span class='ident'>i</span>]) <span class='op'>&lt;</span> <span class='number'>1e-4</span>);
-}</pre>
+}<a class='test-arrow' target='_blank' href=''>Run</a></pre>
 </div><h3 id='tymethod.fft' class='method stab '><span id='fft.v' class='invisible'><code>fn <a href='#tymethod.fft' class='fnname'>fft</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; Self::FreqResult <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></span></h3><div class='docblock'><p>Performs a Fast Fourier Transformation transforming a time domain vector
 into a frequency domain vector.</p>
 
@@ -96,7 +96,7 @@ into a frequency domain vector.</p>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>actual</span>.<span class='ident'>len</span>(), <span class='ident'>expected</span>.<span class='ident'>len</span>());
 <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>actual</span>.<span class='ident'>len</span>() {
        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>f32</span>::<span class='ident'>abs</span>(<span class='ident'>actual</span>[<span class='ident'>i</span>] <span class='op'>-</span> <span class='ident'>expected</span>[<span class='ident'>i</span>]) <span class='op'>&lt;</span> <span class='number'>1e-4</span>);
-}</pre>
+}<a class='test-arrow' target='_blank' href=''>Run</a></pre>
 </div><h3 id='tymethod.windowed_fft' class='method stab '><span id='windowed_fft.v' class='invisible'><code>fn <a href='#tymethod.windowed_fft' class='fnname'>windowed_fft</a>&lt;B&gt;(self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buffer: &amp;mut B,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; window: &amp;<a class='trait' href='../basic_dsp_vector/window_functions/trait.WindowFunction.html' title='basic_dsp_vector::window_functions::WindowFunction'>WindowFunction</a>&lt;T&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; Self::FreqResult <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></span></h3><div class='docblock'><p>Applies a FFT window and performs a Fast Fourier Transformation transforming a time
 domain vector into a frequency domain vector.</p>
 </div></div>
@@ -161,9 +161,11 @@ domain vector into a frequency domain vector.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
+        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
+    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>
