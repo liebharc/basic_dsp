@@ -685,10 +685,11 @@ mod tests {
     }
 
     #[test]
-    fn interpolatef_sinc_test() {
+    fn interpolatef_by_integer_sinc_even_test() {
         let len = 6;
-        let mut time = vec!(0.0; 2 * len).to_complex_time_vec();
-        time[len] = 1.0;
+        let mut time = vec!(0.0; len).to_real_time_vec();
+        time[len / 2] = 1.0;
+        let mut time = time.to_complex().unwrap();
         let sinc: SincFunction<f32> = SincFunction::new();
         let mut buffer = SingleBuffer::new();
         time.interpolatef(&mut buffer,
@@ -696,9 +697,48 @@ mod tests {
                           2.0,
                           0.0,
                           len);
-        let result = time.magnitude();
-        let expected = [0.00000, 0.04466, 0.00000, 0.16667, 0.00000, 0.62201, 1.00000, 0.62201,
-                        0.00000, 0.16667, 0.00000, 0.04466];
+        let result = time.to_real();
+        let expected = [0.00000, 0.04466, 0.00000, -0.16667, 0.00000, 0.62201, 1.00000, 0.62201,
+                        0.00000, -0.16667, 0.00000, 0.04466];
+        assert_eq_tol(&result[..], &expected, 0.1);
+    }
+
+    #[test]
+    fn interpolatef_by_integer_sinc_odd_test() {
+        let len = 7;
+        let mut time = vec!(0.0; len).to_real_time_vec();
+        time[len / 2] = 1.0;
+        let mut time = time.to_complex().unwrap();
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let mut buffer = SingleBuffer::new();
+        time.interpolatef(&mut buffer,
+                          &sinc as &RealImpulseResponse<f32>,
+                          2.0,
+                          0.0,
+                          len);
+        let result = time.to_real();
+        let expected = [0.00000, 0.15856, 0.00000, -0.22913, 0.00000, 0.64199, 1.00000, 0.64199,
+                        0.00000, -0.22913, -0.00000, 0.15856, 0.00000, -0.14286];
+        assert_eq_tol(&result[..], &expected, 0.1);
+    }
+
+    #[test]
+    fn interpolatef_by_fractional_sinc_test() {
+        let len = 6;
+        let mut time = vec!(0.0; len).to_real_time_vec();
+        time[len / 2] = 1.0;
+        let mut time = time.to_complex().unwrap();
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let mut buffer = SingleBuffer::new();
+        time.interpolatef(&mut buffer,
+                          &sinc as &RealImpulseResponse<f32>,
+                          13.0 / 6.0,
+                          0.0,
+                          len);
+        let result = time.to_real();
+        let expected = [-2.7756e-17, 4.0780e-02, 2.0934e-02, -1.3806e-01, -1.1221e-01, 3.6167e-01,
+                        9.1022e-01, 9.1022e-01, 3.6167e-01, -1.1221e-01, -1.3806e-01, 2.0934e-02,
+                        4.0780e-02];
         assert_eq_tol(&result[..], &expected, 0.1);
     }
 
