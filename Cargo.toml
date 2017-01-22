@@ -1,6 +1,6 @@
 [package]
 name = "basic_dsp"
-version = "0.4.2"
+version = "0.4.3"
 authors = ["Christian Liebhardt"]
 license = "MIT/Apache-2.0"
 homepage = "https://github.com/liebharc/basic_dsp"
@@ -20,7 +20,7 @@ crate-type = ["dylib", "rlib"]
 [dependencies.basic_dsp_vector]
 optional = false
 path = "vector"
-version = "0.4.1"
+version = "0.4.3"
 
 [dependencies.basic_dsp_matrix]
 optional = true
@@ -42,6 +42,7 @@ num = "^0.1.35"
 [features]
 use_avx = ["basic_dsp_vector/use_avx"]
 use_sse = ["basic_dsp_vector/use_sse"]
+use_gpu = ["basic_dsp_vector/use_gpu"]
 matrix = ["basic_dsp_matrix"]
 interop= ["basic_dsp_interop"]
 default = ["matrix"]

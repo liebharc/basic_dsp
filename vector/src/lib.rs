@@ -34,6 +34,8 @@
 
 #[cfg(any(feature = "doc", feature="use_sse", feature="use_avx"))]
 extern crate simd;
+#[cfg(any(feature = "doc", feature="use_gpu"))]
+extern crate ocl;
 extern crate num_cpus;
 extern crate crossbeam;
 extern crate num;
@@ -45,6 +47,7 @@ pub mod window_functions;
 pub mod conv_types;
 pub use vector_types::*;
 pub use multicore_support::MultiCoreSettings;
+mod gpu_support;
 use num::traits::Float;
 use std::fmt::Debug;
 use std::ops::*;
@@ -67,7 +70,7 @@ impl ToSimd for f64 {
 /// A real floating pointer number intended to abstract over `f32` and `f64`.
 pub trait RealNumber
     : Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive
-    {
+{
 }
 impl<T> RealNumber for T
     where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive
@@ -87,12 +90,12 @@ impl<T> Zero for T
     }
 }
 
-impl<T> Zero for num::Complex<T> 
+impl<T> Zero for num::Complex<T>
     where T: RealNumber {
     fn zero() -> Self {
         <Self as num::Zero>::zero()
     }
-}   
+}
 
 #[cfg(test)]
 mod tests {
