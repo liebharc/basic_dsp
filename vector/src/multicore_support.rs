@@ -32,6 +32,15 @@ pub struct MultiCoreSettings {
     /// Indicates whether the temp arrays of a vector should already be allocated during
     /// construction
     pub early_temp_allocation: bool,
+
+    /// If the number of samples (`vector.len()``) is above this threshold
+    /// and `core_limit`is greater than one then the library will
+    /// spwan a second worker thread to process the data.
+    pub dual_core_threshold: usize,
+
+    /// If the number of samples (`vector.len()``) is above this threshold the library will
+    /// spawn as many threads as specified by `core_limit`.
+    pub all_cores_thershold: usize
 }
 
 impl MultiCoreSettings {
@@ -47,6 +56,8 @@ impl MultiCoreSettings {
         MultiCoreSettings {
             core_limit: if core_limit >= 1 { core_limit } else { 1 },
             early_temp_allocation: early_temp_allocation,
+            dual_core_threshold: 50000,
+            all_cores_thershold: 100000
         }
     }
 }
@@ -84,7 +95,7 @@ impl Chunk {
         if cores > settings.core_limit {
             cores = settings.core_limit;
         }
-        
+
         if cores == 1 {
             cores
         } else if complexity == Complexity::Small {
@@ -93,18 +104,18 @@ impl Chunk {
             // is already fast enough to occupy the max memory bandwidth
             1
         } else if complexity == Complexity::Medium {
-            if array_length < 50000 {
+            if array_length < settings.dual_core_threshold {
                 1
-            } else if array_length < 100000 {
+            } else if array_length < settings.all_cores_thershold {
                 if cores >= 2 { 2 } else { 1 }
             } else {
                 cores
             }
-        } else if array_length < 30000 {
+        } else if array_length < settings.dual_core_threshold / 2 {
             // complexity == Complexity::Large
             1
-        } else { 
-            cores 
+        } else {
+            cores
         }
     }
 

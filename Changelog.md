@@ -3,6 +3,8 @@ Changes:
 
 ## Version 0.4.3
 
+- New feature: `MultiCoreSettings` now allows more control over how the library is spawning threads.
+
 ## Version 0.4.2
 Bugfix release.
 
