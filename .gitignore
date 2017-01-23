@@ -6,3 +6,4 @@ basic_dsp.sln
 *.dll
 *.so
 *.lib
+/*.txt

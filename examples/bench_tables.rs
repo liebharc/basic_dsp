@@ -49,6 +49,8 @@ fn main() {
 	results.insert("Offset", Vec::new());
 	results.insert("Sin", Vec::new());
 	results.insert("Log", Vec::new());
+	results.insert("Powf", Vec::new());
+	results.insert("Sqrt", Vec::new());
 
 	let data_sizes: Vec<usize> = vec![1000, 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000,
 					  100000, 200000, 500000, 1000000, 10000000, 500000, 100000000];
@@ -87,6 +89,20 @@ fn main() {
 		let end = PreciseTime::now();
 		let duration = start.to(end).num_nanoseconds().unwrap();
 		results.get_mut("Log").unwrap().push(duration);
+
+		let mut dsp = original.clone().to_real_time_vec();
+		let start = PreciseTime::now();
+		dsp.powf(5.0);
+		let end = PreciseTime::now();
+		let duration = start.to(end).num_nanoseconds().unwrap();
+		results.get_mut("Powf").unwrap().push(duration);
+
+		let mut dsp = original.clone().to_real_time_vec();
+		let start = PreciseTime::now();
+		dsp.sqrt();
+		let end = PreciseTime::now();
+		let duration = start.to(end).num_nanoseconds().unwrap();
+		results.get_mut("Sqrt").unwrap().push(duration);
 	}
 
 	// Print
@@ -95,9 +111,11 @@ fn main() {
 		print!("{:?}, ", value);
 	}
 	println!("");
-	for (key, values) in results.iter() {
+	let mut sorted: Vec<_> = results.keys().map(|x|x.clone()).collect();
+	sorted.sort();
+	for key in &sorted {
 		print!("{:?} [ns], ", key);
-		for value in values {
+		for value in &results[key] {
 			print!("{:?}, ", value);
 		}
 		println!("");
