@@ -19,5 +19,5 @@ pub trait GpuSupport<T: RealNumber> {
     fn has_gpu_support() -> bool;
 
     /// Convolve a vector on the GPU.
-    fn gpu_convolve_vector(source: &[T], target: &mut [T], imp_resp: &[T]);
+    fn gpu_convolve_vector(is_complex: bool, source: &[T], target: &mut [T], imp_resp: &[T]);
 }

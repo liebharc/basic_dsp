@@ -17,11 +17,11 @@ pub trait GpuRegTrait : OclPrm + OclVec {}
 impl<T> GpuRegTrait for T
     where T: OclPrm + OclVec {}
 
-const KERNEL_SRC: &'static str = r#"
-    #define mulc(a,b) ((float4)((float)mad(-(a).y, (b).y, (a).x * (b).x), (float)mad((a).y, (b).x, (a).x * (b).y), (float)mad(-(a).z, (b).z, (a).w * (b).w), (float)mad((a).z, (b).w, (a).w * (b).z)))
+const KERNEL_SRC_32: &'static str = r#"
+    #define mulc32(a,b) ((float4)((float)mad(-(a).y, (b).y, (a).x * (b).x), (float)mad((a).y, (b).x, (a).x * (b).y), (float)mad(-(a).z, (b).z, (a).w * (b).w), (float)mad((a).z, (b).w, (a).w * (b).z)))
 
     __kernel
-    void conv_vecs4(
+    void conv_vecs32r(
                 __global float4 const* const src,
                 __constant float4 const* const conv,
                 __global float4* const res)
@@ -56,7 +56,7 @@ const KERNEL_SRC: &'static str = r#"
     }
 
     __kernel
-    void conv_vecs4c(
+    void conv_vecs32c(
                 __global float4 const* const src,
                 __constant float4 const* const conv,
                 __global float4* const res)
@@ -71,80 +71,9 @@ const KERNEL_SRC: &'static str = r#"
         long j = 0;
         for (long i = start; i < end; i+=2) {
             float4 current = src[i];
-            sum1 += mulc(current, conv[j]);
+            sum1 += mulc32(current, conv[j]);
             j+=2;
-            sum2 += mulc(current, conv[j]);
-            j+=2;
-        }
-
-        res[idx] = (float4)
-                   (sum1.x+sum1.w,
-                    sum1.y+sum1.z,
-                    sum2.x+sum2.w,
-                    sum2.y+sum2.z);
-    }
-
-    __kernel
-    void conv_vecs_img4(
-                sampler_t sampler_host,
-                __read_only image1d_t image,
-                __global float4 const* const src,
-                __global float4* const res)
-    {
-        ulong const idx = get_global_id(0);
-        ulong const data_length = get_global_size(0);
-
-        float4 sum1 = (float4)0.0;
-        float4 sum2 = (float4)0.0;
-        float4 sum3 = (float4)0.0;
-        float4 sum4 = (float4)0.0;
-        long start = max((long)(idx - FILTER_LENGTH  / 2), 0L);
-        long end = min(start + FILTER_LENGTH, (long)data_length);
-        int j = 0;
-        for (long i = start; i < end; i++) {
-            float4 current = src[i];
-            float4 conv = read_imagef(image, sampler_host, j);
-            sum1 += current * conv;
-            j++;
-            conv = read_imagef(image, sampler_host, j);
-            sum2 += current * conv;
-            j++;
-            conv = read_imagef(image, sampler_host, j);
-            sum3 += current * conv;
-            j++;
-            conv = read_imagef(image, sampler_host, j);
-            sum4 += current * conv;
-            j++;
-        }
-
-        res[idx] = (float4)
-                   (sum1.x+sum1.y+sum1.z+sum1.w,
-                    sum2.x+sum2.y+sum2.z+sum2.w,
-                    sum3.x+sum3.y+sum3.z+sum3.w,
-                    sum4.x+sum4.y+sum4.z+sum4.w);
-    }
-
-    __kernel
-    void conv_vecs_img4c(
-                sampler_t sampler_host,
-                __read_only image1d_t image,
-                __global float4 const* const src,
-                __global float4* const res)
-    {
-        ulong const idx = get_global_id(0);
-        ulong const data_length = get_global_size(0);
-
-        float4 sum1 = (float4)0.0;
-        float4 sum2 = (float4)0.0;
-        long start = max((long)(idx - FILTER_LENGTH / 2), 0L);
-        long end = min(start + FILTER_LENGTH, (long)data_length);
-        int j = 0;
-        for (long i = start; i < end; i+=2) {
-            float4 current = src[i];
-            float4 conv = read_imagef(image, sampler_host, j);
-            sum1 += mulc(current, conv);
-            j+=2;
-            sum2 += mulc(current, conv);
+            sum2 += mulc32(current, conv[j]);
             j+=2;
         }
 
@@ -155,6 +84,39 @@ const KERNEL_SRC: &'static str = r#"
                     sum2.y+sum2.z);
     }
 "#;
+
+const KERNEL_SRC_64: &'static str = r#"
+    #pragma OPENCL EXTENSION cl_khr_fp64 : enable
+    #define mulc64(a,b) ((float2)((float)mad(-(a).y, (b).y, (a).x * (b).x), (float)mad((a).y, (b).x, (a).x * (b).y))
+
+    __kernel
+    void conv_vecs64r(
+                __global double2 const* const src,
+                __constant double2 const* const conv,
+                __global double2* const res)
+    {
+        ulong const idx = get_global_id(0);
+        ulong const data_length = get_global_size(0);
+
+        double2 sum1 = (double2)0.0;
+        double2 sum2 = (double2)0.0;
+        long start = max((long)(idx - FILTER_LENGTH / 2), 0L);
+        long end = min(start + FILTER_LENGTH, (long)data_length);
+        long j = 0;
+        for (long i = start; i < end; i++) {
+            double2 current = src[i];
+            sum1 += current * conv[j];
+            j++;
+            sum2 += current * conv[j];
+            j++;
+        }
+
+        res[idx] = (double2)
+                   (sum1.x+sum1.y,
+                    sum2.x+sum2.y);
+    }
+"#;
+
 
 fn has_f64_support(device: Device) -> bool {
     const F64_SUPPORT: &'static str = "cl_khr_fp64";
@@ -238,11 +200,12 @@ impl<T> GpuSupport<T> for T
 
     // TODO: f64 support
     // TODO: Caller needs to make sure that edges are calculated
-    fn gpu_convolve_vector(source: &[T], target: &mut [T], imp_resp: &[T]) {
+    fn gpu_convolve_vector(is_complex: bool, source: &[T], target: &mut [T], imp_resp: &[T]) {
         assert!(target.len() >= source.len());
         let data_set_size = source.len();
         let conv_size = imp_resp.len();
-        let vec_len = 4;
+        let is_f64 = mem::size_of::<T>() == 8;
+        let vec_len = if is_f64 { 2 } else { 4 };
 
         let padding = vec_len;
         let conv_size_rounded =
@@ -254,14 +217,15 @@ impl<T> GpuSupport<T> for T
             x => vec_len - x / 2
         };
 
-        let (platform, device) = find_gpu_device(mem::size_of::<T>() == 8)
+        let (platform, device) = find_gpu_device(is_f64)
             .expect("No GPU device available which supports this data type");
 
+        let kernel_src = if is_f64 { KERNEL_SRC_64 } else { KERNEL_SRC_32 };
         // Create an all-in-one context, program, and command queue:
         let prog_bldr = ProgramBuilder::new()
             .cmplr_def("FILTER_LENGTH", num_conv_vectors as i32)
             .cmplr_opt("-cl-fast-relaxed-math -DMAC")
-            .src(KERNEL_SRC);
+            .src(kernel_src);
         let ocl_pq = ProQue::builder()
             .prog_bldr(prog_bldr)
             .platform(platform)
@@ -306,8 +270,11 @@ impl<T> GpuSupport<T> for T
                 ocl_pq.dims().clone(),
                 None).unwrap();
 
+       let kenel_name =
+            if is_f64 { if is_complex { "conv_vecs64c" } else { "conv_vecs64r" }}
+            else      { if is_complex { "conv_vecs32r" } else { "conv_vecs32r" }};
        // Kernel compilation
-       let kernel = ocl_pq.create_kernel("conv_vecs4").expect("ocl program build")
+       let kernel = ocl_pq.create_kernel(kenel_name).expect("ocl program build")
             .gws([data_set_size / vec_len - 1])
             .arg_buf_named("src", Some(&in_buffer))
             .arg_buf_named("conv", Some(&imp_buffer))
@@ -340,17 +307,35 @@ mod tests {
     }
 
     #[test]
-    fn gpu_convolution() {
+    fn gpu_real_convolution32() {
         assert!(f32::has_gpu_support());
 
-        let source = vec![0.2; 1000];
+        let source: Vec<f32> = vec![0.2; 1000];
         let mut target = vec![0.0; 1000];
         let imp_resp = vec![0.1; 64];
         let mut source_vec = source.clone().to_real_time_vec();
         let imp_resp_vec = imp_resp.clone().to_real_time_vec();
         let mut buffer = SingleBuffer::new();
         source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
-        f32::gpu_convolve_vector(&source[..], &mut target[..], &imp_resp[..]);
+        f32::gpu_convolve_vector(false,&source[..], &mut target[..], &imp_resp[..]);
+        assert_eq_tol(&target[100..900], &source_vec[100..900], 1e-6);
+    }
+
+    #[test]
+    fn gpu_real_convolution64() {
+        if !f64::has_gpu_support() {
+            // Allow to skip tests on a host without GPU for f64
+            return;
+        }
+
+        let source: Vec<f64> = vec![0.2; 1000];
+        let mut target = vec![0.0; 1000];
+        let imp_resp = vec![0.1; 64];
+        let mut source_vec = source.clone().to_real_time_vec();
+        let imp_resp_vec = imp_resp.clone().to_real_time_vec();
+        let mut buffer = SingleBuffer::new();
+        source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
+        f64::gpu_convolve_vector(false,&source[..], &mut target[..], &imp_resp[..]);
         assert_eq_tol(&target[100..900], &source_vec[100..900], 1e-6);
     }
 }
