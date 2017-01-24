@@ -4,7 +4,6 @@ mod ocl;
 #[cfg(any(feature = "doc", feature="use_gpu"))]
 pub use self::ocl::*;
 
-
 #[cfg(any(feature = "doc", not(feature="use_gpu")))]
 mod fallback;
 

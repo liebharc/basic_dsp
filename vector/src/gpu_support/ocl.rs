@@ -1,10 +1,21 @@
 use ocl::*;
 use ocl::builders::ProgramBuilder;
-use ocl::aliases::ClFloat4;
+use ocl::aliases::{ClFloat4, ClDouble2};
 use ocl::flags::DeviceType;
+use ocl::traits::{OclVec, OclPrm};
 use ocl::enums::*;
 use std::mem;
 use super::GpuSupport;
+use RealNumber;
+
+pub type Gpu32 = ClFloat4;
+
+pub type Gpu64 = ClDouble2;
+
+pub trait GpuRegTrait : OclPrm + OclVec {}
+
+impl<T> GpuRegTrait for T
+    where T: OclPrm + OclVec {}
 
 const KERNEL_SRC: &'static str = r#"
     #define mulc(a,b) ((float4)((float)mad(-(a).y, (b).y, (a).x * (b).x), (float)mad((a).y, (b).x, (a).x * (b).y), (float)mad(-(a).z, (b).z, (a).w * (b).w), (float)mad((a).z, (b).w, (a).w * (b).z)))
@@ -193,123 +204,120 @@ fn find_gpu_device(require_f64_support: bool) -> Option<(Platform, Device)> {
      return result;
 }
 
-fn array_to_float4(array: &[f32]) -> &[ClFloat4] {
+fn array_to_gpu_simd<T, R>(array: &[T]) -> &[R] {
     unsafe {
+        let is_f64 = mem::size_of::<T>() == 8;
+        let vec_len = if is_f64 { 2 } else { 4 };
         let len = array.len();
-        if len % 4 != 0 {
+        if len % vec_len != 0 {
             panic!("Argument must have an even length");
         }
-        let trans: &[ClFloat4] = mem::transmute(array);
-        &trans[0..len / 4]
+        let trans: &[R] = mem::transmute(array);
+        &trans[0..len / vec_len]
     }
 }
 
-fn array_to_float_mut4(array: &mut [f32]) -> &mut [ClFloat4] {
+fn array_to_gpu_simd_mut<T, R>(array: &mut [T]) -> &mut [R] {
     unsafe {
+        let is_f64 = mem::size_of::<T>() == 8;
+        let vec_len = if is_f64 { 2 } else { 4 };
         let len = array.len();
-        if len % 4 != 0 {
+        if len % vec_len != 0 {
             panic!("Argument must have an even length");
         }
-        let trans: &mut [ClFloat4] = mem::transmute(array);
-        &mut trans[0..len / 4]
+        let trans: &mut [R] = mem::transmute(array);
+        &mut trans[0..len / vec_len]
     }
 }
 
-macro_rules! add_ocl_impl {
-    ($($float:ident, $is_f64:expr);*) => {
-        $(
-            impl GpuSupport<$float> for $float {
-                fn has_gpu_support() -> bool {
-                    find_gpu_device($is_f64).is_some()
-                }
+impl<T> GpuSupport<T> for T
+    where T: RealNumber {
+    fn has_gpu_support() -> bool {
+        find_gpu_device(mem::size_of::<T>() == 8).is_some()
+    }
 
-                // TODO: f64 support
-                // TODO: Caller needs to make sure that edges are calculated 
-                fn gpu_convolve_vector(source: &[$float], target: &mut [$float], imp_resp: &[$float]) {
-                    assert!(target.len() >= source.len());
-                    let data_set_size = source.len();
-                    let conv_size = imp_resp.len();
-                    let vec_len = 4;
+    // TODO: f64 support
+    // TODO: Caller needs to make sure that edges are calculated
+    fn gpu_convolve_vector(source: &[T], target: &mut [T], imp_resp: &[T]) {
+        assert!(target.len() >= source.len());
+        let data_set_size = source.len();
+        let conv_size = imp_resp.len();
+        let vec_len = 4;
 
-                    let padding = vec_len;
-                    let conv_size_rounded =
-                        (conv_size as f32 / vec_len as f32).ceil() as usize * vec_len;
-                    let conv_size_padded = conv_size_rounded + padding;
-                    let num_conv_vectors = conv_size_padded / vec_len;
-                    let phase = match conv_size % (2 * vec_len) {
-                        0 => 0,
-                        x => vec_len - x / 2
-                    };
+        let padding = vec_len;
+        let conv_size_rounded =
+            (conv_size as f32 / vec_len as f32).ceil() as usize * vec_len;
+        let conv_size_padded = conv_size_rounded + padding;
+        let num_conv_vectors = conv_size_padded / vec_len;
+        let phase = match conv_size % (2 * vec_len) {
+            0 => 0,
+            x => vec_len - x / 2
+        };
 
-                    let (platform, device) = find_gpu_device($is_f64)
-                        .expect("No GPU device available which supports this data type");
+        let (platform, device) = find_gpu_device(mem::size_of::<T>() == 8)
+            .expect("No GPU device available which supports this data type");
 
-                    // Create an all-in-one context, program, and command queue:
-                    let prog_bldr = ProgramBuilder::new()
-                        .cmplr_def("FILTER_LENGTH", num_conv_vectors as i32)
-                        .cmplr_opt("-cl-fast-relaxed-math -DMAC")
-                        .src(KERNEL_SRC);
-                    let ocl_pq = ProQue::builder()
-                        .prog_bldr(prog_bldr)
-                        .platform(platform)
-                        .device(device)
-                        .dims([data_set_size / vec_len - 1])
-                        .build()
-                        .expect("Building ProQue");
+        // Create an all-in-one context, program, and command queue:
+        let prog_bldr = ProgramBuilder::new()
+            .cmplr_def("FILTER_LENGTH", num_conv_vectors as i32)
+            .cmplr_opt("-cl-fast-relaxed-math -DMAC")
+            .src(KERNEL_SRC);
+        let ocl_pq = ProQue::builder()
+            .prog_bldr(prog_bldr)
+            .platform(platform)
+            .device(device)
+            .dims([data_set_size / vec_len - 1])
+            .build()
+            .expect("Building ProQue");
 
-                    // Prepare impulse response
-                    let mut imp_vec_padded = vec!(0.0; vec_len * conv_size_padded);
-                    for (n, j) in imp_resp.iter().rev().zip(0..) {
-                        for i in 0..vec_len {
-                            let p = j + i;
-                            let tuple_pos = p % vec_len;
-                            let tuple = ((p - tuple_pos) + i) * vec_len;
-                            imp_vec_padded[tuple + tuple_pos] = *n;
-                        }
-                    }
-
-                    // Create buffers
-                    let in_buffer =
-                        Buffer::new(
-                            ocl_pq.queue().clone(),
-                            Some(core::MEM_READ_ONLY |
-                                 core::MEM_COPY_HOST_PTR),
-                            ocl_pq.dims().clone(),
-                            Some(array_to_float4(&source[phase..data_set_size-vec_len+phase]))).unwrap();
-
-                   let imp_buffer =
-                        Buffer::new(
-                            ocl_pq.queue().clone(),
-                            Some(core::MEM_READ_ONLY |
-                                 core::MEM_COPY_HOST_PTR),
-                            [conv_size_padded],
-                            Some(array_to_float4(&imp_vec_padded))).unwrap();
-
-
-                   let res_buffer =
-                        Buffer::<ClFloat4>::new(
-                            ocl_pq.queue().clone(),
-                            Some(core::MEM_WRITE_ONLY),
-                            ocl_pq.dims().clone(),
-                            None).unwrap();
-
-                   // Kernel compilation
-                   let kernel = ocl_pq.create_kernel("conv_vecs4").expect("ocl program build")
-                        .gws([data_set_size / vec_len - 1])
-                        .arg_buf_named("src", Some(&in_buffer))
-                        .arg_buf_named("conv", Some(&imp_buffer))
-                        .arg_buf(&res_buffer);
-
-                   kernel.enq().expect("Running kernel");
-                   ocl_pq.queue().finish();
-                   res_buffer.cmd().read(array_to_float_mut4(&mut target[0..data_set_size-vec_len])).enq().expect("Transferring res_vec");
-                }
+        // Prepare impulse response
+        let mut imp_vec_padded = vec!(T::zero(); vec_len * conv_size_padded);
+        for (n, j) in imp_resp.iter().rev().zip(0..) {
+            for i in 0..vec_len {
+                let p = j + i;
+                let tuple_pos = p % vec_len;
+                let tuple = ((p - tuple_pos) + i) * vec_len;
+                imp_vec_padded[tuple + tuple_pos] = *n;
             }
-        )*
+        }
+
+        // Create buffers
+        let in_buffer =
+            Buffer::new(
+                ocl_pq.queue().clone(),
+                Some(core::MEM_READ_ONLY |
+                     core::MEM_COPY_HOST_PTR),
+                ocl_pq.dims().clone(),
+                Some(array_to_gpu_simd::<T, T::GpuReg>(&source[phase..data_set_size-vec_len+phase]))).unwrap();
+
+       let imp_buffer =
+            Buffer::new(
+                ocl_pq.queue().clone(),
+                Some(core::MEM_READ_ONLY |
+                     core::MEM_COPY_HOST_PTR),
+                [conv_size_padded],
+                Some(array_to_gpu_simd::<T, T::GpuReg>(&imp_vec_padded))).unwrap();
+
+
+       let res_buffer =
+            Buffer::<T::GpuReg>::new(
+                ocl_pq.queue().clone(),
+                Some(core::MEM_WRITE_ONLY),
+                ocl_pq.dims().clone(),
+                None).unwrap();
+
+       // Kernel compilation
+       let kernel = ocl_pq.create_kernel("conv_vecs4").expect("ocl program build")
+            .gws([data_set_size / vec_len - 1])
+            .arg_buf_named("src", Some(&in_buffer))
+            .arg_buf_named("conv", Some(&imp_buffer))
+            .arg_buf(&res_buffer);
+
+       kernel.enq().expect("Running kernel");
+       ocl_pq.queue().finish();
+       res_buffer.cmd().read(array_to_gpu_simd_mut::<T, T::GpuReg>(&mut target[0..data_set_size-vec_len])).enq().expect("Transferring res_vec");
     }
 }
-
-add_ocl_impl!(f32, false);
 
 /// These testa are only compiled&run with the feature flag `gpu_support`.
 /// The tests assume that the machine running the tests has a GPU which at least supports

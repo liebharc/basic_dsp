@@ -53,18 +53,25 @@ use std::fmt::Debug;
 use std::ops::*;
 
 use simd_extensions::*;
+use gpu_support::{Gpu32, Gpu64, GpuRegTrait};
 
 /// Associates a number type with a SIMD register type.
 pub trait ToSimd: Sized + Sync + Send {
+    /// Type for the SIMD register on the CPU.
     type Reg: Simd<Self> + SimdGeneric<Self> + Copy + Sync + Send + Add<Output = Self::Reg> + Sub<Output = Self::Reg> + Mul<Output = Self::Reg> + Div<Output = Self::Reg> + Zero;
+    /// Type for the SIMD register on the GPU. Defaults to an arbitrary type if GPU support is not
+    /// compiled in.
+    type GpuReg: GpuRegTrait;
 }
 
 impl ToSimd for f32 {
     type Reg = Reg32;
+    type GpuReg = Gpu32;
 }
 
 impl ToSimd for f64 {
     type Reg = Reg64;
+    type GpuReg = Gpu64;
 }
 
 /// A real floating pointer number intended to abstract over `f32` and `f64`.
