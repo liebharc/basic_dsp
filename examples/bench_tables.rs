@@ -9,7 +9,7 @@ use time::PreciseTime;
 use docopt::Docopt;
 use rand::*;
 use std::collections::HashMap;
-const INIT_VAL_RANGE: (f32, f32) = (-100.0, 100.0);
+const INIT_VAL_RANGE: (f64, f64) = (-100.0, 100.0);
 
 const USAGE: &'static str = "
 Benchmarks various functions over different daza sizes and prints the results to STDOUT in
@@ -22,6 +22,21 @@ Options:
     -h, --help  Display usage.
 	--limit=<size>     Data sizes tested will not exceed this value. [default: 0]
 ";
+
+/// Benchmarks the given function. The results are more rough estimations and should
+/// only be interpreted with care and in context of more results.
+fn bench_real<F: FnMut(RealTimeVec64)>(
+        name: &'static str,
+        data: &Vec<f64>,
+        results: &mut HashMap<&'static str, Vec<i64>>,
+        mut func: F) {
+    let dsp = data.clone().to_real_time_vec();
+    let start = PreciseTime::now();
+    func(dsp);
+    let end = PreciseTime::now();
+    let duration = start.to(end).num_nanoseconds().unwrap();
+    results.entry(name).or_insert(Vec::new()).push(duration);
+}
 
 fn main() {
     let argv = env::args();
@@ -61,7 +76,7 @@ fn main() {
     for data_set_size in &data_sizes {
 		//let mut buffer = SingleBuffer::new();
 		let original = {
-	        let mut vec = vec![0.0; *data_set_size];
+	        let mut vec: Vec<f64> = vec![0.0; *data_set_size];
 	        let seed: &[_] = &[5798734, 198196];
 	        let mut rng: StdRng = SeedableRng::from_seed(seed); // Create repeatable data
 	        for n in &mut vec {
@@ -69,41 +84,12 @@ fn main() {
 	        }
 	        vec
 	    };
-		let mut dsp = original.clone().to_real_time_vec();
-		let start = PreciseTime::now();
-		dsp.offset(5.0);
-		let end = PreciseTime::now();
-		let duration = start.to(end).num_nanoseconds().unwrap();
-		results.get_mut("Offset").unwrap().push(duration);
-
-		let mut dsp = original.clone().to_real_time_vec();
-		let start = PreciseTime::now();
-		dsp.sin();
-		let end = PreciseTime::now();
-		let duration = start.to(end).num_nanoseconds().unwrap();
-		results.get_mut("Sin").unwrap().push(duration);
-
-		let mut dsp = original.clone().to_real_time_vec();
-		let start = PreciseTime::now();
-		dsp.log(10.0);
-		let end = PreciseTime::now();
-		let duration = start.to(end).num_nanoseconds().unwrap();
-		results.get_mut("Log").unwrap().push(duration);
-
-		let mut dsp = original.clone().to_real_time_vec();
-		let start = PreciseTime::now();
-		dsp.powf(5.0);
-		let end = PreciseTime::now();
-		let duration = start.to(end).num_nanoseconds().unwrap();
-		results.get_mut("Powf").unwrap().push(duration);
-
-		let mut dsp = original.clone().to_real_time_vec();
-		let start = PreciseTime::now();
-		dsp.sqrt();
-		let end = PreciseTime::now();
-		let duration = start.to(end).num_nanoseconds().unwrap();
-		results.get_mut("Sqrt").unwrap().push(duration);
-	}
+        bench_real("Offset", &original, &mut results, |mut v|v.offset(5.0));
+        bench_real("Sin", &original, &mut results, |mut v|v.sin());
+        bench_real("Log", &original, &mut results, |mut v|v.log(10.0));
+        bench_real("Powf", &original, &mut results, |mut v|v.powf(5.0));
+        bench_real("Sqrt", &original, &mut results, |mut v|v.sqrt());
+    }
 
 	// Print
 	print!("Sizes, ");
