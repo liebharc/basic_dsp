@@ -1,10 +1,10 @@
 //! Fundamental math operations
-use RealNumber;
+use {RealNumber, array_to_complex, array_to_complex_mut};
 use multicore_support::*;
 use simd_extensions::*;
 use num::Complex;
 use std::ops::*;
-use super::super::{array_to_complex, array_to_complex_mut, ErrorReason, VoidResult, Vector,
+use super::super::{ErrorReason, VoidResult, Vector,
                    DspVec, ToSliceMut, MetaData, Domain, NumberSpace, ComplexNumberSpace};
 
 /// An operation which multiplies each vector element with a constant

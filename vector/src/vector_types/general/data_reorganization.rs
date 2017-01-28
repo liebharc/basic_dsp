@@ -1,9 +1,9 @@
 use std::mem;
 use std::ptr;
-use RealNumber;
+use {RealNumber, array_to_complex_mut};
 use num::Complex;
 use multicore_support::*;
-use super::super::{array_to_complex_mut, VoidResult, Buffer, Owner, ErrorReason, NumberSpace,
+use super::super::{VoidResult, Buffer, Owner, ErrorReason, NumberSpace,
                    Domain, ResizeOps, DspVec, Vector, ToSliceMut, MetaData};
 
 /// This trait allows to reorganize the data by changing positions of the individual elements.

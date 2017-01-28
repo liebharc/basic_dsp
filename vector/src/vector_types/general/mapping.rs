@@ -1,8 +1,8 @@
-use RealNumber;
+use {RealNumber, array_to_complex, array_to_complex_mut};
 use num::Complex;
 use std::sync::Arc;
 use multicore_support::*;
-use super::super::{array_to_complex, array_to_complex_mut, ScalarResult, ErrorReason, DspVec,
+use super::super::{ScalarResult, ErrorReason, DspVec,
                    ToSlice, ToSliceMut, MetaData, Domain, RealNumberSpace, ComplexNumberSpace};
 
 /// Operations which allow to iterate over the vector and to derive results

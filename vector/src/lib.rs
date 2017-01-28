@@ -51,6 +51,8 @@ mod gpu_support;
 use num::traits::Float;
 use std::fmt::Debug;
 use std::ops::*;
+use num::complex::Complex;
+use std::mem;
 
 use simd_extensions::*;
 use gpu_support::{Gpu32, Gpu64, GpuRegTrait};
@@ -101,6 +103,28 @@ impl<T> Zero for num::Complex<T>
     where T: RealNumber {
     fn zero() -> Self {
         <Self as num::Zero>::zero()
+    }
+}
+
+fn array_to_complex<T>(array: &[T]) -> &[Complex<T>] {
+    unsafe {
+        let len = array.len();
+        if len % 2 != 0 {
+            panic!("Argument must have an even length");
+        }
+        let trans: &[Complex<T>] = mem::transmute(array);
+        &trans[0..len / 2]
+    }
+}
+
+fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
+    unsafe {
+        let len = array.len();
+        if len % 2 != 0 {
+            panic!("Argument must have an even length");
+        }
+        let trans: &mut [Complex<T>] = mem::transmute(array);
+        &mut trans[0..len / 2]
     }
 }
 

@@ -1,8 +1,8 @@
-use RealNumber;
+use {RealNumber, array_to_complex_mut};
 use multicore_support::*;
 use simd_extensions::Simd;
 use num::Complex;
-use super::super::{array_to_complex_mut, Vector, DspVec, ToSliceMut, MetaData, Domain,
+use super::super::{Vector, DspVec, ToSliceMut, MetaData, Domain,
                    ComplexNumberSpace};
 
 /// Operations on complex types.

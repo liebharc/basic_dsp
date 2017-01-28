@@ -1,4 +1,4 @@
-use RealNumber;
+use {RealNumber, array_to_complex, array_to_complex_mut};
 use multicore_support::{Chunk, MultiCoreSettings, Complexity};
 use num::complex::Complex;
 use num::Zero;
@@ -312,28 +312,6 @@ pub type ComplexTimeVecSlice64<'a> = DspVec<&'a [f64], f64, ComplexData, TimeDat
 pub type ComplexFreqVecSlice64<'a> = DspVec<&'a [f64], f64, ComplexData, FrequencyData>;
 /// A vector with no information about number space or domain at compile time.
 pub type GenDspVecSlice64<'a> = DspVec<&'a [f64], f64, RealOrComplexData, TimeOrFrequencyData>;
-
-fn array_to_complex<T>(array: &[T]) -> &[Complex<T>] {
-    unsafe {
-        let len = array.len();
-        if len % 2 != 0 {
-            panic!("Argument must have an even length");
-        }
-        let trans: &[Complex<T>] = mem::transmute(array);
-        &trans[0..len / 2]
-    }
-}
-
-fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
-    unsafe {
-        let len = array.len();
-        if len % 2 != 0 {
-            panic!("Argument must have an even length");
-        }
-        let trans: &mut [Complex<T>] = mem::transmute(array);
-        &mut trans[0..len / 2]
-    }
-}
 
 fn round_len(len: usize) -> usize {
     ((len + Reg32::len() - 1) / Reg32::len()) * Reg32::len()

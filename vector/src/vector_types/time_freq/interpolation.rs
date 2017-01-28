@@ -1,11 +1,11 @@
-use RealNumber;
+use {RealNumber, array_to_complex, array_to_complex_mut};
 use conv_types::{RealImpulseResponse, RealFrequencyResponse};
 use num::traits::Zero;
 use std::ops::{Add, Mul};
 use super::WrappingIterator;
 use simd_extensions::*;
 use multicore_support::*;
-use super::super::{array_to_complex, array_to_complex_mut, VoidResult, DspVec, Domain,
+use super::super::{VoidResult, DspVec, Domain,
                    NumberSpace, ToSliceMut, GenDspVec, ToDspVector, DataDomain, Buffer, Vector,
                    RealNumberSpace, ErrorReason, InsertZerosOpsBuffered, ScaleOps, MetaData};
 use super::fft;

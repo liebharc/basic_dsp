@@ -6,7 +6,8 @@ use ocl::traits::{OclVec, OclPrm};
 use ocl::enums::*;
 use std::mem;
 use super::GpuSupport;
-use RealNumber;
+use {RealNumber, array_to_complex, array_to_complex_mut};
+use num;
 
 pub type Gpu32 = ClFloat4;
 
@@ -21,7 +22,7 @@ const KERNEL_SRC_32: &'static str = r#"
     #define mulc32(a,b) ((float4)((float)mad(-(a).y, (b).y, (a).x * (b).x), (float)mad((a).y, (b).x, (a).x * (b).y), (float)mad(-(a).z, (b).z, (a).w * (b).w), (float)mad((a).z, (b).w, (a).w * (b).z)))
 
     __kernel
-    void conv_vecs32r(
+    void conv_vecs_r(
                 __global float4 const* const src,
                 __constant float4 const* const conv,
                 __global float4* const res)
@@ -56,7 +57,7 @@ const KERNEL_SRC_32: &'static str = r#"
     }
 
     __kernel
-    void conv_vecs32c(
+    void conv_vecs_c(
                 __global float4 const* const src,
                 __constant float4 const* const conv,
                 __global float4* const res)
@@ -69,28 +70,29 @@ const KERNEL_SRC_32: &'static str = r#"
         long start = max((long)(idx - FILTER_LENGTH / 2), 0L);
         long end = min(start + FILTER_LENGTH, (long)data_length);
         long j = 0;
-        for (long i = start; i < end; i+=2) {
+        for (long i = start; i < end; i++) {
             float4 current = src[i];
             sum1 += mulc32(current, conv[j]);
-            j+=2;
+            j++;
             sum2 += mulc32(current, conv[j]);
-            j+=2;
+            j++;
         }
 
+        // float4 order is: xyzw
         res[idx] = (float4)
-                   (sum1.x+sum1.w,
-                    sum1.y+sum1.z,
-                    sum2.x+sum2.w,
-                    sum2.y+sum2.z);
+                   (sum1.x+sum1.z,
+                    sum1.y+sum1.w,
+                    sum2.x+sum2.z,
+                    sum2.y+sum2.w);
     }
 "#;
 
 const KERNEL_SRC_64: &'static str = r#"
     #pragma OPENCL EXTENSION cl_khr_fp64 : enable
-    #define mulc64(a,b) ((float2)((float)mad(-(a).y, (b).y, (a).x * (b).x), (float)mad((a).y, (b).x, (a).x * (b).y))
+    #define mulc64(a,b) ((double2)((double)mad(-(a).y, (b).y, (a).x * (b).x), (double)mad((a).y, (b).x, (a).x * (b).y)))
 
     __kernel
-    void conv_vecs64r(
+    void conv_vecs_r(
                 __global double2 const* const src,
                 __constant double2 const* const conv,
                 __global double2* const res)
@@ -114,6 +116,29 @@ const KERNEL_SRC_64: &'static str = r#"
         res[idx] = (double2)
                    (sum1.x+sum1.y,
                     sum2.x+sum2.y);
+    }
+
+
+    __kernel
+    void conv_vecs_c(
+                __global double2 const* const src,
+                __constant double2 const* const conv,
+                __global double2* const res)
+    {
+        ulong const idx = get_global_id(0);
+        ulong const data_length = get_global_size(0);
+
+        double2 sum = (double2)0.0;
+        long start = max((long)(idx - FILTER_LENGTH / 2), 0L);
+        long end = min(start + FILTER_LENGTH, (long)data_length);
+        long j = 0;
+        for (long i = start; i < end; i++) {
+            double2 current = src[i];
+            sum += mulc64(current, conv[j]);
+            j++;
+        }
+
+        res[idx] = sum;
     }
 "#;
 
@@ -192,14 +217,32 @@ fn array_to_gpu_simd_mut<T, R>(array: &mut [T]) -> &mut [R] {
     }
 }
 
+/// Prepare impulse response
+///
+/// The data is layout so that it's easier/faster for the kernel to go through the
+/// coefficients.
+///
+/// An example for the data layout can be found in the unit test section.
+fn prepare_impulse_response<T: Clone + Copy + num::Zero>(
+        imp_resp: &[T],
+        destination: &mut [T],
+        vec_len: usize) {
+    for (n, j) in imp_resp.iter().rev().zip(0..) {
+        for i in 0..vec_len {
+            let p = j + i;
+            let tuple_pos = p % vec_len;
+            let tuple = ((p - tuple_pos) + i) * vec_len;
+            destination[tuple + tuple_pos] = *n;
+        }
+    }
+}
+
 impl<T> GpuSupport<T> for T
     where T: RealNumber {
     fn has_gpu_support() -> bool {
         find_gpu_device(mem::size_of::<T>() == 8).is_some()
     }
 
-    // TODO: f64 support
-    // TODO: Caller needs to make sure that edges are calculated
     fn gpu_convolve_vector(is_complex: bool, source: &[T], target: &mut [T], imp_resp: &[T]) {
         assert!(target.len() >= source.len());
         let data_set_size = source.len();
@@ -234,15 +277,15 @@ impl<T> GpuSupport<T> for T
             .build()
             .expect("Building ProQue");
 
-        // Prepare impulse response
-        let mut imp_vec_padded = vec!(T::zero(); vec_len * conv_size_padded);
-        for (n, j) in imp_resp.iter().rev().zip(0..) {
-            for i in 0..vec_len {
-                let p = j + i;
-                let tuple_pos = p % vec_len;
-                let tuple = ((p - tuple_pos) + i) * vec_len;
-                imp_vec_padded[tuple + tuple_pos] = *n;
-            }
+        let step_size = if is_complex { 2 } else { 1 };
+        let mut imp_vec_padded = vec!(T::zero(); vec_len * conv_size_padded / step_size);
+        if is_complex {
+            let complex = array_to_complex(&imp_resp);
+            let complex_dest = array_to_complex_mut(&mut imp_vec_padded);
+            prepare_impulse_response(complex, complex_dest, vec_len / 2);
+        }
+        else {
+            prepare_impulse_response(imp_resp, &mut imp_vec_padded, vec_len);
         }
 
         // Create buffers
@@ -259,9 +302,8 @@ impl<T> GpuSupport<T> for T
                 ocl_pq.queue().clone(),
                 Some(core::MEM_READ_ONLY |
                      core::MEM_COPY_HOST_PTR),
-                [conv_size_padded],
+                [conv_size_padded / step_size],
                 Some(array_to_gpu_simd::<T, T::GpuReg>(&imp_vec_padded))).unwrap();
-
 
        let res_buffer =
             Buffer::<T::GpuReg>::new(
@@ -270,9 +312,7 @@ impl<T> GpuSupport<T> for T
                 ocl_pq.dims().clone(),
                 None).unwrap();
 
-       let kenel_name =
-            if is_f64 { if is_complex { "conv_vecs64c" } else { "conv_vecs64r" }}
-            else      { if is_complex { "conv_vecs32r" } else { "conv_vecs32r" }};
+       let kenel_name = if is_complex { "conv_vecs_c" } else { "conv_vecs_r" };
        // Kernel compilation
        let kernel = ocl_pq.create_kernel(kenel_name).expect("ocl program build")
             .gws([data_set_size / vec_len - 1])
@@ -290,9 +330,12 @@ impl<T> GpuSupport<T> for T
 /// The tests assume that the machine running the tests has a GPU which at least supports
 /// 32bit floating point numbers. However the library can be compiled with enabled GPU support
 /// even if the machine doesn't have a suitable GPU.
+#[cfg(test)]
 mod tests {
     use super::super::GpuSupport;
     use super::super::super::*;
+    use super::prepare_impulse_response;
+    use {array_to_complex, array_to_complex_mut};
     use std::fmt::Debug;
 
     fn assert_eq_tol<T>(left: &[T], right: &[T], tol: T)
@@ -337,5 +380,71 @@ mod tests {
         source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
         f64::gpu_convolve_vector(false,&source[..], &mut target[..], &imp_resp[..]);
         assert_eq_tol(&target[100..900], &source_vec[100..900], 1e-6);
+    }
+
+    #[test]
+    fn gpu_complex_convolution32() {
+        assert!(f32::has_gpu_support());
+
+        let source = vec![0.2; 1000];
+        let mut target = vec![0.0; 1000];
+        let imp_resp = vec![0.1; 64];
+        let mut source_vec = source.clone().to_complex_time_vec();
+        let imp_resp_vec = imp_resp.clone().to_complex_time_vec();
+        let mut buffer = SingleBuffer::new();
+        source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
+        f32::gpu_convolve_vector(true, &source[..], &mut target[..], &imp_resp[..]);
+        assert_eq_tol(&target[100..900], &source_vec[100..900], 1e-6);
+    }
+
+    #[test]
+    fn gpu_complex_convolution64() {
+        if !f64::has_gpu_support() {
+            // Allow to skip tests on a host without GPU for f64
+            return;
+        }
+
+        let source: Vec<f64> = vec![0.2; 1000];
+        let mut target = vec![0.0; 1000];
+        let imp_resp = vec![0.1; 64];
+        let mut source_vec = source.clone().to_complex_time_vec();
+        let imp_resp_vec = imp_resp.clone().to_complex_time_vec();
+        let mut buffer = SingleBuffer::new();
+        source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
+        f64::gpu_convolve_vector(true, &source[..], &mut target[..], &imp_resp[..]);
+        assert_eq_tol(&target[100..900], &source_vec[100..900], 1e-6);
+    }
+
+    #[test]
+    fn gpu_prepare_real_impulse_response() {
+        let imp_resp = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0];
+        let mut padded = vec!(0.0; 8 * 2);
+        prepare_impulse_response(&imp_resp, &mut padded, 2);
+        // Explanation of the result:
+        // The data is chunked in pairs since `vec_len` is 2. So that means the data is
+        // put into a format so that if the GPU loads a vector of size 2 it always
+        // loads a correct value. If there is not enough data to form a pair then a zero is added.
+        //
+        // The convolution requires that the we iterate through the impulse response in
+        // reversed order. However for some systems its faster to access data in forward order
+        // (e.g. because of cache prediction). So that the reason why the result here is already
+        // inverted.
+        //
+        // Finally every second pair is shifted by one byte. That's because the previous steps
+        // mean that we can only access the `vec_len` samples at once, but to calculate
+        // the convolution we need to access every sample. The shifted version give us that
+        let expected = [7.0, 6.0, 0.0, 7.0, 5.0, 4.0, 6.0, 5.0,
+                        3.0, 2.0, 4.0, 3.0, 1.0, 0.0, 2.0, 1.0];
+        assert_eq_tol(&padded, &expected, 1e-6);
+    }
+
+    #[test]
+    fn gpu_prepare_complex_impulse_response() {
+        let imp_resp = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
+        let mut padded = vec!(0.0; 8 * 2);
+        prepare_impulse_response(array_to_complex(&imp_resp), array_to_complex_mut(&mut padded), 2);
+        let expected = [5.0, 6.0, 3.0, 4.0, 0.0, 0.0, 5.0, 6.0, 
+                        1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 1.0, 2.0];
+        assert_eq_tol(&padded, &expected, 1e-6);
     }
 }

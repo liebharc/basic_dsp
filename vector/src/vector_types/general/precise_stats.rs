@@ -1,8 +1,8 @@
-use RealNumber;
+use {RealNumber, array_to_complex};
 use num::{Complex, Zero};
 use num::complex::{Complex64};
 use multicore_support::*;
-use super::super::{array_to_complex, Vector, DspVec, ToSlice, Domain, RealNumberSpace,
+use super::super::{Vector, DspVec, ToSlice, Domain, RealNumberSpace,
                    ComplexNumberSpace, Statistics, Stats};
 use super::{kahan_sum, kahan_sumb};               
 

@@ -1,8 +1,8 @@
-use RealNumber;
+use {RealNumber, array_to_complex};
 use num::Complex;
 use multicore_support::*;
 use simd_extensions::*;
-use super::super::{array_to_complex, Vector, DspVec, ToSlice, Domain, RealNumberSpace,
+use super::super::{Vector, DspVec, ToSlice, Domain, RealNumberSpace,
                    ComplexNumberSpace};
 
 #[repr(C)]

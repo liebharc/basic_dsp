@@ -1,9 +1,9 @@
-use RealNumber;
+use {RealNumber, array_to_complex, array_to_complex_mut};
 use conv_types::*;
 use num::Complex;
 use multicore_support::*;
 use rustfft::FFT;
-use super::super::{array_to_complex, array_to_complex_mut, VoidResult, ToSliceMut, MetaData,
+use super::super::{VoidResult, ToSliceMut, MetaData,
                    DspVec, NumberSpace, TimeDomain, FrequencyDomain, DataDomain, Vector,
                    ComplexNumberSpace, Buffer, ErrorReason, TimeToFrequencyDomainOperations, ToComplexVector,
                    FromVector, PaddingOption, ResizeOps, InsertZerosOps};
