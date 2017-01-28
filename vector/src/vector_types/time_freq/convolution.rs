@@ -3,6 +3,7 @@ use conv_types::*;
 use num::Complex;
 use multicore_support::*;
 use rustfft::FFT;
+use gpu_support::GpuSupport;
 use super::super::{VoidResult, ToSliceMut, MetaData,
                    DspVec, NumberSpace, TimeDomain, FrequencyDomain, DataDomain, Vector,
                    ComplexNumberSpace, Buffer, ErrorReason, TimeToFrequencyDomainOperations, ToComplexVector,
@@ -356,7 +357,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 let range = position .. fft_len+position;
                 fft.process(&x_time[range], x_freq);
                 // Copy over the results of the scalar convolution (1)
-                (&mut x_time[0..imp_len/2]).copy_from_slice(&tmp[0..imp_len/2]); 
+                (&mut x_time[0..imp_len/2]).copy_from_slice(&tmp[0..imp_len/2]);
                 for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_freq.iter()) {
                     *n = *n * *v / scaling;
                 }
@@ -416,6 +417,23 @@ impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
            && impulse_response.len() <= 202
            && impulse_response.len() > 11 {
             self.convolve_vector_simd(buffer, impulse_response);
+        }
+        else if self.len() > 10000 && T::has_gpu_support() {
+            let is_complex = self.is_complex();
+            let source_len = self.len();
+            let source = self.data.to_slice();
+            let imp_resp_len = impulse_response.len();
+            let imp_resp = impulse_response.data.to_slice();
+            let mut target = buffer.get(source_len);
+            {
+                let mut target = target.to_slice_mut();
+                let _ = T::gpu_convolve_vector(
+                                    is_complex,
+                                    &source[0..source_len],
+                                    &mut target[0..source_len],
+                                    &imp_resp[0..imp_resp_len]);
+            }
+            buffer.free(target);
         }
         else if self.len() > 10000
             && impulse_response.len() > 11
