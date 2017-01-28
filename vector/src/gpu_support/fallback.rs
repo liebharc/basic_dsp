@@ -1,6 +1,7 @@
 use super::GpuSupport;
 use RealNumber;
 use num::traits::Float;
+use std::ops::Range;
 
 pub type Gpu32 = f32;
 
@@ -16,7 +17,7 @@ impl<T: RealNumber> GpuSupport<T> for T {
        return false;
     }
 
-    fn gpu_convolve_vector(_: bool, _: &[T], _: &mut [T], _: &[T]) {
+    fn gpu_convolve_vector(_: bool, _: &[T], _: &mut [T], _: &[T]) -> Range<usize> {
         panic!("This version was compiled without GPU support")
     }
 }

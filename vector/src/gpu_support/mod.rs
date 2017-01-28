@@ -11,6 +11,7 @@ mod fallback;
 pub use self::fallback::*;
 
 use RealNumber;
+use std::ops::Range;
 
 /// Trait which adds GPU support to types like `f32` and `f64`.
 pub trait GpuSupport<T: RealNumber> {
@@ -19,5 +20,9 @@ pub trait GpuSupport<T: RealNumber> {
     fn has_gpu_support() -> bool;
 
     /// Convolve a vector on the GPU.
-    fn gpu_convolve_vector(is_complex: bool, source: &[T], target: &mut [T], imp_resp: &[T]);
+    fn gpu_convolve_vector(
+        is_complex: bool,
+        source: &[T],
+        target: &mut [T],
+        imp_resp: &[T]) -> Range<usize>;
 }

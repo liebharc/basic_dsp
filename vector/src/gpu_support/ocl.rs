@@ -5,6 +5,7 @@ use ocl::flags::DeviceType;
 use ocl::traits::{OclVec, OclPrm};
 use ocl::enums::*;
 use std::mem;
+use std::ops::Range;
 use super::GpuSupport;
 use {RealNumber, array_to_complex, array_to_complex_mut};
 use num;
@@ -151,6 +152,16 @@ fn has_f64_support(device: Device) -> bool {
     }
 }
 
+/// Integrated GPUs are typically less powerful but data transfer from memory to the
+/// integrated device can be faster.
+fn is_integrated_gpu(device: Device) -> bool {
+    const INTEL_VENDOR_ID: &'static str = "8086";
+    match device.info(DeviceInfo::VendorId) {
+        DeviceInfoResult::Extensions(vid) => vid == INTEL_VENDOR_ID,
+        _ => false
+    }
+}
+
 /// Returns an indicator of how powerful the device is. More powerful
 /// devices should get the calculations done faster. The higher the
 /// returned value, the higher the device is rated.
@@ -161,30 +172,39 @@ fn has_f64_support(device: Device) -> bool {
 /// GPU is likely the better choice in most cases for large data sets and it should
 /// have more computational units.
 ///
-/// A potential optimization might be to prefer GPU integrated into the CPU for
-/// small data sets since the latency is much higher (since we don't need t ogo over
+/// As an optimization the integrated GPU is preffered for
+/// small data sets since the latency is much lower (since we don't need t ogo over
 /// the PCI bus).
-fn determine_processing_power(device: Device) -> u32 {
+fn determine_processing_power(device: Device, data_length: usize) -> u32 {
+    if data_length < 50000 && is_integrated_gpu(device) {
+        return u32::max_value();
+    }
+
     match device.info(DeviceInfo::MaxComputeUnits) {
         DeviceInfoResult::MaxComputeUnits(units) => units,
         _ => 0
     }
 }
 
-fn find_gpu_device(require_f64_support: bool) -> Option<(Platform, Device)> {
+fn find_gpu_device(require_f64_support: bool, data_length: usize) -> Option<(Platform, Device)> {
     let mut result: Option<(Platform, Device)> = None;
     for p in Platform::list() {
-        let devices = Device::list(&p, DeviceType::from_bits(ffi::CL_DEVICE_TYPE_GPU));
-        if devices.is_ok() {
-              for d in devices.unwrap() {
-                  if !require_f64_support || has_f64_support(d) {
-                      result = match result {
-                          Some((cp, cd)) if determine_processing_power(d) < determine_processing_power(cd)
-                            => Some((cp, cd)),
-                          _ => Some((p, d))
-                      }
-                  }
-              }
+        let devices_op = Device::list(&p, DeviceType::from_bits(ffi::CL_DEVICE_TYPE_GPU));
+        match devices_op {
+            Ok(devices) => {
+                for d in devices {
+                    if !require_f64_support || has_f64_support(d) {
+                        result = match result {
+                            Some((cp, cd))
+                                if determine_processing_power(d, data_length)
+                                    < determine_processing_power(cd, data_length)
+                              => Some((cp, cd)),
+                            _ => Some((p, d))
+                        }
+                    }
+                };
+            },
+            Err(_) => ()
         }
      }
 
@@ -240,10 +260,10 @@ fn prepare_impulse_response<T: Clone + Copy + num::Zero>(
 impl<T> GpuSupport<T> for T
     where T: RealNumber {
     fn has_gpu_support() -> bool {
-        find_gpu_device(mem::size_of::<T>() == 8).is_some()
+        find_gpu_device(mem::size_of::<T>() == 8, 0).is_some()
     }
 
-    fn gpu_convolve_vector(is_complex: bool, source: &[T], target: &mut [T], imp_resp: &[T]) {
+    fn gpu_convolve_vector(is_complex: bool, source: &[T], target: &mut [T], imp_resp: &[T]) -> Range<usize> {
         assert!(target.len() >= source.len());
         let data_set_size = source.len();
         let conv_size = imp_resp.len();
@@ -260,7 +280,7 @@ impl<T> GpuSupport<T> for T
             x => vec_len - x / 2
         };
 
-        let (platform, device) = find_gpu_device(is_f64)
+        let (platform, device) = find_gpu_device(is_f64, data_set_size)
             .expect("No GPU device available which supports this data type");
 
         let kernel_src = if is_f64 { KERNEL_SRC_64 } else { KERNEL_SRC_32 };
@@ -323,6 +343,7 @@ impl<T> GpuSupport<T> for T
        kernel.enq().expect("Running kernel");
        ocl_pq.queue().finish();
        res_buffer.cmd().read(array_to_gpu_simd_mut::<T, T::GpuReg>(&mut target[0..data_set_size-vec_len])).enq().expect("Transferring res_vec");
+       Range { start: conv_size, end: data_set_size - conv_size }
     }
 }
 
@@ -443,7 +464,7 @@ mod tests {
         let imp_resp = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
         let mut padded = vec!(0.0; 8 * 2);
         prepare_impulse_response(array_to_complex(&imp_resp), array_to_complex_mut(&mut padded), 2);
-        let expected = [5.0, 6.0, 3.0, 4.0, 0.0, 0.0, 5.0, 6.0, 
+        let expected = [5.0, 6.0, 3.0, 4.0, 0.0, 0.0, 5.0, 6.0,
                         1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 1.0, 2.0];
         assert_eq_tol(&padded, &expected, 1e-6);
     }
