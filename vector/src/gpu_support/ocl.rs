@@ -29,14 +29,13 @@ const KERNEL_SRC_32: &'static str = r#"
                 __global float4* const res)
     {
         ulong const idx = get_global_id(0);
-        ulong const data_length = get_global_size(0);
 
         float4 sum1 = (float4)0.0;
         float4 sum2 = (float4)0.0;
         float4 sum3 = (float4)0.0;
         float4 sum4 = (float4)0.0;
-        long start = max((long)(idx - FILTER_LENGTH / 2), 0L);
-        long end = min(start + FILTER_LENGTH, (long)data_length);
+        long start = idx - FILTER_LENGTH / 2;
+        long end = start + FILTER_LENGTH;
         long j = 0;
         for (long i = start; i < end; i++) {
             float4 current = src[i];
@@ -64,12 +63,11 @@ const KERNEL_SRC_32: &'static str = r#"
                 __global float4* const res)
     {
         ulong const idx = get_global_id(0);
-        ulong const data_length = get_global_size(0);
 
         float4 sum1 = (float4)0.0;
         float4 sum2 = (float4)0.0;
-        long start = max((long)(idx - FILTER_LENGTH / 2), 0L);
-        long end = min(start + FILTER_LENGTH, (long)data_length);
+        long start = idx - FILTER_LENGTH / 2;
+        long end = start + FILTER_LENGTH;
         long j = 0;
         for (long i = start; i < end; i++) {
             float4 current = src[i];
@@ -99,12 +97,11 @@ const KERNEL_SRC_64: &'static str = r#"
                 __global double2* const res)
     {
         ulong const idx = get_global_id(0);
-        ulong const data_length = get_global_size(0);
 
         double2 sum1 = (double2)0.0;
         double2 sum2 = (double2)0.0;
-        long start = max((long)(idx - FILTER_LENGTH / 2), 0L);
-        long end = min(start + FILTER_LENGTH, (long)data_length);
+        long start = idx - FILTER_LENGTH / 2;
+        long end = start + FILTER_LENGTH;
         long j = 0;
         for (long i = start; i < end; i++) {
             double2 current = src[i];
@@ -127,11 +124,10 @@ const KERNEL_SRC_64: &'static str = r#"
                 __global double2* const res)
     {
         ulong const idx = get_global_id(0);
-        ulong const data_length = get_global_size(0);
 
         double2 sum = (double2)0.0;
-        long start = max((long)(idx - FILTER_LENGTH / 2), 0L);
-        long end = min(start + FILTER_LENGTH, (long)data_length);
+        long start = idx - FILTER_LENGTH / 2;
+        long end = start + FILTER_LENGTH;
         long j = 0;
         for (long i = start; i < end; i++) {
             double2 current = src[i];
@@ -315,7 +311,8 @@ impl<T> GpuSupport<T> for T
                 Some(core::MEM_READ_ONLY |
                      core::MEM_COPY_HOST_PTR),
                 ocl_pq.dims().clone(),
-                Some(array_to_gpu_simd::<T, T::GpuReg>(&source[phase..data_set_size-vec_len+phase]))).unwrap();
+                Some(array_to_gpu_simd::<T, T::GpuReg>(&source[phase..data_set_size-vec_len+phase])))
+                .expect("Failed to create GPU input buffer");
 
        let imp_buffer =
             Buffer::new(
@@ -323,26 +320,43 @@ impl<T> GpuSupport<T> for T
                 Some(core::MEM_READ_ONLY |
                      core::MEM_COPY_HOST_PTR),
                 [conv_size_padded / step_size],
-                Some(array_to_gpu_simd::<T, T::GpuReg>(&imp_vec_padded))).unwrap();
+                Some(array_to_gpu_simd::<T, T::GpuReg>(&imp_vec_padded)))
+                .expect("Failed to create GPU impulse response buffer");;
 
        let res_buffer =
             Buffer::<T::GpuReg>::new(
                 ocl_pq.queue().clone(),
                 Some(core::MEM_WRITE_ONLY),
                 ocl_pq.dims().clone(),
-                None).unwrap();
+                None)
+                .expect("Failed to create GPU result buffer");;
 
        let kenel_name = if is_complex { "conv_vecs_c" } else { "conv_vecs_r" };
-       // Kernel compilation
+
+       // Compile the kernel
        let kernel = ocl_pq.create_kernel(kenel_name).expect("ocl program build")
-            .gws([data_set_size / vec_len - 1])
             .arg_buf_named("src", Some(&in_buffer))
             .arg_buf_named("conv", Some(&imp_buffer))
             .arg_buf(&res_buffer);
 
-       kernel.enq().expect("Running kernel");
+       // Execute kernel, do this in future in chunks so that the GPU watchdog isn't
+       // terminating our kernel
+       let gws_total = data_set_size / vec_len;
+       kernel
+        .cmd()
+        //.gwo([chunk]) // Offset
+        .gws([gws_total])
+        .enq()
+        .expect(&format!("Running kernel (Params: {}) failed:",
+                            gws_total));
+
+       // Wait for all kernels to finish
        ocl_pq.queue().finish();
-       res_buffer.cmd().read(array_to_gpu_simd_mut::<T, T::GpuReg>(&mut target[0..data_set_size-vec_len])).enq().expect("Transferring res_vec");
+       res_buffer.cmd()
+        .read(array_to_gpu_simd_mut::<T, T::GpuReg>(&mut target[0..data_set_size-vec_len]))
+        .enq()
+        .expect("Transferring result vector from the GPU back to memory failed");
+
        Range { start: conv_size, end: data_set_size - conv_size }
     }
 }
@@ -381,8 +395,8 @@ mod tests {
         let imp_resp_vec = imp_resp.clone().to_real_time_vec();
         let mut buffer = SingleBuffer::new();
         source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
-        f32::gpu_convolve_vector(false,&source[..], &mut target[..], &imp_resp[..]);
-        assert_eq_tol(&target[100..900], &source_vec[100..900], 1e-6);
+        let range = f32::gpu_convolve_vector(false,&source[..], &mut target[..], &imp_resp[..]);
+        assert_eq_tol(&target[range.clone()], &source_vec[range.clone()], 1e-6);
     }
 
     #[test]
@@ -399,8 +413,8 @@ mod tests {
         let imp_resp_vec = imp_resp.clone().to_real_time_vec();
         let mut buffer = SingleBuffer::new();
         source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
-        f64::gpu_convolve_vector(false,&source[..], &mut target[..], &imp_resp[..]);
-        assert_eq_tol(&target[100..900], &source_vec[100..900], 1e-6);
+        let range = f64::gpu_convolve_vector(false,&source[..], &mut target[..], &imp_resp[..]);
+        assert_eq_tol(&target[range.clone()], &source_vec[range.clone()], 1e-6);
     }
 
     #[test]
@@ -414,8 +428,8 @@ mod tests {
         let imp_resp_vec = imp_resp.clone().to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
         source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
-        f32::gpu_convolve_vector(true, &source[..], &mut target[..], &imp_resp[..]);
-        assert_eq_tol(&target[100..900], &source_vec[100..900], 1e-6);
+        let range = f32::gpu_convolve_vector(true, &source[..], &mut target[..], &imp_resp[..]);
+        assert_eq_tol(&target[range.clone()], &source_vec[range.clone()], 1e-6);
     }
 
     #[test]
@@ -432,8 +446,8 @@ mod tests {
         let imp_resp_vec = imp_resp.clone().to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
         source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
-        f64::gpu_convolve_vector(true, &source[..], &mut target[..], &imp_resp[..]);
-        assert_eq_tol(&target[100..900], &source_vec[100..900], 1e-6);
+        let range = f64::gpu_convolve_vector(true, &source[..], &mut target[..], &imp_resp[..]);
+        assert_eq_tol(&target[range.clone()], &source_vec[range.clone()], 1e-6);
     }
 
     #[test]
