@@ -5,6 +5,7 @@ use ocl::flags::DeviceType;
 use ocl::traits::{OclVec, OclPrm};
 use ocl::enums::*;
 use std::mem;
+use std::cmp;
 use std::ops::Range;
 use super::GpuSupport;
 use {RealNumber, array_to_complex, array_to_complex_mut};
@@ -339,16 +340,22 @@ impl<T> GpuSupport<T> for T
             .arg_buf_named("conv", Some(&imp_buffer))
             .arg_buf(&res_buffer);
 
-       // Execute kernel, do this in future in chunks so that the GPU watchdog isn't
+       // Execute kernel, do this in chunks so that the GPU watchdog isn't
        // terminating our kernel
-       let gws_total = data_set_size / vec_len;
-       kernel
-        .cmd()
-        //.gwo([chunk]) // Offset
-        .gws([gws_total])
-        .enq()
-        .expect(&format!("Running kernel (Params: {}) failed:",
-                            gws_total));
+       let gws_total = (data_set_size - conv_size_padded) / vec_len;
+       let chunk_size = 100000;
+       let mut chunk = conv_size_padded / vec_len;
+       while chunk < gws_total {
+           let current_size = cmp::min(chunk_size, gws_total - chunk);
+           kernel
+            .cmd()
+            .gwo([chunk]) // Offset
+            .gws([current_size])
+            .enq()
+            .expect(&format!("Running kernel (Params: {}, {}) failed:",
+                                chunk, gws_total));
+            chunk += chunk_size;
+        }
 
        // Wait for all kernels to finish
        ocl_pq.queue().finish();
@@ -357,7 +364,7 @@ impl<T> GpuSupport<T> for T
         .enq()
         .expect("Transferring result vector from the GPU back to memory failed");
 
-       Range { start: conv_size, end: data_set_size - conv_size }
+       Range { start: conv_size_padded, end: data_set_size - conv_size_padded }
     }
 }
 
