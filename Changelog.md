@@ -2,6 +2,7 @@
 Changes:
 
 ## Version 0.4.3
+- Updated `simd` dependency to version `0.2`.
 
 ## Version 0.4.2
 Bugfix release.

@@ -25,7 +25,7 @@ use_simd = ["simd"]
 use_gpu = ["ocl"]
 
 [dependencies]
-simd = { version = "^0.1.1", optional = true }
+simd = { version = "^0.2.0", optional = true }
 ocl = { version = "^0.12.0", optional = true }
 num_cpus = "^1.2.0"
 crossbeam = "^0.2.0"
