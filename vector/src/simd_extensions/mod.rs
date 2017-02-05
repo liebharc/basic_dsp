@@ -65,6 +65,19 @@ pub trait SimdGeneric<T>: Simd<T>
     fn store(self, array: &mut [T], index: usize);
 }
 
+pub trait SimdApproximations<T> : Simd<T>
+    where T: Sized + Sync + Send {
+    fn ln_approx(self) -> Self;
+
+    fn exp_approx(self) -> Self;
+
+    fn sin_approx(self) -> Self;
+
+    fn cos_approx(self) -> Self;
+
+    fn sin_cos_approx(self, is_sin: bool) -> Self;
+}
+
 #[repr(packed)]
 #[derive(Debug, Copy, Clone)]
 struct Unalign<T>(T);
@@ -205,14 +218,14 @@ pub use self::sse::{Reg32, Reg64, IntReg32, IntReg64, UIntReg32, UIntReg64};
 #[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
 mod approximations;
 
-#[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
-pub use self::approximations::*;
-
 #[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
 mod fallback;
 
 #[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
 pub use self::fallback::{Reg32, Reg64};
+
+#[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
+mod approx_fallback;
 
 simd_generic_impl!(f32, Reg32);
 simd_generic_impl!(f64, Reg64);

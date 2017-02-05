@@ -22,7 +22,7 @@
   (this is the zlib license)
 */
 
-use super::{Simd, Reg32, IntReg32, UIntReg32, Reg64, IntReg64, UIntReg64};
+use super::{SimdApproximations, Simd, Reg32, IntReg32, UIntReg32, Reg64, IntReg64, UIntReg64};
 #[cfg(feature="use_sse")]
 use simd::x86::sse2::Sse2F64x2;
 #[cfg(feature="use_avx")]
@@ -31,19 +31,6 @@ use std::mem;
 use std::ops::*;
 use num::Float;
 use Zero;
-
-pub trait SimdApproximations<T> : Simd<T>
-    where T: Sized + Sync + Send {
-    fn ln_approx(self) -> Self;
-
-    fn exp_approx(self) -> Self;
-
-    fn sin_approx(self) -> Self;
-
-    fn cos_approx(self) -> Self;
-
-    fn sin_cos_approx(self, is_sin: bool) -> Self;
-}
 
 macro_rules! simd_approx_impl {
     ($data_type:ident,
