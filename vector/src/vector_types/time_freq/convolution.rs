@@ -3,6 +3,7 @@ use conv_types::*;
 use num::Complex;
 use multicore_support::*;
 use rustfft::FFT;
+use std::mem;
 use gpu_support::GpuSupport;
 use super::super::{VoidResult, ToSliceMut, MetaData,
                    DspVec, NumberSpace, TimeDomain, FrequencyDomain, DataDomain, Vector,
@@ -417,25 +418,37 @@ impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
            && impulse_response.len() <= 202
            && impulse_response.len() > 11 {
             self.convolve_vector_simd(buffer, impulse_response);
+            return Ok(());
         }
-        else if self.len() > 10000 && T::has_gpu_support() {
+
+        if self.len() > 10000 && T::has_gpu_support() {
             let is_complex = self.is_complex();
             let source_len = self.len();
-            let source = self.data.to_slice();
             let imp_resp_len = impulse_response.len();
-            let imp_resp = impulse_response.data.to_slice();
             let mut target = buffer.get(source_len);
-            {
+            let range_done = {
+                let source = self.data.to_slice();
+                let imp_resp = impulse_response.data.to_slice();
                 let mut target = target.to_slice_mut();
-                let _ = T::gpu_convolve_vector(
-                                    is_complex,
-                                    &source[0..source_len],
-                                    &mut target[0..source_len],
-                                    &imp_resp[0..imp_resp_len]);
-            }
-            buffer.free(target);
+                T::gpu_convolve_vector(
+                    is_complex,
+                    &source[0..source_len],
+                    &mut target[0..source_len],
+                    &imp_resp[0..imp_resp_len])
+            };
+            match range_done {
+                None =>
+                    buffer.free(target), // The GPU code can't handle this go to the next cases
+                Some(range) => {
+                    self.convolve_vector_range(target.to_slice_mut(), impulse_response, range);
+                    mem::swap(&mut target, &mut self.data);
+                    buffer.free(target);
+                    return Ok(());
+                }
+            };
         }
-        else if self.len() > 10000
+
+        if self.len() > 10000
             && impulse_response.len() > 11
             // Overlap-discard creates a lot of copies of the size of impulse_response
             // and that only seems to be worthwhile if the vector is long enough
@@ -447,11 +460,9 @@ impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
             }
             return self.overlap_discard(buffer, impulse_response, fft_len);
         }
-        else {
-            self.convolve_vector_scalar(buffer, impulse_response);
-        }
 
-        Ok(())
+        self.convolve_vector_scalar(buffer, impulse_response);
+        return Ok(());
     }
 }
 

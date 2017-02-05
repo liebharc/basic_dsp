@@ -17,7 +17,7 @@ impl<T: RealNumber> GpuSupport<T> for T {
        return false;
     }
 
-    fn gpu_convolve_vector(_: bool, _: &[T], _: &mut [T], _: &[T]) -> Range<usize> {
-        panic!("This version was compiled without GPU support")
+    fn gpu_convolve_vector(_: bool, _: &[T], _: &mut [T], _: &[T]) -> Option<Range<usize>> {
+        None
     }
 }

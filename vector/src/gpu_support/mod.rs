@@ -24,5 +24,5 @@ pub trait GpuSupport<T: RealNumber> {
         is_complex: bool,
         source: &[T],
         target: &mut [T],
-        imp_resp: &[T]) -> Range<usize>;
+        imp_resp: &[T]) -> Option<Range<usize>>;
 }

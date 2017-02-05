@@ -98,6 +98,46 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         buffer.free(temp);
     }
 
+    /// Only calculate the convolution in the inverse range from the given range.
+    /// This is intended to be used together with convolution implementations which
+    /// are faster but don't handle the beginning and end of a vector correctly.
+    fn convolve_vector_range(&mut self, target: &mut [T], vector: &Self, range: Range<usize>)
+    {
+        let points = self.points();
+        let other_points = vector.points();
+        let (other_start, other_end, full_conv_len, conv_len) = if other_points > points {
+            let center = other_points / 2;
+            let conv_len = points / 2;
+            (center - conv_len, center + conv_len, points, conv_len)
+        } else {
+            (0, other_points, other_points, other_points - other_points / 2)
+        };
+        let len = self.len();
+        if self.is_complex() {
+            let other = vector.data.to_slice();
+            let data = self.data.to_slice();
+            let other = array_to_complex(&other[0..vector.len()]);
+            let complex = array_to_complex(&data[0..len]);
+            let dest = array_to_complex_mut(&mut target[0..len]);
+            let other_iter = &other[other_start..other_end];
+            let conv_len = conv_len as isize;
+            for i in 0..range.start/2 {
+                dest[i] = Self::convolve_iteration(complex, other_iter, i as isize, conv_len, full_conv_len);
+            }
+        } else {
+            let other = vector.data.to_slice();
+            let data = self.data.to_slice();
+            let other = &other[0..vector.len()];
+            let data = &data[0..len];
+            let dest = &mut target[0..len];
+            let other_iter = &other[other_start..other_end];
+            let conv_len = conv_len as isize;
+            for i in 0..range.start {
+                dest[i] = Self::convolve_iteration(data, other_iter, i as isize, conv_len, full_conv_len);
+            }
+        }
+    }
+
     fn convolve_vector_scalar<B>(&mut self, buffer: &mut B, vector: &Self)
         where B: Buffer<S, T>
     {

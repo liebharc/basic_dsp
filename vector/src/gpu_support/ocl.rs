@@ -26,7 +26,7 @@ const KERNEL_SRC_32: &'static str = r#"
     __kernel
     void conv_vecs_r(
                 __global float4 const* const src,
-                __constant float4 const* const conv,
+                __global float4 const* const conv,
                 __global float4* const res)
     {
         ulong const idx = get_global_id(0);
@@ -60,7 +60,7 @@ const KERNEL_SRC_32: &'static str = r#"
     __kernel
     void conv_vecs_c(
                 __global float4 const* const src,
-                __constant float4 const* const conv,
+                __global float4 const* const conv,
                 __global float4* const res)
     {
         ulong const idx = get_global_id(0);
@@ -94,7 +94,7 @@ const KERNEL_SRC_64: &'static str = r#"
     __kernel
     void conv_vecs_r(
                 __global double2 const* const src,
-                __constant double2 const* const conv,
+                __global double2 const* const conv,
                 __global double2* const res)
     {
         ulong const idx = get_global_id(0);
@@ -121,7 +121,7 @@ const KERNEL_SRC_64: &'static str = r#"
     __kernel
     void conv_vecs_c(
                 __global double2 const* const src,
-                __constant double2 const* const conv,
+                __global double2 const* const conv,
                 __global double2* const res)
     {
         ulong const idx = get_global_id(0);
@@ -214,7 +214,7 @@ fn array_to_gpu_simd<T, R>(array: &[T]) -> &[R] {
         let vec_len = if is_f64 { 2 } else { 4 };
         let len = array.len();
         if len % vec_len != 0 {
-            panic!("Argument must have an even length");
+            panic!("Argument must fit into an integer number of GPU registers");
         }
         let trans: &[R] = mem::transmute(array);
         &trans[0..len / vec_len]
@@ -227,7 +227,7 @@ fn array_to_gpu_simd_mut<T, R>(array: &mut [T]) -> &mut [R] {
         let vec_len = if is_f64 { 2 } else { 4 };
         let len = array.len();
         if len % vec_len != 0 {
-            panic!("Argument must have an even length");
+            panic!("Argument must fit into an integer number of GPU registers");
         }
         let trans: &mut [R] = mem::transmute(array);
         &mut trans[0..len / vec_len]
@@ -260,17 +260,22 @@ impl<T> GpuSupport<T> for T
         find_gpu_device(mem::size_of::<T>() == 8, 0).is_some()
     }
 
-    fn gpu_convolve_vector(is_complex: bool, source: &[T], target: &mut [T], imp_resp: &[T]) -> Range<usize> {
+    fn gpu_convolve_vector(is_complex: bool, source: &[T], target: &mut [T], imp_resp: &[T])
+            -> Option<Range<usize>> {
         assert!(target.len() >= source.len());
-        let data_set_size = source.len();
-        let conv_size = imp_resp.len();
         let is_f64 = mem::size_of::<T>() == 8;
         let vec_len = if is_f64 { 2 } else { 4 };
+        let data_set_size = (source.len() / vec_len) * vec_len;
+        let conv_size = imp_resp.len();
 
-        let padding = vec_len;
         let conv_size_rounded =
             (conv_size as f32 / vec_len as f32).ceil() as usize * vec_len;
-        let conv_size_padded = conv_size_rounded + padding;
+        let conv_size_padded = conv_size_rounded + vec_len;
+
+        if conv_size_padded >= data_set_size {
+            return None;
+        }
+
         let num_conv_vectors = conv_size_padded / vec_len;
         let phase = match conv_size % (2 * vec_len) {
             0 => 0,
@@ -286,11 +291,12 @@ impl<T> GpuSupport<T> for T
             .cmplr_def("FILTER_LENGTH", num_conv_vectors as i32)
             .cmplr_opt("-cl-fast-relaxed-math -DMAC")
             .src(kernel_src);
+        let source = array_to_gpu_simd::<T, T::GpuReg>(&source[phase..data_set_size-vec_len+phase]);
         let ocl_pq = ProQue::builder()
             .prog_bldr(prog_bldr)
             .platform(platform)
             .device(device)
-            .dims([data_set_size / vec_len - 1])
+            .dims([source.len()])
             .build()
             .expect("Building ProQue");
 
@@ -312,16 +318,17 @@ impl<T> GpuSupport<T> for T
                 Some(core::MEM_READ_ONLY |
                      core::MEM_COPY_HOST_PTR),
                 ocl_pq.dims().clone(),
-                Some(array_to_gpu_simd::<T, T::GpuReg>(&source[phase..data_set_size-vec_len+phase])))
+                Some(source))
                 .expect("Failed to create GPU input buffer");
 
+       let imp_vec_padded = array_to_gpu_simd::<T, T::GpuReg>(&imp_vec_padded);
        let imp_buffer =
             Buffer::new(
                 ocl_pq.queue().clone(),
                 Some(core::MEM_READ_ONLY |
                      core::MEM_COPY_HOST_PTR),
-                [conv_size_padded / step_size],
-                Some(array_to_gpu_simd::<T, T::GpuReg>(&imp_vec_padded)))
+                [imp_vec_padded.len()],
+                Some(&imp_vec_padded))
                 .expect("Failed to create GPU impulse response buffer");;
 
        let res_buffer =
@@ -364,7 +371,7 @@ impl<T> GpuSupport<T> for T
         .enq()
         .expect("Transferring result vector from the GPU back to memory failed");
 
-       Range { start: conv_size_padded, end: data_set_size - conv_size_padded }
+       Some(Range { start: conv_size_padded, end: data_set_size - conv_size_padded })
     }
 }
 
@@ -402,7 +409,7 @@ mod tests {
         let imp_resp_vec = imp_resp.clone().to_real_time_vec();
         let mut buffer = SingleBuffer::new();
         source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
-        let range = f32::gpu_convolve_vector(false,&source[..], &mut target[..], &imp_resp[..]);
+        let range = f32::gpu_convolve_vector(false,&source[..], &mut target[..], &imp_resp[..]).unwrap();
         assert_eq_tol(&target[range.clone()], &source_vec[range.clone()], 1e-6);
     }
 
@@ -420,7 +427,7 @@ mod tests {
         let imp_resp_vec = imp_resp.clone().to_real_time_vec();
         let mut buffer = SingleBuffer::new();
         source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
-        let range = f64::gpu_convolve_vector(false,&source[..], &mut target[..], &imp_resp[..]);
+        let range = f64::gpu_convolve_vector(false,&source[..], &mut target[..], &imp_resp[..]).unwrap();
         assert_eq_tol(&target[range.clone()], &source_vec[range.clone()], 1e-6);
     }
 
@@ -435,7 +442,7 @@ mod tests {
         let imp_resp_vec = imp_resp.clone().to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
         source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
-        let range = f32::gpu_convolve_vector(true, &source[..], &mut target[..], &imp_resp[..]);
+        let range = f32::gpu_convolve_vector(true, &source[..], &mut target[..], &imp_resp[..]).unwrap();
         assert_eq_tol(&target[range.clone()], &source_vec[range.clone()], 1e-6);
     }
 
@@ -453,7 +460,7 @@ mod tests {
         let imp_resp_vec = imp_resp.clone().to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
         source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
-        let range = f64::gpu_convolve_vector(true, &source[..], &mut target[..], &imp_resp[..]);
+        let range = f64::gpu_convolve_vector(true, &source[..], &mut target[..], &imp_resp[..]).unwrap();
         assert_eq_tol(&target[range.clone()], &source_vec[range.clone()], 1e-6);
     }
 
