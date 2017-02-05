@@ -1,10 +1,18 @@
 use num::complex::Complex;
 use super::Simd;
-use simd::x86::avx::{f32x8, f64x4, AvxF32x8, AvxF64x4};
+use simd::x86::avx::{f32x8, f64x4, AvxF32x8, AvxF64x4, i32x8, i64x4, u32x8, u64x4};
 
 pub type Reg32 = f32x8;
 
 pub type Reg64 = f64x4;
+
+pub type IntReg32 = i32x8;
+
+pub type IntReg64 = i64x4;
+
+pub type UIntReg32 = u32x8;
+
+pub type UIntReg64 = u64x4;
 
 impl Simd<f32> for f32x8 {
     type Array = [f32; 8];
