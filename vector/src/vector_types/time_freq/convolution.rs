@@ -449,15 +449,12 @@ impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
         }
 
         if self.len() > 10000
-            && impulse_response.len() > 11
+            && impulse_response.len() > 15
             // Overlap-discard creates a lot of copies of the size of impulse_response
             // and that only seems to be worthwhile if the vector is long enough
             && self.len() > 10 * impulse_response.len()
             && self.is_complex() {
-            let mut fft_len = next_power_of_two(self.len() / 10);
-            if fft_len > 4096 {
-                fft_len = 4096;
-            }
+            let fft_len = next_power_of_two(impulse_response.len());
             return self.overlap_discard(buffer, impulse_response, fft_len);
         }
 
