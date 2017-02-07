@@ -32,6 +32,9 @@ pub trait RealOps {
 /// (feature flag `use_sse`) or AVX2 (feature flag `use_avx`) processors. Without any of those
 /// feature flags the standard library functions will be used instead.
 ///
+/// Information on the error of the approximation and their performance are rough numbers.
+/// A detailed table can be obtained by running the `approx_accuracy` example.
+///
 /// # Failures
 ///
 /// If one of the methods is called on complex data then `self.len()` will be set to `0`.
@@ -42,6 +45,9 @@ pub trait RealOps {
 pub trait ApproximatedOps<T>
     where T: RealNumber {
     /// Computes the principal value approximation of natural logarithm of every element in the vector.
+    ///
+    /// Error should be below `1%` as long as the values in the vector are larger than `1`.
+    /// Single core performance should be about `5x` as fast.
     ///
     /// # Example
     ///
@@ -61,6 +67,10 @@ pub trait ApproximatedOps<T>
 
     /// Calculates the natural exponential approximation for every vector element.
     ///
+    /// Error should be less than `1%`` as long as the values in the vector are small
+    /// (e.g. in the range between -10 and 10).
+    /// Single core performance should be about `50%` faster.
+    ///
     /// # Example
     ///
     /// ```
@@ -79,6 +89,9 @@ pub trait ApproximatedOps<T>
 
     /// Calculates the sine approximation of each element in radians.
     ///
+    /// Error should be below `1E-6`.
+    /// Single core performance should be about `2x` as fast.
+    ///
     /// # Example
     ///
     /// ```
@@ -92,6 +105,9 @@ pub trait ApproximatedOps<T>
 
     /// Calculates the cosine approximation of each element in radians
     ///
+    /// Error should be below `1E-6`.
+    /// Single core performance should be about `2x` as fast.
+    ///
     /// # Example
     ///
     /// ```
@@ -104,6 +120,9 @@ pub trait ApproximatedOps<T>
     fn cos_approx(&mut self);
 
     /// Calculates the approximated logarithm to the given base for every vector element.
+    ///
+    /// Error should be below `1%` as long as the values in the vector are larger than `1`.
+    /// Single core performance should be about `5x` as fast.
     ///
     /// # Example
     ///
@@ -123,6 +142,10 @@ pub trait ApproximatedOps<T>
 
     /// Calculates the approximated exponential to the given base for every vector element.
     ///
+    /// Error should be less than `1%`` as long as the values in the vector are small
+    /// (e.g. in the range between -10 and 10).
+    /// Single core performance should be about `5x` as fast.
+    ///
     /// # Example
     ///
     /// ```
@@ -138,6 +161,10 @@ pub trait ApproximatedOps<T>
     fn expf_approx(&mut self, base: T);
 
     /// Raises every vector element to approximately a floating point power.
+    ///
+    /// Error should be less than `1%`` as long as the values in the vector are really small
+    /// (e.g. in the range between -0.1 and 0.1).
+    /// Single core performance should be about `5x` as fast.
     ///
     /// # Example
     ///

@@ -30,7 +30,10 @@ fn bench_real<F: FnMut(RealTimeVec64)>(
         data: &Vec<f64>,
         results: &mut HashMap<&'static str, Vec<i64>>,
         mut func: F) {
-    let dsp = data.clone().to_real_time_vec();
+    let mut dsp = data.clone().to_real_time_vec();
+    let mut settings = dsp.get_multicore_settings().clone();
+    settings.core_limit = 1;
+    dsp.set_multicore_settings(settings);
     let start = PreciseTime::now();
     func(dsp);
     let end = PreciseTime::now();
@@ -71,11 +74,6 @@ fn main() {
 	};
 
 	let mut results: HashMap<&'static str, Vec<i64>, _> = HashMap::new();
-	results.insert("Offset", Vec::new());
-	results.insert("Sin", Vec::new());
-	results.insert("Log", Vec::new());
-	results.insert("Powf", Vec::new());
-	results.insert("Sqrt", Vec::new());
 
 	let data_sizes: Vec<usize> = vec![1000, 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000,
 					  100000, 200000, 500000, 1000000, 5000000, 100000000];
@@ -84,20 +82,22 @@ fn main() {
 		.take_while(|x| limit == 0 || *x <= limit)
 		.collect();
     for data_set_size in &data_sizes {
-		let mut buffer = SingleBuffer::new();
-        buffer.free(Vec::with_capacity(*data_set_size));
+		/*let mut buffer = SingleBuffer::new();
+        buffer.free(Vec::with_capacity(*data_set_size));*/
 		let original = create_pseudo_random_data(*data_set_size, 5798734);
-        let argument = create_pseudo_random_data(*data_set_size, 1412412).to_real_time_vec();
-        let imp_resp = create_pseudo_random_data(128, 341313).to_real_time_vec();
+        //let argument = create_pseudo_random_data(*data_set_size, 1412412).to_real_time_vec();
+        //let imp_resp = create_pseudo_random_data(128, 341313).to_real_time_vec();
 
-        bench_real("Offset", &original, &mut results, |mut v|v.offset(5.0));
+        /*bench_real("Offset", &original, &mut results, |mut v|v.offset(5.0));
         bench_real("Sin", &original, &mut results, |mut v|v.sin());
         bench_real("Log", &original, &mut results, |mut v|v.log(10.0));
         bench_real("Powf", &original, &mut results, |mut v|v.powf(5.0));
         bench_real("Sqrt", &original, &mut results, |mut v|v.sqrt());
         bench_real("Convolve", &original, &mut results, |mut v|v.convolve_vector(&mut buffer, &imp_resp).unwrap());
         bench_real("Add", &original, &mut results, |mut v|v.add(&argument).unwrap());
-        bench_real("Dot Product", &original, &mut results, |v|{ let _ = v.dot_product(&argument).unwrap(); });
+        bench_real("Dot Product", &original, &mut results, |v|{ let _ = v.dot_product(&argument).unwrap(); });*/
+        bench_real("Approx", &original, &mut results, |mut v|v.log_approx(10.0));
+        bench_real("Accurate", &original, &mut results, |mut v|v.log(10.0));
     }
 
 	// Print
