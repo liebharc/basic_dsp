@@ -22,7 +22,7 @@
   (this is the zlib license)
 */
 
-use super::{SimdApproximations, Simd, Reg32, IntReg32, UIntReg32, Reg64, IntReg64, UIntReg64};
+use super::{SimdApproximations, Reg32, IntReg32, UIntReg32, Reg64, IntReg64, UIntReg64};
 #[cfg(feature="use_sse")]
 use simd::x86::sse2::Sse2F64x2;
 #[cfg(feature="use_avx")]

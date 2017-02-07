@@ -60,7 +60,9 @@ use gpu_support::{Gpu32, Gpu64, GpuRegTrait};
 /// Associates a number type with a SIMD register type.
 pub trait ToSimd: Sized + Sync + Send {
     /// Type for the SIMD register on the CPU.
-    type Reg: Simd<Self> + SimdGeneric<Self> + Copy + Sync + Send + Add<Output = Self::Reg> + Sub<Output = Self::Reg> + Mul<Output = Self::Reg> + Div<Output = Self::Reg> + Zero;
+    type Reg: Simd<Self> + SimdGeneric<Self> + SimdApproximations<Self>
+        + Copy + Sync + Send
+        + Add<Output = Self::Reg> + Sub<Output = Self::Reg> + Mul<Output = Self::Reg> + Div<Output = Self::Reg> + Zero;
     /// Type for the SIMD register on the GPU. Defaults to an arbitrary type if GPU support is not
     /// compiled in.
     type GpuReg: GpuRegTrait;
