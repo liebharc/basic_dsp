@@ -176,7 +176,13 @@ mod real {
     }
 
     #[bench]
-    fn real_logn_32s_benchmark(b: &mut Bencher) {
+    fn real_log_32s_reference(b: &mut Bencher) {
+        let mut vector = VectorBox::<Vec<f32>, f32>::new(Size::Small);
+        b.iter(|| vector.execute(|v, _| real_logn_reference32(v)));
+    }
+
+    #[bench]
+    fn real_log_32s_benchmark(b: &mut Bencher) {
         let mut vector = RealTime32Box::new(Size::Small);
         b.iter(|| {
             vector.execute(|mut v, _| {
@@ -187,13 +193,7 @@ mod real {
     }
 
     #[bench]
-    fn real_logn_32s_reference(b: &mut Bencher) {
-        let mut vector = VectorBox::<Vec<f32>, f32>::new(Size::Small);
-        b.iter(|| vector.execute(|v, _| real_logn_reference32(v)));
-    }
-
-    #[bench]
-    fn real_logn_32m_benchmark(b: &mut Bencher) {
+    fn real_log_32m_benchmark(b: &mut Bencher) {
         let mut vector = RealTime32Box::new(Size::Medium);
         b.iter(|| {
             vector.execute(|mut v, _| {
@@ -204,7 +204,7 @@ mod real {
     }
 
     #[bench]
-    fn real_logn_32l_benchmark(b: &mut Bencher) {
+    fn real_log_32l_benchmark(b: &mut Bencher) {
         let mut vector = RealTime32Box::new(Size::Large);
         b.iter(|| {
             vector.execute(|mut v, _| {
@@ -215,11 +215,33 @@ mod real {
     }
 
     #[bench]
-    fn real_expn_32s_benchmark(b: &mut Bencher) {
+    fn real_log_approx_32s_benchmark(b: &mut Bencher) {
+        let mut vector = RealTime32Box::new(Size::Small);
+        b.iter(|| {
+            vector.execute(|mut v, _| {
+                v.ln_approx();
+                v
+            })
+        });
+    }
+
+    #[bench]
+    fn real_exp_32s_benchmark(b: &mut Bencher) {
         let mut vector = RealTime32Box::new(Size::Small);
         b.iter(|| {
             vector.execute(|mut v, _| {
                 v.exp();
+                v
+            })
+        });
+    }
+
+    #[bench]
+    fn real_exp_approx_32s_benchmark(b: &mut Bencher) {
+        let mut vector = RealTime32Box::new(Size::Small);
+        b.iter(|| {
+            vector.execute(|mut v, _| {
+                v.exp_approx();
                 v
             })
         });
@@ -294,6 +316,17 @@ mod real {
     }
 
     #[bench]
+    fn real_sin_approx_32s_benchmark(b: &mut Bencher) {
+        let mut vector = RealTime32Box::new(Size::Small);
+        b.iter(|| {
+            vector.execute(|mut v, _| {
+                v.sin_approx();
+                v
+            })
+        });
+    }
+
+    #[bench]
     fn real_sin_32m_benchmark(b: &mut Bencher) {
         let mut vector = RealTime32Box::new(Size::Medium);
         b.iter(|| {
@@ -325,8 +358,6 @@ mod real {
             })
         });
     }
-
-
 
     #[bench]
     fn swap_halves_32m_odd_benchmark(b: &mut Bencher) {
