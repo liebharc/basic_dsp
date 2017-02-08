@@ -25,6 +25,47 @@ pub trait RealOps {
     fn abs(&mut self);
 }
 
+/// Operations on real types.
+///
+/// # Failures
+///
+/// If one of the methods is called on complex data then `self.len()` will be set to `0`.
+/// To avoid this it's recommended to use the `to_real_time_vec`, `to_real_freq_vec`
+/// `to_complex_time_vec` and `to_complex_freq_vec` constructor methods since
+/// the resulting types will already check at compile time (using the type system)
+/// that the data is real.
+pub trait ModuloOps<T>
+    where T: RealNumber
+{
+    /// Each value in the vector is dividable by the divisor and the remainder
+    /// is stored in the resulting
+    /// vector. This the same a modulo operation or to phase wrapping.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp_vector::*;
+    /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();
+    /// vector.wrap(4.0);
+    /// assert_eq!([1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0], vector[..]);
+    /// ```
+    fn wrap(&mut self, divisor: T);
+
+    /// This function corrects the jumps in the given vector which occur due
+    /// to wrap or modulo operations.
+    /// This will undo a wrap operation only if the deltas are smaller than half the divisor.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use basic_dsp_vector::*;
+    /// let mut vector = vec!(1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.).to_real_time_vec();
+    /// vector.unwrap(4.0);
+    /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], vector[..]);
+    /// ```
+    fn unwrap(&mut self, divisor: T);
+}
+
 /// Recommended to be only used with feature flags `use_sse` or `use_avx`.
 ///
 /// This trait provides alternative implementations for some standard functions which
@@ -181,47 +222,6 @@ pub trait ApproximatedOps<T>
     fn powf_approx(&mut self, exponent: T);
 }
 
-/// Operations on real types.
-///
-/// # Failures
-///
-/// If one of the methods is called on complex data then `self.len()` will be set to `0`.
-/// To avoid this it's recommended to use the `to_real_time_vec`, `to_real_freq_vec`
-/// `to_complex_time_vec` and `to_complex_freq_vec` constructor methods since
-/// the resulting types will already check at compile time (using the type system)
-/// that the data is real.
-pub trait ModuloOps<T>
-    where T: RealNumber
-{
-    /// Each value in the vector is dividable by the divisor and the remainder
-    /// is stored in the resulting
-    /// vector. This the same a modulo operation or to phase wrapping.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use basic_dsp_vector::*;
-    /// let mut vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0).to_real_time_vec();
-    /// vector.wrap(4.0);
-    /// assert_eq!([1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0], vector[..]);
-    /// ```
-    fn wrap(&mut self, divisor: T);
-
-    /// This function corrects the jumps in the given vector which occur due
-    /// to wrap or modulo operations.
-    /// This will undo a wrap operation only if the deltas are smaller than half the divisor.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use basic_dsp_vector::*;
-    /// let mut vector = vec!(1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.).to_real_time_vec();
-    /// vector.unwrap(4.0);
-    /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], vector[..]);
-    /// ```
-    fn unwrap(&mut self, divisor: T);
-}
-
 macro_rules! assert_real {
     ($self_: ident) => {
         if $self_.is_complex() {
@@ -282,7 +282,9 @@ impl<S, T, N, D> ModuloOps<T> for DspVec<S, T, N, D>
     }
 }
 
-const APPROX_COMPLEXITY: Complexity = Complexity::Small;
+/// Complexity of all approximation functions. Medium, because even if the approximations are faster
+/// than the standard version, it seems to be benificial to spawn threads early.
+const APPROX_COMPLEXITY: Complexity = Complexity::Medium;
 
 impl<S, T, N, D> ApproximatedOps<T> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
