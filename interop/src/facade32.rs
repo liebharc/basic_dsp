@@ -400,6 +400,41 @@ pub extern "C" fn atanh32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
 }
 
 #[no_mangle]
+pub extern "C" fn ln_approx32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, _| Ok(v.ln_approx()))
+}
+
+#[no_mangle]
+pub extern "C" fn exp_approx32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, _| Ok(v.exp_approx()))
+}
+
+#[no_mangle]
+pub extern "C" fn sin_approx32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, _| Ok(v.sin_approx()))
+}
+
+#[no_mangle]
+pub extern "C" fn cos_approx32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, _| Ok(v.cos_approx()))
+}
+
+#[no_mangle]
+pub extern "C" fn log_approx32(vector: Box<VecBuf>, value: f32) -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, _| Ok(v.log_approx(value)))
+}
+
+#[no_mangle]
+pub extern "C" fn expf_approx32(vector: Box<VecBuf>, value: f32) -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, _| Ok(v.expf_approx(value)))
+}
+
+#[no_mangle]
+pub extern "C" fn powf_approx32(vector: Box<VecBuf>, value: f32) -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, _| Ok(v.powf_approx(value)))
+}
+
+#[no_mangle]
 pub extern "C" fn wrap32(vector: Box<VecBuf>, value: f32) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.wrap(value)))
 }

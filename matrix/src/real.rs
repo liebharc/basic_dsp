@@ -83,6 +83,51 @@ macro_rules! add_mat_impl {
                     }
 				}
 			}
+
+			impl<S: ToSlice<T>, V: Vector<T> + ApproximatedOps<T>, T: RealNumber>
+					ApproximatedOps<T> for $matrix<V, S, T> {
+				fn ln_approx(&mut self)  {
+					for v in self.rows_mut() {
+						v.ln_approx()
+					}
+				}
+
+				fn exp_approx(&mut self)  {
+					for v in self.rows_mut() {
+						v.exp_approx()
+					}
+				}
+
+				fn sin_approx(&mut self)  {
+					for v in self.rows_mut() {
+						v.sin_approx()
+					}
+				}
+
+				fn cos_approx(&mut self)  {
+					for v in self.rows_mut() {
+						v.cos_approx()
+					}
+				}
+
+				fn log_approx(&mut self, base: T)  {
+					for v in self.rows_mut() {
+						v.log_approx(base)
+					}
+				}
+
+				fn expf_approx(&mut self, base: T)  {
+					for v in self.rows_mut() {
+						v.expf_approx(base)
+					}
+				}
+
+				fn powf_approx(&mut self, exponent: T)  {
+					for v in self.rows_mut() {
+						v.powf_approx(exponent)
+					}
+				}
+			}
 		)*
 	}
 }
