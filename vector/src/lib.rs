@@ -40,6 +40,8 @@ extern crate num_cpus;
 extern crate crossbeam;
 extern crate num;
 extern crate rustfft;
+#[cfg(any(feature = "doc", feature="use_gpu"))]
+extern crate clfft;
 mod vector_types;
 mod multicore_support;
 mod simd_extensions;
@@ -55,7 +57,7 @@ use num::complex::Complex;
 use std::mem;
 
 use simd_extensions::*;
-use gpu_support::{Gpu32, Gpu64, GpuRegTrait};
+use gpu_support::{Gpu32, Gpu64, GpuRegTrait, GpuFloat};
 
 /// Associates a number type with a SIMD register type.
 pub trait ToSimd: Sized + Sync + Send {
@@ -80,11 +82,11 @@ impl ToSimd for f64 {
 
 /// A real floating pointer number intended to abstract over `f32` and `f64`.
 pub trait RealNumber
-    : Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive
+    : Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive + GpuFloat
 {
 }
 impl<T> RealNumber for T
-    where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive
+    where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive + GpuFloat
 {
 }
 

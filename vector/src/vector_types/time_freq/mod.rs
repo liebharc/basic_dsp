@@ -24,6 +24,7 @@ use super::{Buffer, Vector, MetaData, DspVec, ToSliceMut,
             NumberSpace, Domain, ErrorReason, VoidResult};
 use num::Complex;
 use std::fmt::Debug;
+use gpu_support::GpuSupport;
 
 fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: bool)
     where S: ToSliceMut<T>,
@@ -36,15 +37,21 @@ fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: boo
     let mut temp = buffer.get(len);
     {
         let temp = temp.to_slice_mut();
-        let points = len / 2; // By two since vector is always complex
-        let rbw = (T::from(points).unwrap()) * vec.delta;
-        vec.delta = rbw;
-        let mut fft = FFT::new(points, reverse);
         let signal = vec.data.to_slice();
-        let spectrum = &mut temp[0..len];
-        let signal = array_to_complex(&signal[0..len]);
-        let spectrum = array_to_complex_mut(spectrum);
-        fft.process(signal, spectrum);
+        if !T::has_gpu_support() || len < 10000
+           || !T::is_supported_fft_len(true, len) { 
+            let points = len / 2; // By two since vector is always complex
+            let rbw = (T::from(points).unwrap()) * vec.delta;
+            vec.delta = rbw;
+            let mut fft = FFT::new(points, reverse);
+            let spectrum = &mut temp[0..len];
+            let signal = array_to_complex(&signal[0..len]);
+            let spectrum = array_to_complex_mut(spectrum);
+            fft.process(signal, spectrum);
+        }
+        else {
+            T::fft(true, &signal[0..len], &mut temp[0..len], reverse);
+        }
     }
 
     mem::swap(&mut vec.data, &mut temp);

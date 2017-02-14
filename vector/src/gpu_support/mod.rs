@@ -25,4 +25,14 @@ pub trait GpuSupport<T: RealNumber> {
         source: &[T],
         target: &mut [T],
         imp_resp: &[T]) -> Option<Range<usize>>;
+
+    /// Indicates whether or not the parameters are supported by the FFT implementation.
+    fn is_supported_fft_len(is_complex: bool, len: usize) -> bool;
+
+    /// FFT on the GPU.
+    fn fft(
+        is_complex: bool,
+        source: &[T],
+        target: &mut [T],
+        reverse: bool);
 }

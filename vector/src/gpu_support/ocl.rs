@@ -10,6 +10,7 @@ use std::ops::Range;
 use super::GpuSupport;
 use {RealNumber, array_to_complex, array_to_complex_mut};
 use num;
+use clfft::{ClFftPrm, builder, Precision, Layout, Direction};
 
 pub type Gpu32 = ClFloat4;
 
@@ -17,8 +18,13 @@ pub type Gpu64 = ClDouble2;
 
 pub trait GpuRegTrait : OclPrm + OclVec {}
 
+pub trait GpuFloat : ClFftPrm {}
+
 impl<T> GpuRegTrait for T
     where T: OclPrm + OclVec {}
+
+impl<T> GpuFloat for T
+    where T: ClFftPrm {}
 
 const KERNEL_SRC_32: &'static str = r#"
     #define mulc32(a,b) ((float4)((float)mad(-(a).y, (b).y, (a).x * (b).x), (float)mad((a).y, (b).x, (a).x * (b).y), (float)mad(-(a).z, (b).z, (a).w * (b).w), (float)mad((a).z, (b).w, (a).w * (b).z)))
@@ -372,6 +378,75 @@ impl<T> GpuSupport<T> for T
         .expect("Transferring result vector from the GPU back to memory failed");
 
        Some(Range { start: conv_size_padded, end: data_set_size - conv_size_padded })
+    }
+
+    fn is_supported_fft_len(is_complex: bool, len: usize) -> bool {
+        if !is_complex { false }
+        else if len == 0 { false }
+        else if len == 1 { true }
+        else if len % 2 == 0 { Self::is_supported_fft_len(is_complex, len / 2) }
+        else if len % 3 == 0 { Self::is_supported_fft_len(is_complex, len / 3) }
+        else if len % 5 == 0 { Self::is_supported_fft_len(is_complex, len / 5) }
+        else if len % 7 == 0 { Self::is_supported_fft_len(is_complex, len / 7) }
+        else if len % 11 == 0 { Self::is_supported_fft_len(is_complex, len / 11) }
+        else if len % 13 == 0 { Self::is_supported_fft_len(is_complex, len / 13) }
+        else { false }
+    }
+
+    fn fft(
+        _: bool,
+        source: &[T],
+        target: &mut [T],
+        reverse: bool) {
+        let len = source.len();
+        // Build ocl ProQue
+        let prog_bldr = ProgramBuilder::new();
+        // clFFT sometimes fails if we try to force it to use a certain device. Therefore
+        // we don't set a device in the builder.
+        let ocl_pq = ProQue::builder()
+            .prog_bldr(prog_bldr)
+            .dims([source.len()])
+            .build()
+            .expect("Building ProQue");
+
+        // Create buffers
+        let mut in_buffer =
+            Buffer::new(
+                ocl_pq.queue().clone(),
+                Some(flags::MEM_READ_ONLY |
+                     flags::MEM_COPY_HOST_PTR),
+                ocl_pq.dims().clone(),
+                Some(&source))
+                .expect("Failed to create GPU input buffer");
+
+        let mut res_buffer =
+            Buffer::<T>::new(
+                ocl_pq.queue().clone(),
+                Some(flags::MEM_WRITE_ONLY),
+                ocl_pq.dims().clone(),
+                None)
+                .expect("Failed to create GPU result buffer");
+
+        // Make a plan
+        let plan =
+            builder::<T>()
+            .precision(Precision::Precise)
+            .dims([len / 2])
+            .input_layout(Layout::ComplexInterleaved)
+            .output_layout(Layout::ComplexInterleaved)
+            .bake_out_of_place_plan(&ocl_pq).unwrap();
+
+        let direction = if reverse { Direction::Backward } else { Direction::Forward };
+        // Execute plan
+        plan.enqueue(direction, &mut in_buffer, &mut res_buffer).unwrap();
+
+        // Wait for calculation to finish and read results
+        res_buffer.cmd()
+            .read(target)
+            .enq()
+            .expect("Transferring result vector from the GPU back to memory failed");
+
+        ocl_pq.queue().finish();
     }
 }
 

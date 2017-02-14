@@ -22,11 +22,12 @@ codegen-units = 4
 use_avx = ["use_simd"]
 use_sse = ["use_simd"]
 use_simd = ["simd"]
-use_gpu = ["ocl"]
+use_gpu = ["ocl", "clfft"]
 
 [dependencies]
 simd = { version = "^0.2.0", optional = true }
 ocl = { version = "^0.12.0", optional = true }
+clfft = { version = "^0.1", optional = true }
 num_cpus = "^1.2.0"
 crossbeam = "^0.2.0"
 num = "^0.1.34"
