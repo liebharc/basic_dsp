@@ -39,9 +39,9 @@ impl<T: RealNumber> GpuSupport<T> for T {
     }
 
     fn mul_freq_response(
-        source: &[T],
-        target: &mut [T],
-        freq_resp: &[T]) {
+        _: &[T],
+        _: &mut [T],
+        _: &[T]) {
         panic!("GPU support not available, call `has_gpu_support` first.")
     }
 }
