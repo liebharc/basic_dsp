@@ -4,6 +4,7 @@ use num::Complex;
 use multicore_support::*;
 use rustfft::FFT;
 use std::mem;
+use std::slice;
 use gpu_support::GpuSupport;
 use super::super::{VoidResult, ToSliceMut, MetaData,
                    DspVec, NumberSpace, TimeDomain, FrequencyDomain, DataDomain, Vector,
@@ -281,6 +282,24 @@ fn next_power_of_two(value: usize) -> usize {
     1 << count
 }
 
+
+
+fn array_to_real<T>(array: &[Complex<T>]) -> &[T] {
+    unsafe {
+        let len = array.len();
+        let trans: &[T] = mem::transmute(array);
+        slice::from_raw_parts(trans.as_ptr(), 2 * len)
+    }
+}
+
+fn array_to_real_mut<T>(array: &mut [Complex<T>]) -> &mut [T] {
+    unsafe {
+        let len = array.len();
+        let trans: &mut [T] = mem::transmute(array);
+        slice::from_raw_parts_mut(trans.as_mut_ptr(), 2 * len)
+    }
+}
+
 impl<S, T, N, D> DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
@@ -330,8 +349,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let h_time_padded: &[Complex<T>] = array_to_complex(&h_time_padded[0..2*fft_len]);
             let x_time: &mut [Complex<T>] = array_to_complex_mut(&mut x_time[0..2*x_len]);
             let h_freq: &mut [Complex<T>] = array_to_complex_mut(&mut h_freq[0..2*fft_len]);
-            let x_freq: &mut [Complex<T>] = array_to_complex_mut(&mut x_freq[0..2*fft_len]);
-            let tmp: &mut [Complex<T>] = array_to_complex_mut(&mut tmp[0..2*fft_len]);
+            let mut x_freq: &mut [Complex<T>] = array_to_complex_mut(&mut x_freq[0..2*fft_len]);
+            let mut tmp: &mut [Complex<T>] = array_to_complex_mut(&mut tmp[0..2*fft_len]);
             let end: &mut [Complex<T>] = array_to_complex_mut(&mut end[0..remainder_len]);
             fft.process(h_time_padded, h_freq);
 
@@ -354,27 +373,41 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let mut position = 0;
             let scaling = T::from(fft_len).unwrap();
             {
-                // (3) The first iteration is different since it copies over the results which have been calculated for the beginning
                 let range = position .. fft_len+position;
-                fft.process(&x_time[range], x_freq);
-                // Copy over the results of the scalar convolution (1)
-                (&mut x_time[0..imp_len/2]).copy_from_slice(&tmp[0..imp_len/2]);
-                for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_freq.iter()) {
-                    *n = *n * *v / scaling;
+                if T::has_gpu_support() {
+                    T::mul_freq_response(array_to_real(&x_time[range]), array_to_real_mut(x_freq), array_to_real(h_freq));
+                    (&mut x_time[0..imp_len/2]).copy_from_slice(&tmp[0..imp_len/2]);
+                    mem::swap(&mut tmp, &mut x_freq);
                 }
-                ifft.process(x_freq, tmp);
+                else {
+                    // (3) The first iteration is different since it copies over the results which have been calculated for the beginning
+                    fft.process(&x_time[range], x_freq);
+                    // Copy over the results of the scalar convolution (1)
+                    (&mut x_time[0..imp_len/2]).copy_from_slice(&tmp[0..imp_len/2]);
+                    for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_freq.iter()) {
+                        *n = *n * *v / scaling;
+                    }
+                    ifft.process(x_freq, tmp);
+                }
                 position += step_size;
             }
 
             while position+fft_len < x_len {
                 let range = position .. fft_len+position;
-                fft.process(&x_time[range], x_freq);
-                // (4) Same as (3) except that the results of the previous iteration gets copied over
-                (&mut x_time[position-step_size+imp_len/2 .. position+imp_len/2]).copy_from_slice(&tmp[imp_len-1..fft_len]);
-                for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_freq.iter()) {
-                    *n = *n * *v / scaling;
+                if T::has_gpu_support() {
+                    T::mul_freq_response(array_to_real(&x_time[range]), array_to_real_mut(x_freq), array_to_real(h_freq));
+                    (&mut x_time[position-step_size+imp_len/2 .. position+imp_len/2]).copy_from_slice(&tmp[imp_len-1..fft_len]);
+                    mem::swap(&mut tmp, &mut x_freq);
                 }
-                ifft.process(x_freq, tmp);
+                else {
+                    fft.process(&x_time[range], x_freq);
+                    // (4) Same as (3) except that the results of the previous iteration gets copied over
+                    (&mut x_time[position-step_size+imp_len/2 .. position+imp_len/2]).copy_from_slice(&tmp[imp_len-1..fft_len]);
+                    for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_freq.iter()) {
+                        *n = *n * *v / scaling;
+                    }
+                    ifft.process(x_freq, tmp);
+                }
                 position += step_size;
             }
 

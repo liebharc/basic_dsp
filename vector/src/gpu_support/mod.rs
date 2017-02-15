@@ -35,4 +35,10 @@ pub trait GpuSupport<T: RealNumber> {
         source: &[T],
         target: &mut [T],
         reverse: bool);
+
+    // Calculates the FFT of `source`, multiplies `freq_resp` and stores the IFFT in `target`.
+    fn mul_freq_response(
+        source: &[T],
+        target: &mut [T],
+        freq_resp: &[T]);
 }

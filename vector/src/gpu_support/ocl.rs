@@ -146,6 +146,30 @@ const KERNEL_SRC_64: &'static str = r#"
     }
 "#;
 
+static KERNEL_MUL_SRC32: &'static str = r#"
+    #define mulc32(a,b) ((float2)((float)mad(-(a).y, (b).y, (a).x * (b).x), (float)mad((a).y, (b).x, (a).x * (b).y)))
+
+    __kernel void multiply_vector(
+                __global float2 const* const coeff,
+                __global float2* const srcres)
+    {
+        uint const idx = get_global_id(0);
+        srcres[idx] = mulc32(srcres[idx], coeff[idx]);
+    }
+"#;
+
+static KERNEL_MUL_SRC64: &'static str = r#"
+    #pragma OPENCL EXTENSION cl_khr_fp64 : enable
+    #define mulc64(a,b) ((double2)((double)mad(-(a).y, (b).y, (a).x * (b).x), (double)mad((a).y, (b).x, (a).x * (b).y)))
+
+    __kernel void multiply_vector(
+                __global double2 const* const coeff,
+                __global double2* const srcres)
+    {
+        uint const idx = get_global_id(0);
+        srcres[idx] = mulc64(srcres[idx], coeff[idx]);
+    }
+"#;
 
 fn has_f64_support(device: Device) -> bool {
     const F64_SUPPORT: &'static str = "cl_khr_fp64";
@@ -383,7 +407,10 @@ impl<T> GpuSupport<T> for T
     fn is_supported_fft_len(is_complex: bool, len: usize) -> bool {
         if !is_complex { false }
         else if len == 0 { false }
-        else if len == 1 { true }
+        // Since we divide the number by two in the `fft` routine, we need the result to be
+        // dividable by two.
+        else if len == 1 { false }
+        else if len == 2 { true }
         else if len % 2 == 0 { Self::is_supported_fft_len(is_complex, len / 2) }
         else if len % 3 == 0 { Self::is_supported_fft_len(is_complex, len / 3) }
         else if len % 5 == 0 { Self::is_supported_fft_len(is_complex, len / 5) }
@@ -428,7 +455,7 @@ impl<T> GpuSupport<T> for T
                 .expect("Failed to create GPU result buffer");
 
         // Make a plan
-        let plan =
+        let mut plan =
             builder::<T>()
             .precision(Precision::Precise)
             .dims([len / 2])
@@ -438,7 +465,7 @@ impl<T> GpuSupport<T> for T
 
         let direction = if reverse { Direction::Backward } else { Direction::Forward };
         // Execute plan
-        plan.enqueue(direction, &mut in_buffer, &mut res_buffer).unwrap();
+        plan.enq(direction, &mut in_buffer, &mut res_buffer).unwrap();
 
         // Wait for calculation to finish and read results
         res_buffer.cmd()
@@ -448,6 +475,90 @@ impl<T> GpuSupport<T> for T
 
         ocl_pq.queue().finish();
     }
+
+    fn mul_freq_response(
+        source: &[T],
+        target: &mut [T],
+        freq_resp: &[T]) {
+        assert_eq!(source.len(), target.len());
+        assert_eq!(source.len(), freq_resp.len());
+        let is_f64 = mem::size_of::<T>() == 8;
+        let kernel = if is_f64 { KERNEL_MUL_SRC64 } else { KERNEL_MUL_SRC32 };
+        // Build ocl ProQue
+        let ocl_pq = ProQue::builder()
+            .src(kernel)
+            .dims([source.len()])
+            .build()
+            .expect("Building ProQue");
+
+        // Create buffers
+        let mut in_buffer =
+            Buffer::new(
+                ocl_pq.queue().clone(),
+                Some(flags::MEM_READ_WRITE |
+                     flags::MEM_COPY_HOST_PTR),
+                ocl_pq.dims().clone(),
+                Some(&source))
+                .expect("Failed to create GPU input buffer");
+
+        let coef_buffer =
+            Buffer::new(
+                ocl_pq.queue().clone(),
+                Some(flags::MEM_READ_ONLY |
+                     flags::MEM_COPY_HOST_PTR),
+                ocl_pq.dims().clone(),
+                Some(&freq_resp))
+                .expect("Failed to create GPU input buffer");
+
+        // Use events to schedule our kernels.
+        // When `fft_finish_event` is signaled
+        // then `start_mul_event` gets triggered.
+        // Also when `mul_finish_event` is signaled
+        // then `start_ifft_event` gets triggered.
+        // That leads to a schedule where first the FFT
+        // is executed, then the multiplication and afterwards
+        // the IFFT.
+        let mut fft_finish_event = EventList::new();
+        let start_mul_event = fft_finish_event.clone();
+        let mut mul_finish_event = EventList::new();
+        let start_ifft_event = mul_finish_event.clone();
+        // Make a plan
+        let plan =
+            builder::<T>()
+            .precision(Precision::Precise)
+            .dims([source.len() / 2])
+            .input_layout(Layout::ComplexInterleaved)
+            .output_layout(Layout::ComplexInterleaved)
+            .bake_inplace_plan(&ocl_pq).unwrap();
+
+        // Execute plan
+        let mut plan = plan.enew(&mut fft_finish_event);
+        plan
+            .enq(Direction::Forward, &mut in_buffer)
+            .expect("Enq FFT");
+
+        let mul = ocl_pq.create_kernel("multiply_vector").unwrap()
+            .arg_buf_named("coef", Some(&coef_buffer))
+            .arg_buf_named("srcres", Some(&in_buffer));
+        mul.cmd()
+            .ewait(&start_mul_event)
+            .enew(&mut mul_finish_event)
+            .gws([source.len() / 2])
+            .enq()
+            .expect("Enq Mul");
+
+        plan
+            .enew_opt(None) // Remove the `enew` event by setting it to `None`
+            .ewait(&start_ifft_event)
+            .enq(Direction::Backward, &mut in_buffer)
+            .expect("Enq IFFT");
+
+        // Wait for calculation to finish and read results
+        in_buffer.cmd()
+            .read(target)
+            .enq()
+            .expect("Transferring result vector from the GPU back to memory failed");
+        }
 }
 
 /// These testa are only compiled&run with the feature flag `gpu_support`.
