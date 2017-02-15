@@ -33,7 +33,7 @@
 //!
 //! # Examples
 //!
-//! ```
+//! ```no_run
 //! use std::f32::consts::PI;
 //! use basic_dsp_vector::*;
 //! use basic_dsp_vector::combined_ops::*;
@@ -51,7 +51,7 @@
 //!     b.clone_from(&a);
 //!     a.sin();
 //!     b.cos();
-//!     a.mul(&b);
+//!     a.mul(&b).unwrap();
 //!     a.abs();
 //!     a.log(10.0);
 //!     a.scale(10.0);
@@ -142,7 +142,7 @@ fn evaluate_number_space_transition<T>(is_complex: bool,
         Operation::Magnitude(_) |
         Operation::MagnitudeSquared(_) |
         Operation::ToReal(_) |
-        Operation::ToImag(_) | 
+        Operation::ToImag(_) |
         Operation::Phase(_)
             => complex_to_real(is_complex),
         // General Ops

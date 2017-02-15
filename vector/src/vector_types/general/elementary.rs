@@ -330,17 +330,10 @@ impl<S, T, D, N> ScaleOps<Complex<T>> for DspVec<S, T, N, D>
 {
     fn scale(&mut self, factor: Complex<T>) {
         assert_complex!(self);
-        if factor.im == T::zero() {
-            self.simd_real_operation(|x, y| x.scale_real(y),
-                                     |x, y| x * y,
-                                     factor.re,
-                                     Complexity::Small);
-        } else {
-            self.simd_complex_operation(|x, y| x.scale_complex(y),
-                                        |x, y| x * y,
-                                        factor,
-                                        Complexity::Small);
-        }
+        self.simd_complex_operation(|x, y| x.scale_complex(y),
+                                    |x, y| x * y,
+                                    factor,
+                                    Complexity::Small);
     }
 }
 

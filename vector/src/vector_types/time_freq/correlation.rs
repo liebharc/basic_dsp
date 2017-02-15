@@ -1,5 +1,4 @@
 use RealNumber;
-use num::Complex;
 use super::super::{DspVec, Buffer, ComplexOps, ScaleOps, FrequencyDomainOperations,
                    TimeToFrequencyDomainOperations, RededicateForceOps, ToSliceMut, Owner,
                    PaddingOption, VoidResult, Vector, FromVector, MetaData, ComplexNumberSpace,
@@ -24,7 +23,7 @@ use super::fft;
 /// called before doing the correlation. See also the example section for how to do this.
 /// # Example
 ///
-/// ```
+/// ```no_run
 /// use std::f32;
 /// use basic_dsp_vector::*;
 /// let mut vector = vec!(1.0, 1.0, 2.0, 2.0, 3.0, 3.0).to_complex_time_vec();
@@ -77,7 +76,7 @@ pub trait CrossCorrelationOps<S, T, A>
 impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
 	where DspVec<S, T, N, D>: ToFreqResult
         + TimeToFrequencyDomainOperations<S, T>
-        + ScaleOps<Complex<T>>
+        + ScaleOps<T>
 		+ ReorganizeDataOps<T> + Clone,
 	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>>
         + FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T>
@@ -109,7 +108,7 @@ impl<S, T, N, D> CrossCorrelationOps<S, T, <DspVec<S, T, N, D> as ToFreqResult>:
     for DspVec<S, T, N, D>
 	where DspVec<S, T, N, D>: ToFreqResult
         + TimeToFrequencyDomainOperations<S, T>
-        + ScaleOps<Complex<T>>
+        + ScaleOps<T>
 		+ ReorganizeDataOps<T> + Clone,
 	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>>
         + FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T>
@@ -148,7 +147,7 @@ impl<S, T, N, D> CrossCorrelationOps<S, T, <DspVec<S, T, N, D> as ToFreqResult>:
 		}
 
 		let p = self.points();
-		self.scale(Complex::<T>::new(T::one() / T::from(p).unwrap(), T::zero()));
+		self.scale(T::one() / T::from(p).unwrap());
 		fft(self, buffer, true);
 		self.swap_halves();
 		Ok(())
