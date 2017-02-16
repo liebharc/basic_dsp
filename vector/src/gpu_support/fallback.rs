@@ -38,10 +38,13 @@ impl<T: RealNumber> GpuSupport<T> for T {
         panic!("GPU support not available, call `has_gpu_support` first.")
     }
 
-    fn mul_freq_response(
-        _: &[T],
+    fn overlap_discard(
         _: &mut [T],
-        _: &[T]) {
-        panic!("GPU support not available, call `has_gpu_support` first.")
+        _: &mut [T],
+        _: &mut [T],
+        _: &[T],
+        _: usize,
+        _: usize) -> usize {
+       panic!("GPU support not available, call `has_gpu_support` first.")
     }
 }

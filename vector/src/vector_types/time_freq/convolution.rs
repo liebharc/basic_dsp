@@ -315,6 +315,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
 
         assert_meta_data!(self, impulse_response);
+
         let h_time = impulse_response;
         let imp_len = h_time.points();
         let x_len = self.points();
@@ -369,17 +370,23 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                     position += 1;
                 }
             }
-
             let mut position = 0;
-            let scaling = T::from(fft_len).unwrap();
-            {
-                let range = position .. fft_len+position;
-                if T::has_gpu_support() {
-                    T::mul_freq_response(array_to_real(&x_time[range]), array_to_real_mut(x_freq), array_to_real(h_freq));
-                    (&mut x_time[0..imp_len/2]).copy_from_slice(&tmp[0..imp_len/2]);
-                    mem::swap(&mut tmp, &mut x_freq);
-                }
-                else {
+            if T::has_gpu_support() {
+                // GPU implementation of overlap_discard `thinks` in interleaved arrays
+                // while this implementation `thinks` in complex arrays. Therefore a factor
+                // of 2 needs to be taken into account in the method call.
+                position = T::overlap_discard(
+                    array_to_real_mut(x_time),
+                    array_to_real_mut(tmp),
+                    array_to_real_mut(x_freq),
+                    array_to_real(h_freq),
+                    2 * imp_len,
+                    2 * step_size) / 2;
+            }
+            else {
+                let scaling = T::from(fft_len).unwrap();
+                {
+                    let range = position .. fft_len+position;
                     // (3) The first iteration is different since it copies over the results which have been calculated for the beginning
                     fft.process(&x_time[range], x_freq);
                     // Copy over the results of the scalar convolution (1)
@@ -388,18 +395,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                         *n = *n * *v / scaling;
                     }
                     ifft.process(x_freq, tmp);
+                    position += step_size;
                 }
-                position += step_size;
-            }
 
-            while position+fft_len < x_len {
-                let range = position .. fft_len+position;
-                if T::has_gpu_support() {
-                    T::mul_freq_response(array_to_real(&x_time[range]), array_to_real_mut(x_freq), array_to_real(h_freq));
-                    (&mut x_time[position-step_size+imp_len/2 .. position+imp_len/2]).copy_from_slice(&tmp[imp_len-1..fft_len]);
-                    mem::swap(&mut tmp, &mut x_freq);
-                }
-                else {
+                while position+fft_len < x_len {
+                    let range = position .. fft_len+position;
                     fft.process(&x_time[range], x_freq);
                     // (4) Same as (3) except that the results of the previous iteration gets copied over
                     (&mut x_time[position-step_size+imp_len/2 .. position+imp_len/2]).copy_from_slice(&tmp[imp_len-1..fft_len]);
@@ -407,8 +407,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                         *n = *n * *v / scaling;
                     }
                     ifft.process(x_freq, tmp);
+                    position += step_size;
                 }
-                position += step_size;
             }
 
             // (5) now store the result of the last iteration

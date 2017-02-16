@@ -224,7 +224,7 @@ mod fallback;
 #[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
 pub use self::fallback::{Reg32, Reg64};
 
-#[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
+#[cfg(any(feature = "doc", not(feature="use_sse")))]
 mod approx_fallback;
 
 simd_generic_impl!(f32, Reg32);

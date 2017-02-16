@@ -36,9 +36,12 @@ pub trait GpuSupport<T: RealNumber> {
         target: &mut [T],
         reverse: bool);
 
-    // Calculates the FFT of `source`, multiplies `freq_resp` and stores the IFFT in `target`.
-    fn mul_freq_response(
-        source: &[T],
-        target: &mut [T],
-        freq_resp: &[T]);
+    /// Applys a frequence response to a time domain signal.
+    fn overlap_discard(
+        x_time: &mut [T],
+        tmp: &mut [T],
+        x_freq: &mut [T],
+        h_freq: &[T],
+        imp_len: usize,
+        step_size: usize) -> usize;
 }

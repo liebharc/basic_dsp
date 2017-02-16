@@ -395,7 +395,6 @@ impl<T> GpuSupport<T> for T
         }
 
        // Wait for all kernels to finish
-       ocl_pq.queue().finish();
        res_buffer.cmd()
         .read(array_to_gpu_simd_mut::<T, T::GpuReg>(&mut target[0..data_set_size-vec_len]))
         .enq()
@@ -473,91 +472,149 @@ impl<T> GpuSupport<T> for T
             .enq()
             .expect("Transferring result vector from the GPU back to memory failed");
 
-        ocl_pq.queue().finish();
     }
 
-    fn mul_freq_response(
-        source: &[T],
-        target: &mut [T],
-        freq_resp: &[T]) {
-        assert_eq!(source.len(), target.len());
-        assert_eq!(source.len(), freq_resp.len());
-        let is_f64 = mem::size_of::<T>() == 8;
-        let kernel = if is_f64 { KERNEL_MUL_SRC64 } else { KERNEL_MUL_SRC32 };
-        // Build ocl ProQue
-        let ocl_pq = ProQue::builder()
-            .src(kernel)
-            .dims([source.len()])
-            .build()
-            .expect("Building ProQue");
+    fn overlap_discard(
+            x_time: &mut [T],
+            tmp: &mut [T],
+            _: &mut [T],
+            h_freq: &[T],
+            imp_len: usize,
+            step_size: usize) -> usize {
+          let is_f64 = mem::size_of::<T>() == 8;
+          let kernel = if is_f64 { KERNEL_MUL_SRC64 } else { KERNEL_MUL_SRC32 };
+          let fft_len = h_freq.len();
+          let x_len = x_time.len();
+          // Build ocl ProQue
+          let ocl_pq = ProQue::builder()
+              .src(kernel)
+              .dims([fft_len])
+              .build()
+              .expect("Building ProQue");
 
-        // Create buffers
-        let mut in_buffer =
-            Buffer::new(
-                ocl_pq.queue().clone(),
-                Some(flags::MEM_READ_WRITE |
-                     flags::MEM_COPY_HOST_PTR),
-                ocl_pq.dims().clone(),
-                Some(&source))
-                .expect("Failed to create GPU input buffer");
+          // Use events to schedule our kernels.
+          // When `fft_finish_event` is signaled
+          // then `start_mul_event` gets triggered.
+          // Also when `mul_finish_event` is signaled
+          // then `start_ifft_event` gets triggered.
+          // That leads to a schedule where first the FFT
+          // is executed, then the multiplication and afterwards
+          // the IFFT.
+          let mut fft_finish_event = EventList::new();
+          let start_mul_event = fft_finish_event.clone();
+          let mut mul_finish_event = EventList::new();
+          let start_ifft_event = mul_finish_event.clone();
+          // Make a plan
+          let mut forward_fft =
+              builder::<T>()
+              .precision(Precision::Precise)
+              .dims([fft_len / 2])
+              .input_layout(Layout::ComplexInterleaved)
+              .output_layout(Layout::ComplexInterleaved)
+              .bake_inplace_plan(&ocl_pq).unwrap();
 
-        let coef_buffer =
-            Buffer::new(
-                ocl_pq.queue().clone(),
-                Some(flags::MEM_READ_ONLY |
-                     flags::MEM_COPY_HOST_PTR),
-                ocl_pq.dims().clone(),
-                Some(&freq_resp))
-                .expect("Failed to create GPU input buffer");
+          forward_fft = forward_fft.enew(&mut fft_finish_event);
 
-        // Use events to schedule our kernels.
-        // When `fft_finish_event` is signaled
-        // then `start_mul_event` gets triggered.
-        // Also when `mul_finish_event` is signaled
-        // then `start_ifft_event` gets triggered.
-        // That leads to a schedule where first the FFT
-        // is executed, then the multiplication and afterwards
-        // the IFFT.
-        let mut fft_finish_event = EventList::new();
-        let start_mul_event = fft_finish_event.clone();
-        let mut mul_finish_event = EventList::new();
-        let start_ifft_event = mul_finish_event.clone();
-        // Make a plan
-        let plan =
-            builder::<T>()
-            .precision(Precision::Precise)
-            .dims([source.len() / 2])
-            .input_layout(Layout::ComplexInterleaved)
-            .output_layout(Layout::ComplexInterleaved)
-            .bake_inplace_plan(&ocl_pq).unwrap();
+         let mut reverse_fft =
+             builder::<T>()
+             .precision(Precision::Precise)
+             .dims([fft_len / 2])
+             .input_layout(Layout::ComplexInterleaved)
+             .output_layout(Layout::ComplexInterleaved)
+             .bake_inplace_plan(&ocl_pq).unwrap();
 
-        // Execute plan
-        let mut plan = plan.enew(&mut fft_finish_event);
-        plan
-            .enq(Direction::Forward, &mut in_buffer)
-            .expect("Enq FFT");
+         reverse_fft = reverse_fft.ewait(&start_ifft_event);
 
-        let mul = ocl_pq.create_kernel("multiply_vector").unwrap()
-            .arg_buf_named("coef", Some(&coef_buffer))
-            .arg_buf_named("srcres", Some(&in_buffer));
-        mul.cmd()
-            .ewait(&start_mul_event)
-            .enew(&mut mul_finish_event)
-            .gws([source.len() / 2])
-            .enq()
-            .expect("Enq Mul");
+         let coef_buffer =
+              Buffer::new(
+                  ocl_pq.queue().clone(),
+                  Some(flags::MEM_READ_ONLY |
+                       flags::MEM_COPY_HOST_PTR),
+                  [fft_len],
+                  Some(&h_freq))
+                  .expect("Failed to create GPU input buffer");
 
-        plan
-            .enew_opt(None) // Remove the `enew` event by setting it to `None`
-            .ewait(&start_ifft_event)
-            .enq(Direction::Backward, &mut in_buffer)
-            .expect("Enq IFFT");
+          // Execute plan
+          let mut position = 0;
 
-        // Wait for calculation to finish and read results
-        in_buffer.cmd()
-            .read(target)
-            .enq()
-            .expect("Transferring result vector from the GPU back to memory failed");
+          // `prev_buffer` is used to overlap transfer and calculation.
+          let mut prev_buffer = {
+              let range = position .. fft_len+position;
+              // Create buffers
+              let mut in_buffer =
+                  Buffer::new(
+                      ocl_pq.queue().clone(),
+                      Some(flags::MEM_READ_WRITE |
+                           flags::MEM_COPY_HOST_PTR),
+                      [fft_len],
+                      Some(&x_time[range]))
+                      .expect("Failed to create GPU input buffer");
+
+              forward_fft
+                  .enq(Direction::Forward, &mut in_buffer)
+                  .expect("Enq FFT");
+
+              let mul = ocl_pq.create_kernel("multiply_vector").unwrap()
+                  .arg_buf_named("coef", Some(&coef_buffer))
+                  .arg_buf_named("srcres", Some(&in_buffer));
+              mul.cmd()
+                  .ewait(&start_mul_event)
+                  .enew(&mut mul_finish_event)
+                  .gws([fft_len / 2])
+                  .enq()
+                  .expect("Enq Mul");
+
+              reverse_fft
+                  .enq(Direction::Backward, &mut in_buffer)
+                  .expect("Enq IFFT");
+             (&mut x_time[0..imp_len/2]).copy_from_slice(&tmp[0..imp_len/2]);
+              position += step_size;
+              in_buffer
+          };
+
+          while position+fft_len < x_len {
+              let range = position .. fft_len+position;
+              // Create buffers
+              let mut in_buffer =
+                  Buffer::new(
+                      ocl_pq.queue().clone(),
+                      Some(flags::MEM_READ_WRITE |
+                           flags::MEM_COPY_HOST_PTR),
+                      [fft_len],
+                      Some(&x_time[range]))
+                      .expect("Failed to create GPU input buffer");
+
+              forward_fft
+                  .enq(Direction::Forward, &mut in_buffer)
+                  .expect("Enq FFT");
+
+              let mul = ocl_pq.create_kernel("multiply_vector").unwrap()
+                  .arg_buf_named("coef", Some(&coef_buffer))
+                  .arg_buf_named("srcres", Some(&in_buffer));
+              mul.cmd()
+                  .ewait(&start_mul_event)
+                  .enew(&mut mul_finish_event)
+                  .gws([fft_len / 2])
+                  .enq()
+                  .expect("Enq Mul");
+
+              reverse_fft
+                  .enq(Direction::Backward, &mut in_buffer)
+                  .expect("Enq IFFT");
+
+              prev_buffer.cmd()
+                  .read(tmp)
+                  .enq()
+                  .expect("Transferring result vector from the GPU back to memory failed");
+              (&mut x_time[position-step_size+imp_len/2 .. position+imp_len/2]).copy_from_slice(&tmp[imp_len-2..fft_len]);
+              prev_buffer = in_buffer;
+              position += step_size;
+          }
+          prev_buffer.cmd()
+              .read(tmp)
+              .enq()
+              .expect("Transferring result vector from the GPU back to memory failed");
+          position
         }
 }
 
