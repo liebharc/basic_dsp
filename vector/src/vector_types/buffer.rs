@@ -38,6 +38,7 @@ pub struct SingleBuffer<T>
     temp: Vec<T>,
 }
 
+#[cfg(feature="std")]
 impl<T> SingleBuffer<T>
     where T: RealNumber
 {
@@ -52,6 +53,7 @@ impl<T> SingleBuffer<T>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> Buffer<Vec<T>, T> for SingleBuffer<T>
     where T: RealNumber
 {

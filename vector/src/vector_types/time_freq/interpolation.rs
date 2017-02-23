@@ -11,6 +11,7 @@ use super::super::{VoidResult, DspVec, Domain,
 use super::fft;
 use std::mem;
 use num::complex::Complex;
+use InlineVector;
 
 /// Provides interpolation operations for real and complex data vectors.
 /// # Unstable
@@ -129,10 +130,10 @@ fn function_to_vectors<T>(function: &RealImpulseResponse<T>,
                           complex_result: bool,
                           interpolation_factor: usize,
                           delay: T)
-                          -> Vec<GenDspVec<Vec<T>, T>>
+                          -> InlineVector<GenDspVec<Vec<T>, T>>
     where T: RealNumber
 {
-    let mut result = Vec::with_capacity(interpolation_factor);
+    let mut result = InlineVector::with_capacity(interpolation_factor);
     for shift in 0..interpolation_factor {
         let offset = T::from(shift).unwrap() / T::from(interpolation_factor).unwrap();
         result.push(function_to_vector(function, conv_len, complex_result, offset, delay));
@@ -198,7 +199,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                               interpolation_factor,
                                               delay);
             let mut shifts = Vec::with_capacity(vectors.len() * number_of_shifts);
-            for vector in &vectors {
+            for vector in &vectors[..] {
                 let shifted_copies = DspVec::create_shifted_copies(vector);
                 for shift in shifted_copies {
                     shifts.push(shift);
@@ -218,7 +219,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                                               interpolation_factor,
                                                               conv_len,
                                                               data,
-                                                              &vectors);
+                                                              &vectors[..]);
                     i += 1;
                 }
             }
@@ -270,7 +271,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                                               interpolation_factor,
                                                               conv_len,
                                                               data,
-                                                              &vectors);
+                                                              &vectors[..]);
                     i += 1;
                 }
             }

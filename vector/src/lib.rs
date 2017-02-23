@@ -32,6 +32,10 @@
 //! memory available so that the optimization focus is on decreasing the processing time
 //! for every (common) operation and to spent little time with memory allocations.
 
+#![cfg_attr(not(feature="std"), no_std)]
+#[cfg(not(feature="std"))]
+extern crate core as std;
+
 #[cfg(any(feature = "doc", feature="use_sse", feature="use_avx"))]
 extern crate simd;
 #[cfg(any(feature = "doc", feature="use_gpu"))]
@@ -42,6 +46,7 @@ extern crate num;
 extern crate rustfft;
 #[cfg(any(feature = "doc", feature="use_gpu"))]
 extern crate clfft;
+extern crate arrayvec;
 mod vector_types;
 mod multicore_support;
 mod simd_extensions;
@@ -55,6 +60,7 @@ use std::fmt::Debug;
 use std::ops::*;
 use num::complex::Complex;
 use std::mem;
+use arrayvec::ArrayVec;
 
 use simd_extensions::*;
 use gpu_support::{Gpu32, Gpu64, GpuRegTrait, GpuFloat};
@@ -129,6 +135,129 @@ fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
         }
         let trans: &mut [Complex<T>] = mem::transmute(array);
         &mut trans[0..len / 2]
+    }
+}
+
+/// A type which internally switches between stack and heap allocation.
+/// This is supposed to perform faster but the main reason is that this
+/// way we automatically have a limited stack allocation available on systems
+/// without heap, and on systems with heap allocation we don't have to worry
+/// about introducing artifical limits.
+///
+/// Thanks to: http://stackoverflow.com/questions/27859822/alloca-variable-length-arrays-in-rust
+enum InlineVector<T> {
+    Inline(ArrayVec<[T; 64]>),
+    Dynamic(Vec<T>),
+}
+
+impl<T> InlineVector<T> {
+    fn with_capacity(n: usize) -> InlineVector<T> {
+        if n <= 64 {
+            InlineVector::Inline(ArrayVec::<[T; 64]>::new())
+        } else {
+            InlineVector::Dynamic(
+                Vec::with_capacity(n)
+            )
+        }
+    }
+
+    fn push(&mut self, elem: T) {
+        match self {
+            &mut InlineVector::Inline(ref mut v) => {
+                let res = v.push(elem);
+                if res.is_some() {
+                    panic!("InlineVector capacity exceeded, please open a defect against `basic_dsp`");
+                }
+            },
+            &mut InlineVector::Dynamic(ref mut v) => v.push(elem)
+        };
+    }
+
+    fn len(&self) -> usize {
+        match self {
+            &InlineVector::Inline(ref v) => v.len(),
+            &InlineVector::Dynamic(ref v) => v.len()
+        }
+    }
+}
+
+impl<T> Index<usize> for InlineVector<T> {
+    type Output = T;
+
+    fn index(&self, index: usize) -> &T {
+        match self {
+            &InlineVector::Inline(ref v) => &v[index],
+            &InlineVector::Dynamic(ref v) => &v[index]
+        }
+    }
+}
+
+impl<T> IndexMut<usize> for InlineVector<T> {
+    fn index_mut(&mut self, index: usize) -> &mut T {
+        match self {
+            &mut InlineVector::Inline(ref mut v) => &mut v[index],
+            &mut InlineVector::Dynamic(ref mut v) => &mut v[index]
+        }
+    }
+}
+
+impl<T> Index<RangeFull> for InlineVector<T> {
+    type Output = [T];
+
+    fn index(&self, _index: RangeFull) -> &[T] {
+        match self {
+            &InlineVector::Inline(ref v) => &v[..],
+            &InlineVector::Dynamic(ref v) => &v[..]
+        }
+    }
+}
+
+impl<T> IndexMut<RangeFull> for InlineVector<T> {
+    fn index_mut(&mut self, _index: RangeFull) -> &mut [T] {
+        match self {
+            &mut InlineVector::Inline(ref mut v) => &mut v[..],
+            &mut InlineVector::Dynamic(ref mut v) => &mut v[..]
+        }
+    }
+}
+
+impl<T> Index<RangeFrom<usize>> for InlineVector<T> {
+    type Output = [T];
+
+    fn index(&self, index: RangeFrom<usize>) -> &[T] {
+        match self {
+            &InlineVector::Inline(ref v) => &v[index],
+            &InlineVector::Dynamic(ref v) => &v[index]
+        }
+    }
+}
+
+impl<T> IndexMut<RangeFrom<usize>> for InlineVector<T> {
+    fn index_mut(&mut self, index: RangeFrom<usize>) -> &mut [T] {
+        match self {
+            &mut InlineVector::Inline(ref mut v) => &mut v[index],
+            &mut InlineVector::Dynamic(ref mut v) => &mut v[index]
+        }
+    }
+}
+
+impl<T> Index<RangeTo<usize>> for InlineVector<T> {
+    type Output = [T];
+
+    fn index(&self, index: RangeTo<usize>) -> &[T] {
+        match self {
+            &InlineVector::Inline(ref v) => &v[index],
+            &InlineVector::Dynamic(ref v) => &v[index]
+        }
+    }
+}
+
+impl<T> IndexMut<RangeTo<usize>> for InlineVector<T> {
+    fn index_mut(&mut self, index: RangeTo<usize>) -> &mut [T] {
+        match self {
+            &mut InlineVector::Inline(ref mut v) => &mut v[index],
+            &mut InlineVector::Dynamic(ref mut v) => &mut v[index]
+        }
     }
 }
 
