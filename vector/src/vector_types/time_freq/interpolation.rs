@@ -5,7 +5,7 @@ use std::ops::{Add, Mul};
 use super::WrappingIterator;
 use simd_extensions::*;
 use multicore_support::*;
-use super::super::{VoidResult, DspVec, Domain,
+use super::super::{VoidResult, DspVec, Domain, PaddingOption,
                    NumberSpace, ToSliceMut, GenDspVec, ToDspVector, DataDomain, Buffer, Vector,
                    RealNumberSpace, ErrorReason, InsertZerosOpsBuffered, ScaleOps, MetaData};
 use super::fft;
@@ -61,6 +61,15 @@ pub trait InterpolationOps<S, T>
                        interpolation_factor: u32)
                        -> VoidResult
         where B: Buffer<S, T>;
+
+    /// Interpolates the signal in frequency domain by padding it with zeros.
+    fn interpolate<B>(&mut self,
+                   buffer: &mut B,
+                   function: &RealFrequencyResponse<T>,
+                   target_points: usize,
+                   delay: T)
+                   -> VoidResult
+            where B: Buffer<S, T>;
 
     /// Decimates or downsamples `self`. `decimatei` is the inverse function to `interpolatei`.
     fn decimatei(&mut self, decimation_factor: u32, delay: u32);
@@ -441,6 +450,56 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
         Ok(())
     }
 
+    fn interpolate<B>(&mut self,
+                   buffer: &mut B,
+                   function: &RealFrequencyResponse<T>,
+                   dest_points: usize,
+                   delay: T)
+                   -> VoidResult
+            where B: Buffer<S, T> {
+        if dest_points == self.points() {
+            return Ok(());
+        }
+
+        if !function.is_symmetric() && !self.is_complex() {
+            return Err(ErrorReason::ArgumentFunctionMustBeSymmetric);
+        }
+
+        let is_complex = self.is_complex();
+        let orig_len = self.len();
+        let dest_len = if is_complex { 2 * dest_points } else { dest_points };
+        let interpolation_factorf = T::from(dest_points).unwrap() / T::from(self.points()).unwrap();
+
+        if !self.is_complex() {
+            self.zero_interleave_b(buffer, 2);
+        }
+        // Vector is always complex from here on
+        //self.zero_interleave_b(buffer, 2);
+        fft(self, buffer, false); // fft
+        self.swap_halves_priv(true); // fft shift
+        if dest_len > orig_len {
+            self.zero_pad_b(buffer, if is_complex { dest_points } else { dest_len }, PaddingOption::Surround);
+            let points = self.len() / 2;
+            self.multiply_function_priv(function.is_symmetric(),
+                interpolation_factorf,
+                |array| array_to_complex_mut(array),
+                function,
+                |f, x| Complex::<T>::new(-f.calc(x), T::zero()));
+            self.swap_halves_priv(false); // ifft shift
+            fft(self, buffer, true); // ifft
+            self.scale(T::one() / T::from(points).unwrap());
+            if !is_complex {
+                // Convert vector back into real number space
+                self.pure_complex_to_real_operation_inplace(|x, _arg| x.re, ());
+            }
+        }
+        else {
+            // TODO
+        }
+
+        Ok(())
+    }
+
     fn decimatei(&mut self, decimation_factor: u32, delay: u32) {
         let mut i = delay as usize;
         let mut j = 0;
@@ -658,6 +717,20 @@ mod tests {
                         0.16666667,
                         0.16666667,
                         0.044658206];
+        assert_eq_tol(&result[..], &expected, 1e-4);
+    }
+
+    #[test]
+    fn interpolate_sinc_test() {
+        let len = 6;
+        let mut time = vec!(0.0; 2 * len).to_complex_time_vec();
+        time[len] = 1.0;
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let mut buffer = SingleBuffer::new();
+        time.interpolate(&mut buffer, &sinc as &RealFrequencyResponse<f32>, 2 * len, 0.0).unwrap();
+        let result = time.to_real();
+        let expected = [0.00000, 0.04466, 0.00000, -0.16667, 0.00000, 0.62201, 1.00000, 0.62201,
+                        0.00000, -0.16667, 0.00000, 0.04466];
         assert_eq_tol(&result[..], &expected, 1e-4);
     }
 
