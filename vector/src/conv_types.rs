@@ -163,7 +163,7 @@ macro_rules! add_linear_table_lookup_impl {
                 }
 
                 impl $name<$data_type> {
-/// Creates a lookup table by putting the pieces together.
+                    /// Creates a lookup table by putting the pieces together.
                     pub fn from_raw_parts(table: &[$result_type],
                                           delta: $data_type,
                                           is_symmetric: bool) -> Self {
@@ -171,9 +171,8 @@ macro_rules! add_linear_table_lookup_impl {
                         $name { table: owned_table, delta: delta, is_symmetric: is_symmetric }
                     }
 
-
-/// Creates a lookup table from another convolution function. The `delta` argument
-/// can be used to balance performance vs. accuracy.
+                    /// Creates a lookup table from another convolution function. The `delta` argument
+                    /// can be used to balance performance vs. accuracy.
                     pub fn from_conv_function(other: &$conv_type<$data_type>,
                                               delta: $data_type,
                                               len: usize) -> Self {
