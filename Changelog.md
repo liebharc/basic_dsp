@@ -1,6 +1,11 @@
 # `basic_dsp`
 Changes:
 
+## Version 0.5.0
+
+- `zero_pad_b` now returns a result, which may contain an error if the passed argument is smaller than the actual vector length
+- Renamed `interpolate_vector` to `interpolate_signal`
+
 ## Version 0.4.2
 
 - Fix: Buffer `convolve_vector` for matrices now returns all buffers back to the pool.

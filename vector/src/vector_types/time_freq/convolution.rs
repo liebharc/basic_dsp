@@ -48,7 +48,7 @@ pub trait ConvolutionOps<S, T, A>
     /// 2. `VectorMetaDataMustAgree`: in case `self` and `impulse_response`
     ///    are not in the same number space and same domain.
     /// 3. `InvalidArgumentLength`: if `self.points() < impulse_response.points()`.
-    fn convolve_vector<B>(&mut self, buffer: &mut B, impulse_response: &A) -> VoidResult
+    fn convolve_signal<B>(&mut self, buffer: &mut B, impulse_response: &A) -> VoidResult
         where B: Buffer<S, T>; // TODO: Consider to rename this function with 0.5
 }
 
@@ -135,7 +135,7 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a RealImpulseResponse<T>> for DspVe
                     j = j + T::one();
                 }
 
-                self.convolve_vector(buffer, &imp_resp)
+                self.convolve_signal(buffer, &imp_resp)
                     .expect("Meta data should agree since we constructed the argument from this \
                              vector");
             }
@@ -175,7 +175,7 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a RealImpulseResponse<T>> for DspVe
                     j = j + T::one();
                 }
 
-                self.convolve_vector(buffer, &imp_resp)
+                self.convolve_signal(buffer, &imp_resp)
                     .expect("Meta data should agree since we constructed the argument from this \
                              vector");
             }
@@ -237,7 +237,7 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a ComplexImpulseResponse<T>> for Ds
                 j = j + T::one();
             }
 
-            self.convolve_vector(buffer, &imp_resp)
+            self.convolve_signal(buffer, &imp_resp)
                 .expect("Meta data should agree since we constructed the argument from this \
                          vector");
         }
@@ -274,24 +274,24 @@ fn next_power_of_two(value: usize) -> usize {
         n = n >> 1;
         count += 1;
     }
-    
+
     1 << count
 }
-    
+
 impl<S, T, N, D> DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
           D: TimeDomain,
           DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone
-{    
+{
     fn overlap_discard<B>(&mut self, buffer: &mut B, impulse_response: &Self, fft_len: usize) -> VoidResult
         where B: Buffer<S, T>
     {
         if !self.is_complex() {
             return Err(ErrorReason::InputMustBeComplex);
         }
-    
+
         assert_meta_data!(self, impulse_response);
         let h_time = impulse_response;
         let imp_len = h_time.points();
@@ -302,8 +302,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         let mut fft = FFT::new(fft_len, false);
         let mut ifft = FFT::new(fft_len, true);
         let step_size = fft_len - overlap;
-        let h_time_padded_len = 2*fft_len; 
-        let h_freq_len = 2*fft_len; 
+        let h_time_padded_len = 2*fft_len;
+        let h_freq_len = 2*fft_len;
         let x_freq_len = 2*fft_len;
         let tmp_len = 2*fft_len;
         let remainder_len = x_len - x_len % fft_len;
@@ -320,7 +320,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             for n in &mut h_time_padded[2*imp_len..] {
                 *n = T::zero();
             }
-            
+
             let x_time = self.data.to_slice_mut();
             let h_time: &[Complex<T>] = array_to_complex(&h_time[..]);
             let h_time_padded: &[Complex<T>] = array_to_complex(&h_time_padded[0..2*fft_len]);
@@ -330,7 +330,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let tmp: &mut [Complex<T>] = array_to_complex_mut(&mut tmp[0..2*fft_len]);
             let end: &mut [Complex<T>] = array_to_complex_mut(&mut end[0..remainder_len]);
             fft.process(h_time_padded, h_freq);
-            
+
             let mut position = 0;
             {
                 // (1) Scalar convolution of the beginning
@@ -338,7 +338,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                     *num = Self::convolve_iteration(x_time, h_time, position, (imp_len/2) as isize, imp_len);
                     position += 1;
                 }
-                
+
                 // (2) Scalar convolution of the end/tail
                 position = (x_time.len() - end.len()) as isize;
                 for num in &mut end[0..remainder_len/2] {
@@ -346,7 +346,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                     position += 1;
                 }
             }
-            
+
             let mut position = 0;
             let scaling = T::from(fft_len).unwrap();
             {
@@ -360,7 +360,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 ifft.process(x_freq, tmp);
                 position += step_size;
             }
-            
+
             while position+fft_len < x_len {
                 // (4) Same as (3) except that the results of the previous iteration gets copied over
                 let range = position .. fft_len+position;
@@ -372,15 +372,15 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 ifft.process(x_freq, tmp);
                 position += step_size;
             }
-            
+
             // (5) now store the result of the last iteration
             (&mut x_time[position-step_size+imp_len/2 .. position+imp_len/2]).copy_from_slice(&tmp[imp_len-1..fft_len]);
-            
+
             // (6) Copy over the end result which was calculated at the beginning (2)
             (&mut x_time[x_len - remainder_len / 2 .. ]).copy_from_slice(&end[..]);
         }
         buffer.free(array);
-        
+
         Ok(())
     }
 }
@@ -392,7 +392,7 @@ impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
           D: TimeDomain,
           DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone
 {
-    fn convolve_vector<B>(&mut self, buffer: &mut B, impulse_response: &Self) -> VoidResult
+    fn convolve_signal<B>(&mut self, buffer: &mut B, impulse_response: &Self) -> VoidResult
         where B: Buffer<S, T>
     {
         assert_meta_data!(self, impulse_response);
@@ -409,12 +409,12 @@ impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
         // For the SIMD operation we need to clone `vector` several
         // times and this only is worthwhile if `vector.len() << self.len()`
         // where `<<` means "significant smaller".
-        if self.len() > 1000 
-           && impulse_response.len() <= 202 
+        if self.len() > 1000
+           && impulse_response.len() <= 202
            &&impulse_response.len() > 11 {
-            self.convolve_vector_simd(buffer, impulse_response);
+            self.convolve_signal_simd(buffer, impulse_response);
         }
-        else if self.len() > 10000     
+        else if self.len() > 10000
             && impulse_response.len() > 11
             // Overlap-discard creates a lot of copies of the size of impulse_response
             // and that only seems to be worthwhile if the vector is long enough
@@ -427,7 +427,7 @@ impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
             return self.overlap_discard(buffer, impulse_response, fft_len);
         }
         else {
-            self.convolve_vector_scalar(buffer, impulse_response);
+            self.convolve_signal_scalar(buffer, impulse_response);
         }
 
         Ok(())
@@ -621,7 +621,7 @@ mod tests {
         let argument = (&real[..]).interleave_to_complex_time_vec(&&imag[..]).unwrap();
         assert_eq!(time.points(), argument.points());
         let mut buffer = SingleBuffer::new();
-        time.convolve_vector(&mut buffer, &argument).unwrap();
+        time.convolve_signal(&mut buffer, &argument).unwrap();
         assert_eq!(time.points(), LEN);
         let result = time.magnitude();
         assert_eq!(result.points(), LEN);
@@ -670,7 +670,7 @@ mod tests {
         let b = vec![15.0, 14.0, 13.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0].to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
         let mut conv = a.clone();
-        conv.convolve_vector(&mut buffer, &b).unwrap();
+        conv.convolve_signal(&mut buffer, &b).unwrap();
         let mut a = a.fft(&mut buffer);
         let b = b.fft(&mut buffer);
         a.mul(&b).unwrap();
@@ -687,7 +687,7 @@ mod tests {
         let mut buffer = SingleBuffer::new();
         let mut a = a.to_complex().unwrap();
         let b = b.to_complex().unwrap();
-        a.convolve_vector(&mut buffer, &b).unwrap();
+        a.convolve_signal(&mut buffer, &b).unwrap();
         let a = a.magnitude();
         let exp = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
         assert_eq_tol(&a[..], &exp, 1e-4);
@@ -700,7 +700,7 @@ mod tests {
         let b = vec![0.0, 0.0, 1.0].to_real_time_vec();
         let mut a = a.to_complex().unwrap();
         let b = b.to_complex().unwrap();
-        a.convolve_vector(&mut buffer, &b).unwrap();
+        a.convolve_signal(&mut buffer, &b).unwrap();
         let a = a.magnitude();
         let exp = [9.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
         assert_eq_tol(&a[..], &exp, 1e-4);
@@ -714,7 +714,7 @@ mod tests {
         let a = a.to_complex().unwrap();
         let b = b.to_complex().unwrap();
         let mut conv = a.clone();
-        conv.convolve_vector(&mut buffer, &b).unwrap();
+        conv.convolve_signal(&mut buffer, &b).unwrap();
         let mut a = a.fft(&mut buffer);
         let b = b.fft(&mut buffer);
         a.mul(&b).unwrap();
@@ -734,7 +734,7 @@ mod tests {
         let a = a.to_complex().unwrap();
         let b = b.to_complex().unwrap();
         let mut conv = a.clone();
-        conv.convolve_vector(&mut buffer, &b).unwrap();
+        conv.convolve_signal(&mut buffer, &b).unwrap();
         let mut a = a.fft(&mut buffer);
         let b = b.fft(&mut buffer);
         a.mul(&b).unwrap();
@@ -745,7 +745,7 @@ mod tests {
         let conv = conv.magnitude();
         assert_eq_tol(&mul[..], &conv[..], 1e-4);
     }
-    
+
     #[test]
     fn overlap_discard_test() {
         let a: Vec<f32> = (0..100).map(|x|x as f32).collect();
@@ -756,8 +756,8 @@ mod tests {
         let a = a.to_complex().unwrap();
         let b = b.to_complex().unwrap();
         let mut conv = a.clone();
-        conv.convolve_vector(&mut buffer, &b).unwrap();
-        
+        conv.convolve_signal(&mut buffer, &b).unwrap();
+
         let mut overlap_discard = a;
         overlap_discard.overlap_discard(&mut buffer, &b, 0).unwrap();
         assert_eq_tol(&overlap_discard[..], &conv[..], 1e-4);

@@ -98,7 +98,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         buffer.free(temp);
     }
 
-    fn convolve_vector_scalar<B>(&mut self, buffer: &mut B, vector: &Self)
+    fn convolve_signal_scalar<B>(&mut self, buffer: &mut B, vector: &Self)
         where B: Buffer<S, T>
     {
         let points = self.points();
@@ -284,18 +284,18 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         sum
     }
 
-    fn convolve_vector_simd<B>(&mut self, buffer: &mut B, vector: &Self)
+    fn convolve_signal_simd<B>(&mut self, buffer: &mut B, vector: &Self)
         where B: Buffer<S, T>
     {
         if self.is_complex() {
-            self.convolve_vector_simd_impl(buffer,
+            self.convolve_signal_simd_impl(buffer,
                                            vector,
                                            |x| array_to_complex(x),
                                            |x| array_to_complex_mut(x),
                                            |x, y| x.mul_complex(y),
                                            |x| x.sum_complex())
         } else {
-            self.convolve_vector_simd_impl(buffer,
+            self.convolve_signal_simd_impl(buffer,
                                            vector,
                                            |x| x,
                                            |x| x,
@@ -386,7 +386,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         shifted_copies
     }
 
-    fn convolve_vector_simd_impl<B, TT, C, CMut, RMul, RSum>(&mut self,
+    fn convolve_signal_simd_impl<B, TT, C, CMut, RMul, RSum>(&mut self,
                                                              buffer: &mut B,
                                                              vector: &Self,
                                                              convert: C,

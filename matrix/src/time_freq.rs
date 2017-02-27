@@ -399,13 +399,13 @@ macro_rules! add_mat_impl {
                     ConvolutionOps<S, T, DspVec<S, T, N, D>>
                     for $matrix<DspVec<S, T, N, D>, S, T>
                     where DspVec<S, T, N, D>: ConvolutionOps<S, T, DspVec<S, T, N, D>> {
-				fn convolve_vector<B>(
+				fn convolve_signal<B>(
 						&mut self,
 						buffer: &mut B,
 						impulse_response: &DspVec<S, T, N, D>) -> VoidResult
 							where B: Buffer<S, T> {
                     for v in self.rows_mut() {
-                        try!(v.convolve_vector(buffer, impulse_response));
+                        try!(v.convolve_signal(buffer, impulse_response));
                     }
 
 					Ok(())
@@ -417,7 +417,7 @@ macro_rules! add_mat_impl {
 
 add_mat_impl!(MatrixMxN; Matrix2xN; Matrix3xN; Matrix4xN);
 
-macro_rules! convolve_vector {
+macro_rules! convolve_signal {
     ($self_: expr, $buffer: ident, $impulse_response: ident) => {
         {
             let mut error = None;
@@ -445,7 +445,7 @@ macro_rules! convolve_vector {
 
            while result.len() > 0 {
             $buffer.free(result.pop().expect("Result should not be empty"));
-           } 
+           }
 
            Ok(())
         }
@@ -455,48 +455,48 @@ macro_rules! convolve_vector {
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
         ConvolutionOps<S, T, Vec<&'a Vec<&'a DspVec<S, T, N, D>>>>
         for MatrixMxN<DspVec<S, T, N, D>, S, T> {
-    fn convolve_vector<B>(
+    fn convolve_signal<B>(
             &mut self,
             buffer: &mut B,
             impulse_response: &Vec<&Vec<&DspVec<S, T, N, D>>>) -> VoidResult
                 where B: Buffer<S, T> {
-        convolve_vector!(self, buffer, impulse_response)
+        convolve_signal!(self, buffer, impulse_response)
     }
 }
 
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
         ConvolutionOps<S, T, [[&'a DspVec<S, T, N, D>; 2]; 2]>
         for Matrix2xN<DspVec<S, T, N, D>, S, T> {
-    fn convolve_vector<B>(
+    fn convolve_signal<B>(
             &mut self,
             buffer: &mut B,
             impulse_response: &[[&'a DspVec<S, T, N, D>; 2]; 2]) -> VoidResult
                 where B: Buffer<S, T> {
-        convolve_vector!(self, buffer, impulse_response)
+        convolve_signal!(self, buffer, impulse_response)
     }
 }
 
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
         ConvolutionOps<S, T, [[&'a DspVec<S, T, N, D>; 3]; 3]>
         for Matrix3xN<DspVec<S, T, N, D>, S, T> {
-    fn convolve_vector<B>(
+    fn convolve_signal<B>(
             &mut self,
             buffer: &mut B,
             impulse_response: &[[&'a DspVec<S, T, N, D>; 3]; 3]) -> VoidResult
                 where B: Buffer<S, T> {
-        convolve_vector!(self, buffer, impulse_response)
+        convolve_signal!(self, buffer, impulse_response)
     }
 }
 
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
         ConvolutionOps<S, T, [[&'a DspVec<S, T, N, D>; 4]; 4]>
         for Matrix4xN<DspVec<S, T, N, D>, S, T> {
-    fn convolve_vector<B>(
+    fn convolve_signal<B>(
             &mut self,
             buffer: &mut B,
             impulse_response: &[[&'a DspVec<S, T, N, D>; 4]; 4]) -> VoidResult
                 where B: Buffer<S, T> {
-        convolve_vector!(self, buffer, impulse_response)
+        convolve_signal!(self, buffer, impulse_response)
     }
 }
 
@@ -570,7 +570,7 @@ mod tests {
         let conv = vec!(&conv1, &conv2);
 
         let mut buffer = SingleBuffer::new();
-        mat.convolve_vector(&mut buffer, &conv).unwrap();
+        mat.convolve_signal(&mut buffer, &conv).unwrap();
 
         let expected = {
             let len = 11;
@@ -606,7 +606,7 @@ mod tests {
         let conv = [[&empty, &delay], [&delay, &empty]];
 
         let mut buffer = SingleBuffer::new();
-        mat.convolve_vector(&mut buffer, &conv).unwrap();
+        mat.convolve_signal(&mut buffer, &conv).unwrap();
 
         let expected = {
             let len = 11;

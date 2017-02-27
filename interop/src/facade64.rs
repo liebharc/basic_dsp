@@ -963,10 +963,10 @@ pub extern "C" fn correlate64(vector: Box<VecBuf>, other: &VecBuf) -> VectorInte
 }
 
 #[no_mangle]
-pub extern "C" fn convolve_vector64(vector: Box<VecBuf>,
+pub extern "C" fn convolve_signal64(vector: Box<VecBuf>,
                                     impulse_response: &VecBuf)
                                     -> VectorInteropResult<VecBuf> {
-    vector.convert_vec(|v, b| v.convolve_vector(b, &impulse_response.vec))
+    vector.convert_vec(|v, b| v.convolve_signal(b, &impulse_response.vec))
 }
 
 /// Convolves the vector with an impulse response defined by `impulse_response` and
