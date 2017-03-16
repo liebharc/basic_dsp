@@ -456,7 +456,6 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                    delay: T)
                    -> VoidResult
             where B: Buffer<S, T> {
-        // See also http://hg.savannah.gnu.org/hgweb/octave/file/756c7a550542/scripts/general
         if dest_points == self.points() {
             return Ok(());
         }
@@ -473,6 +472,8 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
         if !self.is_complex() {
             self.zero_interleave_b(buffer, 2);
         }
+        let dest_len = dest_len * if is_complex { 1 } else { 2 };
+        let orig_len = orig_len * if is_complex { 1 } else { 2 };
         // Vector is always complex from here on
         fft(self, buffer, false); // fft
         if dest_len > orig_len {
@@ -500,7 +501,6 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                 }
             }
             mem::swap(&mut self.data, &mut target);
-            println!("{:?}", &self[..]);
             buffer.free(target);
             let points = self.len() / 2;
             self.multiply_function_priv(
@@ -873,6 +873,23 @@ mod tests {
                         9.1022e-01, 9.1022e-01, 3.6167e-01, -1.1221e-01, -1.3806e-01, 2.0934e-02,
                         4.0780e-02];
         assert_eq_tol(&result[..], &expected, 0.1);
+    }
+
+    #[test]
+    fn interpolate_by_fractional_sinc_real_data_test() {
+        let len = 6;
+        let mut time = vec!(0.0; len).to_real_time_vec();
+        time[len / 2] = 1.0;
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let mut buffer = SingleBuffer::new();
+        time.interpolate(&mut buffer,
+                          &sinc as &RealFrequencyResponse<f32>,
+                          13,
+                          0.0).unwrap();
+        let expected = [-2.7756e-17, 4.0780e-02, 2.0934e-02, -1.3806e-01, -1.1221e-01, 3.6167e-01,
+                        9.1022e-01, 9.1022e-01, 3.6167e-01, -1.1221e-01, -1.3806e-01, 2.0934e-02,
+                        4.0780e-02];
+        assert_eq_tol(&time[..], &expected, 0.1);
     }
 
     // TODO interpolate tests: decimation, real data, phase
