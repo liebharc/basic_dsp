@@ -297,6 +297,20 @@ macro_rules! add_mat_impl {
 					Ok(())
 				}
 
+				fn interpolate<B>(
+						&mut self,
+						buffer: &mut B,
+                        function: &RealFrequencyResponse<T>,
+                        dest_points: usize,
+                        delay: T) -> VoidResult
+					where B: Buffer<S, T> {
+                    for v in self.rows_mut() {
+                        try!(v.interpolate(buffer, function, dest_points, delay));
+                    }
+
+					Ok(())
+				}
+
 				fn decimatei(
 						&mut self,
 						decimation_factor: u32,
@@ -445,7 +459,7 @@ macro_rules! convolve_vector {
 
            while result.len() > 0 {
             $buffer.free(result.pop().expect("Result should not be empty"));
-           } 
+           }
 
            Ok(())
         }

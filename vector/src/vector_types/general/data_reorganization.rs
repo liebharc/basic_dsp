@@ -472,7 +472,7 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
                 }
                 PaddingOption::Surround => {
                     let diff = (len - len_before) / if is_complex { 2 } else { 1 };
-                    let mut right = (diff - 1) / 2;
+                    let mut right = (diff) / 2;
                     let mut left = diff - right;
                     if is_complex {
                         right *= 2;
@@ -494,7 +494,7 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
                 PaddingOption::Center => {
                     let mut diff = (len - len_before) / if is_complex { 2 } else { 1 };
                     let mut right = (diff - 1) / 2;
-                    let mut left = diff - right ;
+                    let mut left = diff - right;
                     if is_complex {
                         right *= 2;
                         left *= 2;
@@ -502,7 +502,7 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
                     }
 
                     unsafe {
-                        let src = &data[len_before / 2 + 1] as *const T;
+                        let src = &data[len_before - right] as *const T;
                         let dest = &mut target[len - right] as *mut T;
                         ptr::copy(src, dest, right);
                         let src = &data[0] as *const T;
@@ -719,10 +719,8 @@ mod tests {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0].to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
         v.zero_pad_b(&mut buffer, 10, PaddingOption::Surround);
-        // The expected result is required so that the convolution theorem holds true
-        // (mul in freq is the same as conv)
-        let expected = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
-                        10.0, 11.0, 12.0, 0.0, 0.0];
+        let expected = [0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
+                        10.0, 11.0, 12.0, 0.0, 0.0, 0.0, 0.0];
         assert_eq!(&v[..], &expected);
     }
 

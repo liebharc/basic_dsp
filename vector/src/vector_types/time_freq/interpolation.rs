@@ -5,7 +5,7 @@ use std::ops::{Add, Mul};
 use super::WrappingIterator;
 use simd_extensions::*;
 use multicore_support::*;
-use super::super::{VoidResult, DspVec, Domain, PaddingOption,
+use super::super::{VoidResult, DspVec, Domain,
                    NumberSpace, ToSliceMut, GenDspVec, ToDspVector, DataDomain, Buffer, Vector,
                    RealNumberSpace, ErrorReason, InsertZerosOpsBuffered, ScaleOps, MetaData};
 use super::fft;
@@ -431,15 +431,14 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
         // Vector is always complex from here on
 
         fft(self, buffer, false); // fft
-        self.swap_halves_priv(true); // fft shift
         let points = self.len() / 2;
         let interpolation_factorf = T::from(interpolation_factor).unwrap();
         self.multiply_function_priv(function.is_symmetric(),
+                                    true,
                                     interpolation_factorf,
                                     |array| array_to_complex_mut(array),
                                     function,
                                     |f, x| Complex::<T>::new(f.calc(x), T::zero()));
-        self.swap_halves_priv(false); // ifft shift
         fft(self, buffer, true); // ifft
         self.scale(T::one() / T::from(points).unwrap());
         if !is_complex {
@@ -457,6 +456,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                    delay: T)
                    -> VoidResult
             where B: Buffer<S, T> {
+        // See also http://hg.savannah.gnu.org/hgweb/octave/file/756c7a550542/scripts/general
         if dest_points == self.points() {
             return Ok(());
         }
@@ -474,18 +474,42 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
             self.zero_interleave_b(buffer, 2);
         }
         // Vector is always complex from here on
-        //self.zero_interleave_b(buffer, 2);
         fft(self, buffer, false); // fft
-        self.swap_halves_priv(true); // fft shift
         if dest_len > orig_len {
-            self.zero_pad_b(buffer, if is_complex { dest_points } else { dest_len }, PaddingOption::Surround);
+            let mut target = buffer.get(dest_len);
+            {
+                // zero pad center, but it always assumes complex data
+                // This likely requires a code cleanup
+                let data = self.data.to_slice_mut();
+                let target = target.to_slice_mut();
+                self.valid_len = dest_len;
+                let diff = dest_len - orig_len;
+                let right = (diff - 1) / 2;
+                let left = diff - right;
+
+                unsafe {
+                    use std::ptr;
+                    let src = &data[orig_len - right] as *const T;
+                    let dest = &mut target[dest_len - right] as *mut T;
+                    ptr::copy(src, dest, right);
+                    let src = &data[0] as *const T;
+                    let dest = &mut target[0] as *mut T;
+                    ptr::copy(src, dest, left);
+                    let dest = &mut target[left] as *mut T;
+                    ptr::write_bytes(dest, 0, dest_len - diff);
+                }
+            }
+            mem::swap(&mut self.data, &mut target);
+            println!("{:?}", &self[..]);
+            buffer.free(target);
             let points = self.len() / 2;
-            self.multiply_function_priv(function.is_symmetric(),
+            self.multiply_function_priv(
+                function.is_symmetric(),
+                true,
                 interpolation_factorf,
                 |array| array_to_complex_mut(array),
                 function,
-                |f, x| Complex::<T>::new(-f.calc(x), T::zero()));
-            self.swap_halves_priv(false); // ifft shift
+                |f, x| Complex::<T>::new(f.calc(x), T::zero()));
             fft(self, buffer, true); // ifft
             self.scale(T::one() / T::from(points).unwrap());
             if !is_complex {
@@ -721,7 +745,7 @@ mod tests {
     }
 
     #[test]
-    fn interpolate_sinc_test() {
+    fn interpolate_sinc_even_test() {
         let len = 6;
         let mut time = vec!(0.0; 2 * len).to_complex_time_vec();
         time[len] = 1.0;
@@ -731,6 +755,21 @@ mod tests {
         let result = time.to_real();
         let expected = [0.00000, 0.04466, 0.00000, -0.16667, 0.00000, 0.62201, 1.00000, 0.62201,
                         0.00000, -0.16667, 0.00000, 0.04466];
+        assert_eq_tol(&result[..], &expected, 1e-4);
+    }
+
+    #[test]
+    fn interpolate_sinc_odd_test() {
+        let len = 7;
+        let mut time = vec!(0.0; len).to_real_time_vec();
+        time[len / 2] = 1.0;
+        let mut time = time.to_complex().unwrap();
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let mut buffer = SingleBuffer::new();
+        time.interpolate(&mut buffer, &sinc as &RealFrequencyResponse<f32>, 2 * len, 0.0).unwrap();
+        let result = time.to_real();
+        let expected = [0.00000, 0.15856, 0.00000, -0.22913, 0.00000, 0.64199, 1.00000, 0.64199,
+                        0.00000, -0.22913, -0.00000, 0.15856, 0.00000, -0.14286];
         assert_eq_tol(&result[..], &expected, 1e-4);
     }
 
@@ -810,11 +849,33 @@ mod tests {
                           0.0,
                           len);
         let result = time.to_real();
+        // Expected has been obtained with Octave: a = zeros(6,1); a(4) = 1; interpft(a, 13)
         let expected = [-2.7756e-17, 4.0780e-02, 2.0934e-02, -1.3806e-01, -1.1221e-01, 3.6167e-01,
                         9.1022e-01, 9.1022e-01, 3.6167e-01, -1.1221e-01, -1.3806e-01, 2.0934e-02,
                         4.0780e-02];
         assert_eq_tol(&result[..], &expected, 0.1);
     }
+
+    #[test]
+    fn interpolate_by_fractional_sinc_test() {
+        let len = 6;
+        let mut time = vec!(0.0; len).to_real_time_vec();
+        time[len / 2] = 1.0;
+        let mut time = time.to_complex().unwrap();
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let mut buffer = SingleBuffer::new();
+        time.interpolate(&mut buffer,
+                          &sinc as &RealFrequencyResponse<f32>,
+                          13,
+                          0.0).unwrap();
+        let result = time.to_real();
+        let expected = [-2.7756e-17, 4.0780e-02, 2.0934e-02, -1.3806e-01, -1.1221e-01, 3.6167e-01,
+                        9.1022e-01, 9.1022e-01, 3.6167e-01, -1.1221e-01, -1.3806e-01, 2.0934e-02,
+                        4.0780e-02];
+        assert_eq_tol(&result[..], &expected, 0.1);
+    }
+
+    // TODO interpolate tests: decimation, real data, phase
 
     #[test]
     fn interpolatef_delayed_sinc_test() {

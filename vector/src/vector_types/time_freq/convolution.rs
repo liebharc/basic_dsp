@@ -511,6 +511,7 @@ impl<'a, S, T, N, D> FrequencyMultiplication<'a, S, T, &'a ComplexFrequencyRespo
             return;
         }
         self.multiply_function_priv(frequency_response.is_symmetric(),
+                                    false,
                                     ratio,
                                     |array| array_to_complex_mut(array),
                                     frequency_response,
@@ -534,12 +535,14 @@ impl<'a, S, T, N, D> FrequencyMultiplication<'a, S, T, &'a RealFrequencyResponse
         }
         if self.is_complex() {
             self.multiply_function_priv(frequency_response.is_symmetric(),
+                                        false,
                                         ratio,
                                         |array| array_to_complex_mut(array),
                                         frequency_response,
                                         |f, x| Complex::<T>::new(f.calc(x), T::zero()))
         } else {
             self.multiply_function_priv(frequency_response.is_symmetric(),
+                                        false,
                                         ratio,
                                         |array| array,
                                         frequency_response,

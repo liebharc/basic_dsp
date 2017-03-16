@@ -39,7 +39,7 @@ fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: boo
         let temp = temp.to_slice_mut();
         let signal = vec.data.to_slice();
         if !T::has_gpu_support() || len < 10000
-           || !T::is_supported_fft_len(true, len) { 
+           || !T::is_supported_fft_len(true, len) {
             let points = len / 2; // By two since vector is always complex
             let rbw = (T::from(points).unwrap()) * vec.delta;
             vec.delta = rbw;
@@ -56,6 +56,22 @@ fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: boo
 
     mem::swap(&mut vec.data, &mut temp);
     buffer.free(temp);
+}
+
+/// Transform a value on the x-axis the same way as a fft shift transforms the
+/// x axis of a spectrum.
+fn fft_swap_x<T: RealNumber>(is_fft_shifted: bool, x_value: T, x_max: T) -> T {
+    if !is_fft_shifted {
+        x_value / x_max
+    }
+    else if x_value <= T::zero() {
+        let x_value = x_value / x_max;
+        T::one() + x_value
+    }
+    else {
+        let x_value = x_max - x_value + T::one();
+        -x_value / x_max
+    }
 }
 
 impl<S, T, N, D> DspVec<S, T, N, D>
@@ -517,8 +533,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         buffer.free(temp);
     }
 
-    fn multiply_function_priv<TT, CMut, FA, F>(&mut self,
+        fn multiply_function_priv<TT, CMut, FA, F>(&mut self,
                                                is_symmetric: bool,
+                                               is_fft_shifted: bool,
                                                ratio: T,
                                                convert_mut: CMut,
                                                function_arg: FA,
@@ -528,6 +545,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
               F: Fn(FA, T) -> TT + 'static + Sync,
               TT: Zero + Mul<Output = TT> + Copy + Send + Sync + From<T>
     {
+        let two = T::one() + T::one();
         if !is_symmetric {
             let len = self.len();
             let points = self.points();
@@ -539,14 +557,13 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                       1,
                                       (ratio, function_arg),
                                       move |array, range, (ratio, arg)| {
-                let two = T::from(2.0).unwrap();
                 let scale = TT::from(ratio);
                 let offset = if points % 2 != 0 { 1 } else { 0 };
                 let max = T::from(points - offset).unwrap() / two;
                 let mut j = -(T::from(points - offset).unwrap()) / two +
                             T::from(range.start).unwrap();
                 for num in array {
-                    *num = (*num) * scale * fun(arg, j / max * ratio);
+                    *num = (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j, max) * ratio);
                     j = j + T::one();
                 }
             });
@@ -583,19 +600,19 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                     let mut iter2 = array2.iter_mut().rev();
                     while j1 < j2 {
                         let num = iter1.next().unwrap();
-                        (*num) = (*num) * scale * fun(arg, j1 / max * ratio);
+                        (*num) = (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j1, max) * ratio);
                         j1 = j1 + T::one();
                         i1 += 1;
                     }
                     while j2 < j1 {
                         let num = iter2.next().unwrap();
-                        (*num) = (*num) * scale * fun(arg, j2 / max * ratio);
+                        (*num) = (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j2, max) * ratio);
                         j2 = j2 + T::one();
                         i2 += 1;
                     }
                     // At this point we can be sure that `j1 == j2`
                     for (num1, num2) in iter1.zip(iter2) {
-                        let arg = scale * fun(arg, j1 / max * ratio);
+                        let arg = scale * fun(arg, fft_swap_x(is_fft_shifted, j1, max) * ratio);
                         *num1 = (*num1) * arg;
                         *num2 = (*num2) * arg;
                         j1 = j1 + T::one();
@@ -609,11 +626,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 let pos2 = len2 - i2;
                 let common_length = if pos1 < pos2 { pos1 } else { pos2 };
                 for num in &mut array1[i1 + common_length..len1] {
-                    (*num) = (*num) * scale * fun(arg, j1 / max * ratio);
+                    (*num) = (*num) * scale * fun(arg,  fft_swap_x(is_fft_shifted, j1, max) * ratio);
                     j1 = j1 + T::one();
                 }
                 for num in &mut array2[0..len2 - common_length - i2] {
-                    (*num) = (*num) * scale * fun(arg, j2 / max * ratio);
+                    (*num) = (*num) * scale * fun(arg,  fft_swap_x(is_fft_shifted, j2, max) * ratio);
                     j2 = j2 + T::one();
                 }
             });
@@ -736,5 +753,24 @@ impl<T> ReverseWrappingIterator<T>
                 count: iter_len,
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::fft_swap_x;
+
+     #[test]
+    fn fft_swap_x_test()
+    {
+        let input = [-4.0, -3.0, -2.0, -1.0, 0.0,
+                      1.0, 2.0, 3.0, 4.0];
+        let expected = [0.0, 0.25, 0.5, 0.75, 1.0,
+                       -1.0, -0.75, -0.5, -0.25];
+        let mut actual = [0.0; 9];
+        for i in 0..actual.len() {
+            actual[i] = fft_swap_x(true, input[i], 4.0);
+        }
+        assert_eq!(&actual, &expected);
     }
 }
