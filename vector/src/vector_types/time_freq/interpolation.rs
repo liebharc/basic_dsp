@@ -63,6 +63,7 @@ pub trait InterpolationOps<S, T>
         where B: Buffer<S, T>;
 
     /// Interpolates the signal in frequency domain by padding it with zeros.
+    /// It is required that: `target_points > self.len()`
     fn interpolate<B>(&mut self,
                    buffer: &mut B,
                    function: &RealFrequencyResponse<T>,
@@ -481,7 +482,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
             {
                 // zero pad center, but it always assumes complex data
                 // This likely requires a code cleanup
-                let data = self.data.to_slice_mut();
+                let data = self.data.to_slice();
                 let target = target.to_slice_mut();
                 self.valid_len = dest_len;
                 let diff = dest_len - orig_len;
@@ -518,7 +519,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
             }
         }
         else {
-            // TODO
+            return Err(ErrorReason::InvalidArgumentLength);
         }
 
         Ok(())
@@ -892,7 +893,7 @@ mod tests {
         assert_eq_tol(&time[..], &expected, 0.1);
     }
 
-    // TODO interpolate tests: decimation, real data, phase
+    // TODO interpolate tests: phase
 
     #[test]
     fn interpolatef_delayed_sinc_test() {
