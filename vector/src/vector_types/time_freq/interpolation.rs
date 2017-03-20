@@ -64,7 +64,6 @@ pub trait InterpolationOps<S, T>
         where B: Buffer<S, T>;
 
     /// Interpolates the signal in frequency domain by padding it with zeros.
-    /// It is required that: `target_points > self.len()`
     fn interpolate<B>(&mut self,
                    buffer: &mut B,
                    function: &RealFrequencyResponse<T>,
@@ -464,6 +463,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
 
         let delta_t = self.delta();
         let is_complex = self.is_complex();
+        let orig_points = self.points();
         let orig_len = self.len();
         let dest_len = if is_complex { 2 * dest_points } else { dest_points };
         let interpolation_factorf = T::from(dest_points).unwrap() / T::from(self.points()).unwrap();
@@ -524,7 +524,29 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                 |f, x| Complex::<T>::new(f.calc(x), T::zero()));
         }
         else if dest_len < orig_len {
-            return Err(ErrorReason::InvalidArgumentLength);
+        	let (neg_points, pos_points, step) = 
+        	if is_complex {
+	        	let len_diff = (orig_len - dest_len) / 2;
+	        	let neg_points = len_diff / 2;
+	        	let pos_points = len_diff - neg_points;
+	        	(2 * neg_points, 2 * pos_points, 2)	
+        	} else
+        	{
+				let len_diff = orig_len - dest_len;
+	        	let neg_points = len_diff / 2;
+	        	let pos_points = len_diff - neg_points;
+	        	(neg_points, pos_points, 1)
+        	};
+        	
+        	unsafe {
+        		use std::ptr;
+        		let mut data = self.data.to_slice_mut();
+        		let src = &data[orig_len - neg_points + step] as *const T;
+        		let dest = &mut data[pos_points] as *mut T;
+        		ptr::copy(src, dest, neg_points);
+        	}
+        	self.resize(dest_len).expect("Shrinking should always succeed");
+        	self.scale(T::from(dest_points).unwrap() / T::from(orig_points).unwrap());
         }
         
     	fft(self, buffer, true); // ifft
@@ -955,6 +977,25 @@ mod tests {
         time.decimatei(2, 1);
         let expected = [2.0, 3.0, 6.0, 7.0, 10.0, 11.0];
         assert_eq_tol(&time[..], &expected, 0.1);
+    }
+
+    #[test]
+    fn decimate_with_interpolate_test() {
+    	// Octave: fir1(12, 0.2)
+        let time = vec![
+	        -2.6551e-03, 1.5106e-04, 1.6104e-02, 5.9695e-02, 1.2705e-01, 1.9096e-01,
+	        2.1739e-01, 1.9096e-01, 1.2705e-01, 5.9695e-02, 1.6104e-02, 1.5106e-04,
+	        -2.6551e-03].to_real_time_vec();
+	    let len = time.len();    
+		let mut time = time.to_complex().unwrap();
+		let mut buffer = SingleBuffer::new();
+		let sinc: SincFunction<f32> = SincFunction::new();
+        time.interpolate(&mut buffer, &sinc as &RealFrequencyResponse<f32>, len / 2, 0.0).unwrap();
+        let result = time.magnitude();
+        // Octave: interpft(time, 6)
+        let expected = [
+	         2.0600e-03, 2.1088e-02, 1.5072e-01,2.1024e-01,8.0868e-02, 7.5036e-04];
+        assert_eq_tol(&result[..], &expected, 1e-4);
     }
 
     #[test]
