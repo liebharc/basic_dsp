@@ -3,6 +3,8 @@ Cargo.lock
 .vs/
 basic_dsp.rsproj*
 basic_dsp.sln
+.project
+.settings/
 *.dll
 *.so
 *.lib

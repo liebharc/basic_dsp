@@ -359,7 +359,7 @@ impl<T> RealImpulseResponse<T> for RaisedCosineFunction<T>
 
         let one = T::one();
         let two = T::from(2.0).unwrap();
-        let pi = two * one.asin();
+        let pi = T::PI();
         let four = two * two;
         if x.abs() == one / (two * self.rolloff) {
             let arg = pi / two / self.rolloff;
@@ -383,7 +383,7 @@ impl<T> RealFrequencyResponse<T> for RaisedCosineFunction<T>
         // assume x_delta = 1.0
         let one = T::one();
         let two = T::from(2.0).unwrap();
-        let pi = two * one.asin();
+        let pi = T::PI();
         if x.abs() <= (one - self.rolloff) {
             return one;
         }
@@ -427,7 +427,7 @@ impl<T> RealImpulseResponse<T> for SincFunction<T>
 
         let one = T::one();
         let two = T::from(2.0).unwrap();
-        let pi = two * one.asin();
+        let pi = T::PI();
         let pi_x = pi * x;
         pi_x.sin() / pi_x
     }

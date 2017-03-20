@@ -465,7 +465,6 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
         let delta_t = self.delta();
         let is_complex = self.is_complex();
         let orig_len = self.len();
-        let orig_points = self.points();
         let dest_len = if is_complex { 2 * dest_points } else { dest_points };
         let interpolation_factorf = T::from(dest_points).unwrap() / T::from(self.points()).unwrap();
 
@@ -478,31 +477,31 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
         fft(self, buffer, false); // fft
 
         let two = T::one() + T::one();
-        let pi = two * T::one().asin();
+        let pi = T::PI();
         // Add the delay, which is a linear phase in frequency domain
         if delay != T::zero()
         {
-            let phase_inc = -two * pi * delay / delta_t / delta_t
-                            / T::from(orig_points).unwrap();
             let points = self.len() / 2;
-            let half_points = points / 2;
-            let half = half_points * 2;
+            let pos_points = points / 2;
+            let neg_points = points - pos_points;
+            let phase_inc = -two * pi * -delay / delta_t / delta_t
+                            / T::from(points).unwrap();
             {
                 let len = self.len();
-                let mut freq = (&mut self[half..len]).to_complex_freq_vec();
+                let mut freq = (&mut self[2*pos_points..len]).to_complex_freq_vec();
                 // Negative frequencies
-                let start = -T::from(half/2).unwrap() * phase_inc;
+                let start = -T::from(neg_points).unwrap() * phase_inc;
                 freq.multiply_complex_exponential(phase_inc, start);
             }
             {
-                let mut freq = (&mut self[0..half]).to_complex_freq_vec();
+                let mut freq = (&mut self[0..2*pos_points]).to_complex_freq_vec();
                 // Zero and psoitive frequencies
                 let start = T::zero();
                 freq.multiply_complex_exponential(phase_inc, start);
             }
         }
 
-        if dest_len >= orig_len {
+        if dest_len > orig_len {
             {
                 let mut data = buffer.construct_new(0);
                 let len = self.len();
@@ -523,16 +522,17 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                 |array| array_to_complex_mut(array),
                 function,
                 |f, x| Complex::<T>::new(f.calc(x), T::zero()));
-            fft(self, buffer, true); // ifft
-            let points = self.len() / 2;
-            self.scale(T::one() / T::from(points).unwrap());
-            if !is_complex {
-                // Convert vector back into real number space
-                self.pure_complex_to_real_operation_inplace(|x, _arg| x.re, ());
-            }
         }
-        else {
+        else if dest_len < orig_len {
             return Err(ErrorReason::InvalidArgumentLength);
+        }
+        
+    	fft(self, buffer, true); // ifft
+        let points = self.len() / 2;
+        self.scale(T::one() / T::from(points).unwrap());
+        if !is_complex {
+            // Convert vector back into real number space
+            self.pure_complex_to_real_operation_inplace(|x, _arg| x.re, ());
         }
 
         Ok(())
@@ -923,12 +923,18 @@ mod tests {
                         1.00000, 0.62201, 0.00000, 0.16667];
         assert_eq_tol(&result[..], &expected, 0.1);
     }
-/*
+
+
     #[test]
     fn interpolate_delayed_sinc_test() {
-        let len = 6;
-        let mut time = vec!(0.0; 2 * len).to_complex_time_vec();
-        time[len] = 1.0;
+    	// We use different test data for `interpolate` then for `interpolatef`
+    	// since the dirac impulse used in `interpolatef` does not work well
+    	// with a FFT since it violates the Nyquist–Shannon sampling theorem.   
+    	
+        // time data in Octave: [fir1(5, 0.2)];
+        let time = vec!(0.019827, 0.132513, 0.347660, 0.347660, 0.132513, 0.019827).to_real_time_vec();
+        let len = time.len();
+        let mut time = time.to_complex().unwrap();
         let sinc: SincFunction<f32> = SincFunction::new();
         let mut buffer = SingleBuffer::new();
         time.interpolate(&mut buffer,
@@ -936,10 +942,11 @@ mod tests {
                           2 * len,
                           1.0).unwrap();
         let result = time.magnitude();
-        let expected = [0.00000, 0.00000, 0.00000, 0.04466, 0.00000, 0.16667, 0.00000, 0.62201,
-                        1.00000, 0.62201, 0.00000, 0.16667];
+        // expected in Octave: interpft([time(2:end) 0], 12);
+        let expected = [0.132513, 0.244227, 0.347660, 0.390094, 0.347660, 0.244227,
+				        0.132513, 0.054953, 0.019827, 0.011546, 0.019827, 0.054953];
         assert_eq_tol(&result[..], &expected, 0.1);
-    }*/
+    }
 
     #[test]
     fn decimatei_test() {

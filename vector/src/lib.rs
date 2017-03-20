@@ -88,11 +88,13 @@ impl ToSimd for f64 {
 
 /// A real floating pointer number intended to abstract over `f32` and `f64`.
 pub trait RealNumber
-    : Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive + GpuFloat
+    : Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive + GpuFloat 
+     + num::traits::FloatConst
 {
 }
 impl<T> RealNumber for T
     where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive + GpuFloat
+		    + num::traits::FloatConst
 {
 }
 
