@@ -425,8 +425,6 @@ impl<T> RealImpulseResponse<T> for SincFunction<T>
             return T::one();
         }
 
-        let one = T::one();
-        let two = T::from(2.0).unwrap();
         let pi = T::PI();
         let pi_x = pi * x;
         pi_x.sin() / pi_x
