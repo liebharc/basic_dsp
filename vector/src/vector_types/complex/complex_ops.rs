@@ -78,6 +78,7 @@ impl<S, T, N, D> ComplexOps<T> for DspVec<S, T, N, D>
     fn multiply_complex_exponential(&mut self, a: T, b: T) {
         assert_complex!(self);
         let a = a * self.delta();
+        let b = b * self.delta();
         let data_length = self.len();
         let mut array = self.data.to_slice_mut();
         Chunk::execute_with_range(Complexity::Small,
@@ -91,7 +92,7 @@ impl<S, T, N, D> ComplexOps<T> for DspVec<S, T, N, D>
             let mut exponential =
                 Complex::<T>::from_polar(&T::one(), &b) *
                 Complex::<T>::from_polar(&T::one(),
-                                         &(a * T::from(range.start).unwrap() as T / two));
+                                         &(a * T::from(range.start).unwrap() / two));
             let increment = Complex::<T>::from_polar(&T::one(), &a);
             let array = array_to_complex_mut(array);
             for complex in array {

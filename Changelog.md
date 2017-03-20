@@ -7,6 +7,7 @@ Minor additions.
 - Updated `simd` dependency to version `0.2`.
 - New feature: Added `ApproximatedOps` trait.
 - New feature: New `interpolate` method which offers the same features as `interpolatef`, but the performance should be closer to `interpolatei`.
+- Fix: `multiply_complex_exponential` didn't consistently took `delta` into account.
 
 ## Version 0.4.2
 Bugfix release.

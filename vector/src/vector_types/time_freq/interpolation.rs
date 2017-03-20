@@ -5,9 +5,10 @@ use std::ops::{Add, Mul};
 use super::WrappingIterator;
 use simd_extensions::*;
 use multicore_support::*;
-use super::super::{VoidResult, DspVec, Domain,
+use super::super::{VoidResult, DspVec, Domain, ToComplexVector, ComplexOps, PaddingOption, Owner,
                    NumberSpace, ToSliceMut, GenDspVec, ToDspVector, DataDomain, Buffer, Vector,
-                   RealNumberSpace, ErrorReason, InsertZerosOpsBuffered, ScaleOps, MetaData};
+                   RealNumberSpace, ErrorReason, InsertZerosOpsBuffered, ScaleOps, MetaData,
+                   ResizeOps};
 use super::fft;
 use std::mem;
 use num::complex::Complex;
@@ -318,7 +319,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
 impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: InsertZerosOpsBuffered<S, T> + ScaleOps<T>,
-          S: ToSliceMut<T>,
+          S: ToSliceMut<T> + ToComplexVector<S, T> + Owner,
           T: RealNumber,
           N: NumberSpace,
           D: Domain
@@ -457,53 +458,64 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                    delay: T)
                    -> VoidResult
             where B: Buffer<S, T> {
-        if dest_points == self.points() {
-            return Ok(());
-        }
-
         if !function.is_symmetric() && !self.is_complex() {
             return Err(ErrorReason::ArgumentFunctionMustBeSymmetric);
         }
 
+        let delta_t = self.delta();
         let is_complex = self.is_complex();
         let orig_len = self.len();
+        let orig_points = self.points();
         let dest_len = if is_complex { 2 * dest_points } else { dest_points };
         let interpolation_factorf = T::from(dest_points).unwrap() / T::from(self.points()).unwrap();
 
         if !self.is_complex() {
+            // Vector is always complex from here on (however the complex flag inside the vector
+            // may not be set)
             self.zero_interleave_b(buffer, 2);
         }
-        let dest_len = dest_len * if is_complex { 1 } else { 2 };
-        let orig_len = orig_len * if is_complex { 1 } else { 2 };
-        // Vector is always complex from here on
-        fft(self, buffer, false); // fft
-        if dest_len > orig_len {
-            let mut target = buffer.get(dest_len);
-            {
-                // zero pad center, but it always assumes complex data
-                // This likely requires a code cleanup
-                let data = self.data.to_slice();
-                let target = target.to_slice_mut();
-                self.valid_len = dest_len;
-                let diff = dest_len - orig_len;
-                let right = (diff - 1) / 2;
-                let left = diff - right;
 
-                unsafe {
-                    use std::ptr;
-                    let src = &data[orig_len - right] as *const T;
-                    let dest = &mut target[dest_len - right] as *mut T;
-                    ptr::copy(src, dest, right);
-                    let src = &data[0] as *const T;
-                    let dest = &mut target[0] as *mut T;
-                    ptr::copy(src, dest, left);
-                    let dest = &mut target[left] as *mut T;
-                    ptr::write_bytes(dest, 0, dest_len - diff);
-                }
-            }
-            mem::swap(&mut self.data, &mut target);
-            buffer.free(target);
+        fft(self, buffer, false); // fft
+
+        let two = T::one() + T::one();
+        let pi = two * T::one().asin();
+        // Add the delay, which is a linear phase in frequency domain
+        if delay != T::zero()
+        {
+            let phase_inc = -two * pi * delay / delta_t / delta_t
+                            / T::from(orig_points).unwrap();
             let points = self.len() / 2;
+            let half_points = points / 2;
+            let half = half_points * 2;
+            {
+                let len = self.len();
+                let mut freq = (&mut self[half..len]).to_complex_freq_vec();
+                // Negative frequencies
+                let start = -T::from(half/2).unwrap() * phase_inc;
+                freq.multiply_complex_exponential(phase_inc, start);
+            }
+            {
+                let mut freq = (&mut self[0..half]).to_complex_freq_vec();
+                // Zero and psoitive frequencies
+                let start = T::zero();
+                freq.multiply_complex_exponential(phase_inc, start);
+            }
+        }
+
+        if dest_len >= orig_len {
+            {
+                let mut data = buffer.construct_new(0);
+                let len = self.len();
+                mem::swap(&mut self.data, &mut data); // Take ownership
+                let mut complex = data.to_complex_freq_vec();
+                complex.resize(len)
+                    .expect("Resize should succeed since the size has been checked before");
+                complex.zero_pad_b(buffer, dest_points, PaddingOption::Center);
+                mem::swap(&mut self.data, &mut complex.data);
+                self.resize(2 * dest_points)
+                    .expect("Resize should success, since we just increased the storage size")
+            }
+            // Apply the window function
             self.multiply_function_priv(
                 function.is_symmetric(),
                 true,
@@ -512,6 +524,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                 function,
                 |f, x| Complex::<T>::new(f.calc(x), T::zero()));
             fft(self, buffer, true); // ifft
+            let points = self.len() / 2;
             self.scale(T::one() / T::from(points).unwrap());
             if !is_complex {
                 // Convert vector back into real number space
@@ -893,8 +906,6 @@ mod tests {
         assert_eq_tol(&time[..], &expected, 0.1);
     }
 
-    // TODO interpolate tests: phase
-
     #[test]
     fn interpolatef_delayed_sinc_test() {
         let len = 6;
@@ -912,6 +923,23 @@ mod tests {
                         1.00000, 0.62201, 0.00000, 0.16667];
         assert_eq_tol(&result[..], &expected, 0.1);
     }
+/*
+    #[test]
+    fn interpolate_delayed_sinc_test() {
+        let len = 6;
+        let mut time = vec!(0.0; 2 * len).to_complex_time_vec();
+        time[len] = 1.0;
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let mut buffer = SingleBuffer::new();
+        time.interpolate(&mut buffer,
+                          &sinc as &RealFrequencyResponse<f32>,
+                          2 * len,
+                          1.0).unwrap();
+        let result = time.magnitude();
+        let expected = [0.00000, 0.00000, 0.00000, 0.04466, 0.00000, 0.16667, 0.00000, 0.62201,
+                        1.00000, 0.62201, 0.00000, 0.16667];
+        assert_eq_tol(&result[..], &expected, 0.1);
+    }*/
 
     #[test]
     fn decimatei_test() {

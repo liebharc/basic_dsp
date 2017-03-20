@@ -492,13 +492,13 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
                     }
                 }
                 PaddingOption::Center => {
-                    let mut diff = (len - len_before) / if is_complex { 2 } else { 1 };
-                    let mut right = (diff - 1) / 2;
-                    let mut left = diff - right;
+                    let step = if is_complex { 2 } else { 1 };
+                    let points_before = len_before / step;
+                    let mut right = points_before / 2;
+                    let mut left = points_before - right;
                     if is_complex {
                         right *= 2;
                         left *= 2;
-                        diff *= 2;
                     }
 
                     unsafe {
@@ -509,7 +509,7 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
                         let dest = &mut target[0] as *mut T;
                         ptr::copy(src, dest, left);
                         let dest = &mut target[left] as *mut T;
-                        ptr::write_bytes(dest, 0, len - diff);
+                        ptr::write_bytes(dest, 0, len - len_before);
                     }
                 }
             }
