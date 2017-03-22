@@ -300,12 +300,24 @@ macro_rules! add_mat_impl {
 				fn interpolate<B>(
 						&mut self,
 						buffer: &mut B,
-                        function: &RealFrequencyResponse<T>,
+                        function: Option<&RealFrequencyResponse<T>>,
                         dest_points: usize,
                         delay: T) -> VoidResult
 					where B: Buffer<S, T> {
                     for v in self.rows_mut() {
                         try!(v.interpolate(buffer, function, dest_points, delay));
+                    }
+
+					Ok(())
+				}
+
+				fn interpft<B>(
+						&mut self,
+						buffer: &mut B,
+                        dest_points: usize) -> VoidResult
+					where B: Buffer<S, T> {
+                    for v in self.rows_mut() {
+                        try!(v.interpft(buffer, dest_points));
                     }
 
 					Ok(())

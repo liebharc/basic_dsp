@@ -8,8 +8,8 @@ use multicore_support::*;
 use super::super::{VoidResult, DspVec, Domain, ToComplexVector, ComplexOps, PaddingOption, Owner,
                    NumberSpace, ToSliceMut, GenDspVec, ToDspVector, DataDomain, Buffer, Vector,
                    RealNumberSpace, ErrorReason, InsertZerosOpsBuffered, ScaleOps, MetaData,
-                   ResizeOps};
-use super::fft;
+                   ResizeOps, FrequencyToTimeDomainOperations,
+                   TimeToFrequencyDomainOperations};
 use std::mem;
 use num::complex::Complex;
 use InlineVector;
@@ -66,9 +66,20 @@ pub trait InterpolationOps<S, T>
     /// Interpolates the signal in frequency domain by padding it with zeros.
     fn interpolate<B>(&mut self,
                    buffer: &mut B,
-                   function: &RealFrequencyResponse<T>,
+                   function: Option<&RealFrequencyResponse<T>>,
                    target_points: usize,
                    delay: T)
+                   -> VoidResult
+            where B: Buffer<S, T>;
+
+    /// Interpolates the signal in frequency domain by padding it with zeros.
+    /// This function preserves the shape of the signal in frequency domain.
+    ///
+    /// Calling this function is the same as calling `interpolate` with `None` as
+    /// function and `0.0` as delay.
+    fn interpft<B>(&mut self,
+                   buffer: &mut B,
+                   target_points: usize)
                    -> VoidResult
             where B: Buffer<S, T>;
 
@@ -318,7 +329,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
 impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: InsertZerosOpsBuffered<S, T> + ScaleOps<T>,
-          S: ToSliceMut<T> + ToComplexVector<S, T> + Owner,
+          S: ToSliceMut<T> + ToComplexVector<S, T> + Owner + ToDspVector<T>,
           T: RealNumber,
           N: NumberSpace,
           D: Domain
@@ -429,18 +440,20 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
         } else {
             self.zero_interleave_b(buffer, interpolation_factor);
         }
-        // Vector is always complex from here on
 
-        fft(self, buffer, false); // fft
-        let points = self.len() / 2;
+        let mut complex = buffer.construct_new(0).to_complex_time_vec();
+        self.swap_data(&mut complex);
+        let mut complex = complex.plain_fft(buffer);
+        let points = complex.len() / 2;
         let interpolation_factorf = T::from(interpolation_factor).unwrap();
-        self.multiply_function_priv(function.is_symmetric(),
+        complex.multiply_function_priv(function.is_symmetric(),
                                     true,
                                     interpolation_factorf,
                                     |array| array_to_complex_mut(array),
                                     function,
                                     |f, x| Complex::<T>::new(f.calc(x), T::zero()));
-        fft(self, buffer, true); // ifft
+        let mut complex = complex.plain_ifft(buffer);
+        self.swap_data(&mut complex);
         self.scale(T::one() / T::from(points).unwrap());
         if !is_complex {
             // Convert vector back into real number space
@@ -450,14 +463,22 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
         Ok(())
     }
 
+    fn interpft<B>(&mut self,
+                   buffer: &mut B,
+                   dest_points: usize)
+                   -> VoidResult
+            where B: Buffer<S, T> {
+        self.interpolate(buffer, None, dest_points, T::zero())
+    }
+
     fn interpolate<B>(&mut self,
                    buffer: &mut B,
-                   function: &RealFrequencyResponse<T>,
+                   function: Option<&RealFrequencyResponse<T>>,
                    dest_points: usize,
                    delay: T)
                    -> VoidResult
             where B: Buffer<S, T> {
-        if !function.is_symmetric() && !self.is_complex() {
+        if function.is_some() && !function.unwrap().is_symmetric() && !self.is_complex() {
             return Err(ErrorReason::ArgumentFunctionMustBeSymmetric);
         }
 
@@ -474,27 +495,30 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
             self.zero_interleave_b(buffer, 2);
         }
 
-        fft(self, buffer, false); // fft
+        let mut complex = buffer.construct_new(0).to_complex_time_vec();
+        self.swap_data(&mut complex);
+
+        let mut complex = complex.plain_fft(buffer);
 
         let two = T::one() + T::one();
         let pi = T::PI();
         // Add the delay, which is a linear phase in frequency domain
         if delay != T::zero()
         {
-            let points = self.len() / 2;
+            let points = complex.len() / 2;
             let pos_points = points / 2;
             let neg_points = points - pos_points;
             let phase_inc = -two * pi * -delay / delta_t / delta_t
                             / T::from(points).unwrap();
             {
-                let len = self.len();
-                let mut freq = (&mut self[2*pos_points..len]).to_complex_freq_vec();
+                let len = complex.len();
+                let mut freq = (&mut complex[2*pos_points..len]).to_complex_freq_vec();
                 // Negative frequencies
                 let start = -T::from(neg_points).unwrap() * phase_inc;
                 freq.multiply_complex_exponential(phase_inc, start);
             }
             {
-                let mut freq = (&mut self[0..2*pos_points]).to_complex_freq_vec();
+                let mut freq = (&mut complex[0..2*pos_points]).to_complex_freq_vec();
                 // Zero and psoitive frequencies
                 let start = T::zero();
                 freq.multiply_complex_exponential(phase_inc, start);
@@ -502,34 +526,29 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
         }
 
         if dest_len > orig_len {
-            {
-                let mut data = buffer.construct_new(0);
-                let len = self.len();
-                mem::swap(&mut self.data, &mut data); // Take ownership
-                let mut complex = data.to_complex_freq_vec();
-                complex.resize(len)
-                    .expect("Resize should succeed since the size has been checked before");
-                complex.zero_pad_b(buffer, dest_points, PaddingOption::Center);
-                mem::swap(&mut self.data, &mut complex.data);
-                self.resize(2 * dest_points)
-                    .expect("Resize should success, since we just increased the storage size")
-            }
-            // Apply the window function
-            self.multiply_function_priv(
-                function.is_symmetric(),
-                true,
-                interpolation_factorf,
-                |array| array_to_complex_mut(array),
-                function,
-                |f, x| Complex::<T>::new(f.calc(x), T::zero()));
+            complex.zero_pad_b(buffer, dest_points, PaddingOption::Center);
+
+            match function {
+                None => (),
+                Some(func) => {
+                    // Apply the window function
+                    complex.multiply_function_priv(
+                        func.is_symmetric(),
+                        true,
+                        interpolation_factorf,
+                        |array| array_to_complex_mut(array),
+                        func,
+                        |f, x| Complex::<T>::new(f.calc(x), T::zero()));
+                }
+            };
         }
         else if dest_len < orig_len {
-        	let (neg_points, pos_points, step) = 
+        	let (neg_points, pos_points, step) =
         	if is_complex {
 	        	let len_diff = (orig_len - dest_len) / 2;
 	        	let neg_points = len_diff / 2;
 	        	let pos_points = len_diff - neg_points;
-	        	(2 * neg_points, 2 * pos_points, 2)	
+	        	(2 * neg_points, 2 * pos_points, 2)
         	} else
         	{
 				let len_diff = orig_len - dest_len;
@@ -537,21 +556,22 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
 	        	let pos_points = len_diff - neg_points;
 	        	(neg_points, pos_points, 1)
         	};
-        	
+
         	unsafe {
         		use std::ptr;
-        		let mut data = self.data.to_slice_mut();
+        		let mut data = complex.data.to_slice_mut();
         		let src = &data[orig_len - neg_points + step] as *const T;
         		let dest = &mut data[pos_points] as *mut T;
         		ptr::copy(src, dest, neg_points);
         	}
-        	self.resize(dest_len).expect("Shrinking should always succeed");
-        	self.scale(T::from(dest_points).unwrap() / T::from(orig_points).unwrap());
+        	complex.resize(dest_len).expect("Shrinking should always succeed");
+        	complex.scale(T::from(dest_points).unwrap() / T::from(orig_points).unwrap());
         }
-        
-    	fft(self, buffer, true); // ifft
-        let points = self.len() / 2;
-        self.scale(T::one() / T::from(points).unwrap());
+
+    	let mut complex = complex.plain_ifft(buffer);
+        let points = complex.len() / 2;
+        complex.scale(T::one() / T::from(points).unwrap());
+        complex.swap_data(self);
         if !is_complex {
             // Convert vector back into real number space
             self.pure_complex_to_real_operation_inplace(|x, _arg| x.re, ());
@@ -787,7 +807,7 @@ mod tests {
         time[len] = 1.0;
         let sinc: SincFunction<f32> = SincFunction::new();
         let mut buffer = SingleBuffer::new();
-        time.interpolate(&mut buffer, &sinc as &RealFrequencyResponse<f32>, 2 * len, 0.0).unwrap();
+        time.interpolate(&mut buffer, Some(&sinc as &RealFrequencyResponse<f32>), 2 * len, 0.0).unwrap();
         let result = time.to_real();
         let expected = [0.00000, 0.04466, 0.00000, -0.16667, 0.00000, 0.62201, 1.00000, 0.62201,
                         0.00000, -0.16667, 0.00000, 0.04466];
@@ -802,7 +822,7 @@ mod tests {
         let mut time = time.to_complex().unwrap();
         let sinc: SincFunction<f32> = SincFunction::new();
         let mut buffer = SingleBuffer::new();
-        time.interpolate(&mut buffer, &sinc as &RealFrequencyResponse<f32>, 2 * len, 0.0).unwrap();
+        time.interpolate(&mut buffer, Some(&sinc as &RealFrequencyResponse<f32>), 2 * len, 0.0).unwrap();
         let result = time.to_real();
         let expected = [0.00000, 0.15856, 0.00000, -0.22913, 0.00000, 0.64199, 1.00000, 0.64199,
                         0.00000, -0.22913, -0.00000, 0.15856, 0.00000, -0.14286];
@@ -901,7 +921,7 @@ mod tests {
         let sinc: SincFunction<f32> = SincFunction::new();
         let mut buffer = SingleBuffer::new();
         time.interpolate(&mut buffer,
-                          &sinc as &RealFrequencyResponse<f32>,
+                          Some(&sinc as &RealFrequencyResponse<f32>),
                           13,
                           0.0).unwrap();
         let result = time.to_real();
@@ -919,7 +939,7 @@ mod tests {
         let sinc: SincFunction<f32> = SincFunction::new();
         let mut buffer = SingleBuffer::new();
         time.interpolate(&mut buffer,
-                          &sinc as &RealFrequencyResponse<f32>,
+                          Some(&sinc as &RealFrequencyResponse<f32>),
                           13,
                           0.0).unwrap();
         let expected = [-2.7756e-17, 4.0780e-02, 2.0934e-02, -1.3806e-01, -1.1221e-01, 3.6167e-01,
@@ -951,8 +971,8 @@ mod tests {
     fn interpolate_delayed_sinc_test() {
     	// We use different test data for `interpolate` then for `interpolatef`
     	// since the dirac impulse used in `interpolatef` does not work well
-    	// with a FFT since it violates the Nyquist–Shannon sampling theorem.   
-    	
+    	// with a FFT since it violates the Nyquist–Shannon sampling theorem.
+
         // time data in Octave: [fir1(5, 0.2)];
         let time = vec!(0.019827, 0.132513, 0.347660, 0.347660, 0.132513, 0.019827).to_real_time_vec();
         let len = time.len();
@@ -960,7 +980,7 @@ mod tests {
         let sinc: SincFunction<f32> = SincFunction::new();
         let mut buffer = SingleBuffer::new();
         time.interpolate(&mut buffer,
-                          &sinc as &RealFrequencyResponse<f32>,
+                          Some(&sinc as &RealFrequencyResponse<f32>),
                           2 * len,
                           1.0).unwrap();
         let result = time.magnitude();
@@ -986,11 +1006,11 @@ mod tests {
 	        -2.6551e-03, 1.5106e-04, 1.6104e-02, 5.9695e-02, 1.2705e-01, 1.9096e-01,
 	        2.1739e-01, 1.9096e-01, 1.2705e-01, 5.9695e-02, 1.6104e-02, 1.5106e-04,
 	        -2.6551e-03].to_real_time_vec();
-	    let len = time.len();    
+	    let len = time.len();
 		let mut time = time.to_complex().unwrap();
 		let mut buffer = SingleBuffer::new();
 		let sinc: SincFunction<f32> = SincFunction::new();
-        time.interpolate(&mut buffer, &sinc as &RealFrequencyResponse<f32>, len / 2, 0.0).unwrap();
+        time.interpolate(&mut buffer, Some(&sinc as &RealFrequencyResponse<f32>), len / 2, 0.0).unwrap();
         let result = time.magnitude();
         // Octave: interpft(time, 6)
         let expected = [

@@ -341,6 +341,31 @@ fn swap_array_halves<T>(data: &mut [T], forward: bool)
 }
 
 impl<S, T, N, D> DspVec<S, T, N, D>
+    where S: ToSliceMut<T> + ToDspVector<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain
+{
+    fn swap_data<N1, D1>(&mut self, other: &mut DspVec<S, T, N1, D1>)
+        where N1: NumberSpace, D1: Domain {
+            let self_len = self.len();
+            let other_len = other.len();
+            mem::swap(&mut self.data, &mut other.data);
+            self.resize(other_len)
+                .expect("Resize after swap should succeed");
+            other.resize(self_len)
+                .expect("Resize after swap should succeed");
+    }
+
+    fn take_ownership(&mut self, empty: S) -> Self {
+        let meta_data = self.get_meta_data();
+        let mut other = empty.to_dsp_vec(&meta_data);
+        self.swap_data(&mut other);
+        other
+    }
+}
+
+impl<S, T, N, D> DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
