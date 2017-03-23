@@ -314,13 +314,11 @@ macro_rules! add_mat_impl {
 				fn interpft<B>(
 						&mut self,
 						buffer: &mut B,
-                        dest_points: usize) -> VoidResult
+                        dest_points: usize)
 					where B: Buffer<S, T> {
                     for v in self.rows_mut() {
-                        try!(v.interpft(buffer, dest_points));
+                        v.interpft(buffer, dest_points);
                     }
-
-					Ok(())
 				}
 
 				fn decimatei(

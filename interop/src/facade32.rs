@@ -1194,6 +1194,56 @@ pub extern "C" fn interpolatef32(vector: Box<VecBuf>,
     })
 }
 
+/// Convolves the vector with an frequency response defined by `frequency_response` and
+/// the void pointer `frequency_response_data`.
+/// The `frequency_response_data` pointer is passed to the `frequency_response`
+/// function at every call and can be used to store parameters.
+#[no_mangle]
+pub extern "C" fn interpolate_custom32(vector: Box<VecBuf>,
+                                        frequency_response: extern "C" fn(*const c_void, f32) -> f32,
+                                        frequency_response_data: *const c_void,
+                                        is_symmetric: bool,
+                                        dest_points: usize,
+                                        delay: f32)
+                                        -> VectorInteropResult<VecBuf> {
+    unsafe {
+        let function: &RealFrequencyResponse<f32> = &ForeignRealConvolutionFunction {
+            conv_function: frequency_response,
+            conv_data: mem::transmute(frequency_response_data),
+            is_symmetric: is_symmetric,
+        };
+        vector.convert_vec(|v, b| v.interpolate(b, Some(function), dest_points, delay))
+    }
+}
+
+/// `frequency_response` argument is translated to:
+///
+/// 1. `0` to [`SincFunction`](../../conv_types/struct.SincFunction.html)
+/// 2. `1` to [`RaisedCosineFunction`](../../conv_types/struct.RaisedCosineFunction.html)
+///
+/// `rolloff` is only used if this is a valid parameter for the selected `impulse_response`
+#[no_mangle]
+pub extern "C" fn interpolate32(vector: Box<VecBuf>,
+                                 frequency_response: i32,
+                                 rolloff: f32,
+                                 dest_points: usize,
+                                 delay: f32)
+                                 -> VectorInteropResult<VecBuf> {
+    let function = translate_to_real_frequency_response(frequency_response, rolloff);
+    vector.convert_vec(|v, b| {
+        v.interpolate(b, Some(function.as_ref()), dest_points, delay)
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn interpft32(vector: Box<VecBuf>,
+                                 dest_points: usize)
+                                 -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, b| {
+        Ok(v.interpft(b, dest_points))
+    })
+}
+
 /// Convolves the vector with an impulse response defined by `frequency_response` and
 /// the void pointer `frequency_response_data`.
 /// The `frequency_response_data` pointer is passed to the `frequency_response`

@@ -80,7 +80,6 @@ pub trait InterpolationOps<S, T>
     fn interpft<B>(&mut self,
                    buffer: &mut B,
                    target_points: usize)
-                   -> VoidResult
             where B: Buffer<S, T>;
 
     /// Decimates or downsamples `self`. `decimatei` is the inverse function to `interpolatei`.
@@ -466,9 +465,8 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
     fn interpft<B>(&mut self,
                    buffer: &mut B,
                    dest_points: usize)
-                   -> VoidResult
             where B: Buffer<S, T> {
-        self.interpolate(buffer, None, dest_points, T::zero())
+        self.interpolate(buffer, None, dest_points, T::zero()).expect("interpolate with no frequency response should never fail");
     }
 
     fn interpolate<B>(&mut self,
@@ -529,7 +527,9 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
             complex.zero_pad_b(buffer, dest_points, PaddingOption::Center);
 
             match function {
-                None => (),
+                None => {
+                    complex.scale(T::from(dest_points).unwrap() / T::from(orig_points).unwrap());
+                },
                 Some(func) => {
                     // Apply the window function
                     complex.multiply_function_priv(
