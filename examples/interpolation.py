@@ -5,7 +5,7 @@ import ctypes
 import struct
 import time
 
-# 
+#
 # A small example how to use basic_dsp in a different language.
 #
 
@@ -42,17 +42,17 @@ setValue = setValue64Proto (("set_value64", lib))
 
 interpftProto = ctypes.WINFUNCTYPE (
     VecResult, # Return type.
-    ctypes.c_void_p, 
+    ctypes.c_void_p,
     ctypes.c_ulong)
 
 interpft = interpftProto (("interpft64", lib))
 
 interpolateProto = ctypes.WINFUNCTYPE (
     VecResult, # Return type.
-    ctypes.c_void_p, 
+    ctypes.c_void_p,
     ctypes.c_int,
     ctypes.c_double,
-    ctypes.c_ulong
+    ctypes.c_ulong,
     ctypes.c_double)
 
 interpolate = interpolateProto (("interpolate64", lib))
@@ -71,7 +71,7 @@ f = signal.resample(y1, 100)
 for i in range(0, 19):
     setValue(vec, i, y1[i])
 # vec_res = interpft(vec, 100)
-vec_res = interpolate(vec, 1, 0.35, 100, 0)
+vec_res = interpft(vec, 100)
 assert(vec_res.resultCode == 0)
 vec = vec_res.result
 y2 = [0.0] * 100

@@ -7,6 +7,7 @@ mod inter_test {
     use basic_dsp::*;
     use basic_dsp::conv_types::*;
     use tools::*;
+    use num::complex::*;
 
     #[test]
     fn compare_interpolatef_and_interpolatei() {
@@ -32,6 +33,36 @@ mod inter_test {
                                                        &format!("Results should match \
                                                                  independent if done with \
                                                                  interpolatei or interpolatef, \
+                                                                 factor={}",
+                                                                factor));
+        }
+    }
+
+    #[test]
+    fn compare_interpolate_and_interpolatei() {
+        for iteration in 0..3 {
+            let a = create_random_multitones(201511212, iteration, 2002, 4000, 5);
+            let delta = create_delta(3561159, iteration);
+            let time = a.to_real_time_vec();
+            let mut time = time.to_complex().unwrap();
+            time.scale(Complex32::new(0.9, -0.1));
+            time.set_delta(delta);
+            let fun: SincFunction<f32> = SincFunction::new();
+            let factor = iteration as u32 + 1;
+            let mut buffer = SingleBuffer::new();
+            let mut left = time.clone();
+            left.interpolate(&mut buffer,
+                              Some(&fun as &RealFrequencyResponse<f32>),
+                              time.points() * factor as usize,
+                              0.0).unwrap();
+            let mut right = time;
+            right.interpolatei(&mut buffer, &fun as &RealFrequencyResponse<f32>, factor).unwrap();
+            assert_vector_eq_with_reason_and_tolerance(&left[..],
+                                                       &right[..],
+                                                       0.1,
+                                                       &format!("Results should match \
+                                                                 independent if done with \
+                                                                 interpolatei or interpolate, \
                                                                  factor={}",
                                                                 factor));
         }
@@ -67,6 +98,40 @@ mod inter_test {
                                                        &format!("Results should match \
                                                                  independent if done with \
                                                                  optimized or non optimized \
+                                                                 interpolatef, factor={}",
+                                                                factor));
+        }
+    }
+
+    #[test]
+    fn compare_interpolatef_and_interpolate() {
+        for iteration in 0..3 {
+            let a = create_random_multitones(201511212, iteration, 2002, 4000, 5);
+            let delta = create_delta(201602222, iteration);
+            let time = a.to_real_time_vec();
+            let mut time = time.to_complex().unwrap();
+            time.scale(Complex32::new(0.45, -0.3));
+            time.set_delta(delta);
+            let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
+            let mut buffer = SingleBuffer::new();
+            let factor = iteration as u32 + 2;
+            let mut left = time.clone();
+            left.interpolatef(&mut buffer,
+                              &fun as &RealImpulseResponse<f32>,
+                              factor as f32,
+                              0.0,
+                              12);
+            let mut right = time;
+            right.interpolate(&mut buffer,
+                               Some(&fun as &RealFrequencyResponse<f32>),
+                               left.points(),
+                               0.0).unwrap();
+            assert_vector_eq_with_reason_and_tolerance(&left[..],
+                                                       &right[..],
+                                                       0.1,
+                                                       &format!("Results should match \
+                                                                 independent if done with \
+                                                                 optimized with interpolate or \
                                                                  interpolatef, factor={}",
                                                                 factor));
         }
