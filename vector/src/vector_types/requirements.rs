@@ -176,6 +176,7 @@ impl<'a, T> ToSliceMut<T> for &'a mut [T] {
     }
 }
 
+#[cfg(feature="std")]
 impl<T> ToSlice<T> for Vec<T>
     where T: RealNumber
 {
@@ -201,6 +202,7 @@ impl<T> ToSlice<T> for Vec<T>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> ToSliceMut<T> for Vec<T>
     where T: RealNumber
 {
@@ -209,6 +211,7 @@ impl<T> ToSliceMut<T> for Vec<T>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> Resize for Vec<T>
     where T: RealNumber
 {
@@ -217,6 +220,7 @@ impl<T> Resize for Vec<T>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> Owner for Vec<T> {}
 
 

@@ -33,6 +33,7 @@ pub trait Buffer<S, T>
 }
 
 /// A buffer which stores a single vector and never shrinks.
+#[cfg(feature="std")]
 pub struct SingleBuffer<T>
     where T: RealNumber
 {
@@ -90,7 +91,6 @@ pub struct SingleBufferArrayVec<A: arrayvec::Array>
     temp: Option<arrayvec::ArrayVec<A>>,
 }
 
-#[cfg(feature="std")]
 impl<A: arrayvec::Array> SingleBufferArrayVec<A>
      where A::Item: RealNumber
 {
@@ -100,7 +100,6 @@ impl<A: arrayvec::Array> SingleBufferArrayVec<A>
     }
 }
 
-#[cfg(feature="std")]
 impl<A: arrayvec::Array> Buffer<arrayvec::ArrayVec<A>, A::Item> for SingleBufferArrayVec<A>
     where A::Item: RealNumber
 {
