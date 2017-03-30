@@ -1,6 +1,5 @@
 use std::slice::{Chunks, ChunksMut};
 use num::traits::Float;
-use crossbeam;
 use std::ops::Range;
 use std::sync::{Mutex, Arc};
 use std::mem;
@@ -49,11 +48,11 @@ impl Chunk {
                                                  step_size: usize,
                                                  arguments: S,
                                                  ref function: F)
-        where F: Fn(&mut Vec<&mut [T]>, Range<usize>, S) + 'a + Sync,
+        where F: Fn(&mut InlineVector<&mut [T]>, Range<usize>, S) + 'a + Sync,
               T: RealNumber,
               S: Sync + Copy + Send
     {
-        let mut shortened: Vec<&mut [T]> =
+        let mut shortened: InlineVector<&mut [T]> =
                 array.iter_mut().map(|a| &mut a[range.start..range.end]).collect();
         function(&mut shortened, range, arguments);
     }
@@ -89,7 +88,7 @@ impl Chunk {
                                                step_size: usize,
                                                arguments: S,
                                                ref function: F)
-                                               -> InlineVec<R>
+                                               -> InlineVector<R>
         where F: Fn(&[T], Range<usize>, S) -> R + 'a + Sync,
               T: Copy + Clone + Send + Sync,
               S: Sync + Copy + Send,
@@ -156,7 +155,7 @@ impl Chunk {
                                      b: &[T],
                                      b_step: usize,
                                      ref function: F)
-                                     -> Vec<R>
+                                     -> InlineVector<R>
         where F: Fn(&[T], Range<usize>, &[T]) -> R + 'a + Sync,
               T: Float + Copy + Clone + Send + Sync,
               R: Send
@@ -181,7 +180,7 @@ impl Chunk {
                                                a_step: usize,
                                                arguments: S,
                                                ref function: F)
-                                               -> Vec<R>
+                                               -> InlineVector<R>
         where F: Fn(&[T], Range<usize>, S) -> R + 'a + Sync,
               T: Float + Copy + Clone + Send + Sync,
               R: Send,

@@ -31,6 +31,8 @@
 //! Only operations can be combined where the result of every element in the vector
 //! is independent from any other element in the vector.
 //!
+//! Note: `combined_ops` is not available if explicitly compiled without `std`.
+//!
 //! # Examples
 //!
 //! ```no_run
@@ -75,7 +77,7 @@ pub use self::multi_ops::*;
 mod identifier_ops;
 pub use self::identifier_ops::*;
 
-use RealNumber;
+use {RealNumber, InlineVector};
 use simd_extensions::*;
 use multicore_support::*;
 use std::ops::Range;
@@ -802,7 +804,7 @@ fn generic_vector_back_to_vector<S, T, N, D>(number_space: N,
     vec
 }
 
-fn perform_complex_operations_par<T>(array: &mut Vec<&mut [T]>,
+fn perform_complex_operations_par<T>(array: &mut InlineVector<&mut [T]>,
                                      range: Range<usize>,
                                      arguments: (&[Operation<T>], usize))
     where T: RealNumber + 'static
@@ -820,7 +822,7 @@ fn perform_complex_operations_par<T>(array: &mut Vec<&mut [T]>,
         for j in 0..array.len() {
             unsafe {
                 let elem = vectors.get_unchecked_mut(j);
-                *elem = T::Reg::load_unchecked(array.get_unchecked(j), i)
+                *elem = T::Reg::load_unchecked(array[j], i)
             }
         }
 
@@ -833,7 +835,7 @@ fn perform_complex_operations_par<T>(array: &mut Vec<&mut [T]>,
 
         for j in 0..array.len() {
             unsafe {
-                vectors.get_unchecked(j).store_unchecked(array.get_unchecked_mut(j), i);
+                vectors.get_unchecked(j).store_unchecked(&mut array[j], i);
             }
         }
 
@@ -842,7 +844,7 @@ fn perform_complex_operations_par<T>(array: &mut Vec<&mut [T]>,
     }
 }
 
-fn perform_real_operations_par<T>(array: &mut Vec<&mut [T]>,
+fn perform_real_operations_par<T>(array: &mut InlineVector<&mut [T]>,
                                   range: Range<usize>,
                                   arguments: (&[Operation<T>], usize))
     where T: RealNumber + 'static
@@ -860,7 +862,7 @@ fn perform_real_operations_par<T>(array: &mut Vec<&mut [T]>,
         for j in 0..array.len() {
             unsafe {
                 let elem = vectors.get_unchecked_mut(j);
-                *elem = T::Reg::load_unchecked(array.get_unchecked(j), i)
+                *elem = T::Reg::load_unchecked(array[j], i)
             }
         }
 
@@ -873,7 +875,7 @@ fn perform_real_operations_par<T>(array: &mut Vec<&mut [T]>,
 
         for j in 0..array.len() {
             unsafe {
-                vectors.get_unchecked(j).store(array.get_unchecked_mut(j), i);
+                vectors.get_unchecked(j).store(&mut array[j], i);
             }
         }
 

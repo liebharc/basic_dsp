@@ -195,7 +195,7 @@ impl Chunk {
                                                  step_size: usize,
                                                  arguments: S,
                                                  ref function: F)
-        where F: Fn(&mut Vec<&mut [T]>, Range<usize>, S) + 'a + Sync,
+        where F: Fn(&mut InlineVector<&mut [T]>, Range<usize>, S) + 'a + Sync,
               T: RealNumber,
               S: Sync + Copy + Send
     {
@@ -239,7 +239,7 @@ impl Chunk {
 
             let mut reorganized = Vec::with_capacity(number_of_chunks);
             for _ in 0..number_of_chunks {
-                reorganized.push(Vec::with_capacity(dimensions));
+                reorganized.push(InlineVector::with_capacity(dimensions));
             }
             let mut i = flat_layout.len();
             while i > 0 {
@@ -256,8 +256,10 @@ impl Chunk {
                 }
             });
         } else {
-            let mut shortened: Vec<&mut [T]> =
-                array.iter_mut().map(|a| &mut a[range.start..range.end]).collect();
+            let mut shortened = InlineVector::with_capacity(range.end - range.start);
+            for n in array.iter_mut().map(|a| &mut a[range.start..range.end]) {
+                shortened.push(n);
+            }
             function(&mut shortened, range, arguments);
         }
     }
