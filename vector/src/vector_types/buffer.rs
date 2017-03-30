@@ -2,10 +2,9 @@
 //! So the best option seems to be to create an abstraction so that the buffering can be adjusted
 //! to what an application needs.
 
-use RealNumber;
+use {RealNumber, InlineVector, InternalBuffer};
 use super::ToSliceMut;
 use std::mem;
-use arrayvec;
 
 /// A buffer which can be used by other types. Types will call buffers to create new arrays.
 /// A buffer may can implement any buffering strategy.
@@ -84,54 +83,40 @@ impl<T> Buffer<Vec<T>, T> for SingleBuffer<T>
     }
 }
 
-/// A buffer which stores a single vector and never shrinks.
-pub struct SingleBufferArrayVec<A: arrayvec::Array>
-     where A::Item: RealNumber
-{
-    temp: Option<arrayvec::ArrayVec<A>>,
-}
-
-impl<A: arrayvec::Array> SingleBufferArrayVec<A>
-     where A::Item: RealNumber
+impl<T> InternalBuffer<T>
+    where T: RealNumber
 {
     /// Creates a new buffer which is ready to be passed around.
-    pub fn new() -> SingleBufferArrayVec<A> {
-        SingleBufferArrayVec { temp: None }
+    pub fn new() -> InternalBuffer<T> {
+        InternalBuffer { temp: InlineVector::with_capacity(0) }
     }
 }
 
-impl<A: arrayvec::Array> Buffer<arrayvec::ArrayVec<A>, A::Item> for SingleBufferArrayVec<A>
-    where A::Item: RealNumber
+#[cfg(feature="std")]
+impl<T> Buffer<InlineVector<T>, T> for InternalBuffer<T>
+    where T: RealNumber
 {
-    fn get(&mut self, len: usize) -> arrayvec::ArrayVec<A> {
-        let result =
-            if self.temp.is_some() {
-                let mut result = None;
-                mem::swap(&mut result, &mut self.temp);
-                result.unwrap()
-            } else {
-                 arrayvec::ArrayVec::new()
-            };
-        assert!(len <= result.len());
-        result
+    fn get(&mut self, len: usize) -> InlineVector<T> {
+        if len <= self.temp.len() {
+            let mut result = InlineVector::with_capacity(0);
+            mem::swap(&mut result, &mut self.temp);
+            return result;
+        }
+
+        InlineVector::of_size(T::zero(), len)
     }
 
-    fn construct_new(&mut self, len: usize) -> arrayvec::ArrayVec<A> {
-        let result = arrayvec::ArrayVec::new();
-        assert!(len <= result.len());
-        result
+    fn construct_new(&mut self, len: usize) -> InlineVector<T> {
+        InlineVector::of_size(T::zero(), len)
     }
 
-    fn free(&mut self, storage: arrayvec::ArrayVec<A>) {
-        if self.temp.is_none() {
-            self.temp = Some(storage);
+    fn free(&mut self, storage: InlineVector<T>) {
+        if storage.len() > self.temp.len() {
+            self.temp = storage;
         }
     }
 
     fn alloc_len(&self) -> usize {
-        match self.temp {
-            Some(ref a) => a.capacity(),
-            None => 0
-        }
+        self.temp.capacity()
     }
 }

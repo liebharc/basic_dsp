@@ -218,7 +218,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                               self.is_complex(),
                                               interpolation_factor,
                                               delay);
-            let mut shifts = Vec::with_capacity(vectors.len() * number_of_shifts);
+            let mut shifts = InlineVector::with_capacity(vectors.len() * number_of_shifts);
             for vector in &vectors[..] {
                 let shifted_copies = DspVec::create_shifted_copies(vector);
                 for shift in shifted_copies {

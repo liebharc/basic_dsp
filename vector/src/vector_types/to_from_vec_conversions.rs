@@ -1,6 +1,6 @@
 //! Conversions to and from vectors which serve as constructors.
-use RealNumber;
-use num::{Complex, Zero};
+use {RealNumber, InlineVector};
+use num::{Complex, Zero, One};
 use std::result;
 use super::{round_len, DataDomain, NumberSpace, Domain, ErrorReason, DspVec, GenDspVec,
             RealTimeVec, RealFreqVec, ComplexTimeVec, ComplexFreqVec, RealData, ComplexData,
@@ -8,6 +8,7 @@ use super::{round_len, DataDomain, NumberSpace, Domain, ErrorReason, DspVec, Gen
             TypeMetaData, MetaData};
 use multicore_support::MultiCoreSettings;
 use std::convert::From;
+use arrayvec::{Array, ArrayVec};
 
 /// Conversion from a generic data type into a dsp vector which tracks
 /// its meta information (domain and number space)
@@ -213,6 +214,188 @@ impl<T> ToComplexVector<Vec<T>, T> for Vec<Complex<T>>
             domain: FrequencyData,
             number_space: ComplexData,
             valid_len: 2 * len,
+            multicore_settings: MultiCoreSettings::default(),
+        }
+    }
+}
+
+impl<A: Array> ToDspVector<A::Item> for ArrayVec<A>
+    where A::Item: RealNumber
+{
+    fn to_gen_dsp_vec(self, is_complex: bool, domain: DataDomain) -> GenDspVec<Self, A::Item> {
+        let mut len = self.len();
+        if len % 2 != 0 && is_complex {
+            len = 0;
+        }
+        GenDspVec {
+            data: self,
+            delta: A::Item::one(),
+            domain: TimeOrFrequencyData { domain_current: domain },
+            number_space: RealOrComplexData { is_complex_current: is_complex },
+            valid_len: len,
+            multicore_settings: MultiCoreSettings::default(),
+        }
+    }
+
+    fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<A::Item, N, D>) -> DspVec<Self, A::Item, N, D>
+        where N: NumberSpace, D: Domain {
+        let mut len = self.len();
+        if len % 2 != 0 && meta_data.is_complex() {
+            len = 0;
+        }
+        DspVec {
+            data: self,
+            delta: meta_data.delta,
+            domain: meta_data.domain.clone(),
+            number_space: meta_data.number_space.clone(),
+            valid_len: len,
+            multicore_settings: meta_data.multicore_settings
+        }
+    }
+}
+
+impl<A: Array> ToRealVector<A::Item> for ArrayVec<A>
+    where A::Item: RealNumber
+{
+    fn to_real_time_vec(self) -> RealTimeVec<Self, A::Item> {
+        let len = self.len();
+        RealTimeVec {
+            data: self,
+            delta: A::Item::one(),
+            domain: TimeData,
+            number_space: RealData,
+            valid_len: len,
+            multicore_settings: MultiCoreSettings::default(),
+        }
+    }
+
+    fn to_real_freq_vec(self) -> RealFreqVec<Self, A::Item> {
+        let len = self.len();
+        RealFreqVec {
+            data: self,
+            delta: A::Item::one(),
+            domain: FrequencyData,
+            number_space: RealData,
+            valid_len: len,
+            multicore_settings: MultiCoreSettings::default(),
+        }
+    }
+}
+
+impl<A: Array> ToComplexVector<ArrayVec<A>, A::Item> for ArrayVec<A>
+    where A::Item: RealNumber
+{
+    fn to_complex_time_vec(self) -> ComplexTimeVec<Self, A::Item> {
+        let len = self.len();
+        ComplexTimeVec {
+            data: self,
+            delta: A::Item::one(),
+            domain: TimeData,
+            number_space: ComplexData,
+            valid_len: if len % 2 == 0 { len } else { 0 },
+            multicore_settings: MultiCoreSettings::default(),
+        }
+    }
+
+    fn to_complex_freq_vec(self) -> ComplexFreqVec<Self, A::Item> {
+        let len = self.len();
+        ComplexFreqVec {
+            data: self,
+            delta: A::Item::one(),
+            domain: FrequencyData,
+            number_space: ComplexData,
+            valid_len: if len % 2 == 0 { len } else { 0 },
+            multicore_settings: MultiCoreSettings::default(),
+        }
+    }
+}
+
+impl<T> ToDspVector<T> for InlineVector<T>
+    where T: RealNumber
+{
+    fn to_gen_dsp_vec(self, is_complex: bool, domain: DataDomain) -> GenDspVec<Self, T> {
+        let mut len = self.len();
+        if len % 2 != 0 && is_complex {
+            len = 0;
+        }
+        GenDspVec {
+            data: self,
+            delta: T::one(),
+            domain: TimeOrFrequencyData { domain_current: domain },
+            number_space: RealOrComplexData { is_complex_current: is_complex },
+            valid_len: len,
+            multicore_settings: MultiCoreSettings::default(),
+        }
+    }
+
+    fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
+        where N: NumberSpace, D: Domain {
+        let mut len = self.len();
+        if len % 2 != 0 && meta_data.is_complex() {
+            len = 0;
+        }
+        DspVec {
+            data: self,
+            delta: meta_data.delta,
+            domain: meta_data.domain.clone(),
+            number_space: meta_data.number_space.clone(),
+            valid_len: len,
+            multicore_settings: meta_data.multicore_settings
+        }
+    }
+}
+
+impl<T> ToRealVector<T> for InlineVector<T>
+    where T: RealNumber
+{
+    fn to_real_time_vec(self) -> RealTimeVec<Self, T> {
+        let len = self.len();
+        RealTimeVec {
+            data: self,
+            delta: T::one(),
+            domain: TimeData,
+            number_space: RealData,
+            valid_len: len,
+            multicore_settings: MultiCoreSettings::default(),
+        }
+    }
+
+    fn to_real_freq_vec(self) -> RealFreqVec<Self, T> {
+        let len = self.len();
+        RealFreqVec {
+            data: self,
+            delta: T::one(),
+            domain: FrequencyData,
+            number_space: RealData,
+            valid_len: len,
+            multicore_settings: MultiCoreSettings::default(),
+        }
+    }
+}
+
+impl<T> ToComplexVector<InlineVector<T>, T> for InlineVector<T>
+    where T: RealNumber
+{
+    fn to_complex_time_vec(self) -> ComplexTimeVec<Self, T> {
+        let len = self.len();
+        ComplexTimeVec {
+            data: self,
+            delta: T::one(),
+            domain: TimeData,
+            number_space: ComplexData,
+            valid_len: if len % 2 == 0 { len } else { 0 },
+            multicore_settings: MultiCoreSettings::default(),
+        }
+    }
+
+    fn to_complex_freq_vec(self) -> ComplexFreqVec<Self, T> {
+        let len = self.len();
+        ComplexFreqVec {
+            data: self,
+            delta: T::one(),
+            domain: FrequencyData,
+            number_space: ComplexData,
+            valid_len: if len % 2 == 0 { len } else { 0 },
             multicore_settings: MultiCoreSettings::default(),
         }
     }

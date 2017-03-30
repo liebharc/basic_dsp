@@ -1,6 +1,6 @@
 //! Requirements which a type needs to fulfill
 //! so that it can serve as a vector storage
-use RealNumber;
+use {RealNumber, InlineVector};
 use super::{VoidResult, ErrorReason};
 use arrayvec;
 use num::Zero;
@@ -271,3 +271,37 @@ impl<A: arrayvec::Array> ToSliceMut<A::Item> for arrayvec::ArrayVec<A>
 }
 
 impl<A: arrayvec::Array> Owner for arrayvec::ArrayVec<A> {}
+
+impl<T> ToSlice<T> for InlineVector<T>
+    where T: RealNumber
+{
+    fn to_slice(&self) -> &[T] {
+        &self[..]
+    }
+
+    fn len(&self) -> usize {
+        self.len()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    fn alloc_len(&self) -> usize {
+        self.capacity()
+    }
+
+    fn try_resize(&mut self, len: usize) -> VoidResult {
+        self.try_resize(len)
+    }
+}
+
+impl<T> ToSliceMut<T> for InlineVector<T>
+    where T: RealNumber
+{
+    fn to_slice_mut(&mut self) -> &mut [T] {
+        &mut self[..]
+    }
+}
+
+impl<T> Owner for InlineVector<T> {}

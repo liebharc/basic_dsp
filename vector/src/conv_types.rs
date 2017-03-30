@@ -3,7 +3,7 @@
 //! Convolutions in this library can be defined in time or frequency domain. In
 //! frequency domain the convolution is automatically transformed into a multiplication
 //! which is the analog operation to a convolution in time domain.
-use RealNumber;
+use {RealNumber, InlineVector, InternalBuffer};
 use num::traits::Zero;
 use num::complex::{Complex, Complex32, Complex64};
 use std::marker::PhantomData;
@@ -62,7 +62,7 @@ macro_rules! define_real_lookup_table {
             /// This usually speeds up a convolution and sacrifices accuracy.
             pub struct $name<T>
                 where T: RealNumber {
-                table: Vec<T>,
+                table: InlineVector<T>,
                 delta: T,
                 is_symmetric: bool
             }
@@ -72,7 +72,7 @@ macro_rules! define_real_lookup_table {
 
                 /// Allows to inspect the generated lookup table
                 pub fn table(&self) -> &[T] {
-                    &self.table
+                    &self.table[..]
                 }
 
                 /// Gets the delta value which determines the resolution
@@ -92,7 +92,7 @@ macro_rules! define_complex_lookup_table {
             /// This usually speeds up a convolution and sacrifices accuracy.
             pub struct $name<T>
                 where T: RealNumber {
-                table: Vec<Complex<T>>,
+                table: InlineVector<Complex<T>>,
                 delta: T,
                 is_symmetric: bool
             }
@@ -102,7 +102,7 @@ macro_rules! define_complex_lookup_table {
 
                 /// Allows to inspect the generated lookup table
                 pub fn table(&self) -> &[Complex<T>] {
-                    &self.table
+                    &self.table[..]
                 }
 
                 /// Gets the delta value which determines the resolution
@@ -167,7 +167,10 @@ macro_rules! add_linear_table_lookup_impl {
                     pub fn from_raw_parts(table: &[$result_type],
                                           delta: $data_type,
                                           is_symmetric: bool) -> Self {
-                        let owned_table = Vec::from(table);
+                        let mut owned_table = InlineVector::with_capacity(table.len());
+                        for n in &table[..] {
+                            owned_table.push(*n);
+                        }
                         $name { table: owned_table, delta: delta, is_symmetric: is_symmetric }
                     }
 
@@ -179,9 +182,9 @@ macro_rules! add_linear_table_lookup_impl {
                         let center = len as isize;
                         let len = 2 * len + 1;
                         let is_symmetric = other.is_symmetric();
-                        let mut table = vec![$result_type::zero(); len];
+                        let mut table = InlineVector::of_size($result_type::zero(), len);
                         let mut i = -center;
-                        for n in &mut table {
+                        for n in &mut table[..] {
                             *n = other.calc((i as $data_type) * delta);
                             i += 1;
                         }
@@ -206,11 +209,11 @@ macro_rules! add_real_linear_table_impl {
                     /// Convert the lookup table into complex number space
                     pub fn to_complex(&self) -> $complex<$data_type> {
                         let vector = self.table.clone().to_real_time_vec();
-                        let mut buffer = SingleBuffer::new();
+                        let mut buffer = InternalBuffer::new();
                         let complex = vector.to_complex_b(&mut buffer);
                         let complex = complex.complex(..);
                         let is_symmetric = self.is_symmetric;
-                        let mut table = Vec::with_capacity(complex.len());
+                        let mut table = InlineVector::with_capacity(complex.len());
                         for n in complex {
                             table.push(*n);
                         }
@@ -232,12 +235,19 @@ macro_rules! add_complex_linear_table_impl {
                 impl $name<$data_type> {
                     /// Convert the lookup table into real number space
                     pub fn to_real(self) -> $real<$data_type> {
-                        let vector = self.table.clone().to_complex_time_vec();
-                        let mut buffer = SingleBuffer::new();
+                        let complex = &self.table[..];
+                        let mut interleaved = InlineVector::with_capacity(2 * complex.len());
+                        for n in complex {
+                            interleaved.push(n.re);
+                            interleaved.push(n.im);
+                        }
+                        let mut vector = interleaved.to_complex_time_vec();
+                        vector.set_delta(self.delta);
+                        let mut buffer = InternalBuffer::new();
                         let real = vector.to_real_b(&mut buffer);
                         let real = &real[..];
                         let is_symmetric = self.is_symmetric;
-                        let mut table = Vec::with_capacity(real.len());
+                        let mut table = InlineVector::with_capacity(real.len());
                         for n in real {
                             table.push(*n);
                         }
@@ -258,14 +268,20 @@ macro_rules! add_complex_time_linear_table_impl {
             impl ComplexTimeLinearTableLookup<$data_type> {
                 /// Convert the lookup table into frequency domain
                 pub fn fft(self) -> ComplexFrequencyLinearTableLookup<$data_type> {
-                    let mut vector = self.table.clone().to_complex_time_vec();
+                    let complex = &self.table[..];
+                    let mut interleaved = InlineVector::with_capacity(2 * complex.len());
+                    for n in complex {
+                        interleaved.push(n.re);
+                        interleaved.push(n.im);
+                    }
+                    let mut vector = interleaved.to_complex_time_vec();
                     vector.set_delta(self.delta);
-                    let mut buffer = SingleBuffer::new();
+                    let mut buffer = InternalBuffer::new();
                     let freq = vector.fft(&mut buffer);
                     let delta = freq.delta();
                     let freq = freq.complex(..);
                     let is_symmetric = self.is_symmetric;
-                    let mut table = Vec::with_capacity(freq.len());
+                    let mut table = InlineVector::with_capacity(freq.len());
                     for n in freq {
                         table.push(*n);
                     }
@@ -288,13 +304,13 @@ macro_rules! add_real_time_linear_table_impl {
                 pub fn fft(self) -> RealFrequencyLinearTableLookup<$data_type> {
                     let mut vector = self.table.clone().to_real_time_vec();
                     vector.set_delta(self.delta);
-                    let mut buffer = SingleBuffer::new();
+                    let mut buffer = InternalBuffer::new();
                     let freq = vector.fft(&mut buffer);
                     let freq = freq.magnitude_b(&mut buffer);
                     let is_symmetric = self.is_symmetric;
                     let delta = freq.delta();
                     let freq = &freq[..];
-                    let mut table = Vec::with_capacity(freq.len());
+                    let mut table = InlineVector::with_capacity(freq.len());
                     for n in freq {
                         table.push(*n);
                     }
@@ -314,16 +330,22 @@ macro_rules! add_complex_frequency_linear_table_impl {
     ($($data_type: ident),*) => {
         $(
             impl ComplexFrequencyLinearTableLookup<$data_type> {
-/// Convert the lookup table into time domain
+                /// Convert the lookup table into time domain
                 pub fn ifft(self) -> ComplexTimeLinearTableLookup<$data_type> {
-                    let mut vector = self.table.clone().to_complex_freq_vec();
+                    let complex = &self.table[..];
+                    let mut interleaved = InlineVector::with_capacity(2 * complex.len());
+                    for n in complex {
+                        interleaved.push(n.re);
+                        interleaved.push(n.im);
+                    }
+                    let mut vector = interleaved.to_complex_freq_vec();
                     vector.set_delta(self.delta);
-                    let mut buffer = SingleBuffer::new();
+                    let mut buffer = InternalBuffer::new();
                     let time = vector.ifft(&mut buffer);
                     let delta = time.delta();
                     let time = time.complex(..);
                     let is_symmetric = self.is_symmetric;
-                    let mut table = Vec::with_capacity(time.len());
+                    let mut table = InlineVector::with_capacity(time.len());
                     for n in time {
                         table.push(*n);
                     }

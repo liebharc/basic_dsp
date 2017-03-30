@@ -88,7 +88,7 @@ impl ToSimd for f64 {
 
 /// A real floating pointer number intended to abstract over `f32` and `f64`.
 pub trait RealNumber
-    : Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive + GpuFloat 
+    : Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive + GpuFloat
      + num::traits::FloatConst
 {
 }
@@ -152,6 +152,18 @@ enum InlineVector<T> {
     Dynamic(Vec<T>),
 }
 
+impl<T> InlineVector<T>
+    where T: Copy {
+    fn of_size(default: T, n: usize) -> InlineVector<T> {
+        let mut result = Self::with_capacity(n);
+        for _ in 0..n {
+            result.push(default);
+        }
+
+        result
+    }
+}
+
 impl<T> InlineVector<T> {
     fn with_capacity(n: usize) -> InlineVector<T> {
         if n <= 64 {
@@ -181,6 +193,45 @@ impl<T> InlineVector<T> {
             &InlineVector::Dynamic(ref v) => v.len()
         }
     }
+
+    fn capacity(&self) -> usize {
+        match self {
+            &InlineVector::Inline(ref v) => v.capacity(),
+            &InlineVector::Dynamic(ref v) => v.capacity()
+        }
+    }
+}
+
+impl<T: Zero + Clone> InlineVector<T> {
+    fn try_resize(&mut self, len: usize) -> VoidResult {
+        match self {
+            &mut InlineVector::Inline(ref v) => {
+                if v.capacity() >= len {
+                    Ok(())
+                } else {
+                    Err(ErrorReason::TypeCanNotResize)
+                }
+            },
+            &mut InlineVector::Dynamic(ref mut v) => {
+                if v.capacity() >= len {
+                    v.resize(len, T::zero());
+                Ok(())
+                } else {
+                    // We could increase the vector capacity, but then
+                    // Inline and Dynamic would behave very different and we want
+                    // to avoid that
+                    Err(ErrorReason::TypeCanNotResize)
+                }
+            }
+        }
+    }
+}
+
+/// A buffer which stores a single inline vector and never shrinks.
+struct InternalBuffer<T>
+    where T: RealNumber
+{
+    temp: InlineVector<T>,
 }
 
 impl<T> Index<usize> for InlineVector<T> {
@@ -259,6 +310,15 @@ impl<T> IndexMut<RangeTo<usize>> for InlineVector<T> {
         match self {
             &mut InlineVector::Inline(ref mut v) => &mut v[index],
             &mut InlineVector::Dynamic(ref mut v) => &mut v[index]
+        }
+    }
+}
+
+impl<T: Clone> Clone for InlineVector<T> {
+    fn clone(&self) -> Self {
+         match self {
+            &InlineVector::Inline(ref v) => InlineVector::Inline(v.clone()),
+            &InlineVector::Dynamic(ref v) => InlineVector::Dynamic(v.clone())
         }
     }
 }
