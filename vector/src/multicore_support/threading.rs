@@ -5,21 +5,9 @@ use crossbeam;
 use std::ops::Range;
 use std::sync::{Mutex, Arc};
 use std::mem;
-use super::RealNumber;
+use {RealNumber, InlineVector};
 use std::iter::Iterator;
-
-/// Indicates how complex an operation is and determines how many cores
-/// will be used since operations with smaller complexity are memory bus bound
-/// and not CPU bound
-#[derive(Copy)]
-#[derive(Clone)]
-#[derive(PartialEq)]
-#[derive(Debug)]
-pub enum Complexity {
-    Small,
-    Medium,
-    Large,
-}
+use super::Complexity;
 
 /// Holds parameters which specify how multiple cores are used
 /// to execute an operation.
@@ -84,7 +72,7 @@ impl Chunk {
         if cores > settings.core_limit {
             cores = settings.core_limit;
         }
-        
+
         if cores == 1 {
             cores
         } else if complexity == Complexity::Small {
@@ -103,8 +91,8 @@ impl Chunk {
         } else if array_length < 30000 {
             // complexity == Complexity::Large
             1
-        } else { 
-            cores 
+        } else {
+            cores
         }
     }
 
@@ -319,7 +307,7 @@ impl Chunk {
                                                step_size: usize,
                                                arguments: S,
                                                ref function: F)
-                                               -> Vec<R>
+                                               -> InlineVector<R>
         where F: Fn(&[T], Range<usize>, S) -> R + 'a + Sync,
               T: Copy + Clone + Send + Sync,
               S: Sync + Copy + Send,
@@ -330,7 +318,7 @@ impl Chunk {
         if number_of_chunks > 1 {
             let chunks = Chunk::partition(array, step_size, number_of_chunks);
             let ranges = Chunk::partition_in_ranges(array_len, step_size, chunks.len());
-            let result = Vec::with_capacity(chunks.len());
+            let result = InlineVector::with_capacity(chunks.len());
             let stack_array = Arc::new(Mutex::new(result));
             crossbeam::scope(|scope| {
                 for chunk in chunks.zip(ranges) {
@@ -342,7 +330,7 @@ impl Chunk {
                 }
             });
             let mut guard = stack_array.lock().unwrap();
-            mem::replace(&mut guard, Vec::new())
+            mem::replace(&mut guard, InlineVector::empty())
         } else {
             let result = function(array,
                                   Range {
@@ -350,7 +338,7 @@ impl Chunk {
                                       end: array_len,
                                   },
                                   arguments);
-            vec![result]
+            InlineVector::with_elem(result)
         }
     }
 
@@ -433,7 +421,7 @@ impl Chunk {
                                      b: &[T],
                                      b_step: usize,
                                      ref function: F)
-                                     -> Vec<R>
+                                     -> InlineVector<R>
         where F: Fn(&[T], Range<usize>, &[T]) -> R + 'a + Sync,
               T: Float + Copy + Clone + Send + Sync,
               R: Send
@@ -444,7 +432,7 @@ impl Chunk {
         if number_of_chunks > 1 {
             let chunks = Chunk::partition(b, b_step, number_of_chunks);
             let ranges = Chunk::partition_in_ranges(a_len, a_step, chunks.len());
-            let result = Vec::with_capacity(chunks.len());
+            let result = InlineVector::with_capacity(chunks.len());
             let stack_array = Arc::new(Mutex::new(result));
             crossbeam::scope(|scope| {
                 for chunk in chunks.zip(ranges) {
@@ -456,7 +444,7 @@ impl Chunk {
                 }
             });
             let mut guard = stack_array.lock().unwrap();
-            mem::replace(&mut guard, Vec::new())
+            mem::replace(&mut guard, InlineVector::empty())
         } else {
             let result = function(a,
                                   Range {
@@ -464,7 +452,7 @@ impl Chunk {
                                       end: a_len,
                                   },
                                   &b[0..b_len]);
-            vec![result]
+            InlineVector::with_elem(result)
         }
     }
 
@@ -477,7 +465,7 @@ impl Chunk {
                                                a_step: usize,
                                                arguments: S,
                                                ref function: F)
-                                               -> Vec<R>
+                                               -> InlineVector<R>
         where F: Fn(&[T], Range<usize>, S) -> R + 'a + Sync,
               T: Float + Copy + Clone + Send + Sync,
               R: Send,
@@ -488,7 +476,7 @@ impl Chunk {
         if number_of_chunks > 1 {
             let chunks = Chunk::partition(a, a_step, number_of_chunks);
             let ranges = Chunk::partition_in_ranges(a_len, a_step, chunks.len());
-            let result = Vec::with_capacity(chunks.len());
+            let result = InlineVector::with_capacity(chunks.len());
             let stack_array = Arc::new(Mutex::new(result));
             crossbeam::scope(|scope| {
                 for chunk in chunks.zip(ranges) {
@@ -500,7 +488,7 @@ impl Chunk {
                 }
             });
             let mut guard = stack_array.lock().unwrap();
-            mem::replace(&mut guard, Vec::new())
+            mem::replace(&mut guard, InlineVector::empty())
         } else {
             let result = function(&a[0..a_len],
                                   Range {
@@ -508,7 +496,7 @@ impl Chunk {
                                       end: a_len,
                                   },
                                   arguments);
-            vec![result]
+            InlineVector::with_elem(result)
         }
     }
 

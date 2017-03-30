@@ -1,10 +1,10 @@
-use RealNumber;
+use {RealNumber, InlineVector};
 use num::Complex;
 use multicore_support::*;
 use simd_extensions::*;
 use super::super::{Vector, ScalarResult, ErrorReason, DspVec, ToSlice, MetaData, Domain,
                    RealNumberSpace, ComplexNumberSpace};
-use super::kahan_sum;                      
+use super::kahan_sum;
 
 /// An operation which multiplies each vector element with a constant
 pub trait DotProductOps<R, A>: Sized
@@ -83,7 +83,7 @@ impl<S, T, N, D> DotProductOps<T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
                 result.sum_real()
             })
         } else {
-            Vec::new()
+            InlineVector::empty()
         };
 
         let mut i = 0;
@@ -99,7 +99,7 @@ impl<S, T, N, D> DotProductOps<T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
             i += 1;
         }
 
-        let chunk_sum: T = chunks.iter().fold(T::zero(), |a, b| a + *b);
+        let chunk_sum: T = (&chunks[..]).iter().fold(T::zero(), |a, b| a + *b);
         Ok(chunk_sum + sum)
     }
 }
@@ -144,7 +144,7 @@ impl<S, T, N, D> DotProductOps<Complex<T>, DspVec<S, T, N, D>> for DspVec<S, T, 
                 result.sum_complex()
             })
         } else {
-            Vec::new()
+            InlineVector::empty()
         };
 
         let mut i = 0;
@@ -164,7 +164,7 @@ impl<S, T, N, D> DotProductOps<Complex<T>, DspVec<S, T, N, D>> for DspVec<S, T, 
             i += 2;
         }
 
-        let chunk_sum: Complex<T> = chunks.iter()
+        let chunk_sum: Complex<T> = (&chunks[..]).iter()
             .fold(Complex::<T>::new(T::zero(), T::zero()), |a, b| a + b);
         Ok(chunk_sum + sum)
     }
@@ -201,7 +201,7 @@ impl<S, T, N, D> PreciseDotProductOps<T, DspVec<S, T, N, D>> for DspVec<S, T, N,
                 kahan_sum(original.iter().zip(target).map(|a|*a.0 * *a.1)).sum_real()
             })
         } else {
-            Vec::new()
+            InlineVector::empty()
         };
 
         let mut i = 0;
@@ -217,7 +217,7 @@ impl<S, T, N, D> PreciseDotProductOps<T, DspVec<S, T, N, D>> for DspVec<S, T, N,
             i += 1;
         }
 
-        let chunk_sum: T = chunks.iter().fold(T::zero(), |a, b| a + *b);
+        let chunk_sum: T = (&chunks[..]).iter().fold(T::zero(), |a, b| a + *b);
         Ok(chunk_sum + sum)
     }
 }
@@ -257,7 +257,7 @@ impl<S, T, N, D> PreciseDotProductOps<Complex<T>, DspVec<S, T, N, D>> for DspVec
                 kahan_sum(original.iter().zip(target).map(|a|a.0.mul_complex(*a.1))).sum_complex()
             })
         } else {
-            Vec::new()
+            InlineVector::empty()
         };
 
         let mut i = 0;
@@ -277,7 +277,7 @@ impl<S, T, N, D> PreciseDotProductOps<Complex<T>, DspVec<S, T, N, D>> for DspVec
             i += 2;
         }
 
-        let chunk_sum: Complex<T> = chunks.iter()
+        let chunk_sum: Complex<T> = (&chunks[..]).iter()
             .fold(Complex::<T>::new(T::zero(), T::zero()), |a, b| a + b);
         Ok(chunk_sum + sum)
     }

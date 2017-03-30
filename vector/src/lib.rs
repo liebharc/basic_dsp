@@ -147,7 +147,7 @@ fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
 /// about introducing artifical limits.
 ///
 /// Thanks to: http://stackoverflow.com/questions/27859822/alloca-variable-length-arrays-in-rust
-enum InlineVector<T> {
+pub enum InlineVector<T> {
     Inline(ArrayVec<[T; 64]>),
     Dynamic(Vec<T>),
 }
@@ -175,6 +175,16 @@ impl<T> InlineVector<T> {
         }
     }
 
+    fn with_elem(elem: T) -> InlineVector<T> {
+        let mut vector = Self::with_capacity(1);
+        vector.push(elem);
+        vector
+    }
+
+    fn empty() -> InlineVector<T> {
+        Self::with_capacity(0)
+    }
+
     fn push(&mut self, elem: T) {
         match self {
             &mut InlineVector::Inline(ref mut v) => {
@@ -185,6 +195,15 @@ impl<T> InlineVector<T> {
             },
             &mut InlineVector::Dynamic(ref mut v) => v.push(elem)
         };
+    }
+
+    fn pop(&mut self) -> Option<T> {
+        match self {
+            &mut InlineVector::Inline(ref mut v) => {
+                v.pop()
+            },
+            &mut InlineVector::Dynamic(ref mut v) => v.pop()
+        }
     }
 
     fn len(&self) -> usize {
