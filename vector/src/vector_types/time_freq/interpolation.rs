@@ -150,7 +150,7 @@ fn function_to_vectors<T>(function: &RealImpulseResponse<T>,
                           complex_result: bool,
                           interpolation_factor: usize,
                           delay: T)
-                          -> InlineVector<GenDspVec<Vec<T>, T>>
+                          -> InlineVector<GenDspVec<InlineVector<T>, T>>
     where T: RealNumber
 {
     let mut result = InlineVector::with_capacity(interpolation_factor);
@@ -167,12 +167,12 @@ fn function_to_vector<T>(function: &RealImpulseResponse<T>,
                          complex_result: bool,
                          offset: T,
                          delay: T)
-                         -> GenDspVec<Vec<T>, T>
+                         -> GenDspVec<InlineVector<T>, T>
     where T: RealNumber
 {
     let step = if complex_result { 2 } else { 1 };
     let data_len = step * (2 * conv_len + 1);
-    let mut imp_resp = vec!(T::zero(); data_len).to_gen_dsp_vec(complex_result, DataDomain::Time);
+    let mut imp_resp = InlineVector::of_size(T::zero(), data_len).to_gen_dsp_vec(complex_result, DataDomain::Time);
     let mut i = 0;
     let mut j = -(T::from(conv_len).unwrap() - T::one()) + delay;
     while i < data_len {
@@ -306,7 +306,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                       interpolation_factor: usize,
                                       conv_len: usize,
                                       data: &[TT],
-                                      vectors: &[GenDspVec<Vec<T>, T>])
+                                      vectors: &[GenDspVec<InlineVector<T>, T>])
                                       -> TT
         where TT: Zero + Clone + From<T> + Copy + Add<Output = TT> + Mul<Output = TT>
     {

@@ -15,7 +15,7 @@ pub use self::interpolation::*;
 
 use std::mem;
 use rustfft::FFT;
-use {RealNumber, array_to_complex, array_to_complex_mut};
+use {RealNumber, array_to_complex, array_to_complex_mut, InlineVector};
 use num::Zero;
 use std::ops::*;
 use simd_extensions::*;
@@ -401,7 +401,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
             let mut j = len * T::Reg::len();
             let mut k = 0;
-            let mut current = vec!(T::zero(); T::Reg::len());
+            let mut current = InlineVector::of_size(T::zero(), T::Reg::len());
             while j > 0 {
                 j -= step;
                 if j < shift || j >= min_len {
@@ -409,14 +409,14 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                     current[k] = T::zero();
                     k += 1;
                     if k >= current.len() {
-                        copy.push(T::Reg::load_unchecked(&current, 0));
+                        copy.push(T::Reg::load_unchecked(&current[..], 0));
                         k = 0;
                     }
                     if step > 1 {
                         current[k] = T::zero();
                         k += 1;
                         if k >= current.len() {
-                            copy.push(T::Reg::load_unchecked(&current, 0));
+                            copy.push(T::Reg::load_unchecked(&current[..], 0));
                             k = 0;
                         }
                     }
@@ -427,13 +427,13 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                     current[k] = re;
                     k += 1;
                     if k >= current.len() {
-                        copy.push(T::Reg::load_unchecked(&current, 0));
+                        copy.push(T::Reg::load_unchecked(&current[..], 0));
                         k = 0;
                     }
                     current[k] = im;
                     k += 1;
                     if k >= current.len() {
-                        copy.push(T::Reg::load_unchecked(&current, 0));
+                        copy.push(T::Reg::load_unchecked(&current[..], 0));
                         k = 0;
                     }
                 } else {
@@ -441,7 +441,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                     current[k] = *data.next().unwrap();
                     k += 1;
                     if k >= current.len() {
-                        copy.push(T::Reg::load_unchecked(&current, 0));
+                        copy.push(T::Reg::load_unchecked(&current[..], 0));
                         k = 0;
                     }
                 }
