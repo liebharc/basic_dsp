@@ -1,6 +1,7 @@
 //! Requirements which a type needs to fulfill
 //! so that it can serve as a vector storage
-use {RealNumber, InlineVector};
+use RealNumber;
+use inline_vector::InlineVector;
 use super::{VoidResult, ErrorReason};
 use arrayvec;
 use num::Zero;
@@ -110,6 +111,7 @@ impl<T> ToSliceMut<T> for [T] {
 
 impl<T> Owner for [T] {}
 
+#[cfg(feature="std")]
 impl<T> ToSlice<T> for Box<[T]> {
     fn to_slice(&self) -> &[T] {
         self
@@ -136,12 +138,14 @@ impl<T> ToSlice<T> for Box<[T]> {
     }
 }
 
+#[cfg(feature="std")]
 impl<T> ToSliceMut<T> for Box<[T]> {
     fn to_slice_mut(&mut self) -> &mut [T] {
         self
     }
 }
 
+#[cfg(feature="std")]
 impl<T> Owner for Box<[T]> {}
 
 impl<'a, T> ToSlice<T> for &'a mut [T] {

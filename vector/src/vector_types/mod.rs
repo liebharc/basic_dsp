@@ -271,14 +271,19 @@ pub type ComplexFreqVec<S, T> = DspVec<S, T, ComplexData, FrequencyData>;
 pub type GenDspVec<S, T> = DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>;
 
 /// A vector with real numbers in time domain.
+#[cfg(feature="std")]
 pub type RealTimeVec32 = DspVec<Vec<f32>, f32, RealData, TimeData>;
 /// A vector with real numbers in frequency domain.
+#[cfg(feature="std")]
 pub type RealFreqVec32 = DspVec<Vec<f32>, f32, RealData, FrequencyData>;
 /// A vector with complex numbers in time domain.
+#[cfg(feature="std")]
 pub type ComplexTimeVec32 = DspVec<Vec<f32>, f32, ComplexData, TimeData>;
 /// A vector with complex numbers in frequency domain.
+#[cfg(feature="std")]
 pub type ComplexFreqVec32 = DspVec<Vec<f32>, f32, ComplexData, FrequencyData>;
 /// A vector with no information about number space or domain at compile time.
+#[cfg(feature="std")]
 pub type GenDspVec32 = DspVec<Vec<f32>, f32, RealOrComplexData, TimeOrFrequencyData>;
 
 /// A vector with real numbers in time domain.
@@ -293,14 +298,19 @@ pub type ComplexFreqVecSlice32<'a> = DspVec<&'a [f32], f32, ComplexData, Frequen
 pub type GenDspVecSlice32<'a> = DspVec<&'a [f32], f32, RealOrComplexData, TimeOrFrequencyData>;
 
 /// A vector with real numbers in time domain.
+#[cfg(feature="std")]
 pub type RealTimeVec64 = DspVec<Vec<f64>, f64, RealData, TimeData>;
 /// A vector with real numbers in frequency domain.
+#[cfg(feature="std")]
 pub type RealFreqVec64 = DspVec<Vec<f64>, f64, RealData, FrequencyData>;
 /// A vector with complex numbers in time domain.
+#[cfg(feature="std")]
 pub type ComplexTimeVec64 = DspVec<Vec<f64>, f64, ComplexData, TimeData>;
 /// A vector with complex numbers in frequency domain.
+#[cfg(feature="std")]
 pub type ComplexFreqVec64 = DspVec<Vec<f64>, f64, ComplexData, FrequencyData>;
 /// A vector with no information about number space or domain at compile time.
+#[cfg(feature="std")]
 pub type GenDspVec64 = DspVec<Vec<f64>, f64, RealOrComplexData, TimeOrFrequencyData>;
 
 /// A vector with real numbers in time domain.

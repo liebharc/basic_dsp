@@ -7,7 +7,7 @@ pub use self::threading::*;
 #[cfg(not(feature="std"))]
 mod no_threading;
 #[cfg(not(feature="std"))]
-pub use self::no_threading;
+pub use self::no_threading::*;
 
 /// Indicates how complex an operation is and determines how many cores
 /// will be used since operations with smaller complexity are memory bus bound

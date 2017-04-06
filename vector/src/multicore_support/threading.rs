@@ -5,9 +5,10 @@ use crossbeam;
 use std::ops::Range;
 use std::sync::{Mutex, Arc};
 use std::mem;
-use {RealNumber, InlineVector};
+use RealNumber;
 use std::iter::Iterator;
 use super::Complexity;
+use inline_vector::InlineVector;
 
 /// Holds parameters which specify how multiple cores are used
 /// to execute an operation.

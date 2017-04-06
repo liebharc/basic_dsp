@@ -3,13 +3,14 @@
 //! Convolutions in this library can be defined in time or frequency domain. In
 //! frequency domain the convolution is automatically transformed into a multiplication
 //! which is the analog operation to a convolution in time domain.
-use {RealNumber, InlineVector, InternalBuffer};
+use RealNumber;
 use num::traits::Zero;
 use num::complex::{Complex, Complex32, Complex64};
 use std::marker::PhantomData;
-use std::os::raw::c_void;
 use std::mem;
 use vector_types::*;
+use inline_vector::{InlineVector, InternalBuffer};
+use std;
 
 /// A convolution function in time domain and real number space
 pub trait RealImpulseResponse<T> : Sync
@@ -480,11 +481,12 @@ impl<T> SincFunction<T>
 }
 
 /// A real function which can be constructed outside this crate.
+#[cfg(feature="std")]
 pub struct ForeignRealConvolutionFunction<T>
     where T: RealNumber
 {
     /// The function
-    pub conv_function: extern "C" fn(*const c_void, T) -> T,
+    pub conv_function: extern "C" fn(*const std::os::raw::c_void, T) -> T,
 
     /// The data which is passed to the function.
     ///
@@ -499,12 +501,13 @@ pub struct ForeignRealConvolutionFunction<T>
     pub is_symmetric: bool,
 }
 
+#[cfg(feature="std")]
 impl<T> ForeignRealConvolutionFunction<T>
     where T: RealNumber
 {
     /// Creates a new real function
-    pub unsafe fn new(function: extern "C" fn(*const c_void, T) -> T,
-               function_data: *const c_void,
+    pub unsafe fn new(function: extern "C" fn(*const std::os::raw::c_void, T) -> T,
+               function_data: *const std::os::raw::c_void,
                is_symmetric: bool)
                -> Self {
         ForeignRealConvolutionFunction {
@@ -515,6 +518,7 @@ impl<T> ForeignRealConvolutionFunction<T>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> RealImpulseResponse<T> for ForeignRealConvolutionFunction<T>
     where T: RealNumber
 {
@@ -524,10 +528,11 @@ impl<T> RealImpulseResponse<T> for ForeignRealConvolutionFunction<T>
 
     fn calc(&self, x: T) -> T {
         let fun = self.conv_function;
-        fun(self.conv_data as *const c_void, x)
+        fun(self.conv_data as *const std::os::raw::c_void, x)
     }
 }
 
+#[cfg(feature="std")]
 impl<T> RealFrequencyResponse<T> for ForeignRealConvolutionFunction<T>
     where T: RealNumber
 {
@@ -537,16 +542,17 @@ impl<T> RealFrequencyResponse<T> for ForeignRealConvolutionFunction<T>
 
     fn calc(&self, x: T) -> T {
         let fun = self.conv_function;
-        fun(self.conv_data as *const c_void, x)
+        fun(self.conv_data as *const std::os::raw::c_void, x)
     }
 }
 
 /// A complex function which can be constructed outside this crate.
+#[cfg(feature="std")]
 pub struct ForeignComplexConvolutionFunction<T>
     where T: RealNumber
 {
     /// The function
-    pub conv_function: extern "C" fn(*const c_void, T) -> Complex<T>,
+    pub conv_function: extern "C" fn(*const std::os::raw::c_void, T) -> Complex<T>,
 
     /// The data which is passed to the window function
     ///
@@ -561,12 +567,13 @@ pub struct ForeignComplexConvolutionFunction<T>
     pub is_symmetric: bool,
 }
 
+#[cfg(feature="std")]
 impl<T> ForeignComplexConvolutionFunction<T>
     where T: RealNumber
 {
     /// Creates a new real function
-    pub unsafe fn new(function: extern "C" fn(*const c_void, T) -> Complex<T>,
-               function_data: *const c_void,
+    pub unsafe fn new(function: extern "C" fn(*const std::os::raw::c_void, T) -> Complex<T>,
+               function_data: *const std::os::raw::c_void,
                is_symmetric: bool)
                -> Self {
         ForeignComplexConvolutionFunction {
@@ -577,6 +584,7 @@ impl<T> ForeignComplexConvolutionFunction<T>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> ComplexImpulseResponse<T> for ForeignComplexConvolutionFunction<T>
     where T: RealNumber
 {
@@ -586,10 +594,11 @@ impl<T> ComplexImpulseResponse<T> for ForeignComplexConvolutionFunction<T>
 
     fn calc(&self, x: T) -> Complex<T> {
         let fun = self.conv_function;
-        fun(self.conv_data as *const c_void, x)
+        fun(self.conv_data as *const std::os::raw::c_void, x)
     }
 }
 
+#[cfg(feature="std")]
 impl<T> ComplexFrequencyResponse<T> for ForeignComplexConvolutionFunction<T>
     where T: RealNumber
 {
@@ -601,7 +610,7 @@ impl<T> ComplexFrequencyResponse<T> for ForeignComplexConvolutionFunction<T>
     /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
     fn calc(&self, x: T) -> Complex<T> {
         let fun = self.conv_function;
-        fun(self.conv_data as *const c_void, x)
+        fun(self.conv_data as *const std::os::raw::c_void, x)
     }
 }
 

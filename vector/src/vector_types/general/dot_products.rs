@@ -1,10 +1,11 @@
-use {RealNumber, InlineVector};
+use RealNumber;
 use num::Complex;
 use multicore_support::*;
 use simd_extensions::*;
 use super::super::{Vector, ScalarResult, ErrorReason, DspVec, ToSlice, MetaData, Domain,
                    RealNumberSpace, ComplexNumberSpace};
 use super::kahan_sum;
+use inline_vector::InlineVector;
 
 /// An operation which multiplies each vector element with a constant
 pub trait DotProductOps<R, A>: Sized

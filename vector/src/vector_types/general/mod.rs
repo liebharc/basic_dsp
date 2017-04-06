@@ -10,12 +10,16 @@ mod dot_products;
 pub use self::dot_products::*;
 mod mapping;
 pub use self::mapping::*;
+#[cfg(feature="std")]
 mod statistics;
+#[cfg(feature="std")]
 pub use self::statistics::*;
+#[cfg(feature="std")]
 mod precise_stats;
+#[cfg(feature="std")]
 pub use self::precise_stats::*;
 
-use std::ops::{Add, Sub};    
+use std::ops::{Add, Sub};
 use super::super::Zero;
 
 /// Sums up the given values using a more precise

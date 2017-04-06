@@ -12,7 +12,7 @@ use super::super::{VoidResult, DspVec, Domain, ToComplexVector, ComplexOps, Padd
                    TimeToFrequencyDomainOperations};
 use std::mem;
 use num::complex::Complex;
-use InlineVector;
+use inline_vector::InlineVector;
 
 /// Provides interpolation operations for real and complex data vectors.
 /// # Unstable
@@ -221,8 +221,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let mut shifts = InlineVector::with_capacity(vectors.len() * number_of_shifts);
             for vector in &vectors[..] {
                 let shifted_copies = DspVec::create_shifted_copies(vector);
-                for shift in shifted_copies {
-                    shifts.push(shift);
+                for shift in shifted_copies.iter() {
+                    shifts.push(shift.clone());
                 }
             }
 
@@ -274,7 +274,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                       let shifted = &shifts[selection];
                       let mut sum = T::Reg::splat(T::zero());
                       let simd_iter = simd[simd_end - shifted.len()..simd_end].iter();
-                      let iteration = simd_iter.zip(shifted);
+                      let iteration = simd_iter.zip(shifted.iter());
                       for (this, other) in iteration {
                           sum = sum + simd_mul(*this, *other);
                       }

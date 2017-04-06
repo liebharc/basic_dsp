@@ -15,7 +15,7 @@ pub use self::interpolation::*;
 
 use std::mem;
 use rustfft::FFT;
-use {RealNumber, array_to_complex, array_to_complex_mut, InlineVector};
+use {RealNumber, array_to_complex, array_to_complex_mut};
 use num::Zero;
 use std::ops::*;
 use simd_extensions::*;
@@ -25,6 +25,7 @@ use super::{Buffer, Vector, MetaData, DspVec, ToSliceMut,
 use num::Complex;
 use std::fmt::Debug;
 use gpu_support::GpuSupport;
+use inline_vector::InlineVector;
 
 fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: bool)
     where S: ToSliceMut<T>,
@@ -230,6 +231,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
     /// Convolves a vector of vectors (in this lib also considered a matrix) with a vector
     /// of impulse responses and stores the result in `target`.
+    #[cfg(feature="std")]
     pub fn convolve_mat(
         matrix: &[&Self],
         impulse_response: &[&Self],
@@ -326,6 +328,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         sum
     }
 
+    #[cfg(feature="std")]
     #[inline]
     fn convolve_mat_iteration<TT>(matrix: &[&[TT]],
                               imp_resp: &[&[TT]],
@@ -369,10 +372,10 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
     /// Creates shifted and reversed copies of the given data vector.
     /// This function is especially designed for convolutions.
-    fn create_shifted_copies(&self) -> Vec<Vec<T::Reg>> {
+    fn create_shifted_copies(&self) -> InlineVector<InlineVector<T::Reg>> {
         let step = if self.is_complex() { 2 } else { 1 };
         let number_of_shifts = T::Reg::len() / step;
-        let mut shifted_copies = Vec::with_capacity(number_of_shifts);
+        let mut shifted_copies = InlineVector::with_capacity(number_of_shifts);
         let mut i = 0;
         let len = self.len();
         let data = self.data.to_slice();
@@ -397,7 +400,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             };
             let min_len = self.len() + shift;
             let len = (min_len + T::Reg::len() - 1) / T::Reg::len();
-            let mut copy: Vec<T::Reg> = Vec::with_capacity(len);
+            let mut copy: InlineVector<T::Reg> = InlineVector::with_capacity(len);
 
             let mut j = len * T::Reg::len();
             let mut k = 0;
@@ -514,7 +517,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                           let mut sum = T::Reg::splat(T::zero());
                           let shifted = &shifts[shift];
                           let simd_iter = simd[end - shifted.len()..end].iter();
-                          let iteration = simd_iter.zip(shifted);
+                          let iteration = simd_iter.zip(shifted.iter());
                           for (this, other) in iteration {
                               sum = sum + simd_mul(*this, *other);
                           }

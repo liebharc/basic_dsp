@@ -1,9 +1,8 @@
-use std::slice::{Chunks, ChunksMut};
+use std::slice:: ChunksMut;
 use num::traits::Float;
 use std::ops::Range;
-use std::sync::{Mutex, Arc};
-use std::mem;
-use {RealNumber, InlineVector};
+use RealNumber;
+use inline_vector::InlineVector;
 use std::iter::Iterator;
 use super::Complexity;
 
@@ -219,5 +218,22 @@ impl Chunk {
                      },
                      target,
                      arguments);
+    }#[inline]
+    fn partition_mut<T>(array: &mut [T], step_size: usize, number_of_chunks: usize) -> ChunksMut<T>
+        where T: Copy + Clone + Send
+    {
+        let chunk_size = Chunk::calc_chunk_size(array.len(), step_size, number_of_chunks);
+        array.chunks_mut(chunk_size)
+    }
+
+    #[inline]
+    fn calc_chunk_size(array_length: usize, step_size: usize, number_of_chunks: usize) -> usize {
+        let mut chunk_size = (array_length as f64 / number_of_chunks as f64).ceil() as usize;
+        let remainder = chunk_size % step_size;
+        if remainder > 0 {
+            chunk_size += step_size - chunk_size % step_size;
+        }
+
+        chunk_size
     }
 }

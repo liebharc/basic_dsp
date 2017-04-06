@@ -77,7 +77,7 @@ pub use self::multi_ops::*;
 mod identifier_ops;
 pub use self::identifier_ops::*;
 
-use {RealNumber, InlineVector};
+use RealNumber;
 use simd_extensions::*;
 use multicore_support::*;
 use std::ops::Range;
@@ -88,6 +88,7 @@ use std::sync::{Arc, Mutex};
 use std::fmt;
 use num::complex::Complex;
 use std::ops::{Add, Sub, Mul, Div};
+use inline_vector::InlineVector;
 
 fn require_complex(is_complex: bool) -> Result<bool, ErrorReason> {
     if is_complex {

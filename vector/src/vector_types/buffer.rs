@@ -2,7 +2,7 @@
 //! So the best option seems to be to create an abstraction so that the buffering can be adjusted
 //! to what an application needs.
 
-use {RealNumber, InlineVector, InternalBuffer};
+use RealNumber;
 use super::ToSliceMut;
 use std::mem;
 
@@ -73,44 +73,6 @@ impl<T> Buffer<Vec<T>, T> for SingleBuffer<T>
     }
 
     fn free(&mut self, storage: Vec<T>) {
-        if storage.len() > self.temp.len() {
-            self.temp = storage;
-        }
-    }
-
-    fn alloc_len(&self) -> usize {
-        self.temp.capacity()
-    }
-}
-
-impl<T> InternalBuffer<T>
-    where T: RealNumber
-{
-    /// Creates a new buffer which is ready to be passed around.
-    pub fn new() -> InternalBuffer<T> {
-        InternalBuffer { temp: InlineVector::with_capacity(0) }
-    }
-}
-
-#[cfg(feature="std")]
-impl<T> Buffer<InlineVector<T>, T> for InternalBuffer<T>
-    where T: RealNumber
-{
-    fn get(&mut self, len: usize) -> InlineVector<T> {
-        if len <= self.temp.len() {
-            let mut result = InlineVector::with_capacity(0);
-            mem::swap(&mut result, &mut self.temp);
-            return result;
-        }
-
-        InlineVector::of_size(T::zero(), len)
-    }
-
-    fn construct_new(&mut self, len: usize) -> InlineVector<T> {
-        InlineVector::of_size(T::zero(), len)
-    }
-
-    fn free(&mut self, storage: InlineVector<T>) {
         if storage.len() > self.temp.len() {
             self.temp = storage;
         }

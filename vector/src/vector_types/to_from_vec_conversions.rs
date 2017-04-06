@@ -1,5 +1,6 @@
 //! Conversions to and from vectors which serve as constructors.
-use {RealNumber, InlineVector};
+use RealNumber;
+use inline_vector::InlineVector;
 use num::{Complex, Zero, One};
 use std::result;
 use super::{round_len, DataDomain, NumberSpace, Domain, ErrorReason, DspVec, GenDspVec,
@@ -63,6 +64,7 @@ pub trait ToComplexVector<S, T>
 }
 
 /// Conversion from two instances of a generic data type into a dsp vector with complex data.
+#[cfg(feature="std")]
 pub trait InterleaveToVector<T>: ToSlice<T>
     where T: RealNumber
 {
@@ -94,6 +96,7 @@ pub trait FromVector<T>
     fn to_slice(&self) -> &[T];
 }
 
+#[cfg(feature="std")]
 impl<T> ToDspVector<T> for Vec<T>
     where T: RealNumber
 {
@@ -129,6 +132,7 @@ impl<T> ToDspVector<T> for Vec<T>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> ToRealVector<T> for Vec<T>
     where T: RealNumber
 {
@@ -159,6 +163,7 @@ impl<T> ToRealVector<T> for Vec<T>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> ToComplexVector<Vec<T>, T> for Vec<T>
     where T: RealNumber
 {
@@ -189,6 +194,7 @@ impl<T> ToComplexVector<Vec<T>, T> for Vec<T>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> ToComplexVector<Vec<T>, T> for Vec<Complex<T>>
     where T: RealNumber
 {
@@ -640,6 +646,7 @@ impl<'a, T> ToComplexVector<&'a mut [T], T> for &'a mut [Complex<T>]
     }
 }
 
+#[cfg(feature="std")]
 impl<T> ToDspVector<T> for Box<[T]>
     where T: RealNumber
 {
@@ -675,6 +682,7 @@ impl<T> ToDspVector<T> for Box<[T]>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> ToRealVector<T> for Box<[T]>
     where T: RealNumber
 {
@@ -703,6 +711,7 @@ impl<T> ToRealVector<T> for Box<[T]>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> ToComplexVector<Box<[T]>, T> for Box<[T]>
     where T: RealNumber
 {
@@ -832,6 +841,7 @@ impl<S, T> From<S> for ComplexFreqVec<S, T>
     }
 }
 
+#[cfg(feature="std")]
 impl<Type, T> InterleaveToVector<T> for Type
     where Type: ToSlice<T>,
           T: RealNumber
@@ -948,6 +958,7 @@ fn complex_to_array_mut<T>(complex: &mut [Complex<T>]) -> &mut [T]
     }
 }
 
+#[cfg(feature="std")]
 fn expand_to_full_capacity<T>(vec: &mut Vec<T>)
     where T: Zero
 {
@@ -956,6 +967,7 @@ fn expand_to_full_capacity<T>(vec: &mut Vec<T>)
     }
 }
 
+#[cfg(feature="std")]
 fn complex_vec_to_interleaved_vec<T>(mut vec: Vec<Complex<T>>) -> Vec<T>
     where T: RealNumber
 {
