@@ -40,7 +40,9 @@ extern crate core as std;
 extern crate simd;
 #[cfg(any(feature = "doc", feature="use_gpu"))]
 extern crate ocl;
+#[cfg(feature="std")]
 extern crate num_cpus;
+#[cfg(feature="std")]
 extern crate crossbeam;
 extern crate num;
 extern crate rustfft;
