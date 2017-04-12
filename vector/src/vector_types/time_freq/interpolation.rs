@@ -762,7 +762,6 @@ impl<S, T, N, D> RealInterpolationOps<S, T> for DspVec<S, T, N, D>
 mod tests {
     use conv_types::*;
     use super::super::super::*;
-    use traits::*;
 
     fn assert_eq_tol<T>(left: &[T], right: &[T], tol: T)
         where T: RealNumber

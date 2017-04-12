@@ -453,7 +453,6 @@ impl<V, S, T> FromMatrix<T> for Matrix4xN<V, S, T>
 #[cfg(test)]
 mod tests {
     use super::super::*;
-    use basic_dsp_vector::*;
 
     #[test]
     fn to_gen_dsp_mat_test() {

@@ -528,7 +528,6 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
 mod tests {
     use super::super::*;
     use basic_dsp_vector::conv_types::*;
-    use basic_dsp_vector::*;
     use std::fmt::Debug;
 
     fn assert_eq_tol<T>(left: &[T], right: &[T], tol: T)

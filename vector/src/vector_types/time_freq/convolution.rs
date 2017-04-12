@@ -555,7 +555,6 @@ mod tests {
     use super::super::{WrappingIterator, ReverseWrappingIterator};
     use super::super::super::*;
     use conv_types::*;
-    use traits::*;
     use num_complex::Complex32;
     use std::fmt::Debug;
 

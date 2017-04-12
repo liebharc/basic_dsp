@@ -1147,7 +1147,6 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, O: RealNumber> PreciseSumOps<[O
 #[cfg(test)]
 mod tests {
     use super::super::*;
-    use basic_dsp_vector::*;
 
     #[test]
     fn sum_test() {
