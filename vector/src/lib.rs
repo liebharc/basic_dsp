@@ -44,7 +44,8 @@ extern crate ocl;
 extern crate num_cpus;
 #[cfg(feature="std")]
 extern crate crossbeam;
-extern crate num;
+extern crate num_traits;
+extern crate num_complex;
 extern crate rustfft;
 #[cfg(any(feature = "doc", feature="use_gpu"))]
 extern crate clfft;
@@ -57,12 +58,20 @@ pub mod conv_types;
 pub use vector_types::*;
 pub use multicore_support::MultiCoreSettings;
 mod gpu_support;
-use num::traits::Float;
 use std::fmt::Debug;
 use std::ops::*;
-use num::complex::Complex;
 use std::mem;
 mod inline_vector;
+
+pub mod traits {
+    //! Traits from the `num` crate which are used inside `basic_dsp`. In future
+    //! the `RealNumber` and `Zero` trait will likely be found here too.
+    pub use num_traits::Float;
+    pub use num_traits::One;
+    pub use num_complex::Complex;
+}
+
+use traits::*;
 
 use simd_extensions::*;
 use gpu_support::{Gpu32, Gpu64, GpuRegTrait, GpuFloat};
@@ -90,18 +99,18 @@ impl ToSimd for f64 {
 
 /// A real floating pointer number intended to abstract over `f32` and `f64`.
 pub trait RealNumber
-    : Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive + GpuFloat
-     + num::traits::FloatConst
+    : Float + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive + GpuFloat
+     + num_traits::FloatConst
 {
 }
 impl<T> RealNumber for T
-    where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive + GpuFloat
-		    + num::traits::FloatConst
+    where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive + GpuFloat
+		    + num_traits::FloatConst
 {
 }
 
 /// This trait is necessary so that we can define zero for types outside this crate.
-/// It calls the `num::Zero` trait where possible.
+/// It calls the `num_traits::Zero` trait where possible.
 pub trait Zero {
     fn zero() -> Self;
 }
@@ -109,14 +118,14 @@ pub trait Zero {
 impl<T> Zero for T
     where T: RealNumber {
     fn zero() -> Self {
-        <Self as num::Zero>::zero()
+        <Self as num_traits::Zero>::zero()
     }
 }
 
-impl<T> Zero for num::Complex<T>
+impl<T> Zero for Complex<T>
     where T: RealNumber {
     fn zero() -> Self {
-        <Self as num::Zero>::zero()
+        <Self as num_traits::Zero>::zero()
     }
 }
 

@@ -1,5 +1,5 @@
 use RealNumber;
-use num::Complex;
+use traits::*;
 use multicore_support::*;
 use simd_extensions::*;
 use super::super::{Vector, ScalarResult, ErrorReason, DspVec, ToSlice, MetaData, Domain,

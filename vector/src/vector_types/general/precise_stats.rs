@@ -1,6 +1,6 @@
-use {RealNumber, array_to_complex};
-use num::{Complex, Zero};
-use num::complex::{Complex64};
+use {RealNumber, array_to_complex, Zero};
+use traits::*;
+use num_complex::{Complex64};
 use multicore_support::*;
 use super::super::{Vector, DspVec, ToSlice, Domain, RealNumberSpace,
                    ComplexNumberSpace, Statistics, Stats};
@@ -17,9 +17,9 @@ pub trait PreciseStatisticsOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex64;
+    /// # use num_complex::Complex64;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector: Vec<f32> = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
@@ -46,9 +46,9 @@ pub trait PreciseStatisticsOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex64;
+    /// # use num_complex::Complex64;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector: Vec<f32> = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
@@ -71,9 +71,9 @@ pub trait PreciseSumOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex64;
+    /// # use num_complex::Complex64;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
@@ -88,9 +88,9 @@ pub trait PreciseSumOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex64;
+    /// # use num_complex::Complex64;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();

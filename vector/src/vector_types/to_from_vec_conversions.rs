@@ -1,7 +1,7 @@
 //! Conversions to and from vectors which serve as constructors.
-use RealNumber;
+use {RealNumber, Zero};
 use inline_vector::InlineVector;
-use num::{Complex, Zero, One};
+use traits::*;
 use std::result;
 use super::{round_len, DataDomain, NumberSpace, Domain, ErrorReason, DspVec, GenDspVec,
             RealTimeVec, RealFreqVec, ComplexTimeVec, ComplexFreqVec, RealData, ComplexData,
@@ -986,7 +986,7 @@ fn complex_vec_to_interleaved_vec<T>(mut vec: Vec<Complex<T>>) -> Vec<T>
 
 #[cfg(test)]
 mod tests {
-    use num::complex::Complex32;
+    use num_complex::Complex32;
     use super::complex_vec_to_interleaved_vec;
 
     #[test]

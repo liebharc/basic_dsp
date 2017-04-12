@@ -1,4 +1,4 @@
-use num::complex::Complex;
+use traits::*;
 use super::Simd;
 use simd::x86::avx::{f32x8, f64x4, AvxF32x8, AvxF64x4, i32x8, i64x4, u32x8, u64x4};
 

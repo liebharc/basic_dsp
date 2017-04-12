@@ -1,7 +1,6 @@
-use {RealNumber, array_to_complex, array_to_complex_mut};
+use {RealNumber, array_to_complex, array_to_complex_mut, Zero};
 use multicore_support::{Chunk, MultiCoreSettings, Complexity};
-use num::complex::Complex;
-use num::Zero;
+use traits::*;
 use std::ops::*;
 use std::mem;
 use std::cmp;

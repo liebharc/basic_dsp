@@ -16,13 +16,13 @@ pub use self::interpolation::*;
 use std::mem;
 use rustfft::FFT;
 use {RealNumber, array_to_complex, array_to_complex_mut};
-use num::Zero;
+use Zero;
 use std::ops::*;
 use simd_extensions::*;
 use multicore_support::*;
 use super::{Buffer, Vector, MetaData, DspVec, ToSliceMut,
             NumberSpace, Domain, ErrorReason, VoidResult};
-use num::Complex;
+use traits::*;
 use std::fmt::Debug;
 use gpu_support::GpuSupport;
 use inline_vector::InlineVector;
@@ -92,7 +92,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
               C: Fn(&[T]) -> &[TT],
               CMut: Fn(&mut [T]) -> &mut [TT],
               F: Fn(T) -> TT,
-              TT: Zero + Mul<Output = TT> + Copy
+              TT: Zero + Mul<Output = TT> + Copy + Add<Output = TT>
     {
         let len = self.len();
         let mut temp = buffer.get(len);

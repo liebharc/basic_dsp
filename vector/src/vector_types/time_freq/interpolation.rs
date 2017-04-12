@@ -1,6 +1,6 @@
-use {RealNumber, array_to_complex, array_to_complex_mut};
+use {RealNumber, array_to_complex, array_to_complex_mut, Zero};
 use conv_types::{RealImpulseResponse, RealFrequencyResponse};
-use num::traits::Zero;
+use traits::*;
 use std::ops::{Add, Mul};
 use super::WrappingIterator;
 use simd_extensions::*;
@@ -11,7 +11,6 @@ use super::super::{VoidResult, DspVec, Domain, ToComplexVector, ComplexOps, Padd
                    ResizeOps, FrequencyToTimeDomainOperations,
                    TimeToFrequencyDomainOperations};
 use std::mem;
-use num::complex::Complex;
 use inline_vector::InlineVector;
 
 /// Provides interpolation operations for real and complex data vectors.
@@ -118,7 +117,7 @@ fn interpolate_priv_scalar<T, TT>(temp: &mut [TT],
                                   conv_len: usize,
                                   multicore_settings: &MultiCoreSettings)
     where T: RealNumber,
-          TT: Zero + Mul<Output = TT> + Copy + Send + Sync + From<T>
+          TT: Zero + Mul<Output = TT> + Copy + Send + Sync + From<T> + Add<Output = TT>
 {
     Chunk::execute_with_range(Complexity::Large,
                               &multicore_settings,

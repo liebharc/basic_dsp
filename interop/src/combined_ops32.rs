@@ -3,7 +3,7 @@
 use super::*;
 use basic_dsp_vector::*;
 use basic_dsp_vector::combined_ops::*;
-use num::complex::Complex32;
+use num_complex::Complex32;
 use std::sync::Arc;
 
 pub type VecBuf = InteropVec<f32>;

@@ -1,6 +1,6 @@
 use {RealNumber, array_to_complex, array_to_complex_mut};
 use conv_types::*;
-use num::Complex;
+use traits::*;
 use multicore_support::*;
 use rustfft::FFT;
 use std::mem;
@@ -557,7 +557,7 @@ mod tests {
     use super::super::super::*;
     use conv_types::*;
     use RealNumber;
-    use num::complex::Complex32;
+    use num_complex::Complex32;
     use std::fmt::Debug;
 
     fn assert_eq_tol<T>(left: &[T], right: &[T], tol: T)

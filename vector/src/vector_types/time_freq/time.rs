@@ -1,5 +1,5 @@
 use {RealNumber, array_to_complex_mut};
-use num::Complex;
+use traits::*;
 use super::super::{Owner, ToFreqResult, TimeDomain, MetaData, DspVec,
                    ToSliceMut, NumberSpace, RededicateForceOps};
 use window_functions::*;

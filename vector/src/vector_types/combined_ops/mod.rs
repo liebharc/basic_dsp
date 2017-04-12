@@ -86,7 +86,7 @@ use super::{round_len, ToSliceMut, DspVec, ErrorReason, MetaData, TransRes, Vect
             RealOrComplexData, TimeOrFrequencyData, Domain, NumberSpace, DataDomain};
 use std::sync::{Arc, Mutex};
 use std::fmt;
-use num::complex::Complex;
+use traits::*;
 use std::ops::{Add, Sub, Mul, Div};
 use inline_vector::InlineVector;
 
@@ -1095,7 +1095,7 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
 
 #[cfg(test)]
 mod tests {
-    use num::complex::Complex32;
+    use num_complex::Complex32;
     use super::super::*;
     use super::*;
 

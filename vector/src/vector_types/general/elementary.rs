@@ -2,7 +2,7 @@
 use {RealNumber, array_to_complex, array_to_complex_mut};
 use multicore_support::*;
 use simd_extensions::*;
-use num::Complex;
+use traits::*;
 use std::ops::*;
 use super::super::{ErrorReason, VoidResult, Vector,
                    DspVec, ToSliceMut, MetaData, Domain, NumberSpace, ComplexNumberSpace};
@@ -21,7 +21,7 @@ pub trait ScaleOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -47,7 +47,7 @@ pub trait OffsetOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -72,7 +72,7 @@ pub trait ElementaryOps<A> {
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -95,7 +95,7 @@ pub trait ElementaryOps<A> {
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -118,7 +118,7 @@ pub trait ElementaryOps<A> {
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -141,7 +141,7 @@ pub trait ElementaryOps<A> {
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -170,7 +170,7 @@ pub trait ElementaryWrapAroundOps<A> {
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -196,7 +196,7 @@ pub trait ElementaryWrapAroundOps<A> {
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -222,7 +222,7 @@ pub trait ElementaryWrapAroundOps<A> {
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -248,7 +248,7 @@ pub trait ElementaryWrapAroundOps<A> {
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {

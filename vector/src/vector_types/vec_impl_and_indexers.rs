@@ -4,7 +4,7 @@ use super::{DspVec, NumberSpace, ComplexNumberSpace,
             Domain, DataDomain, ToSlice, ToSliceMut, ErrorReason, VoidResult, TypeMetaData};
 use multicore_support::MultiCoreSettings;
 use std::ops::*;
-use num::complex::Complex;
+use traits::*;
 
 /// Like [`std::ops::Index`](https://doc.rust-lang.org/std/ops/trait.Index.html)
 /// but with a different method name so that it can be used to implement an additional range

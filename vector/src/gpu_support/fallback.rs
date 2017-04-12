@@ -1,6 +1,6 @@
 use super::GpuSupport;
 use RealNumber;
-use num::traits::Float;
+use traits::*;
 use std::ops::Range;
 
 pub type Gpu32 = f32;

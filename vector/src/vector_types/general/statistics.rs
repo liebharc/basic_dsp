@@ -1,5 +1,5 @@
 use {RealNumber, array_to_complex};
-use num::Complex;
+use traits::*;
 use multicore_support::*;
 use simd_extensions::*;
 use super::super::{Vector, DspVec, ToSlice, Domain, RealNumberSpace,
@@ -39,9 +39,9 @@ pub trait StatisticsOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex32;
+    /// # use num_complex::Complex32;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
@@ -67,9 +67,9 @@ pub trait StatisticsOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex32;
+    /// # use num_complex::Complex32;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
@@ -92,9 +92,9 @@ pub trait SumOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex32;
+    /// # use num_complex::Complex32;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
@@ -108,9 +108,9 @@ pub trait SumOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex64;
+    /// # use num_complex::Complex64;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();

@@ -5,7 +5,7 @@ use super::*;
 use basic_dsp_vector::*;
 use basic_dsp_vector::window_functions::*;
 use basic_dsp_vector::conv_types::*;
-use num::complex::*;
+use num_complex::*;
 use std::slice;
 use std::os::raw::c_void;
 use std::mem;

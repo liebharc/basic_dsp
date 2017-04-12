@@ -1,4 +1,4 @@
-use num::complex::Complex;
+use traits::*;
 use super::Zero;
 use std::mem;
 

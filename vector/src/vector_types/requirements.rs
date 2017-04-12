@@ -1,10 +1,9 @@
 //! Requirements which a type needs to fulfill
 //! so that it can serve as a vector storage
-use RealNumber;
+use {RealNumber, Zero};
 use inline_vector::InlineVector;
 use super::{VoidResult, ErrorReason};
 use arrayvec;
-use num::Zero;
 
 /// A trait to convert a type into a slice.
 pub trait ToSlice<T> {
