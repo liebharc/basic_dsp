@@ -101,7 +101,7 @@ mod conv_test {
     #[test]
     fn compare_vector_conv_freq_multiplication() {
         for iteration in 0..3 {
-            let a = create_data_even(201601171, iteration, 502, 1000);
+            let a = create_data_even(201601171, iteration, 502, 2000);
             let b = create_data_with_len(201601172, iteration, a.len());
             let delta = create_delta(201601173, iteration);
             let mut time1 = a.to_complex_time_vec();
@@ -121,6 +121,29 @@ mod conv_test {
                                                        "Results should match independent if done \
                                                         in time or frequency domain");
         }
+    }
+
+    #[test]
+    fn compare_vector_conv_freq_multiplication_large_len() {
+        let a = create_data_even(201601171, 1, 18000, 20000);
+        let b = create_data_with_len(201601172, 1, a.len());
+        let delta = create_delta(201601173, 1);
+        let mut time1 = a.to_complex_time_vec();
+        time1.set_delta(delta);
+        let mut time2 = b.to_complex_time_vec();
+        time2.set_delta(delta);
+        let mut buffer = SingleBuffer::new();
+        let mut left = time1.clone();
+        left.convolve_vector(&mut buffer, &time2).unwrap();
+        let mut freq1 = time1.fft(&mut buffer);
+        let freq2 = time2.fft(&mut buffer);
+        freq1.mul(&freq2).unwrap();
+        let right = freq1.ifft(&mut buffer);
+        assert_vector_eq_with_reason_and_tolerance(&left[..],
+                                                   &conv_swap(&right[..])[0..left.len()],
+                                                   0.2,
+                                                   "Results should match independent if done \
+                                                    in time or frequency domain");
     }
 
     #[test]

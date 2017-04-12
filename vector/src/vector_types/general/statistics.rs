@@ -1,8 +1,8 @@
-use RealNumber;
-use num::Complex;
+use {RealNumber, array_to_complex};
+use traits::*;
 use multicore_support::*;
 use simd_extensions::*;
-use super::super::{array_to_complex, Vector, DspVec, ToSlice, Domain, RealNumberSpace,
+use super::super::{Vector, DspVec, ToSlice, Domain, RealNumberSpace,
                    ComplexNumberSpace};
 
 #[repr(C)]
@@ -39,9 +39,9 @@ pub trait StatisticsOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex32;
+    /// # use num_complex::Complex32;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
@@ -67,9 +67,9 @@ pub trait StatisticsOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex32;
+    /// # use num_complex::Complex32;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
@@ -89,9 +89,9 @@ pub trait SumOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex32;
+    /// # use num_complex::Complex32;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
@@ -105,9 +105,9 @@ pub trait SumOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex64;
+    /// # use num_complex::Complex64;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
@@ -363,7 +363,7 @@ impl<S, T, N, D> StatisticsOps<Statistics<T>> for DspVec<S, T, N, D>
             stats
         });
 
-        Statistics::merge(&chunks)
+        Statistics::merge(&chunks[..])
     }
 
     fn statistics_split(&self, len: usize) -> Vec<Statistics<T>> {
@@ -390,7 +390,7 @@ impl<S, T, N, D> StatisticsOps<Statistics<T>> for DspVec<S, T, N, D>
             results
         });
 
-        Statistics::merge_cols(&chunks)
+        Statistics::merge_cols(&chunks[..])
     }
 }
 
@@ -419,7 +419,7 @@ impl<S, T, N, D> SumOps<T> for DspVec<S, T, N, D>
                 }
                 sum
             });
-            chunks.iter()
+            (&chunks[..]).iter()
                 .map(|v| v.sum_real())
                 .fold(T::zero(), |a, b| a + b)
         } else {
@@ -453,7 +453,7 @@ impl<S, T, N, D> SumOps<T> for DspVec<S, T, N, D>
                 }
                 sum
             });
-            chunks.iter()
+            (&chunks[..]).iter()
                 .map(|v| v.sum_real())
                 .fold(T::zero(), |a, b| a + b)
         } else {
@@ -494,7 +494,7 @@ impl<S, T, N, D> StatisticsOps<Statistics<Complex<T>>> for DspVec<S, T, N, D>
             stat
         });
 
-        Statistics::merge(&chunks)
+        Statistics::merge(&chunks[..])
     }
 
     fn statistics_split(&self, len: usize) -> Vec<Statistics<Complex<T>>> {
@@ -522,7 +522,7 @@ impl<S, T, N, D> StatisticsOps<Statistics<Complex<T>>> for DspVec<S, T, N, D>
             results
         });
 
-        Statistics::merge_cols(&chunks)
+        Statistics::merge_cols(&chunks[..])
     }
 }
 
@@ -551,7 +551,7 @@ impl<S, T, N, D> SumOps<Complex<T>> for DspVec<S, T, N, D>
                 }
                 sum
             });
-            chunks.iter()
+            (&chunks[..]).iter()
                 .map(|v| v.sum_complex())
                 .fold(Complex::<T>::new(T::zero(), T::zero()), |acc, x| acc + x)
         } else {
@@ -585,7 +585,7 @@ impl<S, T, N, D> SumOps<Complex<T>> for DspVec<S, T, N, D>
                 }
                 sum
             });
-            chunks.iter()
+            (&chunks[..]).iter()
                 .map(|v| v.sum_complex())
                 .fold(Complex::<T>::new(T::zero(), T::zero()), |acc, x| acc + x)
         } else {

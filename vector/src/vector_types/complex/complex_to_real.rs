@@ -1,7 +1,7 @@
 use RealNumber;
 use multicore_support::*;
 use simd_extensions::*;
-use num::Complex;
+use traits::*;
 use std::ops::*;
 use super::super::{Owner, ToRealResult, ErrorReason, Buffer, Vector, Resize, MetaData, ResizeOps,
                    DspVec, ToSliceMut, ToSlice, VoidResult, Domain, ComplexNumberSpace,
@@ -19,7 +19,7 @@ pub trait ComplexToRealTransformsOps<T>: ToRealResult
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -34,7 +34,7 @@ pub trait ComplexToRealTransformsOps<T>: ToRealResult
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -49,7 +49,7 @@ pub trait ComplexToRealTransformsOps<T>: ToRealResult
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -64,7 +64,7 @@ pub trait ComplexToRealTransformsOps<T>: ToRealResult
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -79,7 +79,7 @@ pub trait ComplexToRealTransformsOps<T>: ToRealResult
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -105,7 +105,7 @@ pub trait ComplexToRealTransformsOpsBuffered<S, T>: ToRealResult
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -121,7 +121,7 @@ pub trait ComplexToRealTransformsOpsBuffered<S, T>: ToRealResult
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -137,7 +137,7 @@ pub trait ComplexToRealTransformsOpsBuffered<S, T>: ToRealResult
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -153,7 +153,7 @@ pub trait ComplexToRealTransformsOpsBuffered<S, T>: ToRealResult
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -169,7 +169,7 @@ pub trait ComplexToRealTransformsOpsBuffered<S, T>: ToRealResult
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -196,7 +196,7 @@ pub trait ComplexToRealGetterOps<T>: ToRealResult
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -212,7 +212,7 @@ pub trait ComplexToRealGetterOps<T>: ToRealResult
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -228,7 +228,7 @@ pub trait ComplexToRealGetterOps<T>: ToRealResult
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -249,7 +249,7 @@ pub trait ComplexToRealGetterOps<T>: ToRealResult
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -266,7 +266,7 @@ pub trait ComplexToRealGetterOps<T>: ToRealResult
     ///
     /// ```
     /// # use std::f64;
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {

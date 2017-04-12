@@ -1,6 +1,6 @@
 use simd::{f32x4, i32x4, u32x4};
 use simd::x86::sse3::Sse3F32x4;
-use num::complex::Complex;
+use traits::*;
 use super::Simd;
 use simd::x86::sse2::{f64x2, i64x2, u64x2};
 

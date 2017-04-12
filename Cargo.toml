@@ -38,10 +38,12 @@ rand = "^0.3.12"
 hound = "^2.0.0"
 docopt = "^0.6.86"
 num = "^0.1.35"
+time = "^0.1"
 
 [features]
 use_avx = ["basic_dsp_vector/use_avx"]
 use_sse = ["basic_dsp_vector/use_sse"]
+use_gpu = ["basic_dsp_vector/use_gpu"]
 matrix = ["basic_dsp_matrix"]
 interop= ["basic_dsp_interop"]
 default = ["matrix"]

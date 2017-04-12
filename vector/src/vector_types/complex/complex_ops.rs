@@ -1,8 +1,8 @@
-use RealNumber;
+use {RealNumber, array_to_complex_mut};
 use multicore_support::*;
 use simd_extensions::Simd;
-use num::Complex;
-use super::super::{array_to_complex_mut, Vector, DspVec, ToSliceMut, MetaData, Domain,
+use traits::*;
+use super::super::{Vector, DspVec, ToSliceMut, MetaData, Domain,
                    ComplexNumberSpace};
 
 /// Operations on complex types.
@@ -28,7 +28,7 @@ pub trait ComplexOps<T>
     ///
     /// ```
     /// # use std::f64;
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -48,7 +48,7 @@ pub trait ComplexOps<T>
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -78,6 +78,7 @@ impl<S, T, N, D> ComplexOps<T> for DspVec<S, T, N, D>
     fn multiply_complex_exponential(&mut self, a: T, b: T) {
         assert_complex!(self);
         let a = a * self.delta();
+        let b = b * self.delta();
         let data_length = self.len();
         let mut array = self.data.to_slice_mut();
         Chunk::execute_with_range(Complexity::Small,
@@ -91,7 +92,7 @@ impl<S, T, N, D> ComplexOps<T> for DspVec<S, T, N, D>
             let mut exponential =
                 Complex::<T>::from_polar(&T::one(), &b) *
                 Complex::<T>::from_polar(&T::one(),
-                                         &(a * T::from(range.start).unwrap() as T / two));
+                                         &(a * T::from(range.start).unwrap() / two));
             let increment = Complex::<T>::from_polar(&T::one(), &a);
             let array = array_to_complex_mut(array);
             for complex in array {

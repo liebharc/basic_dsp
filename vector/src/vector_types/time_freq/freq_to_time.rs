@@ -1,5 +1,5 @@
 use RealNumber;
-use num::Complex;
+use traits::*;
 use super::super::{ToTimeResult, ToRealTimeResult, TransRes, DspVec, Vector, Buffer, ToSliceMut,
                    RededicateForceOps, ErrorReason, MetaData, ComplexNumberSpace, Owner,
                    FrequencyDomain, DataDomain, InsertZerosOpsBuffered, ScaleOps,
@@ -140,7 +140,7 @@ impl<S, T, N, D> FrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
     fn ifft<B>(mut self, buffer: &mut B) -> Self::TimeResult
       where B: Buffer<S, T> {
           let points = self.points();
-          self.scale(Complex::<T>::new(T::one() / T::from(points).unwrap(), T::zero()));
+          self.scale(T::one() / T::from(points).unwrap());
           self.ifft_shift();
           self.plain_ifft(buffer)
     }

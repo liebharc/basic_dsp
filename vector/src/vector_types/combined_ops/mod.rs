@@ -31,9 +31,11 @@
 //! Only operations can be combined where the result of every element in the vector
 //! is independent from any other element in the vector.
 //!
+//! Note: `combined_ops` is not available if explicitly compiled without `std`.
+//!
 //! # Examples
 //!
-//! ```
+//! ```no_run
 //! use std::f32::consts::PI;
 //! use basic_dsp_vector::*;
 //! use basic_dsp_vector::combined_ops::*;
@@ -51,7 +53,7 @@
 //!     b.clone_from(&a);
 //!     a.sin();
 //!     b.cos();
-//!     a.mul(&b);
+//!     a.mul(&b).unwrap();
 //!     a.abs();
 //!     a.log(10.0);
 //!     a.scale(10.0);
@@ -84,8 +86,9 @@ use super::{round_len, ToSliceMut, DspVec, ErrorReason, MetaData, TransRes, Vect
             RealOrComplexData, TimeOrFrequencyData, Domain, NumberSpace, DataDomain};
 use std::sync::{Arc, Mutex};
 use std::fmt;
-use num::complex::Complex;
+use traits::*;
 use std::ops::{Add, Sub, Mul, Div};
+use inline_vector::InlineVector;
 
 fn require_complex(is_complex: bool) -> Result<bool, ErrorReason> {
     if is_complex {
@@ -142,7 +145,7 @@ fn evaluate_number_space_transition<T>(is_complex: bool,
         Operation::Magnitude(_) |
         Operation::MagnitudeSquared(_) |
         Operation::ToReal(_) |
-        Operation::ToImag(_) | 
+        Operation::ToImag(_) |
         Operation::Phase(_)
             => complex_to_real(is_complex),
         // General Ops
@@ -802,7 +805,7 @@ fn generic_vector_back_to_vector<S, T, N, D>(number_space: N,
     vec
 }
 
-fn perform_complex_operations_par<T>(array: &mut Vec<&mut [T]>,
+fn perform_complex_operations_par<T>(array: &mut InlineVector<&mut [T]>,
                                      range: Range<usize>,
                                      arguments: (&[Operation<T>], usize))
     where T: RealNumber + 'static
@@ -820,7 +823,7 @@ fn perform_complex_operations_par<T>(array: &mut Vec<&mut [T]>,
         for j in 0..array.len() {
             unsafe {
                 let elem = vectors.get_unchecked_mut(j);
-                *elem = T::Reg::load_unchecked(array.get_unchecked(j), i)
+                *elem = T::Reg::load_unchecked(array[j], i)
             }
         }
 
@@ -833,7 +836,7 @@ fn perform_complex_operations_par<T>(array: &mut Vec<&mut [T]>,
 
         for j in 0..array.len() {
             unsafe {
-                vectors.get_unchecked(j).store_unchecked(array.get_unchecked_mut(j), i);
+                vectors.get_unchecked(j).store_unchecked(&mut array[j], i);
             }
         }
 
@@ -842,7 +845,7 @@ fn perform_complex_operations_par<T>(array: &mut Vec<&mut [T]>,
     }
 }
 
-fn perform_real_operations_par<T>(array: &mut Vec<&mut [T]>,
+fn perform_real_operations_par<T>(array: &mut InlineVector<&mut [T]>,
                                   range: Range<usize>,
                                   arguments: (&[Operation<T>], usize))
     where T: RealNumber + 'static
@@ -860,7 +863,7 @@ fn perform_real_operations_par<T>(array: &mut Vec<&mut [T]>,
         for j in 0..array.len() {
             unsafe {
                 let elem = vectors.get_unchecked_mut(j);
-                *elem = T::Reg::load_unchecked(array.get_unchecked(j), i)
+                *elem = T::Reg::load_unchecked(array[j], i)
             }
         }
 
@@ -873,7 +876,7 @@ fn perform_real_operations_par<T>(array: &mut Vec<&mut [T]>,
 
         for j in 0..array.len() {
             unsafe {
-                vectors.get_unchecked(j).store(array.get_unchecked_mut(j), i);
+                vectors.get_unchecked(j).store(&mut array[j], i);
             }
         }
 
@@ -1092,7 +1095,7 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
 
 #[cfg(test)]
 mod tests {
-    use num::complex::Complex32;
+    use num_complex::Complex32;
     use super::super::*;
     use super::*;
 

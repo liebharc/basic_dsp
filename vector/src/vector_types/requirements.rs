@@ -1,7 +1,9 @@
 //! Requirements which a type needs to fulfill
 //! so that it can serve as a vector storage
-use RealNumber;
+use {RealNumber, Zero};
+use inline_vector::InlineVector;
 use super::{VoidResult, ErrorReason};
+use arrayvec;
 
 /// A trait to convert a type into a slice.
 pub trait ToSlice<T> {
@@ -10,7 +12,7 @@ pub trait ToSlice<T> {
 
     /// Length of a slice.
     fn len(&self) -> usize;
-    
+
     /// Indicates whether or not this storage type is empty.
     fn is_empty(&self) -> bool;
 
@@ -56,7 +58,7 @@ impl<'a, T> ToSlice<T> for &'a [T] {
     fn len(&self) -> usize {
         (*self).len()
     }
-    
+
     fn is_empty(&self) -> bool {
         (*self).is_empty()
     }
@@ -82,7 +84,7 @@ impl<T> ToSlice<T> for [T] {
     fn len(&self) -> usize {
         self.len()
     }
-    
+
     fn is_empty(&self) -> bool {
         self.is_empty()
     }
@@ -108,6 +110,7 @@ impl<T> ToSliceMut<T> for [T] {
 
 impl<T> Owner for [T] {}
 
+#[cfg(feature="std")]
 impl<T> ToSlice<T> for Box<[T]> {
     fn to_slice(&self) -> &[T] {
         self
@@ -116,7 +119,7 @@ impl<T> ToSlice<T> for Box<[T]> {
     fn len(&self) -> usize {
         (**self).len()
     }
-    
+
     fn is_empty(&self) -> bool {
         (**self).is_empty()
     }
@@ -134,12 +137,14 @@ impl<T> ToSlice<T> for Box<[T]> {
     }
 }
 
+#[cfg(feature="std")]
 impl<T> ToSliceMut<T> for Box<[T]> {
     fn to_slice_mut(&mut self) -> &mut [T] {
         self
     }
 }
 
+#[cfg(feature="std")]
 impl<T> Owner for Box<[T]> {}
 
 impl<'a, T> ToSlice<T> for &'a mut [T] {
@@ -150,7 +155,7 @@ impl<'a, T> ToSlice<T> for &'a mut [T] {
     fn len(&self) -> usize {
         (**self).len()
     }
-    
+
     fn is_empty(&self) -> bool {
         (**self).is_empty()
     }
@@ -174,6 +179,7 @@ impl<'a, T> ToSliceMut<T> for &'a mut [T] {
     }
 }
 
+#[cfg(feature="std")]
 impl<T> ToSlice<T> for Vec<T>
     where T: RealNumber
 {
@@ -184,7 +190,7 @@ impl<T> ToSlice<T> for Vec<T>
     fn len(&self) -> usize {
         self.len()
     }
-    
+
     fn is_empty(&self) -> bool {
         self.is_empty()
     }
@@ -199,6 +205,7 @@ impl<T> ToSlice<T> for Vec<T>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> ToSliceMut<T> for Vec<T>
     where T: RealNumber
 {
@@ -207,6 +214,7 @@ impl<T> ToSliceMut<T> for Vec<T>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> Resize for Vec<T>
     where T: RealNumber
 {
@@ -215,4 +223,88 @@ impl<T> Resize for Vec<T>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> Owner for Vec<T> {}
+
+
+impl<A: arrayvec::Array> ToSlice<A::Item> for arrayvec::ArrayVec<A>
+    where A::Item: RealNumber
+{
+    fn to_slice(&self) -> &[A::Item] {
+        self.as_slice()
+    }
+
+    fn len(&self) -> usize {
+        self.len()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    fn alloc_len(&self) -> usize {
+        self.capacity()
+    }
+
+    fn try_resize(&mut self, len: usize) -> VoidResult {
+        if len > self.capacity() {
+            return Err(ErrorReason::TypeCanNotResize);
+        }
+
+        if len > self.len() {
+            while len > self.len() {
+                self.push(A::Item::zero());
+            }
+        }
+        else {
+            while len < self.len() {
+                self.pop();
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<A: arrayvec::Array> ToSliceMut<A::Item> for arrayvec::ArrayVec<A>
+    where A::Item: RealNumber
+{
+    fn to_slice_mut(&mut self) -> &mut [A::Item] {
+        self.as_mut_slice()
+    }
+}
+
+impl<A: arrayvec::Array> Owner for arrayvec::ArrayVec<A> {}
+
+impl<T> ToSlice<T> for InlineVector<T>
+    where T: RealNumber
+{
+    fn to_slice(&self) -> &[T] {
+        &self[..]
+    }
+
+    fn len(&self) -> usize {
+        self.len()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    fn alloc_len(&self) -> usize {
+        self.capacity()
+    }
+
+    fn try_resize(&mut self, len: usize) -> VoidResult {
+        self.try_resize(len)
+    }
+}
+
+impl<T> ToSliceMut<T> for InlineVector<T>
+    where T: RealNumber
+{
+    fn to_slice_mut(&mut self) -> &mut [T] {
+        &mut self[..]
+    }
+}
+
+impl<T> Owner for InlineVector<T> {}

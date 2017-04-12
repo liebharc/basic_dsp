@@ -15,15 +15,17 @@ pub use self::interpolation::*;
 
 use std::mem;
 use rustfft::FFT;
-use RealNumber;
-use num::Zero;
+use {RealNumber, array_to_complex, array_to_complex_mut};
+use Zero;
 use std::ops::*;
 use simd_extensions::*;
 use multicore_support::*;
-use super::{array_to_complex, array_to_complex_mut, Buffer, Vector, MetaData, DspVec, ToSliceMut,
+use super::{Buffer, Vector, MetaData, DspVec, ToSliceMut,
             NumberSpace, Domain, ErrorReason, VoidResult};
-use num::Complex;
+use traits::*;
 use std::fmt::Debug;
+use gpu_support::GpuSupport;
+use inline_vector::InlineVector;
 
 fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: bool)
     where S: ToSliceMut<T>,
@@ -36,19 +38,41 @@ fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: boo
     let mut temp = buffer.get(len);
     {
         let temp = temp.to_slice_mut();
-        let points = len / 2; // By two since vector is always complex
-        let rbw = (T::from(points).unwrap()) * vec.delta;
-        vec.delta = rbw;
-        let mut fft = FFT::new(points, reverse);
         let signal = vec.data.to_slice();
-        let spectrum = &mut temp[0..len];
-        let signal = array_to_complex(&signal[0..len]);
-        let spectrum = array_to_complex_mut(spectrum);
-        fft.process(signal, spectrum);
+        if !T::has_gpu_support() || len < 10000
+           || !T::is_supported_fft_len(true, len) {
+            let points = len / 2; // By two since vector is always complex
+            let rbw = (T::from(points).unwrap()) * vec.delta;
+            vec.delta = rbw;
+            let mut fft = FFT::new(points, reverse);
+            let spectrum = &mut temp[0..len];
+            let signal = array_to_complex(&signal[0..len]);
+            let spectrum = array_to_complex_mut(spectrum);
+            fft.process(signal, spectrum);
+        }
+        else {
+            T::fft(true, &signal[0..len], &mut temp[0..len], reverse);
+        }
     }
 
     mem::swap(&mut vec.data, &mut temp);
     buffer.free(temp);
+}
+
+/// Transform a value on the x-axis the same way as a fft shift transforms the
+/// x axis of a spectrum.
+fn fft_swap_x<T: RealNumber>(is_fft_shifted: bool, x_value: T, x_max: T) -> T {
+    if !is_fft_shifted {
+        x_value / x_max
+    }
+    else if x_value <= T::zero() {
+        let x_value = x_value / x_max;
+        T::one() + x_value
+    }
+    else {
+        let x_value = x_max - x_value + T::one();
+        -x_value / x_max
+    }
 }
 
 impl<S, T, N, D> DspVec<S, T, N, D>
@@ -68,7 +92,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
               C: Fn(&[T]) -> &[TT],
               CMut: Fn(&mut [T]) -> &mut [TT],
               F: Fn(T) -> TT,
-              TT: Zero + Mul<Output = TT> + Copy
+              TT: Zero + Mul<Output = TT> + Copy + Add<Output = TT>
     {
         let len = self.len();
         let mut temp = buffer.get(len);
@@ -96,6 +120,46 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
         mem::swap(&mut temp, &mut self.data);
         buffer.free(temp);
+    }
+
+    /// Only calculate the convolution in the inverse range from the given range.
+    /// This is intended to be used together with convolution implementations which
+    /// are faster but don't handle the beginning and end of a vector correctly.
+    fn convolve_vector_range(&mut self, target: &mut [T], vector: &Self, range: Range<usize>)
+    {
+        let points = self.points();
+        let other_points = vector.points();
+        let (other_start, other_end, full_conv_len, conv_len) = if other_points > points {
+            let center = other_points / 2;
+            let conv_len = points / 2;
+            (center - conv_len, center + conv_len, points, conv_len)
+        } else {
+            (0, other_points, other_points, other_points - other_points / 2)
+        };
+        let len = self.len();
+        if self.is_complex() {
+            let other = vector.data.to_slice();
+            let data = self.data.to_slice();
+            let other = array_to_complex(&other[0..vector.len()]);
+            let complex = array_to_complex(&data[0..len]);
+            let dest = array_to_complex_mut(&mut target[0..len]);
+            let other_iter = &other[other_start..other_end];
+            let conv_len = conv_len as isize;
+            for i in 0..range.start/2 {
+                dest[i] = Self::convolve_iteration(complex, other_iter, i as isize, conv_len, full_conv_len);
+            }
+        } else {
+            let other = vector.data.to_slice();
+            let data = self.data.to_slice();
+            let other = &other[0..vector.len()];
+            let data = &data[0..len];
+            let dest = &mut target[0..len];
+            let other_iter = &other[other_start..other_end];
+            let conv_len = conv_len as isize;
+            for i in 0..range.start {
+                dest[i] = Self::convolve_iteration(data, other_iter, i as isize, conv_len, full_conv_len);
+            }
+        }
     }
 
     fn convolve_signal_scalar<B>(&mut self, buffer: &mut B, vector: &Self)
@@ -167,6 +231,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
     /// Convolves a vector of vectors (in this lib also considered a matrix) with a vector
     /// of impulse responses and stores the result in `target`.
+    #[cfg(feature="std")]
     pub fn convolve_mat(
         matrix: &[&Self],
         impulse_response: &[&Self],
@@ -263,6 +328,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         sum
     }
 
+    #[cfg(feature="std")]
     #[inline]
     fn convolve_mat_iteration<TT>(matrix: &[&[TT]],
                               imp_resp: &[&[TT]],
@@ -306,13 +372,16 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
     /// Creates shifted and reversed copies of the given data vector.
     /// This function is especially designed for convolutions.
-    fn create_shifted_copies(&self) -> Vec<Vec<T::Reg>> {
+    fn create_shifted_copies(&self) -> InlineVector<InlineVector<T::Reg>> {
         let step = if self.is_complex() { 2 } else { 1 };
         let number_of_shifts = T::Reg::len() / step;
-        let mut shifted_copies = Vec::with_capacity(number_of_shifts);
+        let mut shifted_copies = InlineVector::with_capacity(number_of_shifts);
         let mut i = 0;
+        let len = self.len();
+        let data = self.data.to_slice();
+        let data = &data[0..len];
         while i < number_of_shifts {
-            let mut data = self.data.to_slice().iter().rev();
+            let mut data = data.iter().rev();
 
             // In general (number_of_shifts - i) indicates which prepared vector we need to use
             // if we later calculate end % number_of_shifts. Some examples:
@@ -331,48 +400,51 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             };
             let min_len = self.len() + shift;
             let len = (min_len + T::Reg::len() - 1) / T::Reg::len();
-            let mut copy: Vec<T::Reg> = Vec::with_capacity(len);
+            let mut copy: InlineVector<T::Reg> = InlineVector::with_capacity(len);
 
             let mut j = len * T::Reg::len();
             let mut k = 0;
-            let mut current = vec!(T::zero(); T::Reg::len());
+            let mut current = InlineVector::of_size(T::zero(), T::Reg::len());
             while j > 0 {
                 j -= step;
                 if j < shift || j >= min_len {
+                    // Insert zeros
                     current[k] = T::zero();
                     k += 1;
                     if k >= current.len() {
-                        copy.push(T::Reg::load_unchecked(&current, 0));
+                        copy.push(T::Reg::load_unchecked(&current[..], 0));
                         k = 0;
                     }
                     if step > 1 {
                         current[k] = T::zero();
                         k += 1;
                         if k >= current.len() {
-                            copy.push(T::Reg::load_unchecked(&current, 0));
+                            copy.push(T::Reg::load_unchecked(&current[..], 0));
                             k = 0;
                         }
                     }
                 } else if step > 1 {
+                    // Push complex number onto vector
                     let im = *data.next().unwrap();
                     let re = *data.next().unwrap();
                     current[k] = re;
                     k += 1;
                     if k >= current.len() {
-                        copy.push(T::Reg::load_unchecked(&current, 0));
+                        copy.push(T::Reg::load_unchecked(&current[..], 0));
                         k = 0;
                     }
                     current[k] = im;
                     k += 1;
                     if k >= current.len() {
-                        copy.push(T::Reg::load_unchecked(&current, 0));
+                        copy.push(T::Reg::load_unchecked(&current[..], 0));
                         k = 0;
                     }
                 } else {
+                    // Push real number onto vector
                     current[k] = *data.next().unwrap();
                     k += 1;
                     if k >= current.len() {
-                        copy.push(T::Reg::load_unchecked(&current, 0));
+                        copy.push(T::Reg::load_unchecked(&current[..], 0));
                         k = 0;
                     }
                 }
@@ -445,7 +517,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                           let mut sum = T::Reg::splat(T::zero());
                           let shifted = &shifts[shift];
                           let simd_iter = simd[end - shifted.len()..end].iter();
-                          let iteration = simd_iter.zip(shifted);
+                          let iteration = simd_iter.zip(shifted.iter());
                           for (this, other) in iteration {
                               sum = sum + simd_mul(*this, *other);
                           }
@@ -464,8 +536,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         buffer.free(temp);
     }
 
-    fn multiply_function_priv<TT, CMut, FA, F>(&mut self,
+        fn multiply_function_priv<TT, CMut, FA, F>(&mut self,
                                                is_symmetric: bool,
+                                               is_fft_shifted: bool,
                                                ratio: T,
                                                convert_mut: CMut,
                                                function_arg: FA,
@@ -475,6 +548,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
               F: Fn(FA, T) -> TT + 'static + Sync,
               TT: Zero + Mul<Output = TT> + Copy + Send + Sync + From<T>
     {
+        let two = T::one() + T::one();
         if !is_symmetric {
             let len = self.len();
             let points = self.points();
@@ -486,14 +560,13 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                       1,
                                       (ratio, function_arg),
                                       move |array, range, (ratio, arg)| {
-                let two = T::from(2.0).unwrap();
                 let scale = TT::from(ratio);
                 let offset = if points % 2 != 0 { 1 } else { 0 };
                 let max = T::from(points - offset).unwrap() / two;
                 let mut j = -(T::from(points - offset).unwrap()) / two +
                             T::from(range.start).unwrap();
                 for num in array {
-                    *num = (*num) * scale * fun(arg, j / max * ratio);
+                    *num = (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j, max) * ratio);
                     j = j + T::one();
                 }
             });
@@ -530,19 +603,19 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                     let mut iter2 = array2.iter_mut().rev();
                     while j1 < j2 {
                         let num = iter1.next().unwrap();
-                        (*num) = (*num) * scale * fun(arg, j1 / max * ratio);
+                        (*num) = (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j1, max) * ratio);
                         j1 = j1 + T::one();
                         i1 += 1;
                     }
                     while j2 < j1 {
                         let num = iter2.next().unwrap();
-                        (*num) = (*num) * scale * fun(arg, j2 / max * ratio);
+                        (*num) = (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j2, max) * ratio);
                         j2 = j2 + T::one();
                         i2 += 1;
                     }
                     // At this point we can be sure that `j1 == j2`
                     for (num1, num2) in iter1.zip(iter2) {
-                        let arg = scale * fun(arg, j1 / max * ratio);
+                        let arg = scale * fun(arg, fft_swap_x(is_fft_shifted, j1, max) * ratio);
                         *num1 = (*num1) * arg;
                         *num2 = (*num2) * arg;
                         j1 = j1 + T::one();
@@ -556,11 +629,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 let pos2 = len2 - i2;
                 let common_length = if pos1 < pos2 { pos1 } else { pos2 };
                 for num in &mut array1[i1 + common_length..len1] {
-                    (*num) = (*num) * scale * fun(arg, j1 / max * ratio);
+                    (*num) = (*num) * scale * fun(arg,  fft_swap_x(is_fft_shifted, j1, max) * ratio);
                     j1 = j1 + T::one();
                 }
                 for num in &mut array2[0..len2 - common_length - i2] {
-                    (*num) = (*num) * scale * fun(arg, j2 / max * ratio);
+                    (*num) = (*num) * scale * fun(arg,  fft_swap_x(is_fft_shifted, j2, max) * ratio);
                     j2 = j2 + T::one();
                 }
             });
@@ -683,5 +756,24 @@ impl<T> ReverseWrappingIterator<T>
                 count: iter_len,
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::fft_swap_x;
+
+     #[test]
+    fn fft_swap_x_test()
+    {
+        let input = [-4.0, -3.0, -2.0, -1.0, 0.0,
+                      1.0, 2.0, 3.0, 4.0];
+        let expected = [0.0, 0.25, 0.5, 0.75, 1.0,
+                       -1.0, -0.75, -0.5, -0.25];
+        let mut actual = [0.0; 9];
+        for i in 0..actual.len() {
+            actual[i] = fft_swap_x(true, input[i], 4.0);
+        }
+        assert_eq!(&actual, &expected);
     }
 }

@@ -1,8 +1,8 @@
 //! This mod contains a definition for window functions and provides implementations for a
 //! few standard windows. See the `WindowFunction` type for more information.
 use RealNumber;
-use std::os::raw::c_void;
 use std::mem;
+use std;
 
 /// A window function for FFT windows. See `https://en.wikipedia.org/wiki/Window_function`
 /// for details. Window functions should document if they aren't applicable for
@@ -77,7 +77,7 @@ impl<T> WindowFunction<T> for HammingWindow<T>
     fn window(&self, n: usize, length: usize) -> T {
         let one = T::one();
         let two = T::from(2.0).unwrap();
-        let pi = two * one.asin();
+        let pi = T::PI();
         let n = T::from(n).unwrap();
         let length = T::from(length).unwrap();
         self.alpha - self.beta * (two * pi * n / (length - one)).cos()
@@ -85,11 +85,12 @@ impl<T> WindowFunction<T> for HammingWindow<T>
 }
 
 /// A window function which can be constructed outside this crate.
+#[cfg(feature="std")]
 pub struct ForeignWindowFunction<T>
     where T: RealNumber
 {
     /// The window function
-    pub window_function: extern "C" fn(*const c_void, usize, usize) -> T,
+    pub window_function: extern "C" fn(*const std::os::raw::c_void, usize, usize) -> T,
 
     /// The data which is passed to the window function
     ///
@@ -104,12 +105,13 @@ pub struct ForeignWindowFunction<T>
     pub is_symmetric: bool,
 }
 
+#[cfg(feature="std")]
 impl<T> ForeignWindowFunction<T>
     where T: RealNumber
 {
     /// Creates a new window function
-    pub unsafe fn new(window: extern "C" fn(*const c_void, usize, usize) -> T,
-               window_data: *const c_void,
+    pub unsafe fn new(window: extern "C" fn(*const std::os::raw::c_void, usize, usize) -> T,
+               window_data: *const std::os::raw::c_void,
                is_symmetric: bool)
                -> Self {
         ForeignWindowFunction {
@@ -120,6 +122,7 @@ impl<T> ForeignWindowFunction<T>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> WindowFunction<T> for ForeignWindowFunction<T>
     where T: RealNumber
 {
@@ -129,7 +132,7 @@ impl<T> WindowFunction<T> for ForeignWindowFunction<T>
 
     fn window(&self, idx: usize, points: usize) -> T {
         let fun = self.window_function;
-        fun(self.window_data as *const c_void, idx, points)
+        fun(self.window_data as *const std::os::raw::c_void, idx, points)
     }
 }
 

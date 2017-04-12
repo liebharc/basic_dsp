@@ -297,6 +297,30 @@ macro_rules! add_mat_impl {
 					Ok(())
 				}
 
+				fn interpolate<B>(
+						&mut self,
+						buffer: &mut B,
+                        function: Option<&RealFrequencyResponse<T>>,
+                        dest_points: usize,
+                        delay: T) -> VoidResult
+					where B: Buffer<S, T> {
+                    for v in self.rows_mut() {
+                        try!(v.interpolate(buffer, function, dest_points, delay));
+                    }
+
+					Ok(())
+				}
+
+				fn interpft<B>(
+						&mut self,
+						buffer: &mut B,
+                        dest_points: usize)
+					where B: Buffer<S, T> {
+                    for v in self.rows_mut() {
+                        v.interpft(buffer, dest_points);
+                    }
+				}
+
 				fn decimatei(
 						&mut self,
 						decimation_factor: u32,

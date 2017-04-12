@@ -1,10 +1,10 @@
-use RealNumber;
-use num::{Complex, Zero};
-use num::complex::{Complex64};
+use {RealNumber, array_to_complex, Zero};
+use traits::*;
+use num_complex::{Complex64};
 use multicore_support::*;
-use super::super::{array_to_complex, Vector, DspVec, ToSlice, Domain, RealNumberSpace,
+use super::super::{Vector, DspVec, ToSlice, Domain, RealNumberSpace,
                    ComplexNumberSpace, Statistics, Stats};
-use super::{kahan_sum, kahan_sumb};               
+use super::{kahan_sum, kahan_sumb};
 
 /// Offers the same functionality as the `StatisticsOps` trait but
 /// the statistics are calculated in a more precise (and slower) way.
@@ -17,9 +17,9 @@ pub trait PreciseStatisticsOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex64;
+    /// # use num_complex::Complex64;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector: Vec<f32> = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
@@ -38,7 +38,7 @@ pub trait PreciseStatisticsOps<T>: Sized
     fn statistics_prec(&self) -> T;
 
     /// Calculates the statistics of the data contained in the vector as if the vector would
-    /// have been split into `len` pieces 
+    /// have been split into `len` pieces
     /// using a more precise but slower algorithm. `self.len` should be dividable by
     /// `len` without a remainder,
     /// but this isn't enforced by the implementation.
@@ -46,9 +46,9 @@ pub trait PreciseStatisticsOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex64;
+    /// # use num_complex::Complex64;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector: Vec<f32> = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
@@ -66,14 +66,14 @@ pub trait PreciseStatisticsOps<T>: Sized
 pub trait PreciseSumOps<T>: Sized
     where T: Sized
 {
-    /// Calculates the sum of the data contained in the vector 
+    /// Calculates the sum of the data contained in the vector
     /// using a more precise but slower algorithm.
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex64;
+    /// # use num_complex::Complex64;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
@@ -83,14 +83,14 @@ pub trait PreciseSumOps<T>: Sized
     /// ```
     fn sum_prec(&self) -> T;
 
-    /// Calculates the sum of the squared data contained in the vector 
+    /// Calculates the sum of the squared data contained in the vector
     /// using a more precise but slower algorithm.
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
-    /// # use num::complex::Complex64;
+    /// # use num_complex::Complex64;
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
@@ -132,7 +132,7 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<f64>> for DspVec<S, f32, N, D>
             stats
         });
 
-        Statistics::merge(&chunks)
+        Statistics::merge(&chunks[..])
     }
 
     fn statistics_split_prec(&self, len: usize) -> Vec<Statistics<f64>> {
@@ -159,7 +159,7 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<f64>> for DspVec<S, f32, N, D>
             results
         });
 
-        Statistics::merge_cols(&chunks)
+        Statistics::merge_cols(&chunks[..])
     }
 }
 
@@ -188,7 +188,7 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<f64>> for DspVec<S, f64, N, D>
             stats
         });
 
-        Statistics::merge(&chunks)
+        Statistics::merge(&chunks[..])
     }
 
     fn statistics_split_prec(&self, len: usize) -> Vec<Statistics<f64>> {
@@ -217,7 +217,7 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<f64>> for DspVec<S, f64, N, D>
             results
         });
 
-        Statistics::merge_cols(&chunks)
+        Statistics::merge_cols(&chunks[..])
     }
 }
 
@@ -241,7 +241,7 @@ impl<S, N, D> PreciseSumOps<f64> for DspVec<S, f32, N, D>
             }
             sum
         });
-        chunks.iter()
+        (&chunks[..]).iter()
             .fold(0.0, |a, b| a + b)
     }
 
@@ -261,7 +261,7 @@ impl<S, N, D> PreciseSumOps<f64> for DspVec<S, f32, N, D>
             }
             sum
         });
-        chunks.iter()
+        (&chunks[..]).iter()
             .fold(0.0, |a, b| a + b)
     }
 }
@@ -282,7 +282,7 @@ impl<S, N, D> PreciseSumOps<f64> for DspVec<S, f64, N, D>
                                                 move |array, _, _| {
             kahan_sumb(array.iter())
         });
-        chunks.iter()
+        (&chunks[..]).iter()
             .fold(0.0, |a, b| a + b)
     }
 
@@ -297,7 +297,7 @@ impl<S, N, D> PreciseSumOps<f64> for DspVec<S, f64, N, D>
                                                 move |array, _, _| {
             kahan_sum(array.iter().map(|x|x*x))
         });
-        chunks.iter()
+        (&chunks[..]).iter()
             .fold(0.0, |a, b| a + b)
     }
 }
@@ -326,7 +326,7 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<Complex<f64>>> for DspVec<S, f32, 
             stat
         });
 
-        Statistics::merge(&chunks)
+        Statistics::merge(&chunks[..])
     }
 
     fn statistics_split_prec(&self, len: usize) -> Vec<Statistics<Complex<f64>>> {
@@ -354,7 +354,7 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<Complex<f64>>> for DspVec<S, f32, 
             results
         });
 
-        Statistics::merge_cols(&chunks)
+        Statistics::merge_cols(&chunks[..])
     }
 }
 
@@ -384,7 +384,7 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<Complex<f64>>> for DspVec<S, f64, 
             stat
         });
 
-        Statistics::merge(&chunks)
+        Statistics::merge(&chunks[..])
     }
 
     fn statistics_split_prec(&self, len: usize) -> Vec<Statistics<Complex<f64>>> {
@@ -414,7 +414,7 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<Complex<f64>>> for DspVec<S, f64, 
             results
         });
 
-        Statistics::merge_cols(&chunks)
+        Statistics::merge_cols(&chunks[..])
     }
 }
 
@@ -439,7 +439,7 @@ impl<S, N, D> PreciseSumOps<Complex<f64>> for DspVec<S, f32, N, D>
             }
             sum
         });
-        chunks.iter()
+        (&chunks[..]).iter()
             .fold(Complex64::zero(), |a, b| a + b)
     }
 
@@ -460,7 +460,7 @@ impl<S, N, D> PreciseSumOps<Complex<f64>> for DspVec<S, f32, N, D>
             }
             sum
         });
-        chunks.iter()
+        (&chunks[..]).iter()
             .fold(Complex64::zero(), |a, b| a + b)
     }
 }
@@ -482,7 +482,7 @@ impl<S, N, D> PreciseSumOps<Complex<f64>> for DspVec<S, f64, N, D>
             let array = array_to_complex(&array[0..array.len()]);
             kahan_sumb(array.iter())
         });
-        chunks.iter()
+        (&chunks[..]).iter()
             .fold(Complex64::zero(), |a, b| a + b)
     }
 
@@ -498,7 +498,7 @@ impl<S, N, D> PreciseSumOps<Complex<f64>> for DspVec<S, f64, N, D>
             let array = array_to_complex(&array[0..array.len()]);
             kahan_sum(array.iter().map(|x|x*x))
         });
-        chunks.iter()
+        (&chunks[..]).iter()
             .fold(Complex64::zero(), |a, b| a + b)
     }
 }
@@ -512,14 +512,14 @@ impl<T> PreciseStats<T> for Statistics<T>
         let t = self.sum + y;
         *sumc = (t - self.sum) - y;
         self.sum = t;
-    
+
         self.count += 1;
-        
+
         let y = elem * elem - *rmsc;
         let t = self.rms + y;
         *rmsc = (t - self.rms) - y;
         self.rms = t;
-        
+
         if elem > self.max {
             self.max = elem;
             self.max_index = index;
@@ -540,9 +540,9 @@ impl<T> PreciseStats<Complex<T>> for Statistics<Complex<T>>
         let t = self.sum + y;
         *sumc = (t - self.sum) - y;
         self.sum = t;
-    
+
         self.count += 1;
-        
+
         let y = elem * elem - *rmsc;
         let t = self.rms + y;
         *rmsc = (t - self.rms) - y;

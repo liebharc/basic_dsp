@@ -1,7 +1,6 @@
-use RealNumber;
+use {RealNumber, array_to_complex, array_to_complex_mut, Zero};
 use multicore_support::{Chunk, MultiCoreSettings, Complexity};
-use num::complex::Complex;
-use num::Zero;
+use traits::*;
 use std::ops::*;
 use std::mem;
 use std::cmp;
@@ -21,6 +20,7 @@ mod real;
 pub use self::real::*;
 mod time_freq;
 pub use self::time_freq::*;
+#[cfg(feature="std")]
 pub mod combined_ops;
 mod rededicate_and_relations;
 pub use self::rededicate_and_relations::*;
@@ -223,13 +223,23 @@ pub struct DspVec<S, T, N, D>
           N: NumberSpace,
           D: Domain
 {
-    /// The underlying storage. `self.len()` should be called to find out how many 
+    /// The underlying storage. `self.len()` should be called to find out how many
     /// elements in `data` contain valid data.
     pub data: S,
     delta: T,
     domain: D,
     number_space: N,
     valid_len: usize,
+    multicore_settings: MultiCoreSettings,
+}
+
+/// Holds meta data about a type.
+#[derive(Clone)]
+#[derive(Copy)]
+pub struct TypeMetaData<T, N, D> {
+    delta: T,
+    domain: D,
+    number_space: N,
     multicore_settings: MultiCoreSettings,
 }
 
@@ -260,14 +270,19 @@ pub type ComplexFreqVec<S, T> = DspVec<S, T, ComplexData, FrequencyData>;
 pub type GenDspVec<S, T> = DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>;
 
 /// A vector with real numbers in time domain.
+#[cfg(feature="std")]
 pub type RealTimeVec32 = DspVec<Vec<f32>, f32, RealData, TimeData>;
 /// A vector with real numbers in frequency domain.
+#[cfg(feature="std")]
 pub type RealFreqVec32 = DspVec<Vec<f32>, f32, RealData, FrequencyData>;
 /// A vector with complex numbers in time domain.
+#[cfg(feature="std")]
 pub type ComplexTimeVec32 = DspVec<Vec<f32>, f32, ComplexData, TimeData>;
 /// A vector with complex numbers in frequency domain.
+#[cfg(feature="std")]
 pub type ComplexFreqVec32 = DspVec<Vec<f32>, f32, ComplexData, FrequencyData>;
 /// A vector with no information about number space or domain at compile time.
+#[cfg(feature="std")]
 pub type GenDspVec32 = DspVec<Vec<f32>, f32, RealOrComplexData, TimeOrFrequencyData>;
 
 /// A vector with real numbers in time domain.
@@ -282,14 +297,19 @@ pub type ComplexFreqVecSlice32<'a> = DspVec<&'a [f32], f32, ComplexData, Frequen
 pub type GenDspVecSlice32<'a> = DspVec<&'a [f32], f32, RealOrComplexData, TimeOrFrequencyData>;
 
 /// A vector with real numbers in time domain.
+#[cfg(feature="std")]
 pub type RealTimeVec64 = DspVec<Vec<f64>, f64, RealData, TimeData>;
 /// A vector with real numbers in frequency domain.
+#[cfg(feature="std")]
 pub type RealFreqVec64 = DspVec<Vec<f64>, f64, RealData, FrequencyData>;
 /// A vector with complex numbers in time domain.
+#[cfg(feature="std")]
 pub type ComplexTimeVec64 = DspVec<Vec<f64>, f64, ComplexData, TimeData>;
 /// A vector with complex numbers in frequency domain.
+#[cfg(feature="std")]
 pub type ComplexFreqVec64 = DspVec<Vec<f64>, f64, ComplexData, FrequencyData>;
 /// A vector with no information about number space or domain at compile time.
+#[cfg(feature="std")]
 pub type GenDspVec64 = DspVec<Vec<f64>, f64, RealOrComplexData, TimeOrFrequencyData>;
 
 /// A vector with real numbers in time domain.
@@ -302,28 +322,6 @@ pub type ComplexTimeVecSlice64<'a> = DspVec<&'a [f64], f64, ComplexData, TimeDat
 pub type ComplexFreqVecSlice64<'a> = DspVec<&'a [f64], f64, ComplexData, FrequencyData>;
 /// A vector with no information about number space or domain at compile time.
 pub type GenDspVecSlice64<'a> = DspVec<&'a [f64], f64, RealOrComplexData, TimeOrFrequencyData>;
-
-fn array_to_complex<T>(array: &[T]) -> &[Complex<T>] {
-    unsafe {
-        let len = array.len();
-        if len % 2 != 0 {
-            panic!("Argument must have an even length");
-        }
-        let trans: &[Complex<T>] = mem::transmute(array);
-        &trans[0..len / 2]
-    }
-}
-
-fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
-    unsafe {
-        let len = array.len();
-        if len % 2 != 0 {
-            panic!("Argument must have an even length");
-        }
-        let trans: &mut [Complex<T>] = mem::transmute(array);
-        &mut trans[0..len / 2]
-    }
-}
 
 fn round_len(len: usize) -> usize {
     ((len + Reg32::len() - 1) / Reg32::len()) * Reg32::len()
@@ -349,6 +347,31 @@ fn swap_array_halves<T>(data: &mut [T], forward: bool)
             unsafe { mem::swap(&mut temp, data.get_unchecked_mut(pos)) };
             pos = pos_new;
         }
+    }
+}
+
+impl<S, T, N, D> DspVec<S, T, N, D>
+    where S: ToSliceMut<T> + ToDspVector<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain
+{
+    fn swap_data<N1, D1>(&mut self, other: &mut DspVec<S, T, N1, D1>)
+        where N1: NumberSpace, D1: Domain {
+            let self_len = self.len();
+            let other_len = other.len();
+            mem::swap(&mut self.data, &mut other.data);
+            self.resize(other_len)
+                .expect("Resize after swap should succeed");
+            other.resize(self_len)
+                .expect("Resize after swap should succeed");
+    }
+
+    fn take_ownership(&mut self, empty: S) -> Self {
+        let meta_data = self.get_meta_data();
+        let mut other = empty.to_dsp_vec(&meta_data);
+        self.swap_data(&mut other);
+        other
     }
 }
 

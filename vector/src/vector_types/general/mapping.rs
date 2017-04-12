@@ -1,8 +1,7 @@
-use RealNumber;
-use num::Complex;
-use std::sync::Arc;
+use {RealNumber, array_to_complex, array_to_complex_mut};
+use traits::*;
 use multicore_support::*;
-use super::super::{array_to_complex, array_to_complex_mut, ScalarResult, ErrorReason, DspVec,
+use super::super::{ScalarResult, ErrorReason, DspVec,
                    ToSlice, ToSliceMut, MetaData, Domain, RealNumberSpace, ComplexNumberSpace};
 
 /// Operations which allow to iterate over the vector and to derive results
@@ -76,6 +75,7 @@ impl<S, T, N, D> MapInplaceOps<T> for DspVec<S, T, N, D>
     }
 }
 
+#[cfg(feature="std")]
 impl<S, T, N, D, R> MapAggregateOps<T, R> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
@@ -84,6 +84,7 @@ impl<S, T, N, D, R> MapAggregateOps<T, R> for DspVec<S, T, N, D>
           R: Send
 {
     type Output = ScalarResult<R>;
+
     fn map_aggregate<'a, A, FMap, FAggr>(&self,
                                          argument: A,
                                          map: FMap,
@@ -93,6 +94,7 @@ impl<S, T, N, D, R> MapAggregateOps<T, R> for DspVec<S, T, N, D>
               FMap: Fn(T, usize, A) -> R + 'a + Sync,
               FAggr: Fn(R, R) -> R + 'a + Sync + Send
     {
+        use std::sync::Arc;
         let aggregate = Arc::new(aggregate);
         let mut result = {
             if self.is_complex() {
@@ -181,6 +183,7 @@ impl<S, T, N, D> MapInplaceOps<Complex<T>> for DspVec<S, T, N, D>
     }
 }
 
+#[cfg(feature="std")]
 impl<S, T, N, D, R> MapAggregateOps<Complex<T>, R> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
@@ -199,6 +202,7 @@ impl<S, T, N, D, R> MapAggregateOps<Complex<T>, R> for DspVec<S, T, N, D>
               FMap: Fn(Complex<T>, usize, A) -> R + 'a + Sync,
               FAggr: Fn(R, R) -> R + 'a + Sync + Send
     {
+        use std::sync::Arc;
         let aggregate = Arc::new(aggregate);
         let mut result = {
             if !self.is_complex() {

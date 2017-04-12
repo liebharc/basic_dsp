@@ -1,10 +1,10 @@
 //! Fundamental math operations
-use RealNumber;
+use {RealNumber, array_to_complex, array_to_complex_mut};
 use multicore_support::*;
 use simd_extensions::*;
-use num::Complex;
+use traits::*;
 use std::ops::*;
-use super::super::{array_to_complex, array_to_complex_mut, ErrorReason, VoidResult, Vector,
+use super::super::{ErrorReason, VoidResult, Vector,
                    DspVec, ToSliceMut, MetaData, Domain, NumberSpace, ComplexNumberSpace};
 
 /// An operation which multiplies each vector element with a constant
@@ -21,7 +21,7 @@ pub trait ScaleOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -47,7 +47,7 @@ pub trait OffsetOps<T>: Sized
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -72,7 +72,7 @@ pub trait ElementaryOps<A> {
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -95,7 +95,7 @@ pub trait ElementaryOps<A> {
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -118,7 +118,7 @@ pub trait ElementaryOps<A> {
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -141,7 +141,7 @@ pub trait ElementaryOps<A> {
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -170,7 +170,7 @@ pub trait ElementaryWrapAroundOps<A> {
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -196,7 +196,7 @@ pub trait ElementaryWrapAroundOps<A> {
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -222,7 +222,7 @@ pub trait ElementaryWrapAroundOps<A> {
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -248,7 +248,7 @@ pub trait ElementaryWrapAroundOps<A> {
     /// # Example
     ///
     /// ```
-    /// # extern crate num;
+    /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// use basic_dsp_vector::*;
     /// # fn main() {
@@ -330,17 +330,10 @@ impl<S, T, D, N> ScaleOps<Complex<T>> for DspVec<S, T, N, D>
 {
     fn scale(&mut self, factor: Complex<T>) {
         assert_complex!(self);
-        if factor.im == T::zero() {
-            self.simd_real_operation(|x, y| x.scale_real(y),
-                                     |x, y| x * y,
-                                     factor.re,
-                                     Complexity::Small);
-        } else {
-            self.simd_complex_operation(|x, y| x.scale_complex(y),
-                                        |x, y| x * y,
-                                        factor,
-                                        Complexity::Small);
-        }
+        self.simd_complex_operation(|x, y| x.scale_complex(y),
+                                    |x, y| x * y,
+                                    factor,
+                                    Complexity::Small);
     }
 }
 

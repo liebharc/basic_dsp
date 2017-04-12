@@ -32,12 +32,14 @@ pub trait Buffer<S, T>
 }
 
 /// A buffer which stores a single vector and never shrinks.
+#[cfg(feature="std")]
 pub struct SingleBuffer<T>
     where T: RealNumber
 {
     temp: Vec<T>,
 }
 
+#[cfg(feature="std")]
 impl<T> SingleBuffer<T>
     where T: RealNumber
 {
@@ -52,6 +54,7 @@ impl<T> SingleBuffer<T>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> Buffer<Vec<T>, T> for SingleBuffer<T>
     where T: RealNumber
 {

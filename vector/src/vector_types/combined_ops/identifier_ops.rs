@@ -1,6 +1,6 @@
 use super::{Identifier, Operation};
 use RealNumber;
-use num::complex::Complex;
+use traits::*;
 use super::super::{RealNumberSpace, ComplexNumberSpace, NumberSpace, TransRes, VoidResult,
                    DataDomain, TimeData, FrequencyData, RealData, ComplexData, RealOrComplexData,
                    TimeOrFrequencyData, Domain, ToRealResult, ToComplexResult, ScaleOps,
@@ -30,7 +30,7 @@ pub trait IdentifierOps {
     /// Adds its length to the vector elements
     /// # Example
     ///
-    /// ```
+    /// ```no_run
     /// use basic_dsp_vector::*;
     /// use basic_dsp_vector::combined_ops::*;
     /// let complex = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();
@@ -48,7 +48,7 @@ pub trait IdentifierOps {
     /// Subtracts its length from the vector elements
     /// # Example
     ///
-    /// ```
+    /// ```no_run
     /// use basic_dsp_vector::*;
     /// use basic_dsp_vector::combined_ops::*;
     /// let complex = vec!(3.0, 2.0, 5.0, 4.0).to_complex_time_vec();
@@ -67,7 +67,7 @@ pub trait IdentifierOps {
     /// Subtracts its length from the vector elements
     /// # Example
     ///
-    /// ```
+    /// ```no_run
     /// use basic_dsp_vector::*;
     /// use basic_dsp_vector::combined_ops::*;
     /// let complex = vec!(2.0, 4.0, 6.0, 8.0).to_complex_time_vec();
@@ -85,7 +85,7 @@ pub trait IdentifierOps {
     /// Multiplies the vector elements with its length
     /// # Example
     ///
-    /// ```
+    /// ```no_run
     /// use basic_dsp_vector::*;
     /// use basic_dsp_vector::combined_ops::*;
     /// let complex = vec!(1.0, 2.0, 3.0, 4.0).to_complex_time_vec();

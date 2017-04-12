@@ -1,7 +1,7 @@
 //! Clients using other programming languages should use the functions
 //! in this mod. Please refer to the other chapters of the help for documentation of the functions.
 extern crate basic_dsp_vector;
-extern crate num;
+extern crate num_complex;
 
 pub mod facade32;
 pub mod combined_ops32;

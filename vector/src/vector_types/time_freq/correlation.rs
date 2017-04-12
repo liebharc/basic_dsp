@@ -1,12 +1,10 @@
 use RealNumber;
-use num::Complex;
 use super::super::{DspVec, Buffer, ComplexOps, ScaleOps, FrequencyDomainOperations,
                    TimeToFrequencyDomainOperations, RededicateForceOps, ToSliceMut, Owner,
                    PaddingOption, VoidResult, Vector, FromVector, MetaData, ComplexNumberSpace,
                    TimeDomain, ElementaryOps, ToFreqResult, InsertZerosOpsBuffered, DataDomain,
-                   ErrorReason, ReorganizeDataOps};
-use std::mem;
-use super::fft;
+                   ErrorReason, ReorganizeDataOps, ToComplexVector, FrequencyToTimeDomainOperations,
+                   ToDspVector, ToTimeResult, RededicateOps};
 
 /// Cross-correlation of data vectors. See also https://en.wikipedia.org/wiki/Cross-correlation
 ///
@@ -24,7 +22,7 @@ use super::fft;
 /// called before doing the correlation. See also the example section for how to do this.
 /// # Example
 ///
-/// ```
+/// ```no_run
 /// use std::f32;
 /// use basic_dsp_vector::*;
 /// let mut vector = vec!(1.0, 1.0, 2.0, 2.0, 3.0, 3.0).to_complex_time_vec();
@@ -77,7 +75,7 @@ pub trait CrossCorrelationOps<S, T, A>
 impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
 	where DspVec<S, T, N, D>: ToFreqResult
         + TimeToFrequencyDomainOperations<S, T>
-        + ScaleOps<Complex<T>>
+        + ScaleOps<T>
 		+ ReorganizeDataOps<T> + Clone,
 	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>>
         + FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T>
@@ -108,20 +106,21 @@ impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
 
 impl<S, T, N, D> CrossCorrelationOps<S, T, <DspVec<S, T, N, D> as ToFreqResult>::FreqResult>
     for DspVec<S, T, N, D>
-	where DspVec<S, T, N, D>: ToFreqResult
+    where DspVec<S, T, N, D>: ToFreqResult
         + TimeToFrequencyDomainOperations<S, T>
-        + ScaleOps<Complex<T>>
+        + RededicateOps<<<DspVec<S, T, N, D> as ToFreqResult>::FreqResult as ToTimeResult>::TimeResult>
+        + ScaleOps<T>
 		+ ReorganizeDataOps<T> + Clone,
-	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>>
-        + FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T>
+	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult:
+          FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T>
         + ElementaryOps<<DspVec<S, T, N, D> as ToFreqResult>::FreqResult>
-        + FromVector<T, Output=S>,
-	  S: ToSliceMut<T> + Owner,
+        + FromVector<T, Output=S> + FrequencyToTimeDomainOperations<S, T>,
+	  S: ToSliceMut<T> + Owner + ToDspVector<T> + ToComplexVector<S, T>,
 	  T: RealNumber,
 	  N: ComplexNumberSpace,
-	  D: TimeDomain {
-
-	fn correlate<B>(
+	  D: TimeDomain
+{
+    fn correlate<B>(
             &mut self,
             buffer: &mut B,
             other: &<DspVec<S, T, N, D> as ToFreqResult>::FreqResult) -> VoidResult
@@ -135,23 +134,15 @@ impl<S, T, N, D> CrossCorrelationOps<S, T, <DspVec<S, T, N, D> as ToFreqResult>:
         }
 		let points = other.points();
 		try!(self.zero_pad_b(buffer, points, PaddingOption::Surround));
-		fft(self, buffer, false);
-		{
-			let mut temp = buffer.construct_new(0);
-			mem::swap(&mut temp, &mut self.data);
-			let mut clone = self.clone();
-			mem::swap(&mut temp, &mut clone.data);
-			let mut clone =
-                <DspVec<S, T, N, D> as ToFreqResult>::FreqResult::rededicate_from_force(clone);
-			try!(clone.mul(other));
-			let (mut temp, _) = clone.get();
-			mem::swap(&mut temp, &mut self.data);
-		}
-
+        let complex = self.take_ownership(buffer.construct_new(0));
+        let mut complex = complex.plain_fft(buffer);
+        try!(complex.mul(other));
+		let complex = complex.plain_ifft(buffer);
+        let mut complex = Self::rededicate_from(complex);
+		self.swap_data(&mut complex);
 		let p = self.points();
-		self.scale(Complex::<T>::new(T::one() / T::from(p).unwrap(), T::zero()));
-		fft(self, buffer, true);
-		self.swap_halves();
+		self.scale(T::one() / T::from(p).unwrap());
+        self.swap_halves();
 		Ok(())
 	}
 }

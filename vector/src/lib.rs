@@ -32,12 +32,24 @@
 //! memory available so that the optimization focus is on decreasing the processing time
 //! for every (common) operation and to spent little time with memory allocations.
 
+#![cfg_attr(not(feature="std"), no_std)]
+#[cfg(not(feature="std"))]
+extern crate core as std;
+
 #[cfg(any(feature = "doc", feature="use_sse", feature="use_avx"))]
 extern crate simd;
+#[cfg(any(feature = "doc", feature="use_gpu"))]
+extern crate ocl;
+#[cfg(feature="std")]
 extern crate num_cpus;
+#[cfg(feature="std")]
 extern crate crossbeam;
-extern crate num;
+extern crate num_traits;
+extern crate num_complex;
 extern crate rustfft;
+#[cfg(any(feature = "doc", feature="use_gpu"))]
+extern crate clfft;
+extern crate arrayvec;
 mod vector_types;
 mod multicore_support;
 mod simd_extensions;
@@ -45,54 +57,112 @@ pub mod window_functions;
 pub mod conv_types;
 pub use vector_types::*;
 pub use multicore_support::MultiCoreSettings;
-use num::traits::Float;
-use std::fmt::Debug;
+mod gpu_support;
 use std::ops::*;
+use std::mem;
+mod inline_vector;
+
+pub mod traits {
+    //! Traits from the `num` crate which are used inside `basic_dsp`. In future
+    //! the `RealNumber` and `Zero` trait will likely be found here too.
+    pub use num_traits::Float;
+    pub use num_traits::One;
+    pub use num_complex::Complex;
+    pub use num_traits::Num;
+    use ToSimd;
+    use std::fmt::Debug;
+    use num_traits;
+    
+    /// A trait for a numeric value which at least supports a subset of the operations defined in this crate.
+    /// Can be an integer or a floating point number. In order to have support for all operations in this crate
+    /// a must implement the `RealNumber`.
+    pub trait DspNumber
+        : Num + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive
+    {
+    }
+    impl<T> DspNumber for T
+        where T: Num + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive
+    {
+    }
+}
+
+use traits::*;
 
 use simd_extensions::*;
+use gpu_support::{Gpu32, Gpu64, GpuRegTrait, GpuFloat};
 
 /// Associates a number type with a SIMD register type.
 pub trait ToSimd: Sized + Sync + Send {
-    type Reg: Simd<Self> + SimdGeneric<Self> + Copy + Sync + Send + Add<Output = Self::Reg> + Sub<Output = Self::Reg> + Mul<Output = Self::Reg> + Div<Output = Self::Reg> + Zero;
+    /// Type for the SIMD register on the CPU.
+    type Reg: Simd<Self> + SimdGeneric<Self> + SimdApproximations<Self>
+        + Copy + Sync + Send
+        + Add<Output = Self::Reg> + Sub<Output = Self::Reg> + Mul<Output = Self::Reg> + Div<Output = Self::Reg> + Zero;
+    /// Type for the SIMD register on the GPU. Defaults to an arbitrary type if GPU support is not
+    /// compiled in.
+    type GpuReg: GpuRegTrait;
 }
 
 impl ToSimd for f32 {
     type Reg = Reg32;
+    type GpuReg = Gpu32;
 }
 
 impl ToSimd for f64 {
     type Reg = Reg64;
+    type GpuReg = Gpu64;
 }
 
 /// A real floating pointer number intended to abstract over `f32` and `f64`.
 pub trait RealNumber
-    : Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive
-    {
+    : Float + traits::DspNumber + GpuFloat + num_traits::FloatConst
+{
 }
 impl<T> RealNumber for T
-    where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug + num::Signed + num::FromPrimitive
+    where T: traits::DspNumber + GpuFloat + num_traits::FloatConst
 {
 }
 
 /// This trait is necessary so that we can define zero for types outside this crate.
-/// It calls the `num::Zero` trait where possible.
+/// It calls the `num_traits::Zero` trait where possible.
 pub trait Zero {
     fn zero() -> Self;
 }
 
 impl<T> Zero for T
-    where T: RealNumber {
+    where T: traits::DspNumber {
     fn zero() -> Self {
-        <Self as num::Zero>::zero()
+        <Self as num_traits::Zero>::zero()
     }
 }
 
-impl<T> Zero for num::Complex<T> 
-    where T: RealNumber {
+impl<T> Zero for Complex<T>
+    where T: traits::DspNumber {
     fn zero() -> Self {
-        <Self as num::Zero>::zero()
+        <Self as num_traits::Zero>::zero()
     }
-}   
+}
+
+fn array_to_complex<T>(array: &[T]) -> &[Complex<T>] {
+    unsafe {
+        let len = array.len();
+        if len % 2 != 0 {
+            panic!("Argument must have an even length");
+        }
+        let trans: &[Complex<T>] = mem::transmute(array);
+        &trans[0..len / 2]
+    }
+}
+
+fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
+    unsafe {
+        let len = array.len();
+        if len % 2 != 0 {
+            panic!("Argument must have an even length");
+        }
+        let trans: &mut [Complex<T>] = mem::transmute(array);
+        &mut trans[0..len / 2]
+    }
+}
 
 #[cfg(test)]
 mod tests {

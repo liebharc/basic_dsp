@@ -187,6 +187,30 @@ pub fn create_delta(seed: usize, iteration: usize) -> f32 {
     rng.gen_range(-10.0, 10.0)
 }
 
+pub fn create_random_multitones(seed: usize,
+                         iteration: usize,
+                         from: usize,
+                         to: usize,
+                         number_of_tones: usize) -> Vec<f32> {
+    let len_seed: &[_] = &[seed, iteration];
+    let mut rng: StdRng = SeedableRng::from_seed(len_seed);
+    let len = 2 * rng.gen_range(from, to);
+    let mut result = vec![0.0; len].to_real_time_vec();
+    for _ in 0..number_of_tones {
+        let mut arg = vec![0.0; len].to_real_time_vec();
+        arg.map_inplace((), |_, i, _| i as f32);
+        let freq = rng.gen_range(0.24, 0.76);
+        let phase = rng.gen_range(-1.0, 1.0);
+        arg.scale(freq);
+        arg.offset(phase);
+        arg.cos();
+        result.add(&arg).unwrap();
+    }
+
+    let (result, _) = result.get();
+    result
+}
+
 use std::sync::{Arc, Mutex};
 
 pub const RANGE_SINGLE_CORE: Range<usize> = Range {

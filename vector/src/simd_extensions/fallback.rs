@@ -1,4 +1,4 @@
-use num::complex::Complex;
+use traits::*;
 use super::Simd;
 use std::ops::*;
 

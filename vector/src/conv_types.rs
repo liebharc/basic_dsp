@@ -3,13 +3,14 @@
 //! Convolutions in this library can be defined in time or frequency domain. In
 //! frequency domain the convolution is automatically transformed into a multiplication
 //! which is the analog operation to a convolution in time domain.
-use RealNumber;
-use num::traits::Zero;
-use num::complex::{Complex, Complex32, Complex64};
+use {RealNumber, Zero};
+use traits::*;
+use num_complex::{Complex32, Complex64};
 use std::marker::PhantomData;
-use std::os::raw::c_void;
 use std::mem;
 use vector_types::*;
+use inline_vector::{InlineVector, InternalBuffer};
+use std;
 
 /// A convolution function in time domain and real number space
 pub trait RealImpulseResponse<T> : Sync
@@ -62,7 +63,7 @@ macro_rules! define_real_lookup_table {
             /// This usually speeds up a convolution and sacrifices accuracy.
             pub struct $name<T>
                 where T: RealNumber {
-                table: Vec<T>,
+                table: InlineVector<T>,
                 delta: T,
                 is_symmetric: bool
             }
@@ -72,7 +73,7 @@ macro_rules! define_real_lookup_table {
 
                 /// Allows to inspect the generated lookup table
                 pub fn table(&self) -> &[T] {
-                    &self.table
+                    &self.table[..]
                 }
 
                 /// Gets the delta value which determines the resolution
@@ -92,7 +93,7 @@ macro_rules! define_complex_lookup_table {
             /// This usually speeds up a convolution and sacrifices accuracy.
             pub struct $name<T>
                 where T: RealNumber {
-                table: Vec<Complex<T>>,
+                table: InlineVector<Complex<T>>,
                 delta: T,
                 is_symmetric: bool
             }
@@ -102,7 +103,7 @@ macro_rules! define_complex_lookup_table {
 
                 /// Allows to inspect the generated lookup table
                 pub fn table(&self) -> &[Complex<T>] {
-                    &self.table
+                    &self.table[..]
                 }
 
                 /// Gets the delta value which determines the resolution
@@ -163,26 +164,28 @@ macro_rules! add_linear_table_lookup_impl {
                 }
 
                 impl $name<$data_type> {
-/// Creates a lookup table by putting the pieces together.
+                    /// Creates a lookup table by putting the pieces together.
                     pub fn from_raw_parts(table: &[$result_type],
                                           delta: $data_type,
                                           is_symmetric: bool) -> Self {
-                        let owned_table = Vec::from(table);
+                        let mut owned_table = InlineVector::with_capacity(table.len());
+                        for n in &table[..] {
+                            owned_table.push(*n);
+                        }
                         $name { table: owned_table, delta: delta, is_symmetric: is_symmetric }
                     }
 
-
-/// Creates a lookup table from another convolution function. The `delta` argument
-/// can be used to balance performance vs. accuracy.
+                    /// Creates a lookup table from another convolution function. The `delta` argument
+                    /// can be used to balance performance vs. accuracy.
                     pub fn from_conv_function(other: &$conv_type<$data_type>,
                                               delta: $data_type,
                                               len: usize) -> Self {
                         let center = len as isize;
                         let len = 2 * len + 1;
                         let is_symmetric = other.is_symmetric();
-                        let mut table = vec![$result_type::zero(); len];
+                        let mut table = InlineVector::of_size($result_type::zero(), len);
                         let mut i = -center;
-                        for n in &mut table {
+                        for n in &mut table[..] {
                             *n = other.calc((i as $data_type) * delta);
                             i += 1;
                         }
@@ -207,11 +210,11 @@ macro_rules! add_real_linear_table_impl {
                     /// Convert the lookup table into complex number space
                     pub fn to_complex(&self) -> $complex<$data_type> {
                         let vector = self.table.clone().to_real_time_vec();
-                        let mut buffer = SingleBuffer::new();
+                        let mut buffer = InternalBuffer::new();
                         let complex = vector.to_complex_b(&mut buffer);
                         let complex = complex.complex(..);
                         let is_symmetric = self.is_symmetric;
-                        let mut table = Vec::with_capacity(complex.len());
+                        let mut table = InlineVector::with_capacity(complex.len());
                         for n in complex {
                             table.push(*n);
                         }
@@ -233,12 +236,19 @@ macro_rules! add_complex_linear_table_impl {
                 impl $name<$data_type> {
                     /// Convert the lookup table into real number space
                     pub fn to_real(self) -> $real<$data_type> {
-                        let vector = self.table.clone().to_complex_time_vec();
-                        let mut buffer = SingleBuffer::new();
+                        let complex = &self.table[..];
+                        let mut interleaved = InlineVector::with_capacity(2 * complex.len());
+                        for n in complex {
+                            interleaved.push(n.re);
+                            interleaved.push(n.im);
+                        }
+                        let mut vector = interleaved.to_complex_time_vec();
+                        vector.set_delta(self.delta);
+                        let mut buffer = InternalBuffer::new();
                         let real = vector.to_real_b(&mut buffer);
                         let real = &real[..];
                         let is_symmetric = self.is_symmetric;
-                        let mut table = Vec::with_capacity(real.len());
+                        let mut table = InlineVector::with_capacity(real.len());
                         for n in real {
                             table.push(*n);
                         }
@@ -259,14 +269,20 @@ macro_rules! add_complex_time_linear_table_impl {
             impl ComplexTimeLinearTableLookup<$data_type> {
                 /// Convert the lookup table into frequency domain
                 pub fn fft(self) -> ComplexFrequencyLinearTableLookup<$data_type> {
-                    let mut vector = self.table.clone().to_complex_time_vec();
+                    let complex = &self.table[..];
+                    let mut interleaved = InlineVector::with_capacity(2 * complex.len());
+                    for n in complex {
+                        interleaved.push(n.re);
+                        interleaved.push(n.im);
+                    }
+                    let mut vector = interleaved.to_complex_time_vec();
                     vector.set_delta(self.delta);
-                    let mut buffer = SingleBuffer::new();
+                    let mut buffer = InternalBuffer::new();
                     let freq = vector.fft(&mut buffer);
                     let delta = freq.delta();
                     let freq = freq.complex(..);
                     let is_symmetric = self.is_symmetric;
-                    let mut table = Vec::with_capacity(freq.len());
+                    let mut table = InlineVector::with_capacity(freq.len());
                     for n in freq {
                         table.push(*n);
                     }
@@ -289,13 +305,13 @@ macro_rules! add_real_time_linear_table_impl {
                 pub fn fft(self) -> RealFrequencyLinearTableLookup<$data_type> {
                     let mut vector = self.table.clone().to_real_time_vec();
                     vector.set_delta(self.delta);
-                    let mut buffer = SingleBuffer::new();
+                    let mut buffer = InternalBuffer::new();
                     let freq = vector.fft(&mut buffer);
                     let freq = freq.magnitude_b(&mut buffer);
                     let is_symmetric = self.is_symmetric;
                     let delta = freq.delta();
                     let freq = &freq[..];
-                    let mut table = Vec::with_capacity(freq.len());
+                    let mut table = InlineVector::with_capacity(freq.len());
                     for n in freq {
                         table.push(*n);
                     }
@@ -315,16 +331,22 @@ macro_rules! add_complex_frequency_linear_table_impl {
     ($($data_type: ident),*) => {
         $(
             impl ComplexFrequencyLinearTableLookup<$data_type> {
-/// Convert the lookup table into time domain
+                /// Convert the lookup table into time domain
                 pub fn ifft(self) -> ComplexTimeLinearTableLookup<$data_type> {
-                    let mut vector = self.table.clone().to_complex_freq_vec();
+                    let complex = &self.table[..];
+                    let mut interleaved = InlineVector::with_capacity(2 * complex.len());
+                    for n in complex {
+                        interleaved.push(n.re);
+                        interleaved.push(n.im);
+                    }
+                    let mut vector = interleaved.to_complex_freq_vec();
                     vector.set_delta(self.delta);
-                    let mut buffer = SingleBuffer::new();
+                    let mut buffer = InternalBuffer::new();
                     let time = vector.ifft(&mut buffer);
                     let delta = time.delta();
                     let time = time.complex(..);
                     let is_symmetric = self.is_symmetric;
-                    let mut table = Vec::with_capacity(time.len());
+                    let mut table = InlineVector::with_capacity(time.len());
                     for n in time {
                         table.push(*n);
                     }
@@ -360,7 +382,7 @@ impl<T> RealImpulseResponse<T> for RaisedCosineFunction<T>
 
         let one = T::one();
         let two = T::from(2.0).unwrap();
-        let pi = two * one.asin();
+        let pi = T::PI();
         let four = two * two;
         if x.abs() == one / (two * self.rolloff) {
             let arg = pi / two / self.rolloff;
@@ -384,7 +406,7 @@ impl<T> RealFrequencyResponse<T> for RaisedCosineFunction<T>
         // assume x_delta = 1.0
         let one = T::one();
         let two = T::from(2.0).unwrap();
-        let pi = two * one.asin();
+        let pi = T::PI();
         if x.abs() <= (one - self.rolloff) {
             return one;
         }
@@ -426,9 +448,7 @@ impl<T> RealImpulseResponse<T> for SincFunction<T>
             return T::one();
         }
 
-        let one = T::one();
-        let two = T::from(2.0).unwrap();
-        let pi = two * one.asin();
+        let pi = T::PI();
         let pi_x = pi * x;
         pi_x.sin() / pi_x
     }
@@ -461,11 +481,12 @@ impl<T> SincFunction<T>
 }
 
 /// A real function which can be constructed outside this crate.
+#[cfg(feature="std")]
 pub struct ForeignRealConvolutionFunction<T>
     where T: RealNumber
 {
     /// The function
-    pub conv_function: extern "C" fn(*const c_void, T) -> T,
+    pub conv_function: extern "C" fn(*const std::os::raw::c_void, T) -> T,
 
     /// The data which is passed to the function.
     ///
@@ -480,12 +501,13 @@ pub struct ForeignRealConvolutionFunction<T>
     pub is_symmetric: bool,
 }
 
+#[cfg(feature="std")]
 impl<T> ForeignRealConvolutionFunction<T>
     where T: RealNumber
 {
     /// Creates a new real function
-    pub unsafe fn new(function: extern "C" fn(*const c_void, T) -> T,
-               function_data: *const c_void,
+    pub unsafe fn new(function: extern "C" fn(*const std::os::raw::c_void, T) -> T,
+               function_data: *const std::os::raw::c_void,
                is_symmetric: bool)
                -> Self {
         ForeignRealConvolutionFunction {
@@ -496,6 +518,7 @@ impl<T> ForeignRealConvolutionFunction<T>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> RealImpulseResponse<T> for ForeignRealConvolutionFunction<T>
     where T: RealNumber
 {
@@ -505,10 +528,11 @@ impl<T> RealImpulseResponse<T> for ForeignRealConvolutionFunction<T>
 
     fn calc(&self, x: T) -> T {
         let fun = self.conv_function;
-        fun(self.conv_data as *const c_void, x)
+        fun(self.conv_data as *const std::os::raw::c_void, x)
     }
 }
 
+#[cfg(feature="std")]
 impl<T> RealFrequencyResponse<T> for ForeignRealConvolutionFunction<T>
     where T: RealNumber
 {
@@ -518,16 +542,17 @@ impl<T> RealFrequencyResponse<T> for ForeignRealConvolutionFunction<T>
 
     fn calc(&self, x: T) -> T {
         let fun = self.conv_function;
-        fun(self.conv_data as *const c_void, x)
+        fun(self.conv_data as *const std::os::raw::c_void, x)
     }
 }
 
 /// A complex function which can be constructed outside this crate.
+#[cfg(feature="std")]
 pub struct ForeignComplexConvolutionFunction<T>
     where T: RealNumber
 {
     /// The function
-    pub conv_function: extern "C" fn(*const c_void, T) -> Complex<T>,
+    pub conv_function: extern "C" fn(*const std::os::raw::c_void, T) -> Complex<T>,
 
     /// The data which is passed to the window function
     ///
@@ -542,12 +567,13 @@ pub struct ForeignComplexConvolutionFunction<T>
     pub is_symmetric: bool,
 }
 
+#[cfg(feature="std")]
 impl<T> ForeignComplexConvolutionFunction<T>
     where T: RealNumber
 {
     /// Creates a new real function
-    pub unsafe fn new(function: extern "C" fn(*const c_void, T) -> Complex<T>,
-               function_data: *const c_void,
+    pub unsafe fn new(function: extern "C" fn(*const std::os::raw::c_void, T) -> Complex<T>,
+               function_data: *const std::os::raw::c_void,
                is_symmetric: bool)
                -> Self {
         ForeignComplexConvolutionFunction {
@@ -558,6 +584,7 @@ impl<T> ForeignComplexConvolutionFunction<T>
     }
 }
 
+#[cfg(feature="std")]
 impl<T> ComplexImpulseResponse<T> for ForeignComplexConvolutionFunction<T>
     where T: RealNumber
 {
@@ -567,10 +594,11 @@ impl<T> ComplexImpulseResponse<T> for ForeignComplexConvolutionFunction<T>
 
     fn calc(&self, x: T) -> Complex<T> {
         let fun = self.conv_function;
-        fun(self.conv_data as *const c_void, x)
+        fun(self.conv_data as *const std::os::raw::c_void, x)
     }
 }
 
+#[cfg(feature="std")]
 impl<T> ComplexFrequencyResponse<T> for ForeignComplexConvolutionFunction<T>
     where T: RealNumber
 {
@@ -582,7 +610,7 @@ impl<T> ComplexFrequencyResponse<T> for ForeignComplexConvolutionFunction<T>
     /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
     fn calc(&self, x: T) -> Complex<T> {
         let fun = self.conv_function;
-        fun(self.conv_data as *const c_void, x)
+        fun(self.conv_data as *const std::os::raw::c_void, x)
     }
 }
 
@@ -591,8 +619,8 @@ mod tests {
     use super::*;
     use RealNumber;
     use std::fmt::Debug;
-    use num::complex::Complex;
-    use num::traits::Zero;
+    use traits::Complex;
+    use Zero;
 
     fn conv_test<T, C>(conv: C, expected: &[T], step: T, tolerance: T)
         where T: RealNumber + Debug,

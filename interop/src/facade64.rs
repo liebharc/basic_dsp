@@ -5,7 +5,7 @@ use super::*;
 use basic_dsp_vector::*;
 use basic_dsp_vector::window_functions::*;
 use basic_dsp_vector::conv_types::*;
-use num::complex::*;
+use num_complex::*;
 use std::slice;
 use std::os::raw::c_void;
 use std::mem;
@@ -397,6 +397,41 @@ pub extern "C" fn acosh64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
 #[no_mangle]
 pub extern "C" fn atanh64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
     vector.convert_vec(|v, _| Ok(v.atanh()))
+}
+
+#[no_mangle]
+pub extern "C" fn ln_approx64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, _| Ok(v.ln_approx()))
+}
+
+#[no_mangle]
+pub extern "C" fn exp_approx64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, _| Ok(v.exp_approx()))
+}
+
+#[no_mangle]
+pub extern "C" fn sin_approx64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, _| Ok(v.sin_approx()))
+}
+
+#[no_mangle]
+pub extern "C" fn cos_approx64(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, _| Ok(v.cos_approx()))
+}
+
+#[no_mangle]
+pub extern "C" fn log_approx64(vector: Box<VecBuf>, value: f64) -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, _| Ok(v.log_approx(value)))
+}
+
+#[no_mangle]
+pub extern "C" fn expf_approx64(vector: Box<VecBuf>, value: f64) -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, _| Ok(v.expf_approx(value)))
+}
+
+#[no_mangle]
+pub extern "C" fn powf_approx64(vector: Box<VecBuf>, value: f64) -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, _| Ok(v.powf_approx(value)))
 }
 
 #[no_mangle]
@@ -1127,6 +1162,56 @@ pub extern "C" fn interpolatef64(vector: Box<VecBuf>,
     let function = translate_to_real_convolution_function(impulse_response, rolloff);
     vector.convert_vec(|v, b| {
         Ok(v.interpolatef(b, function.as_ref(), interpolation_factor, delay, len))
+    })
+}
+
+/// Convolves the vector with an frequency response defined by `frequency_response` and
+/// the void pointer `frequency_response_data`.
+/// The `frequency_response_data` pointer is passed to the `frequency_response`
+/// function at every call and can be used to store parameters.
+#[no_mangle]
+pub extern "C" fn interpolate_custom64(vector: Box<VecBuf>,
+                                        frequency_response: extern "C" fn(*const c_void, f64) -> f64,
+                                        frequency_response_data: *const c_void,
+                                        is_symmetric: bool,
+                                        dest_points: usize,
+                                        delay: f64)
+                                        -> VectorInteropResult<VecBuf> {
+    unsafe {
+        let function: &RealFrequencyResponse<f64> = &ForeignRealConvolutionFunction {
+            conv_function: frequency_response,
+            conv_data: mem::transmute(frequency_response_data),
+            is_symmetric: is_symmetric,
+        };
+        vector.convert_vec(|v, b| v.interpolate(b, Some(function), dest_points, delay))
+    }
+}
+
+/// `frequency_response` argument is translated to:
+///
+/// 1. `0` to [`SincFunction`](../../conv_types/struct.SincFunction.html)
+/// 2. `1` to [`RaisedCosineFunction`](../../conv_types/struct.RaisedCosineFunction.html)
+///
+/// `rolloff` is only used if this is a valid parameter for the selected `impulse_response`
+#[no_mangle]
+pub extern "C" fn interpolate64(vector: Box<VecBuf>,
+                                 frequency_response: i32,
+                                 rolloff: f64,
+                                 dest_points: usize,
+                                 delay: f64)
+                                 -> VectorInteropResult<VecBuf> {
+    let function = translate_to_real_frequency_response(frequency_response, rolloff);
+    vector.convert_vec(|v, b| {
+        v.interpolate(b, Some(function.as_ref()), dest_points, delay)
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn interpft64(vector: Box<VecBuf>,
+                                 dest_points: usize)
+                                 -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, b| {
+        Ok(v.interpft(b, dest_points))
     })
 }
 

@@ -1,6 +1,6 @@
-use RealNumber;
-use num::Complex;
-use super::super::{array_to_complex_mut, Owner, ToFreqResult, TimeDomain, MetaData, DspVec,
+use {RealNumber, array_to_complex_mut};
+use traits::*;
+use super::super::{Owner, ToFreqResult, TimeDomain, MetaData, DspVec,
                    ToSliceMut, NumberSpace, RededicateForceOps};
 use window_functions::*;
 

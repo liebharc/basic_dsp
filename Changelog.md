@@ -6,12 +6,26 @@ Changes:
 - `zero_pad_b` now returns a result, which may contain an error if the passed argument is smaller than the actual vector length
 - Renamed `interpolate_vector` to `interpolate_signal`
 
-## Version 0.4.2
+## Version 0.4.3
+Minor additions.
 
+- Updated `simd` dependency to version `0.2`.
+- New feature: Added `ApproximatedOps` trait.
+- New feature: New `interpolate` method which offers the same features as `interpolatef`, but the performance should be closer to `interpolatei`.
+- Fix: `multiply_complex_exponential` didn't consistently took `delta` into account.
+
+## Version 0.4.2
+Bugfix release.
+
+- Fix: Not all implementations of `to_complex_time_vec` and `to_complex_freq_vec` set the vector length to 0 if a storage of odd length is passed.
+- Fix: Offset in `zero_pad` if `Surround` or `Center` was chosen and the original vector length is odd. As a result the convolution theorem didn't hold true, that means a multiplication in frequency domain didn't give the same results as a convolution.
+- Fix: `zero_pad_b` failed to copy the vector completely if `Center` was the selected option.
+- Fix: Convolution for vectors produced random results if the allocated size of a vector was different than it's actual size.
 - Fix: Buffer `convolve_vector` for matrices now returns all buffers back to the pool.
 - Performance: Convolution and interpolation now rely on the overlap and add algorithm or spawn worker threads for larger data sizes.
 - Fix: `use_sse` and `use_avx` failed to pick the faster implementations. However with the current status of the `simd` crate it's not recommended to use those feature flags. The Rust lib team is right now discussing about the future of the `simd`crate.
 - Fix: Out or range panic in `add`, `sub`, `mul` and `div` for large vectors.
+- New feature: Added a `TypeMetaData` struct which allows to create a new vector with the same meta data as an existing vector.
 
 ## Version 0.4.1
 Minor additions and improvements.

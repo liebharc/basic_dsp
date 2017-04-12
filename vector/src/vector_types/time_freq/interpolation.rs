@@ -1,16 +1,17 @@
-use RealNumber;
+use {RealNumber, array_to_complex, array_to_complex_mut, Zero};
 use conv_types::{RealImpulseResponse, RealFrequencyResponse};
-use num::traits::Zero;
+use traits::*;
 use std::ops::{Add, Mul};
 use super::WrappingIterator;
 use simd_extensions::*;
 use multicore_support::*;
-use super::super::{array_to_complex, array_to_complex_mut, VoidResult, DspVec, Domain,
+use super::super::{VoidResult, DspVec, Domain, ToComplexVector, ComplexOps, PaddingOption, Owner,
                    NumberSpace, ToSliceMut, GenDspVec, ToDspVector, DataDomain, Buffer, Vector,
-                   RealNumberSpace, ErrorReason, InsertZerosOpsBuffered, ScaleOps, MetaData};
-use super::fft;
+                   RealNumberSpace, ErrorReason, InsertZerosOpsBuffered, ScaleOps, MetaData,
+                   ResizeOps, FrequencyToTimeDomainOperations,
+                   TimeToFrequencyDomainOperations};
 use std::mem;
-use num::complex::Complex;
+use inline_vector::InlineVector;
 
 /// Provides interpolation operations for real and complex data vectors.
 /// # Unstable
@@ -61,6 +62,25 @@ pub trait InterpolationOps<S, T>
                        -> VoidResult
         where B: Buffer<S, T>;
 
+    /// Interpolates the signal in frequency domain by padding it with zeros.
+    fn interpolate<B>(&mut self,
+                   buffer: &mut B,
+                   function: Option<&RealFrequencyResponse<T>>,
+                   target_points: usize,
+                   delay: T)
+                   -> VoidResult
+            where B: Buffer<S, T>;
+
+    /// Interpolates the signal in frequency domain by padding it with zeros.
+    /// This function preserves the shape of the signal in frequency domain.
+    ///
+    /// Calling this function is the same as calling `interpolate` with `None` as
+    /// function and `0.0` as delay.
+    fn interpft<B>(&mut self,
+                   buffer: &mut B,
+                   target_points: usize)
+            where B: Buffer<S, T>;
+
     /// Decimates or downsamples `self`. `decimatei` is the inverse function to `interpolatei`.
     fn decimatei(&mut self, decimation_factor: u32, delay: u32);
 }
@@ -97,7 +117,7 @@ fn interpolate_priv_scalar<T, TT>(temp: &mut [TT],
                                   conv_len: usize,
                                   multicore_settings: &MultiCoreSettings)
     where T: RealNumber,
-          TT: Zero + Mul<Output = TT> + Copy + Send + Sync + From<T>
+          TT: Zero + Mul<Output = TT> + Copy + Send + Sync + From<T> + Add<Output = TT>
 {
     Chunk::execute_with_range(Complexity::Large,
                               &multicore_settings,
@@ -129,10 +149,10 @@ fn function_to_vectors<T>(function: &RealImpulseResponse<T>,
                           complex_result: bool,
                           interpolation_factor: usize,
                           delay: T)
-                          -> Vec<GenDspVec<Vec<T>, T>>
+                          -> InlineVector<GenDspVec<InlineVector<T>, T>>
     where T: RealNumber
 {
-    let mut result = Vec::with_capacity(interpolation_factor);
+    let mut result = InlineVector::with_capacity(interpolation_factor);
     for shift in 0..interpolation_factor {
         let offset = T::from(shift).unwrap() / T::from(interpolation_factor).unwrap();
         result.push(function_to_vector(function, conv_len, complex_result, offset, delay));
@@ -146,12 +166,12 @@ fn function_to_vector<T>(function: &RealImpulseResponse<T>,
                          complex_result: bool,
                          offset: T,
                          delay: T)
-                         -> GenDspVec<Vec<T>, T>
+                         -> GenDspVec<InlineVector<T>, T>
     where T: RealNumber
 {
     let step = if complex_result { 2 } else { 1 };
     let data_len = step * (2 * conv_len + 1);
-    let mut imp_resp = vec!(T::zero(); data_len).to_gen_dsp_vec(complex_result, DataDomain::Time);
+    let mut imp_resp = InlineVector::of_size(T::zero(), data_len).to_gen_dsp_vec(complex_result, DataDomain::Time);
     let mut i = 0;
     let mut j = -(T::from(conv_len).unwrap() - T::one()) + delay;
     while i < data_len {
@@ -197,11 +217,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                               self.is_complex(),
                                               interpolation_factor,
                                               delay);
-            let mut shifts = Vec::with_capacity(vectors.len() * number_of_shifts);
-            for vector in &vectors {
+            let mut shifts = InlineVector::with_capacity(vectors.len() * number_of_shifts);
+            for vector in &vectors[..] {
                 let shifted_copies = DspVec::create_shifted_copies(vector);
-                for shift in shifted_copies {
-                    shifts.push(shift);
+                for shift in shifted_copies.iter() {
+                    shifts.push(shift.clone());
                 }
             }
 
@@ -218,7 +238,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                                               interpolation_factor,
                                                               conv_len,
                                                               data,
-                                                              &vectors);
+                                                              &vectors[..]);
                     i += 1;
                 }
             }
@@ -253,7 +273,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                       let shifted = &shifts[selection];
                       let mut sum = T::Reg::splat(T::zero());
                       let simd_iter = simd[simd_end - shifted.len()..simd_end].iter();
-                      let iteration = simd_iter.zip(shifted);
+                      let iteration = simd_iter.zip(shifted.iter());
                       for (this, other) in iteration {
                           sum = sum + simd_mul(*this, *other);
                       }
@@ -270,7 +290,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                                               interpolation_factor,
                                                               conv_len,
                                                               data,
-                                                              &vectors);
+                                                              &vectors[..]);
                     i += 1;
                 }
             }
@@ -285,7 +305,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                       interpolation_factor: usize,
                                       conv_len: usize,
                                       data: &[TT],
-                                      vectors: &[GenDspVec<Vec<T>, T>])
+                                      vectors: &[GenDspVec<InlineVector<T>, T>])
                                       -> TT
         where TT: Zero + Clone + From<T> + Copy + Add<Output = TT> + Mul<Output = TT>
     {
@@ -307,7 +327,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
 impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: InsertZerosOpsBuffered<S, T> + ScaleOps<T>,
-          S: ToSliceMut<T>,
+          S: ToSliceMut<T> + ToComplexVector<S, T> + Owner + ToDspVector<T>,
           T: RealNumber,
           N: NumberSpace,
           D: Domain
@@ -418,20 +438,139 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
         } else {
             self.zero_interleave_b(buffer, interpolation_factor);
         }
-        // Vector is always complex from here on
 
-        fft(self, buffer, false); // fft
-        self.swap_halves_priv(true); // fft shift
-        let points = self.len() / 2;
+        let mut complex = buffer.construct_new(0).to_complex_time_vec();
+        self.swap_data(&mut complex);
+        let mut complex = complex.plain_fft(buffer);
+        let points = complex.len() / 2;
         let interpolation_factorf = T::from(interpolation_factor).unwrap();
-        self.multiply_function_priv(function.is_symmetric(),
+        complex.multiply_function_priv(function.is_symmetric(),
+                                    true,
                                     interpolation_factorf,
                                     |array| array_to_complex_mut(array),
                                     function,
                                     |f, x| Complex::<T>::new(f.calc(x), T::zero()));
-        self.swap_halves_priv(false); // ifft shift
-        fft(self, buffer, true); // ifft
+        let mut complex = complex.plain_ifft(buffer);
+        self.swap_data(&mut complex);
         self.scale(T::one() / T::from(points).unwrap());
+        if !is_complex {
+            // Convert vector back into real number space
+            self.pure_complex_to_real_operation_inplace(|x, _arg| x.re, ());
+        }
+
+        Ok(())
+    }
+
+    fn interpft<B>(&mut self,
+                   buffer: &mut B,
+                   dest_points: usize)
+            where B: Buffer<S, T> {
+        self.interpolate(buffer, None, dest_points, T::zero()).expect("interpolate with no frequency response should never fail");
+    }
+
+    fn interpolate<B>(&mut self,
+                   buffer: &mut B,
+                   function: Option<&RealFrequencyResponse<T>>,
+                   dest_points: usize,
+                   delay: T)
+                   -> VoidResult
+            where B: Buffer<S, T> {
+        if function.is_some() && !function.unwrap().is_symmetric() && !self.is_complex() {
+            return Err(ErrorReason::ArgumentFunctionMustBeSymmetric);
+        }
+
+        let delta_t = self.delta();
+        let is_complex = self.is_complex();
+        let orig_points = self.points();
+        let orig_len = self.len();
+        let dest_len = if is_complex { 2 * dest_points } else { dest_points };
+        let interpolation_factorf = T::from(dest_points).unwrap() / T::from(self.points()).unwrap();
+
+        if !self.is_complex() {
+            // Vector is always complex from here on (however the complex flag inside the vector
+            // may not be set)
+            self.zero_interleave_b(buffer, 2);
+        }
+
+        let mut complex = buffer.construct_new(0).to_complex_time_vec();
+        self.swap_data(&mut complex);
+
+        let mut complex = complex.plain_fft(buffer);
+
+        let two = T::one() + T::one();
+        let pi = T::PI();
+        // Add the delay, which is a linear phase in frequency domain
+        if delay != T::zero()
+        {
+            let points = complex.len() / 2;
+            let pos_points = points / 2;
+            let neg_points = points - pos_points;
+            let phase_inc = -two * pi * -delay / delta_t / delta_t
+                            / T::from(points).unwrap();
+            {
+                let len = complex.len();
+                let mut freq = (&mut complex[2*pos_points..len]).to_complex_freq_vec();
+                // Negative frequencies
+                let start = -T::from(neg_points).unwrap() * phase_inc;
+                freq.multiply_complex_exponential(phase_inc, start);
+            }
+            {
+                let mut freq = (&mut complex[0..2*pos_points]).to_complex_freq_vec();
+                // Zero and psoitive frequencies
+                let start = T::zero();
+                freq.multiply_complex_exponential(phase_inc, start);
+            }
+        }
+
+        if dest_len > orig_len {
+            try!(complex.zero_pad_b(buffer, dest_points, PaddingOption::Center));
+
+            match function {
+                None => {
+                    complex.scale(T::from(dest_points).unwrap() / T::from(orig_points).unwrap());
+                },
+                Some(func) => {
+                    // Apply the window function
+                    complex.multiply_function_priv(
+                        func.is_symmetric(),
+                        true,
+                        interpolation_factorf,
+                        |array| array_to_complex_mut(array),
+                        func,
+                        |f, x| Complex::<T>::new(f.calc(x), T::zero()));
+                }
+            };
+        }
+        else if dest_len < orig_len {
+        	let (neg_points, pos_points, step) =
+        	if is_complex {
+	        	let len_diff = (orig_len - dest_len) / 2;
+	        	let neg_points = len_diff / 2;
+	        	let pos_points = len_diff - neg_points;
+	        	(2 * neg_points, 2 * pos_points, 2)
+        	} else
+        	{
+				let len_diff = orig_len - dest_len;
+	        	let neg_points = len_diff / 2;
+	        	let pos_points = len_diff - neg_points;
+	        	(neg_points, pos_points, 1)
+        	};
+
+        	unsafe {
+        		use std::ptr;
+        		let mut data = complex.data.to_slice_mut();
+        		let src = &data[orig_len - neg_points + step] as *const T;
+        		let dest = &mut data[pos_points] as *mut T;
+        		ptr::copy(src, dest, neg_points);
+        	}
+        	complex.resize(dest_len).expect("Shrinking should always succeed");
+        	complex.scale(T::from(dest_points).unwrap() / T::from(orig_points).unwrap());
+        }
+
+    	let mut complex = complex.plain_ifft(buffer);
+        let points = complex.len() / 2;
+        complex.scale(T::one() / T::from(points).unwrap());
+        complex.swap_data(self);
         if !is_complex {
             // Convert vector back into real number space
             self.pure_complex_to_real_operation_inplace(|x, _arg| x.re, ());
@@ -661,6 +800,35 @@ mod tests {
     }
 
     #[test]
+    fn interpolate_sinc_even_test() {
+        let len = 6;
+        let mut time = vec!(0.0; 2 * len).to_complex_time_vec();
+        time[len] = 1.0;
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let mut buffer = SingleBuffer::new();
+        time.interpolate(&mut buffer, Some(&sinc as &RealFrequencyResponse<f32>), 2 * len, 0.0).unwrap();
+        let result = time.to_real();
+        let expected = [0.00000, 0.04466, 0.00000, -0.16667, 0.00000, 0.62201, 1.00000, 0.62201,
+                        0.00000, -0.16667, 0.00000, 0.04466];
+        assert_eq_tol(&result[..], &expected, 1e-4);
+    }
+
+    #[test]
+    fn interpolate_sinc_odd_test() {
+        let len = 7;
+        let mut time = vec!(0.0; len).to_real_time_vec();
+        time[len / 2] = 1.0;
+        let mut time = time.to_complex().unwrap();
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let mut buffer = SingleBuffer::new();
+        time.interpolate(&mut buffer, Some(&sinc as &RealFrequencyResponse<f32>), 2 * len, 0.0).unwrap();
+        let result = time.to_real();
+        let expected = [0.00000, 0.15856, 0.00000, -0.22913, 0.00000, 0.64199, 1.00000, 0.64199,
+                        0.00000, -0.22913, -0.00000, 0.15856, 0.00000, -0.14286];
+        assert_eq_tol(&result[..], &expected, 1e-4);
+    }
+
+    #[test]
     fn interpolatei_rc_test() {
         let len = 6;
         let mut time = vec!(0.0; 2 * len).to_complex_time_vec();
@@ -685,10 +853,11 @@ mod tests {
     }
 
     #[test]
-    fn interpolatef_sinc_test() {
+    fn interpolatef_by_integer_sinc_even_test() {
         let len = 6;
-        let mut time = vec!(0.0; 2 * len).to_complex_time_vec();
-        time[len] = 1.0;
+        let mut time = vec!(0.0; len).to_real_time_vec();
+        time[len / 2] = 1.0;
+        let mut time = time.to_complex().unwrap();
         let sinc: SincFunction<f32> = SincFunction::new();
         let mut buffer = SingleBuffer::new();
         time.interpolatef(&mut buffer,
@@ -696,10 +865,86 @@ mod tests {
                           2.0,
                           0.0,
                           len);
-        let result = time.magnitude();
-        let expected = [0.00000, 0.04466, 0.00000, 0.16667, 0.00000, 0.62201, 1.00000, 0.62201,
-                        0.00000, 0.16667, 0.00000, 0.04466];
+        let result = time.to_real();
+        let expected = [0.00000, 0.04466, 0.00000, -0.16667, 0.00000, 0.62201, 1.00000, 0.62201,
+                        0.00000, -0.16667, 0.00000, 0.04466];
         assert_eq_tol(&result[..], &expected, 0.1);
+    }
+
+    #[test]
+    fn interpolatef_by_integer_sinc_odd_test() {
+        let len = 7;
+        let mut time = vec!(0.0; len).to_real_time_vec();
+        time[len / 2] = 1.0;
+        let mut time = time.to_complex().unwrap();
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let mut buffer = SingleBuffer::new();
+        time.interpolatef(&mut buffer,
+                          &sinc as &RealImpulseResponse<f32>,
+                          2.0,
+                          0.0,
+                          len);
+        let result = time.to_real();
+        let expected = [0.00000, 0.15856, 0.00000, -0.22913, 0.00000, 0.64199, 1.00000, 0.64199,
+                        0.00000, -0.22913, -0.00000, 0.15856, 0.00000, -0.14286];
+        assert_eq_tol(&result[..], &expected, 0.1);
+    }
+
+    #[test]
+    fn interpolatef_by_fractional_sinc_test() {
+        let len = 6;
+        let mut time = vec!(0.0; len).to_real_time_vec();
+        time[len / 2] = 1.0;
+        let mut time = time.to_complex().unwrap();
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let mut buffer = SingleBuffer::new();
+        time.interpolatef(&mut buffer,
+                          &sinc as &RealImpulseResponse<f32>,
+                          13.0 / 6.0,
+                          0.0,
+                          len);
+        let result = time.to_real();
+        // Expected has been obtained with Octave: a = zeros(6,1); a(4) = 1; interpft(a, 13)
+        let expected = [-2.7756e-17, 4.0780e-02, 2.0934e-02, -1.3806e-01, -1.1221e-01, 3.6167e-01,
+                        9.1022e-01, 9.1022e-01, 3.6167e-01, -1.1221e-01, -1.3806e-01, 2.0934e-02,
+                        4.0780e-02];
+        assert_eq_tol(&result[..], &expected, 0.1);
+    }
+
+    #[test]
+    fn interpolate_by_fractional_sinc_test() {
+        let len = 6;
+        let mut time = vec!(0.0; len).to_real_time_vec();
+        time[len / 2] = 1.0;
+        let mut time = time.to_complex().unwrap();
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let mut buffer = SingleBuffer::new();
+        time.interpolate(&mut buffer,
+                          Some(&sinc as &RealFrequencyResponse<f32>),
+                          13,
+                          0.0).unwrap();
+        let result = time.to_real();
+        let expected = [-2.7756e-17, 4.0780e-02, 2.0934e-02, -1.3806e-01, -1.1221e-01, 3.6167e-01,
+                        9.1022e-01, 9.1022e-01, 3.6167e-01, -1.1221e-01, -1.3806e-01, 2.0934e-02,
+                        4.0780e-02];
+        assert_eq_tol(&result[..], &expected, 0.1);
+    }
+
+    #[test]
+    fn interpolate_by_fractional_sinc_real_data_test() {
+        let len = 6;
+        let mut time = vec!(0.0; len).to_real_time_vec();
+        time[len / 2] = 1.0;
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let mut buffer = SingleBuffer::new();
+        time.interpolate(&mut buffer,
+                          Some(&sinc as &RealFrequencyResponse<f32>),
+                          13,
+                          0.0).unwrap();
+        let expected = [-2.7756e-17, 4.0780e-02, 2.0934e-02, -1.3806e-01, -1.1221e-01, 3.6167e-01,
+                        9.1022e-01, 9.1022e-01, 3.6167e-01, -1.1221e-01, -1.3806e-01, 2.0934e-02,
+                        4.0780e-02];
+        assert_eq_tol(&time[..], &expected, 0.1);
     }
 
     #[test]
@@ -720,6 +965,30 @@ mod tests {
         assert_eq_tol(&result[..], &expected, 0.1);
     }
 
+
+    #[test]
+    fn interpolate_delayed_sinc_test() {
+    	// We use different test data for `interpolate` then for `interpolatef`
+    	// since the dirac impulse used in `interpolatef` does not work well
+    	// with a FFT since it violates the Nyquist–Shannon sampling theorem.
+
+        // time data in Octave: [fir1(5, 0.2)];
+        let time = vec!(0.019827, 0.132513, 0.347660, 0.347660, 0.132513, 0.019827).to_real_time_vec();
+        let len = time.len();
+        let mut time = time.to_complex().unwrap();
+        let sinc: SincFunction<f32> = SincFunction::new();
+        let mut buffer = SingleBuffer::new();
+        time.interpolate(&mut buffer,
+                          Some(&sinc as &RealFrequencyResponse<f32>),
+                          2 * len,
+                          1.0).unwrap();
+        let result = time.magnitude();
+        // expected in Octave: interpft([time(2:end) 0], 12);
+        let expected = [0.132513, 0.244227, 0.347660, 0.390094, 0.347660, 0.244227,
+				        0.132513, 0.054953, 0.019827, 0.011546, 0.019827, 0.054953];
+        assert_eq_tol(&result[..], &expected, 0.1);
+    }
+
     #[test]
     fn decimatei_test() {
         let mut time = vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0]
@@ -727,6 +996,25 @@ mod tests {
         time.decimatei(2, 1);
         let expected = [2.0, 3.0, 6.0, 7.0, 10.0, 11.0];
         assert_eq_tol(&time[..], &expected, 0.1);
+    }
+
+    #[test]
+    fn decimate_with_interpolate_test() {
+    	// Octave: fir1(12, 0.2)
+        let time = vec![
+	        -2.6551e-03, 1.5106e-04, 1.6104e-02, 5.9695e-02, 1.2705e-01, 1.9096e-01,
+	        2.1739e-01, 1.9096e-01, 1.2705e-01, 5.9695e-02, 1.6104e-02, 1.5106e-04,
+	        -2.6551e-03].to_real_time_vec();
+	    let len = time.len();
+		let mut time = time.to_complex().unwrap();
+		let mut buffer = SingleBuffer::new();
+		let sinc: SincFunction<f32> = SincFunction::new();
+        time.interpolate(&mut buffer, Some(&sinc as &RealFrequencyResponse<f32>), len / 2, 0.0).unwrap();
+        let result = time.magnitude();
+        // Octave: interpft(time, 6)
+        let expected = [
+	         2.0600e-03, 2.1088e-02, 1.5072e-01,2.1024e-01,8.0868e-02, 7.5036e-04];
+        assert_eq_tol(&result[..], &expected, 1e-4);
     }
 
     #[test]

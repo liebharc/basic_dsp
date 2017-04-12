@@ -1,10 +1,10 @@
 //! This module defines the basic vector trait and indexers.
-use RealNumber;
-use super::{array_to_complex, array_to_complex_mut, DspVec, NumberSpace, ComplexNumberSpace,
-            Domain, DataDomain, ToSlice, ToSliceMut, ErrorReason, VoidResult};
+use {RealNumber, array_to_complex, array_to_complex_mut};
+use super::{DspVec, NumberSpace, ComplexNumberSpace,
+            Domain, DataDomain, ToSlice, ToSliceMut, ErrorReason, VoidResult, TypeMetaData};
 use multicore_support::MultiCoreSettings;
 use std::ops::*;
-use num::complex::Complex;
+use traits::*;
 
 /// Like [`std::ops::Index`](https://doc.rust-lang.org/std/ops/trait.Index.html)
 /// but with a different method name so that it can be used to implement an additional range
@@ -69,7 +69,7 @@ pub trait Vector<T>: MetaData + ResizeOps
     /// The number of valid elements in the vector. This can be changed
     /// with the `Resize` trait.
     fn len(&self) -> usize;
-    
+
     /// Indicates whether or not the vector is empty.
     fn is_empty(&self) -> bool;
 
@@ -94,9 +94,44 @@ pub trait Vector<T>: MetaData + ResizeOps
     fn alloc_len(&self) -> usize;
 }
 
+/// Gets the meta data of a type. This can be used to create a new type with the same
+/// meta data.
+/// # Example
+///
+/// ```
+/// use basic_dsp_vector::*;
+/// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_real_time_vec();
+/// let meta_data = vector.get_meta_data();
+/// let slice = &vector[0..2];
+/// let slice = slice.to_dsp_vec(&meta_data);
+/// assert_eq!(false, slice.is_complex());
+/// ```
+pub trait GetMetaData<T, N, D>
+    where T: RealNumber,
+          N: NumberSpace,
+          D: Domain {
+    /// Gets a copy of the vector meta data. This can be used to create
+    /// new types with the same meta data.
+    fn get_meta_data(&self) -> TypeMetaData<T, N, D>;
+}
+
 impl<S, T, N, D> MetaData for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
+          N: NumberSpace,
+          D: Domain
+{
+    fn domain(&self) -> DataDomain {
+        self.domain.domain()
+    }
+
+    fn is_complex(&self) -> bool {
+        self.number_space.is_complex()
+    }
+}
+
+impl<T, N, D> MetaData for TypeMetaData<T, N, D>
+    where T: RealNumber,
           N: NumberSpace,
           D: Domain
 {
@@ -147,7 +182,7 @@ impl<S, T, N, D> Vector<T> for DspVec<S, T, N, D>
     fn len(&self) -> usize {
         self.valid_len
     }
-    
+
     fn is_empty(&self) -> bool {
         self.valid_len == 0
     }
@@ -166,6 +201,21 @@ impl<S, T, N, D> Vector<T> for DspVec<S, T, N, D>
 
     fn alloc_len(&self) -> usize {
         self.data.len()
+    }
+}
+
+impl<S, T, N, D> GetMetaData<T, N, D> for DspVec<S, T, N, D>
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain {
+    fn get_meta_data(&self) -> TypeMetaData<T, N, D> {
+        TypeMetaData {
+            number_space: self.number_space.clone(),
+            domain: self.domain.clone(),
+            delta: self.delta,
+            multicore_settings: self.multicore_settings
+        }
     }
 }
 

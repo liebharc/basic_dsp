@@ -4,7 +4,7 @@
 use super::*;
 use basic_dsp_vector::*;
 use basic_dsp_vector::combined_ops::*;
-use num::complex::Complex64;
+use num_complex::Complex64;
 use std::sync::Arc;
 
 pub type VecBuf = InteropVec<f64>;
