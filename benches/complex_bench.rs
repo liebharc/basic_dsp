@@ -93,7 +93,7 @@ mod complex {
             vector.execute(|mut v, buffer| {
                 let len = v.len();
                 let operand = vec!(0.0; len).to_complex_time_vec();
-                v.convolve_vector(buffer, &operand).unwrap();
+                v.convolve_signal(buffer, &operand).unwrap();
                 v
             })
         });
@@ -105,7 +105,7 @@ mod complex {
         b.iter(|| {
             vector.execute(|mut v, buffer| {
                 let operand = vec!(0.0; 100).to_complex_time_vec();
-                v.convolve_vector(buffer, &operand).unwrap();
+                v.convolve_signal(buffer, &operand).unwrap();
                 v
             })
         });
