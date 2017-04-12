@@ -58,7 +58,6 @@ pub mod conv_types;
 pub use vector_types::*;
 pub use multicore_support::MultiCoreSettings;
 mod gpu_support;
-use std::fmt::Debug;
 use std::ops::*;
 use std::mem;
 mod inline_vector;
@@ -69,6 +68,22 @@ pub mod traits {
     pub use num_traits::Float;
     pub use num_traits::One;
     pub use num_complex::Complex;
+    pub use num_traits::Num;
+    use ToSimd;
+    use std::fmt::Debug;
+    use num_traits;
+    
+    /// A trait for a numeric value which at least supports a subset of the operations defined in this crate.
+    /// Can be an integer or a floating point number. In order to have support for all operations in this crate
+    /// a must implement the `RealNumber`.
+    pub trait DspNumber
+        : Num + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive
+    {
+    }
+    impl<T> DspNumber for T
+        where T: Num + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive
+    {
+    }
 }
 
 use traits::*;
@@ -99,13 +114,11 @@ impl ToSimd for f64 {
 
 /// A real floating pointer number intended to abstract over `f32` and `f64`.
 pub trait RealNumber
-    : Float + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive + GpuFloat
-     + num_traits::FloatConst
+    : Float + traits::DspNumber + GpuFloat + num_traits::FloatConst
 {
 }
 impl<T> RealNumber for T
-    where T: Float + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive + GpuFloat
-		    + num_traits::FloatConst
+    where T: traits::DspNumber + GpuFloat + num_traits::FloatConst
 {
 }
 
@@ -116,14 +129,14 @@ pub trait Zero {
 }
 
 impl<T> Zero for T
-    where T: RealNumber {
+    where T: traits::DspNumber {
     fn zero() -> Self {
         <Self as num_traits::Zero>::zero()
     }
 }
 
 impl<T> Zero for Complex<T>
-    where T: RealNumber {
+    where T: traits::DspNumber {
     fn zero() -> Self {
         <Self as num_traits::Zero>::zero()
     }
