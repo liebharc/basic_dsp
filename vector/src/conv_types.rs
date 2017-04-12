@@ -615,11 +615,8 @@ impl<T> ComplexFrequencyResponse<T> for ForeignComplexConvolutionFunction<T>
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use RealNumber;
+    use traits::*;
     use std::fmt::Debug;
-    use traits::Complex;
-    use Zero;
 
     fn conv_test<T, C>(conv: C, expected: &[T], step: T, tolerance: T)
         where T: RealNumber + Debug,

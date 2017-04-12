@@ -110,7 +110,7 @@ mod conv_test {
             time2.set_delta(delta);
             let mut buffer = SingleBuffer::new();
             let mut left = time1.clone();
-            left.convolve_vector(&mut buffer, &time2).unwrap();
+            left.convolve_signal(&mut buffer, &time2).unwrap();
             let mut freq1 = time1.fft(&mut buffer);
             let freq2 = time2.fft(&mut buffer);
             freq1.mul(&freq2).unwrap();
@@ -134,7 +134,7 @@ mod conv_test {
         time2.set_delta(delta);
         let mut buffer = SingleBuffer::new();
         let mut left = time1.clone();
-        left.convolve_vector(&mut buffer, &time2).unwrap();
+        left.convolve_signal(&mut buffer, &time2).unwrap();
         let mut freq1 = time1.fft(&mut buffer);
         let freq2 = time2.fft(&mut buffer);
         freq1.mul(&freq2).unwrap();
@@ -158,10 +158,10 @@ mod conv_test {
             time2.set_delta(delta);
             let mut buffer = SingleBuffer::new();
             let mut left = time1.clone();
-            left.convolve_vector(&mut buffer, &time2).unwrap();
+            left.convolve_signal(&mut buffer, &time2).unwrap();
             let mut time2 = conv_zero_pad(&b, time1.len(), true).to_complex_time_vec();
             time2.set_delta(delta);
-            time1.convolve_vector(&mut buffer, &time2).unwrap();
+            time1.convolve_signal(&mut buffer, &time2).unwrap();
             assert_vector_eq_with_reason_and_tolerance(&left[..],
                                                        &time1[..],
                                                        0.2,
@@ -183,10 +183,10 @@ mod conv_test {
             time2.set_delta(delta);
             let mut buffer = SingleBuffer::new();
             let mut left = time1.clone();
-            left.convolve_vector(&mut buffer, &time2).unwrap();
+            left.convolve_signal(&mut buffer, &time2).unwrap();
             let mut time2 = conv_zero_pad(&b, time1.len(), false).to_real_time_vec();
             time2.set_delta(delta);
-            time1.convolve_vector(&mut buffer, &time2).unwrap();
+            time1.convolve_signal(&mut buffer, &time2).unwrap();
             assert_vector_eq_with_reason_and_tolerance(&left[..],
                                                        &time1[..],
                                                        0.2,

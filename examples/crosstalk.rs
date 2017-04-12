@@ -61,7 +61,7 @@ fn main() {
     ];
 
     let mut buffer = SingleBuffer::new();
-    mat.convolve_vector(&mut buffer, &imp_resp).unwrap();
+    mat.convolve_signal(&mut buffer, &imp_resp).unwrap();
 
     let rows = &mat.rows();
     complex.set_real_imag(&rows[0], &rows[1])

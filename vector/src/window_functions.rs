@@ -139,7 +139,7 @@ impl<T> WindowFunction<T> for ForeignWindowFunction<T>
 #[cfg(test)]
 mod tests {
     use super::*;
-    use super::super::RealNumber;
+    use traits::*;
     use std::fmt::Debug;
 
     fn window_test<T, W>(window: W, expected: &[T])

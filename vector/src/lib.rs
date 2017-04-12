@@ -163,6 +163,7 @@ fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use traits::*;
     use simd_extensions::Simd;
 
     #[test]
