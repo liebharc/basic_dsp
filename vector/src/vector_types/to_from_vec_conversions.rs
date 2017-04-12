@@ -1,5 +1,4 @@
 //! Conversions to and from vectors which serve as constructors.
-use {RealNumber, Zero};
 use inline_vector::InlineVector;
 use traits::*;
 use std::result;

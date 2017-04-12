@@ -1,4 +1,4 @@
-use {RealNumber, array_to_complex};
+use array_to_complex;
 use traits::*;
 use multicore_support::*;
 use simd_extensions::*;

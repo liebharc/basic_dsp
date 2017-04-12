@@ -1,7 +1,7 @@
 use basic_dsp_vector::*;
+use basic_dsp_vector::traits::*;
 use super::*;
 use IntoFixedLength;
-use num_complex::Complex;
 
 macro_rules! add_mat_impl {
     ($($matrix:ident);*) => {

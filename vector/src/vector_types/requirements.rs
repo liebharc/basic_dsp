@@ -1,6 +1,6 @@
 //! Requirements which a type needs to fulfill
 //! so that it can serve as a vector storage
-use {RealNumber, Zero};
+use traits::*;
 use inline_vector::InlineVector;
 use super::{VoidResult, ErrorReason};
 use arrayvec;

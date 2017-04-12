@@ -1,6 +1,6 @@
 //! This mod contains a definition for window functions and provides implementations for a
 //! few standard windows. See the `WindowFunction` type for more information.
-use RealNumber;
+use traits::*;
 use std::mem;
 use std;
 

@@ -58,20 +58,21 @@ pub mod conv_types;
 pub use vector_types::*;
 pub use multicore_support::MultiCoreSettings;
 mod gpu_support;
-use std::ops::*;
 use std::mem;
 mod inline_vector;
+use traits::*;
 
 pub mod traits {
-    //! Traits from the `num` crate which are used inside `basic_dsp`. In future
-    //! the `RealNumber` and `Zero` trait will likely be found here too.
+    //! Traits from the `num` crate which are used inside `basic_dsp` and extensions to those traits.
     pub use num_traits::Float;
     pub use num_traits::One;
     pub use num_complex::Complex;
     pub use num_traits::Num;
-    use ToSimd;
     use std::fmt::Debug;
     use num_traits;
+    use simd_extensions::*;
+    use gpu_support::{Gpu32, Gpu64, GpuRegTrait, GpuFloat};
+    use std::ops::*;
     
     /// A trait for a numeric value which at least supports a subset of the operations defined in this crate.
     /// Can be an integer or a floating point number. In order to have support for all operations in this crate
@@ -84,61 +85,56 @@ pub mod traits {
         where T: Num + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive
     {
     }
-}
-
-use traits::*;
-
-use simd_extensions::*;
-use gpu_support::{Gpu32, Gpu64, GpuRegTrait, GpuFloat};
-
-/// Associates a number type with a SIMD register type.
-pub trait ToSimd: Sized + Sync + Send {
-    /// Type for the SIMD register on the CPU.
-    type Reg: Simd<Self> + SimdGeneric<Self> + SimdApproximations<Self>
-        + Copy + Sync + Send
-        + Add<Output = Self::Reg> + Sub<Output = Self::Reg> + Mul<Output = Self::Reg> + Div<Output = Self::Reg> + Zero;
-    /// Type for the SIMD register on the GPU. Defaults to an arbitrary type if GPU support is not
-    /// compiled in.
-    type GpuReg: GpuRegTrait;
-}
-
-impl ToSimd for f32 {
-    type Reg = Reg32;
-    type GpuReg = Gpu32;
-}
-
-impl ToSimd for f64 {
-    type Reg = Reg64;
-    type GpuReg = Gpu64;
-}
-
-/// A real floating pointer number intended to abstract over `f32` and `f64`.
-pub trait RealNumber
-    : Float + traits::DspNumber + GpuFloat + num_traits::FloatConst
-{
-}
-impl<T> RealNumber for T
-    where T: traits::DspNumber + GpuFloat + num_traits::FloatConst
-{
-}
-
-/// This trait is necessary so that we can define zero for types outside this crate.
-/// It calls the `num_traits::Zero` trait where possible.
-pub trait Zero {
-    fn zero() -> Self;
-}
-
-impl<T> Zero for T
-    where T: traits::DspNumber {
-    fn zero() -> Self {
-        <Self as num_traits::Zero>::zero()
+    
+    /// Associates a number type with a SIMD register type.
+    pub trait ToSimd: Sized + Sync + Send {
+        /// Type for the SIMD register on the CPU.
+        type Reg: Simd<Self> + SimdGeneric<Self> + SimdApproximations<Self>
+            + Copy + Sync + Send
+            + Add<Output = Self::Reg> + Sub<Output = Self::Reg> + Mul<Output = Self::Reg> + Div<Output = Self::Reg> + Zero;
+        /// Type for the SIMD register on the GPU. Defaults to an arbitrary type if GPU support is not
+        /// compiled in.
+        type GpuReg: GpuRegTrait;
     }
-}
 
-impl<T> Zero for Complex<T>
-    where T: traits::DspNumber {
-    fn zero() -> Self {
-        <Self as num_traits::Zero>::zero()
+    impl ToSimd for f32 {
+        type Reg = Reg32;
+        type GpuReg = Gpu32;
+    }
+
+    impl ToSimd for f64 {
+        type Reg = Reg64;
+        type GpuReg = Gpu64;
+    }
+
+    /// A real floating pointer number intended to abstract over `f32` and `f64`.
+    pub trait RealNumber
+        : Float + DspNumber + GpuFloat + num_traits::FloatConst
+    {
+    }
+    impl<T> RealNumber for T
+        where T: DspNumber + GpuFloat + num_traits::FloatConst
+    {
+    }
+
+    /// This trait is necessary so that we can define zero for types outside this crate.
+    /// It calls the `num_traits::Zero` trait where possible.
+    pub trait Zero {
+        fn zero() -> Self;
+    }
+
+    impl<T> Zero for T
+        where T: DspNumber {
+        fn zero() -> Self {
+            <Self as num_traits::Zero>::zero()
+        }
+    }
+
+    impl<T> Zero for Complex<T>
+        where T: DspNumber {
+        fn zero() -> Self {
+            <Self as num_traits::Zero>::zero()
+        }
     }
 }
 

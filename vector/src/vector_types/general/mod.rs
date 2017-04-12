@@ -20,7 +20,7 @@ mod precise_stats;
 pub use self::precise_stats::*;
 
 use std::ops::{Add, Sub};
-use super::super::Zero;
+use traits::*;
 
 /// Sums up the given values using a more precise
 /// summation algorithm: `https://en.wikipedia.org/wiki/Kahan_summation_algorithm`

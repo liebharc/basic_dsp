@@ -1,4 +1,4 @@
-use RealNumber;
+use traits::*;
 use std::result;
 use std::sync::{Arc, Mutex};
 use super::{generic_vector_from_any_vector, generic_vector_back_to_vector, Identifier,

@@ -1,6 +1,6 @@
 use std::mem;
 use std::ptr;
-use {RealNumber, array_to_complex_mut};
+use {array_to_complex_mut};
 use traits::*;
 use multicore_support::*;
 use super::super::{VoidResult, Buffer, Owner, ErrorReason, NumberSpace,

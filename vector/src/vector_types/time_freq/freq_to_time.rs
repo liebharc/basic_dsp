@@ -1,4 +1,3 @@
-use RealNumber;
 use traits::*;
 use super::super::{ToTimeResult, ToRealTimeResult, TransRes, DspVec, Vector, Buffer, ToSliceMut,
                    RededicateForceOps, ErrorReason, MetaData, ComplexNumberSpace, Owner,

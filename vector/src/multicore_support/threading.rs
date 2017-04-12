@@ -5,7 +5,6 @@ use crossbeam;
 use std::ops::Range;
 use std::sync::{Mutex, Arc};
 use std::mem;
-use RealNumber;
 use std::iter::Iterator;
 use super::Complexity;
 use inline_vector::InlineVector;

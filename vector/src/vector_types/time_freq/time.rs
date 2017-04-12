@@ -1,4 +1,4 @@
-use {RealNumber, array_to_complex_mut};
+use array_to_complex_mut;
 use traits::*;
 use super::super::{Owner, ToFreqResult, TimeDomain, MetaData, DspVec,
                    ToSliceMut, NumberSpace, RededicateForceOps};

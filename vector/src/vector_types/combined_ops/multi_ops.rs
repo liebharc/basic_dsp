@@ -1,4 +1,4 @@
-use RealNumber;
+use traits::*;
 use std::result;
 use super::super::{ToSlice, ToSliceMut, Owner, NumberSpace, Domain, RealOrComplexData,
                    TimeOrFrequencyData, DspVec, ErrorReason, RededicateForceOps, Buffer};

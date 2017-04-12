@@ -1,6 +1,7 @@
 use std::ops::*;
 use arrayvec::*;
-use {Zero, VoidResult, ErrorReason, RealNumber, Buffer};
+use {VoidResult, ErrorReason, Buffer};
+use traits::*;
 use std::mem;
 use std::iter::FromIterator;
 use std::slice::Iter;

@@ -77,7 +77,6 @@ pub use self::multi_ops::*;
 mod identifier_ops;
 pub use self::identifier_ops::*;
 
-use RealNumber;
 use simd_extensions::*;
 use multicore_support::*;
 use std::ops::Range;

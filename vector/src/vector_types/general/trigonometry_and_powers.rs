@@ -1,4 +1,4 @@
-use RealNumber;
+use traits::*;
 use multicore_support::*;
 use simd_extensions::*;
 use super::super::{DspVec, MetaData, ToSliceMut, NumberSpace, Domain};

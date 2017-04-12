@@ -1,5 +1,5 @@
 //! This module defines the basic vector trait and indexers.
-use {RealNumber, array_to_complex, array_to_complex_mut};
+use {array_to_complex, array_to_complex_mut};
 use super::{DspVec, NumberSpace, ComplexNumberSpace,
             Domain, DataDomain, ToSlice, ToSliceMut, ErrorReason, VoidResult, TypeMetaData};
 use multicore_support::MultiCoreSettings;

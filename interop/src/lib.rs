@@ -8,9 +8,10 @@ pub mod combined_ops32;
 pub mod facade64;
 pub mod combined_ops64;
 use basic_dsp_vector::{VoidResult, SingleBuffer, TransRes, PaddingOption, GenDspVec, ScalarResult,
-                       ErrorReason, RealNumber};
+                       ErrorReason};
 use basic_dsp_vector::window_functions::*;
 use basic_dsp_vector::conv_types::*;
+use basic_dsp_vector::traits::RealNumber;
 
 pub struct InteropVec<T>
     where T: RealNumber

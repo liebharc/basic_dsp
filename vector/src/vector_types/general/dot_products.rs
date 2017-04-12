@@ -1,4 +1,3 @@
-use RealNumber;
 use traits::*;
 use multicore_support::*;
 use simd_extensions::*;

@@ -1,7 +1,6 @@
 use std::slice:: ChunksMut;
 use traits::*;
 use std::ops::Range;
-use RealNumber;
 use inline_vector::InlineVector;
 use std::iter::Iterator;
 use super::Complexity;

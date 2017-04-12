@@ -1,5 +1,4 @@
 use traits::*;
-use super::Zero;
 use std::mem;
 
 pub trait Simd<T>: Sized

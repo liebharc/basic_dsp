@@ -8,6 +8,7 @@ extern crate basic_dsp_vector;
 extern crate num_complex;
 
 use basic_dsp_vector::*;
+use basic_dsp_vector::traits::*;
 use std::mem;
 
 mod mat_impl;

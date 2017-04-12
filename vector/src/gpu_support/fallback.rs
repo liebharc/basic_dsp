@@ -1,5 +1,4 @@
 use super::GpuSupport;
-use RealNumber;
 use traits::*;
 use std::ops::Range;
 

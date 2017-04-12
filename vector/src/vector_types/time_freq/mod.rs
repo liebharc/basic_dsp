@@ -15,8 +15,7 @@ pub use self::interpolation::*;
 
 use std::mem;
 use rustfft::FFT;
-use {RealNumber, array_to_complex, array_to_complex_mut};
-use Zero;
+use {array_to_complex, array_to_complex_mut};
 use std::ops::*;
 use simd_extensions::*;
 use multicore_support::*;

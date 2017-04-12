@@ -1,4 +1,5 @@
-use {RealNumber, array_to_complex_mut};
+use array_to_complex_mut;
+use traits::*;
 use super::super::{Vector, DspVec, ToSliceMut, Domain, NumberSpace, MetaData};
 
 /// A trait to calculate the diff (1st derivative in a discrete number space) or cumulative sum 

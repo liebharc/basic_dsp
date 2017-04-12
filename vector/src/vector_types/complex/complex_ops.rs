@@ -1,4 +1,4 @@
-use {RealNumber, array_to_complex_mut};
+use array_to_complex_mut;
 use multicore_support::*;
 use simd_extensions::Simd;
 use traits::*;

@@ -3,7 +3,6 @@
 //! Convolutions in this library can be defined in time or frequency domain. In
 //! frequency domain the convolution is automatically transformed into a multiplication
 //! which is the analog operation to a convolution in time domain.
-use {RealNumber, Zero};
 use traits::*;
 use num_complex::{Complex32, Complex64};
 use std::marker::PhantomData;
