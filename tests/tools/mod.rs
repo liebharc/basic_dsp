@@ -1,6 +1,6 @@
 use rand::*;
 use basic_dsp::*;
-use basic_dsp::traits::*;
+use basic_dsp::numbers::*;
 use std::ops::Range;
 use num::complex::Complex32;
 use std::panic;
