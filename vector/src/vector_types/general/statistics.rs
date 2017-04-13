@@ -1,5 +1,5 @@
 use array_to_complex;
-use traits::*;
+use numbers::*;
 use multicore_support::*;
 use simd_extensions::*;
 use super::super::{Vector, DspVec, ToSlice, Domain, RealNumberSpace,

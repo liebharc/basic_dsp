@@ -11,7 +11,7 @@ use basic_dsp_vector::{VoidResult, SingleBuffer, TransRes, PaddingOption, GenDsp
                        ErrorReason};
 use basic_dsp_vector::window_functions::*;
 use basic_dsp_vector::conv_types::*;
-use basic_dsp_vector::traits::RealNumber;
+use basic_dsp_vector::numbers::RealNumber;
 
 pub struct InteropVec<T>
     where T: RealNumber

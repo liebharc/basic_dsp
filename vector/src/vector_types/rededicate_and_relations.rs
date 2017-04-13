@@ -1,5 +1,5 @@
 //! Specifies the conversions between data types.
-use traits::*;
+use numbers::*;
 use super::{DspVec, GenDspVec, MetaData, RealTimeVec, RealFreqVec, ResizeOps, ComplexTimeVec,
             ComplexFreqVec, ToSlice, NumberSpace, Domain, DataDomain, RealData, ComplexData,
             RealOrComplexData, TimeData, FrequencyData, TimeOrFrequencyData};

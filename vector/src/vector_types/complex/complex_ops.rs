@@ -1,7 +1,7 @@
 use array_to_complex_mut;
 use multicore_support::*;
 use simd_extensions::Simd;
-use traits::*;
+use numbers::*;
 use super::super::{Vector, DspVec, ToSliceMut, MetaData, Domain,
                    ComplexNumberSpace};
 

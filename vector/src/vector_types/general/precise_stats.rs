@@ -1,5 +1,5 @@
 use array_to_complex;
-use traits::*;
+use numbers::*;
 use num_complex::{Complex64};
 use multicore_support::*;
 use super::super::{Vector, DspVec, ToSlice, Domain, RealNumberSpace,

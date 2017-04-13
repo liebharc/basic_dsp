@@ -1,5 +1,5 @@
 use super::GpuSupport;
-use traits::*;
+use numbers::*;
 use std::ops::Range;
 
 pub type Gpu32 = f32;

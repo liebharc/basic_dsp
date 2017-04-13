@@ -1,5 +1,5 @@
 use {array_to_complex, array_to_complex_mut};
-use traits::*;
+use numbers::*;
 use multicore_support::*;
 use super::super::{ScalarResult, ErrorReason, DspVec,
                    ToSlice, ToSliceMut, MetaData, Domain, RealNumberSpace, ComplexNumberSpace};

@@ -1,4 +1,4 @@
-use traits::*;
+use numbers::*;
 use super::Simd;
 use std::ops::*;
 

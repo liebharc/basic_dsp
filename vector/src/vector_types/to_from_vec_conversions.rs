@@ -1,6 +1,6 @@
 //! Conversions to and from vectors which serve as constructors.
 use inline_vector::InlineVector;
-use traits::*;
+use numbers::*;
 use std::result;
 use super::{round_len, DataDomain, NumberSpace, Domain, ErrorReason, DspVec, GenDspVec,
             RealTimeVec, RealFreqVec, ComplexTimeVec, ComplexFreqVec, RealData, ComplexData,

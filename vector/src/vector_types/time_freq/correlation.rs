@@ -1,4 +1,4 @@
-use traits::*;
+use numbers::*;
 use super::super::{DspVec, Buffer, ComplexOps, ScaleOps, FrequencyDomainOperations,
                    TimeToFrequencyDomainOperations, RededicateForceOps, ToSliceMut, Owner,
                    PaddingOption, VoidResult, Vector, FromVector, MetaData, ComplexNumberSpace,

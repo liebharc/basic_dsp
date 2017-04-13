@@ -1,6 +1,6 @@
 use {array_to_complex, array_to_complex_mut};
 use multicore_support::{Chunk, MultiCoreSettings, Complexity};
-use traits::*;
+use numbers::*;
 use std::ops::*;
 use std::mem;
 use std::cmp;

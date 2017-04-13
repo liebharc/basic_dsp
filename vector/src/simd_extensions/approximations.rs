@@ -29,7 +29,7 @@ use simd::x86::sse2::Sse2F64x2;
 use simd::x86::avx::{AvxF64x4, AvxF32x8};
 use std::mem;
 use std::ops::*;
-use traits::*;
+use numbers::*;
 use Zero;
 
 macro_rules! simd_approx_impl {

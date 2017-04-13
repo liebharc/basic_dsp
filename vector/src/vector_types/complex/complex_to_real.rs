@@ -1,6 +1,6 @@
 use multicore_support::*;
 use simd_extensions::*;
-use traits::*;
+use numbers::*;
 use std::ops::*;
 use super::super::{Owner, ToRealResult, ErrorReason, Buffer, Vector, Resize, MetaData, ResizeOps,
                    DspVec, ToSliceMut, ToSlice, VoidResult, Domain, ComplexNumberSpace,

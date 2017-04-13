@@ -1,5 +1,5 @@
 use basic_dsp_vector::*;
-use basic_dsp_vector::traits::*;
+use basic_dsp_vector::numbers::*;
 use super::*;
 
 /// A trait for matrix types. In this lib a matrix is simply a collection of

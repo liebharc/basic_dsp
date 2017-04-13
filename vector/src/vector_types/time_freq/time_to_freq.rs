@@ -1,4 +1,4 @@
-use traits::*;
+use numbers::*;
 use super::super::{Owner, ToFreqResult, TransRes, TimeDomain, Buffer, Vector, DataDomain,
                    MetaData, ResizeOps, DspVec, ToSliceMut, RealNumberSpace, NumberSpace,
                    RededicateForceOps, ErrorReason, InsertZerosOpsBuffered,

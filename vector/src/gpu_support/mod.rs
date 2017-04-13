@@ -10,7 +10,7 @@ mod fallback;
 #[cfg(any(feature = "doc", not(feature="use_gpu")))]
 pub use self::fallback::*;
 
-use traits::*;
+use numbers::*;
 use std::ops::Range;
 
 /// Trait which adds GPU support to types like `f32` and `f64`.

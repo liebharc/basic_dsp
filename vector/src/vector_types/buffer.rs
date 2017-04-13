@@ -2,7 +2,7 @@
 //! So the best option seems to be to create an abstraction so that the buffering can be adjusted
 //! to what an application needs.
 
-use traits::*;
+use numbers::*;
 use super::ToSliceMut;
 use std::mem;
 

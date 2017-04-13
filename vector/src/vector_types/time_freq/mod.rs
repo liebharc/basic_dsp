@@ -21,7 +21,7 @@ use simd_extensions::*;
 use multicore_support::*;
 use super::{Buffer, Vector, MetaData, DspVec, ToSliceMut,
             NumberSpace, Domain, ErrorReason, VoidResult};
-use traits::*;
+use numbers::*;
 use std::fmt::Debug;
 use gpu_support::GpuSupport;
 use inline_vector::InlineVector;

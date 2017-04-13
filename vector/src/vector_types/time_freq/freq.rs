@@ -1,4 +1,4 @@
-use traits::*;
+use numbers::*;
 use std::mem;
 use std::ptr;
 use super::super::{ToTimeResult, DspVec, Vector, Buffer, ToSliceMut, RededicateForceOps, MetaData,

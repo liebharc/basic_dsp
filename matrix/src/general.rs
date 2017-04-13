@@ -1,5 +1,5 @@
 use basic_dsp_vector::*;
-use basic_dsp_vector::traits::*;
+use basic_dsp_vector::numbers::*;
 use super::*;
 use IntoFixedLength;
 

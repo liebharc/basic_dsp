@@ -60,9 +60,9 @@ pub use multicore_support::MultiCoreSettings;
 mod gpu_support;
 use std::mem;
 mod inline_vector;
-use traits::*;
+use numbers::*;
 
-pub mod traits {
+pub mod numbers {
     //! Traits from the `num` crate which are used inside `basic_dsp` and extensions to those traits.
     pub use num_traits::Float;
     pub use num_traits::One;
@@ -73,7 +73,7 @@ pub mod traits {
     use simd_extensions::*;
     use gpu_support::{Gpu32, Gpu64, GpuRegTrait, GpuFloat};
     use std::ops::*;
-    
+
     /// A trait for a numeric value which at least supports a subset of the operations defined in this crate.
     /// Can be an integer or a floating point number. In order to have support for all operations in this crate
     /// a must implement the `RealNumber`.
@@ -85,7 +85,7 @@ pub mod traits {
         where T: Num + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive
     {
     }
-    
+
     /// Associates a number type with a SIMD register type.
     pub trait ToSimd: Sized + Sync + Send {
         /// Type for the SIMD register on the CPU.

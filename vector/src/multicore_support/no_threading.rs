@@ -1,5 +1,5 @@
 use std::slice:: ChunksMut;
-use traits::*;
+use numbers::*;
 use std::ops::Range;
 use inline_vector::InlineVector;
 use std::iter::Iterator;

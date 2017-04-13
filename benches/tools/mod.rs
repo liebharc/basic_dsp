@@ -1,5 +1,5 @@
 use basic_dsp::*;
-use basic_dsp::traits::*;
+use basic_dsp::numbers::*;
 use std::boxed::Box;
 
 pub const DEFAULT_DATA_SIZE: usize = 10000;
