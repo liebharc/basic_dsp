@@ -4,7 +4,7 @@
 //! frequency domain the convolution is automatically transformed into a multiplication
 //! which is the analog operation to a convolution in time domain.
 use {RealNumber, Zero};
-use traits::*;
+use numbers::*;
 use num_complex::{Complex32, Complex64};
 use std::marker::PhantomData;
 use std::mem;
@@ -619,7 +619,7 @@ mod tests {
     use super::*;
     use RealNumber;
     use std::fmt::Debug;
-    use traits::Complex;
+    use numbers::Complex;
     use Zero;
 
     fn conv_test<T, C>(conv: C, expected: &[T], step: T, tolerance: T)

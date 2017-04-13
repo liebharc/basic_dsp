@@ -1,6 +1,6 @@
 use {RealNumber, array_to_complex, array_to_complex_mut};
 use conv_types::*;
-use traits::*;
+use numbers::*;
 use multicore_support::*;
 use rustfft::FFT;
 use std::mem;

@@ -1,7 +1,7 @@
 use std::mem;
 use std::ptr;
 use {RealNumber, array_to_complex_mut};
-use traits::*;
+use numbers::*;
 use multicore_support::*;
 use super::super::{VoidResult, Buffer, Owner, ErrorReason, NumberSpace,
                    Domain, ResizeOps, DspVec, Vector, ToSliceMut, MetaData};

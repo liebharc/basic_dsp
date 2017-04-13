@@ -1,6 +1,6 @@
 use {RealNumber, array_to_complex, array_to_complex_mut, Zero};
 use conv_types::{RealImpulseResponse, RealFrequencyResponse};
-use traits::*;
+use numbers::*;
 use std::ops::{Add, Mul};
 use super::WrappingIterator;
 use simd_extensions::*;

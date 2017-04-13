@@ -1,6 +1,6 @@
 use num_cpus;
 use std::slice::{Chunks, ChunksMut};
-use traits::*;
+use numbers::*;
 use crossbeam;
 use std::ops::Range;
 use std::sync::{Mutex, Arc};

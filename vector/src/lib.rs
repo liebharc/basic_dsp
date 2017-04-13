@@ -62,7 +62,7 @@ use std::ops::*;
 use std::mem;
 mod inline_vector;
 
-pub mod traits {
+pub mod numbers {
     //! Traits from the `num` crate which are used inside `basic_dsp`. In future
     //! the `RealNumber` and `Zero` trait will likely be found here too.
     pub use num_traits::Float;
@@ -72,7 +72,7 @@ pub mod traits {
     use ToSimd;
     use std::fmt::Debug;
     use num_traits;
-    
+
     /// A trait for a numeric value which at least supports a subset of the operations defined in this crate.
     /// Can be an integer or a floating point number. In order to have support for all operations in this crate
     /// a must implement the `RealNumber`.
@@ -86,7 +86,7 @@ pub mod traits {
     }
 }
 
-use traits::*;
+use numbers::*;
 
 use simd_extensions::*;
 use gpu_support::{Gpu32, Gpu64, GpuRegTrait, GpuFloat};
@@ -114,11 +114,11 @@ impl ToSimd for f64 {
 
 /// A real floating pointer number intended to abstract over `f32` and `f64`.
 pub trait RealNumber
-    : Float + traits::DspNumber + GpuFloat + num_traits::FloatConst
+    : Float + numbers::DspNumber + GpuFloat + num_traits::FloatConst
 {
 }
 impl<T> RealNumber for T
-    where T: traits::DspNumber + GpuFloat + num_traits::FloatConst
+    where T: numbers::DspNumber + GpuFloat + num_traits::FloatConst
 {
 }
 
@@ -129,14 +129,14 @@ pub trait Zero {
 }
 
 impl<T> Zero for T
-    where T: traits::DspNumber {
+    where T: numbers::DspNumber {
     fn zero() -> Self {
         <Self as num_traits::Zero>::zero()
     }
 }
 
 impl<T> Zero for Complex<T>
-    where T: traits::DspNumber {
+    where T: numbers::DspNumber {
     fn zero() -> Self {
         <Self as num_traits::Zero>::zero()
     }

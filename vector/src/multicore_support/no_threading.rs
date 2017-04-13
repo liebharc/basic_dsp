@@ -1,5 +1,5 @@
 use std::slice:: ChunksMut;
-use traits::*;
+use numbers::*;
 use std::ops::Range;
 use RealNumber;
 use inline_vector::InlineVector;

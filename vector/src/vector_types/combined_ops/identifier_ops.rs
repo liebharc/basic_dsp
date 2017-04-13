@@ -1,6 +1,6 @@
 use super::{Identifier, Operation};
 use RealNumber;
-use traits::*;
+use numbers::*;
 use super::super::{RealNumberSpace, ComplexNumberSpace, NumberSpace, TransRes, VoidResult,
                    DataDomain, TimeData, FrequencyData, RealData, ComplexData, RealOrComplexData,
                    TimeOrFrequencyData, Domain, ToRealResult, ToComplexResult, ScaleOps,

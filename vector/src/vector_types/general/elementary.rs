@@ -2,7 +2,7 @@
 use {RealNumber, array_to_complex, array_to_complex_mut};
 use multicore_support::*;
 use simd_extensions::*;
-use traits::*;
+use numbers::*;
 use std::ops::*;
 use super::super::{ErrorReason, VoidResult, Vector,
                    DspVec, ToSliceMut, MetaData, Domain, NumberSpace, ComplexNumberSpace};

@@ -86,7 +86,7 @@ use super::{round_len, ToSliceMut, DspVec, ErrorReason, MetaData, TransRes, Vect
             RealOrComplexData, TimeOrFrequencyData, Domain, NumberSpace, DataDomain};
 use std::sync::{Arc, Mutex};
 use std::fmt;
-use traits::*;
+use numbers::*;
 use std::ops::{Add, Sub, Mul, Div};
 use inline_vector::InlineVector;
 

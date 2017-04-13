@@ -1,4 +1,4 @@
-use traits::*;
+use numbers::*;
 use std::sync::Arc;
 
 /// An alternative way to define operations on a vector.
