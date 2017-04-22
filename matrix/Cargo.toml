@@ -5,7 +5,7 @@ authors = ["Christian Liebhardt"]
 license = "MIT/Apache-2.0"
 homepage = "https://github.com/liebharc/basic_dsp"
 repository = "https://github.com/liebharc/basic_dsp"
-documentation = "https://liebharc.github.io/basic_dsp/basic_dsp/"
+documentation = "https://liebharc.github.io/basic_dsp/basic_dsp_matrix/index.html"
 keywords = ["dsp", "vector", "interpolation", "convolution", "matrix"]
 description = """
 This lib offers the same operations defined in `basic_dsp_vector` for matrices.
