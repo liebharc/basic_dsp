@@ -118,7 +118,7 @@ pub trait RealNumber
 {
 }
 impl<T> RealNumber for T
-    where T: numbers::DspNumber + GpuFloat + num_traits::FloatConst
+    where T: Float + numbers::DspNumber + GpuFloat + num_traits::FloatConst
 {
 }
 
