@@ -9,6 +9,7 @@
 
     <title>atomic.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc source">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,7 +43,7 @@
         </form>
     </nav>
 
-    <section id='main' class="content source"><pre class="line-numbers"><span id="1">  1</span>
+    <section id='main' class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -223,186 +224,186 @@
 <span id="179">179</span>
 <span id="180">180</span>
 <span id="181">181</span>
-</pre><pre class='rust '>
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>marker</span>::<span class='ident'>PhantomData</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ptr</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::{<span class='self'>self</span>, <span class='ident'>Ordering</span>};
+</pre><pre class="rust ">
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::{<span class="self">self</span>, <span class="ident">Ordering</span>};
 
-<span class='kw'>use</span> <span class='kw'>super</span>::{<span class='ident'>Owned</span>, <span class='ident'>Shared</span>, <span class='ident'>Guard</span>};
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Owned</span>, <span class="ident">Shared</span>, <span class="ident">Guard</span>};
 
-<span class='doccomment'>/// Like `std::sync::atomic::AtomicPtr`.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// Provides atomic access to a (nullable) pointer of type `T`, interfacing with</span>
-<span class='doccomment'>/// the `Owned` and `Shared` types.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Atomic</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='ident'>ptr</span>: <span class='ident'>atomic</span>::<span class='ident'>AtomicPtr</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
-    <span class='ident'>_marker</span>: <span class='ident'>PhantomData</span><span class='op'>&lt;</span><span class='op'>*</span><span class='kw'>const</span> ()<span class='op'>&gt;</span>,
+<span class="doccomment">/// Like `std::sync::atomic::AtomicPtr`.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Provides atomic access to a (nullable) pointer of type `T`, interfacing with</span>
+<span class="doccomment">/// the `Owned` and `Shared` types.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Atomic</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="ident">ptr</span>: <span class="ident">atomic</span>::<span class="ident">AtomicPtr</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">*</span><span class="kw">const</span> ()<span class="op">&gt;</span>,
 }
 
-<span class='kw'>unsafe</span> <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Sync</span><span class='op'>&gt;</span> <span class='ident'>Send</span> <span class='kw'>for</span> <span class='ident'>Atomic</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {}
-<span class='kw'>unsafe</span> <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Sync</span><span class='op'>&gt;</span> <span class='ident'>Sync</span> <span class='kw'>for</span> <span class='ident'>Atomic</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {}
+<span class="kw">unsafe</span> <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Sync</span><span class="op">&gt;</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">Atomic</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {}
+<span class="kw">unsafe</span> <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Sync</span><span class="op">&gt;</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">Atomic</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {}
 
-<span class='kw'>fn</span> <span class='ident'>opt_shared_into_raw</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>val</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Shared</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>T</span> {
-    <span class='ident'>val</span>.<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>p</span><span class='op'>|</span> <span class='ident'>p</span>.<span class='ident'>as_raw</span>()).<span class='ident'>unwrap_or</span>(<span class='ident'>ptr</span>::<span class='ident'>null_mut</span>())
+<span class="kw">fn</span> <span class="ident">opt_shared_into_raw</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">val</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>) <span class="op">-&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span> {
+    <span class="ident">val</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">as_raw</span>()).<span class="ident">unwrap_or</span>(<span class="ident">ptr</span>::<span class="ident">null_mut</span>())
 }
 
-<span class='kw'>fn</span> <span class='ident'>opt_owned_as_raw</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>val</span>: <span class='kw-2'>&amp;</span><span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Owned</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>T</span> {
-    <span class='ident'>val</span>.<span class='ident'>as_ref</span>().<span class='ident'>map</span>(<span class='ident'>Owned</span>::<span class='ident'>as_raw</span>).<span class='ident'>unwrap_or</span>(<span class='ident'>ptr</span>::<span class='ident'>null_mut</span>())
+<span class="kw">fn</span> <span class="ident">opt_owned_as_raw</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">val</span>: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Owned</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>) <span class="op">-&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span> {
+    <span class="ident">val</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="ident">Owned</span>::<span class="ident">as_raw</span>).<span class="ident">unwrap_or</span>(<span class="ident">ptr</span>::<span class="ident">null_mut</span>())
 }
 
-<span class='kw'>fn</span> <span class='ident'>opt_owned_into_raw</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>val</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Owned</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>) <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>T</span> {
-    <span class='kw'>let</span> <span class='ident'>ptr</span> <span class='op'>=</span> <span class='ident'>val</span>.<span class='ident'>as_ref</span>().<span class='ident'>map</span>(<span class='ident'>Owned</span>::<span class='ident'>as_raw</span>).<span class='ident'>unwrap_or</span>(<span class='ident'>ptr</span>::<span class='ident'>null_mut</span>());
-    <span class='ident'>mem</span>::<span class='ident'>forget</span>(<span class='ident'>val</span>);
-    <span class='ident'>ptr</span>
+<span class="kw">fn</span> <span class="ident">opt_owned_into_raw</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">val</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Owned</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>) <span class="op">-&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span> {
+    <span class="kw">let</span> <span class="ident">ptr</span> <span class="op">=</span> <span class="ident">val</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="ident">Owned</span>::<span class="ident">as_raw</span>).<span class="ident">unwrap_or</span>(<span class="ident">ptr</span>::<span class="ident">null_mut</span>());
+    <span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">val</span>);
+    <span class="ident">ptr</span>
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Atomic</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// Create a new, null atomic pointer.</span>
-    <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;nightly&quot;</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>const</span> <span class='kw'>fn</span> <span class='ident'>null</span>() <span class='op'>-&gt;</span> <span class='ident'>Atomic</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='ident'>Atomic</span> {
-            <span class='ident'>ptr</span>: <span class='ident'>atomic</span>::<span class='ident'>AtomicPtr</span>::<span class='ident'>new</span>(<span class='number'>0</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _),
-            <span class='ident'>_marker</span>: <span class='ident'>PhantomData</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Atomic</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Create a new, null atomic pointer.</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">null</span>() <span class="op">-&gt;</span> <span class="ident">Atomic</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="ident">Atomic</span> {
+            <span class="ident">ptr</span>: <span class="ident">atomic</span>::<span class="ident">AtomicPtr</span>::<span class="ident">new</span>(<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> _),
+            <span class="ident">_marker</span>: <span class="ident">PhantomData</span>
         }
     }
 
-    <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>not</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;nightly&quot;</span>))]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>null</span>() <span class='op'>-&gt;</span> <span class='ident'>Atomic</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='ident'>Atomic</span> {
-            <span class='ident'>ptr</span>: <span class='ident'>atomic</span>::<span class='ident'>AtomicPtr</span>::<span class='ident'>new</span>(<span class='number'>0</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _),
-            <span class='ident'>_marker</span>: <span class='ident'>PhantomData</span>
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>))]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">null</span>() <span class="op">-&gt;</span> <span class="ident">Atomic</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="ident">Atomic</span> {
+            <span class="ident">ptr</span>: <span class="ident">atomic</span>::<span class="ident">AtomicPtr</span>::<span class="ident">new</span>(<span class="number">0</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> _),
+            <span class="ident">_marker</span>: <span class="ident">PhantomData</span>
         }
     }
 
-    <span class='doccomment'>/// Create a new atomic pointer</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>data</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>Atomic</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='ident'>Atomic</span> {
-            <span class='ident'>ptr</span>: <span class='ident'>atomic</span>::<span class='ident'>AtomicPtr</span>::<span class='ident'>new</span>(<span class='ident'>Box</span>::<span class='ident'>into_raw</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>data</span>))),
-            <span class='ident'>_marker</span>: <span class='ident'>PhantomData</span>
+    <span class="doccomment">/// Create a new atomic pointer</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">data</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">Atomic</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="ident">Atomic</span> {
+            <span class="ident">ptr</span>: <span class="ident">atomic</span>::<span class="ident">AtomicPtr</span>::<span class="ident">new</span>(<span class="ident">Box</span>::<span class="ident">into_raw</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">data</span>))),
+            <span class="ident">_marker</span>: <span class="ident">PhantomData</span>
         }
     }
 
-    <span class='doccomment'>/// Do an atomic load with the given memory ordering.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// In order to perform the load, we must pass in a borrow of a</span>
-    <span class='doccomment'>/// `Guard`. This is a way of guaranteeing that the thread has pinned the</span>
-    <span class='doccomment'>/// epoch for the entire lifetime `&#39;a`. In return, you get an optional</span>
-    <span class='doccomment'>/// `Shared` pointer back (`None` if the `Atomic` is currently null), with</span>
-    <span class='doccomment'>/// lifetime tied to the guard.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// # Panics</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Panics if `ord` is `Release` or `AcqRel`.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>load</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>ord</span>: <span class='ident'>Ordering</span>, _: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Guard</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw'>unsafe</span> { <span class='ident'>Shared</span>::<span class='ident'>from_raw</span>(<span class='self'>self</span>.<span class='ident'>ptr</span>.<span class='ident'>load</span>(<span class='ident'>ord</span>)) }
+    <span class="doccomment">/// Do an atomic load with the given memory ordering.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// In order to perform the load, we must pass in a borrow of a</span>
+    <span class="doccomment">/// `Guard`. This is a way of guaranteeing that the thread has pinned the</span>
+    <span class="doccomment">/// epoch for the entire lifetime `&#39;a`. In return, you get an optional</span>
+    <span class="doccomment">/// `Shared` pointer back (`None` if the `Atomic` is currently null), with</span>
+    <span class="doccomment">/// lifetime tied to the guard.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Panics</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Panics if `ord` is `Release` or `AcqRel`.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ord</span>: <span class="ident">Ordering</span>, _: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Guard</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;&gt;</span> {
+        <span class="kw">unsafe</span> { <span class="ident">Shared</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">load</span>(<span class="ident">ord</span>)) }
     }
 
-    <span class='doccomment'>/// Do an atomic store with the given memory ordering.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Transfers ownership of the given `Owned` pointer, if any. Since no</span>
-    <span class='doccomment'>/// lifetime information is acquired, no `Guard` value is needed.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// # Panics</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Panics if `ord` is `Acquire` or `AcqRel`.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>store</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>val</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Owned</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>, <span class='ident'>ord</span>: <span class='ident'>Ordering</span>) {
-        <span class='self'>self</span>.<span class='ident'>ptr</span>.<span class='ident'>store</span>(<span class='ident'>opt_owned_into_raw</span>(<span class='ident'>val</span>), <span class='ident'>ord</span>)
+    <span class="doccomment">/// Do an atomic store with the given memory ordering.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Transfers ownership of the given `Owned` pointer, if any. Since no</span>
+    <span class="doccomment">/// lifetime information is acquired, no `Guard` value is needed.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Panics</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Panics if `ord` is `Acquire` or `AcqRel`.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">store</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">val</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Owned</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>, <span class="ident">ord</span>: <span class="ident">Ordering</span>) {
+        <span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">store</span>(<span class="ident">opt_owned_into_raw</span>(<span class="ident">val</span>), <span class="ident">ord</span>)
     }
 
-    <span class='doccomment'>/// Do an atomic store with the given memory ordering, immediately yielding</span>
-    <span class='doccomment'>/// a shared reference to the pointer that was stored.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Transfers ownership of the given `Owned` pointer, yielding a `Shared`</span>
-    <span class='doccomment'>/// reference to it. Since the reference is valid only for the curent epoch,</span>
-    <span class='doccomment'>/// it&#39;s lifetime is tied to a `Guard` value.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// # Panics</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Panics if `ord` is `Acquire` or `AcqRel`.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>store_and_ref</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>val</span>: <span class='ident'>Owned</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>, <span class='ident'>ord</span>: <span class='ident'>Ordering</span>, _: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Guard</span>)
-                             <span class='op'>-&gt;</span> <span class='ident'>Shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span>
+    <span class="doccomment">/// Do an atomic store with the given memory ordering, immediately yielding</span>
+    <span class="doccomment">/// a shared reference to the pointer that was stored.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Transfers ownership of the given `Owned` pointer, yielding a `Shared`</span>
+    <span class="doccomment">/// reference to it. Since the reference is valid only for the curent epoch,</span>
+    <span class="doccomment">/// it&#39;s lifetime is tied to a `Guard` value.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Panics</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Panics if `ord` is `Acquire` or `AcqRel`.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">store_and_ref</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">val</span>: <span class="ident">Owned</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">ord</span>: <span class="ident">Ordering</span>, _: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Guard</span>)
+                             <span class="op">-&gt;</span> <span class="ident">Shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span>
     {
-        <span class='kw'>unsafe</span> {
-            <span class='kw'>let</span> <span class='ident'>shared</span> <span class='op'>=</span> <span class='ident'>Shared</span>::<span class='ident'>from_owned</span>(<span class='ident'>val</span>);
-            <span class='self'>self</span>.<span class='ident'>store_shared</span>(<span class='prelude-val'>Some</span>(<span class='ident'>shared</span>), <span class='ident'>ord</span>);
-            <span class='ident'>shared</span>
+        <span class="kw">unsafe</span> {
+            <span class="kw">let</span> <span class="ident">shared</span> <span class="op">=</span> <span class="ident">Shared</span>::<span class="ident">from_owned</span>(<span class="ident">val</span>);
+            <span class="self">self</span>.<span class="ident">store_shared</span>(<span class="prelude-val">Some</span>(<span class="ident">shared</span>), <span class="ident">ord</span>);
+            <span class="ident">shared</span>
         }
     }
 
-    <span class='doccomment'>/// Do an atomic store of a `Shared` pointer with the given memory ordering.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// This operation does not require a guard, because it does not yield any</span>
-    <span class='doccomment'>/// new information about the lifetime of a pointer.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// # Panics</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Panics if `ord` is `Acquire` or `AcqRel`.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>store_shared</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>val</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Shared</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>, <span class='ident'>ord</span>: <span class='ident'>Ordering</span>) {
-        <span class='self'>self</span>.<span class='ident'>ptr</span>.<span class='ident'>store</span>(<span class='ident'>opt_shared_into_raw</span>(<span class='ident'>val</span>), <span class='ident'>ord</span>)
+    <span class="doccomment">/// Do an atomic store of a `Shared` pointer with the given memory ordering.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This operation does not require a guard, because it does not yield any</span>
+    <span class="doccomment">/// new information about the lifetime of a pointer.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Panics</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Panics if `ord` is `Acquire` or `AcqRel`.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">store_shared</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">val</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>, <span class="ident">ord</span>: <span class="ident">Ordering</span>) {
+        <span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">store</span>(<span class="ident">opt_shared_into_raw</span>(<span class="ident">val</span>), <span class="ident">ord</span>)
     }
 
-    <span class='doccomment'>/// Do a compare-and-set from a `Shared` to an `Owned` pointer with the</span>
-    <span class='doccomment'>/// given memory ordering.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// As with `store`, this operation does not require a guard; it produces no new</span>
-    <span class='doccomment'>/// lifetime information. The `Result` indicates whether the CAS succeeded; if</span>
-    <span class='doccomment'>/// not, ownership of the `new` pointer is returned to the caller.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>cas</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>old</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Shared</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>, <span class='ident'>new</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Owned</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>, <span class='ident'>ord</span>: <span class='ident'>Ordering</span>)
-               <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Owned</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;</span>
+    <span class="doccomment">/// Do a compare-and-set from a `Shared` to an `Owned` pointer with the</span>
+    <span class="doccomment">/// given memory ordering.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// As with `store`, this operation does not require a guard; it produces no new</span>
+    <span class="doccomment">/// lifetime information. The `Result` indicates whether the CAS succeeded; if</span>
+    <span class="doccomment">/// not, ownership of the `new` pointer is returned to the caller.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cas</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">old</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>, <span class="ident">new</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Owned</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>, <span class="ident">ord</span>: <span class="ident">Ordering</span>)
+               <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Owned</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
     {
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>ptr</span>.<span class='ident'>compare_and_swap</span>(<span class='ident'>opt_shared_into_raw</span>(<span class='ident'>old</span>),
-                                     <span class='ident'>opt_owned_as_raw</span>(<span class='kw-2'>&amp;</span><span class='ident'>new</span>),
-                                     <span class='ident'>ord</span>) <span class='op'>==</span> <span class='ident'>opt_shared_into_raw</span>(<span class='ident'>old</span>)
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">compare_and_swap</span>(<span class="ident">opt_shared_into_raw</span>(<span class="ident">old</span>),
+                                     <span class="ident">opt_owned_as_raw</span>(<span class="kw-2">&amp;</span><span class="ident">new</span>),
+                                     <span class="ident">ord</span>) <span class="op">==</span> <span class="ident">opt_shared_into_raw</span>(<span class="ident">old</span>)
         {
-            <span class='ident'>mem</span>::<span class='ident'>forget</span>(<span class='ident'>new</span>);
-            <span class='prelude-val'>Ok</span>(())
-        } <span class='kw'>else</span> {
-            <span class='prelude-val'>Err</span>(<span class='ident'>new</span>)
+            <span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">new</span>);
+            <span class="prelude-val">Ok</span>(())
+        } <span class="kw">else</span> {
+            <span class="prelude-val">Err</span>(<span class="ident">new</span>)
         }
     }
 
-    <span class='doccomment'>/// Do a compare-and-set from a `Shared` to an `Owned` pointer with the</span>
-    <span class='doccomment'>/// given memory ordering, immediatley acquiring a new `Shared` reference to</span>
-    <span class='doccomment'>/// the previously-owned pointer if successful.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// This operation is analogous to `store_and_ref`.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>cas_and_ref</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>old</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Shared</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>, <span class='ident'>new</span>: <span class='ident'>Owned</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
-                           <span class='ident'>ord</span>: <span class='ident'>Ordering</span>, _: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Guard</span>)
-                           <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span>, <span class='ident'>Owned</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>
+    <span class="doccomment">/// Do a compare-and-set from a `Shared` to an `Owned` pointer with the</span>
+    <span class="doccomment">/// given memory ordering, immediatley acquiring a new `Shared` reference to</span>
+    <span class="doccomment">/// the previously-owned pointer if successful.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This operation is analogous to `store_and_ref`.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cas_and_ref</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">old</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>, <span class="ident">new</span>: <span class="ident">Owned</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+                           <span class="ident">ord</span>: <span class="ident">Ordering</span>, _: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Guard</span>)
+                           <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">Owned</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>
     {
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>ptr</span>.<span class='ident'>compare_and_swap</span>(<span class='ident'>opt_shared_into_raw</span>(<span class='ident'>old</span>), <span class='ident'>new</span>.<span class='ident'>as_raw</span>(), <span class='ident'>ord</span>)
-            <span class='op'>==</span> <span class='ident'>opt_shared_into_raw</span>(<span class='ident'>old</span>)
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">compare_and_swap</span>(<span class="ident">opt_shared_into_raw</span>(<span class="ident">old</span>), <span class="ident">new</span>.<span class="ident">as_raw</span>(), <span class="ident">ord</span>)
+            <span class="op">==</span> <span class="ident">opt_shared_into_raw</span>(<span class="ident">old</span>)
         {
-            <span class='prelude-val'>Ok</span>(<span class='kw'>unsafe</span> { <span class='ident'>Shared</span>::<span class='ident'>from_owned</span>(<span class='ident'>new</span>) })
-        } <span class='kw'>else</span> {
-            <span class='prelude-val'>Err</span>(<span class='ident'>new</span>)
+            <span class="prelude-val">Ok</span>(<span class="kw">unsafe</span> { <span class="ident">Shared</span>::<span class="ident">from_owned</span>(<span class="ident">new</span>) })
+        } <span class="kw">else</span> {
+            <span class="prelude-val">Err</span>(<span class="ident">new</span>)
         }
     }
 
-    <span class='doccomment'>/// Do a compare-and-set from a `Shared` to another `Shared` pointer with</span>
-    <span class='doccomment'>/// the given memory ordering.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// The boolean return value is `true` when the CAS is successful.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>cas_shared</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>old</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Shared</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>, <span class='ident'>new</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Shared</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>, <span class='ident'>ord</span>: <span class='ident'>Ordering</span>)
-                      <span class='op'>-&gt;</span> <span class='ident'>bool</span>
+    <span class="doccomment">/// Do a compare-and-set from a `Shared` to another `Shared` pointer with</span>
+    <span class="doccomment">/// the given memory ordering.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The boolean return value is `true` when the CAS is successful.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cas_shared</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">old</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>, <span class="ident">new</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>, <span class="ident">ord</span>: <span class="ident">Ordering</span>)
+                      <span class="op">-&gt;</span> <span class="ident">bool</span>
     {
-        <span class='self'>self</span>.<span class='ident'>ptr</span>.<span class='ident'>compare_and_swap</span>(<span class='ident'>opt_shared_into_raw</span>(<span class='ident'>old</span>),
-                                  <span class='ident'>opt_shared_into_raw</span>(<span class='ident'>new</span>),
-                                  <span class='ident'>ord</span>) <span class='op'>==</span> <span class='ident'>opt_shared_into_raw</span>(<span class='ident'>old</span>)
+        <span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">compare_and_swap</span>(<span class="ident">opt_shared_into_raw</span>(<span class="ident">old</span>),
+                                  <span class="ident">opt_shared_into_raw</span>(<span class="ident">new</span>),
+                                  <span class="ident">ord</span>) <span class="op">==</span> <span class="ident">opt_shared_into_raw</span>(<span class="ident">old</span>)
     }
 
-    <span class='doccomment'>/// Do an atomic swap with an `Owned` pointer with the given memory ordering.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>swap</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>new</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Owned</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>, <span class='ident'>ord</span>: <span class='ident'>Ordering</span>, _: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Guard</span>)
-                    <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw'>unsafe</span> { <span class='ident'>Shared</span>::<span class='ident'>from_raw</span>(<span class='self'>self</span>.<span class='ident'>ptr</span>.<span class='ident'>swap</span>(<span class='ident'>opt_owned_into_raw</span>(<span class='ident'>new</span>), <span class='ident'>ord</span>)) }
+    <span class="doccomment">/// Do an atomic swap with an `Owned` pointer with the given memory ordering.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">swap</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">new</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Owned</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>, <span class="ident">ord</span>: <span class="ident">Ordering</span>, _: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Guard</span>)
+                    <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;&gt;</span> {
+        <span class="kw">unsafe</span> { <span class="ident">Shared</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">swap</span>(<span class="ident">opt_owned_into_raw</span>(<span class="ident">new</span>), <span class="ident">ord</span>)) }
     }
 
-    <span class='doccomment'>/// Do an atomic swap with a `Shared` pointer with the given memory ordering.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>swap_shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>new</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Shared</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>, <span class='ident'>ord</span>: <span class='ident'>Ordering</span>, _: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Guard</span>)
-                           <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw'>unsafe</span> { <span class='ident'>Shared</span>::<span class='ident'>from_raw</span>(<span class='self'>self</span>.<span class='ident'>ptr</span>.<span class='ident'>swap</span>(<span class='ident'>opt_shared_into_raw</span>(<span class='ident'>new</span>), <span class='ident'>ord</span>)) }
+    <span class="doccomment">/// Do an atomic swap with a `Shared` pointer with the given memory ordering.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">swap_shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">new</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>, <span class="ident">ord</span>: <span class="ident">Ordering</span>, _: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Guard</span>)
+                           <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;&gt;</span> {
+        <span class="kw">unsafe</span> { <span class="ident">Shared</span>::<span class="ident">from_raw</span>(<span class="self">self</span>.<span class="ident">ptr</span>.<span class="ident">swap</span>(<span class="ident">opt_shared_into_raw</span>(<span class="ident">new</span>), <span class="ident">ord</span>)) }
     }
 }
 </pre>
@@ -462,11 +463,9 @@
     <script>
         window.rootPath = "../../../../";
         window.currentCrate = "crossbeam";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../../jquery.js"></script>
     <script src="../../../../main.js"></script>
-    <script src="../../../../extra.js"></script>
     <script defer src="../../../../search-index.js"></script>
 </body>
 </html>

@@ -9,6 +9,7 @@
 
     <title>basic_dsp_vector::Vector - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc trait">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,48 +43,48 @@
         </form>
     </nav>
 
-    <section id='main' class="content trait">
-<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class='trait' href=''>Vector</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class="trait" href=''>Vector</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-466' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/vec_impl_and_indexers.rs.html#58-95' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait Vector&lt;T&gt;: <a class='trait' href='../basic_dsp_vector/trait.MetaData.html' title='basic_dsp_vector::MetaData'>MetaData</a> + <a class='trait' href='../basic_dsp_vector/trait.ResizeOps.html' title='basic_dsp_vector::ResizeOps'>ResizeOps</a> <span class='where'>where T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span> {
+               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/vec_impl_and_indexers.rs.html#58-95' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait Vector&lt;T&gt;: <a class="trait" href="../basic_dsp_vector/trait.MetaData.html" title="trait basic_dsp_vector::MetaData">MetaData</a> + <a class="trait" href="../basic_dsp_vector/trait.ResizeOps.html" title="trait basic_dsp_vector::ResizeOps">ResizeOps</a> <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,&nbsp;</span>{
     fn <a href='#tymethod.delta' class='fnname'>delta</a>(&amp;self) -&gt; T;
     fn <a href='#tymethod.set_delta' class='fnname'>set_delta</a>(&amp;mut self, delta: T);
-    fn <a href='#tymethod.len' class='fnname'>len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>;
-    fn <a href='#tymethod.is_empty' class='fnname'>is_empty</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
-    fn <a href='#tymethod.points' class='fnname'>points</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>;
-    fn <a href='#tymethod.get_multicore_settings' class='fnname'>get_multicore_settings</a>(&amp;self) -&gt; &amp;<a class='struct' href='../basic_dsp_vector/struct.MultiCoreSettings.html' title='basic_dsp_vector::MultiCoreSettings'>MultiCoreSettings</a>;
-    fn <a href='#tymethod.set_multicore_settings' class='fnname'>set_multicore_settings</a>(&amp;mut self, settings: <a class='struct' href='../basic_dsp_vector/struct.MultiCoreSettings.html' title='basic_dsp_vector::MultiCoreSettings'>MultiCoreSettings</a>);
-    fn <a href='#tymethod.alloc_len' class='fnname'>alloc_len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>;
+    fn <a href='#tymethod.len' class='fnname'>len</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
+    fn <a href='#tymethod.is_empty' class='fnname'>is_empty</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>;
+    fn <a href='#tymethod.points' class='fnname'>points</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
+    fn <a href='#tymethod.get_multicore_settings' class='fnname'>get_multicore_settings</a>(&amp;self) -&gt; &amp;<a class="struct" href="../basic_dsp_vector/struct.MultiCoreSettings.html" title="struct basic_dsp_vector::MultiCoreSettings">MultiCoreSettings</a>;
+    fn <a href='#tymethod.set_multicore_settings' class='fnname'>set_multicore_settings</a>(&amp;mut self, settings: <a class="struct" href="../basic_dsp_vector/struct.MultiCoreSettings.html" title="struct basic_dsp_vector::MultiCoreSettings">MultiCoreSettings</a>);
+    fn <a href='#tymethod.alloc_len' class='fnname'>alloc_len</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
 }</pre><div class='docblock'><p>A trait for vector types.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.delta' class='method stab '><span id='delta.v' class='invisible'><code>fn <a href='#tymethod.delta' class='fnname'>delta</a>(&amp;self) -&gt; T</code></span></h3><div class='docblock'><p>The x-axis delta. If <code>domain</code> is time domain then <code>delta</code> is in <code>[s]</code>,
+        <h3 id='tymethod.delta' class='method'><span id='delta.v' class='invisible'><code>fn <a href='#tymethod.delta' class='fnname'>delta</a>(&amp;self) -&gt; T</code></span></h3><div class='docblock'><p>The x-axis delta. If <code>domain</code> is time domain then <code>delta</code> is in <code>[s]</code>,
 in frequency domain <code>delta</code> is in <code>[Hz]</code>.</p>
-</div><h3 id='tymethod.set_delta' class='method stab '><span id='set_delta.v' class='invisible'><code>fn <a href='#tymethod.set_delta' class='fnname'>set_delta</a>(&amp;mut self, delta: T)</code></span></h3><div class='docblock'><p>Sets the x-axis delta. If <code>domain</code> is time domain then <code>delta</code> is in <code>[s]</code>,
+</div><h3 id='tymethod.set_delta' class='method'><span id='set_delta.v' class='invisible'><code>fn <a href='#tymethod.set_delta' class='fnname'>set_delta</a>(&amp;mut self, delta: T)</code></span></h3><div class='docblock'><p>Sets the x-axis delta. If <code>domain</code> is time domain then <code>delta</code> is in <code>[s]</code>,
 in frequency domain <code>delta</code> is in <code>[Hz]</code>.</p>
-</div><h3 id='tymethod.len' class='method stab '><span id='len.v' class='invisible'><code>fn <a href='#tymethod.len' class='fnname'>len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></span></h3><div class='docblock'><p>The number of valid elements in the vector. This can be changed
+</div><h3 id='tymethod.len' class='method'><span id='len.v' class='invisible'><code>fn <a href='#tymethod.len' class='fnname'>len</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span></h3><div class='docblock'><p>The number of valid elements in the vector. This can be changed
 with the <code>Resize</code> trait.</p>
-</div><h3 id='tymethod.is_empty' class='method stab '><span id='is_empty.v' class='invisible'><code>fn <a href='#tymethod.is_empty' class='fnname'>is_empty</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></span></h3><div class='docblock'><p>Indicates whether or not the vector is empty.</p>
-</div><h3 id='tymethod.points' class='method stab '><span id='points.v' class='invisible'><code>fn <a href='#tymethod.points' class='fnname'>points</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></span></h3><div class='docblock'><p>The number of valid points. If the vector is complex then every valid
+</div><h3 id='tymethod.is_empty' class='method'><span id='is_empty.v' class='invisible'><code>fn <a href='#tymethod.is_empty' class='fnname'>is_empty</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h3><div class='docblock'><p>Indicates whether or not the vector is empty.</p>
+</div><h3 id='tymethod.points' class='method'><span id='points.v' class='invisible'><code>fn <a href='#tymethod.points' class='fnname'>points</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span></h3><div class='docblock'><p>The number of valid points. If the vector is complex then every valid
 point consists of two floating point numbers,
 while for real vectors every point only consists of one floating point number.</p>
-</div><h3 id='tymethod.get_multicore_settings' class='method stab '><span id='get_multicore_settings.v' class='invisible'><code>fn <a href='#tymethod.get_multicore_settings' class='fnname'>get_multicore_settings</a>(&amp;self) -&gt; &amp;<a class='struct' href='../basic_dsp_vector/struct.MultiCoreSettings.html' title='basic_dsp_vector::MultiCoreSettings'>MultiCoreSettings</a></code></span></h3><div class='docblock'><p>Gets the multi core settings which determine how the
+</div><h3 id='tymethod.get_multicore_settings' class='method'><span id='get_multicore_settings.v' class='invisible'><code>fn <a href='#tymethod.get_multicore_settings' class='fnname'>get_multicore_settings</a>(&amp;self) -&gt; &amp;<a class="struct" href="../basic_dsp_vector/struct.MultiCoreSettings.html" title="struct basic_dsp_vector::MultiCoreSettings">MultiCoreSettings</a></code></span></h3><div class='docblock'><p>Gets the multi core settings which determine how the
 work is split between several cores if the amount of data
 gets larger.</p>
-</div><h3 id='tymethod.set_multicore_settings' class='method stab '><span id='set_multicore_settings.v' class='invisible'><code>fn <a href='#tymethod.set_multicore_settings' class='fnname'>set_multicore_settings</a>(&amp;mut self, settings: <a class='struct' href='../basic_dsp_vector/struct.MultiCoreSettings.html' title='basic_dsp_vector::MultiCoreSettings'>MultiCoreSettings</a>)</code></span></h3><div class='docblock'><p>Sets the multi core settings which determine how the
+</div><h3 id='tymethod.set_multicore_settings' class='method'><span id='set_multicore_settings.v' class='invisible'><code>fn <a href='#tymethod.set_multicore_settings' class='fnname'>set_multicore_settings</a>(&amp;mut self, settings: <a class="struct" href="../basic_dsp_vector/struct.MultiCoreSettings.html" title="struct basic_dsp_vector::MultiCoreSettings">MultiCoreSettings</a>)</code></span></h3><div class='docblock'><p>Sets the multi core settings which determine how the
 work is split between several cores if the amount of data
 gets larger.</p>
-</div><h3 id='tymethod.alloc_len' class='method stab '><span id='alloc_len.v' class='invisible'><code>fn <a href='#tymethod.alloc_len' class='fnname'>alloc_len</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></span></h3><div class='docblock'><p>Gets the number of allocated elements in the underlying vector.
+</div><h3 id='tymethod.alloc_len' class='method'><span id='alloc_len.v' class='invisible'><code>fn <a href='#tymethod.alloc_len' class='fnname'>alloc_len</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span></h3><div class='docblock'><p>Gets the number of allocated elements in the underlying vector.
 The allocated length may be larger than the length of valid points.
 In most cases you likely want to have <code>len</code>or <code>points</code> instead.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;S, T, N, D&gt; Vector&lt;T&gt; for <a class='struct' href='../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, N, D&gt; <span class='where'>where S: <a class='trait' href='../basic_dsp_vector/trait.ToSlice.html' title='basic_dsp_vector::ToSlice'>ToSlice</a>&lt;T&gt;, T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a>, D: <a class='trait' href='../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></li>
+    <li><code>impl&lt;S, T, N, D&gt; Vector&lt;T&gt; for <a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../basic_dsp_vector/trait.ToSlice.html" title="trait basic_dsp_vector::ToSlice">ToSlice</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;N: <a class="trait" href="../basic_dsp_vector/trait.NumberSpace.html" title="trait basic_dsp_vector::NumberSpace">NumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;D: <a class="trait" href="../basic_dsp_vector/trait.Domain.html" title="trait basic_dsp_vector::Domain">Domain</a>,&nbsp;</span></code></li>
 </ul><script type="text/javascript" async
                          src="../implementors/basic_dsp_vector/trait.Vector.js">
                  </script></section>
@@ -142,11 +143,9 @@ In most cases you likely want to have <code>len</code>or <code>points</code> ins
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

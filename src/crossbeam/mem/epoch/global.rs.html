@@ -9,6 +9,7 @@
 
     <title>global.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc source">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,7 +43,7 @@
         </form>
     </nav>
 
-    <section id='main' class="content source"><pre class="line-numbers"><span id="1"> 1</span>
+    <section id='main' class="content"><pre class="line-numbers"><span id="1"> 1</span>
 <span id="2"> 2</span>
 <span id="3"> 3</span>
 <span id="4"> 4</span>
@@ -137,101 +138,101 @@
 <span id="93">93</span>
 <span id="94">94</span>
 <span id="95">95</span>
-</pre><pre class='rust '>
-<span class='comment'>// Definition of global epoch state. The `get` function is the way to</span>
-<span class='comment'>// access this data externally (until const fn is stabilized...).</span>
+</pre><pre class="rust ">
+<span class="comment">// Definition of global epoch state. The `get` function is the way to</span>
+<span class="comment">// access this data externally (until const fn is stabilized...).</span>
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::<span class='ident'>AtomicUsize</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::<span class="ident">AtomicUsize</span>;
 
-<span class='kw'>use</span> <span class='ident'>mem</span>::<span class='ident'>CachePadded</span>;
-<span class='kw'>use</span> <span class='ident'>mem</span>::<span class='ident'>epoch</span>::<span class='ident'>garbage</span>;
-<span class='kw'>use</span> <span class='ident'>mem</span>::<span class='ident'>epoch</span>::<span class='ident'>participants</span>::<span class='ident'>Participants</span>;
+<span class="kw">use</span> <span class="ident">mem</span>::<span class="ident">CachePadded</span>;
+<span class="kw">use</span> <span class="ident">mem</span>::<span class="ident">epoch</span>::<span class="ident">garbage</span>;
+<span class="kw">use</span> <span class="ident">mem</span>::<span class="ident">epoch</span>::<span class="ident">participants</span>::<span class="ident">Participants</span>;
 
-<span class='doccomment'>/// Global epoch state</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>EpochState</span> {
-    <span class='doccomment'>/// Current global epoch</span>
-    <span class='kw'>pub</span> <span class='ident'>epoch</span>: <span class='ident'>CachePadded</span><span class='op'>&lt;</span><span class='ident'>AtomicUsize</span><span class='op'>&gt;</span>,
+<span class="doccomment">/// Global epoch state</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">EpochState</span> {
+    <span class="doccomment">/// Current global epoch</span>
+    <span class="kw">pub</span> <span class="ident">epoch</span>: <span class="ident">CachePadded</span><span class="op">&lt;</span><span class="ident">AtomicUsize</span><span class="op">&gt;</span>,
 
-    <span class='comment'>// FIXME: move this into the `garbage` module, rationalize API</span>
-    <span class='doccomment'>/// Global garbage bags</span>
-    <span class='kw'>pub</span> <span class='ident'>garbage</span>: [<span class='ident'>CachePadded</span><span class='op'>&lt;</span><span class='ident'>garbage</span>::<span class='ident'>ConcBag</span><span class='op'>&gt;</span>; <span class='number'>3</span>],
+    <span class="comment">// FIXME: move this into the `garbage` module, rationalize API</span>
+    <span class="doccomment">/// Global garbage bags</span>
+    <span class="kw">pub</span> <span class="ident">garbage</span>: [<span class="ident">CachePadded</span><span class="op">&lt;</span><span class="ident">garbage</span>::<span class="ident">ConcBag</span><span class="op">&gt;</span>; <span class="number">3</span>],
 
-    <span class='doccomment'>/// Participant list</span>
-    <span class='kw'>pub</span> <span class='ident'>participants</span>: <span class='ident'>Participants</span>,
+    <span class="doccomment">/// Participant list</span>
+    <span class="kw">pub</span> <span class="ident">participants</span>: <span class="ident">Participants</span>,
 }
 
-<span class='kw'>unsafe</span> <span class='kw'>impl</span> <span class='ident'>Send</span> <span class='kw'>for</span> <span class='ident'>EpochState</span> {}
-<span class='kw'>unsafe</span> <span class='kw'>impl</span> <span class='ident'>Sync</span> <span class='kw'>for</span> <span class='ident'>EpochState</span> {}
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">EpochState</span> {}
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">EpochState</span> {}
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>imp</span>::<span class='ident'>get</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">imp</span>::<span class="ident">get</span>;
 
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>not</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;nightly&quot;</span>))]</span>
-<span class='kw'>mod</span> <span class='ident'>imp</span> {
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::{<span class='self'>self</span>, <span class='ident'>AtomicUsize</span>};
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::<span class='ident'>Ordering</span>::<span class='ident'>Relaxed</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>))]</span>
+<span class="kw">mod</span> <span class="ident">imp</span> {
+    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
+    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::{<span class="self">self</span>, <span class="ident">AtomicUsize</span>};
+    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::<span class="ident">Ordering</span>::<span class="ident">Relaxed</span>;
 
-    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>EpochState</span>;
-    <span class='kw'>use</span> <span class='ident'>mem</span>::<span class='ident'>CachePadded</span>;
-    <span class='kw'>use</span> <span class='ident'>mem</span>::<span class='ident'>epoch</span>::<span class='ident'>participants</span>::<span class='ident'>Participants</span>;
+    <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">EpochState</span>;
+    <span class="kw">use</span> <span class="ident">mem</span>::<span class="ident">CachePadded</span>;
+    <span class="kw">use</span> <span class="ident">mem</span>::<span class="ident">epoch</span>::<span class="ident">participants</span>::<span class="ident">Participants</span>;
 
-    <span class='kw'>impl</span> <span class='ident'>EpochState</span> {
-        <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>EpochState</span> {
-            <span class='ident'>EpochState</span> {
-                <span class='ident'>epoch</span>: <span class='ident'>CachePadded</span>::<span class='ident'>zeroed</span>(),
-                <span class='ident'>garbage</span>: [<span class='ident'>CachePadded</span>::<span class='ident'>zeroed</span>(),
-                          <span class='ident'>CachePadded</span>::<span class='ident'>zeroed</span>(),
-                          <span class='ident'>CachePadded</span>::<span class='ident'>zeroed</span>()],
-                <span class='ident'>participants</span>: <span class='ident'>Participants</span>::<span class='ident'>new</span>(),
+    <span class="kw">impl</span> <span class="ident">EpochState</span> {
+        <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="ident">EpochState</span> {
+            <span class="ident">EpochState</span> {
+                <span class="ident">epoch</span>: <span class="ident">CachePadded</span>::<span class="ident">zeroed</span>(),
+                <span class="ident">garbage</span>: [<span class="ident">CachePadded</span>::<span class="ident">zeroed</span>(),
+                          <span class="ident">CachePadded</span>::<span class="ident">zeroed</span>(),
+                          <span class="ident">CachePadded</span>::<span class="ident">zeroed</span>()],
+                <span class="ident">participants</span>: <span class="ident">Participants</span>::<span class="ident">new</span>(),
             }
         }
     }
 
-    <span class='kw'>static</span> <span class='ident'>EPOCH</span>: <span class='ident'>AtomicUsize</span> <span class='op'>=</span> <span class='ident'>atomic</span>::<span class='ident'>ATOMIC_USIZE_INIT</span>;
+    <span class="kw">static</span> <span class="ident">EPOCH</span>: <span class="ident">AtomicUsize</span> <span class="op">=</span> <span class="ident">atomic</span>::<span class="ident">ATOMIC_USIZE_INIT</span>;
 
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get</span>() <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>EpochState</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>addr</span> <span class='op'>=</span> <span class='ident'>EPOCH</span>.<span class='ident'>load</span>(<span class='ident'>Relaxed</span>);
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>() <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">EpochState</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">EPOCH</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>);
 
-        <span class='kw'>if</span> <span class='ident'>addr</span> <span class='op'>==</span> <span class='number'>0</span> {
-            <span class='kw'>let</span> <span class='ident'>boxed</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>EpochState</span>::<span class='ident'>new</span>());
-            <span class='kw'>let</span> <span class='ident'>raw</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>into_raw</span>(<span class='ident'>boxed</span>);
+        <span class="kw">if</span> <span class="ident">addr</span> <span class="op">==</span> <span class="number">0</span> {
+            <span class="kw">let</span> <span class="ident">boxed</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">EpochState</span>::<span class="ident">new</span>());
+            <span class="kw">let</span> <span class="ident">raw</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">into_raw</span>(<span class="ident">boxed</span>);
 
-            <span class='ident'>addr</span> <span class='op'>=</span> <span class='ident'>EPOCH</span>.<span class='ident'>compare_and_swap</span>(<span class='number'>0</span>, <span class='ident'>raw</span> <span class='kw'>as</span> <span class='ident'>usize</span>, <span class='ident'>Relaxed</span>);
-            <span class='kw'>if</span> <span class='ident'>addr</span> <span class='op'>!=</span> <span class='number'>0</span> {
-                <span class='kw'>let</span> <span class='ident'>boxed</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>Box</span>::<span class='ident'>from_raw</span>(<span class='ident'>raw</span>) };
-                <span class='ident'>mem</span>::<span class='ident'>drop</span>(<span class='ident'>boxed</span>);
-            } <span class='kw'>else</span> {
-                <span class='ident'>addr</span> <span class='op'>=</span> <span class='ident'>raw</span> <span class='kw'>as</span> <span class='ident'>usize</span>;
+            <span class="ident">addr</span> <span class="op">=</span> <span class="ident">EPOCH</span>.<span class="ident">compare_and_swap</span>(<span class="number">0</span>, <span class="ident">raw</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">Relaxed</span>);
+            <span class="kw">if</span> <span class="ident">addr</span> <span class="op">!=</span> <span class="number">0</span> {
+                <span class="kw">let</span> <span class="ident">boxed</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">Box</span>::<span class="ident">from_raw</span>(<span class="ident">raw</span>) };
+                <span class="ident">mem</span>::<span class="ident">drop</span>(<span class="ident">boxed</span>);
+            } <span class="kw">else</span> {
+                <span class="ident">addr</span> <span class="op">=</span> <span class="ident">raw</span> <span class="kw">as</span> <span class="ident">usize</span>;
             }
         }
 
-        <span class='kw'>unsafe</span> {
-            <span class='kw-2'>&amp;</span><span class='op'>*</span>(<span class='ident'>addr</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>EpochState</span>)
+        <span class="kw">unsafe</span> {
+            <span class="kw-2">&amp;</span><span class="kw-2">*</span>(<span class="ident">addr</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">EpochState</span>)
         }
     }
 }
 
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;nightly&quot;</span>)]</span>
-<span class='kw'>mod</span> <span class='ident'>imp</span> {
-    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>EpochState</span>;
-    <span class='kw'>use</span> <span class='ident'>mem</span>::<span class='ident'>CachePadded</span>;
-    <span class='kw'>use</span> <span class='ident'>mem</span>::<span class='ident'>epoch</span>::<span class='ident'>participants</span>::<span class='ident'>Participants</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>)]</span>
+<span class="kw">mod</span> <span class="ident">imp</span> {
+    <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">EpochState</span>;
+    <span class="kw">use</span> <span class="ident">mem</span>::<span class="ident">CachePadded</span>;
+    <span class="kw">use</span> <span class="ident">mem</span>::<span class="ident">epoch</span>::<span class="ident">participants</span>::<span class="ident">Participants</span>;
 
-    <span class='kw'>impl</span> <span class='ident'>EpochState</span> {
-        <span class='kw'>const</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>EpochState</span> {
-            <span class='ident'>EpochState</span> {
-                <span class='ident'>epoch</span>: <span class='ident'>CachePadded</span>::<span class='ident'>zeroed</span>(),
-                <span class='ident'>garbage</span>: [<span class='ident'>CachePadded</span>::<span class='ident'>zeroed</span>(),
-                          <span class='ident'>CachePadded</span>::<span class='ident'>zeroed</span>(),
-                          <span class='ident'>CachePadded</span>::<span class='ident'>zeroed</span>()],
-                <span class='ident'>participants</span>: <span class='ident'>Participants</span>::<span class='ident'>new</span>(),
+    <span class="kw">impl</span> <span class="ident">EpochState</span> {
+        <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="ident">EpochState</span> {
+            <span class="ident">EpochState</span> {
+                <span class="ident">epoch</span>: <span class="ident">CachePadded</span>::<span class="ident">zeroed</span>(),
+                <span class="ident">garbage</span>: [<span class="ident">CachePadded</span>::<span class="ident">zeroed</span>(),
+                          <span class="ident">CachePadded</span>::<span class="ident">zeroed</span>(),
+                          <span class="ident">CachePadded</span>::<span class="ident">zeroed</span>()],
+                <span class="ident">participants</span>: <span class="ident">Participants</span>::<span class="ident">new</span>(),
             }
         }
     }
 
-    <span class='kw'>static</span> <span class='ident'>EPOCH</span>: <span class='ident'>EpochState</span> <span class='op'>=</span> <span class='ident'>EpochState</span>::<span class='ident'>new</span>();
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get</span>() <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>EpochState</span> { <span class='kw-2'>&amp;</span><span class='ident'>EPOCH</span> }
+    <span class="kw">static</span> <span class="ident">EPOCH</span>: <span class="ident">EpochState</span> <span class="op">=</span> <span class="ident">EpochState</span>::<span class="ident">new</span>();
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>() <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">EpochState</span> { <span class="kw-2">&amp;</span><span class="ident">EPOCH</span> }
 }
 </pre>
 </section>
@@ -290,11 +291,9 @@
     <script>
         window.rootPath = "../../../../";
         window.currentCrate = "crossbeam";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../../jquery.js"></script>
     <script src="../../../../main.js"></script>
-    <script src="../../../../extra.js"></script>
     <script defer src="../../../../search-index.js"></script>
 </body>
 </html>

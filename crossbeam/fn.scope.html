@@ -9,6 +9,7 @@
 
     <title>crossbeam::scope - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc fn">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,25 +43,23 @@
         </form>
     </nav>
 
-    <section id='main' class="content fn">
-<h1 class='fqn'><span class='in-band'>Function <a href='index.html'>crossbeam</a>::<wbr><a class='fn' href=''>scope</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Function <a href='index.html'>crossbeam</a>::<wbr><a class="fn" href=''>scope</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-749' class='srclink' href='../src/crossbeam/scoped.rs.html#60-65' title='goto source code'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn scope&lt;'a, F, R&gt;(f: F) -&gt; R <span class='where'>where F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>(&amp;<a class='struct' href='../crossbeam/struct.Scope.html' title='crossbeam::Scope'>Scope</a>&lt;'a&gt;) -&gt; R</span></pre><div class='docblock'><p>Create a new <code>scope</code>, for deferred destructors.</p>
-
+               </span><a class='srclink' href='../src/crossbeam/scoped.rs.html#60-65' title='goto source code'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn scope&lt;'a, F, R&gt;(f: F) -&gt; R <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html" title="trait core::ops::FnOnce">FnOnce</a>(&amp;<a class="struct" href="../crossbeam/struct.Scope.html" title="struct crossbeam::Scope">Scope</a>&lt;'a&gt;) -&gt; R,&nbsp;</span></pre><div class='docblock'><p>Create a new <code>scope</code>, for deferred destructors.</p>
 <p>Scopes, in particular, support <a href="struct.Scope.html#method.spawn"><em>scoped thread spawning</em></a>.</p>
-
-<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1>
+<h1 id="examples" class="section-header"><a href="#examples">Examples</a></h1>
 <p>Creating and using a scope:</p>
 
-<pre class='rust rust-example-rendered'>
-<span class='ident'>crossbeam</span>::<span class='ident'>scope</span>(<span class='op'>|</span><span class='ident'>scope</span><span class='op'>|</span> {
-    <span class='ident'>scope</span>.<span class='ident'>defer</span>(<span class='op'>||</span> <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;Exiting scope&quot;</span>));
-    <span class='ident'>scope</span>.<span class='ident'>spawn</span>(<span class='op'>||</span> <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;Running child thread in scope&quot;</span>))
+<pre class="rust rust-example-rendered">
+<span class="ident">crossbeam</span>::<span class="ident">scope</span>(<span class="op">|</span><span class="ident">scope</span><span class="op">|</span> {
+    <span class="ident">scope</span>.<span class="ident">defer</span>(<span class="op">||</span> <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Exiting scope&quot;</span>));
+    <span class="ident">scope</span>.<span class="ident">spawn</span>(<span class="op">||</span> <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Running child thread in scope&quot;</span>))
 });
-<span class='comment'>// Prints messages in the reverse order written</span><a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class="comment">// Prints messages in the reverse order written</span></pre>
 </div></section>
     <section id='search' class="content hidden"></section>
 
@@ -117,11 +116,9 @@
     <script>
         window.rootPath = "../";
         window.currentCrate = "crossbeam";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

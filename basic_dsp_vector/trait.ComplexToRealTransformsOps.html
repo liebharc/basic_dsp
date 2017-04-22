@@ -9,6 +9,7 @@
 
     <title>basic_dsp_vector::ComplexToRealTransformsOps - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc trait">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,72 +43,66 @@
         </form>
     </nav>
 
-    <section id='main' class="content trait">
-<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class='trait' href=''>ComplexToRealTransformsOps</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class="trait" href=''>ComplexToRealTransformsOps</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-782' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/complex/complex_to_real.rs.html#15-93' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait ComplexToRealTransformsOps&lt;T&gt;: <a class='trait' href='../basic_dsp_vector/trait.ToRealResult.html' title='basic_dsp_vector::ToRealResult'>ToRealResult</a> <span class='where'>where T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span> {
-    fn <a href='#tymethod.magnitude' class='fnname'>magnitude</a>(self) -&gt; Self::RealResult;
-    fn <a href='#tymethod.magnitude_squared' class='fnname'>magnitude_squared</a>(self) -&gt; Self::RealResult;
-    fn <a href='#tymethod.to_real' class='fnname'>to_real</a>(self) -&gt; Self::RealResult;
-    fn <a href='#tymethod.to_imag' class='fnname'>to_imag</a>(self) -&gt; Self::RealResult;
-    fn <a href='#tymethod.phase' class='fnname'>phase</a>(self) -&gt; Self::RealResult;
+               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/complex/complex_to_real.rs.html#15-93' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait ComplexToRealTransformsOps&lt;T&gt;: <a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">ToRealResult</a> <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,&nbsp;</span>{
+    fn <a href='#tymethod.magnitude' class='fnname'>magnitude</a>(self) -&gt; Self::<a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">RealResult</a>;
+    fn <a href='#tymethod.magnitude_squared' class='fnname'>magnitude_squared</a>(self) -&gt; Self::<a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">RealResult</a>;
+    fn <a href='#tymethod.to_real' class='fnname'>to_real</a>(self) -&gt; Self::<a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">RealResult</a>;
+    fn <a href='#tymethod.to_imag' class='fnname'>to_imag</a>(self) -&gt; Self::<a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">RealResult</a>;
+    fn <a href='#tymethod.phase' class='fnname'>phase</a>(self) -&gt; Self::<a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">RealResult</a>;
 }</pre><div class='docblock'><p>Defines transformations from complex to real number space.</p>
-
-<h1 id='failures' class='section-header'><a href='#failures'>Failures</a></h1>
-<p>All operations in this trait set <code>self.len()</code> to <code>0</code> if the type isn&#39;t in
+<h1 id="failures" class="section-header"><a href="#failures">Failures</a></h1>
+<p>All operations in this trait set <code>self.len()</code> to <code>0</code> if the type isn't in
 the complex number space.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.magnitude' class='method stab '><span id='magnitude.v' class='invisible'><code>fn <a href='#tymethod.magnitude' class='fnname'>magnitude</a>(self) -&gt; Self::RealResult</code></span></h3><div class='docblock'><p>Gets the absolute value, magnitude or norm of all vector elements.</p>
-
-<h1 id='example' class='section-header'><a href='#example'>Example</a></h1>
-<pre class='rust rust-example-rendered'>
-<span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
-<span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>3.0</span>, <span class='op'>-</span><span class='number'>4.0</span>, <span class='op'>-</span><span class='number'>3.0</span>, <span class='number'>4.0</span>).<span class='ident'>to_complex_time_vec</span>();
-<span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>magnitude</span>();
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>5.0</span>, <span class='number'>5.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
-</div><h3 id='tymethod.magnitude_squared' class='method stab '><span id='magnitude_squared.v' class='invisible'><code>fn <a href='#tymethod.magnitude_squared' class='fnname'>magnitude_squared</a>(self) -&gt; Self::RealResult</code></span></h3><div class='docblock'><p>Gets the square root of the absolute value of all vector elements.</p>
-
-<h1 id='example-1' class='section-header'><a href='#example-1'>Example</a></h1>
-<pre class='rust rust-example-rendered'>
-<span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
-<span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>3.0</span>, <span class='op'>-</span><span class='number'>4.0</span>, <span class='op'>-</span><span class='number'>3.0</span>, <span class='number'>4.0</span>).<span class='ident'>to_complex_time_vec</span>();
-<span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>magnitude_squared</span>();
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>25.0</span>, <span class='number'>25.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
-</div><h3 id='tymethod.to_real' class='method stab '><span id='to_real.v' class='invisible'><code>fn <a href='#tymethod.to_real' class='fnname'>to_real</a>(self) -&gt; Self::RealResult</code></span></h3><div class='docblock'><p>Gets all real elements.</p>
-
-<h1 id='example-2' class='section-header'><a href='#example-2'>Example</a></h1>
-<pre class='rust rust-example-rendered'>
-<span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
-<span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>).<span class='ident'>to_complex_time_vec</span>();
-<span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>to_real</span>();
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>3.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
-</div><h3 id='tymethod.to_imag' class='method stab '><span id='to_imag.v' class='invisible'><code>fn <a href='#tymethod.to_imag' class='fnname'>to_imag</a>(self) -&gt; Self::RealResult</code></span></h3><div class='docblock'><p>Gets all imag elements.</p>
-
-<h1 id='example-3' class='section-header'><a href='#example-3'>Example</a></h1>
-<pre class='rust rust-example-rendered'>
-<span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
-<span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>).<span class='ident'>to_complex_time_vec</span>();
-<span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>to_imag</span>();
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>2.0</span>, <span class='number'>4.0</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
-</div><h3 id='tymethod.phase' class='method stab '><span id='phase.v' class='invisible'><code>fn <a href='#tymethod.phase' class='fnname'>phase</a>(self) -&gt; Self::RealResult</code></span></h3><div class='docblock'><p>Gets the phase of all elements in [rad].</p>
-
-<h1 id='example-4' class='section-header'><a href='#example-4'>Example</a></h1>
-<pre class='rust rust-example-rendered'>
-<span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
-<span class='kw'>let</span> <span class='ident'>data</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>f32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>4.0</span>, <span class='op'>-</span><span class='number'>2.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='op'>-</span><span class='number'>3.0</span>, <span class='number'>1.0</span>, <span class='number'>1.0</span>);
-<span class='kw'>let</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='ident'>data</span>.<span class='ident'>to_complex_time_vec</span>();
-<span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>vector</span>.<span class='ident'>phase</span>();
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>0.0</span>, <span class='number'>1.5707964</span>, <span class='number'>3.1415927</span>, <span class='op'>-</span><span class='number'>1.5707964</span>, <span class='number'>0.7853982</span>], <span class='ident'>result</span>[<span class='number'>0</span>..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+        <h3 id='tymethod.magnitude' class='method'><span id='magnitude.v' class='invisible'><code>fn <a href='#tymethod.magnitude' class='fnname'>magnitude</a>(self) -&gt; Self::<a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">RealResult</a></code></span></h3><div class='docblock'><p>Gets the absolute value, magnitude or norm of all vector elements.</p>
+<h1 id="example" class="section-header"><a href="#example">Example</a></h1>
+<pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="kw-2">*</span>;
+<span class="kw">let</span> <span class="ident">vector</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>(<span class="number">3.0</span>, <span class="op">-</span><span class="number">4.0</span>, <span class="op">-</span><span class="number">3.0</span>, <span class="number">4.0</span>).<span class="ident">to_complex_time_vec</span>();
+<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">vector</span>.<span class="ident">magnitude</span>();
+<span class="macro">assert_eq</span><span class="macro">!</span>([<span class="number">5.0</span>, <span class="number">5.0</span>], <span class="ident">result</span>[<span class="number">0</span>..]);</pre>
+</div><h3 id='tymethod.magnitude_squared' class='method'><span id='magnitude_squared.v' class='invisible'><code>fn <a href='#tymethod.magnitude_squared' class='fnname'>magnitude_squared</a>(self) -&gt; Self::<a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">RealResult</a></code></span></h3><div class='docblock'><p>Gets the square root of the absolute value of all vector elements.</p>
+<h1 id="example-1" class="section-header"><a href="#example-1">Example</a></h1>
+<pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="kw-2">*</span>;
+<span class="kw">let</span> <span class="ident">vector</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>(<span class="number">3.0</span>, <span class="op">-</span><span class="number">4.0</span>, <span class="op">-</span><span class="number">3.0</span>, <span class="number">4.0</span>).<span class="ident">to_complex_time_vec</span>();
+<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">vector</span>.<span class="ident">magnitude_squared</span>();
+<span class="macro">assert_eq</span><span class="macro">!</span>([<span class="number">25.0</span>, <span class="number">25.0</span>], <span class="ident">result</span>[<span class="number">0</span>..]);</pre>
+</div><h3 id='tymethod.to_real' class='method'><span id='to_real.v' class='invisible'><code>fn <a href='#tymethod.to_real' class='fnname'>to_real</a>(self) -&gt; Self::<a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">RealResult</a></code></span></h3><div class='docblock'><p>Gets all real elements.</p>
+<h1 id="example-2" class="section-header"><a href="#example-2">Example</a></h1>
+<pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="kw-2">*</span>;
+<span class="kw">let</span> <span class="ident">vector</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>(<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>).<span class="ident">to_complex_time_vec</span>();
+<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">vector</span>.<span class="ident">to_real</span>();
+<span class="macro">assert_eq</span><span class="macro">!</span>([<span class="number">1.0</span>, <span class="number">3.0</span>], <span class="ident">result</span>[<span class="number">0</span>..]);</pre>
+</div><h3 id='tymethod.to_imag' class='method'><span id='to_imag.v' class='invisible'><code>fn <a href='#tymethod.to_imag' class='fnname'>to_imag</a>(self) -&gt; Self::<a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">RealResult</a></code></span></h3><div class='docblock'><p>Gets all imag elements.</p>
+<h1 id="example-3" class="section-header"><a href="#example-3">Example</a></h1>
+<pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="kw-2">*</span>;
+<span class="kw">let</span> <span class="ident">vector</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>(<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>).<span class="ident">to_complex_time_vec</span>();
+<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">vector</span>.<span class="ident">to_imag</span>();
+<span class="macro">assert_eq</span><span class="macro">!</span>([<span class="number">2.0</span>, <span class="number">4.0</span>], <span class="ident">result</span>[<span class="number">0</span>..]);</pre>
+</div><h3 id='tymethod.phase' class='method'><span id='phase.v' class='invisible'><code>fn <a href='#tymethod.phase' class='fnname'>phase</a>(self) -&gt; Self::<a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">RealResult</a></code></span></h3><div class='docblock'><p>Gets the phase of all elements in [rad].</p>
+<h1 id="example-4" class="section-header"><a href="#example-4">Example</a></h1>
+<pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="kw-2">*</span>;
+<span class="kw">let</span> <span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>(<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">4.0</span>, <span class="op">-</span><span class="number">2.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="op">-</span><span class="number">3.0</span>, <span class="number">1.0</span>, <span class="number">1.0</span>);
+<span class="kw">let</span> <span class="ident">vector</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">to_complex_time_vec</span>();
+<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">vector</span>.<span class="ident">phase</span>();
+<span class="macro">assert_eq</span><span class="macro">!</span>([<span class="number">0.0</span>, <span class="number">1.5707964</span>, <span class="number">3.1415927</span>, <span class="op">-</span><span class="number">1.5707964</span>, <span class="number">0.7853982</span>], <span class="ident">result</span>[<span class="number">0</span>..]);</pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;S, T, N, D&gt; ComplexToRealTransformsOps&lt;T&gt; for <a class='struct' href='../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, N, D&gt; <span class='where'>where <a class='struct' href='../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, N, D&gt;: <a class='trait' href='../basic_dsp_vector/trait.ToRealResult.html' title='basic_dsp_vector::ToRealResult'>ToRealResult</a>, <a class='struct' href='../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, N, D&gt;::RealResult: <a class='trait' href='../basic_dsp_vector/trait.RededicateForceOps.html' title='basic_dsp_vector::RededicateForceOps'>RededicateForceOps</a>&lt;<a class='struct' href='../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, N, D&gt;&gt;, S: <a class='trait' href='../basic_dsp_vector/trait.ToSliceMut.html' title='basic_dsp_vector::ToSliceMut'>ToSliceMut</a>&lt;T&gt; + <a class='trait' href='../basic_dsp_vector/trait.Owner.html' title='basic_dsp_vector::Owner'>Owner</a>, T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../basic_dsp_vector/trait.ComplexNumberSpace.html' title='basic_dsp_vector::ComplexNumberSpace'>ComplexNumberSpace</a>, D: <a class='trait' href='../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></li>
-<li><code>impl&lt;T, N, D&gt; ComplexToRealTransformsOps&lt;T&gt; for <a class='struct' href='../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where <a class='struct' href='../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt;: <a class='trait' href='../basic_dsp_vector/trait.ToRealResult.html' title='basic_dsp_vector::ToRealResult'>ToRealResult</a>, <a class='struct' href='../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt;::RealResult: <a class='trait' href='../basic_dsp_vector/trait.RededicateForceOps.html' title='basic_dsp_vector::RededicateForceOps'>RededicateForceOps</a>&lt;<a class='struct' href='../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt;&gt;, T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../basic_dsp_vector/trait.ComplexNumberSpace.html' title='basic_dsp_vector::ComplexNumberSpace'>ComplexNumberSpace</a>, D: <a class='trait' href='../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></li>
+    <li><code>impl&lt;S, T, N, D&gt; ComplexToRealTransformsOps&lt;T&gt; for <a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;<a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt;: <a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">ToRealResult</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;<a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt;::<a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">RealResult</a>: <a class="trait" href="../basic_dsp_vector/trait.RededicateForceOps.html" title="trait basic_dsp_vector::RededicateForceOps">RededicateForceOps</a>&lt;<a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt;&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../basic_dsp_vector/trait.ToSliceMut.html" title="trait basic_dsp_vector::ToSliceMut">ToSliceMut</a>&lt;T&gt; + <a class="trait" href="../basic_dsp_vector/trait.Owner.html" title="trait basic_dsp_vector::Owner">Owner</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;N: <a class="trait" href="../basic_dsp_vector/trait.ComplexNumberSpace.html" title="trait basic_dsp_vector::ComplexNumberSpace">ComplexNumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;D: <a class="trait" href="../basic_dsp_vector/trait.Domain.html" title="trait basic_dsp_vector::Domain">Domain</a>,&nbsp;</span></code></li>
+<li><code>impl&lt;T, N, D&gt; ComplexToRealTransformsOps&lt;T&gt; for <a class="struct" href="../basic_dsp_vector/combined_ops/struct.Identifier.html" title="struct basic_dsp_vector::combined_ops::Identifier">Identifier</a>&lt;T, N, D&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;<a class="struct" href="../basic_dsp_vector/combined_ops/struct.Identifier.html" title="struct basic_dsp_vector::combined_ops::Identifier">Identifier</a>&lt;T, N, D&gt;: <a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">ToRealResult</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;<a class="struct" href="../basic_dsp_vector/combined_ops/struct.Identifier.html" title="struct basic_dsp_vector::combined_ops::Identifier">Identifier</a>&lt;T, N, D&gt;::<a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">RealResult</a>: <a class="trait" href="../basic_dsp_vector/trait.RededicateForceOps.html" title="trait basic_dsp_vector::RededicateForceOps">RededicateForceOps</a>&lt;<a class="struct" href="../basic_dsp_vector/combined_ops/struct.Identifier.html" title="struct basic_dsp_vector::combined_ops::Identifier">Identifier</a>&lt;T, N, D&gt;&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;N: <a class="trait" href="../basic_dsp_vector/trait.ComplexNumberSpace.html" title="trait basic_dsp_vector::ComplexNumberSpace">ComplexNumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;D: <a class="trait" href="../basic_dsp_vector/trait.Domain.html" title="trait basic_dsp_vector::Domain">Domain</a>,&nbsp;</span></code></li>
 </ul><script type="text/javascript" async
                          src="../implementors/basic_dsp_vector/trait.ComplexToRealTransformsOps.js">
                  </script></section>
@@ -166,11 +161,9 @@ the complex number space.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

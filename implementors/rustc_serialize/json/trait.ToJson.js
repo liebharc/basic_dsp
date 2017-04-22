@@ -1,5 +1,7 @@
 (function() {var implementors = {};
-implementors["rustc_serialize"] = [];implementors["num"] = [];
+implementors["basic_dsp_vector"] = [];
+implementors["num"] = [];
+implementors["rustc_serialize"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

@@ -9,6 +9,7 @@
 
     <title>scoped.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc source">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,7 +43,7 @@
         </form>
     </nav>
 
-    <section id='main' class="content source"><pre class="line-numbers"><span id="1">  1</span>
+    <section id='main' class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -317,280 +318,280 @@
 <span id="273">273</span>
 <span id="274">274</span>
 <span id="275">275</span>
-</pre><pre class='rust '>
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cell</span>::<span class='ident'>RefCell</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rc</span>::<span class='ident'>Rc</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::<span class='ident'>Ordering</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>Arc</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>thread</span>;
+</pre><pre class="rust ">
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">RefCell</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">rc</span>::<span class="ident">Rc</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::<span class="ident">Ordering</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">thread</span>;
 
-<span class='kw'>use</span> {<span class='ident'>spawn_unsafe</span>, <span class='ident'>FnBox</span>};
-<span class='kw'>use</span> <span class='ident'>sync</span>::<span class='ident'>AtomicOption</span>;
+<span class="kw">use</span> {<span class="ident">spawn_unsafe</span>, <span class="ident">FnBox</span>};
+<span class="kw">use</span> <span class="ident">sync</span>::<span class="ident">AtomicOption</span>;
 
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Scope</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='ident'>dtors</span>: <span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>DtorChain</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Scope</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="ident">dtors</span>: <span class="ident">RefCell</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">DtorChain</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
 }
 
-<span class='kw'>struct</span> <span class='ident'>DtorChain</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='ident'>dtor</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>FnBox</span> <span class='op'>+</span> <span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>,
-    <span class='ident'>next</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>DtorChain</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span><span class='op'>&gt;</span>
+<span class="kw">struct</span> <span class="ident">DtorChain</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="ident">dtor</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">FnBox</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
+    <span class="ident">next</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">DtorChain</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;&gt;</span><span class="op">&gt;</span>
 }
 
-<span class='kw'>enum</span> <span class='ident'>JoinState</span> {
-    <span class='ident'>Running</span>(<span class='ident'>thread</span>::<span class='ident'>JoinHandle</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span>),
-    <span class='ident'>Joined</span>,
+<span class="kw">enum</span> <span class="ident">JoinState</span> {
+    <span class="ident">Running</span>(<span class="ident">thread</span>::<span class="ident">JoinHandle</span><span class="op">&lt;</span>()<span class="op">&gt;</span>),
+    <span class="ident">Joined</span>,
 }
 
-<span class='kw'>impl</span> <span class='ident'>JoinState</span> {
-    <span class='kw'>fn</span> <span class='ident'>join</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>JoinState</span>::<span class='ident'>Joined</span>;
-        <span class='ident'>mem</span>::<span class='ident'>swap</span>(<span class='self'>self</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>state</span>);
-        <span class='kw'>if</span> <span class='kw'>let</span> <span class='ident'>JoinState</span>::<span class='ident'>Running</span>(<span class='ident'>handle</span>) <span class='op'>=</span> <span class='ident'>state</span> {
-            <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>handle</span>.<span class='ident'>join</span>();
+<span class="kw">impl</span> <span class="ident">JoinState</span> {
+    <span class="kw">fn</span> <span class="ident">join</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">JoinState</span>::<span class="ident">Joined</span>;
+        <span class="ident">mem</span>::<span class="ident">swap</span>(<span class="self">self</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">state</span>);
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">JoinState</span>::<span class="ident">Running</span>(<span class="ident">handle</span>) <span class="op">=</span> <span class="ident">state</span> {
+            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">handle</span>.<span class="ident">join</span>();
 
-            <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>thread</span>::<span class='ident'>panicking</span>() { <span class='ident'>res</span>.<span class='ident'>unwrap</span>(); }
+            <span class="kw">if</span> <span class="op">!</span><span class="ident">thread</span>::<span class="ident">panicking</span>() { <span class="ident">res</span>.<span class="ident">unwrap</span>(); }
         }
     }
 }
 
-<span class='doccomment'>/// A handle to a scoped thread</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ScopedJoinHandle</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='ident'>inner</span>: <span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='ident'>JoinState</span><span class='op'>&gt;&gt;</span>,
-    <span class='ident'>packet</span>: <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>AtomicOption</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>,
-    <span class='ident'>thread</span>: <span class='ident'>thread</span>::<span class='ident'>Thread</span>,
+<span class="doccomment">/// A handle to a scoped thread</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ScopedJoinHandle</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="ident">inner</span>: <span class="ident">Rc</span><span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">JoinState</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">packet</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">AtomicOption</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">thread</span>: <span class="ident">thread</span>::<span class="ident">Thread</span>,
 }
 
-<span class='doccomment'>/// Create a new `scope`, for deferred destructors.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// Scopes, in particular, support [*scoped thread spawning*](struct.Scope.html#method.spawn).</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// # Examples</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// Creating and using a scope:</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// crossbeam::scope(|scope| {</span>
-<span class='doccomment'>///     scope.defer(|| println!(&quot;Exiting scope&quot;));</span>
-<span class='doccomment'>///     scope.spawn(|| println!(&quot;Running child thread in scope&quot;))</span>
-<span class='doccomment'>/// });</span>
-<span class='doccomment'>/// // Prints messages in the reverse order written</span>
-<span class='doccomment'>/// ```</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>scope</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>F</span>, <span class='ident'>R</span><span class='op'>&gt;</span>(<span class='ident'>f</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='ident'>R</span> <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>FnOnce</span>(<span class='kw-2'>&amp;</span><span class='ident'>Scope</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>R</span> {
-    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>scope</span> <span class='op'>=</span> <span class='ident'>Scope</span> { <span class='ident'>dtors</span>: <span class='ident'>RefCell</span>::<span class='ident'>new</span>(<span class='prelude-val'>None</span>) };
-    <span class='kw'>let</span> <span class='ident'>ret</span> <span class='op'>=</span> <span class='ident'>f</span>(<span class='kw-2'>&amp;</span><span class='ident'>scope</span>);
-    <span class='ident'>scope</span>.<span class='ident'>drop_all</span>();
-    <span class='ident'>ret</span>
+<span class="doccomment">/// Create a new `scope`, for deferred destructors.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Scopes, in particular, support [*scoped thread spawning*](struct.Scope.html#method.spawn).</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Examples</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Creating and using a scope:</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```</span>
+<span class="doccomment">/// crossbeam::scope(|scope| {</span>
+<span class="doccomment">///     scope.defer(|| println!(&quot;Exiting scope&quot;));</span>
+<span class="doccomment">///     scope.spawn(|| println!(&quot;Running child thread in scope&quot;))</span>
+<span class="doccomment">/// });</span>
+<span class="doccomment">/// // Prints messages in the reverse order written</span>
+<span class="doccomment">/// ```</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">scope</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">F</span>, <span class="ident">R</span><span class="op">&gt;</span>(<span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="ident">R</span> <span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="ident">Scope</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">R</span> {
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">scope</span> <span class="op">=</span> <span class="ident">Scope</span> { <span class="ident">dtors</span>: <span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="prelude-val">None</span>) };
+    <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="ident">f</span>(<span class="kw-2">&amp;</span><span class="ident">scope</span>);
+    <span class="ident">scope</span>.<span class="ident">drop_all</span>();
+    <span class="ident">ret</span>
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>fmt</span>::<span class='ident'>Debug</span> <span class='kw'>for</span> <span class='ident'>Scope</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
-        <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;Scope {{ ... }}&quot;</span>)
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Scope</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Scope {{ ... }}&quot;</span>)
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>fmt</span>::<span class='ident'>Debug</span> <span class='kw'>for</span> <span class='ident'>ScopedJoinHandle</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
-        <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;ScopedJoinHandle {{ ... }}&quot;</span>)
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">ScopedJoinHandle</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;ScopedJoinHandle {{ ... }}&quot;</span>)
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Scope</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='comment'>// This method is carefully written in a transactional style, so</span>
-    <span class='comment'>// that it can be called directly and, if any dtor panics, can be</span>
-    <span class='comment'>// resumed in the unwinding this causes. By initially running the</span>
-    <span class='comment'>// method outside of any destructor, we avoid any leakage problems</span>
-    <span class='comment'>// due to @rust-lang/rust#14875.</span>
-    <span class='kw'>fn</span> <span class='ident'>drop_all</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='kw'>loop</span> {
-            <span class='comment'>// use a separate scope to ensure that the RefCell borrow</span>
-            <span class='comment'>// is relinquishe before running `dtor`</span>
-            <span class='kw'>let</span> <span class='ident'>dtor</span> <span class='op'>=</span> {
-                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dtors</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dtors</span>.<span class='ident'>borrow_mut</span>();
-                <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>mut</span> <span class='ident'>node</span>) <span class='op'>=</span> <span class='ident'>dtors</span>.<span class='ident'>take</span>() {
-                    <span class='op'>*</span><span class='ident'>dtors</span> <span class='op'>=</span> <span class='ident'>node</span>.<span class='ident'>next</span>.<span class='ident'>take</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>b</span><span class='op'>|</span> <span class='op'>*</span><span class='ident'>b</span>);
-                    <span class='ident'>node</span>.<span class='ident'>dtor</span>
-                } <span class='kw'>else</span> {
-                    <span class='kw'>return</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Scope</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="comment">// This method is carefully written in a transactional style, so</span>
+    <span class="comment">// that it can be called directly and, if any dtor panics, can be</span>
+    <span class="comment">// resumed in the unwinding this causes. By initially running the</span>
+    <span class="comment">// method outside of any destructor, we avoid any leakage problems</span>
+    <span class="comment">// due to @rust-lang/rust#14875.</span>
+    <span class="kw">fn</span> <span class="ident">drop_all</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+        <span class="kw">loop</span> {
+            <span class="comment">// use a separate scope to ensure that the RefCell borrow</span>
+            <span class="comment">// is relinquishe before running `dtor`</span>
+            <span class="kw">let</span> <span class="ident">dtor</span> <span class="op">=</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dtors</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">dtors</span>.<span class="ident">borrow_mut</span>();
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">node</span>) <span class="op">=</span> <span class="ident">dtors</span>.<span class="ident">take</span>() {
+                    <span class="kw-2">*</span><span class="ident">dtors</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">next</span>.<span class="ident">take</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">b</span>);
+                    <span class="ident">node</span>.<span class="ident">dtor</span>
+                } <span class="kw">else</span> {
+                    <span class="kw">return</span>
                 }
             };
-            <span class='ident'>dtor</span>.<span class='ident'>call_box</span>()
+            <span class="ident">dtor</span>.<span class="ident">call_box</span>()
         }
     }
 
-    <span class='doccomment'>/// Schedule code to be executed when exiting the scope.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// This is akin to having a destructor on the stack, except that it is</span>
-    <span class='doccomment'>/// *guaranteed* to be run.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>defer</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='ident'>F</span>) <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>FnOnce</span>() <span class='op'>+</span> <span class='lifetime'>&#39;a</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dtors</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dtors</span>.<span class='ident'>borrow_mut</span>();
-        <span class='op'>*</span><span class='ident'>dtors</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>DtorChain</span> {
-            <span class='ident'>dtor</span>: <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>f</span>),
-            <span class='ident'>next</span>: <span class='ident'>dtors</span>.<span class='ident'>take</span>().<span class='ident'>map</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>)
+    <span class="doccomment">/// Schedule code to be executed when exiting the scope.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This is akin to having a destructor on the stack, except that it is</span>
+    <span class="doccomment">/// *guaranteed* to be run.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">defer</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnOnce</span>() <span class="op">+</span> <span class="lifetime">&#39;a</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dtors</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">dtors</span>.<span class="ident">borrow_mut</span>();
+        <span class="kw-2">*</span><span class="ident">dtors</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">DtorChain</span> {
+            <span class="ident">dtor</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">f</span>),
+            <span class="ident">next</span>: <span class="ident">dtors</span>.<span class="ident">take</span>().<span class="ident">map</span>(<span class="ident">Box</span>::<span class="ident">new</span>)
         });
     }
 
-    <span class='doccomment'>/// Create a scoped thread.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// `spawn` is similar to the [`spawn`][spawn] function in Rust&#39;s standard library. The</span>
-    <span class='doccomment'>/// difference is that this thread is scoped, meaning that it&#39;s guaranteed to terminate</span>
-    <span class='doccomment'>/// before the current stack frame goes away, allowing you to reference the parent stack frame</span>
-    <span class='doccomment'>/// directly. This is ensured by having the parent thread join on the child thread before the</span>
-    <span class='doccomment'>/// scope exits.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// [spawn]: http://doc.rust-lang.org/std/thread/fn.spawn.html</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// # Examples</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// A basic scoped thread:</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// crossbeam::scope(|scope| {</span>
-    <span class='doccomment'>///     scope.spawn(|| {</span>
-    <span class='doccomment'>///         println!(&quot;Hello from a scoped thread!&quot;);</span>
-    <span class='doccomment'>///     });</span>
-    <span class='doccomment'>/// });</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// When writing concurrent Rust programs, you&#39;ll sometimes see a pattern like this, using</span>
-    <span class='doccomment'>/// [`std::thread::spawn`][spawn]:</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ```ignore</span>
-    <span class='doccomment'>/// let array = [1, 2, 3];</span>
-    <span class='doccomment'>/// let mut guards = vec![];</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// for i in &amp;array {</span>
-    <span class='doccomment'>///     let guard = std::thread::spawn(move || {</span>
-    <span class='doccomment'>///         println!(&quot;element: {}&quot;, i);</span>
-    <span class='doccomment'>///     });</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>///     guards.push(guard);</span>
-    <span class='doccomment'>/// }</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// for guard in guards {</span>
-    <span class='doccomment'>///     guard.join().unwrap();</span>
-    <span class='doccomment'>/// }</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// The basic pattern is:</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// 1. Iterate over some collection.</span>
-    <span class='doccomment'>/// 2. Spin up a thread to operate on each part of the collection.</span>
-    <span class='doccomment'>/// 3. Join all the threads.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// However, this code actually gives an error:</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ```text</span>
-    <span class='doccomment'>/// error: `array` does not live long enough</span>
-    <span class='doccomment'>/// for i in &amp;array {</span>
-    <span class='doccomment'>///           ^~~~~</span>
-    <span class='doccomment'>/// in expansion of for loop expansion</span>
-    <span class='doccomment'>/// note: expansion site</span>
-    <span class='doccomment'>/// note: reference must be valid for the static lifetime...</span>
-    <span class='doccomment'>/// note: ...but borrowed value is only valid for the block suffix following statement 0 at ...</span>
-    <span class='doccomment'>///     let array = [1, 2, 3];</span>
-    <span class='doccomment'>///     let mut guards = vec![];</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>///     for i in &amp;array {</span>
-    <span class='doccomment'>///         let guard = std::thread::spawn(move || {</span>
-    <span class='doccomment'>///             println!(&quot;element: {}&quot;, i);</span>
-    <span class='doccomment'>/// ...</span>
-    <span class='doccomment'>/// error: aborting due to previous error</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Because [`std::thread::spawn`][spawn] doesn&#39;t know about this scope, it requires a</span>
-    <span class='doccomment'>/// `&#39;static` lifetime. One way of giving it a proper lifetime is to use an [`Arc`][arc]:</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// [arc]: http://doc.rust-lang.org/stable/std/sync/struct.Arc.html</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use std::sync::Arc;</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// let array = Arc::new([1, 2, 3]);</span>
-    <span class='doccomment'>/// let mut guards = vec![];</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// for i in (0..array.len()) {</span>
-    <span class='doccomment'>///     let a = array.clone();</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>///     let guard = std::thread::spawn(move || {</span>
-    <span class='doccomment'>///         println!(&quot;element: {}&quot;, a[i]);</span>
-    <span class='doccomment'>///     });</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>///     guards.push(guard);</span>
-    <span class='doccomment'>/// }</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// for guard in guards {</span>
-    <span class='doccomment'>///     guard.join().unwrap();</span>
-    <span class='doccomment'>/// }</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// But this introduces unnecessary allocation, as `Arc&lt;T&gt;` puts its data on the heap, and we</span>
-    <span class='doccomment'>/// also end up dealing with reference counts. We know that we&#39;re joining the threads before</span>
-    <span class='doccomment'>/// our function returns, so just taking a reference _should_ be safe. Rust can&#39;t know that,</span>
-    <span class='doccomment'>/// though.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Enter scoped threads. Here&#39;s our original example, using `spawn` from crossbeam rather</span>
-    <span class='doccomment'>/// than from `std::thread`:</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// let array = [1, 2, 3];</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// crossbeam::scope(|scope| {</span>
-    <span class='doccomment'>///     for i in &amp;array {</span>
-    <span class='doccomment'>///         scope.spawn(move || {</span>
-    <span class='doccomment'>///             println!(&quot;element: {}&quot;, i);</span>
-    <span class='doccomment'>///         });</span>
-    <span class='doccomment'>///     }</span>
-    <span class='doccomment'>/// });</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Much more straightforward.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>spawn</span><span class='op'>&lt;</span><span class='ident'>F</span>, <span class='ident'>T</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='ident'>ScopedJoinHandle</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>where</span>
-        <span class='ident'>F</span>: <span class='ident'>FnOnce</span>() <span class='op'>-&gt;</span> <span class='ident'>T</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='lifetime'>&#39;a</span>, <span class='ident'>T</span>: <span class='ident'>Send</span> <span class='op'>+</span> <span class='lifetime'>&#39;a</span>
+    <span class="doccomment">/// Create a scoped thread.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// `spawn` is similar to the [`spawn`][spawn] function in Rust&#39;s standard library. The</span>
+    <span class="doccomment">/// difference is that this thread is scoped, meaning that it&#39;s guaranteed to terminate</span>
+    <span class="doccomment">/// before the current stack frame goes away, allowing you to reference the parent stack frame</span>
+    <span class="doccomment">/// directly. This is ensured by having the parent thread join on the child thread before the</span>
+    <span class="doccomment">/// scope exits.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [spawn]: http://doc.rust-lang.org/std/thread/fn.spawn.html</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Examples</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// A basic scoped thread:</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// crossbeam::scope(|scope| {</span>
+    <span class="doccomment">///     scope.spawn(|| {</span>
+    <span class="doccomment">///         println!(&quot;Hello from a scoped thread!&quot;);</span>
+    <span class="doccomment">///     });</span>
+    <span class="doccomment">/// });</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// When writing concurrent Rust programs, you&#39;ll sometimes see a pattern like this, using</span>
+    <span class="doccomment">/// [`std::thread::spawn`][spawn]:</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```ignore</span>
+    <span class="doccomment">/// let array = [1, 2, 3];</span>
+    <span class="doccomment">/// let mut guards = vec![];</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// for i in &amp;array {</span>
+    <span class="doccomment">///     let guard = std::thread::spawn(move || {</span>
+    <span class="doccomment">///         println!(&quot;element: {}&quot;, i);</span>
+    <span class="doccomment">///     });</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     guards.push(guard);</span>
+    <span class="doccomment">/// }</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// for guard in guards {</span>
+    <span class="doccomment">///     guard.join().unwrap();</span>
+    <span class="doccomment">/// }</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The basic pattern is:</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// 1. Iterate over some collection.</span>
+    <span class="doccomment">/// 2. Spin up a thread to operate on each part of the collection.</span>
+    <span class="doccomment">/// 3. Join all the threads.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// However, this code actually gives an error:</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```text</span>
+    <span class="doccomment">/// error: `array` does not live long enough</span>
+    <span class="doccomment">/// for i in &amp;array {</span>
+    <span class="doccomment">///           ^~~~~</span>
+    <span class="doccomment">/// in expansion of for loop expansion</span>
+    <span class="doccomment">/// note: expansion site</span>
+    <span class="doccomment">/// note: reference must be valid for the static lifetime...</span>
+    <span class="doccomment">/// note: ...but borrowed value is only valid for the block suffix following statement 0 at ...</span>
+    <span class="doccomment">///     let array = [1, 2, 3];</span>
+    <span class="doccomment">///     let mut guards = vec![];</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     for i in &amp;array {</span>
+    <span class="doccomment">///         let guard = std::thread::spawn(move || {</span>
+    <span class="doccomment">///             println!(&quot;element: {}&quot;, i);</span>
+    <span class="doccomment">/// ...</span>
+    <span class="doccomment">/// error: aborting due to previous error</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Because [`std::thread::spawn`][spawn] doesn&#39;t know about this scope, it requires a</span>
+    <span class="doccomment">/// `&#39;static` lifetime. One way of giving it a proper lifetime is to use an [`Arc`][arc]:</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [arc]: http://doc.rust-lang.org/stable/std/sync/struct.Arc.html</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// use std::sync::Arc;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let array = Arc::new([1, 2, 3]);</span>
+    <span class="doccomment">/// let mut guards = vec![];</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// for i in (0..array.len()) {</span>
+    <span class="doccomment">///     let a = array.clone();</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     let guard = std::thread::spawn(move || {</span>
+    <span class="doccomment">///         println!(&quot;element: {}&quot;, a[i]);</span>
+    <span class="doccomment">///     });</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     guards.push(guard);</span>
+    <span class="doccomment">/// }</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// for guard in guards {</span>
+    <span class="doccomment">///     guard.join().unwrap();</span>
+    <span class="doccomment">/// }</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// But this introduces unnecessary allocation, as `Arc&lt;T&gt;` puts its data on the heap, and we</span>
+    <span class="doccomment">/// also end up dealing with reference counts. We know that we&#39;re joining the threads before</span>
+    <span class="doccomment">/// our function returns, so just taking a reference _should_ be safe. Rust can&#39;t know that,</span>
+    <span class="doccomment">/// though.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Enter scoped threads. Here&#39;s our original example, using `spawn` from crossbeam rather</span>
+    <span class="doccomment">/// than from `std::thread`:</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// let array = [1, 2, 3];</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// crossbeam::scope(|scope| {</span>
+    <span class="doccomment">///     for i in &amp;array {</span>
+    <span class="doccomment">///         scope.spawn(move || {</span>
+    <span class="doccomment">///             println!(&quot;element: {}&quot;, i);</span>
+    <span class="doccomment">///         });</span>
+    <span class="doccomment">///     }</span>
+    <span class="doccomment">/// });</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Much more straightforward.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">spawn</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="ident">ScopedJoinHandle</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">where</span>
+        <span class="ident">F</span>: <span class="ident">FnOnce</span>() <span class="op">-&gt;</span> <span class="ident">T</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;a</span>, <span class="ident">T</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;a</span>
     {
-        <span class='kw'>let</span> <span class='ident'>their_packet</span> <span class='op'>=</span> <span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>AtomicOption</span>::<span class='ident'>new</span>());
-        <span class='kw'>let</span> <span class='ident'>my_packet</span> <span class='op'>=</span> <span class='ident'>their_packet</span>.<span class='ident'>clone</span>();
+        <span class="kw">let</span> <span class="ident">their_packet</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">AtomicOption</span>::<span class="ident">new</span>());
+        <span class="kw">let</span> <span class="ident">my_packet</span> <span class="op">=</span> <span class="ident">their_packet</span>.<span class="ident">clone</span>();
 
-        <span class='kw'>let</span> <span class='ident'>join_handle</span> <span class='op'>=</span> <span class='kw'>unsafe</span> {
-            <span class='ident'>spawn_unsafe</span>(<span class='kw'>move</span> <span class='op'>||</span> {
-                <span class='ident'>their_packet</span>.<span class='ident'>swap</span>(<span class='ident'>f</span>(), <span class='ident'>Ordering</span>::<span class='ident'>Relaxed</span>);
+        <span class="kw">let</span> <span class="ident">join_handle</span> <span class="op">=</span> <span class="kw">unsafe</span> {
+            <span class="ident">spawn_unsafe</span>(<span class="kw">move</span> <span class="op">||</span> {
+                <span class="ident">their_packet</span>.<span class="ident">swap</span>(<span class="ident">f</span>(), <span class="ident">Ordering</span>::<span class="ident">Relaxed</span>);
             })
         };
 
-        <span class='kw'>let</span> <span class='ident'>thread</span> <span class='op'>=</span> <span class='ident'>join_handle</span>.<span class='ident'>thread</span>().<span class='ident'>clone</span>();
-        <span class='kw'>let</span> <span class='ident'>deferred_handle</span> <span class='op'>=</span> <span class='ident'>Rc</span>::<span class='ident'>new</span>(<span class='ident'>RefCell</span>::<span class='ident'>new</span>(<span class='ident'>JoinState</span>::<span class='ident'>Running</span>(<span class='ident'>join_handle</span>)));
-        <span class='kw'>let</span> <span class='ident'>my_handle</span> <span class='op'>=</span> <span class='ident'>deferred_handle</span>.<span class='ident'>clone</span>();
+        <span class="kw">let</span> <span class="ident">thread</span> <span class="op">=</span> <span class="ident">join_handle</span>.<span class="ident">thread</span>().<span class="ident">clone</span>();
+        <span class="kw">let</span> <span class="ident">deferred_handle</span> <span class="op">=</span> <span class="ident">Rc</span>::<span class="ident">new</span>(<span class="ident">RefCell</span>::<span class="ident">new</span>(<span class="ident">JoinState</span>::<span class="ident">Running</span>(<span class="ident">join_handle</span>)));
+        <span class="kw">let</span> <span class="ident">my_handle</span> <span class="op">=</span> <span class="ident">deferred_handle</span>.<span class="ident">clone</span>();
 
-        <span class='self'>self</span>.<span class='ident'>defer</span>(<span class='kw'>move</span> <span class='op'>||</span> {
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>deferred_handle</span>.<span class='ident'>borrow_mut</span>();
-            <span class='ident'>state</span>.<span class='ident'>join</span>();
+        <span class="self">self</span>.<span class="ident">defer</span>(<span class="kw">move</span> <span class="op">||</span> {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">deferred_handle</span>.<span class="ident">borrow_mut</span>();
+            <span class="ident">state</span>.<span class="ident">join</span>();
         });
 
-        <span class='ident'>ScopedJoinHandle</span> {
-            <span class='ident'>inner</span>: <span class='ident'>my_handle</span>,
-            <span class='ident'>packet</span>: <span class='ident'>my_packet</span>,
-            <span class='ident'>thread</span>: <span class='ident'>thread</span>,
+        <span class="ident">ScopedJoinHandle</span> {
+            <span class="ident">inner</span>: <span class="ident">my_handle</span>,
+            <span class="ident">packet</span>: <span class="ident">my_packet</span>,
+            <span class="ident">thread</span>: <span class="ident">thread</span>,
         }
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>ScopedJoinHandle</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// Join the scoped thread, returning the result it produced.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>join</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
-        <span class='self'>self</span>.<span class='ident'>inner</span>.<span class='ident'>borrow_mut</span>().<span class='ident'>join</span>();
-        <span class='self'>self</span>.<span class='ident'>packet</span>.<span class='ident'>take</span>(<span class='ident'>Ordering</span>::<span class='ident'>Relaxed</span>).<span class='ident'>unwrap</span>()
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">ScopedJoinHandle</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Join the scoped thread, returning the result it produced.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">join</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
+        <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">borrow_mut</span>().<span class="ident">join</span>();
+        <span class="self">self</span>.<span class="ident">packet</span>.<span class="ident">take</span>(<span class="ident">Ordering</span>::<span class="ident">Relaxed</span>).<span class="ident">unwrap</span>()
     }
 
-    <span class='doccomment'>/// Get the underlying thread handle.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>thread</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>thread</span>::<span class='ident'>Thread</span> {
-        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>thread</span>
+    <span class="doccomment">/// Get the underlying thread handle.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">thread</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">thread</span>::<span class="ident">Thread</span> {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">thread</span>
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Drop</span> <span class='kw'>for</span> <span class='ident'>Scope</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>drop</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='self'>self</span>.<span class='ident'>drop_all</span>()
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">Scope</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+        <span class="self">self</span>.<span class="ident">drop_all</span>()
     }
 }
 </pre>
@@ -650,11 +651,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "crossbeam";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    <script src="../../extra.js"></script>
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

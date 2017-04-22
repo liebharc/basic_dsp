@@ -9,6 +9,7 @@
 
     <title>basic_dsp_vector::SymmetricTimeToFrequencyDomainOperations - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc trait">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,73 +43,62 @@
         </form>
     </nav>
 
-    <section id='main' class="content trait">
-<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class='trait' href=''>SymmetricTimeToFrequencyDomainOperations</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class="trait" href=''>SymmetricTimeToFrequencyDomainOperations</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1319' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/time_freq/time_to_freq.rs.html#69-118' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait SymmetricTimeToFrequencyDomainOperations&lt;S, T&gt;: <a class='trait' href='../basic_dsp_vector/trait.ToFreqResult.html' title='basic_dsp_vector::ToFreqResult'>ToFreqResult</a> <span class='where'>where S: <a class='trait' href='../basic_dsp_vector/trait.ToSliceMut.html' title='basic_dsp_vector::ToSliceMut'>ToSliceMut</a>&lt;T&gt;, T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span> {
-    fn <a href='#tymethod.plain_sfft' class='fnname'>plain_sfft</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; <a class='type' href='../basic_dsp_vector/type.TransRes.html' title='basic_dsp_vector::TransRes'>TransRes</a>&lt;Self::FreqResult&gt; <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span>;
-    fn <a href='#tymethod.sfft' class='fnname'>sfft</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; <a class='type' href='../basic_dsp_vector/type.TransRes.html' title='basic_dsp_vector::TransRes'>TransRes</a>&lt;Self::FreqResult&gt; <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span>;
-    fn <a href='#tymethod.windowed_sfft' class='fnname'>windowed_sfft</a>&lt;B&gt;(self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buffer: &amp;mut B,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; window: &amp;<a class='trait' href='../basic_dsp_vector/window_functions/trait.WindowFunction.html' title='basic_dsp_vector::window_functions::WindowFunction'>WindowFunction</a>&lt;T&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='type' href='../basic_dsp_vector/type.TransRes.html' title='basic_dsp_vector::TransRes'>TransRes</a>&lt;Self::FreqResult&gt; <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span>;
+               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/time_freq/time_to_freq.rs.html#69-118' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait SymmetricTimeToFrequencyDomainOperations&lt;S, T&gt;: <a class="trait" href="../basic_dsp_vector/trait.ToFreqResult.html" title="trait basic_dsp_vector::ToFreqResult">ToFreqResult</a> <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../basic_dsp_vector/trait.ToSliceMut.html" title="trait basic_dsp_vector::ToSliceMut">ToSliceMut</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,&nbsp;</span>{
+    fn <a href='#tymethod.plain_sfft' class='fnname'>plain_sfft</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; <a class="type" href="../basic_dsp_vector/type.TransRes.html" title="type basic_dsp_vector::TransRes">TransRes</a>&lt;Self::<a class="trait" href="../basic_dsp_vector/trait.ToFreqResult.html" title="trait basic_dsp_vector::ToFreqResult">FreqResult</a>&gt;<br>&nbsp;&nbsp;&nbsp; <span class="where">where<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;B: <a class="trait" href="../basic_dsp_vector/trait.Buffer.html" title="trait basic_dsp_vector::Buffer">Buffer</a>&lt;S, T&gt;</span>;
+    fn <a href='#tymethod.sfft' class='fnname'>sfft</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; <a class="type" href="../basic_dsp_vector/type.TransRes.html" title="type basic_dsp_vector::TransRes">TransRes</a>&lt;Self::<a class="trait" href="../basic_dsp_vector/trait.ToFreqResult.html" title="trait basic_dsp_vector::ToFreqResult">FreqResult</a>&gt;<br>&nbsp;&nbsp;&nbsp; <span class="where">where<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;B: <a class="trait" href="../basic_dsp_vector/trait.Buffer.html" title="trait basic_dsp_vector::Buffer">Buffer</a>&lt;S, T&gt;</span>;
+    fn <a href='#tymethod.windowed_sfft' class='fnname'>windowed_sfft</a>&lt;B&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self, <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buffer: &amp;mut B, <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;window: &amp;<a class="trait" href="../basic_dsp_vector/window_functions/trait.WindowFunction.html" title="trait basic_dsp_vector::window_functions::WindowFunction">WindowFunction</a>&lt;T&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;) -&gt; <a class="type" href="../basic_dsp_vector/type.TransRes.html" title="type basic_dsp_vector::TransRes">TransRes</a>&lt;Self::<a class="trait" href="../basic_dsp_vector/trait.ToFreqResult.html" title="trait basic_dsp_vector::ToFreqResult">FreqResult</a>&gt;<br>&nbsp;&nbsp;&nbsp; <span class="where">where<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;B: <a class="trait" href="../basic_dsp_vector/trait.Buffer.html" title="trait basic_dsp_vector::Buffer">Buffer</a>&lt;S, T&gt;</span>;
 }</pre><div class='docblock'><p>Defines all operations which are valid on <code>DataVecs</code> containing real time domain data.</p>
-
-<h1 id='failures' class='section-header'><a href='#failures'>Failures</a></h1>
-<p>All operations in this trait set <code>self.len()</code> to <code>0</code> if the vector isn&#39;t in time domain or
-with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn&#39;t and odd number.</p>
+<h1 id="failures" class="section-header"><a href="#failures">Failures</a></h1>
+<p>All operations in this trait set <code>self.len()</code> to <code>0</code> if the vector isn't in time domain or
+with <code>VectorMustHaveAnOddLength</code> if <code>self.points()</code> isn't and odd number.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.plain_sfft' class='method stab '><span id='plain_sfft.v' class='invisible'><code>fn <a href='#tymethod.plain_sfft' class='fnname'>plain_sfft</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; <a class='type' href='../basic_dsp_vector/type.TransRes.html' title='basic_dsp_vector::TransRes'>TransRes</a>&lt;Self::FreqResult&gt; <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></span></h3><div class='docblock'><p>Performs a Symmetric Fast Fourier Transformation under the assumption that <code>self</code>
+        <h3 id='tymethod.plain_sfft' class='method'><span id='plain_sfft.v' class='invisible'><code>fn <a href='#tymethod.plain_sfft' class='fnname'>plain_sfft</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; <a class="type" href="../basic_dsp_vector/type.TransRes.html" title="type basic_dsp_vector::TransRes">TransRes</a>&lt;Self::<a class="trait" href="../basic_dsp_vector/trait.ToFreqResult.html" title="trait basic_dsp_vector::ToFreqResult">FreqResult</a>&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;B: <a class="trait" href="../basic_dsp_vector/trait.Buffer.html" title="trait basic_dsp_vector::Buffer">Buffer</a>&lt;S, T&gt;,&nbsp;</span></code></span></h3><div class='docblock'><p>Performs a Symmetric Fast Fourier Transformation under the assumption that <code>self</code>
 is symmetric around the center. This assumption
-isn&#39;t verified and no error is raised if the vector isn&#39;t symmetric.</p>
-
+isn't verified and no error is raised if the vector isn't symmetric.</p>
 <p>This version of the IFFT neither applies a window nor does it scale the
 vector.</p>
-
-<h1 id='failures-1' class='section-header'><a href='#failures-1'>Failures</a></h1>
+<h1 id="failures-1" class="section-header"><a href="#failures-1">Failures</a></h1>
 <p>TransRes may report the following <code>ErrorReason</code> members:</p>
-
 <ol>
 <li><code>VectorMustBeReal</code>: if <code>self</code> is in complex number space.</li>
 <li><code>VectorMustBeInTimeDomain</code>: if <code>self</code> is in frequency domain.</li>
 </ol>
-
-<h1 id='unstable' class='section-header'><a href='#unstable'>Unstable</a></h1>
+<h1 id="unstable" class="section-header"><a href="#unstable">Unstable</a></h1>
 <p>Symmetric IFFTs are unstable and may only work under certain conditions.</p>
-</div><h3 id='tymethod.sfft' class='method stab '><span id='sfft.v' class='invisible'><code>fn <a href='#tymethod.sfft' class='fnname'>sfft</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; <a class='type' href='../basic_dsp_vector/type.TransRes.html' title='basic_dsp_vector::TransRes'>TransRes</a>&lt;Self::FreqResult&gt; <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></span></h3><div class='docblock'><p>Performs a Symmetric Fast Fourier Transformation under the assumption that <code>self</code>
+</div><h3 id='tymethod.sfft' class='method'><span id='sfft.v' class='invisible'><code>fn <a href='#tymethod.sfft' class='fnname'>sfft</a>&lt;B&gt;(self, buffer: &amp;mut B) -&gt; <a class="type" href="../basic_dsp_vector/type.TransRes.html" title="type basic_dsp_vector::TransRes">TransRes</a>&lt;Self::<a class="trait" href="../basic_dsp_vector/trait.ToFreqResult.html" title="trait basic_dsp_vector::ToFreqResult">FreqResult</a>&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;B: <a class="trait" href="../basic_dsp_vector/trait.Buffer.html" title="trait basic_dsp_vector::Buffer">Buffer</a>&lt;S, T&gt;,&nbsp;</span></code></span></h3><div class='docblock'><p>Performs a Symmetric Fast Fourier Transformation under the assumption that <code>self</code>
 is symmetric around the center. This assumption
-isn&#39;t verified and no error is raised if the vector isn&#39;t symmetric.</p>
-
-<h1 id='failures-2' class='section-header'><a href='#failures-2'>Failures</a></h1>
+isn't verified and no error is raised if the vector isn't symmetric.</p>
+<h1 id="failures-2" class="section-header"><a href="#failures-2">Failures</a></h1>
 <p>TransRes may report the following <code>ErrorReason</code> members:</p>
-
 <ol>
 <li><code>VectorMustBeReal</code>: if <code>self</code> is in complex number space.</li>
 <li><code>VectorMustBeInTimeDomain</code>: if <code>self</code> is in frequency domain.</li>
 </ol>
-
-<h1 id='unstable-1' class='section-header'><a href='#unstable-1'>Unstable</a></h1>
+<h1 id="unstable-1" class="section-header"><a href="#unstable-1">Unstable</a></h1>
 <p>Symmetric IFFTs are unstable and may only work under certain conditions.</p>
-</div><h3 id='tymethod.windowed_sfft' class='method stab '><span id='windowed_sfft.v' class='invisible'><code>fn <a href='#tymethod.windowed_sfft' class='fnname'>windowed_sfft</a>&lt;B&gt;(self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buffer: &amp;mut B,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; window: &amp;<a class='trait' href='../basic_dsp_vector/window_functions/trait.WindowFunction.html' title='basic_dsp_vector::window_functions::WindowFunction'>WindowFunction</a>&lt;T&gt;)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='type' href='../basic_dsp_vector/type.TransRes.html' title='basic_dsp_vector::TransRes'>TransRes</a>&lt;Self::FreqResult&gt; <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></span></h3><div class='docblock'><p>Performs a Symmetric Fast Fourier Transformation under the assumption that <code>self</code>
+</div><h3 id='tymethod.windowed_sfft' class='method'><span id='windowed_sfft.v' class='invisible'><code>fn <a href='#tymethod.windowed_sfft' class='fnname'>windowed_sfft</a>&lt;B&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;self, <br>&nbsp;&nbsp;&nbsp;&nbsp;buffer: &amp;mut B, <br>&nbsp;&nbsp;&nbsp;&nbsp;window: &amp;<a class="trait" href="../basic_dsp_vector/window_functions/trait.WindowFunction.html" title="trait basic_dsp_vector::window_functions::WindowFunction">WindowFunction</a>&lt;T&gt;<br>) -&gt; <a class="type" href="../basic_dsp_vector/type.TransRes.html" title="type basic_dsp_vector::TransRes">TransRes</a>&lt;Self::<a class="trait" href="../basic_dsp_vector/trait.ToFreqResult.html" title="trait basic_dsp_vector::ToFreqResult">FreqResult</a>&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;B: <a class="trait" href="../basic_dsp_vector/trait.Buffer.html" title="trait basic_dsp_vector::Buffer">Buffer</a>&lt;S, T&gt;,&nbsp;</span></code></span></h3><div class='docblock'><p>Performs a Symmetric Fast Fourier Transformation under the assumption that <code>self</code>
 is symmetric around the center. This assumption
-isn&#39;t verified and no error is raised if the vector isn&#39;t symmetric.</p>
-
-<h1 id='failures-3' class='section-header'><a href='#failures-3'>Failures</a></h1>
+isn't verified and no error is raised if the vector isn't symmetric.</p>
+<h1 id="failures-3" class="section-header"><a href="#failures-3">Failures</a></h1>
 <p>TransRes may report the following <code>ErrorReason</code> members:</p>
-
 <ol>
 <li><code>VectorMustBeReal</code>: if <code>self</code> is in complex number space.</li>
 <li><code>VectorMustBeInTimeDomain</code>: if <code>self</code> is in frequency domain.</li>
 </ol>
-
-<h1 id='unstable-2' class='section-header'><a href='#unstable-2'>Unstable</a></h1>
+<h1 id="unstable-2" class="section-header"><a href="#unstable-2">Unstable</a></h1>
 <p>Symmetric IFFTs are unstable and may only work under certain conditions.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;S, T, N, D&gt; SymmetricTimeToFrequencyDomainOperations&lt;S, T&gt; for <a class='struct' href='../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, N, D&gt; <span class='where'>where <a class='struct' href='../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, N, D&gt;: <a class='trait' href='../basic_dsp_vector/trait.ToFreqResult.html' title='basic_dsp_vector::ToFreqResult'>ToFreqResult</a>, <a class='struct' href='../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, N, D&gt;::FreqResult: <a class='trait' href='../basic_dsp_vector/trait.RededicateForceOps.html' title='basic_dsp_vector::RededicateForceOps'>RededicateForceOps</a>&lt;<a class='struct' href='../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, N, D&gt;&gt; + <a class='trait' href='../basic_dsp_vector/trait.FrequencyDomainOperations.html' title='basic_dsp_vector::FrequencyDomainOperations'>FrequencyDomainOperations</a>&lt;S, T&gt; + <a class='trait' href='../basic_dsp_vector/trait.Vector.html' title='basic_dsp_vector::Vector'>Vector</a>&lt;T&gt;, S: <a class='trait' href='../basic_dsp_vector/trait.ToSliceMut.html' title='basic_dsp_vector::ToSliceMut'>ToSliceMut</a>&lt;T&gt; + <a class='trait' href='../basic_dsp_vector/trait.Owner.html' title='basic_dsp_vector::Owner'>Owner</a>, T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../basic_dsp_vector/trait.RealNumberSpace.html' title='basic_dsp_vector::RealNumberSpace'>RealNumberSpace</a>, D: <a class='trait' href='../basic_dsp_vector/trait.TimeDomain.html' title='basic_dsp_vector::TimeDomain'>TimeDomain</a></span></code></li>
+    <li><code>impl&lt;S, T, N, D&gt; SymmetricTimeToFrequencyDomainOperations&lt;S, T&gt; for <a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;<a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt;: <a class="trait" href="../basic_dsp_vector/trait.ToFreqResult.html" title="trait basic_dsp_vector::ToFreqResult">ToFreqResult</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;<a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt;::<a class="trait" href="../basic_dsp_vector/trait.ToFreqResult.html" title="trait basic_dsp_vector::ToFreqResult">FreqResult</a>: <a class="trait" href="../basic_dsp_vector/trait.RededicateForceOps.html" title="trait basic_dsp_vector::RededicateForceOps">RededicateForceOps</a>&lt;<a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt;&gt; + <a class="trait" href="../basic_dsp_vector/trait.FrequencyDomainOperations.html" title="trait basic_dsp_vector::FrequencyDomainOperations">FrequencyDomainOperations</a>&lt;S, T&gt; + <a class="trait" href="../basic_dsp_vector/trait.Vector.html" title="trait basic_dsp_vector::Vector">Vector</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../basic_dsp_vector/trait.ToSliceMut.html" title="trait basic_dsp_vector::ToSliceMut">ToSliceMut</a>&lt;T&gt; + <a class="trait" href="../basic_dsp_vector/trait.Owner.html" title="trait basic_dsp_vector::Owner">Owner</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;N: <a class="trait" href="../basic_dsp_vector/trait.RealNumberSpace.html" title="trait basic_dsp_vector::RealNumberSpace">RealNumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;D: <a class="trait" href="../basic_dsp_vector/trait.TimeDomain.html" title="trait basic_dsp_vector::TimeDomain">TimeDomain</a>,&nbsp;</span></code></li>
 </ul><script type="text/javascript" async
                          src="../implementors/basic_dsp_vector/trait.SymmetricTimeToFrequencyDomainOperations.js">
                  </script></section>
@@ -167,11 +157,9 @@ isn&#39;t verified and no error is raised if the vector isn&#39;t symmetric.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

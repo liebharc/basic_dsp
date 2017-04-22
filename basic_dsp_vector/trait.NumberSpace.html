@@ -9,6 +9,7 @@
 
     <title>basic_dsp_vector::NumberSpace - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc trait">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,31 +43,31 @@
         </form>
     </nav>
 
-    <section id='main' class="content trait">
-<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class='trait' href=''>NumberSpace</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class="trait" href=''>NumberSpace</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-5265' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/mod.rs.html#59-70' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait NumberSpace: <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> {
-    fn <a href='#tymethod.is_complex' class='fnname'>is_complex</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
+               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/mod.rs.html#59-70' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait NumberSpace: <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> {
+    fn <a href='#tymethod.is_complex' class='fnname'>is_complex</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>;
     fn <a href='#tymethod.to_complex' class='fnname'>to_complex</a>(&amp;mut self);
     fn <a href='#tymethod.to_real' class='fnname'>to_real</a>(&amp;mut self);
 }</pre><div class='docblock'><p>Number space (real or complex) information.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.is_complex' class='method stab '><span id='is_complex.v' class='invisible'><code>fn <a href='#tymethod.is_complex' class='fnname'>is_complex</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></span></h3><h3 id='tymethod.to_complex' class='method stab '><span id='to_complex.v' class='invisible'><code>fn <a href='#tymethod.to_complex' class='fnname'>to_complex</a>(&amp;mut self)</code></span></h3><div class='docblock'><p>For implementations which track meta data
+        <h3 id='tymethod.is_complex' class='method'><span id='is_complex.v' class='invisible'><code>fn <a href='#tymethod.is_complex' class='fnname'>is_complex</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h3><h3 id='tymethod.to_complex' class='method'><span id='to_complex.v' class='invisible'><code>fn <a href='#tymethod.to_complex' class='fnname'>to_complex</a>(&amp;mut self)</code></span></h3><div class='docblock'><p>For implementations which track meta data
 at runtime this method may be implemented to transition
 between different states. For all other implementations
 they may leave this empty.</p>
-</div><h3 id='tymethod.to_real' class='method stab '><span id='to_real.v' class='invisible'><code>fn <a href='#tymethod.to_real' class='fnname'>to_real</a>(&amp;mut self)</code></span></h3><div class='docblock'><p>See <code>RealNumberSpace</code> for some more details.</p>
+</div><h3 id='tymethod.to_real' class='method'><span id='to_real.v' class='invisible'><code>fn <a href='#tymethod.to_real' class='fnname'>to_real</a>(&amp;mut self)</code></span></h3><div class='docblock'><p>See <code>RealNumberSpace</code> for some more details.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl NumberSpace for <a class='struct' href='../basic_dsp_vector/struct.RealData.html' title='basic_dsp_vector::RealData'>RealData</a></code></li>
-<li><code>impl NumberSpace for <a class='struct' href='../basic_dsp_vector/struct.ComplexData.html' title='basic_dsp_vector::ComplexData'>ComplexData</a></code></li>
-<li><code>impl NumberSpace for <a class='struct' href='../basic_dsp_vector/struct.RealOrComplexData.html' title='basic_dsp_vector::RealOrComplexData'>RealOrComplexData</a></code></li>
+    <li><code>impl NumberSpace for <a class="struct" href="../basic_dsp_vector/struct.RealData.html" title="struct basic_dsp_vector::RealData">RealData</a></code></li>
+<li><code>impl NumberSpace for <a class="struct" href="../basic_dsp_vector/struct.ComplexData.html" title="struct basic_dsp_vector::ComplexData">ComplexData</a></code></li>
+<li><code>impl NumberSpace for <a class="struct" href="../basic_dsp_vector/struct.RealOrComplexData.html" title="struct basic_dsp_vector::RealOrComplexData">RealOrComplexData</a></code></li>
 </ul><script type="text/javascript" async
                          src="../implementors/basic_dsp_vector/trait.NumberSpace.js">
                  </script></section>
@@ -125,11 +126,9 @@ they may leave this empty.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

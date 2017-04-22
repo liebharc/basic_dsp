@@ -9,6 +9,7 @@
 
     <title>basic_dsp_vector::RealInterpolationOps - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc trait">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,38 +43,35 @@
         </form>
     </nav>
 
-    <section id='main' class="content trait">
-<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class='trait' href=''>RealInterpolationOps</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class="trait" href=''>RealInterpolationOps</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1763' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/time_freq/interpolation.rs.html#72-90' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait RealInterpolationOps&lt;S, T&gt; <span class='where'>where S: <a class='trait' href='../basic_dsp_vector/trait.ToSliceMut.html' title='basic_dsp_vector::ToSliceMut'>ToSliceMut</a>&lt;T&gt;, T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span> {
-    fn <a href='#tymethod.interpolate_hermite' class='fnname'>interpolate_hermite</a>&lt;B&gt;(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buffer: &amp;mut B,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; interpolation_factor: T,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; delay: T) <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span>;
-    fn <a href='#tymethod.interpolate_lin' class='fnname'>interpolate_lin</a>&lt;B&gt;(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buffer: &amp;mut B,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; interpolation_factor: T,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; delay: T) <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span>;
+               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/time_freq/interpolation.rs.html#92-110' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait RealInterpolationOps&lt;S, T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../basic_dsp_vector/trait.ToSliceMut.html" title="trait basic_dsp_vector::ToSliceMut">ToSliceMut</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,&nbsp;</span>{
+    fn <a href='#tymethod.interpolate_hermite' class='fnname'>interpolate_hermite</a>&lt;B&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buffer: &amp;mut B, <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;interpolation_factor: T, <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay: T<br>&nbsp;&nbsp;&nbsp;&nbsp;)<br>&nbsp;&nbsp;&nbsp; <span class="where">where<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;B: <a class="trait" href="../basic_dsp_vector/trait.Buffer.html" title="trait basic_dsp_vector::Buffer">Buffer</a>&lt;S, T&gt;</span>;
+    fn <a href='#tymethod.interpolate_lin' class='fnname'>interpolate_lin</a>&lt;B&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buffer: &amp;mut B, <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;interpolation_factor: T, <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay: T<br>&nbsp;&nbsp;&nbsp;&nbsp;)<br>&nbsp;&nbsp;&nbsp; <span class="where">where<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;B: <a class="trait" href="../basic_dsp_vector/trait.Buffer.html" title="trait basic_dsp_vector::Buffer">Buffer</a>&lt;S, T&gt;</span>;
 }</pre><div class='docblock'><p>Provides interpolation operations which are only applicable for real data vectors.</p>
-
-<h1 id='failures' class='section-header'><a href='#failures'>Failures</a></h1>
-<p>All operations in this trait fail with <code>VectorMustBeReal</code> if the vector isn&#39;t in the
+<h1 id="failures" class="section-header"><a href="#failures">Failures</a></h1>
+<p>All operations in this trait fail with <code>VectorMustBeReal</code> if the vector isn't in the
 real number space.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.interpolate_hermite' class='method stab '><span id='interpolate_hermite.v' class='invisible'><code>fn <a href='#tymethod.interpolate_hermite' class='fnname'>interpolate_hermite</a>&lt;B&gt;(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buffer: &amp;mut B,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; interpolation_factor: T,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; delay: T) <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></span></h3><div class='docblock'><p>Piecewise cubic hermite interpolation between samples.</p>
-
-<h1 id='unstable' class='section-header'><a href='#unstable'>Unstable</a></h1>
+        <h3 id='tymethod.interpolate_hermite' class='method'><span id='interpolate_hermite.v' class='invisible'><code>fn <a href='#tymethod.interpolate_hermite' class='fnname'>interpolate_hermite</a>&lt;B&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;buffer: &amp;mut B, <br>&nbsp;&nbsp;&nbsp;&nbsp;interpolation_factor: T, <br>&nbsp;&nbsp;&nbsp;&nbsp;delay: T<br>) <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;B: <a class="trait" href="../basic_dsp_vector/trait.Buffer.html" title="trait basic_dsp_vector::Buffer">Buffer</a>&lt;S, T&gt;,&nbsp;</span></code></span></h3><div class='docblock'><p>Piecewise cubic hermite interpolation between samples.</p>
+<h1 id="unstable" class="section-header"><a href="#unstable">Unstable</a></h1>
 <p>Algorithm might need to be revised.
 This operation and <code>interpolate_lin</code> might be merged into one function with an
 additional argument in future.</p>
-</div><h3 id='tymethod.interpolate_lin' class='method stab '><span id='interpolate_lin.v' class='invisible'><code>fn <a href='#tymethod.interpolate_lin' class='fnname'>interpolate_lin</a>&lt;B&gt;(&amp;mut self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buffer: &amp;mut B,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; interpolation_factor: T,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; delay: T) <span class='where'>where B: <a class='trait' href='../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></span></h3><div class='docblock'><p>Linear interpolation between samples.</p>
-
-<h1 id='unstable-1' class='section-header'><a href='#unstable-1'>Unstable</a></h1>
+</div><h3 id='tymethod.interpolate_lin' class='method'><span id='interpolate_lin.v' class='invisible'><code>fn <a href='#tymethod.interpolate_lin' class='fnname'>interpolate_lin</a>&lt;B&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;buffer: &amp;mut B, <br>&nbsp;&nbsp;&nbsp;&nbsp;interpolation_factor: T, <br>&nbsp;&nbsp;&nbsp;&nbsp;delay: T<br>) <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;B: <a class="trait" href="../basic_dsp_vector/trait.Buffer.html" title="trait basic_dsp_vector::Buffer">Buffer</a>&lt;S, T&gt;,&nbsp;</span></code></span></h3><div class='docblock'><p>Linear interpolation between samples.</p>
+<h1 id="unstable-1" class="section-header"><a href="#unstable-1">Unstable</a></h1>
 <p>This operation and <code>interpolate_hermite</code> might be merged into one function with an
 additional argument in future.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;S, T, N, D&gt; RealInterpolationOps&lt;S, T&gt; for <a class='struct' href='../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, N, D&gt; <span class='where'>where S: <a class='trait' href='../basic_dsp_vector/trait.ToSliceMut.html' title='basic_dsp_vector::ToSliceMut'>ToSliceMut</a>&lt;T&gt;, T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../basic_dsp_vector/trait.RealNumberSpace.html' title='basic_dsp_vector::RealNumberSpace'>RealNumberSpace</a>, D: <a class='trait' href='../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></li>
+    <li><code>impl&lt;S, T, N, D&gt; RealInterpolationOps&lt;S, T&gt; for <a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../basic_dsp_vector/trait.ToSliceMut.html" title="trait basic_dsp_vector::ToSliceMut">ToSliceMut</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;N: <a class="trait" href="../basic_dsp_vector/trait.RealNumberSpace.html" title="trait basic_dsp_vector::RealNumberSpace">RealNumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;D: <a class="trait" href="../basic_dsp_vector/trait.Domain.html" title="trait basic_dsp_vector::Domain">Domain</a>,&nbsp;</span></code></li>
 </ul><script type="text/javascript" async
                          src="../implementors/basic_dsp_vector/trait.RealInterpolationOps.js">
                  </script></section>
@@ -132,11 +130,9 @@ additional argument in future.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

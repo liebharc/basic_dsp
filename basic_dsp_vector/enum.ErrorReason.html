@@ -9,6 +9,7 @@
 
     <title>basic_dsp_vector::ErrorReason - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc enum">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,12 +43,12 @@
         </form>
     </nav>
 
-    <section id='main' class="content enum">
-<h1 class='fqn'><span class='in-band'>Enum <a href='index.html'>basic_dsp_vector</a>::<wbr><a class='enum' href=''>ErrorReason</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Enum <a href='index.html'>basic_dsp_vector</a>::<wbr><a class="enum" href=''>ErrorReason</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-6737' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/checks_and_results.rs.html#6-68' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/checks_and_results.rs.html#6-68' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum ErrorReason {
     InputMustHaveTheSameSize,
     InputMetaDataMustAgree,
@@ -81,37 +82,37 @@ The necessary operations may include FFT/IFFT, complex/real conversion and resam
 </div><span id='variant.InputMustBeInFrequencyDomain' class='variant'><span id='InputMustBeInFrequencyDomain.v' class='invisible'><code>InputMustBeInFrequencyDomain</code></span></span><div class='docblock'><p>The operation requires the input to be in frequency domain.</p>
 </div><span id='variant.InvalidArgumentLength' class='variant'><span id='InvalidArgumentLength.v' class='invisible'><code>InvalidArgumentLength</code></span></span><div class='docblock'><p>The arguments have an invalid length to perform the operation. The
 operations documentation should have more information about the requirements.
-Please open a defect if this isn&#39;t the case.</p>
+Please open a defect if this isn't the case.</p>
 </div><span id='variant.InputMustBeConjSymmetric' class='variant'><span id='InputMustBeConjSymmetric.v' class='invisible'><code>InputMustBeConjSymmetric</code></span></span><div class='docblock'><p>The operations is only valid if the data input contains half of a symmetric spectrum.
 The symmetry definition follows soon however more important is that the element at 0 Hz
 which happens to be the first vector element must be real. The error message is raised
 if this
-is violated, the rest of the definition is only listed here for completeness snce it can&#39;t
+is violated, the rest of the definition is only listed here for completeness snce it can't
 be checked.
 The required symmetry for a vector is that for every point
 <code>vector[x].conj() == vector[-x]</code>(pseudocode)
 where <code>x</code> is the x-axis position relative to 0 Hz and <code>conj</code> is the complex conjugate.</p>
 </div><span id='variant.InputMustHaveAnOddLength' class='variant'><span id='InputMustHaveAnOddLength.v' class='invisible'><code>InputMustHaveAnOddLength</code></span></span><div class='docblock'><p><code>self.points()</code> must be an odd number.</p>
 </div><span id='variant.ArgumentFunctionMustBeSymmetric' class='variant'><span id='ArgumentFunctionMustBeSymmetric.v' class='invisible'><code>ArgumentFunctionMustBeSymmetric</code></span></span><div class='docblock'><p>The function passed as argument must be symmetric</p>
-</div><span id='variant.InvalidNumberOfArgumentsForCombinedOp' class='variant'><span id='InvalidNumberOfArgumentsForCombinedOp.v' class='invisible'><code>InvalidNumberOfArgumentsForCombinedOp</code></span></span><div class='docblock'><p>The number of arguments passed into a combined operation methods doesn&#39;t match
+</div><span id='variant.InvalidNumberOfArgumentsForCombinedOp' class='variant'><span id='InvalidNumberOfArgumentsForCombinedOp.v' class='invisible'><code>InvalidNumberOfArgumentsForCombinedOp</code></span></span><div class='docblock'><p>The number of arguments passed into a combined operation methods doesn't match
 with the number of arguments specified previously via the <code>add_op</code> methods.</p>
-</div><span id='variant.InputMustNotBeEmpty' class='variant'><span id='InputMustNotBeEmpty.v' class='invisible'><code>InputMustNotBeEmpty</code></span></span><div class='docblock'><p>The operation isn&#39;t specified for an empty vector.</p>
+</div><span id='variant.InputMustNotBeEmpty' class='variant'><span id='InputMustNotBeEmpty.v' class='invisible'><code>InputMustNotBeEmpty</code></span></span><div class='docblock'><p>The operation isn't specified for an empty vector.</p>
 </div><span id='variant.InputMustHaveAnEvenLength' class='variant'><span id='InputMustHaveAnEvenLength.v' class='invisible'><code>InputMustHaveAnEvenLength</code></span></span><div class='docblock'><p>Given input must have an even length.</p>
 </div><span id='variant.TypeCanNotResize' class='variant'><span id='TypeCanNotResize.v' class='invisible'><code>TypeCanNotResize</code></span></span><div class='docblock'><p>The arguments would require that the type allocates larger memory. But the
-type can&#39;t do that.</p>
-</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='enum' href='../basic_dsp_vector/enum.ErrorReason.html' title='basic_dsp_vector::ErrorReason'>ErrorReason</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-6752' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/checks_and_results.rs.html#2' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='enum' href='../basic_dsp_vector/enum.ErrorReason.html' title='basic_dsp_vector::ErrorReason'>ErrorReason</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-6753' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/checks_and_results.rs.html#3' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.clone' class='method'><span id='clone.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='enum' href='../basic_dsp_vector/enum.ErrorReason.html' title='basic_dsp_vector::ErrorReason'>ErrorReason</a></code></span></h4>
+type can't do that.</p>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html" title="trait core::marker::Copy">Copy</a> for <a class="enum" href="../basic_dsp_vector/enum.ErrorReason.html" title="enum basic_dsp_vector::ErrorReason">ErrorReason</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/basic_dsp_vector/vector_types/checks_and_results.rs.html#2' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="enum" href="../basic_dsp_vector/enum.ErrorReason.html" title="enum basic_dsp_vector::ErrorReason">ErrorReason</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/basic_dsp_vector/vector_types/checks_and_results.rs.html#3' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class="method"><span id='clone.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class="enum" href="../basic_dsp_vector/enum.ErrorReason.html" title="enum basic_dsp_vector::ErrorReason">ErrorReason</a></code></span></h4>
 <div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
-</div><h4 id='method.clone_from' class='method'><span id='clone_from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></span></h4>
+</div><h4 id='method.clone_from' class="method"><span id='clone_from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></span></h4>
 <div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
-</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='enum' href='../basic_dsp_vector/enum.ErrorReason.html' title='basic_dsp_vector::ErrorReason'>ErrorReason</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-6756' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/checks_and_results.rs.html#4' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.eq' class='method'><span id='eq.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class='enum' href='../basic_dsp_vector/enum.ErrorReason.html' title='basic_dsp_vector::ErrorReason'>ErrorReason</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></span></h4>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a> for <a class="enum" href="../basic_dsp_vector/enum.ErrorReason.html" title="enum basic_dsp_vector::ErrorReason">ErrorReason</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/basic_dsp_vector/vector_types/checks_and_results.rs.html#4' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.eq' class="method"><span id='eq.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class="enum" href="../basic_dsp_vector/enum.ErrorReason.html" title="enum basic_dsp_vector::ErrorReason">ErrorReason</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
 <div class='docblock'><p>This method tests for <code>self</code> and <code>other</code> values to be equal, and is used by <code>==</code>. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq">Read more</a></p>
-</div><h4 id='method.ne' class='method'><span id='ne.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, other: &amp;Rhs) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></span></h4>
+</div><h4 id='method.ne' class="method"><span id='ne.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, other: &amp;Rhs) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></span></h4>
 <div class='docblock'><p>This method tests for <code>!=</code>.</p>
-</div></div><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='enum' href='../basic_dsp_vector/enum.ErrorReason.html' title='basic_dsp_vector::ErrorReason'>ErrorReason</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-6762' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/checks_and_results.rs.html#5' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.fmt' class='method'><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></span></h4>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="enum" href="../basic_dsp_vector/enum.ErrorReason.html" title="enum basic_dsp_vector::ErrorReason">ErrorReason</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/basic_dsp_vector/vector_types/checks_and_results.rs.html#5' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class="method"><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code></span></h4>
 <div class='docblock'><p>Formats the value using the given formatter.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
@@ -169,11 +170,9 @@ type can&#39;t do that.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

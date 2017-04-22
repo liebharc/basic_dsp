@@ -9,6 +9,7 @@
 
     <title>basic_dsp_vector::RededicateOps - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc trait">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,40 +43,38 @@
         </form>
     </nav>
 
-    <section id='main' class="content trait">
-<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class='trait' href=''>RededicateOps</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class="trait" href=''>RededicateOps</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-3605' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/rededicate_and_relations.rs.html#14-29' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait RededicateOps&lt;Other&gt;: <a class='trait' href='../basic_dsp_vector/trait.RededicateForceOps.html' title='basic_dsp_vector::RededicateForceOps'>RededicateForceOps</a>&lt;Other&gt; {
+               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/rededicate_and_relations.rs.html#14-29' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait RededicateOps&lt;Other&gt;: <a class="trait" href="../basic_dsp_vector/trait.RededicateForceOps.html" title="trait basic_dsp_vector::RededicateForceOps">RededicateForceOps</a>&lt;Other&gt; {
     fn <a href='#tymethod.rededicate_from' class='fnname'>rededicate_from</a>(origin: Other) -&gt; Self;
 }</pre><div class='docblock'><p>This trait allows to change a data type. The operations will
 convert a type to a different one and set <code>self.len()</code> to zero.
 However <code>self.allocated_len()</code> will remain unchanged. The use case for this
 is to allow to reuse the memory of a vector for different operations.</p>
-
 <p>If a type should always be converted without any checks then the <code>RededicateForceOps</code>
 trait provides option for that.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.rededicate_from' class='method stab '><span id='rededicate_from.v' class='invisible'><code>fn <a href='#tymethod.rededicate_from' class='fnname'>rededicate_from</a>(origin: Other) -&gt; Self</code></span></h3><div class='docblock'><p>Make <code>Other</code> a <code>Self</code>.</p>
-
-<h1 id='example' class='section-header'><a href='#example'>Example</a></h1>
-<pre class='rust rust-example-rendered'>
-<span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
-<span class='kw'>let</span> <span class='ident'>complex</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>).<span class='ident'>to_complex_freq_vec</span>();
-<span class='kw'>let</span> <span class='ident'>real</span> <span class='op'>=</span> <span class='ident'>complex</span>.<span class='ident'>phase</span>();
-<span class='kw'>let</span> <span class='ident'>complex</span> <span class='op'>=</span> <span class='ident'>ComplexTimeVec32</span>::<span class='ident'>rededicate_from</span>(<span class='ident'>real</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='bool-val'>true</span>, <span class='ident'>complex</span>.<span class='ident'>is_complex</span>());
-<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DataDomain</span>::<span class='ident'>Time</span>, <span class='ident'>complex</span>.<span class='ident'>domain</span>());
-<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>0</span>, <span class='ident'>complex</span>.<span class='ident'>len</span>());
-<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>4</span>, <span class='ident'>complex</span>.<span class='ident'>alloc_len</span>());<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+        <h3 id='tymethod.rededicate_from' class='method'><span id='rededicate_from.v' class='invisible'><code>fn <a href='#tymethod.rededicate_from' class='fnname'>rededicate_from</a>(origin: Other) -&gt; Self</code></span></h3><div class='docblock'><p>Make <code>Other</code> a <code>Self</code>.</p>
+<h1 id="example" class="section-header"><a href="#example">Example</a></h1>
+<pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="kw-2">*</span>;
+<span class="kw">let</span> <span class="ident">complex</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>(<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>).<span class="ident">to_complex_freq_vec</span>();
+<span class="kw">let</span> <span class="ident">real</span> <span class="op">=</span> <span class="ident">complex</span>.<span class="ident">phase</span>();
+<span class="kw">let</span> <span class="ident">complex</span> <span class="op">=</span> <span class="ident">ComplexTimeVec32</span>::<span class="ident">rededicate_from</span>(<span class="ident">real</span>);
+<span class="macro">assert_eq</span><span class="macro">!</span>(<span class="bool-val">true</span>, <span class="ident">complex</span>.<span class="ident">is_complex</span>());
+<span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">DataDomain</span>::<span class="ident">Time</span>, <span class="ident">complex</span>.<span class="ident">domain</span>());
+<span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">0</span>, <span class="ident">complex</span>.<span class="ident">len</span>());
+<span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">4</span>, <span class="ident">complex</span>.<span class="ident">alloc_len</span>());</pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;U, V&gt; RededicateOps&lt;U&gt; for V <span class='where'>where V: <a class='trait' href='../basic_dsp_vector/trait.RededicateForceOps.html' title='basic_dsp_vector::RededicateForceOps'>RededicateForceOps</a>&lt;U&gt; + <a class='trait' href='../basic_dsp_vector/trait.MetaData.html' title='basic_dsp_vector::MetaData'>MetaData</a> + <a class='trait' href='../basic_dsp_vector/trait.ResizeOps.html' title='basic_dsp_vector::ResizeOps'>ResizeOps</a>, U: <a class='trait' href='../basic_dsp_vector/trait.MetaData.html' title='basic_dsp_vector::MetaData'>MetaData</a></span></code></li>
+    <li><code>impl&lt;U, V&gt; RededicateOps&lt;U&gt; for V <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;V: <a class="trait" href="../basic_dsp_vector/trait.RededicateForceOps.html" title="trait basic_dsp_vector::RededicateForceOps">RededicateForceOps</a>&lt;U&gt; + <a class="trait" href="../basic_dsp_vector/trait.MetaData.html" title="trait basic_dsp_vector::MetaData">MetaData</a> + <a class="trait" href="../basic_dsp_vector/trait.ResizeOps.html" title="trait basic_dsp_vector::ResizeOps">ResizeOps</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;U: <a class="trait" href="../basic_dsp_vector/trait.MetaData.html" title="trait basic_dsp_vector::MetaData">MetaData</a>,&nbsp;</span></code></li>
 </ul><script type="text/javascript" async
                          src="../implementors/basic_dsp_vector/trait.RededicateOps.js">
                  </script></section>
@@ -134,11 +133,9 @@ trait provides option for that.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

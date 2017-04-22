@@ -9,6 +9,7 @@
 
     <title>arc_cell.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc source">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,7 +43,7 @@
         </form>
     </nav>
 
-    <section id='main' class="content source"><pre class="line-numbers"><span id="1"> 1</span>
+    <section id='main' class="content"><pre class="line-numbers"><span id="1"> 1</span>
 <span id="2"> 2</span>
 <span id="3"> 3</span>
 <span id="4"> 4</span>
@@ -132,95 +133,95 @@
 <span id="88">88</span>
 <span id="89">89</span>
 <span id="90">90</span>
-</pre><pre class='rust '>
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>marker</span>::<span class='ident'>PhantomData</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>Arc</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::{<span class='ident'>AtomicUsize</span>, <span class='ident'>Ordering</span>};
+</pre><pre class="rust ">
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::{<span class="ident">AtomicUsize</span>, <span class="ident">Ordering</span>};
 
-<span class='doccomment'>/// A type providing atomic storage and retrieval of an `Arc&lt;T&gt;`.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ArcCell</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>AtomicUsize</span>, <span class='ident'>PhantomData</span><span class='op'>&lt;</span><span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>);
+<span class="doccomment">/// A type providing atomic storage and retrieval of an `Arc&lt;T&gt;`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ArcCell</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">AtomicUsize</span>, <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>);
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Drop</span> <span class='kw'>for</span> <span class='ident'>ArcCell</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>drop</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='self'>self</span>.<span class='ident'>take</span>();
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">ArcCell</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+        <span class="self">self</span>.<span class="ident">take</span>();
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>ArcCell</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// Creates a new `ArcCell`.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>t</span>: <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ArcCell</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='ident'>ArcCell</span>(<span class='ident'>AtomicUsize</span>::<span class='ident'>new</span>(<span class='kw'>unsafe</span> { <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>t</span>) }), <span class='ident'>PhantomData</span>)
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">ArcCell</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Creates a new `ArcCell`.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">t</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">ArcCell</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="ident">ArcCell</span>(<span class="ident">AtomicUsize</span>::<span class="ident">new</span>(<span class="kw">unsafe</span> { <span class="ident">mem</span>::<span class="ident">transmute</span>(<span class="ident">t</span>) }), <span class="ident">PhantomData</span>)
     }
 
-    <span class='kw'>fn</span> <span class='ident'>take</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='kw'>loop</span> {
-            <span class='kw'>match</span> <span class='self'>self</span>.<span class='number'>0</span>.<span class='ident'>swap</span>(<span class='number'>0</span>, <span class='ident'>Ordering</span>::<span class='ident'>Acquire</span>) {
-                <span class='number'>0</span> <span class='op'>=&gt;</span> {}
-                <span class='ident'>n</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='kw'>unsafe</span> { <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>n</span>) }
+    <span class="kw">fn</span> <span class="ident">take</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="kw">loop</span> {
+            <span class="kw">match</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">swap</span>(<span class="number">0</span>, <span class="ident">Ordering</span>::<span class="ident">Acquire</span>) {
+                <span class="number">0</span> <span class="op">=&gt;</span> {}
+                <span class="ident">n</span> <span class="op">=&gt;</span> <span class="kw">return</span> <span class="kw">unsafe</span> { <span class="ident">mem</span>::<span class="ident">transmute</span>(<span class="ident">n</span>) }
             }
         }
     }
 
-    <span class='kw'>fn</span> <span class='ident'>put</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>t</span>: <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) {
-        <span class='macro'>debug_assert_eq</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='number'>0</span>.<span class='ident'>load</span>(<span class='ident'>Ordering</span>::<span class='ident'>SeqCst</span>), <span class='number'>0</span>);
-        <span class='self'>self</span>.<span class='number'>0</span>.<span class='ident'>store</span>(<span class='kw'>unsafe</span> { <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>t</span>) }, <span class='ident'>Ordering</span>::<span class='ident'>Release</span>);
+    <span class="kw">fn</span> <span class="ident">put</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">t</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
+        <span class="macro">debug_assert_eq</span><span class="macro">!</span>(<span class="self">self</span>.<span class="number">0</span>.<span class="ident">load</span>(<span class="ident">Ordering</span>::<span class="ident">SeqCst</span>), <span class="number">0</span>);
+        <span class="self">self</span>.<span class="number">0</span>.<span class="ident">store</span>(<span class="kw">unsafe</span> { <span class="ident">mem</span>::<span class="ident">transmute</span>(<span class="ident">t</span>) }, <span class="ident">Ordering</span>::<span class="ident">Release</span>);
     }
 
-    <span class='doccomment'>/// Stores a new value in the `ArcCell`, returning the previous</span>
-    <span class='doccomment'>/// value.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>set</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>t</span>: <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>old</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>take</span>();
-        <span class='self'>self</span>.<span class='ident'>put</span>(<span class='ident'>t</span>);
-        <span class='ident'>old</span>
+    <span class="doccomment">/// Stores a new value in the `ArcCell`, returning the previous</span>
+    <span class="doccomment">/// value.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">t</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">old</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">take</span>();
+        <span class="self">self</span>.<span class="ident">put</span>(<span class="ident">t</span>);
+        <span class="ident">old</span>
     }
 
-    <span class='doccomment'>/// Returns a copy of the value stored by the `ArcCell`.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>take</span>();
-        <span class='comment'>// NB: correctness here depends on Arc&#39;s clone impl not panicking</span>
-        <span class='kw'>let</span> <span class='ident'>out</span> <span class='op'>=</span> <span class='ident'>t</span>.<span class='ident'>clone</span>();
-        <span class='self'>self</span>.<span class='ident'>put</span>(<span class='ident'>t</span>);
-        <span class='ident'>out</span>
+    <span class="doccomment">/// Returns a copy of the value stored by the `ArcCell`.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">take</span>();
+        <span class="comment">// NB: correctness here depends on Arc&#39;s clone impl not panicking</span>
+        <span class="kw">let</span> <span class="ident">out</span> <span class="op">=</span> <span class="ident">t</span>.<span class="ident">clone</span>();
+        <span class="self">self</span>.<span class="ident">put</span>(<span class="ident">t</span>);
+        <span class="ident">out</span>
     }
 }
 
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
-<span class='kw'>mod</span> <span class='ident'>test</span> {
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>Arc</span>;
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::{<span class='ident'>ATOMIC_USIZE_INIT</span>, <span class='ident'>AtomicUsize</span>, <span class='ident'>Ordering</span>};
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">test</span> {
+    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
+    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::{<span class="ident">ATOMIC_USIZE_INIT</span>, <span class="ident">AtomicUsize</span>, <span class="ident">Ordering</span>};
 
-    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
+    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
-    <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>basic</span>() {
-        <span class='kw'>let</span> <span class='ident'>r</span> <span class='op'>=</span> <span class='ident'>ArcCell</span>::<span class='ident'>new</span>(<span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='number'>0</span>));
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>r</span>.<span class='ident'>get</span>(), <span class='number'>0</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>r</span>.<span class='ident'>set</span>(<span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='number'>1</span>)), <span class='number'>0</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>r</span>.<span class='ident'>get</span>(), <span class='number'>1</span>);
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">basic</span>() {
+        <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">ArcCell</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="number">0</span>));
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">*</span><span class="ident">r</span>.<span class="ident">get</span>(), <span class="number">0</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">*</span><span class="ident">r</span>.<span class="ident">set</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="number">1</span>)), <span class="number">0</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">*</span><span class="ident">r</span>.<span class="ident">get</span>(), <span class="number">1</span>);
     }
 
-    <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>drop_runs</span>() {
-        <span class='kw'>static</span> <span class='ident'>DROPS</span>: <span class='ident'>AtomicUsize</span> <span class='op'>=</span> <span class='ident'>ATOMIC_USIZE_INIT</span>;
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">drop_runs</span>() {
+        <span class="kw">static</span> <span class="ident">DROPS</span>: <span class="ident">AtomicUsize</span> <span class="op">=</span> <span class="ident">ATOMIC_USIZE_INIT</span>;
 
-        <span class='kw'>struct</span> <span class='ident'>Foo</span>;
+        <span class="kw">struct</span> <span class="ident">Foo</span>;
 
-        <span class='kw'>impl</span> <span class='ident'>Drop</span> <span class='kw'>for</span> <span class='ident'>Foo</span> {
-            <span class='kw'>fn</span> <span class='ident'>drop</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-                <span class='ident'>DROPS</span>.<span class='ident'>fetch_add</span>(<span class='number'>1</span>, <span class='ident'>Ordering</span>::<span class='ident'>SeqCst</span>);
+        <span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">Foo</span> {
+            <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+                <span class="ident">DROPS</span>.<span class="ident">fetch_add</span>(<span class="number">1</span>, <span class="ident">Ordering</span>::<span class="ident">SeqCst</span>);
             }
         }
 
-        <span class='kw'>let</span> <span class='ident'>r</span> <span class='op'>=</span> <span class='ident'>ArcCell</span>::<span class='ident'>new</span>(<span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>Foo</span>));
-        <span class='kw'>let</span> <span class='ident'>_f</span> <span class='op'>=</span> <span class='ident'>r</span>.<span class='ident'>get</span>();
-        <span class='ident'>r</span>.<span class='ident'>get</span>();
-        <span class='ident'>r</span>.<span class='ident'>set</span>(<span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>Foo</span>));
-        <span class='ident'>drop</span>(<span class='ident'>_f</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DROPS</span>.<span class='ident'>load</span>(<span class='ident'>Ordering</span>::<span class='ident'>SeqCst</span>), <span class='number'>1</span>);
-        <span class='ident'>drop</span>(<span class='ident'>r</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DROPS</span>.<span class='ident'>load</span>(<span class='ident'>Ordering</span>::<span class='ident'>SeqCst</span>), <span class='number'>2</span>);
+        <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">ArcCell</span>::<span class="ident">new</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Foo</span>));
+        <span class="kw">let</span> <span class="ident">_f</span> <span class="op">=</span> <span class="ident">r</span>.<span class="ident">get</span>();
+        <span class="ident">r</span>.<span class="ident">get</span>();
+        <span class="ident">r</span>.<span class="ident">set</span>(<span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Foo</span>));
+        <span class="ident">drop</span>(<span class="ident">_f</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">DROPS</span>.<span class="ident">load</span>(<span class="ident">Ordering</span>::<span class="ident">SeqCst</span>), <span class="number">1</span>);
+        <span class="ident">drop</span>(<span class="ident">r</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">DROPS</span>.<span class="ident">load</span>(<span class="ident">Ordering</span>::<span class="ident">SeqCst</span>), <span class="number">2</span>);
     }
 }
 </pre>
@@ -280,11 +281,9 @@
     <script>
         window.rootPath = "../../../";
         window.currentCrate = "crossbeam";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
-    <script src="../../../extra.js"></script>
     <script defer src="../../../search-index.js"></script>
 </body>
 </html>

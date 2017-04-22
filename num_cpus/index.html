@@ -9,6 +9,7 @@
 
     <title>num_cpus - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc mod">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,20 +43,31 @@
         </form>
     </nav>
 
-    <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>num_cpus</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Crate <a class="mod" href=''>num_cpus</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-0' class='srclink' href='../src/num_cpus/lib.rs.html#1-116' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../src/num_cpus/lib.rs.html#1-181' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Replaces the deprecated functionality of std::os::num_cpus.</p>
 </div><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='fn' href='fn.get.html'
-                                  title='num_cpus::get'>get</a></td>
+                           <td><a class="fn" href="fn.get.html"
+                                  title='fn num_cpus::get'>get</a></td>
                            <td class='docblock-short'>
                                 <p>Returns the number of CPUs of the current machine.</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="fn" href="fn.get_physical.html"
+                                  title='fn num_cpus::get_physical'>get_physical</a></td>
+                           <td class='docblock-short'>
+                                <p>Returns the number of physical cores of the current machine.
+If not possible on the particular architecture returns same as get() which
+is the logical CPUs.</p>
+
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>
@@ -113,11 +125,9 @@
     <script>
         window.rootPath = "../";
         window.currentCrate = "num_cpus";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

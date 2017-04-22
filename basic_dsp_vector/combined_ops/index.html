@@ -9,6 +9,7 @@
 
     <title>basic_dsp_vector::combined_ops - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc mod">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,220 +43,236 @@
         </form>
     </nav>
 
-    <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>basic_dsp_vector</a>::<wbr><a class='mod' href=''>combined_ops</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>basic_dsp_vector</a>::<wbr><a class="mod" href=''>combined_ops</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-2471' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/mod.rs.html#1-1275' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../../src/basic_dsp_vector/vector_types/combined_ops/mod.rs.html#1-1278' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>This module allows to combine certain operations into one operation. Since one
 many machines the speed of many DSP operations is limited by the memory bus speed
 this approach may result in better register and cache usage and thus decrease
 the pressure on the memory bus. As with all performance hints remember
 rule number 1: Benchmark your code. This is especially true at this very early
 state of the library.</p>
-
 <p>With this approach we change how we operate on vectors. If you perform
 <code>M</code> operations on a vector with the length <code>N</code> you iterate wit hall other methods like this:</p>
 
-<pre class='rust rust-example-rendered'>
-<span class='comment'>// pseudocode:</span>
-<span class='comment'>// for m in M:</span>
-<span class='comment'>//  for n in N:</span>
-<span class='comment'>//    execute m on n</span><a class='test-arrow' target='_blank' href=''>Run</a></pre>
-
+<pre class="rust rust-example-rendered">
+<span class="comment">// pseudocode:</span>
+<span class="comment">// for m in M:</span>
+<span class="comment">//  for n in N:</span>
+<span class="comment">//    execute m on n</span></pre>
 <p>with this method the pattern is changed slightly:</p>
 
-<pre class='rust rust-example-rendered'>
-<span class='comment'>// pseudocode:</span>
-<span class='comment'>// for n in N:</span>
-<span class='comment'>//  for m in M:</span>
-<span class='comment'>//    execute m on n</span><a class='test-arrow' target='_blank' href=''>Run</a></pre>
-
+<pre class="rust rust-example-rendered">
+<span class="comment">// pseudocode:</span>
+<span class="comment">// for n in N:</span>
+<span class="comment">//  for m in M:</span>
+<span class="comment">//    execute m on n</span></pre>
 <p>Both variants have the same complexity however the second one is beneficial since we
 have increased locality this way. This should help us by making better use of registers and
 CPU caches.</p>
-
 <p>Only operations can be combined where the result of every element in the vector
 is independent from any other element in the vector.</p>
-
-<h1 id='examples' class='section-header'><a href='#examples'>Examples</a></h1>
-<pre class='rust rust-example-rendered'>
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>f32</span>::<span class='ident'>consts</span>::<span class='ident'>PI</span>;
-<span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
-<span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='ident'>combined_ops</span>::<span class='op'>*</span>;
-<span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>0.1</span>, <span class='number'>0.2</span>, <span class='number'>0.3</span>, <span class='number'>0.4</span>, <span class='number'>0.5</span>, <span class='number'>0.6</span>, <span class='number'>0.7</span>, <span class='number'>0.8</span>).<span class='ident'>to_real_time_vec</span>();
-<span class='kw'>let</span> <span class='ident'>b</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>0.0</span>; <span class='number'>8</span>).<span class='ident'>to_real_time_vec</span>();
-<span class='kw'>let</span> <span class='ident'>ops</span> <span class='op'>=</span> <span class='ident'>multi_ops2</span>(<span class='ident'>a</span>, <span class='ident'>b</span>);
-<span class='kw'>let</span> <span class='ident'>ops</span> <span class='op'>=</span> <span class='ident'>ops</span>.<span class='ident'>add_ops</span>(<span class='op'>|</span><span class='kw-2'>mut</span> <span class='ident'>a</span>, <span class='kw-2'>mut</span> <span class='ident'>b</span><span class='op'>|</span> {
-    <span class='ident'>a</span>.<span class='ident'>scale</span>(<span class='number'>2.0</span> <span class='op'>*</span> <span class='ident'>PI</span>);
-    <span class='ident'>b</span>.<span class='ident'>clone_from</span>(<span class='kw-2'>&amp;</span><span class='ident'>a</span>);
-    <span class='ident'>a</span>.<span class='ident'>sin</span>();
-    <span class='ident'>b</span>.<span class='ident'>cos</span>();
-    <span class='ident'>a</span>.<span class='ident'>mul</span>(<span class='kw-2'>&amp;</span><span class='ident'>b</span>);
-    <span class='ident'>a</span>.<span class='ident'>abs</span>();
-    <span class='ident'>a</span>.<span class='ident'>log</span>(<span class='number'>10.0</span>);
-    <span class='ident'>a</span>.<span class='ident'>scale</span>(<span class='number'>10.0</span>);
-    (<span class='ident'>a</span>, <span class='ident'>b</span>)
+<p>Note: <code>combined_ops</code> is not available if explicitly compiled without <code>std</code>.</p>
+<h1 id="examples" class="section-header"><a href="#examples">Examples</a></h1>
+<pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">f32</span>::<span class="ident">consts</span>::<span class="ident">PI</span>;
+<span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="ident">combined_ops</span>::<span class="kw-2">*</span>;
+<span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>(<span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.3</span>, <span class="number">0.4</span>, <span class="number">0.5</span>, <span class="number">0.6</span>, <span class="number">0.7</span>, <span class="number">0.8</span>).<span class="ident">to_real_time_vec</span>();
+<span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>(<span class="number">0.0</span>; <span class="number">8</span>).<span class="ident">to_real_time_vec</span>();
+<span class="kw">let</span> <span class="ident">ops</span> <span class="op">=</span> <span class="ident">multi_ops2</span>(<span class="ident">a</span>, <span class="ident">b</span>);
+<span class="kw">let</span> <span class="ident">ops</span> <span class="op">=</span> <span class="ident">ops</span>.<span class="ident">add_ops</span>(<span class="op">|</span><span class="kw-2">mut</span> <span class="ident">a</span>, <span class="kw-2">mut</span> <span class="ident">b</span><span class="op">|</span> {
+    <span class="ident">a</span>.<span class="ident">scale</span>(<span class="number">2.0</span> <span class="op">*</span> <span class="ident">PI</span>);
+    <span class="ident">b</span>.<span class="ident">clone_from</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>);
+    <span class="ident">a</span>.<span class="ident">sin</span>();
+    <span class="ident">b</span>.<span class="ident">cos</span>();
+    <span class="ident">a</span>.<span class="ident">mul</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>).<span class="ident">unwrap</span>();
+    <span class="ident">a</span>.<span class="ident">abs</span>();
+    <span class="ident">a</span>.<span class="ident">log</span>(<span class="number">10.0</span>);
+    <span class="ident">a</span>.<span class="ident">scale</span>(<span class="number">10.0</span>);
+    (<span class="ident">a</span>, <span class="ident">b</span>)
 });
-<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buffer</span> <span class='op'>=</span> <span class='ident'>SingleBuffer</span>::<span class='ident'>new</span>();
-<span class='kw'>let</span> (<span class='ident'>a</span>, <span class='ident'>b</span>) <span class='op'>=</span> <span class='ident'>ops</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buffer</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
-<span class='ident'>close</span>(<span class='kw-2'>&amp;</span>[<span class='number'>0.80902</span>, <span class='number'>0.30902</span>, <span class='op'>-</span><span class='number'>0.30902</span>, <span class='op'>-</span><span class='number'>0.80902</span>, <span class='op'>-</span><span class='number'>1.00000</span>, <span class='op'>-</span><span class='number'>0.80902</span>, <span class='op'>-</span><span class='number'>0.30902</span>, <span class='number'>0.30902</span>],
-          <span class='kw-2'>&amp;</span><span class='ident'>b</span>[..]);
-<span class='ident'>close</span>(<span class='kw-2'>&amp;</span>[<span class='op'>-</span><span class='number'>3.2282</span>, <span class='op'>-</span><span class='number'>5.3181</span>, <span class='op'>-</span><span class='number'>5.3181</span>, <span class='op'>-</span><span class='number'>3.2282</span>, <span class='op'>-</span><span class='number'>159.1199</span>, <span class='op'>-</span><span class='number'>3.2282</span>, <span class='op'>-</span><span class='number'>5.3181</span>, <span class='op'>-</span><span class='number'>5.3181</span>],
-          <span class='kw-2'>&amp;</span><span class='ident'>a</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">SingleBuffer</span>::<span class="ident">new</span>();
+<span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="op">=</span> <span class="ident">ops</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>).<span class="ident">expect</span>(<span class="string">&quot;Ignoring error handling in examples&quot;</span>);
+<span class="ident">close</span>(<span class="kw-2">&amp;</span>[<span class="number">0.80902</span>, <span class="number">0.30902</span>, <span class="op">-</span><span class="number">0.30902</span>, <span class="op">-</span><span class="number">0.80902</span>, <span class="op">-</span><span class="number">1.00000</span>, <span class="op">-</span><span class="number">0.80902</span>, <span class="op">-</span><span class="number">0.30902</span>, <span class="number">0.30902</span>],
+          <span class="kw-2">&amp;</span><span class="ident">b</span>[..]);
+<span class="ident">close</span>(<span class="kw-2">&amp;</span>[<span class="op">-</span><span class="number">3.2282</span>, <span class="op">-</span><span class="number">5.3181</span>, <span class="op">-</span><span class="number">5.3181</span>, <span class="op">-</span><span class="number">3.2282</span>, <span class="op">-</span><span class="number">159.1199</span>, <span class="op">-</span><span class="number">3.2282</span>, <span class="op">-</span><span class="number">5.3181</span>, <span class="op">-</span><span class="number">5.3181</span>],
+          <span class="kw-2">&amp;</span><span class="ident">a</span>[..]);</pre>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.Identifier.html'
-                                  title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a></td>
+                           <td><a class="struct" href="struct.Identifier.html"
+                                  title='struct basic_dsp_vector::combined_ops::Identifier'>Identifier</a></td>
                            <td class='docblock-short'>
                                 <p>An identifier is just a placeholder for a data type
 used to ensure already at compile time that operations are valid.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.MultiOperation1.html'
-                                  title='basic_dsp_vector::combined_ops::MultiOperation1'>MultiOperation1</a></td>
+                           <td><a class="struct" href="struct.MultiOperation1.html"
+                                  title='struct basic_dsp_vector::combined_ops::MultiOperation1'>MultiOperation1</a></td>
                            <td class='docblock-short'>
                                 <p>A multi operation which holds a vector and records all changes
 which need to be done to the vectors. By calling <code>get</code> on the struct
 all operations will be executed in one run.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.MultiOperation2.html'
-                                  title='basic_dsp_vector::combined_ops::MultiOperation2'>MultiOperation2</a></td>
+                           <td><a class="struct" href="struct.MultiOperation2.html"
+                                  title='struct basic_dsp_vector::combined_ops::MultiOperation2'>MultiOperation2</a></td>
                            <td class='docblock-short'>
                                 <p>A multi operation which holds a vector and records all changes
 which need to be done to the vectors. By calling <code>get</code> on the struct
 all operations will be executed in one run.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.PreparedOperation1.html'
-                                  title='basic_dsp_vector::combined_ops::PreparedOperation1'>PreparedOperation1</a></td>
+                           <td><a class="struct" href="struct.PreparedOperation1.html"
+                                  title='struct basic_dsp_vector::combined_ops::PreparedOperation1'>PreparedOperation1</a></td>
                            <td class='docblock-short'>
                                 <p>An operation on one data vector which has been prepared in
 advance.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.PreparedOperation2.html'
-                                  title='basic_dsp_vector::combined_ops::PreparedOperation2'>PreparedOperation2</a></td>
+                           <td><a class="struct" href="struct.PreparedOperation2.html"
+                                  title='struct basic_dsp_vector::combined_ops::PreparedOperation2'>PreparedOperation2</a></td>
                            <td class='docblock-short'>
                                 <p>An operation on two data vectors which has been prepared in
 advance.</p>
+
                            </td>
                        </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='enum' href='enum.Operation.html'
-                                  title='basic_dsp_vector::combined_ops::Operation'>Operation</a></td>
+                           <td><a class="enum" href="enum.Operation.html"
+                                  title='enum basic_dsp_vector::combined_ops::Operation'>Operation</a></td>
                            <td class='docblock-short'>
                                 <p>An alternative way to define operations on a vector.</p>
+
                            </td>
                        </tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='trait' href='trait.IdentifierOps.html'
-                                  title='basic_dsp_vector::combined_ops::IdentifierOps'>IdentifierOps</a></td>
+                           <td><a class="trait" href="trait.IdentifierOps.html"
+                                  title='trait basic_dsp_vector::combined_ops::IdentifierOps'>IdentifierOps</a></td>
                            <td class='docblock-short'>
                                 <p>Operations for all kind of vectors which can be used in combination
 with multi ops or prepared ops.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='trait' href='trait.PreparedOperation1Exec.html'
-                                  title='basic_dsp_vector::combined_ops::PreparedOperation1Exec'>PreparedOperation1Exec</a></td>
+                           <td><a class="trait" href="trait.PreparedOperation1Exec.html"
+                                  title='trait basic_dsp_vector::combined_ops::PreparedOperation1Exec'>PreparedOperation1Exec</a></td>
                            <td class='docblock-short'>
                                 <p>Executes the prepared operations to convert <code>S</code>to <code>D</code>.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='trait' href='trait.PreparedOperation2Exec.html'
-                                  title='basic_dsp_vector::combined_ops::PreparedOperation2Exec'>PreparedOperation2Exec</a></td>
+                           <td><a class="trait" href="trait.PreparedOperation2Exec.html"
+                                  title='trait basic_dsp_vector::combined_ops::PreparedOperation2Exec'>PreparedOperation2Exec</a></td>
                            <td class='docblock-short'>
                                 <p>Executes the prepared operations to convert <code>S1</code> and <code>S2</code> to <code>D1</code> and <code>D2</code>.</p>
+
                            </td>
                        </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='fn' href='fn.multi_ops1.html'
-                                  title='basic_dsp_vector::combined_ops::multi_ops1'>multi_ops1</a></td>
+                           <td><a class="fn" href="fn.multi_ops1.html"
+                                  title='fn basic_dsp_vector::combined_ops::multi_ops1'>multi_ops1</a></td>
                            <td class='docblock-short'>
                                 <p>Creates a new multi operation for one vectors.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='fn' href='fn.multi_ops2.html'
-                                  title='basic_dsp_vector::combined_ops::multi_ops2'>multi_ops2</a></td>
+                           <td><a class="fn" href="fn.multi_ops2.html"
+                                  title='fn basic_dsp_vector::combined_ops::multi_ops2'>multi_ops2</a></td>
                            <td class='docblock-short'>
                                 <p>Creates a new multi operation for two vectors.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='fn' href='fn.prepare32_1.html'
-                                  title='basic_dsp_vector::combined_ops::prepare32_1'>prepare32_1</a></td>
+                           <td><a class="fn" href="fn.prepare32_1.html"
+                                  title='fn basic_dsp_vector::combined_ops::prepare32_1'>prepare32_1</a></td>
                            <td class='docblock-short'>
                                 <p>Prepares an operation with one input and one output.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='fn' href='fn.prepare32_2.html'
-                                  title='basic_dsp_vector::combined_ops::prepare32_2'>prepare32_2</a></td>
+                           <td><a class="fn" href="fn.prepare32_2.html"
+                                  title='fn basic_dsp_vector::combined_ops::prepare32_2'>prepare32_2</a></td>
                            <td class='docblock-short'>
                                 <p>Prepares an operation with one input and one output.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='fn' href='fn.prepare64_1.html'
-                                  title='basic_dsp_vector::combined_ops::prepare64_1'>prepare64_1</a></td>
+                           <td><a class="fn" href="fn.prepare64_1.html"
+                                  title='fn basic_dsp_vector::combined_ops::prepare64_1'>prepare64_1</a></td>
                            <td class='docblock-short'>
                                 <p>Prepares an operation with one input and one output.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='fn' href='fn.prepare64_2.html'
-                                  title='basic_dsp_vector::combined_ops::prepare64_2'>prepare64_2</a></td>
+                           <td><a class="fn" href="fn.prepare64_2.html"
+                                  title='fn basic_dsp_vector::combined_ops::prepare64_2'>prepare64_2</a></td>
                            <td class='docblock-short'>
                                 <p>Prepares an operation with one input and one output.</p>
+
                            </td>
                        </tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='type' href='type.ComplexFreqIdent.html'
-                                  title='basic_dsp_vector::combined_ops::ComplexFreqIdent'>ComplexFreqIdent</a></td>
+                           <td><a class="type" href="type.ComplexFreqIdent.html"
+                                  title='type basic_dsp_vector::combined_ops::ComplexFreqIdent'>ComplexFreqIdent</a></td>
                            <td class='docblock-short'>
                                 <p>A identifier with complex numbers in frequency domain.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='type' href='type.ComplexTimeIdent.html'
-                                  title='basic_dsp_vector::combined_ops::ComplexTimeIdent'>ComplexTimeIdent</a></td>
+                           <td><a class="type" href="type.ComplexTimeIdent.html"
+                                  title='type basic_dsp_vector::combined_ops::ComplexTimeIdent'>ComplexTimeIdent</a></td>
                            <td class='docblock-short'>
                                 <p>A identifier with complex numbers in time domain.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='type' href='type.GenDspIdent.html'
-                                  title='basic_dsp_vector::combined_ops::GenDspIdent'>GenDspIdent</a></td>
+                           <td><a class="type" href="type.GenDspIdent.html"
+                                  title='type basic_dsp_vector::combined_ops::GenDspIdent'>GenDspIdent</a></td>
                            <td class='docblock-short'>
                                 <p>A identifier with no information about number space or domain at compile time.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='type' href='type.RealFreqIdent.html'
-                                  title='basic_dsp_vector::combined_ops::RealFreqIdent'>RealFreqIdent</a></td>
+                           <td><a class="type" href="type.RealFreqIdent.html"
+                                  title='type basic_dsp_vector::combined_ops::RealFreqIdent'>RealFreqIdent</a></td>
                            <td class='docblock-short'>
                                 <p>A identifier with real numbers in frequency domain.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='type' href='type.RealTimeIdent.html'
-                                  title='basic_dsp_vector::combined_ops::RealTimeIdent'>RealTimeIdent</a></td>
+                           <td><a class="type" href="type.RealTimeIdent.html"
+                                  title='type basic_dsp_vector::combined_ops::RealTimeIdent'>RealTimeIdent</a></td>
                            <td class='docblock-short'>
                                 <p>A identifier with real numbers in time domain.</p>
+
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>
@@ -313,11 +330,9 @@ with multi ops or prepared ops.</p>
     <script>
         window.rootPath = "../../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    <script src="../../extra.js"></script>
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

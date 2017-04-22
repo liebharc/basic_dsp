@@ -9,6 +9,7 @@
 
     <title>lib.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc source">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,7 +43,7 @@
         </form>
     </nav>
 
-    <section id='main' class="content source"><pre class="line-numbers"><span id="1"> 1</span>
+    <section id='main' class="content"><pre class="line-numbers"><span id="1"> 1</span>
 <span id="2"> 2</span>
 <span id="3"> 3</span>
 <span id="4"> 4</span>
@@ -96,60 +97,60 @@
 <span id="52">52</span>
 <span id="53">53</span>
 <span id="54">54</span>
-</pre><pre class='rust '>
-<span class='doccomment'>//! Support for concurrent and parallel programming.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! This crate is an early work in progress. The focus for the moment is</span>
-<span class='doccomment'>//! concurrency:</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! - **Non-blocking data structures**. These data structures allow for high</span>
-<span class='doccomment'>//! performance, highly-concurrent access, much superior to wrapping with a</span>
-<span class='doccomment'>//! `Mutex`. Ultimately the goal is to include stacks, queues, deques, bags,</span>
-<span class='doccomment'>//! sets and maps. These live in the `sync` module.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! - **Memory management**. Because non-blocking data structures avoid global</span>
-<span class='doccomment'>//! synchronization, it is not easy to tell when internal data can be safely</span>
-<span class='doccomment'>//! freed. The `mem` module provides generic, easy to use, and high-performance</span>
-<span class='doccomment'>//! APIs for managing memory in these cases. These live in the `mem` module.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! - **Synchronization**. The standard library provides a few synchronization</span>
-<span class='doccomment'>//! primitives (locks, semaphores, barriers, etc) but this crate seeks to expand</span>
-<span class='doccomment'>//! that set to include more advanced/niche primitives, as well as userspace</span>
-<span class='doccomment'>//! alternatives. These live in the `sync` module.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! - **Scoped thread API**. Finally, the crate provides a &quot;scoped&quot; thread API,</span>
-<span class='doccomment'>//! making it possible to spawn threads that share stack data with their</span>
-<span class='doccomment'>//! parents. This functionality is exported at the top-level.</span>
+</pre><pre class="rust ">
+<span class="doccomment">//! Support for concurrent and parallel programming.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! This crate is an early work in progress. The focus for the moment is</span>
+<span class="doccomment">//! concurrency:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! - **Non-blocking data structures**. These data structures allow for high</span>
+<span class="doccomment">//! performance, highly-concurrent access, much superior to wrapping with a</span>
+<span class="doccomment">//! `Mutex`. Ultimately the goal is to include stacks, queues, deques, bags,</span>
+<span class="doccomment">//! sets and maps. These live in the `sync` module.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! - **Memory management**. Because non-blocking data structures avoid global</span>
+<span class="doccomment">//! synchronization, it is not easy to tell when internal data can be safely</span>
+<span class="doccomment">//! freed. The `mem` module provides generic, easy to use, and high-performance</span>
+<span class="doccomment">//! APIs for managing memory in these cases. These live in the `mem` module.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! - **Synchronization**. The standard library provides a few synchronization</span>
+<span class="doccomment">//! primitives (locks, semaphores, barriers, etc) but this crate seeks to expand</span>
+<span class="doccomment">//! that set to include more advanced/niche primitives, as well as userspace</span>
+<span class="doccomment">//! alternatives. These live in the `sync` module.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! - **Scoped thread API**. Finally, the crate provides a &quot;scoped&quot; thread API,</span>
+<span class="doccomment">//! making it possible to spawn threads that share stack data with their</span>
+<span class="doccomment">//! parents. This functionality is exported at the top-level.</span>
 
-<span class='comment'>//#![deny(missing_docs)]</span>
+<span class="comment">//#![deny(missing_docs)]</span>
 
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;nightly&quot;</span>,
-            <span class='ident'>feature</span>(<span class='ident'>const_fn</span>, <span class='ident'>repr_simd</span>, <span class='ident'>optin_builtin_traits</span>))]</span>
+<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>,
+            <span class="ident">feature</span>(<span class="ident">const_fn</span>, <span class="ident">repr_simd</span>, <span class="ident">optin_builtin_traits</span>))]</span>
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>thread</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">thread</span>;
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>scoped</span>::{<span class='ident'>scope</span>, <span class='ident'>Scope</span>, <span class='ident'>ScopedJoinHandle</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">scoped</span>::{<span class="ident">scope</span>, <span class="ident">Scope</span>, <span class="ident">ScopedJoinHandle</span>};
 
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>mem</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>sync</span>;
-<span class='kw'>mod</span> <span class='ident'>scoped</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">mem</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">sync</span>;
+<span class="kw">mod</span> <span class="ident">scoped</span>;
 
-<span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span>
-<span class='kw'>trait</span> <span class='ident'>FnBox</span> {
-    <span class='kw'>fn</span> <span class='ident'>call_box</span>(<span class='self'>self</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>);
+<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
+<span class="kw">trait</span> <span class="ident">FnBox</span> {
+    <span class="kw">fn</span> <span class="ident">call_box</span>(<span class="self">self</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>);
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>FnOnce</span>()<span class='op'>&gt;</span> <span class='ident'>FnBox</span> <span class='kw'>for</span> <span class='ident'>F</span> {
-    <span class='kw'>fn</span> <span class='ident'>call_box</span>(<span class='self'>self</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span>) { (<span class='op'>*</span><span class='self'>self</span>)() }
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">F</span>: <span class="ident">FnOnce</span>()<span class="op">&gt;</span> <span class="ident">FnBox</span> <span class="kw">for</span> <span class="ident">F</span> {
+    <span class="kw">fn</span> <span class="ident">call_box</span>(<span class="self">self</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>) { (<span class="kw-2">*</span><span class="self">self</span>)() }
 }
 
-<span class='doccomment'>/// Like `std::thread::spawn`, but without the closure bounds.</span>
-<span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>spawn_unsafe</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>F</span><span class='op'>&gt;</span>(<span class='ident'>f</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='ident'>thread</span>::<span class='ident'>JoinHandle</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>FnOnce</span>() <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='lifetime'>&#39;a</span> {
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
+<span class="doccomment">/// Like `std::thread::spawn`, but without the closure bounds.</span>
+<span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">spawn_unsafe</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">F</span><span class="op">&gt;</span>(<span class="ident">f</span>: <span class="ident">F</span>) <span class="op">-&gt;</span> <span class="ident">thread</span>::<span class="ident">JoinHandle</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="kw">where</span> <span class="ident">F</span>: <span class="ident">FnOnce</span>() <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
+    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
 
-    <span class='kw'>let</span> <span class='ident'>closure</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>FnBox</span> <span class='op'>+</span> <span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>f</span>);
-    <span class='kw'>let</span> <span class='ident'>closure</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>FnBox</span> <span class='op'>+</span> <span class='ident'>Send</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>closure</span>);
-    <span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> <span class='ident'>closure</span>.<span class='ident'>call_box</span>())
+    <span class="kw">let</span> <span class="ident">closure</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">FnBox</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">f</span>);
+    <span class="kw">let</span> <span class="ident">closure</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">FnBox</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">transmute</span>(<span class="ident">closure</span>);
+    <span class="ident">thread</span>::<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">||</span> <span class="ident">closure</span>.<span class="ident">call_box</span>())
 }
 </pre>
 </section>
@@ -208,11 +209,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "crossbeam";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    <script src="../../extra.js"></script>
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 (function() {var implementors = {};
+implementors["basic_dsp_vector"] = [];
 implementors["num"] = [];
 
             if (window.register_implementors) {

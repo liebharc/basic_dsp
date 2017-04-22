@@ -9,6 +9,7 @@
 
     <title>basic_dsp_vector::combined_ops::PreparedOperation1Exec - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc trait">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,23 +43,23 @@
         </form>
     </nav>
 
-    <section id='main' class="content trait">
-<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>basic_dsp_vector</a>::<wbr><a href='index.html'>combined_ops</a>::<wbr><a class='trait' href=''>PreparedOperation1Exec</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>basic_dsp_vector</a>::<wbr><a href='index.html'>combined_ops</a>::<wbr><a class="trait" href=''>PreparedOperation1Exec</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-2484' class='srclink' href='../../src/basic_dsp_vector/vector/src/vector_types/combined_ops/prepared_ops.rs.html#13-16' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../../src/basic_dsp_vector/vector_types/combined_ops/prepared_ops.rs.html#13-16' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait PreparedOperation1Exec&lt;B, S, D&gt; {
-    fn <a href='#tymethod.exec' class='fnname'>exec</a>(&amp;self, buffer: &amp;mut B, source: S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;D, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='enum' href='../../basic_dsp_vector/enum.ErrorReason.html' title='basic_dsp_vector::ErrorReason'>ErrorReason</a>, D<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>&gt;;
+    fn <a href='#tymethod.exec' class='fnname'>exec</a>(&amp;self, buffer: &amp;mut B, source: S) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;D, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">(</a><a class="enum" href="../../basic_dsp_vector/enum.ErrorReason.html" title="enum basic_dsp_vector::ErrorReason">ErrorReason</a>, D<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">)</a>&gt;;
 }</pre><div class='docblock'><p>Executes the prepared operations to convert <code>S</code>to <code>D</code>.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.exec' class='method stab '><span id='exec.v' class='invisible'><code>fn <a href='#tymethod.exec' class='fnname'>exec</a>(&amp;self, buffer: &amp;mut B, source: S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;D, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='enum' href='../../basic_dsp_vector/enum.ErrorReason.html' title='basic_dsp_vector::ErrorReason'>ErrorReason</a>, D<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>&gt;</code></span></h3><div class='docblock'><p>Executes the prepared operations to convert <code>S</code>to <code>D</code>.</p>
+        <h3 id='tymethod.exec' class='method'><span id='exec.v' class='invisible'><code>fn <a href='#tymethod.exec' class='fnname'>exec</a>(&amp;self, buffer: &amp;mut B, source: S) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;D, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">(</a><a class="enum" href="../../basic_dsp_vector/enum.ErrorReason.html" title="enum basic_dsp_vector::ErrorReason">ErrorReason</a>, D<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">)</a>&gt;</code></span></h3><div class='docblock'><p>Executes the prepared operations to convert <code>S</code>to <code>D</code>.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;T, S, B, NI, DI, NO, DO&gt; PreparedOperation1Exec&lt;B, <a class='struct' href='../../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, NI, DI&gt;, <a class='struct' href='../../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, NO, DO&gt;&gt; for <a class='struct' href='../../basic_dsp_vector/combined_ops/struct.PreparedOperation1.html' title='basic_dsp_vector::combined_ops::PreparedOperation1'>PreparedOperation1</a>&lt;T, NI, DI, NO, DO&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a> + 'static, S: <a class='trait' href='../../basic_dsp_vector/trait.ToSliceMut.html' title='basic_dsp_vector::ToSliceMut'>ToSliceMut</a>&lt;T&gt; + <a class='trait' href='../../basic_dsp_vector/trait.Owner.html' title='basic_dsp_vector::Owner'>Owner</a>, <a class='struct' href='../../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, NO, DO&gt;: <a class='trait' href='../../basic_dsp_vector/trait.RededicateForceOps.html' title='basic_dsp_vector::RededicateForceOps'>RededicateForceOps</a>&lt;<a class='struct' href='../../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, NI, DI&gt;&gt;, NI: <a class='trait' href='../../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a>, DI: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a>, NO: <a class='trait' href='../../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a>, DO: <a class='trait' href='../../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a>, B: <a class='trait' href='../../basic_dsp_vector/trait.Buffer.html' title='basic_dsp_vector::Buffer'>Buffer</a>&lt;S, T&gt;</span></code></li>
+    <li><code>impl&lt;T, S, B, NI, DI, NO, DO&gt; PreparedOperation1Exec&lt;B, <a class="struct" href="../../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, NI, DI&gt;, <a class="struct" href="../../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, NO, DO&gt;&gt; for <a class="struct" href="../../basic_dsp_vector/combined_ops/struct.PreparedOperation1.html" title="struct basic_dsp_vector::combined_ops::PreparedOperation1">PreparedOperation1</a>&lt;T, NI, DI, NO, DO&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a> + 'static,<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../../basic_dsp_vector/trait.ToSliceMut.html" title="trait basic_dsp_vector::ToSliceMut">ToSliceMut</a>&lt;T&gt; + <a class="trait" href="../../basic_dsp_vector/trait.Owner.html" title="trait basic_dsp_vector::Owner">Owner</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;<a class="struct" href="../../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, NO, DO&gt;: <a class="trait" href="../../basic_dsp_vector/trait.RededicateForceOps.html" title="trait basic_dsp_vector::RededicateForceOps">RededicateForceOps</a>&lt;<a class="struct" href="../../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, NI, DI&gt;&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;NI: <a class="trait" href="../../basic_dsp_vector/trait.NumberSpace.html" title="trait basic_dsp_vector::NumberSpace">NumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;DI: <a class="trait" href="../../basic_dsp_vector/trait.Domain.html" title="trait basic_dsp_vector::Domain">Domain</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;NO: <a class="trait" href="../../basic_dsp_vector/trait.NumberSpace.html" title="trait basic_dsp_vector::NumberSpace">NumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;DO: <a class="trait" href="../../basic_dsp_vector/trait.Domain.html" title="trait basic_dsp_vector::Domain">Domain</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;B: <a class="trait" href="../../basic_dsp_vector/trait.Buffer.html" title="trait basic_dsp_vector::Buffer">Buffer</a>&lt;S, T&gt;,&nbsp;</span></code></li>
 </ul><script type="text/javascript" async
                          src="../../implementors/basic_dsp_vector/combined_ops/trait.PreparedOperation1Exec.js">
                  </script></section>
@@ -117,11 +118,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    <script src="../../extra.js"></script>
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

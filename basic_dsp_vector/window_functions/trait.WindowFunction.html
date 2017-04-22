@@ -9,6 +9,7 @@
 
     <title>basic_dsp_vector::window_functions::WindowFunction - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc trait">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,21 +43,19 @@
         </form>
     </nav>
 
-    <section id='main' class="content trait">
-<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>basic_dsp_vector</a>::<wbr><a href='index.html'>window_functions</a>::<wbr><a class='trait' href=''>WindowFunction</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>basic_dsp_vector</a>::<wbr><a href='index.html'>window_functions</a>::<wbr><a class="trait" href=''>WindowFunction</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-6199' class='srclink' href='../../src/basic_dsp_vector/vector/src/window_functions.rs.html#17-25' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait WindowFunction&lt;T&gt;: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span> {
-    fn <a href='#tymethod.is_symmetric' class='fnname'>is_symmetric</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>;
-    fn <a href='#tymethod.window' class='fnname'>window</a>(&amp;self, n: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, length: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; T;
+               </span><a class='srclink' href='../../src/basic_dsp_vector/window_functions.rs.html#17-25' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait WindowFunction&lt;T&gt;: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,&nbsp;</span>{
+    fn <a href='#tymethod.is_symmetric' class='fnname'>is_symmetric</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>;
+    fn <a href='#tymethod.window' class='fnname'>window</a>(&amp;self, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, length: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T;
 }</pre><div class='docblock'><p>A window function for FFT windows. See <code>https://en.wikipedia.org/wiki/Window_function</code>
-for details. Window functions should document if they aren&#39;t applicable for
+for details. Window functions should document if they aren't applicable for
 Inverse Fourier Transformations.</p>
-
 <p>The contract for window functions is as follows:</p>
-
 <ol>
 <li>The second argument is of the function is always <code>self.points()</code> and the possible values
 for the first argument ranges from <code>0..self.points()</code>.</li>
@@ -66,15 +65,15 @@ for the first argument ranges from <code>0..self.points()</code>.</li>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.is_symmetric' class='method stab '><span id='is_symmetric.v' class='invisible'><code>fn <a href='#tymethod.is_symmetric' class='fnname'>is_symmetric</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></span></h3><div class='docblock'><p>Indicates whether this function is symmetric around 0 or not.
+        <h3 id='tymethod.is_symmetric' class='method'><span id='is_symmetric.v' class='invisible'><code>fn <a href='#tymethod.is_symmetric' class='fnname'>is_symmetric</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h3><div class='docblock'><p>Indicates whether this function is symmetric around 0 or not.
 Symmetry is defined as <code>self.window(x) == self.window(-x)</code>.</p>
-</div><h3 id='tymethod.window' class='method stab '><span id='window.v' class='invisible'><code>fn <a href='#tymethod.window' class='fnname'>window</a>(&amp;self, n: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, length: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; T</code></span></h3><div class='docblock'><p>Calculates a point of the window function</p>
+</div><h3 id='tymethod.window' class='method'><span id='window.v' class='invisible'><code>fn <a href='#tymethod.window' class='fnname'>window</a>(&amp;self, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, length: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T</code></span></h3><div class='docblock'><p>Calculates a point of the window function</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;T&gt; WindowFunction&lt;T&gt; for <a class='struct' href='../../basic_dsp_vector/window_functions/struct.TriangularWindow.html' title='basic_dsp_vector::window_functions::TriangularWindow'>TriangularWindow</a> <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span></code></li>
-<li><code>impl&lt;T&gt; WindowFunction&lt;T&gt; for <a class='struct' href='../../basic_dsp_vector/window_functions/struct.HammingWindow.html' title='basic_dsp_vector::window_functions::HammingWindow'>HammingWindow</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span></code></li>
-<li><code>impl&lt;T&gt; WindowFunction&lt;T&gt; for <a class='struct' href='../../basic_dsp_vector/window_functions/struct.ForeignWindowFunction.html' title='basic_dsp_vector::window_functions::ForeignWindowFunction'>ForeignWindowFunction</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='../../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span></code></li>
+    <li><code>impl&lt;T&gt; WindowFunction&lt;T&gt; for <a class="struct" href="../../basic_dsp_vector/window_functions/struct.TriangularWindow.html" title="struct basic_dsp_vector::window_functions::TriangularWindow">TriangularWindow</a> <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,&nbsp;</span></code></li>
+<li><code>impl&lt;T&gt; WindowFunction&lt;T&gt; for <a class="struct" href="../../basic_dsp_vector/window_functions/struct.HammingWindow.html" title="struct basic_dsp_vector::window_functions::HammingWindow">HammingWindow</a>&lt;T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,&nbsp;</span></code></li>
+<li><code>impl&lt;T&gt; WindowFunction&lt;T&gt; for <a class="struct" href="../../basic_dsp_vector/window_functions/struct.ForeignWindowFunction.html" title="struct basic_dsp_vector::window_functions::ForeignWindowFunction">ForeignWindowFunction</a>&lt;T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,&nbsp;</span></code></li>
 </ul><script type="text/javascript" async
                          src="../../implementors/basic_dsp_vector/window_functions/trait.WindowFunction.js">
                  </script></section>
@@ -133,11 +132,9 @@ Symmetry is defined as <code>self.window(x) == self.window(-x)</code>.</p>
     <script>
         window.rootPath = "../../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    <script src="../../extra.js"></script>
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

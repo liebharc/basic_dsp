@@ -9,6 +9,7 @@
 
     <title>basic_dsp_vector::InsertZerosOps - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc trait">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,62 +43,57 @@
         </form>
     </nav>
 
-    <section id='main' class="content trait">
-<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class='trait' href=''>InsertZerosOps</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class="trait" href=''>InsertZerosOps</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-4121' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/data_reorganization.rs.html#79-126' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait InsertZerosOps&lt;T&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a></span> {
-    fn <a href='#tymethod.zero_pad' class='fnname'>zero_pad</a>(&amp;mut self, points: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, option: <a class='enum' href='../basic_dsp_vector/enum.PaddingOption.html' title='basic_dsp_vector::PaddingOption'>PaddingOption</a>) -&gt; <a class='type' href='../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a>;
-    fn <a href='#tymethod.zero_interleave' class='fnname'>zero_interleave</a>(&amp;mut self, factor: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; <a class='type' href='../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a>;
+               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/general/data_reorganization.rs.html#79-126' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait InsertZerosOps&lt;T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,&nbsp;</span>{
+    fn <a href='#tymethod.zero_pad' class='fnname'>zero_pad</a>(&amp;mut self, points: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, option: <a class="enum" href="../basic_dsp_vector/enum.PaddingOption.html" title="enum basic_dsp_vector::PaddingOption">PaddingOption</a>) -&gt; <a class="type" href="../basic_dsp_vector/type.VoidResult.html" title="type basic_dsp_vector::VoidResult">VoidResult</a>;
+    fn <a href='#tymethod.zero_interleave' class='fnname'>zero_interleave</a>(&amp;mut self, factor: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a class="type" href="../basic_dsp_vector/type.VoidResult.html" title="type basic_dsp_vector::VoidResult">VoidResult</a>;
 }</pre><div class='docblock'><p>A trait to insert zeros into the data at some specified positions.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.zero_pad' class='method stab '><span id='zero_pad.v' class='invisible'><code>fn <a href='#tymethod.zero_pad' class='fnname'>zero_pad</a>(&amp;mut self, points: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, option: <a class='enum' href='../basic_dsp_vector/enum.PaddingOption.html' title='basic_dsp_vector::PaddingOption'>PaddingOption</a>) -&gt; <a class='type' href='../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a></code></span></h3><div class='docblock'><p>Appends zeros add the end of the vector until the vector has the size given
+        <h3 id='tymethod.zero_pad' class='method'><span id='zero_pad.v' class='invisible'><code>fn <a href='#tymethod.zero_pad' class='fnname'>zero_pad</a>(&amp;mut self, points: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, option: <a class="enum" href="../basic_dsp_vector/enum.PaddingOption.html" title="enum basic_dsp_vector::PaddingOption">PaddingOption</a>) -&gt; <a class="type" href="../basic_dsp_vector/type.VoidResult.html" title="type basic_dsp_vector::VoidResult">VoidResult</a></code></span></h3><div class='docblock'><p>Appends zeros add the end of the vector until the vector has the size given
 in the points argument.
-If <code>points</code> smaller than the <code>self.len()</code> then this operation won&#39;t do anything, however
+If <code>points</code> smaller than the <code>self.len()</code> then this operation won't do anything, however
 in future it will raise an error.</p>
-
 <p>Note: Each point is two floating point numbers if the vector is complex.
 Note2: Adding zeros to the signal changes its power. If this function is used to
 zero pad to a power
 of 2 in order to speed up FFT calculation then it might be necessary to multiply it
-with <code>len_after/len_before</code>\
+with <code>len_after/len_before</code><br />
 so that the spectrum shows the expected power. Of course this is depending
 on the application.</p>
-
-<h1 id='example' class='section-header'><a href='#example'>Example</a></h1>
-<pre class='rust rust-example-rendered'>
-<span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
-<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>).<span class='ident'>to_real_time_vec</span>();
-<span class='ident'>vector</span>.<span class='ident'>zero_pad</span>(<span class='number'>4</span>, <span class='ident'>PaddingOption</span>::<span class='ident'>End</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>], <span class='ident'>vector</span>[..]);
-<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>).<span class='ident'>to_complex_time_vec</span>();
-<span class='ident'>vector</span>.<span class='ident'>zero_pad</span>(<span class='number'>2</span>, <span class='ident'>PaddingOption</span>::<span class='ident'>End</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>], <span class='ident'>vector</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
-</div><h3 id='tymethod.zero_interleave' class='method stab '><span id='zero_interleave.v' class='invisible'><code>fn <a href='#tymethod.zero_interleave' class='fnname'>zero_interleave</a>(&amp;mut self, factor: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; <a class='type' href='../basic_dsp_vector/type.VoidResult.html' title='basic_dsp_vector::VoidResult'>VoidResult</a></code></span></h3><div class='docblock'><p>Interleaves zeros <code>factor - 1</code>times after every vector element, so that the resulting
+<h1 id="example" class="section-header"><a href="#example">Example</a></h1>
+<pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="kw-2">*</span>;
+<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vector</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>(<span class="number">1.0</span>, <span class="number">2.0</span>).<span class="ident">to_real_time_vec</span>();
+<span class="ident">vector</span>.<span class="ident">zero_pad</span>(<span class="number">4</span>, <span class="ident">PaddingOption</span>::<span class="ident">End</span>).<span class="ident">expect</span>(<span class="string">&quot;Ignoring error handling in examples&quot;</span>);
+<span class="macro">assert_eq</span><span class="macro">!</span>([<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>], <span class="ident">vector</span>[..]);
+<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vector</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>(<span class="number">1.0</span>, <span class="number">2.0</span>).<span class="ident">to_complex_time_vec</span>();
+<span class="ident">vector</span>.<span class="ident">zero_pad</span>(<span class="number">2</span>, <span class="ident">PaddingOption</span>::<span class="ident">End</span>).<span class="ident">expect</span>(<span class="string">&quot;Ignoring error handling in examples&quot;</span>);
+<span class="macro">assert_eq</span><span class="macro">!</span>([<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>], <span class="ident">vector</span>[..]);</pre>
+</div><h3 id='tymethod.zero_interleave' class='method'><span id='zero_interleave.v' class='invisible'><code>fn <a href='#tymethod.zero_interleave' class='fnname'>zero_interleave</a>(&amp;mut self, factor: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a class="type" href="../basic_dsp_vector/type.VoidResult.html" title="type basic_dsp_vector::VoidResult">VoidResult</a></code></span></h3><div class='docblock'><p>Interleaves zeros <code>factor - 1</code>times after every vector element, so that the resulting
 vector will have a length of <code>self.len() * factor</code>.</p>
-
 <p>Note: Remember that each complex number consists of two floating points and interleaving
 will take that into account.</p>
-
 <p>If factor is 0 (zero) then <code>self</code> will be returned.</p>
-
-<h1 id='example-1' class='section-header'><a href='#example-1'>Example</a></h1>
-<pre class='rust rust-example-rendered'>
-<span class='kw'>use</span> <span class='ident'>basic_dsp_vector</span>::<span class='op'>*</span>;
-<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>).<span class='ident'>to_real_time_vec</span>();
-<span class='ident'>vector</span>.<span class='ident'>zero_interleave</span>(<span class='number'>2</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>0.0</span>, <span class='number'>2.0</span>, <span class='number'>0.0</span>], <span class='ident'>vector</span>[..]);
-<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vector</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>).<span class='ident'>to_complex_time_vec</span>();
-<span class='ident'>vector</span>.<span class='ident'>zero_interleave</span>(<span class='number'>2</span>).<span class='ident'>expect</span>(<span class='string'>&quot;Ignoring error handling in examples&quot;</span>);
-<span class='macro'>assert_eq</span><span class='macro'>!</span>([<span class='number'>1.0</span>, <span class='number'>2.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>, <span class='number'>3.0</span>, <span class='number'>4.0</span>, <span class='number'>0.0</span>, <span class='number'>0.0</span>], <span class='ident'>vector</span>[..]);<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+<h1 id="example-1" class="section-header"><a href="#example-1">Example</a></h1>
+<pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="kw-2">*</span>;
+<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vector</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>(<span class="number">1.0</span>, <span class="number">2.0</span>).<span class="ident">to_real_time_vec</span>();
+<span class="ident">vector</span>.<span class="ident">zero_interleave</span>(<span class="number">2</span>);
+<span class="macro">assert_eq</span><span class="macro">!</span>([<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">2.0</span>, <span class="number">0.0</span>], <span class="ident">vector</span>[..]);
+<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vector</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>(<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>).<span class="ident">to_complex_time_vec</span>();
+<span class="ident">vector</span>.<span class="ident">zero_interleave</span>(<span class="number">2</span>).<span class="ident">expect</span>(<span class="string">&quot;Ignoring error handling in examples&quot;</span>);
+<span class="macro">assert_eq</span><span class="macro">!</span>([<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>], <span class="ident">vector</span>[..]);</pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;S, T, N, D&gt; InsertZerosOps&lt;T&gt; for <a class='struct' href='../basic_dsp_vector/struct.DspVec.html' title='basic_dsp_vector::DspVec'>DspVec</a>&lt;S, T, N, D&gt; <span class='where'>where S: <a class='trait' href='../basic_dsp_vector/trait.ToSliceMut.html' title='basic_dsp_vector::ToSliceMut'>ToSliceMut</a>&lt;T&gt;, T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../basic_dsp_vector/trait.NumberSpace.html' title='basic_dsp_vector::NumberSpace'>NumberSpace</a>, D: <a class='trait' href='../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></li>
+    <li><code>impl&lt;S, T, N, D&gt; InsertZerosOps&lt;T&gt; for <a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../basic_dsp_vector/trait.ToSliceMut.html" title="trait basic_dsp_vector::ToSliceMut">ToSliceMut</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;N: <a class="trait" href="../basic_dsp_vector/trait.NumberSpace.html" title="trait basic_dsp_vector::NumberSpace">NumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;D: <a class="trait" href="../basic_dsp_vector/trait.Domain.html" title="trait basic_dsp_vector::Domain">Domain</a>,&nbsp;</span></code></li>
 </ul><script type="text/javascript" async
                          src="../implementors/basic_dsp_vector/trait.InsertZerosOps.js">
                  </script></section>
@@ -156,11 +152,9 @@ will take that into account.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

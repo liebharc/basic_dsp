@@ -4,11 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-1ecc6299db9ec823\crossbeam-0.2.10\src\mem/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-1ecc6299db9ec823\crossbeam-0.2.10\src\mem\mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc source">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,7 +43,7 @@
         </form>
     </nav>
 
-    <section id='main' class="content source"><pre class="line-numbers"><span id="1">1</span>
+    <section id='main' class="content"><pre class="line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -51,16 +52,16 @@
 <span id="7">7</span>
 <span id="8">8</span>
 <span id="9">9</span>
-</pre><pre class='rust '>
-<span class='doccomment'>//! Memory management for concurrent data structures</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! At the moment, the only memory management scheme is epoch-based reclamation,</span>
-<span class='doccomment'>//! found in the `epoch` submodule.</span>
+</pre><pre class="rust ">
+<span class="doccomment">//! Memory management for concurrent data structures</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! At the moment, the only memory management scheme is epoch-based reclamation,</span>
+<span class="doccomment">//! found in the `epoch` submodule.</span>
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>cache_padded</span>::{<span class='ident'>CachePadded</span>, <span class='ident'>ZerosValid</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">cache_padded</span>::{<span class="ident">CachePadded</span>, <span class="ident">ZerosValid</span>};
 
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>epoch</span>;
-<span class='kw'>mod</span> <span class='ident'>cache_padded</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">epoch</span>;
+<span class="kw">mod</span> <span class="ident">cache_padded</span>;
 </pre>
 </section>
     <section id='search' class="content hidden"></section>
@@ -118,11 +119,9 @@
     <script>
         window.rootPath = "../../../";
         window.currentCrate = "crossbeam";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
-    <script src="../../../extra.js"></script>
     <script defer src="../../../search-index.js"></script>
 </body>
 </html>

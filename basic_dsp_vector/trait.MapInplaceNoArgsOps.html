@@ -9,6 +9,7 @@
 
     <title>basic_dsp_vector::MapInplaceNoArgsOps - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc trait">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,24 +43,24 @@
         </form>
     </nav>
 
-    <section id='main' class="content trait">
-<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class='trait' href=''>MapInplaceNoArgsOps</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class="trait" href=''>MapInplaceNoArgsOps</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-4521' class='srclink' href='../src/basic_dsp_vector/vector/src/vector_types/general/mapping.rs.html#20-25' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait MapInplaceNoArgsOps&lt;T&gt;: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> <span class='where'>where T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span> {
-    fn <a href='#tymethod.map_inplace' class='fnname'>map_inplace</a>&lt;F&gt;(&amp;mut self, map: F) <span class='where'>where F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Fn.html' title='core::ops::Fn'>Fn</a>(T, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; T + 'static + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a></span>;
+               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/general/mapping.rs.html#19-24' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait MapInplaceNoArgsOps&lt;T&gt;: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a> <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,&nbsp;</span>{
+    fn <a href='#tymethod.map_inplace' class='fnname'>map_inplace</a>&lt;F&gt;(&amp;mut self, map: F)<br>&nbsp;&nbsp;&nbsp; <span class="where">where<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/trait.Fn.html" title="trait core::ops::Fn">Fn</a>(T, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T + 'static + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a></span>;
 }</pre><div class='docblock'><p>Operations which allow to iterate over the vector change the vector contents.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.map_inplace' class='method stab '><span id='map_inplace.v' class='invisible'><code>fn <a href='#tymethod.map_inplace' class='fnname'>map_inplace</a>&lt;F&gt;(&amp;mut self, map: F) <span class='where'>where F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Fn.html' title='core::ops::Fn'>Fn</a>(T, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; T + 'static + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a></span></code></span></h3><div class='docblock'><p>Transforms all vector elements using the function <code>map</code>.</p>
+        <h3 id='tymethod.map_inplace' class='method'><span id='map_inplace.v' class='invisible'><code>fn <a href='#tymethod.map_inplace' class='fnname'>map_inplace</a>&lt;F&gt;(&amp;mut self, map: F) <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/trait.Fn.html" title="trait core::ops::Fn">Fn</a>(T, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T + 'static + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a>,&nbsp;</span></code></span></h3><div class='docblock'><p>Transforms all vector elements using the function <code>map</code>.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;T, N, D&gt; MapInplaceNoArgsOps&lt;T&gt; for <a class='struct' href='../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../basic_dsp_vector/trait.RealNumberSpace.html' title='basic_dsp_vector::RealNumberSpace'>RealNumberSpace</a>, D: <a class='trait' href='../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></li>
-<li><code>impl&lt;T, N, D&gt; MapInplaceNoArgsOps&lt;<a class='struct' href='../num_complex/struct.Complex.html' title='num_complex::Complex'>Complex</a>&lt;T&gt;&gt; for <a class='struct' href='../basic_dsp_vector/combined_ops/struct.Identifier.html' title='basic_dsp_vector::combined_ops::Identifier'>Identifier</a>&lt;T, N, D&gt; <span class='where'>where T: <a class='trait' href='../basic_dsp_vector/trait.RealNumber.html' title='basic_dsp_vector::RealNumber'>RealNumber</a>, N: <a class='trait' href='../basic_dsp_vector/trait.ComplexNumberSpace.html' title='basic_dsp_vector::ComplexNumberSpace'>ComplexNumberSpace</a>, D: <a class='trait' href='../basic_dsp_vector/trait.Domain.html' title='basic_dsp_vector::Domain'>Domain</a></span></code></li>
+    <li><code>impl&lt;T, N, D&gt; MapInplaceNoArgsOps&lt;T&gt; for <a class="struct" href="../basic_dsp_vector/combined_ops/struct.Identifier.html" title="struct basic_dsp_vector::combined_ops::Identifier">Identifier</a>&lt;T, N, D&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;N: <a class="trait" href="../basic_dsp_vector/trait.RealNumberSpace.html" title="trait basic_dsp_vector::RealNumberSpace">RealNumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;D: <a class="trait" href="../basic_dsp_vector/trait.Domain.html" title="trait basic_dsp_vector::Domain">Domain</a>,&nbsp;</span></code></li>
+<li><code>impl&lt;T, N, D&gt; MapInplaceNoArgsOps&lt;<a class="struct" href="../basic_dsp_vector/numbers/struct.Complex.html" title="struct basic_dsp_vector::numbers::Complex">Complex</a>&lt;T&gt;&gt; for <a class="struct" href="../basic_dsp_vector/combined_ops/struct.Identifier.html" title="struct basic_dsp_vector::combined_ops::Identifier">Identifier</a>&lt;T, N, D&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;N: <a class="trait" href="../basic_dsp_vector/trait.ComplexNumberSpace.html" title="trait basic_dsp_vector::ComplexNumberSpace">ComplexNumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;D: <a class="trait" href="../basic_dsp_vector/trait.Domain.html" title="trait basic_dsp_vector::Domain">Domain</a>,&nbsp;</span></code></li>
 </ul><script type="text/javascript" async
                          src="../implementors/basic_dsp_vector/trait.MapInplaceNoArgsOps.js">
                  </script></section>
@@ -118,11 +119,9 @@
     <script>
         window.rootPath = "../";
         window.currentCrate = "basic_dsp_vector";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

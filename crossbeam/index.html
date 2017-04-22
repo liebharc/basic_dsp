@@ -9,6 +9,7 @@
 
     <title>crossbeam - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc mod">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,78 +43,89 @@
         </form>
     </nav>
 
-    <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>crossbeam</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Crate <a class="mod" href=''>crossbeam</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-0' class='srclink' href='../src/crossbeam/lib.rs.html#1-54' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../src/crossbeam/lib.rs.html#1-54' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Support for concurrent and parallel programming.</p>
-
 <p>This crate is an early work in progress. The focus for the moment is
 concurrency:</p>
-
 <ul>
-<li><p><strong>Non-blocking data structures</strong>. These data structures allow for high
+<li>
+<p><strong>Non-blocking data structures</strong>. These data structures allow for high
 performance, highly-concurrent access, much superior to wrapping with a
 <code>Mutex</code>. Ultimately the goal is to include stacks, queues, deques, bags,
-sets and maps. These live in the <code>sync</code> module.</p></li>
-<li><p><strong>Memory management</strong>. Because non-blocking data structures avoid global
+sets and maps. These live in the <code>sync</code> module.</p>
+</li>
+<li>
+<p><strong>Memory management</strong>. Because non-blocking data structures avoid global
 synchronization, it is not easy to tell when internal data can be safely
 freed. The <code>mem</code> module provides generic, easy to use, and high-performance
-APIs for managing memory in these cases. These live in the <code>mem</code> module.</p></li>
-<li><p><strong>Synchronization</strong>. The standard library provides a few synchronization
+APIs for managing memory in these cases. These live in the <code>mem</code> module.</p>
+</li>
+<li>
+<p><strong>Synchronization</strong>. The standard library provides a few synchronization
 primitives (locks, semaphores, barriers, etc) but this crate seeks to expand
 that set to include more advanced/niche primitives, as well as userspace
-alternatives. These live in the <code>sync</code> module.</p></li>
-<li><p><strong>Scoped thread API</strong>. Finally, the crate provides a &quot;scoped&quot; thread API,
+alternatives. These live in the <code>sync</code> module.</p>
+</li>
+<li>
+<p><strong>Scoped thread API</strong>. Finally, the crate provides a &quot;scoped&quot; thread API,
 making it possible to spawn threads that share stack data with their
-parents. This functionality is exported at the top-level.</p></li>
+parents. This functionality is exported at the top-level.</p>
+</li>
 </ul>
 </div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='mod' href='mem/index.html'
-                                  title='crossbeam::mem'>mem</a></td>
+                           <td><a class="mod" href="mem/index.html"
+                                  title='mod crossbeam::mem'>mem</a></td>
                            <td class='docblock-short'>
                                 <p>Memory management for concurrent data structures</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='mod' href='sync/index.html'
-                                  title='crossbeam::sync'>sync</a></td>
+                           <td><a class="mod" href="sync/index.html"
+                                  title='mod crossbeam::sync'>sync</a></td>
                            <td class='docblock-short'>
                                 <p>Synchronization primitives.</p>
+
                            </td>
                        </tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.Scope.html'
-                                  title='crossbeam::Scope'>Scope</a></td>
+                           <td><a class="struct" href="struct.Scope.html"
+                                  title='struct crossbeam::Scope'>Scope</a></td>
                            <td class='docblock-short'>
                                 
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.ScopedJoinHandle.html'
-                                  title='crossbeam::ScopedJoinHandle'>ScopedJoinHandle</a></td>
+                           <td><a class="struct" href="struct.ScopedJoinHandle.html"
+                                  title='struct crossbeam::ScopedJoinHandle'>ScopedJoinHandle</a></td>
                            <td class='docblock-short'>
                                 <p>A handle to a scoped thread</p>
+
                            </td>
                        </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='fn' href='fn.scope.html'
-                                  title='crossbeam::scope'>scope</a></td>
+                           <td><a class="fn" href="fn.scope.html"
+                                  title='fn crossbeam::scope'>scope</a></td>
                            <td class='docblock-short'>
                                 <p>Create a new <code>scope</code>, for deferred destructors.</p>
+
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='fn' href='fn.spawn_unsafe.html'
-                                  title='crossbeam::spawn_unsafe'>spawn_unsafe</a></td>
+                           <td><a class="fn" href="fn.spawn_unsafe.html"
+                                  title='fn crossbeam::spawn_unsafe'>spawn_unsafe</a><a title='unsafe function' href='#'><sup>⚠</sup></a></td>
                            <td class='docblock-short'>
                                 <p>Like <code>std::thread::spawn</code>, but without the closure bounds.</p>
+
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>
@@ -171,11 +183,9 @@ parents. This functionality is exported at the top-level.</p></li>
     <script>
         window.rootPath = "../";
         window.currentCrate = "crossbeam";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    <script src="../extra.js"></script>
     <script defer src="../search-index.js"></script>
 </body>
 </html>

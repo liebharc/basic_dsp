@@ -4,11 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-1ecc6299db9ec823\crossbeam-0.2.10\src\mem\epoch/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-1ecc6299db9ec823\crossbeam-0.2.10\src\mem\epoch\mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc source">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,7 +43,7 @@
         </form>
     </nav>
 
-    <section id='main' class="content source"><pre class="line-numbers"><span id="1">  1</span>
+    <section id='main' class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -307,270 +308,270 @@
 <span id="263">263</span>
 <span id="264">264</span>
 <span id="265">265</span>
-</pre><pre class='rust '>
-<span class='doccomment'>//! Epoch-based memory management</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! This module provides fast, easy to use memory management for lock free data</span>
-<span class='doccomment'>//! structures. It&#39;s inspired by [Keir Fraser&#39;s *epoch-based</span>
-<span class='doccomment'>//! reclamation*](https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-579.pdf).</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! The basic problem this is solving is the fact that when one thread has</span>
-<span class='doccomment'>//! removed a node from a data structure, other threads may still have pointers</span>
-<span class='doccomment'>//! to that node (in the form of snapshots that will be validated through things</span>
-<span class='doccomment'>//! like compare-and-swap), so the memory cannot be immediately freed. Put differently:</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! 1. There are two sources of reachability at play -- the data structure, and</span>
-<span class='doccomment'>//! the snapshots in threads accessing it. Before we delete a node, we need to know</span>
-<span class='doccomment'>//! that it cannot be reached in either of these ways.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! 2. Once a node has been unliked from the data structure, no *new* snapshots</span>
-<span class='doccomment'>//! reaching it will be created.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! Using the epoch scheme is fairly straightforward, and does not require</span>
-<span class='doccomment'>//! understanding any of the implementation details:</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! - When operating on a shared data structure, a thread must &quot;pin the current</span>
-<span class='doccomment'>//! epoch&quot;, which is done by calling `pin()`. This function returns a `Guard`</span>
-<span class='doccomment'>//! which unpins the epoch when destroyed.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! - When the thread subsequently reads from a lock-free data structure, the</span>
-<span class='doccomment'>//! pointers it extracts act like references with lifetime tied to the</span>
-<span class='doccomment'>//! `Guard`. This allows threads to safely read from snapshotted data, being</span>
-<span class='doccomment'>//! guaranteed that the data will remain allocated until they exit the epoch.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! To put the `Guard` to use, Crossbeam provides a set of three pointer types meant to work together:</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! - `Owned&lt;T&gt;`, akin to `Box&lt;T&gt;`, which points to uniquely-owned data that has</span>
-<span class='doccomment'>//!   not yet been published in a concurrent data structure.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! - `Shared&lt;&#39;a, T&gt;`, akin to `&amp;&#39;a T`, which points to shared data that may or may</span>
-<span class='doccomment'>//!   not be reachable from a data structure, but it guaranteed not to be freed</span>
-<span class='doccomment'>//!   during lifetime `&#39;a`.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! - `Atomic&lt;T&gt;`, akin to `std::sync::atomic::AtomicPtr`, which provides atomic</span>
-<span class='doccomment'>//!   updates to a pointer using the `Owned` and `Shared` types, and connects them</span>
-<span class='doccomment'>//!   to a `Guard`.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! Each of these types provides further documentation on usage.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! # Example</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! ```</span>
-<span class='doccomment'>//! use std::sync::atomic::Ordering::{Acquire, Release, Relaxed};</span>
-<span class='doccomment'>//! use std::ptr;</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! use crossbeam::mem::epoch::{self, Atomic, Owned};</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! struct TreiberStack&lt;T&gt; {</span>
-<span class='doccomment'>//!     head: Atomic&lt;Node&lt;T&gt;&gt;,</span>
-<span class='doccomment'>//! }</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! struct Node&lt;T&gt; {</span>
-<span class='doccomment'>//!     data: T,</span>
-<span class='doccomment'>//!     next: Atomic&lt;Node&lt;T&gt;&gt;,</span>
-<span class='doccomment'>//! }</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! impl&lt;T&gt; TreiberStack&lt;T&gt; {</span>
-<span class='doccomment'>//!     fn new() -&gt; TreiberStack&lt;T&gt; {</span>
-<span class='doccomment'>//!         TreiberStack {</span>
-<span class='doccomment'>//!             head: Atomic::null()</span>
-<span class='doccomment'>//!         }</span>
-<span class='doccomment'>//!     }</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!     fn push(&amp;self, t: T) {</span>
-<span class='doccomment'>//!         // allocate the node via Owned</span>
-<span class='doccomment'>//!         let mut n = Owned::new(Node {</span>
-<span class='doccomment'>//!             data: t,</span>
-<span class='doccomment'>//!             next: Atomic::null(),</span>
-<span class='doccomment'>//!         });</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!         // become active</span>
-<span class='doccomment'>//!         let guard = epoch::pin();</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!         loop {</span>
-<span class='doccomment'>//!             // snapshot current head</span>
-<span class='doccomment'>//!             let head = self.head.load(Relaxed, &amp;guard);</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!             // update `next` pointer with snapshot</span>
-<span class='doccomment'>//!             n.next.store_shared(head, Relaxed);</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!             // if snapshot is still good, link in the new node</span>
-<span class='doccomment'>//!             match self.head.cas_and_ref(head, n, Release, &amp;guard) {</span>
-<span class='doccomment'>//!                 Ok(_) =&gt; return,</span>
-<span class='doccomment'>//!                 Err(owned) =&gt; n = owned,</span>
-<span class='doccomment'>//!             }</span>
-<span class='doccomment'>//!         }</span>
-<span class='doccomment'>//!     }</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!     fn pop(&amp;self) -&gt; Option&lt;T&gt; {</span>
-<span class='doccomment'>//!         // become active</span>
-<span class='doccomment'>//!         let guard = epoch::pin();</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!         loop {</span>
-<span class='doccomment'>//!             // take a snapshot</span>
-<span class='doccomment'>//!             match self.head.load(Acquire, &amp;guard) {</span>
-<span class='doccomment'>//!                 // the stack is non-empty</span>
-<span class='doccomment'>//!                 Some(head) =&gt; {</span>
-<span class='doccomment'>//!                     // read through the snapshot, *safely*!</span>
-<span class='doccomment'>//!                     let next = head.next.load(Relaxed, &amp;guard);</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!                     // if snapshot is still good, update from `head` to `next`</span>
-<span class='doccomment'>//!                     if self.head.cas_shared(Some(head), next, Release) {</span>
-<span class='doccomment'>//!                         unsafe {</span>
-<span class='doccomment'>//!                             // mark the node as unlinked</span>
-<span class='doccomment'>//!                             guard.unlinked(head);</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!                             // extract out the data from the now-unlinked node</span>
-<span class='doccomment'>//!                             return Some(ptr::read(&amp;(*head).data))</span>
-<span class='doccomment'>//!                         }</span>
-<span class='doccomment'>//!                     }</span>
-<span class='doccomment'>//!                 }</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!                 // we observed the stack empty</span>
-<span class='doccomment'>//!                 None =&gt; return None</span>
-<span class='doccomment'>//!             }</span>
-<span class='doccomment'>//!         }</span>
-<span class='doccomment'>//!     }</span>
-<span class='doccomment'>//! }</span>
-<span class='doccomment'>//! ```</span>
+</pre><pre class="rust ">
+<span class="doccomment">//! Epoch-based memory management</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! This module provides fast, easy to use memory management for lock free data</span>
+<span class="doccomment">//! structures. It&#39;s inspired by [Keir Fraser&#39;s *epoch-based</span>
+<span class="doccomment">//! reclamation*](https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-579.pdf).</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! The basic problem this is solving is the fact that when one thread has</span>
+<span class="doccomment">//! removed a node from a data structure, other threads may still have pointers</span>
+<span class="doccomment">//! to that node (in the form of snapshots that will be validated through things</span>
+<span class="doccomment">//! like compare-and-swap), so the memory cannot be immediately freed. Put differently:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! 1. There are two sources of reachability at play -- the data structure, and</span>
+<span class="doccomment">//! the snapshots in threads accessing it. Before we delete a node, we need to know</span>
+<span class="doccomment">//! that it cannot be reached in either of these ways.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! 2. Once a node has been unliked from the data structure, no *new* snapshots</span>
+<span class="doccomment">//! reaching it will be created.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Using the epoch scheme is fairly straightforward, and does not require</span>
+<span class="doccomment">//! understanding any of the implementation details:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! - When operating on a shared data structure, a thread must &quot;pin the current</span>
+<span class="doccomment">//! epoch&quot;, which is done by calling `pin()`. This function returns a `Guard`</span>
+<span class="doccomment">//! which unpins the epoch when destroyed.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! - When the thread subsequently reads from a lock-free data structure, the</span>
+<span class="doccomment">//! pointers it extracts act like references with lifetime tied to the</span>
+<span class="doccomment">//! `Guard`. This allows threads to safely read from snapshotted data, being</span>
+<span class="doccomment">//! guaranteed that the data will remain allocated until they exit the epoch.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! To put the `Guard` to use, Crossbeam provides a set of three pointer types meant to work together:</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! - `Owned&lt;T&gt;`, akin to `Box&lt;T&gt;`, which points to uniquely-owned data that has</span>
+<span class="doccomment">//!   not yet been published in a concurrent data structure.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! - `Shared&lt;&#39;a, T&gt;`, akin to `&amp;&#39;a T`, which points to shared data that may or may</span>
+<span class="doccomment">//!   not be reachable from a data structure, but it guaranteed not to be freed</span>
+<span class="doccomment">//!   during lifetime `&#39;a`.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! - `Atomic&lt;T&gt;`, akin to `std::sync::atomic::AtomicPtr`, which provides atomic</span>
+<span class="doccomment">//!   updates to a pointer using the `Owned` and `Shared` types, and connects them</span>
+<span class="doccomment">//!   to a `Guard`.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Each of these types provides further documentation on usage.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Example</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//! use std::sync::atomic::Ordering::{Acquire, Release, Relaxed};</span>
+<span class="doccomment">//! use std::ptr;</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! use crossbeam::mem::epoch::{self, Atomic, Owned};</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! struct TreiberStack&lt;T&gt; {</span>
+<span class="doccomment">//!     head: Atomic&lt;Node&lt;T&gt;&gt;,</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! struct Node&lt;T&gt; {</span>
+<span class="doccomment">//!     data: T,</span>
+<span class="doccomment">//!     next: Atomic&lt;Node&lt;T&gt;&gt;,</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! impl&lt;T&gt; TreiberStack&lt;T&gt; {</span>
+<span class="doccomment">//!     fn new() -&gt; TreiberStack&lt;T&gt; {</span>
+<span class="doccomment">//!         TreiberStack {</span>
+<span class="doccomment">//!             head: Atomic::null()</span>
+<span class="doccomment">//!         }</span>
+<span class="doccomment">//!     }</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!     fn push(&amp;self, t: T) {</span>
+<span class="doccomment">//!         // allocate the node via Owned</span>
+<span class="doccomment">//!         let mut n = Owned::new(Node {</span>
+<span class="doccomment">//!             data: t,</span>
+<span class="doccomment">//!             next: Atomic::null(),</span>
+<span class="doccomment">//!         });</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!         // become active</span>
+<span class="doccomment">//!         let guard = epoch::pin();</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!         loop {</span>
+<span class="doccomment">//!             // snapshot current head</span>
+<span class="doccomment">//!             let head = self.head.load(Relaxed, &amp;guard);</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!             // update `next` pointer with snapshot</span>
+<span class="doccomment">//!             n.next.store_shared(head, Relaxed);</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!             // if snapshot is still good, link in the new node</span>
+<span class="doccomment">//!             match self.head.cas_and_ref(head, n, Release, &amp;guard) {</span>
+<span class="doccomment">//!                 Ok(_) =&gt; return,</span>
+<span class="doccomment">//!                 Err(owned) =&gt; n = owned,</span>
+<span class="doccomment">//!             }</span>
+<span class="doccomment">//!         }</span>
+<span class="doccomment">//!     }</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!     fn pop(&amp;self) -&gt; Option&lt;T&gt; {</span>
+<span class="doccomment">//!         // become active</span>
+<span class="doccomment">//!         let guard = epoch::pin();</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!         loop {</span>
+<span class="doccomment">//!             // take a snapshot</span>
+<span class="doccomment">//!             match self.head.load(Acquire, &amp;guard) {</span>
+<span class="doccomment">//!                 // the stack is non-empty</span>
+<span class="doccomment">//!                 Some(head) =&gt; {</span>
+<span class="doccomment">//!                     // read through the snapshot, *safely*!</span>
+<span class="doccomment">//!                     let next = head.next.load(Relaxed, &amp;guard);</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!                     // if snapshot is still good, update from `head` to `next`</span>
+<span class="doccomment">//!                     if self.head.cas_shared(Some(head), next, Release) {</span>
+<span class="doccomment">//!                         unsafe {</span>
+<span class="doccomment">//!                             // mark the node as unlinked</span>
+<span class="doccomment">//!                             guard.unlinked(head);</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!                             // extract out the data from the now-unlinked node</span>
+<span class="doccomment">//!                             return Some(ptr::read(&amp;(*head).data))</span>
+<span class="doccomment">//!                         }</span>
+<span class="doccomment">//!                     }</span>
+<span class="doccomment">//!                 }</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!                 // we observed the stack empty</span>
+<span class="doccomment">//!                 None =&gt; return None</span>
+<span class="doccomment">//!             }</span>
+<span class="doccomment">//!         }</span>
+<span class="doccomment">//!     }</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//! ```</span>
 
-<span class='comment'>// FIXME: document implementation details</span>
+<span class="comment">// FIXME: document implementation details</span>
 
-<span class='kw'>mod</span> <span class='ident'>atomic</span>;
-<span class='kw'>mod</span> <span class='ident'>garbage</span>;
-<span class='kw'>mod</span> <span class='ident'>global</span>;
-<span class='kw'>mod</span> <span class='ident'>guard</span>;
-<span class='kw'>mod</span> <span class='ident'>local</span>;
-<span class='kw'>mod</span> <span class='ident'>participant</span>;
-<span class='kw'>mod</span> <span class='ident'>participants</span>;
+<span class="kw">mod</span> <span class="ident">atomic</span>;
+<span class="kw">mod</span> <span class="ident">garbage</span>;
+<span class="kw">mod</span> <span class="ident">global</span>;
+<span class="kw">mod</span> <span class="ident">guard</span>;
+<span class="kw">mod</span> <span class="ident">local</span>;
+<span class="kw">mod</span> <span class="ident">participant</span>;
+<span class="kw">mod</span> <span class="ident">participants</span>;
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>atomic</span>::<span class='ident'>Atomic</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>guard</span>::{<span class='ident'>pin</span>, <span class='ident'>Guard</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">atomic</span>::<span class="ident">Atomic</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">guard</span>::{<span class="ident">pin</span>, <span class="ident">Guard</span>};
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::{<span class='ident'>Deref</span>, <span class='ident'>DerefMut</span>};
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ptr</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::{<span class="ident">Deref</span>, <span class="ident">DerefMut</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
 
-<span class='doccomment'>/// Like `Box&lt;T&gt;`: an owned, heap-allocated data value of type `T`.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Owned</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='ident'>data</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
+<span class="doccomment">/// Like `Box&lt;T&gt;`: an owned, heap-allocated data value of type `T`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Owned</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="ident">data</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Owned</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// Move `t` to a new heap allocation.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>t</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>Owned</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='ident'>Owned</span> { <span class='ident'>data</span>: <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>t</span>) }
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Owned</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Move `t` to a new heap allocation.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">t</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">Owned</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="ident">Owned</span> { <span class="ident">data</span>: <span class="ident">Box</span>::<span class="ident">new</span>(<span class="ident">t</span>) }
     }
 
-    <span class='kw'>fn</span> <span class='ident'>as_raw</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>T</span> {
-        <span class='self'>self</span>.<span class='ident'>deref</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _
+    <span class="kw">fn</span> <span class="ident">as_raw</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span> {
+        <span class="self">self</span>.<span class="ident">deref</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> _ <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> _
     }
 
-    <span class='doccomment'>/// Move data out of the owned box, deallocating the box.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>into_inner</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
-        <span class='op'>*</span><span class='self'>self</span>.<span class='ident'>data</span>
-    }
-}
-
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Deref</span> <span class='kw'>for</span> <span class='ident'>Owned</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='kw'>type</span> <span class='ident'>Target</span> <span class='op'>=</span> <span class='ident'>T</span>;
-    <span class='kw'>fn</span> <span class='ident'>deref</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>T</span> {
-        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>
+    <span class="doccomment">/// Move data out of the owned box, deallocating the box.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_inner</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
+        <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">data</span>
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>DerefMut</span> <span class='kw'>for</span> <span class='ident'>Owned</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>deref_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>T</span> {
-        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Deref</span> <span class="kw">for</span> <span class="ident">Owned</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">T</span>;
+    <span class="kw">fn</span> <span class="ident">deref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">T</span> {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">data</span>
     }
 }
 
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>)]</span>
-<span class='doccomment'>/// Like `&amp;&#39;a T`: a shared reference valid for lifetime `&#39;a`.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span>: <span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='ident'>data</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span>,
-}
-
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Copy</span> <span class='kw'>for</span> <span class='ident'>Shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {}
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Clone</span> <span class='kw'>for</span> <span class='ident'>Shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>clone</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='ident'>Shared</span> { <span class='ident'>data</span>: <span class='self'>self</span>.<span class='ident'>data</span> }
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">DerefMut</span> <span class="kw">for</span> <span class="ident">Owned</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">deref_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span> {
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">data</span>
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Deref</span> <span class='kw'>for</span> <span class='ident'>Shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='kw'>type</span> <span class='ident'>Target</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span>;
-    <span class='kw'>fn</span> <span class='ident'>deref</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='op'>&amp;&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span> {
-        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>data</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="doccomment">/// Like `&amp;&#39;a T`: a shared reference valid for lifetime `&#39;a`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>: <span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="ident">data</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">T</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Copy</span> <span class="kw">for</span> <span class="ident">Shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {}
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">Shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="ident">Shared</span> { <span class="ident">data</span>: <span class="self">self</span>.<span class="ident">data</span> }
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>from_raw</span>(<span class='ident'>raw</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw'>if</span> <span class='ident'>raw</span> <span class='op'>==</span> <span class='ident'>ptr</span>::<span class='ident'>null_mut</span>() { <span class='prelude-val'>None</span> }
-        <span class='kw'>else</span> {
-            <span class='prelude-val'>Some</span>(<span class='ident'>Shared</span> {
-                <span class='ident'>data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>::<span class='op'>&lt;</span><span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>T</span>, <span class='kw-2'>&amp;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>raw</span>)
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Deref</span> <span class="kw">for</span> <span class="ident">Shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">T</span>;
+    <span class="kw">fn</span> <span class="ident">deref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">T</span> {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">data</span>
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">from_raw</span>(<span class="ident">raw</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;&gt;</span> {
+        <span class="kw">if</span> <span class="ident">raw</span> <span class="op">==</span> <span class="ident">ptr</span>::<span class="ident">null_mut</span>() { <span class="prelude-val">None</span> }
+        <span class="kw">else</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">Shared</span> {
+                <span class="ident">data</span>: <span class="ident">mem</span>::<span class="ident">transmute</span>::<span class="op">&lt;</span><span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span>, <span class="kw-2">&amp;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">raw</span>)
             })
         }
     }
 
-    <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>from_ref</span>(<span class='ident'>r</span>: <span class='kw-2'>&amp;</span><span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>Shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='ident'>Shared</span> { <span class='ident'>data</span>: <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>r</span>) }
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">from_ref</span>(<span class="ident">r</span>: <span class="kw-2">&amp;</span><span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">Shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="ident">Shared</span> { <span class="ident">data</span>: <span class="ident">mem</span>::<span class="ident">transmute</span>(<span class="ident">r</span>) }
     }
 
-    <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>from_owned</span>(<span class='ident'>owned</span>: <span class='ident'>Owned</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>Shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>ret</span> <span class='op'>=</span> <span class='ident'>Shared</span>::<span class='ident'>from_ref</span>(<span class='ident'>owned</span>.<span class='ident'>deref</span>());
-        <span class='ident'>mem</span>::<span class='ident'>forget</span>(<span class='ident'>owned</span>);
-        <span class='ident'>ret</span>
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">from_owned</span>(<span class="ident">owned</span>: <span class="ident">Owned</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="ident">Shared</span>::<span class="ident">from_ref</span>(<span class="ident">owned</span>.<span class="ident">deref</span>());
+        <span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">owned</span>);
+        <span class="ident">ret</span>
     }
 
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>as_raw</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>T</span> {
-        <span class='self'>self</span>.<span class='ident'>data</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_raw</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span> {
+        <span class="self">self</span>.<span class="ident">data</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> _ <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> _
     }
 }
 
 
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
-<span class='kw'>mod</span> <span class='ident'>test</span> {
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::<span class='ident'>Ordering</span>;
-    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
-    <span class='kw'>use</span> <span class='ident'>mem</span>::<span class='ident'>epoch</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">test</span> {
+    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::<span class="ident">Ordering</span>;
+    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use</span> <span class="ident">mem</span>::<span class="ident">epoch</span>;
 
-    <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>test_no_drop</span>() {
-        <span class='kw'>static</span> <span class='kw-2'>mut</span> <span class='ident'>DROPS</span>: <span class='ident'>i32</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='kw'>struct</span> <span class='ident'>Test</span>;
-        <span class='kw'>impl</span> <span class='ident'>Drop</span> <span class='kw'>for</span> <span class='ident'>Test</span> {
-            <span class='kw'>fn</span> <span class='ident'>drop</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-                <span class='kw'>unsafe</span> {
-                    <span class='ident'>DROPS</span> <span class='op'>+=</span> <span class='number'>1</span>;
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_no_drop</span>() {
+        <span class="kw">static</span> <span class="kw-2">mut</span> <span class="ident">DROPS</span>: <span class="ident">i32</span> <span class="op">=</span> <span class="number">0</span>;
+        <span class="kw">struct</span> <span class="ident">Test</span>;
+        <span class="kw">impl</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">Test</span> {
+            <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+                <span class="kw">unsafe</span> {
+                    <span class="ident">DROPS</span> <span class="op">+=</span> <span class="number">1</span>;
                 }
             }
         }
-        <span class='kw'>let</span> <span class='ident'>g</span> <span class='op'>=</span> <span class='ident'>pin</span>();
+        <span class="kw">let</span> <span class="ident">g</span> <span class="op">=</span> <span class="ident">pin</span>();
 
-        <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>Atomic</span>::<span class='ident'>null</span>();
-        <span class='ident'>x</span>.<span class='ident'>store</span>(<span class='prelude-val'>Some</span>(<span class='ident'>Owned</span>::<span class='ident'>new</span>(<span class='ident'>Test</span>)), <span class='ident'>Ordering</span>::<span class='ident'>Relaxed</span>);
-        <span class='ident'>x</span>.<span class='ident'>store_and_ref</span>(<span class='ident'>Owned</span>::<span class='ident'>new</span>(<span class='ident'>Test</span>), <span class='ident'>Ordering</span>::<span class='ident'>Relaxed</span>, <span class='kw-2'>&amp;</span><span class='ident'>g</span>);
-        <span class='kw'>let</span> <span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>load</span>(<span class='ident'>Ordering</span>::<span class='ident'>Relaxed</span>, <span class='kw-2'>&amp;</span><span class='ident'>g</span>);
-        <span class='kw'>let</span> <span class='ident'>z</span> <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>cas_and_ref</span>(<span class='ident'>y</span>, <span class='ident'>Owned</span>::<span class='ident'>new</span>(<span class='ident'>Test</span>), <span class='ident'>Ordering</span>::<span class='ident'>Relaxed</span>, <span class='kw-2'>&amp;</span><span class='ident'>g</span>).<span class='ident'>ok</span>();
-        <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>cas</span>(<span class='ident'>z</span>, <span class='prelude-val'>Some</span>(<span class='ident'>Owned</span>::<span class='ident'>new</span>(<span class='ident'>Test</span>)), <span class='ident'>Ordering</span>::<span class='ident'>Relaxed</span>);
-        <span class='ident'>x</span>.<span class='ident'>swap</span>(<span class='prelude-val'>Some</span>(<span class='ident'>Owned</span>::<span class='ident'>new</span>(<span class='ident'>Test</span>)), <span class='ident'>Ordering</span>::<span class='ident'>Relaxed</span>, <span class='kw-2'>&amp;</span><span class='ident'>g</span>);
+        <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">Atomic</span>::<span class="ident">null</span>();
+        <span class="ident">x</span>.<span class="ident">store</span>(<span class="prelude-val">Some</span>(<span class="ident">Owned</span>::<span class="ident">new</span>(<span class="ident">Test</span>)), <span class="ident">Ordering</span>::<span class="ident">Relaxed</span>);
+        <span class="ident">x</span>.<span class="ident">store_and_ref</span>(<span class="ident">Owned</span>::<span class="ident">new</span>(<span class="ident">Test</span>), <span class="ident">Ordering</span>::<span class="ident">Relaxed</span>, <span class="kw-2">&amp;</span><span class="ident">g</span>);
+        <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">load</span>(<span class="ident">Ordering</span>::<span class="ident">Relaxed</span>, <span class="kw-2">&amp;</span><span class="ident">g</span>);
+        <span class="kw">let</span> <span class="ident">z</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">cas_and_ref</span>(<span class="ident">y</span>, <span class="ident">Owned</span>::<span class="ident">new</span>(<span class="ident">Test</span>), <span class="ident">Ordering</span>::<span class="ident">Relaxed</span>, <span class="kw-2">&amp;</span><span class="ident">g</span>).<span class="ident">ok</span>();
+        <span class="kw">let</span> _ <span class="op">=</span> <span class="ident">x</span>.<span class="ident">cas</span>(<span class="ident">z</span>, <span class="prelude-val">Some</span>(<span class="ident">Owned</span>::<span class="ident">new</span>(<span class="ident">Test</span>)), <span class="ident">Ordering</span>::<span class="ident">Relaxed</span>);
+        <span class="ident">x</span>.<span class="ident">swap</span>(<span class="prelude-val">Some</span>(<span class="ident">Owned</span>::<span class="ident">new</span>(<span class="ident">Test</span>)), <span class="ident">Ordering</span>::<span class="ident">Relaxed</span>, <span class="kw-2">&amp;</span><span class="ident">g</span>);
 
-        <span class='kw'>unsafe</span> {
-            <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>DROPS</span>, <span class='number'>0</span>);
+        <span class="kw">unsafe</span> {
+            <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">DROPS</span>, <span class="number">0</span>);
         }
     }
 
-    <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>test_new</span>() {
-        <span class='kw'>let</span> <span class='ident'>guard</span> <span class='op'>=</span> <span class='ident'>epoch</span>::<span class='ident'>pin</span>();
-        <span class='kw'>let</span> <span class='ident'>my_atomic</span> <span class='op'>=</span> <span class='ident'>Atomic</span>::<span class='ident'>new</span>(<span class='number'>42</span>);
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_new</span>() {
+        <span class="kw">let</span> <span class="ident">guard</span> <span class="op">=</span> <span class="ident">epoch</span>::<span class="ident">pin</span>();
+        <span class="kw">let</span> <span class="ident">my_atomic</span> <span class="op">=</span> <span class="ident">Atomic</span>::<span class="ident">new</span>(<span class="number">42</span>);
 
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='op'>*</span><span class='ident'>my_atomic</span>.<span class='ident'>load</span>(<span class='ident'>Ordering</span>::<span class='ident'>Relaxed</span>, <span class='kw-2'>&amp;</span><span class='ident'>guard</span>).<span class='ident'>unwrap</span>(), <span class='number'>42</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">my_atomic</span>.<span class="ident">load</span>(<span class="ident">Ordering</span>::<span class="ident">Relaxed</span>, <span class="kw-2">&amp;</span><span class="ident">guard</span>).<span class="ident">unwrap</span>(), <span class="number">42</span>);
     }
 }
 </pre>
@@ -630,11 +631,9 @@
     <script>
         window.rootPath = "../../../../";
         window.currentCrate = "crossbeam";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../../jquery.js"></script>
     <script src="../../../../main.js"></script>
-    <script src="../../../../extra.js"></script>
     <script defer src="../../../../search-index.js"></script>
 </body>
 </html>

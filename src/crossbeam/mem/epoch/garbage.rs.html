@@ -9,6 +9,7 @@
 
     <title>garbage.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc source">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,7 +43,7 @@
         </form>
     </nav>
 
-    <section id='main' class="content source"><pre class="line-numbers"><span id="1">  1</span>
+    <section id='main' class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -186,147 +187,147 @@
 <span id="142">142</span>
 <span id="143">143</span>
 <span id="144">144</span>
-</pre><pre class='rust '>
-<span class='comment'>// Data structures for storing garbage to be freed later (once the</span>
-<span class='comment'>// epochs have sufficiently advanced).</span>
-<span class='comment'>//</span>
-<span class='comment'>// In general, we try to manage the garbage thread locally whenever</span>
-<span class='comment'>// possible. Each thread keep track of three bags of garbage. But if a</span>
-<span class='comment'>// thread is exiting, these bags must be moved into the global garbage</span>
-<span class='comment'>// bags.</span>
+</pre><pre class="rust ">
+<span class="comment">// Data structures for storing garbage to be freed later (once the</span>
+<span class="comment">// epochs have sufficiently advanced).</span>
+<span class="comment">//</span>
+<span class="comment">// In general, we try to manage the garbage thread locally whenever</span>
+<span class="comment">// possible. Each thread keep track of three bags of garbage. But if a</span>
+<span class="comment">// thread is exiting, these bags must be moved into the global garbage</span>
+<span class="comment">// bags.</span>
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ptr</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::<span class='ident'>AtomicPtr</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::<span class='ident'>Ordering</span>::{<span class='ident'>Relaxed</span>, <span class='ident'>Release</span>, <span class='ident'>Acquire</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::<span class="ident">AtomicPtr</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::<span class="ident">Ordering</span>::{<span class="ident">Relaxed</span>, <span class="ident">Release</span>, <span class="ident">Acquire</span>};
 
-<span class='kw'>use</span> <span class='ident'>mem</span>::<span class='ident'>ZerosValid</span>;
+<span class="kw">use</span> <span class="ident">mem</span>::<span class="ident">ZerosValid</span>;
 
-<span class='doccomment'>/// One item of garbage.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// Stores enough information to do a deallocation.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>struct</span> <span class='ident'>Item</span> {
-    <span class='ident'>ptr</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span>,
-    <span class='ident'>free</span>: <span class='kw'>unsafe</span> <span class='kw'>fn</span>(<span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span>),
+<span class="doccomment">/// One item of garbage.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Stores enough information to do a deallocation.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">struct</span> <span class="ident">Item</span> {
+    <span class="ident">ptr</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u8</span>,
+    <span class="ident">free</span>: <span class="kw">unsafe</span> <span class="kw">fn</span>(<span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u8</span>),
 }
 
-<span class='doccomment'>/// A single, thread-local bag of garbage.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Bag</span>(<span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>&gt;</span>);
+<span class="doccomment">/// A single, thread-local bag of garbage.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Bag</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Item</span><span class="op">&gt;</span>);
 
-<span class='kw'>impl</span> <span class='ident'>Bag</span> {
-    <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Bag</span> {
-        <span class='ident'>Bag</span>(<span class='macro'>vec</span><span class='macro'>!</span>[])
+<span class="kw">impl</span> <span class="ident">Bag</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="ident">Bag</span> {
+        <span class="ident">Bag</span>(<span class="macro">vec</span><span class="macro">!</span>[])
     }
 
-    <span class='kw'>fn</span> <span class='ident'>insert</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>elem</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>T</span>) {
-        <span class='kw'>let</span> <span class='ident'>size</span> <span class='op'>=</span> <span class='ident'>mem</span>::<span class='ident'>size_of</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>();
-        <span class='kw'>if</span> <span class='ident'>size</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
-            <span class='self'>self</span>.<span class='number'>0</span>.<span class='ident'>push</span>(<span class='ident'>Item</span> {
-                <span class='ident'>ptr</span>: <span class='ident'>elem</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span>,
-                <span class='ident'>free</span>: <span class='ident'>free</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
+    <span class="kw">fn</span> <span class="ident">insert</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">elem</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span>) {
+        <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">size_of</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
+        <span class="kw">if</span> <span class="ident">size</span> <span class="op">&gt;</span> <span class="number">0</span> {
+            <span class="self">self</span>.<span class="number">0</span>.<span class="ident">push</span>(<span class="ident">Item</span> {
+                <span class="ident">ptr</span>: <span class="ident">elem</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u8</span>,
+                <span class="ident">free</span>: <span class="ident">free</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
             })
         }
-        <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>free</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='ident'>t</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>u8</span>) {
-            <span class='ident'>drop</span>(<span class='ident'>Vec</span>::<span class='ident'>from_raw_parts</span>(<span class='ident'>t</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>T</span>, <span class='number'>0</span>, <span class='number'>1</span>));
+        <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">free</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">t</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">u8</span>) {
+            <span class="ident">drop</span>(<span class="ident">Vec</span>::<span class="ident">from_raw_parts</span>(<span class="ident">t</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span>, <span class="number">0</span>, <span class="number">1</span>));
         }
     }
 
-    <span class='kw'>fn</span> <span class='ident'>len</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
-        <span class='self'>self</span>.<span class='number'>0</span>.<span class='ident'>len</span>()
+    <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+        <span class="self">self</span>.<span class="number">0</span>.<span class="ident">len</span>()
     }
 
-    <span class='doccomment'>/// Deallocate all garbage in the bag</span>
-    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>collect</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>mem</span>::<span class='ident'>replace</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='number'>0</span>, <span class='ident'>Vec</span>::<span class='ident'>new</span>());
-        <span class='kw'>for</span> <span class='ident'>item</span> <span class='kw'>in</span> <span class='ident'>data</span>.<span class='ident'>iter</span>() {
-            (<span class='ident'>item</span>.<span class='ident'>free</span>)(<span class='ident'>item</span>.<span class='ident'>ptr</span>);
+    <span class="doccomment">/// Deallocate all garbage in the bag</span>
+    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">collect</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">mem</span>::<span class="ident">replace</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="number">0</span>, <span class="ident">Vec</span>::<span class="ident">new</span>());
+        <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">data</span>.<span class="ident">iter</span>() {
+            (<span class="ident">item</span>.<span class="ident">free</span>)(<span class="ident">item</span>.<span class="ident">ptr</span>);
         }
-        <span class='ident'>data</span>.<span class='ident'>truncate</span>(<span class='number'>0</span>);
-        <span class='self'>self</span>.<span class='number'>0</span> <span class='op'>=</span> <span class='ident'>data</span>;
+        <span class="ident">data</span>.<span class="ident">truncate</span>(<span class="number">0</span>);
+        <span class="self">self</span>.<span class="number">0</span> <span class="op">=</span> <span class="ident">data</span>;
     }
 }
 
-<span class='comment'>// needed because the bags store raw pointers.</span>
-<span class='kw'>unsafe</span> <span class='kw'>impl</span> <span class='ident'>Send</span> <span class='kw'>for</span> <span class='ident'>Bag</span> {}
-<span class='kw'>unsafe</span> <span class='kw'>impl</span> <span class='ident'>Sync</span> <span class='kw'>for</span> <span class='ident'>Bag</span> {}
+<span class="comment">// needed because the bags store raw pointers.</span>
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">Bag</span> {}
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">Bag</span> {}
 
-<span class='doccomment'>/// A thread-local set of garbage bags.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Local</span> {
-    <span class='doccomment'>/// Garbage added at least one epoch behind the current local epoch</span>
-    <span class='kw'>pub</span> <span class='ident'>old</span>: <span class='ident'>Bag</span>,
-    <span class='doccomment'>/// Garbage added in the current local epoch or earlier</span>
-    <span class='kw'>pub</span> <span class='ident'>cur</span>: <span class='ident'>Bag</span>,
-    <span class='doccomment'>/// Garbage added in the current *global* epoch</span>
-    <span class='kw'>pub</span> <span class='ident'>new</span>: <span class='ident'>Bag</span>,
+<span class="doccomment">/// A thread-local set of garbage bags.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Local</span> {
+    <span class="doccomment">/// Garbage added at least one epoch behind the current local epoch</span>
+    <span class="kw">pub</span> <span class="ident">old</span>: <span class="ident">Bag</span>,
+    <span class="doccomment">/// Garbage added in the current local epoch or earlier</span>
+    <span class="kw">pub</span> <span class="ident">cur</span>: <span class="ident">Bag</span>,
+    <span class="doccomment">/// Garbage added in the current *global* epoch</span>
+    <span class="kw">pub</span> <span class="ident">new</span>: <span class="ident">Bag</span>,
 }
 
-<span class='kw'>impl</span> <span class='ident'>Local</span> {
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Local</span> {
-        <span class='ident'>Local</span> {
-            <span class='ident'>old</span>: <span class='ident'>Bag</span>::<span class='ident'>new</span>(),
-            <span class='ident'>cur</span>: <span class='ident'>Bag</span>::<span class='ident'>new</span>(),
-            <span class='ident'>new</span>: <span class='ident'>Bag</span>::<span class='ident'>new</span>(),
-        }
-    }
-
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>insert</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>elem</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>T</span>) {
-        <span class='self'>self</span>.<span class='ident'>new</span>.<span class='ident'>insert</span>(<span class='ident'>elem</span>)
-    }
-
-    <span class='doccomment'>/// Collect one epoch of garbage, rotating the local garbage bags.</span>
-    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>collect</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='kw'>let</span> <span class='ident'>ret</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>old</span>.<span class='ident'>collect</span>();
-        <span class='ident'>mem</span>::<span class='ident'>swap</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>old</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>cur</span>);
-        <span class='ident'>mem</span>::<span class='ident'>swap</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>cur</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>new</span>);
-        <span class='ident'>ret</span>
-    }
-
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>size</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
-        <span class='self'>self</span>.<span class='ident'>old</span>.<span class='ident'>len</span>() <span class='op'>+</span> <span class='self'>self</span>.<span class='ident'>cur</span>.<span class='ident'>len</span>() <span class='op'>+</span> <span class='self'>self</span>.<span class='ident'>new</span>.<span class='ident'>len</span>()
-    }
-}
-
-<span class='doccomment'>/// A concurrent garbage bag, currently based on Treiber&#39;s stack.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// The elements are themselves owned `Bag`s.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ConcBag</span> {
-    <span class='ident'>head</span>: <span class='ident'>AtomicPtr</span><span class='op'>&lt;</span><span class='ident'>Node</span><span class='op'>&gt;</span>,
-}
-
-<span class='kw'>unsafe</span> <span class='kw'>impl</span> <span class='ident'>ZerosValid</span> <span class='kw'>for</span> <span class='ident'>ConcBag</span> {}
-
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>struct</span> <span class='ident'>Node</span> {
-    <span class='ident'>data</span>: <span class='ident'>Bag</span>,
-    <span class='ident'>next</span>: <span class='ident'>AtomicPtr</span><span class='op'>&lt;</span><span class='ident'>Node</span><span class='op'>&gt;</span>,
-}
-
-<span class='kw'>impl</span> <span class='ident'>ConcBag</span> {
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>insert</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>t</span>: <span class='ident'>Bag</span>){
-        <span class='kw'>let</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>into_raw</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(
-            <span class='ident'>Node</span> { <span class='ident'>data</span>: <span class='ident'>t</span>, <span class='ident'>next</span>: <span class='ident'>AtomicPtr</span>::<span class='ident'>new</span>(<span class='ident'>ptr</span>::<span class='ident'>null_mut</span>()) }));
-        <span class='kw'>loop</span> {
-            <span class='kw'>let</span> <span class='ident'>head</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>head</span>.<span class='ident'>load</span>(<span class='ident'>Acquire</span>);
-            <span class='kw'>unsafe</span> { (<span class='op'>*</span><span class='ident'>n</span>).<span class='ident'>next</span>.<span class='ident'>store</span>(<span class='ident'>head</span>, <span class='ident'>Relaxed</span>) };
-            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>head</span>.<span class='ident'>compare_and_swap</span>(<span class='ident'>head</span>, <span class='ident'>n</span>, <span class='ident'>Release</span>) <span class='op'>==</span> <span class='ident'>head</span> { <span class='kw'>break</span> }
+<span class="kw">impl</span> <span class="ident">Local</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="ident">Local</span> {
+        <span class="ident">Local</span> {
+            <span class="ident">old</span>: <span class="ident">Bag</span>::<span class="ident">new</span>(),
+            <span class="ident">cur</span>: <span class="ident">Bag</span>::<span class="ident">new</span>(),
+            <span class="ident">new</span>: <span class="ident">Bag</span>::<span class="ident">new</span>(),
         }
     }
 
-    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>collect</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) {
-        <span class='comment'>// check to avoid xchg instruction</span>
-        <span class='comment'>// when no garbage exists</span>
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>head</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>head</span>.<span class='ident'>load</span>(<span class='ident'>Relaxed</span>);
-        <span class='kw'>if</span> <span class='ident'>head</span> <span class='op'>!=</span> <span class='ident'>ptr</span>::<span class='ident'>null_mut</span>() {
-            <span class='ident'>head</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>head</span>.<span class='ident'>swap</span>(<span class='ident'>ptr</span>::<span class='ident'>null_mut</span>(), <span class='ident'>Acquire</span>);
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">elem</span>: <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span>) {
+        <span class="self">self</span>.<span class="ident">new</span>.<span class="ident">insert</span>(<span class="ident">elem</span>)
+    }
 
-            <span class='kw'>while</span> <span class='ident'>head</span> <span class='op'>!=</span> <span class='ident'>ptr</span>::<span class='ident'>null_mut</span>() {
-                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>from_raw</span>(<span class='ident'>head</span>);
-                <span class='ident'>n</span>.<span class='ident'>data</span>.<span class='ident'>collect</span>();
-                <span class='ident'>head</span> <span class='op'>=</span> <span class='ident'>n</span>.<span class='ident'>next</span>.<span class='ident'>load</span>(<span class='ident'>Relaxed</span>);
+    <span class="doccomment">/// Collect one epoch of garbage, rotating the local garbage bags.</span>
+    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">collect</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+        <span class="kw">let</span> <span class="ident">ret</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">old</span>.<span class="ident">collect</span>();
+        <span class="ident">mem</span>::<span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">old</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">cur</span>);
+        <span class="ident">mem</span>::<span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">cur</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">new</span>);
+        <span class="ident">ret</span>
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+        <span class="self">self</span>.<span class="ident">old</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="self">self</span>.<span class="ident">cur</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="self">self</span>.<span class="ident">new</span>.<span class="ident">len</span>()
+    }
+}
+
+<span class="doccomment">/// A concurrent garbage bag, currently based on Treiber&#39;s stack.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The elements are themselves owned `Bag`s.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConcBag</span> {
+    <span class="ident">head</span>: <span class="ident">AtomicPtr</span><span class="op">&lt;</span><span class="ident">Node</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">unsafe</span> <span class="kw">impl</span> <span class="ident">ZerosValid</span> <span class="kw">for</span> <span class="ident">ConcBag</span> {}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">struct</span> <span class="ident">Node</span> {
+    <span class="ident">data</span>: <span class="ident">Bag</span>,
+    <span class="ident">next</span>: <span class="ident">AtomicPtr</span><span class="op">&lt;</span><span class="ident">Node</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">ConcBag</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">t</span>: <span class="ident">Bag</span>){
+        <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">into_raw</span>(<span class="ident">Box</span>::<span class="ident">new</span>(
+            <span class="ident">Node</span> { <span class="ident">data</span>: <span class="ident">t</span>, <span class="ident">next</span>: <span class="ident">AtomicPtr</span>::<span class="ident">new</span>(<span class="ident">ptr</span>::<span class="ident">null_mut</span>()) }));
+        <span class="kw">loop</span> {
+            <span class="kw">let</span> <span class="ident">head</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">head</span>.<span class="ident">load</span>(<span class="ident">Acquire</span>);
+            <span class="kw">unsafe</span> { (<span class="kw-2">*</span><span class="ident">n</span>).<span class="ident">next</span>.<span class="ident">store</span>(<span class="ident">head</span>, <span class="ident">Relaxed</span>) };
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">head</span>.<span class="ident">compare_and_swap</span>(<span class="ident">head</span>, <span class="ident">n</span>, <span class="ident">Release</span>) <span class="op">==</span> <span class="ident">head</span> { <span class="kw">break</span> }
+        }
+    }
+
+    <span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">collect</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="comment">// check to avoid xchg instruction</span>
+        <span class="comment">// when no garbage exists</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">head</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">head</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>);
+        <span class="kw">if</span> <span class="ident">head</span> <span class="op">!=</span> <span class="ident">ptr</span>::<span class="ident">null_mut</span>() {
+            <span class="ident">head</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">head</span>.<span class="ident">swap</span>(<span class="ident">ptr</span>::<span class="ident">null_mut</span>(), <span class="ident">Acquire</span>);
+
+            <span class="kw">while</span> <span class="ident">head</span> <span class="op">!=</span> <span class="ident">ptr</span>::<span class="ident">null_mut</span>() {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">Box</span>::<span class="ident">from_raw</span>(<span class="ident">head</span>);
+                <span class="ident">n</span>.<span class="ident">data</span>.<span class="ident">collect</span>();
+                <span class="ident">head</span> <span class="op">=</span> <span class="ident">n</span>.<span class="ident">next</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>);
             }
         }
     }
@@ -388,11 +389,9 @@
     <script>
         window.rootPath = "../../../../";
         window.currentCrate = "crossbeam";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../../jquery.js"></script>
     <script src="../../../../main.js"></script>
-    <script src="../../../../extra.js"></script>
     <script defer src="../../../../search-index.js"></script>
 </body>
 </html>

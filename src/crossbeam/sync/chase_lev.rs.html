@@ -9,6 +9,7 @@
 
     <title>chase_lev.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc source">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,7 +43,7 @@
         </form>
     </nav>
 
-    <section id='main' class="content source"><pre class="line-numbers"><span id="1">  1</span>
+    <section id='main' class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -644,606 +645,606 @@
 <span id="600">600</span>
 <span id="601">601</span>
 <span id="602">602</span>
-</pre><pre class='rust '>
-<span class='comment'>// Copyright 2013 The Rust Project Developers. See the COPYRIGHT</span>
-<span class='comment'>// file at the top-level directory of this distribution and at</span>
-<span class='comment'>// http://rust-lang.org/COPYRIGHT.</span>
-<span class='comment'>//</span>
-<span class='comment'>// Licensed under the Apache License, Version 2.0 &lt;LICENSE-APACHE or</span>
-<span class='comment'>// http://www.apache.org/licenses/LICENSE-2.0&gt; or the MIT license</span>
-<span class='comment'>// &lt;LICENSE-MIT or http://opensource.org/licenses/MIT&gt;, at your</span>
-<span class='comment'>// option. This file may not be copied, modified, or distributed</span>
-<span class='comment'>// except according to those terms.</span>
+</pre><pre class="rust ">
+<span class="comment">// Copyright 2013 The Rust Project Developers. See the COPYRIGHT</span>
+<span class="comment">// file at the top-level directory of this distribution and at</span>
+<span class="comment">// http://rust-lang.org/COPYRIGHT.</span>
+<span class="comment">//</span>
+<span class="comment">// Licensed under the Apache License, Version 2.0 &lt;LICENSE-APACHE or</span>
+<span class="comment">// http://www.apache.org/licenses/LICENSE-2.0&gt; or the MIT license</span>
+<span class="comment">// &lt;LICENSE-MIT or http://opensource.org/licenses/MIT&gt;, at your</span>
+<span class="comment">// option. This file may not be copied, modified, or distributed</span>
+<span class="comment">// except according to those terms.</span>
 
-<span class='doccomment'>//! A lock-free concurrent work-stealing deque</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! This module contains a hybrid implementation of the Chase-Lev work stealing deque</span>
-<span class='doccomment'>//! described in [&quot;Dynamic Circular Work-Stealing Deque&quot;][chase_lev] and the improved version</span>
-<span class='doccomment'>//! described in [&quot;Correct and Efficient Work-Stealing for Weak Memory Models&quot;][weak_chase_lev].</span>
-<span class='doccomment'>//! The implementation is heavily based on the pseudocode found in the papers.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! # Example</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! ```</span>
-<span class='doccomment'>//! use crossbeam::sync::chase_lev;</span>
-<span class='doccomment'>//! let (mut worker, stealer) = chase_lev::deque();</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! // Only the worker may push/try_pop</span>
-<span class='doccomment'>//! worker.push(1);</span>
-<span class='doccomment'>//! worker.try_pop();</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! // Stealers take data from the other end of the deque</span>
-<span class='doccomment'>//! worker.push(1);</span>
-<span class='doccomment'>//! stealer.steal();</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! // Stealers can be cloned to have many stealers stealing in parallel</span>
-<span class='doccomment'>//! worker.push(1);</span>
-<span class='doccomment'>//! let stealer2 = stealer.clone();</span>
-<span class='doccomment'>//! stealer2.steal();</span>
-<span class='doccomment'>//! ```</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! [chase_lev]: http://neteril.org/~jeremie/Dynamic_Circular_Work_Queue.pdf</span>
-<span class='doccomment'>//! [weak_chase_lev]: http://www.di.ens.fr/~zappa/readings/ppopp13.pdf</span>
+<span class="doccomment">//! A lock-free concurrent work-stealing deque</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! This module contains a hybrid implementation of the Chase-Lev work stealing deque</span>
+<span class="doccomment">//! described in [&quot;Dynamic Circular Work-Stealing Deque&quot;][chase_lev] and the improved version</span>
+<span class="doccomment">//! described in [&quot;Correct and Efficient Work-Stealing for Weak Memory Models&quot;][weak_chase_lev].</span>
+<span class="doccomment">//! The implementation is heavily based on the pseudocode found in the papers.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Example</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//! use crossbeam::sync::chase_lev;</span>
+<span class="doccomment">//! let (mut worker, stealer) = chase_lev::deque();</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! // Only the worker may push/try_pop</span>
+<span class="doccomment">//! worker.push(1);</span>
+<span class="doccomment">//! worker.try_pop();</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! // Stealers take data from the other end of the deque</span>
+<span class="doccomment">//! worker.push(1);</span>
+<span class="doccomment">//! stealer.steal();</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! // Stealers can be cloned to have many stealers stealing in parallel</span>
+<span class="doccomment">//! worker.push(1);</span>
+<span class="doccomment">//! let stealer2 = stealer.clone();</span>
+<span class="doccomment">//! stealer2.steal();</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! [chase_lev]: http://neteril.org/~jeremie/Dynamic_Circular_Work_Queue.pdf</span>
+<span class="doccomment">//! [weak_chase_lev]: http://www.di.ens.fr/~zappa/readings/ppopp13.pdf</span>
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cell</span>::<span class='ident'>UnsafeCell</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ptr</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::<span class='ident'>Ordering</span>::{<span class='ident'>Acquire</span>, <span class='ident'>Relaxed</span>, <span class='ident'>Release</span>, <span class='ident'>SeqCst</span>};
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::{<span class='ident'>AtomicIsize</span>, <span class='ident'>fence</span>};
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>Arc</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cell</span>::<span class="ident">UnsafeCell</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::<span class="ident">Ordering</span>::{<span class="ident">Acquire</span>, <span class="ident">Relaxed</span>, <span class="ident">Release</span>, <span class="ident">SeqCst</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::{<span class="ident">AtomicIsize</span>, <span class="ident">fence</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
-<span class='kw'>use</span> <span class='ident'>mem</span>::<span class='ident'>epoch</span>::{<span class='self'>self</span>, <span class='ident'>Atomic</span>, <span class='ident'>Shared</span>, <span class='ident'>Owned</span>};
+<span class="kw">use</span> <span class="ident">mem</span>::<span class="ident">epoch</span>::{<span class="self">self</span>, <span class="ident">Atomic</span>, <span class="ident">Shared</span>, <span class="ident">Owned</span>};
 
-<span class='comment'>// Once the queue is less than 1/K full, then it will be downsized. Note that</span>
-<span class='comment'>// the deque requires that this number be less than 2.</span>
-<span class='kw'>const</span> <span class='ident'>K</span>: <span class='ident'>isize</span> <span class='op'>=</span> <span class='number'>4</span>;
+<span class="comment">// Once the queue is less than 1/K full, then it will be downsized. Note that</span>
+<span class="comment">// the deque requires that this number be less than 2.</span>
+<span class="kw">const</span> <span class="ident">K</span>: <span class="ident">isize</span> <span class="op">=</span> <span class="number">4</span>;
 
-<span class='comment'>// Minimum number of bits that a buffer size should be. No buffer will resize to</span>
-<span class='comment'>// under this value, and all deques will initially contain a buffer of this</span>
-<span class='comment'>// size.</span>
-<span class='comment'>//</span>
-<span class='comment'>// The size in question is 1 &lt;&lt; MIN_BITS</span>
-<span class='kw'>const</span> <span class='ident'>MIN_BITS</span>: <span class='ident'>u32</span> <span class='op'>=</span> <span class='number'>7</span>;
+<span class="comment">// Minimum number of bits that a buffer size should be. No buffer will resize to</span>
+<span class="comment">// under this value, and all deques will initially contain a buffer of this</span>
+<span class="comment">// size.</span>
+<span class="comment">//</span>
+<span class="comment">// The size in question is 1 &lt;&lt; MIN_BITS</span>
+<span class="kw">const</span> <span class="ident">MIN_BITS</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">7</span>;
 
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>struct</span> <span class='ident'>Deque</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='ident'>bottom</span>: <span class='ident'>AtomicIsize</span>,
-    <span class='ident'>top</span>: <span class='ident'>AtomicIsize</span>,
-    <span class='ident'>array</span>: <span class='ident'>Atomic</span><span class='op'>&lt;</span><span class='ident'>Buffer</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>,
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">struct</span> <span class="ident">Deque</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="ident">bottom</span>: <span class="ident">AtomicIsize</span>,
+    <span class="ident">top</span>: <span class="ident">AtomicIsize</span>,
+    <span class="ident">array</span>: <span class="ident">Atomic</span><span class="op">&lt;</span><span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
 }
 
-<span class='comment'>// FIXME: can these constraints be relaxed?</span>
-<span class='kw'>unsafe</span> <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Send</span><span class='op'>&gt;</span> <span class='ident'>Send</span> <span class='kw'>for</span> <span class='ident'>Deque</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {}
-<span class='kw'>unsafe</span> <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Send</span><span class='op'>&gt;</span> <span class='ident'>Sync</span> <span class='kw'>for</span> <span class='ident'>Deque</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {}
+<span class="comment">// FIXME: can these constraints be relaxed?</span>
+<span class="kw">unsafe</span> <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Send</span><span class="op">&gt;</span> <span class="ident">Send</span> <span class="kw">for</span> <span class="ident">Deque</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {}
+<span class="kw">unsafe</span> <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Send</span><span class="op">&gt;</span> <span class="ident">Sync</span> <span class="kw">for</span> <span class="ident">Deque</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {}
 
-<span class='doccomment'>/// Worker half of the work-stealing deque. This worker has exclusive access to</span>
-<span class='doccomment'>/// one side of the deque, and uses `push` and `try_pop` method to manipulate it.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// There may only be one worker per deque, and operations on the worker</span>
-<span class='doccomment'>/// require mutable access to the worker itself.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Worker</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='ident'>deque</span>: <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>Deque</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>,
+<span class="doccomment">/// Worker half of the work-stealing deque. This worker has exclusive access to</span>
+<span class="doccomment">/// one side of the deque, and uses `push` and `try_pop` method to manipulate it.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// There may only be one worker per deque, and operations on the worker</span>
+<span class="doccomment">/// require mutable access to the worker itself.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Worker</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="ident">deque</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Deque</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
 }
 
-<span class='doccomment'>/// The stealing half of the work-stealing deque. Stealers have access to the</span>
-<span class='doccomment'>/// opposite end of the deque from the worker, and they only have access to the</span>
-<span class='doccomment'>/// `steal` method.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// Stealers can be cloned to have more than one handle active at a time.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Stealer</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='ident'>deque</span>: <span class='ident'>Arc</span><span class='op'>&lt;</span><span class='ident'>Deque</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>,
+<span class="doccomment">/// The stealing half of the work-stealing deque. Stealers have access to the</span>
+<span class="doccomment">/// opposite end of the deque from the worker, and they only have access to the</span>
+<span class="doccomment">/// `steal` method.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Stealers can be cloned to have more than one handle active at a time.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Stealer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="ident">deque</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Deque</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
 }
 
-<span class='doccomment'>/// When stealing some data, this is an enumeration of the possible outcomes.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>, <span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Steal</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// The deque was empty at the time of stealing</span>
-    <span class='ident'>Empty</span>,
-    <span class='doccomment'>/// The stealer lost the race for stealing data, and a retry may return more</span>
-    <span class='doccomment'>/// data.</span>
-    <span class='ident'>Abort</span>,
-    <span class='doccomment'>/// The stealer has successfully stolen some data.</span>
-    <span class='ident'>Data</span>(<span class='ident'>T</span>),
+<span class="doccomment">/// When stealing some data, this is an enumeration of the possible outcomes.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Steal</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// The deque was empty at the time of stealing</span>
+    <span class="ident">Empty</span>,
+    <span class="doccomment">/// The stealer lost the race for stealing data, and a retry may return more</span>
+    <span class="doccomment">/// data.</span>
+    <span class="ident">Abort</span>,
+    <span class="doccomment">/// The stealer has successfully stolen some data.</span>
+    <span class="ident">Data</span>(<span class="ident">T</span>),
 }
 
-<span class='comment'>// An internal buffer used by the chase-lev deque. This structure is actually</span>
-<span class='comment'>// implemented as a circular buffer, and is used as the intermediate storage of</span>
-<span class='comment'>// the data in the deque.</span>
-<span class='comment'>//</span>
-<span class='comment'>// This Vec&lt;T&gt; always has a length of 0, the backing buffer is just used by the</span>
-<span class='comment'>// code below.</span>
-<span class='kw'>struct</span> <span class='ident'>Buffer</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='ident'>storage</span>: <span class='ident'>UnsafeCell</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>,
-    <span class='ident'>log_size</span>: <span class='ident'>u32</span>,
+<span class="comment">// An internal buffer used by the chase-lev deque. This structure is actually</span>
+<span class="comment">// implemented as a circular buffer, and is used as the intermediate storage of</span>
+<span class="comment">// the data in the deque.</span>
+<span class="comment">//</span>
+<span class="comment">// This Vec&lt;T&gt; always has a length of 0, the backing buffer is just used by the</span>
+<span class="comment">// code below.</span>
+<span class="kw">struct</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="ident">storage</span>: <span class="ident">UnsafeCell</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">log_size</span>: <span class="ident">u32</span>,
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>fmt</span>::<span class='ident'>Debug</span> <span class='kw'>for</span> <span class='ident'>Buffer</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
-        <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;Buffer {{ ... }}&quot;</span>)
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt</span>::<span class="ident">Formatter</span>) <span class="op">-&gt;</span> <span class="ident">fmt</span>::<span class="prelude-ty">Result</span> {
+        <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Buffer {{ ... }}&quot;</span>)
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Worker</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// Pushes data onto the front of this work queue.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>push</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>t</span>: <span class='ident'>T</span>) {
-        <span class='kw'>unsafe</span> { <span class='self'>self</span>.<span class='ident'>deque</span>.<span class='ident'>push</span>(<span class='ident'>t</span>) }
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Worker</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Pushes data onto the front of this work queue.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">push</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">t</span>: <span class="ident">T</span>) {
+        <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">deque</span>.<span class="ident">push</span>(<span class="ident">t</span>) }
     }
 
-    <span class='doccomment'>/// Pops data off the front of the work queue, returning `None` on an empty</span>
-    <span class='doccomment'>/// queue.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>try_pop</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='kw'>unsafe</span> { <span class='self'>self</span>.<span class='ident'>deque</span>.<span class='ident'>try_pop</span>() }
-    }
-}
-
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Stealer</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='doccomment'>/// Steals work off the end of the queue (opposite of the worker&#39;s end)</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>steal</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Steal</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>deque</span>.<span class='ident'>steal</span>()
+    <span class="doccomment">/// Pops data off the front of the work queue, returning `None` on an empty</span>
+    <span class="doccomment">/// queue.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_pop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="kw">unsafe</span> { <span class="self">self</span>.<span class="ident">deque</span>.<span class="ident">try_pop</span>() }
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Clone</span> <span class='kw'>for</span> <span class='ident'>Stealer</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>clone</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Stealer</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='ident'>Stealer</span> { <span class='ident'>deque</span>: <span class='self'>self</span>.<span class='ident'>deque</span>.<span class='ident'>clone</span>() }
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Stealer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Steals work off the end of the queue (opposite of the worker&#39;s end)</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">steal</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Steal</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">deque</span>.<span class="ident">steal</span>()
     }
 }
 
-<span class='doccomment'>/// Creates a new empty deque</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>deque</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>() <span class='op'>-&gt;</span> (<span class='ident'>Worker</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>, <span class='ident'>Stealer</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>) {
-    <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>Deque</span>::<span class='ident'>new</span>());
-    <span class='kw'>let</span> <span class='ident'>b</span> <span class='op'>=</span> <span class='ident'>a</span>.<span class='ident'>clone</span>();
-    (<span class='ident'>Worker</span> { <span class='ident'>deque</span>: <span class='ident'>a</span> }, <span class='ident'>Stealer</span> { <span class='ident'>deque</span>: <span class='ident'>b</span> })
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">Stealer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Stealer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="ident">Stealer</span> { <span class="ident">deque</span>: <span class="self">self</span>.<span class="ident">deque</span>.<span class="ident">clone</span>() }
+    }
 }
 
-<span class='comment'>// Almost all of this code can be found directly in the paper so I&#39;m not</span>
-<span class='comment'>// personally going to heavily comment what&#39;s going on here.</span>
+<span class="doccomment">/// Creates a new empty deque</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">deque</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>() <span class="op">-&gt;</span> (<span class="ident">Worker</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">Stealer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
+    <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Deque</span>::<span class="ident">new</span>());
+    <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">clone</span>();
+    (<span class="ident">Worker</span> { <span class="ident">deque</span>: <span class="ident">a</span> }, <span class="ident">Stealer</span> { <span class="ident">deque</span>: <span class="ident">b</span> })
+}
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Deque</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Deque</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>array</span> <span class='op'>=</span> <span class='ident'>Atomic</span>::<span class='ident'>null</span>();
-        <span class='ident'>array</span>.<span class='ident'>store</span>(<span class='prelude-val'>Some</span>(<span class='ident'>Owned</span>::<span class='ident'>new</span>(<span class='ident'>Buffer</span>::<span class='ident'>new</span>(<span class='ident'>MIN_BITS</span>))), <span class='ident'>SeqCst</span>);
-        <span class='ident'>Deque</span> {
-            <span class='ident'>bottom</span>: <span class='ident'>AtomicIsize</span>::<span class='ident'>new</span>(<span class='number'>0</span>),
-            <span class='ident'>top</span>: <span class='ident'>AtomicIsize</span>::<span class='ident'>new</span>(<span class='number'>0</span>),
-            <span class='ident'>array</span>: <span class='ident'>array</span>,
+<span class="comment">// Almost all of this code can be found directly in the paper so I&#39;m not</span>
+<span class="comment">// personally going to heavily comment what&#39;s going on here.</span>
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Deque</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="ident">Deque</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="ident">Atomic</span>::<span class="ident">null</span>();
+        <span class="ident">array</span>.<span class="ident">store</span>(<span class="prelude-val">Some</span>(<span class="ident">Owned</span>::<span class="ident">new</span>(<span class="ident">Buffer</span>::<span class="ident">new</span>(<span class="ident">MIN_BITS</span>))), <span class="ident">SeqCst</span>);
+        <span class="ident">Deque</span> {
+            <span class="ident">bottom</span>: <span class="ident">AtomicIsize</span>::<span class="ident">new</span>(<span class="number">0</span>),
+            <span class="ident">top</span>: <span class="ident">AtomicIsize</span>::<span class="ident">new</span>(<span class="number">0</span>),
+            <span class="ident">array</span>: <span class="ident">array</span>,
         }
     }
 
-    <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>push</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>data</span>: <span class='ident'>T</span>) {
-        <span class='kw'>let</span> <span class='ident'>guard</span> <span class='op'>=</span> <span class='ident'>epoch</span>::<span class='ident'>pin</span>();
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">push</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">data</span>: <span class="ident">T</span>) {
+        <span class="kw">let</span> <span class="ident">guard</span> <span class="op">=</span> <span class="ident">epoch</span>::<span class="ident">pin</span>();
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>b</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>bottom</span>.<span class='ident'>load</span>(<span class='ident'>Relaxed</span>);
-        <span class='kw'>let</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>top</span>.<span class='ident'>load</span>(<span class='ident'>Acquire</span>);
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>array</span>.<span class='ident'>load</span>(<span class='ident'>Relaxed</span>, <span class='kw-2'>&amp;</span><span class='ident'>guard</span>).<span class='ident'>unwrap</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bottom</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>);
+        <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">top</span>.<span class="ident">load</span>(<span class="ident">Acquire</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">a</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">array</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>, <span class="kw-2">&amp;</span><span class="ident">guard</span>).<span class="ident">unwrap</span>();
 
-        <span class='kw'>let</span> <span class='ident'>size</span> <span class='op'>=</span> <span class='ident'>b</span> <span class='op'>-</span> <span class='ident'>t</span>;
-        <span class='kw'>if</span> <span class='ident'>size</span> <span class='op'>&gt;=</span> (<span class='ident'>a</span>.<span class='ident'>size</span>() <span class='kw'>as</span> <span class='ident'>isize</span>) <span class='op'>-</span> <span class='number'>1</span> {
-            <span class='comment'>// You won&#39;t find this code in the chase-lev deque paper. This is</span>
-            <span class='comment'>// alluded to in a small footnote, however. We always free a buffer</span>
-            <span class='comment'>// when growing in order to prevent leaks.</span>
-            <span class='ident'>a</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>swap_buffer</span>(<span class='ident'>a</span>, <span class='ident'>a</span>.<span class='ident'>resize</span>(<span class='ident'>b</span>, <span class='ident'>t</span>, <span class='number'>1</span>), <span class='kw-2'>&amp;</span><span class='ident'>guard</span>);
+        <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="ident">b</span> <span class="op">-</span> <span class="ident">t</span>;
+        <span class="kw">if</span> <span class="ident">size</span> <span class="op">&gt;=</span> (<span class="ident">a</span>.<span class="ident">size</span>() <span class="kw">as</span> <span class="ident">isize</span>) <span class="op">-</span> <span class="number">1</span> {
+            <span class="comment">// You won&#39;t find this code in the chase-lev deque paper. This is</span>
+            <span class="comment">// alluded to in a small footnote, however. We always free a buffer</span>
+            <span class="comment">// when growing in order to prevent leaks.</span>
+            <span class="ident">a</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">swap_buffer</span>(<span class="ident">a</span>, <span class="ident">a</span>.<span class="ident">resize</span>(<span class="ident">b</span>, <span class="ident">t</span>, <span class="number">1</span>), <span class="kw-2">&amp;</span><span class="ident">guard</span>);
 
-            <span class='comment'>// reload the bottom counter, since swap_buffer modifies it.</span>
-            <span class='ident'>b</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>bottom</span>.<span class='ident'>load</span>(<span class='ident'>Relaxed</span>);
+            <span class="comment">// reload the bottom counter, since swap_buffer modifies it.</span>
+            <span class="ident">b</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bottom</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>);
         }
-        <span class='ident'>a</span>.<span class='ident'>put</span>(<span class='ident'>b</span>, <span class='ident'>data</span>);
-        <span class='ident'>fence</span>(<span class='ident'>Release</span>);
-        <span class='self'>self</span>.<span class='ident'>bottom</span>.<span class='ident'>store</span>(<span class='ident'>b</span> <span class='op'>+</span> <span class='number'>1</span>, <span class='ident'>Relaxed</span>);
+        <span class="ident">a</span>.<span class="ident">put</span>(<span class="ident">b</span>, <span class="ident">data</span>);
+        <span class="ident">fence</span>(<span class="ident">Release</span>);
+        <span class="self">self</span>.<span class="ident">bottom</span>.<span class="ident">store</span>(<span class="ident">b</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">Relaxed</span>);
     }
 
-    <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>try_pop</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>guard</span> <span class='op'>=</span> <span class='ident'>epoch</span>::<span class='ident'>pin</span>();
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">try_pop</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">guard</span> <span class="op">=</span> <span class="ident">epoch</span>::<span class="ident">pin</span>();
 
-        <span class='kw'>let</span> <span class='ident'>b</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>bottom</span>.<span class='ident'>load</span>(<span class='ident'>Relaxed</span>) <span class='op'>-</span> <span class='number'>1</span>;
-        <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>array</span>.<span class='ident'>load</span>(<span class='ident'>Relaxed</span>, <span class='kw-2'>&amp;</span><span class='ident'>guard</span>).<span class='ident'>unwrap</span>();
-        <span class='self'>self</span>.<span class='ident'>bottom</span>.<span class='ident'>store</span>(<span class='ident'>b</span>, <span class='ident'>Relaxed</span>);
-        <span class='ident'>fence</span>(<span class='ident'>SeqCst</span>); <span class='comment'>// the store to bottom must occur before loading top.</span>
-        <span class='kw'>let</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>top</span>.<span class='ident'>load</span>(<span class='ident'>Relaxed</span>);
+        <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bottom</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>) <span class="op">-</span> <span class="number">1</span>;
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">array</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>, <span class="kw-2">&amp;</span><span class="ident">guard</span>).<span class="ident">unwrap</span>();
+        <span class="self">self</span>.<span class="ident">bottom</span>.<span class="ident">store</span>(<span class="ident">b</span>, <span class="ident">Relaxed</span>);
+        <span class="ident">fence</span>(<span class="ident">SeqCst</span>); <span class="comment">// the store to bottom must occur before loading top.</span>
+        <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">top</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>);
 
-        <span class='kw'>let</span> <span class='ident'>size</span> <span class='op'>=</span> <span class='ident'>b</span> <span class='op'>-</span> <span class='ident'>t</span>;
-        <span class='kw'>if</span> <span class='ident'>size</span> <span class='op'>&gt;=</span> <span class='number'>0</span> {
-            <span class='comment'>// non-empty case</span>
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>a</span>.<span class='ident'>get</span>(<span class='ident'>b</span>));
-            <span class='kw'>if</span> <span class='ident'>size</span> <span class='op'>==</span> <span class='number'>0</span> {
-                <span class='comment'>// last element in queue, check for races.</span>
-                <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>top</span>.<span class='ident'>compare_and_swap</span>(<span class='ident'>t</span>, <span class='ident'>t</span> <span class='op'>+</span> <span class='number'>1</span>, <span class='ident'>SeqCst</span>) <span class='op'>!=</span> <span class='ident'>t</span> {
-                    <span class='comment'>// lost the race.</span>
-                    <span class='ident'>mem</span>::<span class='ident'>forget</span>(<span class='ident'>data</span>.<span class='ident'>take</span>());
+        <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="ident">b</span> <span class="op">-</span> <span class="ident">t</span>;
+        <span class="kw">if</span> <span class="ident">size</span> <span class="op">&gt;=</span> <span class="number">0</span> {
+            <span class="comment">// non-empty case</span>
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">a</span>.<span class="ident">get</span>(<span class="ident">b</span>));
+            <span class="kw">if</span> <span class="ident">size</span> <span class="op">==</span> <span class="number">0</span> {
+                <span class="comment">// last element in queue, check for races.</span>
+                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">top</span>.<span class="ident">compare_and_swap</span>(<span class="ident">t</span>, <span class="ident">t</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">SeqCst</span>) <span class="op">!=</span> <span class="ident">t</span> {
+                    <span class="comment">// lost the race.</span>
+                    <span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">data</span>.<span class="ident">take</span>());
                 }
 
-                <span class='comment'>// set the queue to a canonically empty state.</span>
-                <span class='self'>self</span>.<span class='ident'>bottom</span>.<span class='ident'>store</span>(<span class='ident'>b</span> <span class='op'>+</span> <span class='number'>1</span>, <span class='ident'>Relaxed</span>);
-            } <span class='kw'>else</span> {
-                <span class='self'>self</span>.<span class='ident'>maybe_shrink</span>(<span class='ident'>b</span>, <span class='ident'>t</span>, <span class='kw-2'>&amp;</span><span class='ident'>guard</span>);
+                <span class="comment">// set the queue to a canonically empty state.</span>
+                <span class="self">self</span>.<span class="ident">bottom</span>.<span class="ident">store</span>(<span class="ident">b</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">Relaxed</span>);
+            } <span class="kw">else</span> {
+                <span class="self">self</span>.<span class="ident">maybe_shrink</span>(<span class="ident">b</span>, <span class="ident">t</span>, <span class="kw-2">&amp;</span><span class="ident">guard</span>);
             }
-            <span class='ident'>data</span>
-        } <span class='kw'>else</span> {
-            <span class='comment'>// empty queue. revert the decrement of &quot;b&quot; and try to shrink.</span>
-            <span class='comment'>//</span>
-            <span class='comment'>// the original chase_lev paper uses &quot;t&quot; here, but the new one uses &quot;b + 1&quot;.</span>
-            <span class='comment'>// don&#39;t worry, they&#39;re the same thing: pop and steal operations will never leave</span>
-            <span class='comment'>// the top counter greater than the bottom counter. After we decrement &quot;b&quot; at</span>
-            <span class='comment'>// the beginning of this function, the lowest possible value it could hold here is &quot;t - 1&quot;.</span>
-            <span class='comment'>// That&#39;s also the only value that could cause this branch to be taken.</span>
-            <span class='self'>self</span>.<span class='ident'>bottom</span>.<span class='ident'>store</span>(<span class='ident'>b</span> <span class='op'>+</span> <span class='number'>1</span>, <span class='ident'>Relaxed</span>);
-            <span class='prelude-val'>None</span>
+            <span class="ident">data</span>
+        } <span class="kw">else</span> {
+            <span class="comment">// empty queue. revert the decrement of &quot;b&quot; and try to shrink.</span>
+            <span class="comment">//</span>
+            <span class="comment">// the original chase_lev paper uses &quot;t&quot; here, but the new one uses &quot;b + 1&quot;.</span>
+            <span class="comment">// don&#39;t worry, they&#39;re the same thing: pop and steal operations will never leave</span>
+            <span class="comment">// the top counter greater than the bottom counter. After we decrement &quot;b&quot; at</span>
+            <span class="comment">// the beginning of this function, the lowest possible value it could hold here is &quot;t - 1&quot;.</span>
+            <span class="comment">// That&#39;s also the only value that could cause this branch to be taken.</span>
+            <span class="self">self</span>.<span class="ident">bottom</span>.<span class="ident">store</span>(<span class="ident">b</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">Relaxed</span>);
+            <span class="prelude-val">None</span>
         }
     }
 
-    <span class='kw'>fn</span> <span class='ident'>steal</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Steal</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>guard</span> <span class='op'>=</span> <span class='ident'>epoch</span>::<span class='ident'>pin</span>();
+    <span class="kw">fn</span> <span class="ident">steal</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Steal</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">guard</span> <span class="op">=</span> <span class="ident">epoch</span>::<span class="ident">pin</span>();
 
-        <span class='kw'>let</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>top</span>.<span class='ident'>load</span>(<span class='ident'>Acquire</span>);
-        <span class='ident'>fence</span>(<span class='ident'>SeqCst</span>); <span class='comment'>// top must be loaded before bottom.</span>
-        <span class='kw'>let</span> <span class='ident'>b</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>bottom</span>.<span class='ident'>load</span>(<span class='ident'>Acquire</span>);
+        <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">top</span>.<span class="ident">load</span>(<span class="ident">Acquire</span>);
+        <span class="ident">fence</span>(<span class="ident">SeqCst</span>); <span class="comment">// top must be loaded before bottom.</span>
+        <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bottom</span>.<span class="ident">load</span>(<span class="ident">Acquire</span>);
 
-        <span class='kw'>let</span> <span class='ident'>size</span> <span class='op'>=</span> <span class='ident'>b</span> <span class='op'>-</span> <span class='ident'>t</span>;
-        <span class='kw'>if</span> <span class='ident'>size</span> <span class='op'>&lt;=</span> <span class='number'>0</span> {
-            <span class='kw'>return</span> <span class='ident'>Steal</span>::<span class='ident'>Empty</span>
+        <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="ident">b</span> <span class="op">-</span> <span class="ident">t</span>;
+        <span class="kw">if</span> <span class="ident">size</span> <span class="op">&lt;=</span> <span class="number">0</span> {
+            <span class="kw">return</span> <span class="ident">Steal</span>::<span class="ident">Empty</span>
         }
 
-        <span class='kw'>unsafe</span> {
-            <span class='comment'>// while the paper uses a &quot;consume&quot; ordering here, the closest thing we have</span>
-            <span class='comment'>// available is Acquire, which is strictly stronger.</span>
-            <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>array</span>.<span class='ident'>load</span>(<span class='ident'>Acquire</span>, <span class='kw-2'>&amp;</span><span class='ident'>guard</span>).<span class='ident'>unwrap</span>();
-            <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>a</span>.<span class='ident'>get</span>(<span class='ident'>t</span>);
-            <span class='comment'>// we may be racing against other steals and a pop.</span>
-            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>top</span>.<span class='ident'>compare_and_swap</span>(<span class='ident'>t</span>, <span class='ident'>t</span> <span class='op'>+</span> <span class='number'>1</span>, <span class='ident'>SeqCst</span>) <span class='op'>==</span> <span class='ident'>t</span> {
-                <span class='ident'>Steal</span>::<span class='ident'>Data</span>(<span class='ident'>data</span>)
-            } <span class='kw'>else</span> {
-                <span class='ident'>mem</span>::<span class='ident'>forget</span>(<span class='ident'>data</span>); <span class='comment'>// someone else stole this value</span>
-                <span class='ident'>Steal</span>::<span class='ident'>Abort</span>
+        <span class="kw">unsafe</span> {
+            <span class="comment">// while the paper uses a &quot;consume&quot; ordering here, the closest thing we have</span>
+            <span class="comment">// available is Acquire, which is strictly stronger.</span>
+            <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">array</span>.<span class="ident">load</span>(<span class="ident">Acquire</span>, <span class="kw-2">&amp;</span><span class="ident">guard</span>).<span class="ident">unwrap</span>();
+            <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">get</span>(<span class="ident">t</span>);
+            <span class="comment">// we may be racing against other steals and a pop.</span>
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">top</span>.<span class="ident">compare_and_swap</span>(<span class="ident">t</span>, <span class="ident">t</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">SeqCst</span>) <span class="op">==</span> <span class="ident">t</span> {
+                <span class="ident">Steal</span>::<span class="ident">Data</span>(<span class="ident">data</span>)
+            } <span class="kw">else</span> {
+                <span class="ident">mem</span>::<span class="ident">forget</span>(<span class="ident">data</span>); <span class="comment">// someone else stole this value</span>
+                <span class="ident">Steal</span>::<span class="ident">Abort</span>
             }
         }
     }
 
-    <span class='comment'>// potentially shrink the array. This can be called only from the worker.</span>
-    <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>maybe_shrink</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>b</span>: <span class='ident'>isize</span>, <span class='ident'>t</span>: <span class='ident'>isize</span>, <span class='ident'>guard</span>: <span class='kw-2'>&amp;</span><span class='ident'>epoch</span>::<span class='ident'>Guard</span>) {
-        <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>array</span>.<span class='ident'>load</span>(<span class='ident'>SeqCst</span>, <span class='ident'>guard</span>).<span class='ident'>unwrap</span>();
-        <span class='kw'>let</span> <span class='ident'>size</span> <span class='op'>=</span> <span class='ident'>b</span> <span class='op'>-</span> <span class='ident'>t</span>;
-        <span class='kw'>if</span> <span class='ident'>size</span> <span class='op'>&lt;</span> (<span class='ident'>a</span>.<span class='ident'>size</span>() <span class='kw'>as</span> <span class='ident'>isize</span>) <span class='op'>/</span> <span class='ident'>K</span> <span class='op'>&amp;&amp;</span> <span class='ident'>size</span> <span class='op'>&gt;</span> (<span class='number'>1</span> <span class='op'>&lt;&lt;</span> <span class='ident'>MIN_BITS</span>) {
-            <span class='self'>self</span>.<span class='ident'>swap_buffer</span>(<span class='ident'>a</span>, <span class='ident'>a</span>.<span class='ident'>resize</span>(<span class='ident'>b</span>, <span class='ident'>t</span>, <span class='op'>-</span><span class='number'>1</span>), <span class='ident'>guard</span>);
+    <span class="comment">// potentially shrink the array. This can be called only from the worker.</span>
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">maybe_shrink</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">b</span>: <span class="ident">isize</span>, <span class="ident">t</span>: <span class="ident">isize</span>, <span class="ident">guard</span>: <span class="kw-2">&amp;</span><span class="ident">epoch</span>::<span class="ident">Guard</span>) {
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">array</span>.<span class="ident">load</span>(<span class="ident">SeqCst</span>, <span class="ident">guard</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="ident">b</span> <span class="op">-</span> <span class="ident">t</span>;
+        <span class="kw">if</span> <span class="ident">size</span> <span class="op">&lt;</span> (<span class="ident">a</span>.<span class="ident">size</span>() <span class="kw">as</span> <span class="ident">isize</span>) <span class="op">/</span> <span class="ident">K</span> <span class="op">&amp;&amp;</span> <span class="ident">size</span> <span class="op">&gt;</span> (<span class="number">1</span> <span class="op">&lt;&lt;</span> <span class="ident">MIN_BITS</span>) {
+            <span class="self">self</span>.<span class="ident">swap_buffer</span>(<span class="ident">a</span>, <span class="ident">a</span>.<span class="ident">resize</span>(<span class="ident">b</span>, <span class="ident">t</span>, <span class="op">-</span><span class="number">1</span>), <span class="ident">guard</span>);
         }
     }
 
-    <span class='comment'>// Helper routine not mentioned in the paper which is used in growing and</span>
-    <span class='comment'>// shrinking buffers to swap in a new buffer into place.</span>
-    <span class='comment'>//</span>
-    <span class='comment'>// As a bit of a recap, stealers can continue using buffers after this</span>
-    <span class='comment'>// method has called &#39;unlinked&#39; on it. The continued usage is simply a read</span>
-    <span class='comment'>// followed by a forget, but we must make sure that the memory can continue</span>
-    <span class='comment'>// to be read after we flag this buffer for reclamation. All stealers,</span>
-    <span class='comment'>// however, have their own epoch pinned during this time so the buffer will</span>
-    <span class='comment'>// just naturally be free&#39;d once all concurrent stealers have exited.</span>
-    <span class='comment'>//</span>
-    <span class='comment'>// This method may only be called safely from the workers due to the way it modifies</span>
-    <span class='comment'>// the array pointer.</span>
-    <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>swap_buffer</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>,
-                              <span class='ident'>old</span>: <span class='ident'>Shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>Buffer</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span>,
-                              <span class='ident'>buf</span>: <span class='ident'>Buffer</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
-                              <span class='ident'>guard</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>epoch</span>::<span class='ident'>Guard</span>)
-                              <span class='op'>-&gt;</span> <span class='ident'>Shared</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>Buffer</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>newbuf</span> <span class='op'>=</span> <span class='ident'>Owned</span>::<span class='ident'>new</span>(<span class='ident'>buf</span>);
-        <span class='kw'>let</span> <span class='ident'>newbuf</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>array</span>.<span class='ident'>store_and_ref</span>(<span class='ident'>newbuf</span>, <span class='ident'>Release</span>, <span class='kw-2'>&amp;</span><span class='ident'>guard</span>);
-        <span class='ident'>guard</span>.<span class='ident'>unlinked</span>(<span class='ident'>old</span>);
+    <span class="comment">// Helper routine not mentioned in the paper which is used in growing and</span>
+    <span class="comment">// shrinking buffers to swap in a new buffer into place.</span>
+    <span class="comment">//</span>
+    <span class="comment">// As a bit of a recap, stealers can continue using buffers after this</span>
+    <span class="comment">// method has called &#39;unlinked&#39; on it. The continued usage is simply a read</span>
+    <span class="comment">// followed by a forget, but we must make sure that the memory can continue</span>
+    <span class="comment">// to be read after we flag this buffer for reclamation. All stealers,</span>
+    <span class="comment">// however, have their own epoch pinned during this time so the buffer will</span>
+    <span class="comment">// just naturally be free&#39;d once all concurrent stealers have exited.</span>
+    <span class="comment">//</span>
+    <span class="comment">// This method may only be called safely from the workers due to the way it modifies</span>
+    <span class="comment">// the array pointer.</span>
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">swap_buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>,
+                              <span class="ident">old</span>: <span class="ident">Shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
+                              <span class="ident">buf</span>: <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+                              <span class="ident">guard</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">epoch</span>::<span class="ident">Guard</span>)
+                              <span class="op">-&gt;</span> <span class="ident">Shared</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
+        <span class="kw">let</span> <span class="ident">newbuf</span> <span class="op">=</span> <span class="ident">Owned</span>::<span class="ident">new</span>(<span class="ident">buf</span>);
+        <span class="kw">let</span> <span class="ident">newbuf</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">array</span>.<span class="ident">store_and_ref</span>(<span class="ident">newbuf</span>, <span class="ident">Release</span>, <span class="kw-2">&amp;</span><span class="ident">guard</span>);
+        <span class="ident">guard</span>.<span class="ident">unlinked</span>(<span class="ident">old</span>);
 
-        <span class='ident'>newbuf</span>
+        <span class="ident">newbuf</span>
     }
 }
 
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Drop</span> <span class='kw'>for</span> <span class='ident'>Deque</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>drop</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='kw'>let</span> <span class='ident'>guard</span> <span class='op'>=</span> <span class='ident'>epoch</span>::<span class='ident'>pin</span>();
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">Deque</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+        <span class="kw">let</span> <span class="ident">guard</span> <span class="op">=</span> <span class="ident">epoch</span>::<span class="ident">pin</span>();
 
-        <span class='comment'>// Arc enforces that we have truly exclusive access here.</span>
+        <span class="comment">// Arc enforces that we have truly exclusive access here.</span>
 
-        <span class='kw'>let</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>top</span>.<span class='ident'>load</span>(<span class='ident'>Relaxed</span>);
-        <span class='kw'>let</span> <span class='ident'>b</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>bottom</span>.<span class='ident'>load</span>(<span class='ident'>Relaxed</span>);
-        <span class='kw'>let</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>array</span>.<span class='ident'>swap</span>(<span class='prelude-val'>None</span>, <span class='ident'>Relaxed</span>, <span class='kw-2'>&amp;</span><span class='ident'>guard</span>).<span class='ident'>unwrap</span>();
-        <span class='comment'>// Free whatever is leftover in the dequeue, then free the backing</span>
-        <span class='comment'>// memory itself</span>
-        <span class='kw'>unsafe</span> {
-            <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>t</span>..<span class='ident'>b</span> {
-                <span class='ident'>drop</span>(<span class='ident'>a</span>.<span class='ident'>get</span>(<span class='ident'>i</span>));
+        <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">top</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>);
+        <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bottom</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>);
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">array</span>.<span class="ident">swap</span>(<span class="prelude-val">None</span>, <span class="ident">Relaxed</span>, <span class="kw-2">&amp;</span><span class="ident">guard</span>).<span class="ident">unwrap</span>();
+        <span class="comment">// Free whatever is leftover in the dequeue, then free the backing</span>
+        <span class="comment">// memory itself</span>
+        <span class="kw">unsafe</span> {
+            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">t</span>..<span class="ident">b</span> {
+                <span class="ident">drop</span>(<span class="ident">a</span>.<span class="ident">get</span>(<span class="ident">i</span>));
             }
-            <span class='ident'>guard</span>.<span class='ident'>unlinked</span>(<span class='ident'>a</span>);
+            <span class="ident">guard</span>.<span class="ident">unlinked</span>(<span class="ident">a</span>);
         }
     }
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Buffer</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>log_size</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>Buffer</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='ident'>Buffer</span> {
-            <span class='ident'>storage</span>: <span class='ident'>UnsafeCell</span>::<span class='ident'>new</span>(<span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='number'>1</span> <span class='op'>&lt;&lt;</span> <span class='ident'>log_size</span>)),
-            <span class='ident'>log_size</span>: <span class='ident'>log_size</span>,
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">log_size</span>: <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="ident">Buffer</span> {
+            <span class="ident">storage</span>: <span class="ident">UnsafeCell</span>::<span class="ident">new</span>(<span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="number">1</span> <span class="op">&lt;&lt;</span> <span class="ident">log_size</span>)),
+            <span class="ident">log_size</span>: <span class="ident">log_size</span>,
         }
     }
 
-    <span class='kw'>fn</span> <span class='ident'>size</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
-        <span class='kw'>unsafe</span> { (<span class='op'>*</span><span class='self'>self</span>.<span class='ident'>storage</span>.<span class='ident'>get</span>()).<span class='ident'>capacity</span>() }
+    <span class="kw">fn</span> <span class="ident">size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+        <span class="kw">unsafe</span> { (<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">get</span>()).<span class="ident">capacity</span>() }
     }
 
-    <span class='kw'>fn</span> <span class='ident'>mask</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>isize</span> {
-        <span class='kw'>unsafe</span> {
-            ((<span class='op'>*</span><span class='self'>self</span>.<span class='ident'>storage</span>.<span class='ident'>get</span>()).<span class='ident'>capacity</span>() <span class='op'>-</span> <span class='number'>1</span>) <span class='kw'>as</span> <span class='ident'>isize</span>
+    <span class="kw">fn</span> <span class="ident">mask</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">isize</span> {
+        <span class="kw">unsafe</span> {
+            ((<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">get</span>()).<span class="ident">capacity</span>() <span class="op">-</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">isize</span>
         }
     }
 
-    <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>elem</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>i</span>: <span class='ident'>isize</span>) <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>T</span> {
-        (<span class='op'>*</span><span class='self'>self</span>.<span class='ident'>storage</span>.<span class='ident'>get</span>()).<span class='ident'>as_mut_ptr</span>().<span class='ident'>offset</span>(<span class='ident'>i</span> <span class='kw-2'>&amp;</span> <span class='self'>self</span>.<span class='ident'>mask</span>())
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">elem</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">isize</span>) <span class="op">-&gt;</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">T</span> {
+        (<span class="kw-2">*</span><span class="self">self</span>.<span class="ident">storage</span>.<span class="ident">get</span>()).<span class="ident">as_mut_ptr</span>().<span class="ident">offset</span>(<span class="ident">i</span> <span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">mask</span>())
     }
 
-    <span class='comment'>// This does not protect against loading duplicate values of the same cell,</span>
-    <span class='comment'>// nor does this clear out the contents contained within. Hence, this is a</span>
-    <span class='comment'>// very unsafe method which the caller needs to treat specially in case a</span>
-    <span class='comment'>// race is lost.</span>
-    <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>i</span>: <span class='ident'>isize</span>) <span class='op'>-&gt;</span> <span class='ident'>T</span> {
-        <span class='ident'>ptr</span>::<span class='ident'>read</span>(<span class='self'>self</span>.<span class='ident'>elem</span>(<span class='ident'>i</span>))
+    <span class="comment">// This does not protect against loading duplicate values of the same cell,</span>
+    <span class="comment">// nor does this clear out the contents contained within. Hence, this is a</span>
+    <span class="comment">// very unsafe method which the caller needs to treat specially in case a</span>
+    <span class="comment">// race is lost.</span>
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">isize</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
+        <span class="ident">ptr</span>::<span class="ident">read</span>(<span class="self">self</span>.<span class="ident">elem</span>(<span class="ident">i</span>))
     }
 
-    <span class='comment'>// Unsafe because this unsafely overwrites possibly uninitialized or</span>
-    <span class='comment'>// initialized data.</span>
-    <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>put</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>i</span>: <span class='ident'>isize</span>, <span class='ident'>t</span>: <span class='ident'>T</span>) {
-        <span class='ident'>ptr</span>::<span class='ident'>write</span>(<span class='self'>self</span>.<span class='ident'>elem</span>(<span class='ident'>i</span>), <span class='ident'>t</span>);
+    <span class="comment">// Unsafe because this unsafely overwrites possibly uninitialized or</span>
+    <span class="comment">// initialized data.</span>
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">put</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">isize</span>, <span class="ident">t</span>: <span class="ident">T</span>) {
+        <span class="ident">ptr</span>::<span class="ident">write</span>(<span class="self">self</span>.<span class="ident">elem</span>(<span class="ident">i</span>), <span class="ident">t</span>);
     }
 
-    <span class='comment'>// Again, unsafe because this has incredibly dubious ownership violations.</span>
-    <span class='comment'>// It is assumed that this buffer is immediately dropped.</span>
-    <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>resize</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>b</span>: <span class='ident'>isize</span>, <span class='ident'>t</span>: <span class='ident'>isize</span>, <span class='ident'>delta</span>: <span class='ident'>i32</span>) <span class='op'>-&gt;</span> <span class='ident'>Buffer</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>buf</span> <span class='op'>=</span> <span class='ident'>Buffer</span>::<span class='ident'>new</span>(((<span class='self'>self</span>.<span class='ident'>log_size</span> <span class='kw'>as</span> <span class='ident'>i32</span>) <span class='op'>+</span> <span class='ident'>delta</span>) <span class='kw'>as</span> <span class='ident'>u32</span>);
-        <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>t</span>..<span class='ident'>b</span> {
-            <span class='ident'>buf</span>.<span class='ident'>put</span>(<span class='ident'>i</span>, <span class='self'>self</span>.<span class='ident'>get</span>(<span class='ident'>i</span>));
+    <span class="comment">// Again, unsafe because this has incredibly dubious ownership violations.</span>
+    <span class="comment">// It is assumed that this buffer is immediately dropped.</span>
+    <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">resize</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">b</span>: <span class="ident">isize</span>, <span class="ident">t</span>: <span class="ident">isize</span>, <span class="ident">delta</span>: <span class="ident">i32</span>) <span class="op">-&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">Buffer</span>::<span class="ident">new</span>(((<span class="self">self</span>.<span class="ident">log_size</span> <span class="kw">as</span> <span class="ident">i32</span>) <span class="op">+</span> <span class="ident">delta</span>) <span class="kw">as</span> <span class="ident">u32</span>);
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">t</span>..<span class="ident">b</span> {
+            <span class="ident">buf</span>.<span class="ident">put</span>(<span class="ident">i</span>, <span class="self">self</span>.<span class="ident">get</span>(<span class="ident">i</span>));
         }
-        <span class='kw'>return</span> <span class='ident'>buf</span>;
+        <span class="kw">return</span> <span class="ident">buf</span>;
     }
 }
 
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
-<span class='kw'>mod</span> <span class='ident'>tests</span> {
-    <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rand</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rand</span>;
 
-    <span class='kw'>use</span> <span class='kw'>super</span>::{<span class='ident'>deque</span>, <span class='ident'>Worker</span>, <span class='ident'>Stealer</span>, <span class='ident'>Steal</span>};
+    <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">deque</span>, <span class="ident">Worker</span>, <span class="ident">Stealer</span>, <span class="ident">Steal</span>};
 
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>thread</span>;
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>Arc</span>;
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::{<span class='ident'>AtomicBool</span>, <span class='ident'>ATOMIC_BOOL_INIT</span>,
-                            <span class='ident'>AtomicUsize</span>, <span class='ident'>ATOMIC_USIZE_INIT</span>};
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::<span class='ident'>Ordering</span>::<span class='ident'>SeqCst</span>;
+    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">thread</span>;
+    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
+    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::{<span class="ident">AtomicBool</span>, <span class="ident">ATOMIC_BOOL_INIT</span>,
+                            <span class="ident">AtomicUsize</span>, <span class="ident">ATOMIC_USIZE_INIT</span>};
+    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::<span class="ident">Ordering</span>::<span class="ident">SeqCst</span>;
 
-    <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>rand</span>::<span class='ident'>Rng</span>;
+    <span class="kw">use</span> <span class="self">self</span>::<span class="ident">rand</span>::<span class="ident">Rng</span>;
 
-    <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>smoke</span>() {
-        <span class='kw'>let</span> (<span class='kw-2'>mut</span> <span class='ident'>w</span>, <span class='ident'>s</span>) <span class='op'>=</span> <span class='ident'>deque</span>();
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>w</span>.<span class='ident'>try_pop</span>(), <span class='prelude-val'>None</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>s</span>.<span class='ident'>steal</span>(), <span class='ident'>Steal</span>::<span class='ident'>Empty</span>);
-        <span class='ident'>w</span>.<span class='ident'>push</span>(<span class='number'>1</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>w</span>.<span class='ident'>try_pop</span>(), <span class='prelude-val'>Some</span>(<span class='number'>1</span>));
-        <span class='ident'>w</span>.<span class='ident'>push</span>(<span class='number'>1</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>s</span>.<span class='ident'>steal</span>(), <span class='ident'>Steal</span>::<span class='ident'>Data</span>(<span class='number'>1</span>));
-        <span class='ident'>w</span>.<span class='ident'>push</span>(<span class='number'>1</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>s</span>.<span class='ident'>clone</span>().<span class='ident'>steal</span>(), <span class='ident'>Steal</span>::<span class='ident'>Data</span>(<span class='number'>1</span>));
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">smoke</span>() {
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">w</span>, <span class="ident">s</span>) <span class="op">=</span> <span class="ident">deque</span>();
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">w</span>.<span class="ident">try_pop</span>(), <span class="prelude-val">None</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">s</span>.<span class="ident">steal</span>(), <span class="ident">Steal</span>::<span class="ident">Empty</span>);
+        <span class="ident">w</span>.<span class="ident">push</span>(<span class="number">1</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">w</span>.<span class="ident">try_pop</span>(), <span class="prelude-val">Some</span>(<span class="number">1</span>));
+        <span class="ident">w</span>.<span class="ident">push</span>(<span class="number">1</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">s</span>.<span class="ident">steal</span>(), <span class="ident">Steal</span>::<span class="ident">Data</span>(<span class="number">1</span>));
+        <span class="ident">w</span>.<span class="ident">push</span>(<span class="number">1</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">s</span>.<span class="ident">clone</span>().<span class="ident">steal</span>(), <span class="ident">Steal</span>::<span class="ident">Data</span>(<span class="number">1</span>));
     }
 
-    <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>stealpush</span>() {
-        <span class='kw'>static</span> <span class='ident'>AMT</span>: <span class='ident'>isize</span> <span class='op'>=</span> <span class='number'>100000</span>;
-        <span class='kw'>let</span> (<span class='kw-2'>mut</span> <span class='ident'>w</span>, <span class='ident'>s</span>) <span class='op'>=</span> <span class='ident'>deque</span>();
-        <span class='kw'>let</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> {
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>left</span> <span class='op'>=</span> <span class='ident'>AMT</span>;
-            <span class='kw'>while</span> <span class='ident'>left</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
-                <span class='kw'>match</span> <span class='ident'>s</span>.<span class='ident'>steal</span>() {
-                    <span class='ident'>Steal</span>::<span class='ident'>Data</span>(<span class='ident'>i</span>) <span class='op'>=&gt;</span> {
-                        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>i</span>, <span class='number'>1</span>);
-                        <span class='ident'>left</span> <span class='op'>-=</span> <span class='number'>1</span>;
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">stealpush</span>() {
+        <span class="kw">static</span> <span class="ident">AMT</span>: <span class="ident">isize</span> <span class="op">=</span> <span class="number">100000</span>;
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">w</span>, <span class="ident">s</span>) <span class="op">=</span> <span class="ident">deque</span>();
+        <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">thread</span>::<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">||</span> {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">left</span> <span class="op">=</span> <span class="ident">AMT</span>;
+            <span class="kw">while</span> <span class="ident">left</span> <span class="op">&gt;</span> <span class="number">0</span> {
+                <span class="kw">match</span> <span class="ident">s</span>.<span class="ident">steal</span>() {
+                    <span class="ident">Steal</span>::<span class="ident">Data</span>(<span class="ident">i</span>) <span class="op">=&gt;</span> {
+                        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">i</span>, <span class="number">1</span>);
+                        <span class="ident">left</span> <span class="op">-=</span> <span class="number">1</span>;
                     }
-                    <span class='ident'>Steal</span>::<span class='ident'>Abort</span> <span class='op'>|</span> <span class='ident'>Steal</span>::<span class='ident'>Empty</span> <span class='op'>=&gt;</span> {}
+                    <span class="ident">Steal</span>::<span class="ident">Abort</span> <span class="op">|</span> <span class="ident">Steal</span>::<span class="ident">Empty</span> <span class="op">=&gt;</span> {}
                 }
             }
         });
 
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>AMT</span> {
-            <span class='ident'>w</span>.<span class='ident'>push</span>(<span class='number'>1</span>);
+        <span class="kw">for</span> _ <span class="kw">in</span> <span class="number">0</span>..<span class="ident">AMT</span> {
+            <span class="ident">w</span>.<span class="ident">push</span>(<span class="number">1</span>);
         }
 
-        <span class='ident'>t</span>.<span class='ident'>join</span>().<span class='ident'>unwrap</span>();
+        <span class="ident">t</span>.<span class="ident">join</span>().<span class="ident">unwrap</span>();
     }
 
-    <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>stealpush_large</span>() {
-        <span class='kw'>static</span> <span class='ident'>AMT</span>: <span class='ident'>isize</span> <span class='op'>=</span> <span class='number'>100000</span>;
-        <span class='kw'>let</span> (<span class='kw-2'>mut</span> <span class='ident'>w</span>, <span class='ident'>s</span>) <span class='op'>=</span> <span class='ident'>deque</span>();
-        <span class='kw'>let</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> {
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>left</span> <span class='op'>=</span> <span class='ident'>AMT</span>;
-            <span class='kw'>while</span> <span class='ident'>left</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
-                <span class='kw'>match</span> <span class='ident'>s</span>.<span class='ident'>steal</span>() {
-                    <span class='ident'>Steal</span>::<span class='ident'>Data</span>((<span class='number'>1</span>, <span class='number'>10</span>)) <span class='op'>=&gt;</span> { <span class='ident'>left</span> <span class='op'>-=</span> <span class='number'>1</span>; }
-                    <span class='ident'>Steal</span>::<span class='ident'>Data</span>(..) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(),
-                    <span class='ident'>Steal</span>::<span class='ident'>Abort</span> <span class='op'>|</span> <span class='ident'>Steal</span>::<span class='ident'>Empty</span> <span class='op'>=&gt;</span> {}
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">stealpush_large</span>() {
+        <span class="kw">static</span> <span class="ident">AMT</span>: <span class="ident">isize</span> <span class="op">=</span> <span class="number">100000</span>;
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">w</span>, <span class="ident">s</span>) <span class="op">=</span> <span class="ident">deque</span>();
+        <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">thread</span>::<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">||</span> {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">left</span> <span class="op">=</span> <span class="ident">AMT</span>;
+            <span class="kw">while</span> <span class="ident">left</span> <span class="op">&gt;</span> <span class="number">0</span> {
+                <span class="kw">match</span> <span class="ident">s</span>.<span class="ident">steal</span>() {
+                    <span class="ident">Steal</span>::<span class="ident">Data</span>((<span class="number">1</span>, <span class="number">10</span>)) <span class="op">=&gt;</span> { <span class="ident">left</span> <span class="op">-=</span> <span class="number">1</span>; }
+                    <span class="ident">Steal</span>::<span class="ident">Data</span>(..) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(),
+                    <span class="ident">Steal</span>::<span class="ident">Abort</span> <span class="op">|</span> <span class="ident">Steal</span>::<span class="ident">Empty</span> <span class="op">=&gt;</span> {}
                 }
             }
         });
 
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>AMT</span> {
-            <span class='ident'>w</span>.<span class='ident'>push</span>((<span class='number'>1</span>, <span class='number'>10</span>));
+        <span class="kw">for</span> _ <span class="kw">in</span> <span class="number">0</span>..<span class="ident">AMT</span> {
+            <span class="ident">w</span>.<span class="ident">push</span>((<span class="number">1</span>, <span class="number">10</span>));
         }
 
-        <span class='ident'>t</span>.<span class='ident'>join</span>().<span class='ident'>unwrap</span>();
+        <span class="ident">t</span>.<span class="ident">join</span>().<span class="ident">unwrap</span>();
     }
 
-    <span class='kw'>fn</span> <span class='ident'>stampede</span>(<span class='kw-2'>mut</span> <span class='ident'>w</span>: <span class='ident'>Worker</span><span class='op'>&lt;</span><span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>isize</span><span class='op'>&gt;&gt;</span>,
-                <span class='ident'>s</span>: <span class='ident'>Stealer</span><span class='op'>&lt;</span><span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>isize</span><span class='op'>&gt;&gt;</span>,
-                <span class='ident'>nthreads</span>: <span class='ident'>isize</span>,
-                <span class='ident'>amt</span>: <span class='ident'>usize</span>) {
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>amt</span> {
-            <span class='ident'>w</span>.<span class='ident'>push</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='number'>20</span>));
+    <span class="kw">fn</span> <span class="ident">stampede</span>(<span class="kw-2">mut</span> <span class="ident">w</span>: <span class="ident">Worker</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;&gt;</span>,
+                <span class="ident">s</span>: <span class="ident">Stealer</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;&gt;</span>,
+                <span class="ident">nthreads</span>: <span class="ident">isize</span>,
+                <span class="ident">amt</span>: <span class="ident">usize</span>) {
+        <span class="kw">for</span> _ <span class="kw">in</span> <span class="number">0</span>..<span class="ident">amt</span> {
+            <span class="ident">w</span>.<span class="ident">push</span>(<span class="ident">Box</span>::<span class="ident">new</span>(<span class="number">20</span>));
         }
-        <span class='kw'>let</span> <span class='ident'>remaining</span> <span class='op'>=</span> <span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>AtomicUsize</span>::<span class='ident'>new</span>(<span class='ident'>amt</span>));
+        <span class="kw">let</span> <span class="ident">remaining</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">AtomicUsize</span>::<span class="ident">new</span>(<span class="ident">amt</span>));
 
-        <span class='kw'>let</span> <span class='ident'>threads</span> <span class='op'>=</span> (<span class='number'>0</span>..<span class='ident'>nthreads</span>).<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> {
-            <span class='kw'>let</span> <span class='ident'>remaining</span> <span class='op'>=</span> <span class='ident'>remaining</span>.<span class='ident'>clone</span>();
-            <span class='kw'>let</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>clone</span>();
-            <span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> {
-                <span class='kw'>while</span> <span class='ident'>remaining</span>.<span class='ident'>load</span>(<span class='ident'>SeqCst</span>) <span class='op'>&gt;</span> <span class='number'>0</span> {
-                    <span class='kw'>match</span> <span class='ident'>s</span>.<span class='ident'>steal</span>() {
-                        <span class='ident'>Steal</span>::<span class='ident'>Data</span>(<span class='ident'>val</span>) <span class='op'>=&gt;</span> {
-                            <span class='kw'>if</span> <span class='op'>*</span><span class='ident'>val</span> <span class='op'>==</span> <span class='number'>20</span> {
-                                <span class='ident'>remaining</span>.<span class='ident'>fetch_sub</span>(<span class='number'>1</span>, <span class='ident'>SeqCst</span>);
-                            } <span class='kw'>else</span> {
-                                <span class='macro'>panic</span><span class='macro'>!</span>()
+        <span class="kw">let</span> <span class="ident">threads</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">nthreads</span>).<span class="ident">map</span>(<span class="op">|</span>_<span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">remaining</span> <span class="op">=</span> <span class="ident">remaining</span>.<span class="ident">clone</span>();
+            <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">clone</span>();
+            <span class="ident">thread</span>::<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">||</span> {
+                <span class="kw">while</span> <span class="ident">remaining</span>.<span class="ident">load</span>(<span class="ident">SeqCst</span>) <span class="op">&gt;</span> <span class="number">0</span> {
+                    <span class="kw">match</span> <span class="ident">s</span>.<span class="ident">steal</span>() {
+                        <span class="ident">Steal</span>::<span class="ident">Data</span>(<span class="ident">val</span>) <span class="op">=&gt;</span> {
+                            <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">val</span> <span class="op">==</span> <span class="number">20</span> {
+                                <span class="ident">remaining</span>.<span class="ident">fetch_sub</span>(<span class="number">1</span>, <span class="ident">SeqCst</span>);
+                            } <span class="kw">else</span> {
+                                <span class="macro">panic</span><span class="macro">!</span>()
                             }
                         }
-                        <span class='ident'>Steal</span>::<span class='ident'>Abort</span> <span class='op'>|</span> <span class='ident'>Steal</span>::<span class='ident'>Empty</span> <span class='op'>=&gt;</span> {}
+                        <span class="ident">Steal</span>::<span class="ident">Abort</span> <span class="op">|</span> <span class="ident">Steal</span>::<span class="ident">Empty</span> <span class="op">=&gt;</span> {}
                     }
                 }
             })
-        }).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>();
+        }).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>_<span class="op">&gt;&gt;</span>();
 
-        <span class='kw'>while</span> <span class='ident'>remaining</span>.<span class='ident'>load</span>(<span class='ident'>SeqCst</span>) <span class='op'>&gt;</span> <span class='number'>0</span> {
-            <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>val</span>) <span class='op'>=</span> <span class='ident'>w</span>.<span class='ident'>try_pop</span>() {
-                <span class='kw'>if</span> <span class='op'>*</span><span class='ident'>val</span> <span class='op'>==</span> <span class='number'>20</span> {
-                    <span class='ident'>remaining</span>.<span class='ident'>fetch_sub</span>(<span class='number'>1</span>, <span class='ident'>SeqCst</span>);
-                } <span class='kw'>else</span> {
-                    <span class='macro'>panic</span><span class='macro'>!</span>()
+        <span class="kw">while</span> <span class="ident">remaining</span>.<span class="ident">load</span>(<span class="ident">SeqCst</span>) <span class="op">&gt;</span> <span class="number">0</span> {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">val</span>) <span class="op">=</span> <span class="ident">w</span>.<span class="ident">try_pop</span>() {
+                <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">val</span> <span class="op">==</span> <span class="number">20</span> {
+                    <span class="ident">remaining</span>.<span class="ident">fetch_sub</span>(<span class="number">1</span>, <span class="ident">SeqCst</span>);
+                } <span class="kw">else</span> {
+                    <span class="macro">panic</span><span class="macro">!</span>()
                 }
             }
         }
 
-        <span class='kw'>for</span> <span class='ident'>thread</span> <span class='kw'>in</span> <span class='ident'>threads</span>.<span class='ident'>into_iter</span>() {
-            <span class='ident'>thread</span>.<span class='ident'>join</span>().<span class='ident'>unwrap</span>();
+        <span class="kw">for</span> <span class="ident">thread</span> <span class="kw">in</span> <span class="ident">threads</span>.<span class="ident">into_iter</span>() {
+            <span class="ident">thread</span>.<span class="ident">join</span>().<span class="ident">unwrap</span>();
         }
     }
 
-    <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>run_stampede</span>() {
-        <span class='kw'>let</span> (<span class='ident'>w</span>, <span class='ident'>s</span>) <span class='op'>=</span> <span class='ident'>deque</span>();
-        <span class='ident'>stampede</span>(<span class='ident'>w</span>, <span class='ident'>s</span>, <span class='number'>8</span>, <span class='number'>10000</span>);
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">run_stampede</span>() {
+        <span class="kw">let</span> (<span class="ident">w</span>, <span class="ident">s</span>) <span class="op">=</span> <span class="ident">deque</span>();
+        <span class="ident">stampede</span>(<span class="ident">w</span>, <span class="ident">s</span>, <span class="number">8</span>, <span class="number">10000</span>);
     }
 
-    <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>many_stampede</span>() {
-        <span class='kw'>static</span> <span class='ident'>AMT</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>4</span>;
-        <span class='kw'>let</span> <span class='ident'>threads</span> <span class='op'>=</span> (<span class='number'>0</span>..<span class='ident'>AMT</span>).<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> {
-            <span class='kw'>let</span> (<span class='ident'>w</span>, <span class='ident'>s</span>) <span class='op'>=</span> <span class='ident'>deque</span>();
-            <span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='op'>||</span> {
-                <span class='ident'>stampede</span>(<span class='ident'>w</span>, <span class='ident'>s</span>, <span class='number'>4</span>, <span class='number'>10000</span>);
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">many_stampede</span>() {
+        <span class="kw">static</span> <span class="ident">AMT</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">4</span>;
+        <span class="kw">let</span> <span class="ident">threads</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">AMT</span>).<span class="ident">map</span>(<span class="op">|</span>_<span class="op">|</span> {
+            <span class="kw">let</span> (<span class="ident">w</span>, <span class="ident">s</span>) <span class="op">=</span> <span class="ident">deque</span>();
+            <span class="ident">thread</span>::<span class="ident">spawn</span>(<span class="op">||</span> {
+                <span class="ident">stampede</span>(<span class="ident">w</span>, <span class="ident">s</span>, <span class="number">4</span>, <span class="number">10000</span>);
             })
-        }).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>();
+        }).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>_<span class="op">&gt;&gt;</span>();
 
-        <span class='kw'>for</span> <span class='ident'>thread</span> <span class='kw'>in</span> <span class='ident'>threads</span>.<span class='ident'>into_iter</span>() {
-            <span class='ident'>thread</span>.<span class='ident'>join</span>().<span class='ident'>unwrap</span>();
+        <span class="kw">for</span> <span class="ident">thread</span> <span class="kw">in</span> <span class="ident">threads</span>.<span class="ident">into_iter</span>() {
+            <span class="ident">thread</span>.<span class="ident">join</span>().<span class="ident">unwrap</span>();
         }
     }
 
-    <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>stress</span>() {
-        <span class='kw'>static</span> <span class='ident'>AMT</span>: <span class='ident'>isize</span> <span class='op'>=</span> <span class='number'>100000</span>;
-        <span class='kw'>static</span> <span class='ident'>NTHREADS</span>: <span class='ident'>isize</span> <span class='op'>=</span> <span class='number'>8</span>;
-        <span class='kw'>static</span> <span class='ident'>DONE</span>: <span class='ident'>AtomicBool</span> <span class='op'>=</span> <span class='ident'>ATOMIC_BOOL_INIT</span>;
-        <span class='kw'>static</span> <span class='ident'>HITS</span>: <span class='ident'>AtomicUsize</span> <span class='op'>=</span> <span class='ident'>ATOMIC_USIZE_INIT</span>;
-        <span class='kw'>let</span> (<span class='kw-2'>mut</span> <span class='ident'>w</span>, <span class='ident'>s</span>) <span class='op'>=</span> <span class='ident'>deque</span>();
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">stress</span>() {
+        <span class="kw">static</span> <span class="ident">AMT</span>: <span class="ident">isize</span> <span class="op">=</span> <span class="number">100000</span>;
+        <span class="kw">static</span> <span class="ident">NTHREADS</span>: <span class="ident">isize</span> <span class="op">=</span> <span class="number">8</span>;
+        <span class="kw">static</span> <span class="ident">DONE</span>: <span class="ident">AtomicBool</span> <span class="op">=</span> <span class="ident">ATOMIC_BOOL_INIT</span>;
+        <span class="kw">static</span> <span class="ident">HITS</span>: <span class="ident">AtomicUsize</span> <span class="op">=</span> <span class="ident">ATOMIC_USIZE_INIT</span>;
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">w</span>, <span class="ident">s</span>) <span class="op">=</span> <span class="ident">deque</span>();
 
-        <span class='kw'>let</span> <span class='ident'>threads</span> <span class='op'>=</span> (<span class='number'>0</span>..<span class='ident'>NTHREADS</span>).<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> {
-            <span class='kw'>let</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>clone</span>();
-            <span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> {
-                <span class='kw'>loop</span> {
-                    <span class='kw'>match</span> <span class='ident'>s</span>.<span class='ident'>steal</span>() {
-                        <span class='ident'>Steal</span>::<span class='ident'>Data</span>(<span class='number'>2</span>) <span class='op'>=&gt;</span> { <span class='ident'>HITS</span>.<span class='ident'>fetch_add</span>(<span class='number'>1</span>, <span class='ident'>SeqCst</span>); }
-                        <span class='ident'>Steal</span>::<span class='ident'>Data</span>(..) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(),
-                        _ <span class='kw'>if</span> <span class='ident'>DONE</span>.<span class='ident'>load</span>(<span class='ident'>SeqCst</span>) <span class='op'>=&gt;</span> <span class='kw'>break</span>,
-                        _ <span class='op'>=&gt;</span> {}
+        <span class="kw">let</span> <span class="ident">threads</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">NTHREADS</span>).<span class="ident">map</span>(<span class="op">|</span>_<span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">clone</span>();
+            <span class="ident">thread</span>::<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">||</span> {
+                <span class="kw">loop</span> {
+                    <span class="kw">match</span> <span class="ident">s</span>.<span class="ident">steal</span>() {
+                        <span class="ident">Steal</span>::<span class="ident">Data</span>(<span class="number">2</span>) <span class="op">=&gt;</span> { <span class="ident">HITS</span>.<span class="ident">fetch_add</span>(<span class="number">1</span>, <span class="ident">SeqCst</span>); }
+                        <span class="ident">Steal</span>::<span class="ident">Data</span>(..) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(),
+                        _ <span class="kw">if</span> <span class="ident">DONE</span>.<span class="ident">load</span>(<span class="ident">SeqCst</span>) <span class="op">=&gt;</span> <span class="kw">break</span>,
+                        _ <span class="op">=&gt;</span> {}
                     }
                 }
             })
-        }).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>();
+        }).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>_<span class="op">&gt;&gt;</span>();
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rng</span> <span class='op'>=</span> <span class='ident'>rand</span>::<span class='ident'>thread_rng</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>expected</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='kw'>while</span> <span class='ident'>expected</span> <span class='op'>&lt;</span> <span class='ident'>AMT</span> {
-            <span class='kw'>if</span> <span class='ident'>rng</span>.<span class='ident'>gen_range</span>(<span class='number'>0</span>, <span class='number'>3</span>) <span class='op'>==</span> <span class='number'>2</span> {
-                <span class='kw'>match</span> <span class='ident'>w</span>.<span class='ident'>try_pop</span>() {
-                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> {}
-                    <span class='prelude-val'>Some</span>(<span class='number'>2</span>) <span class='op'>=&gt;</span> { <span class='ident'>HITS</span>.<span class='ident'>fetch_add</span>(<span class='number'>1</span>, <span class='ident'>SeqCst</span>); },
-                    <span class='prelude-val'>Some</span>(_) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(),
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">rand</span>::<span class="ident">thread_rng</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">expected</span> <span class="op">=</span> <span class="number">0</span>;
+        <span class="kw">while</span> <span class="ident">expected</span> <span class="op">&lt;</span> <span class="ident">AMT</span> {
+            <span class="kw">if</span> <span class="ident">rng</span>.<span class="ident">gen_range</span>(<span class="number">0</span>, <span class="number">3</span>) <span class="op">==</span> <span class="number">2</span> {
+                <span class="kw">match</span> <span class="ident">w</span>.<span class="ident">try_pop</span>() {
+                    <span class="prelude-val">None</span> <span class="op">=&gt;</span> {}
+                    <span class="prelude-val">Some</span>(<span class="number">2</span>) <span class="op">=&gt;</span> { <span class="ident">HITS</span>.<span class="ident">fetch_add</span>(<span class="number">1</span>, <span class="ident">SeqCst</span>); },
+                    <span class="prelude-val">Some</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(),
                 }
-            } <span class='kw'>else</span> {
-                <span class='ident'>expected</span> <span class='op'>+=</span> <span class='number'>1</span>;
-                <span class='ident'>w</span>.<span class='ident'>push</span>(<span class='number'>2</span>);
+            } <span class="kw">else</span> {
+                <span class="ident">expected</span> <span class="op">+=</span> <span class="number">1</span>;
+                <span class="ident">w</span>.<span class="ident">push</span>(<span class="number">2</span>);
             }
         }
 
-        <span class='kw'>while</span> <span class='ident'>HITS</span>.<span class='ident'>load</span>(<span class='ident'>SeqCst</span>) <span class='op'>&lt;</span> <span class='ident'>AMT</span> <span class='kw'>as</span> <span class='ident'>usize</span> {
-            <span class='kw'>match</span> <span class='ident'>w</span>.<span class='ident'>try_pop</span>() {
-                <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> {}
-                <span class='prelude-val'>Some</span>(<span class='number'>2</span>) <span class='op'>=&gt;</span> { <span class='ident'>HITS</span>.<span class='ident'>fetch_add</span>(<span class='number'>1</span>, <span class='ident'>SeqCst</span>); },
-                <span class='prelude-val'>Some</span>(_) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(),
+        <span class="kw">while</span> <span class="ident">HITS</span>.<span class="ident">load</span>(<span class="ident">SeqCst</span>) <span class="op">&lt;</span> <span class="ident">AMT</span> <span class="kw">as</span> <span class="ident">usize</span> {
+            <span class="kw">match</span> <span class="ident">w</span>.<span class="ident">try_pop</span>() {
+                <span class="prelude-val">None</span> <span class="op">=&gt;</span> {}
+                <span class="prelude-val">Some</span>(<span class="number">2</span>) <span class="op">=&gt;</span> { <span class="ident">HITS</span>.<span class="ident">fetch_add</span>(<span class="number">1</span>, <span class="ident">SeqCst</span>); },
+                <span class="prelude-val">Some</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(),
             }
         }
-        <span class='ident'>DONE</span>.<span class='ident'>store</span>(<span class='bool-val'>true</span>, <span class='ident'>SeqCst</span>);
+        <span class="ident">DONE</span>.<span class="ident">store</span>(<span class="bool-val">true</span>, <span class="ident">SeqCst</span>);
 
-        <span class='kw'>for</span> <span class='ident'>thread</span> <span class='kw'>in</span> <span class='ident'>threads</span>.<span class='ident'>into_iter</span>() {
-            <span class='ident'>thread</span>.<span class='ident'>join</span>().<span class='ident'>unwrap</span>();
+        <span class="kw">for</span> <span class="ident">thread</span> <span class="kw">in</span> <span class="ident">threads</span>.<span class="ident">into_iter</span>() {
+            <span class="ident">thread</span>.<span class="ident">join</span>().<span class="ident">unwrap</span>();
         }
 
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>HITS</span>.<span class='ident'>load</span>(<span class='ident'>SeqCst</span>), <span class='ident'>expected</span> <span class='kw'>as</span> <span class='ident'>usize</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">HITS</span>.<span class="ident">load</span>(<span class="ident">SeqCst</span>), <span class="ident">expected</span> <span class="kw">as</span> <span class="ident">usize</span>);
     }
 
-    <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>no_starvation</span>() {
-        <span class='kw'>static</span> <span class='ident'>AMT</span>: <span class='ident'>isize</span> <span class='op'>=</span> <span class='number'>10000</span>;
-        <span class='kw'>static</span> <span class='ident'>NTHREADS</span>: <span class='ident'>isize</span> <span class='op'>=</span> <span class='number'>4</span>;
-        <span class='kw'>static</span> <span class='ident'>DONE</span>: <span class='ident'>AtomicBool</span> <span class='op'>=</span> <span class='ident'>ATOMIC_BOOL_INIT</span>;
-        <span class='kw'>let</span> (<span class='kw-2'>mut</span> <span class='ident'>w</span>, <span class='ident'>s</span>) <span class='op'>=</span> <span class='ident'>deque</span>();
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">no_starvation</span>() {
+        <span class="kw">static</span> <span class="ident">AMT</span>: <span class="ident">isize</span> <span class="op">=</span> <span class="number">10000</span>;
+        <span class="kw">static</span> <span class="ident">NTHREADS</span>: <span class="ident">isize</span> <span class="op">=</span> <span class="number">4</span>;
+        <span class="kw">static</span> <span class="ident">DONE</span>: <span class="ident">AtomicBool</span> <span class="op">=</span> <span class="ident">ATOMIC_BOOL_INIT</span>;
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">w</span>, <span class="ident">s</span>) <span class="op">=</span> <span class="ident">deque</span>();
 
-        <span class='kw'>let</span> (<span class='ident'>threads</span>, <span class='ident'>hits</span>): (<span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;</span>) <span class='op'>=</span> (<span class='number'>0</span>..<span class='ident'>NTHREADS</span>).<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> {
-            <span class='kw'>let</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>clone</span>();
-            <span class='kw'>let</span> <span class='ident'>ctr</span> <span class='op'>=</span> <span class='ident'>Arc</span>::<span class='ident'>new</span>(<span class='ident'>AtomicUsize</span>::<span class='ident'>new</span>(<span class='number'>0</span>));
-            <span class='kw'>let</span> <span class='ident'>ctr2</span> <span class='op'>=</span> <span class='ident'>ctr</span>.<span class='ident'>clone</span>();
-            (<span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span> <span class='op'>||</span> {
-                <span class='kw'>loop</span> {
-                    <span class='kw'>match</span> <span class='ident'>s</span>.<span class='ident'>steal</span>() {
-                        <span class='ident'>Steal</span>::<span class='ident'>Data</span>((<span class='number'>1</span>, <span class='number'>2</span>)) <span class='op'>=&gt;</span> { <span class='ident'>ctr</span>.<span class='ident'>fetch_add</span>(<span class='number'>1</span>, <span class='ident'>SeqCst</span>); }
-                        <span class='ident'>Steal</span>::<span class='ident'>Data</span>(..) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(),
-                        _ <span class='kw'>if</span> <span class='ident'>DONE</span>.<span class='ident'>load</span>(<span class='ident'>SeqCst</span>) <span class='op'>=&gt;</span> <span class='kw'>break</span>,
-                        _ <span class='op'>=&gt;</span> {}
+        <span class="kw">let</span> (<span class="ident">threads</span>, <span class="ident">hits</span>): (<span class="ident">Vec</span><span class="op">&lt;</span>_<span class="op">&gt;</span>, <span class="ident">Vec</span><span class="op">&lt;</span>_<span class="op">&gt;</span>) <span class="op">=</span> (<span class="number">0</span>..<span class="ident">NTHREADS</span>).<span class="ident">map</span>(<span class="op">|</span>_<span class="op">|</span> {
+            <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">s</span>.<span class="ident">clone</span>();
+            <span class="kw">let</span> <span class="ident">ctr</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">AtomicUsize</span>::<span class="ident">new</span>(<span class="number">0</span>));
+            <span class="kw">let</span> <span class="ident">ctr2</span> <span class="op">=</span> <span class="ident">ctr</span>.<span class="ident">clone</span>();
+            (<span class="ident">thread</span>::<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">||</span> {
+                <span class="kw">loop</span> {
+                    <span class="kw">match</span> <span class="ident">s</span>.<span class="ident">steal</span>() {
+                        <span class="ident">Steal</span>::<span class="ident">Data</span>((<span class="number">1</span>, <span class="number">2</span>)) <span class="op">=&gt;</span> { <span class="ident">ctr</span>.<span class="ident">fetch_add</span>(<span class="number">1</span>, <span class="ident">SeqCst</span>); }
+                        <span class="ident">Steal</span>::<span class="ident">Data</span>(..) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(),
+                        _ <span class="kw">if</span> <span class="ident">DONE</span>.<span class="ident">load</span>(<span class="ident">SeqCst</span>) <span class="op">=&gt;</span> <span class="kw">break</span>,
+                        _ <span class="op">=&gt;</span> {}
                     }
                 }
-            }), <span class='ident'>ctr2</span>)
-        }).<span class='ident'>unzip</span>();
+            }), <span class="ident">ctr2</span>)
+        }).<span class="ident">unzip</span>();
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rng</span> <span class='op'>=</span> <span class='ident'>rand</span>::<span class='ident'>thread_rng</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>myhit</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
-        <span class='lifetime'>&#39;outer</span>: <span class='kw'>loop</span> {
-            <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>rng</span>.<span class='ident'>gen_range</span>(<span class='number'>0</span>, <span class='ident'>AMT</span>) {
-                <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>myhit</span> <span class='op'>&amp;&amp;</span> <span class='ident'>rng</span>.<span class='ident'>gen_range</span>(<span class='number'>0</span>, <span class='number'>3</span>) <span class='op'>==</span> <span class='number'>2</span> {
-                    <span class='kw'>match</span> <span class='ident'>w</span>.<span class='ident'>try_pop</span>() {
-                        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> {}
-                        <span class='prelude-val'>Some</span>((<span class='number'>1</span>, <span class='number'>2</span>)) <span class='op'>=&gt;</span> <span class='ident'>myhit</span> <span class='op'>=</span> <span class='bool-val'>true</span>,
-                        <span class='prelude-val'>Some</span>(_) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(),
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">rand</span>::<span class="ident">thread_rng</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">myhit</span> <span class="op">=</span> <span class="bool-val">false</span>;
+        <span class="lifetime">&#39;outer</span>: <span class="kw">loop</span> {
+            <span class="kw">for</span> _ <span class="kw">in</span> <span class="number">0</span>..<span class="ident">rng</span>.<span class="ident">gen_range</span>(<span class="number">0</span>, <span class="ident">AMT</span>) {
+                <span class="kw">if</span> <span class="op">!</span><span class="ident">myhit</span> <span class="op">&amp;&amp;</span> <span class="ident">rng</span>.<span class="ident">gen_range</span>(<span class="number">0</span>, <span class="number">3</span>) <span class="op">==</span> <span class="number">2</span> {
+                    <span class="kw">match</span> <span class="ident">w</span>.<span class="ident">try_pop</span>() {
+                        <span class="prelude-val">None</span> <span class="op">=&gt;</span> {}
+                        <span class="prelude-val">Some</span>((<span class="number">1</span>, <span class="number">2</span>)) <span class="op">=&gt;</span> <span class="ident">myhit</span> <span class="op">=</span> <span class="bool-val">true</span>,
+                        <span class="prelude-val">Some</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(),
                     }
-                } <span class='kw'>else</span> {
-                    <span class='ident'>w</span>.<span class='ident'>push</span>((<span class='number'>1</span>, <span class='number'>2</span>));
+                } <span class="kw">else</span> {
+                    <span class="ident">w</span>.<span class="ident">push</span>((<span class="number">1</span>, <span class="number">2</span>));
                 }
             }
 
-            <span class='kw'>for</span> <span class='ident'>slot</span> <span class='kw'>in</span> <span class='ident'>hits</span>.<span class='ident'>iter</span>() {
-                <span class='kw'>let</span> <span class='ident'>amt</span> <span class='op'>=</span> <span class='ident'>slot</span>.<span class='ident'>load</span>(<span class='ident'>SeqCst</span>);
-                <span class='kw'>if</span> <span class='ident'>amt</span> <span class='op'>==</span> <span class='number'>0</span> { <span class='kw'>continue</span> <span class='lifetime'>&#39;outer</span>; }
+            <span class="kw">for</span> <span class="ident">slot</span> <span class="kw">in</span> <span class="ident">hits</span>.<span class="ident">iter</span>() {
+                <span class="kw">let</span> <span class="ident">amt</span> <span class="op">=</span> <span class="ident">slot</span>.<span class="ident">load</span>(<span class="ident">SeqCst</span>);
+                <span class="kw">if</span> <span class="ident">amt</span> <span class="op">==</span> <span class="number">0</span> { <span class="kw">continue</span> <span class="lifetime">&#39;outer</span>; }
             }
-            <span class='kw'>if</span> <span class='ident'>myhit</span> {
-                <span class='kw'>break</span>
+            <span class="kw">if</span> <span class="ident">myhit</span> {
+                <span class="kw">break</span>
             }
         }
 
-        <span class='ident'>DONE</span>.<span class='ident'>store</span>(<span class='bool-val'>true</span>, <span class='ident'>SeqCst</span>);
+        <span class="ident">DONE</span>.<span class="ident">store</span>(<span class="bool-val">true</span>, <span class="ident">SeqCst</span>);
 
-        <span class='kw'>for</span> <span class='ident'>thread</span> <span class='kw'>in</span> <span class='ident'>threads</span>.<span class='ident'>into_iter</span>() {
-            <span class='ident'>thread</span>.<span class='ident'>join</span>().<span class='ident'>unwrap</span>();
+        <span class="kw">for</span> <span class="ident">thread</span> <span class="kw">in</span> <span class="ident">threads</span>.<span class="ident">into_iter</span>() {
+            <span class="ident">thread</span>.<span class="ident">join</span>().<span class="ident">unwrap</span>();
         }
     }
 }
@@ -1304,11 +1305,9 @@
     <script>
         window.rootPath = "../../../";
         window.currentCrate = "crossbeam";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../jquery.js"></script>
     <script src="../../../main.js"></script>
-    <script src="../../../extra.js"></script>
     <script defer src="../../../search-index.js"></script>
 </body>
 </html>

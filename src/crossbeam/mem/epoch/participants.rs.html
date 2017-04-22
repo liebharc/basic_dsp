@@ -9,6 +9,7 @@
 
     <title>participants.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../../main.css">
     
@@ -16,7 +17,7 @@
     
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc source">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -42,7 +43,7 @@
         </form>
     </nav>
 
-    <section id='main' class="content source"><pre class="line-numbers"><span id="1">  1</span>
+    <section id='main' class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -162,125 +163,125 @@
 <span id="118">118</span>
 <span id="119">119</span>
 <span id="120">120</span>
-</pre><pre class='rust '>
-<span class='comment'>// Manages the global participant list, which is an intrustive list in</span>
-<span class='comment'>// which items are lazily removed on traversal (after being</span>
-<span class='comment'>// &quot;logically&quot; deleted by becoming inactive.)</span>
+</pre><pre class="rust ">
+<span class="comment">// Manages the global participant list, which is an intrustive list in</span>
+<span class="comment">// which items are lazily removed on traversal (after being</span>
+<span class="comment">// &quot;logically&quot; deleted by becoming inactive.)</span>
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::{<span class='ident'>Deref</span>, <span class='ident'>DerefMut</span>};
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>atomic</span>::<span class='ident'>Ordering</span>::{<span class='ident'>Relaxed</span>, <span class='ident'>Acquire</span>, <span class='ident'>Release</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::{<span class="ident">Deref</span>, <span class="ident">DerefMut</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">atomic</span>::<span class="ident">Ordering</span>::{<span class="ident">Relaxed</span>, <span class="ident">Acquire</span>, <span class="ident">Release</span>};
 
-<span class='kw'>use</span> <span class='ident'>mem</span>::<span class='ident'>epoch</span>::{<span class='ident'>Atomic</span>, <span class='ident'>Owned</span>, <span class='ident'>Guard</span>};
-<span class='kw'>use</span> <span class='ident'>mem</span>::<span class='ident'>epoch</span>::<span class='ident'>participant</span>::<span class='ident'>Participant</span>;
-<span class='kw'>use</span> <span class='ident'>mem</span>::<span class='ident'>CachePadded</span>;
+<span class="kw">use</span> <span class="ident">mem</span>::<span class="ident">epoch</span>::{<span class="ident">Atomic</span>, <span class="ident">Owned</span>, <span class="ident">Guard</span>};
+<span class="kw">use</span> <span class="ident">mem</span>::<span class="ident">epoch</span>::<span class="ident">participant</span>::<span class="ident">Participant</span>;
+<span class="kw">use</span> <span class="ident">mem</span>::<span class="ident">CachePadded</span>;
 
-<span class='doccomment'>/// Global, threadsafe list of threads participating in epoch management.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Participants</span> {
-    <span class='ident'>head</span>: <span class='ident'>Atomic</span><span class='op'>&lt;</span><span class='ident'>ParticipantNode</span><span class='op'>&gt;</span>
+<span class="doccomment">/// Global, threadsafe list of threads participating in epoch management.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Participants</span> {
+    <span class="ident">head</span>: <span class="ident">Atomic</span><span class="op">&lt;</span><span class="ident">ParticipantNode</span><span class="op">&gt;</span>
 }
 
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ParticipantNode</span>(<span class='ident'>CachePadded</span><span class='op'>&lt;</span><span class='ident'>Participant</span><span class='op'>&gt;</span>);
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ParticipantNode</span>(<span class="ident">CachePadded</span><span class="op">&lt;</span><span class="ident">Participant</span><span class="op">&gt;</span>);
 
-<span class='kw'>impl</span> <span class='ident'>ParticipantNode</span> {
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>ParticipantNode</span> {
-        <span class='ident'>ParticipantNode</span>(<span class='ident'>CachePadded</span>::<span class='ident'>new</span>(<span class='ident'>Participant</span>::<span class='ident'>new</span>()))
-    }
-}
-
-<span class='kw'>impl</span> <span class='ident'>Deref</span> <span class='kw'>for</span> <span class='ident'>ParticipantNode</span> {
-    <span class='kw'>type</span> <span class='ident'>Target</span> <span class='op'>=</span> <span class='ident'>Participant</span>;
-    <span class='kw'>fn</span> <span class='ident'>deref</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>Participant</span> {
-        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='number'>0</span>
+<span class="kw">impl</span> <span class="ident">ParticipantNode</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="ident">ParticipantNode</span> {
+        <span class="ident">ParticipantNode</span>(<span class="ident">CachePadded</span>::<span class="ident">new</span>(<span class="ident">Participant</span>::<span class="ident">new</span>()))
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>DerefMut</span> <span class='kw'>for</span> <span class='ident'>ParticipantNode</span> {
-    <span class='kw'>fn</span> <span class='ident'>deref_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Participant</span> {
-        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='number'>0</span>
+<span class="kw">impl</span> <span class="ident">Deref</span> <span class="kw">for</span> <span class="ident">ParticipantNode</span> {
+    <span class="kw">type</span> <span class="ident">Target</span> <span class="op">=</span> <span class="ident">Participant</span>;
+    <span class="kw">fn</span> <span class="ident">deref</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">Participant</span> {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>Participants</span> {
-    <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>not</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;nightly&quot;</span>))]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Participants</span> {
-        <span class='ident'>Participants</span> { <span class='ident'>head</span>: <span class='ident'>Atomic</span>::<span class='ident'>null</span>() }
+<span class="kw">impl</span> <span class="ident">DerefMut</span> <span class="kw">for</span> <span class="ident">ParticipantNode</span> {
+    <span class="kw">fn</span> <span class="ident">deref_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Participant</span> {
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="number">0</span>
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">Participants</span> {
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>))]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="ident">Participants</span> {
+        <span class="ident">Participants</span> { <span class="ident">head</span>: <span class="ident">Atomic</span>::<span class="ident">null</span>() }
     }
 
-    <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;nightly&quot;</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>const</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Participants</span> {
-        <span class='ident'>Participants</span> { <span class='ident'>head</span>: <span class='ident'>Atomic</span>::<span class='ident'>null</span>() }
+    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="ident">Participants</span> {
+        <span class="ident">Participants</span> { <span class="ident">head</span>: <span class="ident">Atomic</span>::<span class="ident">null</span>() }
     }
 
-    <span class='doccomment'>/// Enroll a new thread in epoch management by adding a new `Particpant`</span>
-    <span class='doccomment'>/// record to the global list.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>enroll</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>Participant</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>participant</span> <span class='op'>=</span> <span class='ident'>Owned</span>::<span class='ident'>new</span>(<span class='ident'>ParticipantNode</span>::<span class='ident'>new</span>());
+    <span class="doccomment">/// Enroll a new thread in epoch management by adding a new `Particpant`</span>
+    <span class="doccomment">/// record to the global list.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">enroll</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">Participant</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">participant</span> <span class="op">=</span> <span class="ident">Owned</span>::<span class="ident">new</span>(<span class="ident">ParticipantNode</span>::<span class="ident">new</span>());
 
-        <span class='comment'>// we ultimately use epoch tracking to free Participant nodes, but we</span>
-        <span class='comment'>// can&#39;t actually enter an epoch here, so fake it; we know the node</span>
-        <span class='comment'>// can&#39;t be removed until marked inactive anyway.</span>
-        <span class='kw'>let</span> <span class='ident'>fake_guard</span> <span class='op'>=</span> ();
-        <span class='kw'>let</span> <span class='ident'>g</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>Guard</span> <span class='op'>=</span> <span class='kw'>unsafe</span> { <span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='kw-2'>&amp;</span><span class='ident'>fake_guard</span>) };
-        <span class='kw'>loop</span> {
-            <span class='kw'>let</span> <span class='ident'>head</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>head</span>.<span class='ident'>load</span>(<span class='ident'>Relaxed</span>, <span class='ident'>g</span>);
-            <span class='ident'>participant</span>.<span class='ident'>next</span>.<span class='ident'>store_shared</span>(<span class='ident'>head</span>, <span class='ident'>Relaxed</span>);
-            <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>head</span>.<span class='ident'>cas_and_ref</span>(<span class='ident'>head</span>, <span class='ident'>participant</span>, <span class='ident'>Release</span>, <span class='ident'>g</span>) {
-                <span class='prelude-val'>Ok</span>(<span class='ident'>shared</span>) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> <span class='ident'>shared</span>: <span class='kw-2'>&amp;</span><span class='ident'>Participant</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>shared</span>;
-                    <span class='kw'>return</span> <span class='ident'>shared</span>;
+        <span class="comment">// we ultimately use epoch tracking to free Participant nodes, but we</span>
+        <span class="comment">// can&#39;t actually enter an epoch here, so fake it; we know the node</span>
+        <span class="comment">// can&#39;t be removed until marked inactive anyway.</span>
+        <span class="kw">let</span> <span class="ident">fake_guard</span> <span class="op">=</span> ();
+        <span class="kw">let</span> <span class="ident">g</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">Guard</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">mem</span>::<span class="ident">transmute</span>(<span class="kw-2">&amp;</span><span class="ident">fake_guard</span>) };
+        <span class="kw">loop</span> {
+            <span class="kw">let</span> <span class="ident">head</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">head</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>, <span class="ident">g</span>);
+            <span class="ident">participant</span>.<span class="ident">next</span>.<span class="ident">store_shared</span>(<span class="ident">head</span>, <span class="ident">Relaxed</span>);
+            <span class="kw">match</span> <span class="self">self</span>.<span class="ident">head</span>.<span class="ident">cas_and_ref</span>(<span class="ident">head</span>, <span class="ident">participant</span>, <span class="ident">Release</span>, <span class="ident">g</span>) {
+                <span class="prelude-val">Ok</span>(<span class="ident">shared</span>) <span class="op">=&gt;</span> {
+                    <span class="kw">let</span> <span class="ident">shared</span>: <span class="kw-2">&amp;</span><span class="ident">Participant</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">shared</span>;
+                    <span class="kw">return</span> <span class="ident">shared</span>;
                 }
-                <span class='prelude-val'>Err</span>(<span class='ident'>owned</span>) <span class='op'>=&gt;</span> {
-                    <span class='ident'>participant</span> <span class='op'>=</span> <span class='ident'>owned</span>;
+                <span class="prelude-val">Err</span>(<span class="ident">owned</span>) <span class="op">=&gt;</span> {
+                    <span class="ident">participant</span> <span class="op">=</span> <span class="ident">owned</span>;
                 }
             }
         }
     }
 
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>, <span class='ident'>g</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Guard</span>) <span class='op'>-&gt;</span> <span class='ident'>Iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-        <span class='ident'>Iter</span> {
-            <span class='ident'>guard</span>: <span class='ident'>g</span>,
-            <span class='ident'>next</span>: <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>head</span>,
-            <span class='ident'>needs_acq</span>: <span class='bool-val'>true</span>,
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">g</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Guard</span>) <span class="op">-&gt;</span> <span class="ident">Iter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+        <span class="ident">Iter</span> {
+            <span class="ident">guard</span>: <span class="ident">g</span>,
+            <span class="ident">next</span>: <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">head</span>,
+            <span class="ident">needs_acq</span>: <span class="bool-val">true</span>,
         }
     }
 }
 
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='comment'>// pin to an epoch so that we can free inactive nodes</span>
-    <span class='ident'>guard</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Guard</span>,
-    <span class='ident'>next</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Atomic</span><span class='op'>&lt;</span><span class='ident'>ParticipantNode</span><span class='op'>&gt;</span>,
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Iter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="comment">// pin to an epoch so that we can free inactive nodes</span>
+    <span class="ident">guard</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Guard</span>,
+    <span class="ident">next</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Atomic</span><span class="op">&lt;</span><span class="ident">ParticipantNode</span><span class="op">&gt;</span>,
 
-    <span class='comment'>// an Acquire read is needed only for the first read, due to release</span>
-    <span class='comment'>// sequences</span>
-    <span class='ident'>needs_acq</span>: <span class='ident'>bool</span>,
+    <span class="comment">// an Acquire read is needed only for the first read, due to release</span>
+    <span class="comment">// sequences</span>
+    <span class="ident">needs_acq</span>: <span class="ident">bool</span>,
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Iterator</span> <span class='kw'>for</span> <span class='ident'>Iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
-    <span class='kw'>type</span> <span class='ident'>Item</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Participant</span>;
-    <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>Participant</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>cur</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>needs_acq</span> {
-            <span class='self'>self</span>.<span class='ident'>needs_acq</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
-            <span class='self'>self</span>.<span class='ident'>next</span>.<span class='ident'>load</span>(<span class='ident'>Acquire</span>, <span class='self'>self</span>.<span class='ident'>guard</span>)
-        } <span class='kw'>else</span> {
-            <span class='self'>self</span>.<span class='ident'>next</span>.<span class='ident'>load</span>(<span class='ident'>Relaxed</span>, <span class='self'>self</span>.<span class='ident'>guard</span>)
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">Iter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Participant</span>;
+    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Participant</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cur</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">needs_acq</span> {
+            <span class="self">self</span>.<span class="ident">needs_acq</span> <span class="op">=</span> <span class="bool-val">false</span>;
+            <span class="self">self</span>.<span class="ident">next</span>.<span class="ident">load</span>(<span class="ident">Acquire</span>, <span class="self">self</span>.<span class="ident">guard</span>)
+        } <span class="kw">else</span> {
+            <span class="self">self</span>.<span class="ident">next</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>, <span class="self">self</span>.<span class="ident">guard</span>)
         };
 
-        <span class='kw'>while</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>n</span>) <span class='op'>=</span> <span class='ident'>cur</span> {
-            <span class='comment'>// attempt to clean up inactive nodes</span>
-            <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>n</span>.<span class='ident'>active</span>.<span class='ident'>load</span>(<span class='ident'>Relaxed</span>) {
-                <span class='ident'>cur</span> <span class='op'>=</span> <span class='ident'>n</span>.<span class='ident'>next</span>.<span class='ident'>load</span>(<span class='ident'>Relaxed</span>, <span class='self'>self</span>.<span class='ident'>guard</span>);
-                <span class='comment'>// TODO: actually reclaim inactive participants!</span>
-            } <span class='kw'>else</span> {
-                <span class='self'>self</span>.<span class='ident'>next</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>n</span>.<span class='ident'>next</span>;
-                <span class='kw'>return</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>n</span>)
+        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">n</span>) <span class="op">=</span> <span class="ident">cur</span> {
+            <span class="comment">// attempt to clean up inactive nodes</span>
+            <span class="kw">if</span> <span class="op">!</span><span class="ident">n</span>.<span class="ident">active</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>) {
+                <span class="ident">cur</span> <span class="op">=</span> <span class="ident">n</span>.<span class="ident">next</span>.<span class="ident">load</span>(<span class="ident">Relaxed</span>, <span class="self">self</span>.<span class="ident">guard</span>);
+                <span class="comment">// TODO: actually reclaim inactive participants!</span>
+            } <span class="kw">else</span> {
+                <span class="self">self</span>.<span class="ident">next</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">n</span>.<span class="ident">next</span>;
+                <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">n</span>)
             }
         }
 
-        <span class='prelude-val'>None</span>
+        <span class="prelude-val">None</span>
     }
 }
 </pre>
@@ -340,11 +341,9 @@
     <script>
         window.rootPath = "../../../../";
         window.currentCrate = "crossbeam";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../../jquery.js"></script>
     <script src="../../../../main.js"></script>
-    <script src="../../../../extra.js"></script>
     <script defer src="../../../../search-index.js"></script>
 </body>
 </html>

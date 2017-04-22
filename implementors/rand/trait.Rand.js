@@ -1,5 +1,7 @@
 (function() {var implementors = {};
-implementors["rand"] = [];implementors["num"] = [];
+implementors["basic_dsp_vector"] = [];
+implementors["num"] = [];
+implementors["rand"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

@@ -9,14 +9,15 @@
 
     <title>num_traits::identities::One - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
     
 
-    
+    <link rel="shortcut icon" href="https://rust-num.github.io/num/favicon.ico">
     
 </head>
-<body class="rustdoc">
+<body class="rustdoc trait">
     <!--[if lte IE 8]>
     <div class="warning">
         This old browser is unsupported and will most likely display funky
@@ -27,7 +28,7 @@
     
 
     <nav class="sidebar">
-        
+        <a href='../../num_traits/index.html'><img src='https://rust-num.github.io/num/rust-logo-128x128-blk-v2.png' alt='logo' width='100'></a>
         <p class='location'><a href='../index.html'>num_traits</a>::<wbr><a href='index.html'>identities</a></p><script>window.sidebarCurrent = {name: 'One', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
@@ -42,44 +43,42 @@
         </form>
     </nav>
 
-    <section id='main' class="content trait">
-<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>num_traits</a>::<wbr><a href='index.html'>identities</a>::<wbr><a class='trait' href=''>One</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>num_traits</a>::<wbr><a href='index.html'>identities</a>::<wbr><a class="trait" href=''>One</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-20' class='srclink' href='../../src/num_traits/identities.rs.html#54-71' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait One: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Mul.html' title='core::ops::Mul'>Mul</a>&lt;Self, Output=Self&gt; {
+               </span><a class='srclink' href='../../src/num_traits/identities.rs.html#54-71' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait One: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/trait.Mul.html" title="trait core::ops::Mul">Mul</a>&lt;Self, Output = Self&gt; {
     fn <a href='#tymethod.one' class='fnname'>one</a>() -&gt; Self;
 }</pre><div class='docblock'><p>Defines a multiplicative identity element for <code>Self</code>.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.one' class='method stab '><span id='one.v' class='invisible'><code>fn <a href='#tymethod.one' class='fnname'>one</a>() -&gt; Self</code></span></h3><div class='docblock'><p>Returns the multiplicative identity element of <code>Self</code>, <code>1</code>.</p>
-
-<h1 id='laws' class='section-header'><a href='#laws'>Laws</a></h1>
+        <h3 id='tymethod.one' class='method'><span id='one.v' class='invisible'><code>fn <a href='#tymethod.one' class='fnname'>one</a>() -&gt; Self</code></span></h3><div class='docblock'><p>Returns the multiplicative identity element of <code>Self</code>, <code>1</code>.</p>
+<h1 id="laws" class="section-header"><a href="#laws">Laws</a></h1>
 <pre><code class="language-{.text}">a * 1 = a       ∀ a ∈ Self
 1 * a = a       ∀ a ∈ Self
 </code></pre>
-
-<h1 id='purity' class='section-header'><a href='#purity'>Purity</a></h1>
+<h1 id="purity" class="section-header"><a href="#purity">Purity</a></h1>
 <p>This function should return the same result at all times regardless of
 external mutable state, for example values stored in TLS or in
 <code>static mut</code>s.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl One for <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></li>
-<li><code>impl One for <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a></code></li>
-<li><code>impl One for <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a></code></li>
-<li><code>impl One for <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></li>
-<li><code>impl One for <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a></code></li>
-<li><code>impl One for <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a></code></li>
-<li><code>impl One for <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i8.html'>i8</a></code></li>
-<li><code>impl One for <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i16.html'>i16</a></code></li>
-<li><code>impl One for <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a></code></li>
-<li><code>impl One for <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i64.html'>i64</a></code></li>
-<li><code>impl One for <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f32.html'>f32</a></code></li>
-<li><code>impl One for <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a></code></li>
+    <li><code>impl One for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></li>
+<li><code>impl One for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a></code></li>
+<li><code>impl One for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a></code></li>
+<li><code>impl One for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a></code></li>
+<li><code>impl One for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></code></li>
+<li><code>impl One for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a></code></li>
+<li><code>impl One for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a></code></li>
+<li><code>impl One for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">i16</a></code></li>
+<li><code>impl One for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a></code></li>
+<li><code>impl One for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a></code></li>
+<li><code>impl One for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a></code></li>
+<li><code>impl One for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a></code></li>
 </ul><script type="text/javascript" async
                          src="../../implementors/num_traits/identities/trait.One.js">
                  </script></section>
@@ -138,11 +137,9 @@ external mutable state, for example values stored in TLS or in
     <script>
         window.rootPath = "../../";
         window.currentCrate = "num_traits";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    <script src="../../extra.js"></script>
     <script defer src="../../search-index.js"></script>
 </body>
 </html>
