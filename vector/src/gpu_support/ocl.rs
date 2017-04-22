@@ -8,8 +8,7 @@ use std::mem;
 use std::cmp;
 use std::ops::Range;
 use super::GpuSupport;
-use {RealNumber, array_to_complex, array_to_complex_mut};
-use num;
+use {RealNumber, array_to_complex, array_to_complex_mut, Zero};
 use clfft::{ClFftPrm, builder, Precision, Layout, Direction};
 
 pub type Gpu32 = ClFloat4;
@@ -270,7 +269,7 @@ fn array_to_gpu_simd_mut<T, R>(array: &mut [T]) -> &mut [R] {
 /// coefficients.
 ///
 /// An example for the data layout can be found in the unit test section.
-fn prepare_impulse_response<T: Clone + Copy + num::Zero>(
+fn prepare_impulse_response<T: Clone + Copy + Zero>(
         imp_resp: &[T],
         destination: &mut [T],
         vec_len: usize) {

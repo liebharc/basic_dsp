@@ -1,6 +1,6 @@
 use std::mem;
 use std::ptr;
-use {array_to_complex_mut};
+use {array_to_complex_mut, memcpy, memzero};
 use numbers::*;
 use multicore_support::*;
 use super::super::{VoidResult, Buffer, Owner, ErrorReason, NumberSpace,
@@ -306,10 +306,7 @@ impl<S, T, N, D> InsertZerosOps<T> for DspVec<S, T, N, D>
         match option {
             PaddingOption::End => {
                 // Zero target
-                let dest = &mut data[len_before] as *mut T;
-                unsafe {
-                    ptr::write_bytes(dest, 0, len - len_before);
-                }
+                memzero(data, len_before .. len);
                 Ok(())
             }
             PaddingOption::Surround => {
@@ -321,17 +318,11 @@ impl<S, T, N, D> InsertZerosOps<T> for DspVec<S, T, N, D>
                     left *= 2;
                 }
 
-                unsafe {
-                    let src = &data[0] as *const T;
-                    let dest = &mut data[left] as *mut T;
-                    ptr::copy(src, dest, len_before);
-                    if right > 0 {
-                        let dest = &mut data[len - right] as *mut T;
-                        ptr::write_bytes(dest, 0, right);
-                    }
-                    let dest = &mut data[0] as *mut T;
-                    ptr::write_bytes(dest, 0, left);
+                memcpy(data, 0..len_before, left);
+                if right > 0 {
+                    memzero(data, len - right .. len);
                 }
+                memzero(data, 0 .. left);
                 Ok(())
             }
             PaddingOption::Center => {
@@ -344,19 +335,10 @@ impl<S, T, N, D> InsertZerosOps<T> for DspVec<S, T, N, D>
                 }
 
                 if right > 0 {
-                    unsafe {
-                        let src = &data[left] as *const T;
-                        let dest = &mut data[len - right] as *mut T;
-                        // src and dest may overload with copy, a unit test covers this case
-                        ptr::copy(src, dest, right);
-                    }
+                    memcpy(data, left..left + right, len - right);
                 }
 
-                unsafe {
-                    let dest = &mut data[left] as *mut T;
-                    ptr::write_bytes(dest, 0, len - left - right);
-
-                }
+                memzero(data, left .. len - right);
                 Ok(())
             }
         }
@@ -425,13 +407,8 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
             match option {
                 PaddingOption::End => {
                     // Zero target
-                    let src = &data[0] as *const T;
-                    let dest_start = &mut target[0] as *mut T;
-                    let dest_end = &mut target[len_before] as *mut T;
-                    unsafe {
-                        ptr::copy(src, dest_start, len_before);
-                        ptr::write_bytes(dest_end, 0, len - len_before);
-                    }
+                    &mut target[0..len_before].copy_from_slice(&data[0..len_before]);
+                    memzero(target, len_before .. len);
                 }
                 PaddingOption::Surround => {
                     let diff = (len - len_before) / if is_complex { 2 } else { 1 };
@@ -442,17 +419,11 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
                         left *= 2;
                     }
 
-                    unsafe {
-                        let src = &data[0] as *const T;
-                        let dest = &mut target[left] as *mut T;
-                        ptr::copy(src, dest, len_before);
-                        if right > 0 {
-                            let dest = &mut target[len - right] as *mut T;
-                            ptr::write_bytes(dest, 0, right);
-                        }
-                        let dest = &mut target[0] as *mut T;
-                        ptr::write_bytes(dest, 0, left);
+                    &mut target[left..left+len_before].copy_from_slice(&data[0..len_before]);
+                    if right > 0 {
+                        memzero(target, len - right .. len);
                     }
+                    memzero(target, 0 .. left);
                 }
                 PaddingOption::Center => {
                     let step = if is_complex { 2 } else { 1 };
@@ -464,16 +435,9 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
                         left *= 2;
                     }
 
-                    unsafe {
-                        let src = &data[len_before - right] as *const T;
-                        let dest = &mut target[len - right] as *mut T;
-                        ptr::copy(src, dest, right);
-                        let src = &data[0] as *const T;
-                        let dest = &mut target[0] as *mut T;
-                        ptr::copy(src, dest, left);
-                        let dest = &mut target[left] as *mut T;
-                        ptr::write_bytes(dest, 0, len - len_before);
-                    }
+                    &mut target[len - right .. len].copy_from_slice(&data[len_before - right .. len_before]);
+                    &mut target[0 .. left].copy_from_slice(&data[0 .. left]);
+                    memzero(target, left .. len - len_before);
                 }
             }
         }
