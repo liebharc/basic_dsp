@@ -1,6 +1,6 @@
 CARGO_CMD ?= cargo
 
-packages = vector interop matrix
+packages = vector matrix interop
 
 RUST_VERSION=$(shell rustc --version)
 RUST_NIGHTLY = $(findstring nightly,$(RUST_VERSION))
@@ -16,6 +16,9 @@ ifeq ($(RUST_NIGHTLY), nightly)
 else
 			@echo "Bench requires Rust nigthly, skipping bench for $(RUST_VERSION)"
 endif
+
+clean:
+	$(MAKE) run-all TASK="clean"
 
 update:
 	$(MAKE) run-all TASK="update"
