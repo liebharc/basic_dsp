@@ -138,6 +138,47 @@ mod inter_test {
     }
 
     #[test]
+    fn compare_interpolatef_and_interpolate_with_delay() {
+        for iteration in 0..3 {
+            let a = create_random_multitones(20170322, iteration, 2002, 4000, 5);
+            let len = a.len();
+            let delta = create_delta(20170323, iteration);
+            let delay = create_delta(20170324, iteration);
+            let time = a.to_real_time_vec();
+            let mut time = time.to_complex().unwrap();
+            time.scale(Complex32::new(0.45, -0.3));
+            time.set_delta(delta);
+            let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.1);
+            let mut buffer = SingleBuffer::new();
+            let factor = iteration as u32 + 1;
+            let mut left = time.clone();
+            left.interpolatef(&mut buffer,
+                              &fun as &RealImpulseResponse<f32>,
+                              factor as f32,
+                              delay,
+                              12);
+            let mut right = time;
+            right.interpolate(&mut buffer,
+                               Some(&fun as &RealFrequencyResponse<f32>),
+                               left.points(),
+                               delay).unwrap();
+            // `create_random_multitones` very likely creates discontinuities if the vector
+            // is wrapped around from the end to the beginning. Both interpolatation functions
+            // perform such as wrap around. The discontinuities will cause ringing and both methods
+            // likely react different to the ringing. Since we don't care too much about that
+            // for this test we ignore the beginning and end in the test.
+            assert_vector_eq_with_reason_and_tolerance(&left[150..len-150],
+                                                       &right[150..len-150],
+                                                       1e-2,
+                                                       &format!("Results should match \
+                                                                 independent if done with \
+                                                                 with interpolate or \
+                                                                 interpolatef, factor={}",
+                                                                factor));
+        }
+    }
+
+    #[test]
     fn compare_interpolatef_and_interpolatef_optimized_with_delay() {
         for iteration in 0..3 {
             // This offset is just enough to trigger the non optimized code path
@@ -232,7 +273,7 @@ mod inter_test {
     #[test]
     fn upsample_downsample() {
         for iteration in 0..3 {
-            let a = create_data_even(2015112125, iteration, 2002, 4000);
+            let a = create_random_multitones(2015112125, iteration, 2002, 4000, 5);
             let delta = create_delta(35611596, iteration);
             let mut time = a.to_complex_time_vec();
             time.set_delta(delta);
@@ -250,6 +291,31 @@ mod inter_test {
                                   1.0 / factor,
                                   0.0,
                                   13);
+            assert_vector_eq_with_reason_and_tolerance(&time[..],
+                                                       &upsample[..],
+                                                       0.2,
+                                                       &format!("Downsampling should be the \
+                                                                 inverse of upsampling, \
+                                                                 factor={}",
+                                                                factor));
+        }
+    }
+
+    #[test]
+    fn interpolate_upsample_downsample() {
+        for iteration in 0..3 {
+            let a = create_random_multitones(2015112125, iteration, 2002, 4000, 5);
+            let delta = create_delta(35611596, iteration);
+            let mut time = a.to_complex_time_vec();
+            time.set_delta(delta);
+            let mut buffer = SingleBuffer::new();
+            let factor = iteration + 2;
+            let points = time.points();
+            let mut upsample = time.clone();
+            upsample.interpft(&mut buffer,
+                                  factor * points);
+            upsample.interpft(&mut buffer,
+                                  points);
             assert_vector_eq_with_reason_and_tolerance(&time[..],
                                                        &upsample[..],
                                                        0.2,

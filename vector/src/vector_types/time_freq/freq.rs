@@ -1,6 +1,5 @@
 use RealNumber;
 use std::mem;
-use std::ptr;
 use super::super::{ToTimeResult, DspVec, Vector, Buffer, ToSliceMut, RededicateForceOps, MetaData,
                    ComplexNumberSpace, Owner, FrequencyDomain, DataDomain};
 
@@ -59,20 +58,8 @@ impl<S, T, N, D> FrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
         {
             let data = self.data.to_slice();
             let mut temp = temp.to_slice_mut();
-            {
-                let data = &data[step] as *const T;
-                let target = &mut temp[step] as *mut T;
-                unsafe {
-                    ptr::copy(data, target, len - step);
-                }
-            }
-            {
-                let data = &data[0] as *const T;
-                let target = &mut temp[0] as *mut T;
-                unsafe {
-                    ptr::copy(data, target, step);
-                }
-            }
+            &mut temp[step..len].clone_from_slice(&data[step..len]);
+            &mut temp[0..step].clone_from_slice(&data[0..step]);
             let mut j = step + 1;
             let mut i = temp_len - 1;
             while i >= len {

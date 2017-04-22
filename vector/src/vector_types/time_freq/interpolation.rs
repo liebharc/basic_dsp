@@ -1,4 +1,4 @@
-use {RealNumber, array_to_complex, array_to_complex_mut, Zero};
+use {RealNumber, array_to_complex, array_to_complex_mut, Zero, memcpy};
 use conv_types::{RealImpulseResponse, RealFrequencyResponse};
 use numbers::*;
 use std::ops::{Add, Mul};
@@ -497,15 +497,15 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
 
         let mut complex = complex.plain_fft(buffer);
 
-        let two = T::one() + T::one();
         let pi = T::PI();
+        let two = T::one() + T::one();
         // Add the delay, which is a linear phase in frequency domain
         if delay != T::zero()
         {
             let points = complex.len() / 2;
             let pos_points = points / 2;
             let neg_points = points - pos_points;
-            let phase_inc = -two * pi * -delay / delta_t / delta_t
+            let phase_inc = two * pi * delay / delta_t
                             / T::from(points).unwrap();
             {
                 let len = complex.len();
@@ -524,7 +524,6 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
 
         if dest_len > orig_len {
             complex.zero_pad_b(buffer, dest_points, PaddingOption::Center);
-
             match function {
                 None => {
                     complex.scale(T::from(dest_points).unwrap() / T::from(orig_points).unwrap());
@@ -542,35 +541,24 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
             };
         }
         else if dest_len < orig_len {
-        	let (neg_points, pos_points, step) =
-        	if is_complex {
-	        	let len_diff = (orig_len - dest_len) / 2;
-	        	let neg_points = len_diff / 2;
-	        	let pos_points = len_diff - neg_points;
-	        	(2 * neg_points, 2 * pos_points, 2)
-        	} else
-        	{
-				let len_diff = orig_len - dest_len;
-	        	let neg_points = len_diff / 2;
-	        	let pos_points = len_diff - neg_points;
-	        	(neg_points, pos_points, 1)
-        	};
-
-        	unsafe {
-        		use std::ptr;
-        		let mut data = complex.data.to_slice_mut();
-        		let src = &data[orig_len - neg_points + step] as *const T;
-        		let dest = &mut data[pos_points] as *mut T;
-        		ptr::copy(src, dest, neg_points);
-        	}
-        	complex.resize(dest_len).expect("Shrinking should always succeed");
-        	complex.scale(T::from(dest_points).unwrap() / T::from(orig_points).unwrap());
+            let neg_points = dest_points / 2;
+            let pos_points = dest_points - neg_points;
+            let step = 2;
+            {
+                let copyrange = orig_len - step * neg_points .. orig_len;
+                memcpy(complex.data.to_slice_mut(),
+                       copyrange,
+                       step * pos_points);
+            }
+        	complex.resize(step * (neg_points + pos_points)).expect("Shrinking should always succeed");
+        	complex.scale(T::from(step * (neg_points + pos_points)).unwrap() / T::from(orig_len).unwrap());
         }
 
     	let mut complex = complex.plain_ifft(buffer);
         let points = complex.len() / 2;
         complex.scale(T::one() / T::from(points).unwrap());
         complex.swap_data(self);
+        self.delta = delta_t / interpolation_factorf;
         if !is_complex {
             // Convert vector back into real number space
             self.pure_complex_to_real_operation_inplace(|x, _arg| x.re, ());

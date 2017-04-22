@@ -142,6 +142,7 @@ impl<T> Zero for Complex<T>
     }
 }
 
+// Returns a complex slice from a real slice
 fn array_to_complex<T>(array: &[T]) -> &[Complex<T>] {
     unsafe {
         let len = array.len();
@@ -153,6 +154,7 @@ fn array_to_complex<T>(array: &[T]) -> &[Complex<T>] {
     }
 }
 
+// Returns a complex slice from a real slice
 fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
     unsafe {
         let len = array.len();
@@ -162,6 +164,31 @@ fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
         let trans: &mut [Complex<T>] = mem::transmute(array);
         &mut trans[0..len / 2]
     }
+}
+
+/// Copies memory inside a slice
+fn memcpy<T: Copy>(data: &mut [T], from: Range<usize>, to: usize) {
+    use std::ptr::copy;
+    assert!(from.start <= from.end);
+    assert!(from.end <= data.len());
+    assert!(to <= data.len() - (from.end - from.start));
+    unsafe {
+        let ptr = data.as_mut_ptr();
+        copy(ptr.offset(from.start as isize),
+             ptr.offset(to as isize),
+             from.end - from.start)
+     }
+}
+
+// Zeros a range within the slice
+fn memzero<T: Copy>(data: &mut [T], range: Range<usize>) {
+    use std::ptr::write_bytes;
+    assert!(range.start <= range.end);
+    assert!(range.end <= data.len());
+     unsafe {
+         let ptr = data.as_mut_ptr();
+         write_bytes(ptr.offset(range.start as isize), 0, range.end - range.start);
+     }
 }
 
 #[cfg(test)]
