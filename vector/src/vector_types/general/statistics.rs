@@ -2,9 +2,10 @@ use array_to_complex;
 use numbers::*;
 use multicore_support::*;
 use simd_extensions::*;
+use arrayvec::ArrayVec;
 use super::super::{Vector, DspVec, ToSlice, Domain, RealNumberSpace,
                    ComplexNumberSpace};
-
+                  
 #[repr(C)]
 #[derive(Copy)]
 #[derive(Clone)]
@@ -30,10 +31,17 @@ pub struct Statistics<T> {
     pub max_index: usize,
 }
 
+/// The maximum `len` for any of the `*split` methods.
+pub const STATS_VEC_CAPACTIY: usize = 16;
+
+/// Alias for a vector of any statistical information.
+pub type StatsVec<T> = ArrayVec<[T; STATS_VEC_CAPACTIY]>;
+
 /// This trait offers operations to calculate statistics about the data in a type.
-pub trait StatisticsOps<T>: Sized
-    where T: Sized
+pub trait StatisticsOps<T>
 {
+    type Result;
+
     /// Calculates the statistics of the data.
     ///
     /// # Example
@@ -56,13 +64,19 @@ pub trait StatisticsOps<T>: Sized
     /// assert_eq!(result.max_index, 2);
     /// }
     /// ```
-    fn statistics(&self) -> T;
+    fn statistics(&self) -> Self::Result;
+}
 
+/// This trait offers operations to calculate statistics about the data in a type.
+pub trait StatisticsSplitOps<T>
+{
+    type Result;
 
     /// Calculates the statistics of the data contained in the vector as if the vector would
     /// have been split into `len` pieces. `self.len` should be dividable by
     /// `len` without a remainder,
-    /// but this isn't enforced by the implementation.
+    /// but this isn't enforced by the implementation. 
+    /// For implementation reasons `len <= 16` must be true.
     ///
     /// # Example
     ///
@@ -78,7 +92,7 @@ pub trait StatisticsOps<T>: Sized
     /// assert_eq!(result[1].sum, Complex32::new(3.0, 4.0));
     /// }
     /// ```
-    fn statistics_split(&self, len: usize) -> Vec<T>;
+    fn statistics_split(&self, len: usize) -> Self::Result;
 }
 
 /// Offers operations to calculate the sum or the sum of squares.
@@ -123,28 +137,28 @@ pub trait Stats<T>: Sized {
     /// Creates an empty statistics struct.
     fn empty() -> Self;
     /// Creates a vector of empty statistics structs.
-    fn empty_vec(len: usize) -> Vec<Self>;
+    fn empty_vec(len: usize) -> StatsVec<Self>;
     /// Creates a statistics struct which resembles an invalid result.
     fn invalid() -> Self;
     /// Merges several statistics into one.
     fn merge(stats: &[Self]) -> Self;
     /// Merges several vectors of statistics into one vector.
-    fn merge_cols(stats: &[Vec<Self>]) -> Vec<Self>;
+    fn merge_cols(stats: &[StatsVec<Self>]) -> StatsVec<Self>;
     /// Adds a new value to the statistics, all statistic fields get updated.
     fn add(&mut self, elem: T, index: usize);
 }
 
 macro_rules! impl_common_stats {
     () => {
-        fn merge_cols(stats: &[Vec<Self>]) -> Vec<Self> {
+        fn merge_cols(stats: &[StatsVec<Self>]) -> StatsVec<Self> {
             if stats.is_empty() {
-                return Vec::new();
+                return StatsVec::new();
             }
 
             let len = stats[0].len();
-            let mut results = Vec::with_capacity(len);
+            let mut results = StatsVec::new();
             for i in 0..len {
-                let mut reordered = Vec::with_capacity(stats.len());
+                let mut reordered = StatsVec::new();
                 for s in stats.iter()
                 {
                     reordered.push(s[i]);
@@ -156,8 +170,8 @@ macro_rules! impl_common_stats {
             results
         }
 
-        fn empty_vec(len: usize) -> Vec<Self> {
-            let mut results = Vec::with_capacity(len);
+        fn empty_vec(len: usize) -> StatsVec<Self> {
+            let mut results = StatsVec::new();
             for _ in 0..len {
                 results.push(Statistics::empty());
             }
@@ -339,12 +353,14 @@ impl<T> Stats<Complex<T>> for Statistics<Complex<T>>
     }
 }
 
-impl<S, T, N, D> StatisticsOps<Statistics<T>> for DspVec<S, T, N, D>
+impl<S, T, N, D> StatisticsOps<T> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: RealNumberSpace,
           D: Domain
 {
+    type Result = Statistics<T>;
+
     fn statistics(&self) -> Statistics<T> {
         let data_length = self.len();
         let array = self.data.to_slice();
@@ -365,10 +381,23 @@ impl<S, T, N, D> StatisticsOps<Statistics<T>> for DspVec<S, T, N, D>
 
         Statistics::merge(&chunks[..])
     }
-
-    fn statistics_split(&self, len: usize) -> Vec<Statistics<T>> {
+}    
+    
+impl<S, T, N, D> StatisticsSplitOps<T> for DspVec<S, T, N, D>
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: RealNumberSpace,
+          D: Domain
+{
+    type Result = StatsVec<Statistics<T>>;
+ 
+    fn statistics_split(&self, len: usize) -> StatsVec<Statistics<T>> {
         if len == 0 {
-            return Vec::new();
+            return StatsVec::new();
+        }
+        
+        if len > STATS_VEC_CAPACTIY {
+            panic!("len bigger than maximum value");
         }
 
         let data_length = self.len();
@@ -469,12 +498,14 @@ impl<S, T, N, D> SumOps<T> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, T, N, D> StatisticsOps<Statistics<Complex<T>>> for DspVec<S, T, N, D>
+impl<S, T, N, D> StatisticsOps<Complex<T>> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
           D: Domain
 {
+    type Result = Statistics<Complex<T>>;
+
     fn statistics(&self) -> Statistics<Complex<T>> {
         let data_length = self.len();
         let array = self.data.to_slice();
@@ -496,10 +527,23 @@ impl<S, T, N, D> StatisticsOps<Statistics<Complex<T>>> for DspVec<S, T, N, D>
 
         Statistics::merge(&chunks[..])
     }
+}
+    
+impl<S, T, N, D> StatisticsSplitOps<Complex<T>> for DspVec<S, T, N, D>
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: ComplexNumberSpace,
+          D: Domain
+{    
+    type Result = StatsVec<Statistics<Complex<T>>>;
 
-    fn statistics_split(&self, len: usize) -> Vec<Statistics<Complex<T>>> {
+    fn statistics_split(&self, len: usize) -> StatsVec<Statistics<Complex<T>>> {
         if len == 0 {
-            return Vec::new();
+            return StatsVec::new();
+        }
+        
+        if len > STATS_VEC_CAPACTIY {
+            panic!("len bigger than maximum value");
         }
 
         let data_length = self.len();

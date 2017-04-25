@@ -10,9 +10,7 @@ mod dot_products;
 pub use self::dot_products::*;
 mod mapping;
 pub use self::mapping::*;
-#[cfg(feature="std")]
 mod statistics;
-#[cfg(feature="std")]
 pub use self::statistics::*;
 #[cfg(feature="std")]
 mod precise_stats;

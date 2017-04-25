@@ -6,6 +6,8 @@ Changes:
 - `zero_pad_b` now returns a result, which may contain an error if the passed argument is smaller than the actual vector length
 - Renamed `interpolate_vector` to `interpolate_signal`
 - Removed deprecated functions `swap_halves_b`, `statistics_splitted`
+- Removed `MapInplaceNoArgsOps` for combined ops since they seem to not fit in their independent on how this module progresses.
+- Restructured statistics traits.
 
 ## Version 0.4.3
 Minor additions.

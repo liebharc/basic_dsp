@@ -3,14 +3,15 @@ use numbers::*;
 use num_complex::{Complex64};
 use multicore_support::*;
 use super::super::{Vector, DspVec, ToSlice, Domain, RealNumberSpace,
-                   ComplexNumberSpace, Statistics, Stats};
+                   ComplexNumberSpace, Statistics, Stats, StatsVec, STATS_VEC_CAPACTIY};
 use super::{kahan_sum, kahan_sumb};
 
 /// Offers the same functionality as the `StatisticsOps` trait but
 /// the statistics are calculated in a more precise (and slower) way.
-pub trait PreciseStatisticsOps<T>: Sized
-    where T: Sized
+pub trait PreciseStatisticsOps<T>
 {
+    type Result;
+
     /// Calculates the statistics of the data contained in the vector using
     /// a more precise but slower algorithm.
     ///
@@ -35,13 +36,21 @@ pub trait PreciseStatisticsOps<T>: Sized
     /// assert_eq!(result.max_index, 2);
     /// }
     /// ```
-    fn statistics_prec(&self) -> T;
+    fn statistics_prec(&self) -> Self::Result;
+}
+    
+/// Offers the same functionality as the `StatisticsOps` trait but
+/// the statistics are calculated in a more precise (and slower) way.
+pub trait PreciseStatisticsSplitOps<T>
+{
+    type Result;
 
     /// Calculates the statistics of the data contained in the vector as if the vector would
     /// have been split into `len` pieces
     /// using a more precise but slower algorithm. `self.len` should be dividable by
     /// `len` without a remainder,
     /// but this isn't enforced by the implementation.
+    /// For implementation reasons `len <= 16` must be true.
     ///
     /// # Example
     ///
@@ -58,7 +67,7 @@ pub trait PreciseStatisticsOps<T>: Sized
     /// assert_eq!(result[1].sum, Complex64::new(3.0, 4.0));
     /// }
     /// ```
-    fn statistics_split_prec(&self, len: usize) -> Vec<T>;
+    fn statistics_split_prec(&self, len: usize) -> Self::Result;
 }
 
 /// Offers the same functionality as the `SumOps` trait but
@@ -109,11 +118,13 @@ pub trait PreciseStats<T>: Sized {
     fn add_prec(&mut self, elem: T, index: usize, sumc: &mut T, rmsc: &mut T);
 }
 
-impl<S, N, D> PreciseStatisticsOps<Statistics<f64>> for DspVec<S, f32, N, D>
+impl<S, N, D> PreciseStatisticsOps<f64> for DspVec<S, f32, N, D>
     where S: ToSlice<f32>,
           N: RealNumberSpace,
           D: Domain
 {
+    type Result = Statistics<f64>;
+
     fn statistics_prec(&self) -> Statistics<f64> {
         let data_length = self.len();
         let array = self.data.to_slice();
@@ -134,10 +145,22 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<f64>> for DspVec<S, f32, N, D>
 
         Statistics::merge(&chunks[..])
     }
+}
 
-    fn statistics_split_prec(&self, len: usize) -> Vec<Statistics<f64>> {
+impl<S, N, D> PreciseStatisticsSplitOps<f64> for DspVec<S, f32, N, D>
+    where S: ToSlice<f32>,
+          N: RealNumberSpace,
+          D: Domain
+{
+    type Result = StatsVec<Statistics<f64>>;
+
+    fn statistics_split_prec(&self, len: usize) -> StatsVec<Statistics<f64>> {
         if len == 0 {
-            return Vec::new();
+            return StatsVec::new();
+        }
+        
+        if len > STATS_VEC_CAPACTIY {
+            panic!("len bigger than maximum value");
         }
 
         let data_length = self.len();
@@ -163,11 +186,13 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<f64>> for DspVec<S, f32, N, D>
     }
 }
 
-impl<S, N, D> PreciseStatisticsOps<Statistics<f64>> for DspVec<S, f64, N, D>
+impl<S, N, D> PreciseStatisticsOps<f64> for DspVec<S, f64, N, D>
     where S: ToSlice<f64>,
           N: RealNumberSpace,
           D: Domain
 {
+    type Result = Statistics<f64>;
+
     fn statistics_prec(&self) -> Statistics<f64> {
         let data_length = self.len();
         let array = self.data.to_slice();
@@ -190,10 +215,22 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<f64>> for DspVec<S, f64, N, D>
 
         Statistics::merge(&chunks[..])
     }
+}
 
-    fn statistics_split_prec(&self, len: usize) -> Vec<Statistics<f64>> {
+impl<S, N, D> PreciseStatisticsSplitOps<f64> for DspVec<S, f64, N, D>
+    where S: ToSlice<f64>,
+          N: RealNumberSpace,
+          D: Domain
+{
+    type Result = StatsVec<Statistics<f64>>;
+
+    fn statistics_split_prec(&self, len: usize) -> StatsVec<Statistics<f64>> {
         if len == 0 {
-            return Vec::new();
+            return StatsVec::new();
+        }
+        
+        if len > STATS_VEC_CAPACTIY {
+            panic!("len bigger than maximum value");
         }
 
         let data_length = self.len();
@@ -302,11 +339,13 @@ impl<S, N, D> PreciseSumOps<f64> for DspVec<S, f64, N, D>
     }
 }
 
-impl<S, N, D> PreciseStatisticsOps<Statistics<Complex<f64>>> for DspVec<S, f32, N, D>
+impl<S, N, D> PreciseStatisticsOps<Complex<f64>> for DspVec<S, f32, N, D>
     where S: ToSlice<f32>,
           N: ComplexNumberSpace,
           D: Domain
 {
+    type Result = Statistics<Complex<f64>>;
+
     fn statistics_prec(&self) -> Statistics<Complex<f64>> {
         let data_length = self.len();
         let array = self.data.to_slice();
@@ -328,10 +367,22 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<Complex<f64>>> for DspVec<S, f32, 
 
         Statistics::merge(&chunks[..])
     }
+}
 
-    fn statistics_split_prec(&self, len: usize) -> Vec<Statistics<Complex<f64>>> {
+impl<S, N, D> PreciseStatisticsSplitOps<Complex<f64>> for DspVec<S, f32, N, D>
+    where S: ToSlice<f32>,
+          N: ComplexNumberSpace,
+          D: Domain
+{
+    type Result = StatsVec<Statistics<Complex<f64>>>;
+
+    fn statistics_split_prec(&self, len: usize) -> StatsVec<Statistics<Complex<f64>>> {
         if len == 0 {
-            return Vec::new();
+            return StatsVec::new();
+        }
+        
+        if len > STATS_VEC_CAPACTIY {
+            panic!("len bigger than maximum value");
         }
 
         let data_length = self.len();
@@ -353,16 +404,18 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<Complex<f64>>> for DspVec<S, f32, 
 
             results
         });
-
+        
         Statistics::merge_cols(&chunks[..])
     }
 }
 
-impl<S, N, D> PreciseStatisticsOps<Statistics<Complex<f64>>> for DspVec<S, f64, N, D>
+impl<S, N, D> PreciseStatisticsOps<Complex<f64>> for DspVec<S, f64, N, D>
     where S: ToSlice<f64>,
           N: ComplexNumberSpace,
           D: Domain
 {
+    type Result = Statistics<Complex<f64>>;
+
     fn statistics_prec(&self) -> Statistics<Complex<f64>> {
         let data_length = self.len();
         let array = self.data.to_slice();
@@ -386,10 +439,22 @@ impl<S, N, D> PreciseStatisticsOps<Statistics<Complex<f64>>> for DspVec<S, f64, 
 
         Statistics::merge(&chunks[..])
     }
+}
 
-    fn statistics_split_prec(&self, len: usize) -> Vec<Statistics<Complex<f64>>> {
+impl<S, N, D> PreciseStatisticsSplitOps<Complex<f64>> for DspVec<S, f64, N, D>
+    where S: ToSlice<f64>,
+          N: ComplexNumberSpace,
+          D: Domain
+{
+    type Result = StatsVec<Statistics<Complex<f64>>>;
+
+    fn statistics_split_prec(&self, len: usize) -> StatsVec<Statistics<Complex<f64>>> {
         if len == 0 {
-            return Vec::new();
+            return StatsVec::new();
+        }
+        
+        if len > STATS_VEC_CAPACTIY {
+            panic!("len bigger than maximum value");
         }
 
         let data_length = self.len();
