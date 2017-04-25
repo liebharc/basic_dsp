@@ -79,6 +79,10 @@ impl<T> InlineVector<T> {
         }
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
     pub fn capacity(&self) -> usize {
         match self {
             &InlineVector::Inline(ref v) => v.capacity(),

@@ -230,7 +230,6 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
     /// Convolves a vector of vectors (in this lib also considered a matrix) with a vector
     /// of impulse responses and stores the result in `target`.
-    #[cfg(feature="std")]
     pub fn convolve_mat(
         matrix: &[&Self],
         impulse_response: &[&Self],
@@ -268,15 +267,15 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         };
         if matrix[0].is_complex() {
             let len = matrix[0].len();
-            let others: Vec<&[T]> = impulse_response.iter().map(|v|v.data.to_slice()).collect();
-            let data_vecs: Vec<&[T]> = matrix.iter().map(|v|v.data.to_slice()).collect();
+            let others: InlineVector<&[T]> = impulse_response.iter().map(|v|v.data.to_slice()).collect();
+            let data_vecs: InlineVector<&[T]> = matrix.iter().map(|v|v.data.to_slice()).collect();
             let target = target.to_slice_mut();
-            let others: Vec<&[Complex<T>]>
+            let others: InlineVector<&[Complex<T>]>
                 = others.iter().map(|o| {
                     let c = array_to_complex(&o[0..impulse_response[0].len()]);
                     &c[other_start..other_end]
                 }).collect();
-            let data_vecs: Vec<&[Complex<T>]>
+            let data_vecs: InlineVector<&[Complex<T>]>
                 = data_vecs.iter().map(|o| {
                     array_to_complex(&o[0..impulse_response[0].len()])
                 }).collect();
@@ -284,25 +283,25 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let conv_len = conv_len as isize;
             for (num, i) in dest.iter_mut().zip(0..) {
                 *num =
-                    Self::convolve_mat_iteration(&data_vecs, &others, i, conv_len, full_conv_len);
+                    Self::convolve_mat_iteration(&data_vecs[..], &others[..], i, conv_len, full_conv_len);
             }
         } else {
             let len = matrix[0].len();
-            let others: Vec<&[T]> = impulse_response.iter().map(|v|v.data.to_slice()).collect();
-            let data_vecs: Vec<&[T]> = matrix.iter().map(|v|v.data.to_slice()).collect();
+            let others: InlineVector<&[T]> = impulse_response.iter().map(|v|v.data.to_slice()).collect();
+            let data_vecs: InlineVector<&[T]> = matrix.iter().map(|v|v.data.to_slice()).collect();
             let target = target.to_slice_mut();
-            let others: Vec<&[T]>
+            let others: InlineVector<&[T]>
                 = others.iter().map(|o| {
                     &o[other_start..other_end]
                 }).collect();
-            let data_vecs: Vec<&[T]>
+            let data_vecs: InlineVector<&[T]>
                 = data_vecs.iter().map(|o| {
                     &o[0..len]
                 }).collect();
             let dest = &mut target[0..len];
             let conv_len = conv_len as isize;
             for (num, i) in dest.iter_mut().zip(0..) {
-                *num = Self::convolve_mat_iteration(&data_vecs, &others, i, conv_len, full_conv_len);
+                *num = Self::convolve_mat_iteration(&data_vecs[..], &others[..], i, conv_len, full_conv_len);
             }
         }
 
@@ -327,7 +326,6 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         sum
     }
 
-    #[cfg(feature="std")]
     #[inline]
     fn convolve_mat_iteration<TT>(matrix: &[&[TT]],
                               imp_resp: &[&[TT]],

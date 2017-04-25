@@ -75,6 +75,10 @@ impl<T> InlineVector<T> {
         }
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
 	pub fn iter(&self) -> Iter<T> {
 		match self {
             &InlineVector::Inline(ref v) => v.iter(),
