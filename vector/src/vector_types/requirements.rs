@@ -110,7 +110,7 @@ impl<T> ToSliceMut<T> for [T] {
 
 impl<T> Owner for [T] {}
 
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 impl<T> ToSlice<T> for Box<[T]> {
     fn to_slice(&self) -> &[T] {
         self
@@ -137,14 +137,14 @@ impl<T> ToSlice<T> for Box<[T]> {
     }
 }
 
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 impl<T> ToSliceMut<T> for Box<[T]> {
     fn to_slice_mut(&mut self) -> &mut [T] {
         self
     }
 }
 
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 impl<T> Owner for Box<[T]> {}
 
 impl<'a, T> ToSlice<T> for &'a mut [T] {
@@ -179,7 +179,7 @@ impl<'a, T> ToSliceMut<T> for &'a mut [T] {
     }
 }
 
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 impl<T> ToSlice<T> for Vec<T>
     where T: RealNumber
 {
@@ -205,7 +205,7 @@ impl<T> ToSlice<T> for Vec<T>
     }
 }
 
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 impl<T> ToSliceMut<T> for Vec<T>
     where T: RealNumber
 {
@@ -214,7 +214,7 @@ impl<T> ToSliceMut<T> for Vec<T>
     }
 }
 
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 impl<T> Resize for Vec<T>
     where T: RealNumber
 {
@@ -223,7 +223,7 @@ impl<T> Resize for Vec<T>
     }
 }
 
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 impl<T> Owner for Vec<T> {}
 
 

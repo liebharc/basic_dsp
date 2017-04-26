@@ -480,7 +480,7 @@ impl<T> SincFunction<T>
 }
 
 /// A real function which can be constructed outside this crate.
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 pub struct ForeignRealConvolutionFunction<T>
     where T: RealNumber
 {
@@ -500,7 +500,7 @@ pub struct ForeignRealConvolutionFunction<T>
     pub is_symmetric: bool,
 }
 
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 impl<T> ForeignRealConvolutionFunction<T>
     where T: RealNumber
 {
@@ -517,7 +517,7 @@ impl<T> ForeignRealConvolutionFunction<T>
     }
 }
 
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 impl<T> RealImpulseResponse<T> for ForeignRealConvolutionFunction<T>
     where T: RealNumber
 {
@@ -531,7 +531,7 @@ impl<T> RealImpulseResponse<T> for ForeignRealConvolutionFunction<T>
     }
 }
 
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 impl<T> RealFrequencyResponse<T> for ForeignRealConvolutionFunction<T>
     where T: RealNumber
 {
@@ -546,7 +546,7 @@ impl<T> RealFrequencyResponse<T> for ForeignRealConvolutionFunction<T>
 }
 
 /// A complex function which can be constructed outside this crate.
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 pub struct ForeignComplexConvolutionFunction<T>
     where T: RealNumber
 {
@@ -566,7 +566,7 @@ pub struct ForeignComplexConvolutionFunction<T>
     pub is_symmetric: bool,
 }
 
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 impl<T> ForeignComplexConvolutionFunction<T>
     where T: RealNumber
 {
@@ -583,7 +583,7 @@ impl<T> ForeignComplexConvolutionFunction<T>
     }
 }
 
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 impl<T> ComplexImpulseResponse<T> for ForeignComplexConvolutionFunction<T>
     where T: RealNumber
 {
@@ -597,7 +597,7 @@ impl<T> ComplexImpulseResponse<T> for ForeignComplexConvolutionFunction<T>
     }
 }
 
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 impl<T> ComplexFrequencyResponse<T> for ForeignComplexConvolutionFunction<T>
     where T: RealNumber
 {

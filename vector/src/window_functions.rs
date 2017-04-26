@@ -85,7 +85,7 @@ impl<T> WindowFunction<T> for HammingWindow<T>
 }
 
 /// A window function which can be constructed outside this crate.
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 pub struct ForeignWindowFunction<T>
     where T: RealNumber
 {
@@ -105,7 +105,7 @@ pub struct ForeignWindowFunction<T>
     pub is_symmetric: bool,
 }
 
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 impl<T> ForeignWindowFunction<T>
     where T: RealNumber
 {
@@ -122,7 +122,7 @@ impl<T> ForeignWindowFunction<T>
     }
 }
 
-#[cfg(feature="std")]
+#[cfg(any(feature="std", test))]
 impl<T> WindowFunction<T> for ForeignWindowFunction<T>
     where T: RealNumber
 {

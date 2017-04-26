@@ -11,7 +11,7 @@ pub trait MapInplaceOps<T>: Sized
     where T: Sized
 {
     /// Transforms all vector elements using the function `map`.
-    fn map_inplace<'a, A, F>(&mut self, argument: A, map: F)
+    fn map_inplace<'a, A, F>(&mut self, argument: A, map: &F)
         where A: Sync + Copy + Send,
               F: Fn(T, usize, A) -> T + 'a + Sync;
 }
@@ -28,12 +28,12 @@ pub trait MapAggregateOps<T, R>: Sized
     /// be aggregated in any deterministic order.
     fn map_aggregate<'a, A, FMap, FAggr>(&self,
                                          argument: A,
-                                         map: FMap,
-                                         aggregate: FAggr)
+                                         map: &FMap,
+                                         aggregate: &FAggr)
                                          -> Self::Output
         where A: Sync + Copy + Send,
               FMap: Fn(T, usize, A) -> R + 'a + Sync,
-              FAggr: Fn(R, R) -> R + 'a + Sync + Send + Copy;
+              FAggr: Fn(R, R) -> R + 'a + Sync + Send;
 }
 
 impl<S, T, N, D> MapInplaceOps<T> for DspVec<S, T, N, D>
@@ -42,7 +42,7 @@ impl<S, T, N, D> MapInplaceOps<T> for DspVec<S, T, N, D>
           N: RealNumberSpace,
           D: Domain
 {
-    fn map_inplace<'a, A, F>(&mut self, argument: A, map: F)
+    fn map_inplace<'a, A, F>(&mut self, argument: A, map: &F)
         where A: Sync + Copy + Send,
               F: Fn(T, usize, A) -> T + 'a + Sync
     {
@@ -79,12 +79,12 @@ impl<S, T, N, D, R> MapAggregateOps<T, R> for DspVec<S, T, N, D>
 
     fn map_aggregate<'a, A, FMap, FAggr>(&self,
                                          argument: A,
-                                         map: FMap,
-                                         aggregate: FAggr)
+                                         map: &FMap,
+                                         aggregate: &FAggr)
                                          -> ScalarResult<R>
         where A: Sync + Copy + Send,
               FMap: Fn(T, usize, A) -> R + 'a + Sync,
-              FAggr: Fn(R, R) -> R + 'a + Sync + Send + Copy
+              FAggr: Fn(R, R) -> R + 'a + Sync + Send
     {
         let mut result = {
             if self.is_complex() {
@@ -143,7 +143,7 @@ impl<S, T, N, D> MapInplaceOps<Complex<T>> for DspVec<S, T, N, D>
           N: ComplexNumberSpace,
           D: Domain
 {
-    fn map_inplace<'a, A, F>(&mut self, argument: A, map: F)
+    fn map_inplace<'a, A, F>(&mut self, argument: A, map: &F)
         where A: Sync + Copy + Send,
               F: Fn(Complex<T>, usize, A) -> Complex<T> + 'a + Sync
     {
@@ -181,12 +181,12 @@ impl<S, T, N, D, R> MapAggregateOps<Complex<T>, R> for DspVec<S, T, N, D>
 
     fn map_aggregate<'a, A, FMap, FAggr>(&self,
                                          argument: A,
-                                         map: FMap,
-                                         aggregate: FAggr)
+                                         map: &FMap,
+                                         aggregate: &FAggr)
                                          -> ScalarResult<R>
         where A: Sync + Copy + Send,
               FMap: Fn(Complex<T>, usize, A) -> R + 'a + Sync,
-              FAggr: Fn(R, R) -> R + 'a + Sync + Send + Copy
+              FAggr: Fn(R, R) -> R + 'a + Sync + Send
     {
         let mut result = {
             if !self.is_complex() {

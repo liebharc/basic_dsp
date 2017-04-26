@@ -4,7 +4,6 @@ use super::*;
 use basic_dsp_vector::*;
 use basic_dsp_vector::combined_ops::*;
 use num_complex::Complex32;
-use std::sync::Arc;
 
 pub type VecBuf = InteropVec<f32>;
 
@@ -324,20 +323,6 @@ pub extern "C" fn div_points_ops1_f32(ops: &mut PreparedOp1F32, arg: usize) {
 }
 
 #[no_mangle]
-pub extern "C" fn map_real_ops1_f32(ops: &mut PreparedOp1F32,
-                                    arg: usize,
-                                    map: extern "C" fn(f32, usize) -> f32) {
-    ops.add_enum_op(Operation::MapReal(arg, Arc::new(move |v, i| map(v, i))))
-}
-
-#[no_mangle]
-pub extern "C" fn map_complex_ops1_f32(ops: &mut PreparedOp1F32,
-                                       arg: usize,
-                                       map: extern "C" fn(Complex32, usize) -> Complex32) {
-    ops.add_enum_op(Operation::MapComplex(arg, Arc::new(move |v, i| map(v, i))))
-}
-
-#[no_mangle]
 pub extern "C" fn delete_ops1_f32(vector: Box<PreparedOp1F32>) {
     drop(vector);
 }
@@ -559,20 +544,6 @@ pub extern "C" fn mul_points_ops2_f32(ops: &mut PreparedOp2F32, arg: usize) {
 #[no_mangle]
 pub extern "C" fn div_points_ops2_f32(ops: &mut PreparedOp2F32, arg: usize) {
     ops.add_enum_op(Operation::DivPoints(arg))
-}
-
-#[no_mangle]
-pub extern "C" fn map_real_ops2_f32(ops: &mut PreparedOp2F32,
-                                    arg: usize,
-                                    map: extern "C" fn(f32, usize) -> f32) {
-    ops.add_enum_op(Operation::MapReal(arg, Arc::new(move |v, i| map(v, i))))
-}
-
-#[no_mangle]
-pub extern "C" fn map_complex_ops2_f32(ops: &mut PreparedOp2F32,
-                                       arg: usize,
-                                       map: extern "C" fn(Complex32, usize) -> Complex32) {
-    ops.add_enum_op(Operation::MapComplex(arg, Arc::new(move |v, i| map(v, i))))
 }
 
 #[no_mangle]

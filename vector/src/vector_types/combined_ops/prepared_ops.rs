@@ -338,7 +338,7 @@ fn merge_operations<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> Vec<Operati
             ops1pos += 1;
         }
         else {
-            res.push(arg1[ops2pos].0.clone());
+            res.push(arg2[ops2pos].0.clone());
             ops2pos += 1;
         }
         

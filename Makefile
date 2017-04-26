@@ -34,13 +34,14 @@ build_all: build
 	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml    
 	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --features use_sse
 	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml    
-	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --features use_gpu
-	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml    
 	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --no-default-features    
+	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml    
+	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --features use_gpu
     
 test_all: test
 	$(CARGO_CMD) clean
 	$(CARGO_CMD) test --features use_gpu
+	$(CARGO_CMD) test --manifest-path vector/Cargo.toml --no-default-features --lib
 
 run-all: $(packages)
 	$(CARGO_CMD) $(TASK) --verbose $(FLAGS)

@@ -165,12 +165,14 @@ pub extern "C" fn complex_dot_product32(vector: &VecBuf,
 
 #[no_mangle]
 pub extern "C" fn real_statistics32(vector: &VecBuf) -> Statistics<f32> {
-    vector.vec.statistics()
+    let vec = &vector.vec as &StatisticsOps<f32, Result=Statistics<f32>>;
+    vec.statistics()
 }
 
 #[no_mangle]
 pub extern "C" fn complex_statistics32(vector: &VecBuf) -> Statistics<Complex32> {
-    vector.vec.statistics()
+    let vec = &vector.vec as &StatisticsOps<Complex32, Result=Statistics<Complex32>>;
+    vec.statistics()
 }
 
 #[no_mangle]
@@ -214,12 +216,14 @@ pub extern "C" fn complex_dot_product_prec32(vector: &VecBuf,
 
 #[no_mangle]
 pub extern "C" fn real_statistics_prec32(vector: &VecBuf) -> Statistics<f64> {
-    vector.vec.statistics_prec()
+    let vec = &vector.vec as &PreciseStatisticsOps<f64, Result=Statistics<f64>>;
+    vec.statistics_prec()
 }
 
 #[no_mangle]
 pub extern "C" fn complex_statistics_prec32(vector: &VecBuf) -> Statistics<Complex64> {
-    vector.vec.statistics_prec()
+    let vec = &vector.vec as &PreciseStatisticsOps<Complex64, Result=Statistics<Complex64>>;
+    vec.statistics_prec()
 }
 
 #[no_mangle]
@@ -511,14 +515,16 @@ pub extern "C" fn to_imag32(vector: Box<VecBuf>) -> VectorInteropResult<VecBuf> 
 pub extern "C" fn map_inplace_real32(vector: Box<VecBuf>,
                                      map: extern "C" fn(f32, usize) -> f32)
                                      -> VectorInteropResult<VecBuf> {
-    vector.convert_vec(|v, _| Ok(v.map_inplace((), move |v, i, _| map(v, i))))
+    let map = move |v, i, _| map(v, i);
+    vector.convert_vec(|v, _| Ok(v.map_inplace((), &map)))
 }
 
 #[no_mangle]
 pub extern "C" fn map_inplace_complex32(vector: Box<VecBuf>,
                                         map: extern "C" fn(Complex32, usize) -> Complex32)
                                         -> VectorInteropResult<VecBuf> {
-    vector.convert_vec(|v, _| Ok(v.map_inplace((), move |v, i, _| map(v, i))))
+    let map = move |v, i, _| map(v, i);
+    vector.convert_vec(|v, _| Ok(v.map_inplace((), &map)))
 }
 
 /// Warning: This function interface heavily works around the Rust type system and the safety
@@ -530,14 +536,17 @@ pub extern "C" fn map_aggregate_real32(vector: &VecBuf,
                                                                 -> *const c_void)
                                        -> ScalarResult<*const c_void> {
     unsafe {
+        let map  = move |v, i, _| {
+                        mem::transmute(map(v, i))
+                    };
+        let aggr = move |a: usize, b: usize| {
+                        mem::transmute(aggregate(mem::transmute(a),mem::transmute(b)))
+                    };
+                    
         let result = vector.convert_scalar(|v| {
-            v.map_aggregate((),
-                            move |v, i, _| mem::transmute(map(v, i)),
-                            move |a: usize, b: usize| {
-                                mem::transmute(aggregate(mem::transmute(a), mem::transmute(b)))
-                            })
-        },
-                                           mem::transmute(0usize));
+                v.map_aggregate((), &map, &aggr)
+            },
+            mem::transmute(0usize));
         mem::transmute(result)
     }
 }
@@ -551,14 +560,17 @@ pub extern "C" fn map_aggregate_complex32(vector: &VecBuf,
                                                                    -> *const c_void)
                                           -> ScalarResult<*const c_void> {
     unsafe {
+        let map  = move |v, i, _| {
+                        mem::transmute(map(v, i))
+                    };
+        let aggr = move |a: usize, b: usize| {
+                        mem::transmute(aggregate(mem::transmute(a),mem::transmute(b)))
+                    };
+                    
         let result = vector.convert_scalar(|v| {
-            v.map_aggregate((),
-                            move |v, i, _| mem::transmute(map(v, i)),
-                            move |a: usize, b: usize| {
-                                mem::transmute(aggregate(mem::transmute(a), mem::transmute(b)))
-                            })
-        },
-                                           mem::transmute(0usize));
+                v.map_aggregate((), &map, &aggr)
+            },
+            mem::transmute(0usize));
         mem::transmute(result)
     }
 }
@@ -750,7 +762,8 @@ pub extern "C" fn real_statistics_split32(vector: &VecBuf,
                                              len: usize)
                                              -> i32 {
     let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
-    let stats = vector.vec.statistics_split(data.len());
+    let vec = &vector.vec as &StatisticsSplitOps<f32, Result=StatsVec<Statistics<f32>>>;
+    let stats = vec.statistics_split(data.len());
     for i in 0..stats.len() {
         data[i] = stats[i];
     }
@@ -764,7 +777,8 @@ pub extern "C" fn complex_statistics_split32(vector: &VecBuf,
                                                 len: usize)
                                                 -> i32 {
     let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
-    let stats = vector.vec.statistics_split(data.len());
+    let vec = &vector.vec as &StatisticsSplitOps<Complex32, Result=StatsVec<Statistics<Complex32>>>;
+    let stats = vec.statistics_split(data.len());
     for i in 0..stats.len() {
         data[i] = stats[i];
     }

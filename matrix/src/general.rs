@@ -355,7 +355,7 @@ macro_rules! add_mat_impl {
 
 			impl<S: ToSlice<T>, V: Vector<T> + MapInplaceOps<T>, T: RealNumber>
 					MapInplaceOps<T> for $matrix<V, S, T> {
-				fn map_inplace<'a, A, F>(&mut self, argument: A, map: F)
+				fn map_inplace<'a, A, F>(&mut self, argument: A, map: &F)
 					where A: Sync + Copy + Send,
 					  	  F: Fn(T, usize, A) -> T + 'a + Sync {
 					for v in self.rows_mut() {
@@ -366,7 +366,7 @@ macro_rules! add_mat_impl {
 
 			impl<S: ToSlice<T>, V: Vector<T> + MapInplaceOps<Complex<T>>, T: RealNumber>
 					MapInplaceOps<Complex<T>> for $matrix<V, S, T> {
-				fn map_inplace<'a, A, F>(&mut self, argument: A, map: F)
+				fn map_inplace<'a, A, F>(&mut self, argument: A, map: &F)
 					where A: Sync + Copy + Send,
 					  	  F: Fn(Complex<T>, usize, A) -> Complex<T> + 'a + Sync {
 					for v in self.rows_mut() {
@@ -644,8 +644,8 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send> MapAggregateOps<T, R>
 
     fn map_aggregate<'a, A, FMap, FAggr>(&self,
                                          argument: A,
-                                         map: FMap,
-                                         aggregate: FAggr)
+                                         map: &FMap,
+                                         aggregate: &FAggr)
                                          -> ScalarResult<Vec<R>>
         where A: Sync + Copy + Send,
               FMap: Fn(T, usize, A) -> R + 'a + Sync,
@@ -671,8 +671,8 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send> MapAggregateOps<T, R>
 
     fn map_aggregate<'a, A, FMap, FAggr>(&self,
                                          argument: A,
-                                         map: FMap,
-                                         aggregate: FAggr)
+                                         map: &FMap,
+                                         aggregate: &FAggr)
                                          -> ScalarResult<[R; 2]>
         where A: Sync + Copy + Send,
               FMap: Fn(T, usize, A) -> R + 'a + Sync,
@@ -698,8 +698,8 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send> MapAggregateOps<T, R>
 
     fn map_aggregate<'a, A, FMap, FAggr>(&self,
                                          argument: A,
-                                         map: FMap,
-                                         aggregate: FAggr)
+                                         map: &FMap,
+                                         aggregate: &FAggr)
                                          -> ScalarResult<[R; 3]>
         where A: Sync + Copy + Send,
               FMap: Fn(T, usize, A) -> R + 'a + Sync,
@@ -725,8 +725,8 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send> MapAggregateOps<T, R>
 
     fn map_aggregate<'a, A, FMap, FAggr>(&self,
                                          argument: A,
-                                         map: FMap,
-                                         aggregate: FAggr)
+                                         map: &FMap,
+                                         aggregate: &FAggr)
                                          -> ScalarResult<[R; 4]>
         where A: Sync + Copy + Send,
               FMap: Fn(T, usize, A) -> R + 'a + Sync,

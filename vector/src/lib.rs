@@ -31,10 +31,10 @@
 //! on memory. On normal desktop computers there is usually plenty of
 //! memory available so that the optimization focus is on decreasing the processing time
 //! for every (common) operation and to spent little time with memory allocations.
-
-#![cfg_attr(not(feature="std"), no_std)]
-#[cfg(not(feature="std"))]
-extern crate core as std;
+/*
+#![cfg_attr(not(any(feature="std", test)), no_std)]
+#[cfg(not(any(feature="std", test)))]
+extern crate core as std;*/
 
 #[cfg(any(feature = "doc", feature="use_sse", feature="use_avx"))]
 extern crate simd;

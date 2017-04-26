@@ -12,9 +12,7 @@ mod mapping;
 pub use self::mapping::*;
 mod statistics;
 pub use self::statistics::*;
-#[cfg(feature="std")]
 mod precise_stats;
-#[cfg(feature="std")]
 pub use self::precise_stats::*;
 
 use std::ops::{Add, Sub};
