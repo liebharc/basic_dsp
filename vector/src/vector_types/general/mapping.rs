@@ -3,7 +3,8 @@ use numbers::*;
 use multicore_support::*;
 use super::super::{ScalarResult, ErrorReason, DspVec,
                    ToSlice, ToSliceMut, MetaData, Domain, RealNumberSpace, ComplexNumberSpace};
-
+use inline_vector::InlineVector;
+                   
 /// Operations which allow to iterate over the vector and to derive results
 /// or to change the vector.
 pub trait MapInplaceOps<T>: Sized
@@ -13,14 +14,6 @@ pub trait MapInplaceOps<T>: Sized
     fn map_inplace<'a, A, F>(&mut self, argument: A, map: F)
         where A: Sync + Copy + Send,
               F: Fn(T, usize, A) -> T + 'a + Sync;
-}
-
-/// Operations which allow to iterate over the vector change the vector contents.
-pub trait MapInplaceNoArgsOps<T>: Sized
-    where T: Sized
-{
-    /// Transforms all vector elements using the function `map`.
-    fn map_inplace<F>(&mut self, map: F) where F: Fn(T, usize) -> T + 'static + Sync + Send;
 }
 
 /// Operations which allow to iterate over the vector and to derive results.
@@ -40,7 +33,7 @@ pub trait MapAggregateOps<T, R>: Sized
                                          -> Self::Output
         where A: Sync + Copy + Send,
               FMap: Fn(T, usize, A) -> R + 'a + Sync,
-              FAggr: Fn(R, R) -> R + 'a + Sync + Send;
+              FAggr: Fn(R, R) -> R + 'a + Sync + Send + Copy;
 }
 
 impl<S, T, N, D> MapInplaceOps<T> for DspVec<S, T, N, D>
@@ -75,7 +68,6 @@ impl<S, T, N, D> MapInplaceOps<T> for DspVec<S, T, N, D>
     }
 }
 
-#[cfg(feature="std")]
 impl<S, T, N, D, R> MapAggregateOps<T, R> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
@@ -92,10 +84,8 @@ impl<S, T, N, D, R> MapAggregateOps<T, R> for DspVec<S, T, N, D>
                                          -> ScalarResult<R>
         where A: Sync + Copy + Send,
               FMap: Fn(T, usize, A) -> R + 'a + Sync,
-              FAggr: Fn(R, R) -> R + 'a + Sync + Send
+              FAggr: Fn(R, R) -> R + 'a + Sync + Send + Copy
     {
-        use std::sync::Arc;
-        let aggregate = Arc::new(aggregate);
         let mut result = {
             if self.is_complex() {
                 return Err(ErrorReason::InputMustBeReal);
@@ -106,14 +96,12 @@ impl<S, T, N, D, R> MapAggregateOps<T, R> for DspVec<S, T, N, D>
             if length == 0 {
                 return Err(ErrorReason::InputMustNotBeEmpty);
             }
-            let aggregate = aggregate.clone();
             Chunk::map_on_array_chunks(Complexity::Small,
                                        &self.multicore_settings,
                                        &array[0..length],
                                        1,
                                        argument,
                                        move |array, range, argument| {
-                let aggregate = aggregate.clone();
                 let mut i = range.start;
                 let mut sum: Option<R> = None;
                 for num in array {
@@ -127,10 +115,9 @@ impl<S, T, N, D, R> MapAggregateOps<T, R> for DspVec<S, T, N, D>
                 sum
             })
         };
-        let aggregate = aggregate.clone();
         // Would be nicer if we could use iter().fold(..) but we need
         // the value of R and not just a reference so we can't user an iter
-        let mut only_valid_options = Vec::with_capacity(result.len());
+        let mut only_valid_options = InlineVector::with_capacity(result.len());
         for _ in 0..result.len() {
             let elem = result.pop().unwrap();
             match elem {
@@ -183,7 +170,6 @@ impl<S, T, N, D> MapInplaceOps<Complex<T>> for DspVec<S, T, N, D>
     }
 }
 
-#[cfg(feature="std")]
 impl<S, T, N, D, R> MapAggregateOps<Complex<T>, R> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
@@ -200,10 +186,8 @@ impl<S, T, N, D, R> MapAggregateOps<Complex<T>, R> for DspVec<S, T, N, D>
                                          -> ScalarResult<R>
         where A: Sync + Copy + Send,
               FMap: Fn(Complex<T>, usize, A) -> R + 'a + Sync,
-              FAggr: Fn(R, R) -> R + 'a + Sync + Send
+              FAggr: Fn(R, R) -> R + 'a + Sync + Send + Copy
     {
-        use std::sync::Arc;
-        let aggregate = Arc::new(aggregate);
         let mut result = {
             if !self.is_complex() {
                 return Err(ErrorReason::InputMustBeComplex);
@@ -214,14 +198,12 @@ impl<S, T, N, D, R> MapAggregateOps<Complex<T>, R> for DspVec<S, T, N, D>
             if length == 0 {
                 return Err(ErrorReason::InputMustNotBeEmpty);
             }
-            let aggregate = aggregate.clone();
             Chunk::map_on_array_chunks(Complexity::Small,
                                        &self.multicore_settings,
                                        &array[0..length],
                                        2,
                                        argument,
                                        move |array, range, argument| {
-                let aggregate = aggregate.clone();
                 let array = array_to_complex(array);
                 let mut i = range.start / 2;
                 let mut sum: Option<R> = None;
@@ -236,10 +218,9 @@ impl<S, T, N, D, R> MapAggregateOps<Complex<T>, R> for DspVec<S, T, N, D>
                 sum
             })
         };
-        let aggregate = aggregate.clone();
         // Would be nicer if we could use iter().fold(..) but we need
         // the value of R and not just a reference so we can't user an iter
-        let mut only_valid_options = Vec::with_capacity(result.len());
+        let mut only_valid_options = InlineVector::with_capacity(result.len());
         for _ in 0..result.len() {
             let elem = result.pop().unwrap();
             match elem {

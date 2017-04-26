@@ -83,7 +83,6 @@ use std::ops::Range;
 use super::{round_len, ToSliceMut, DspVec, ErrorReason, MetaData, TransRes, Vector,
             RealToComplexTransformsOpsBuffered, ComplexToRealTransformsOps, Buffer, Owner,
             RealOrComplexData, TimeOrFrequencyData, Domain, NumberSpace, DataDomain};
-use std::sync::{Arc, Mutex};
 use std::fmt;
 use numbers::*;
 use std::ops::{Add, Sub, Mul, Div};
@@ -130,16 +129,14 @@ fn evaluate_number_space_transition<T>(is_complex: bool,
         // Real Ops
         Operation::AddReal(_, _) |
         Operation::MultiplyReal(_, _) |
-        Operation::Abs(_) |
-        Operation::MapReal(_, _)
+        Operation::Abs(_)
             => require_real(is_complex),
         Operation::ToComplex(_) => real_to_complex(is_complex),
         // Complex Ops
         Operation::AddComplex(_, _) |
         Operation::MultiplyComplex(_, _) |
         Operation::ComplexConj(_) |
-        Operation::MultiplyComplexExponential(_, _, _) |
-        Operation::MapComplex(_, _)
+        Operation::MultiplyComplexExponential(_, _, _)
             => require_complex(is_complex),
         Operation::Magnitude(_) |
         Operation::MagnitudeSquared(_) |
@@ -190,7 +187,6 @@ fn get_argument<T>(operation: &Operation<T>) -> usize
         Operation::MultiplyReal(arg, _) |
         Operation::Abs(arg) |
         Operation::ToComplex(arg) |
-        Operation::MapReal(arg, _) |
         // Complex Ops
         Operation::AddComplex(arg, _) |
         Operation::MultiplyComplex(arg, _) |
@@ -201,7 +197,6 @@ fn get_argument<T>(operation: &Operation<T>) -> usize
         Operation::ToImag(arg) |
         Operation::Phase(arg) |
         Operation::MultiplyComplexExponential(arg, _, _) |
-        Operation::MapComplex(arg, _) |
         // General Ops
         Operation::AddPoints(arg) |
         Operation::SubPoints(arg) |
@@ -279,9 +274,6 @@ impl<T> PerformOperationSimd<T> for T::Reg
                 // before the operations are executed, so there is nothing
                 // to do anymore
             }
-            Operation::MapReal(_, _) => {
-                panic!("real operation on complex vector indicates a bug");
-            }
             // Complex Ops
             Operation::AddComplex(idx, value) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
@@ -330,15 +322,6 @@ impl<T> PerformOperationSimd<T> for T::Reg
                 *v = v.iter_over_complex_vector(|x| {
                     let res = x * exponential;
                     exponential = exponential * increment;
-                    res
-                });
-            }
-            Operation::MapComplex(idx, ref op) => {
-                let v = unsafe { vectors.get_unchecked_mut(idx) };
-                let mut i = index;
-                *v = v.iter_over_complex_vector(|x| {
-                    let res = op(x, i);
-                    i += 1;
                     res
                 });
             }
@@ -471,7 +454,7 @@ impl<T> PerformOperationSimd<T> for T::Reg
     #[inline]
     fn perform_real_operation(vectors: &mut [Self],
                               operation: &Operation<T>,
-                              index: usize,
+                              _index: usize,
                               points: usize) {
         match *operation {
             // Real Ops
@@ -489,15 +472,6 @@ impl<T> PerformOperationSimd<T> for T::Reg
             }
             Operation::ToComplex(_) => {
                 panic!("number space conversions should have already been completed");
-            }
-            Operation::MapReal(idx, ref op) => {
-                let v = unsafe { vectors.get_unchecked_mut(idx) };
-                let mut i = index;
-                *v = v.iter_over_vector(|x| {
-                    let res = op(x, i);
-                    i += 1;
-                    res
-                });
             }
             // Complex Ops
             Operation::AddComplex(_, _) => {
@@ -525,9 +499,6 @@ impl<T> PerformOperationSimd<T> for T::Reg
                 panic!("complex operation on real vector indicates a bug");
             }
             Operation::MultiplyComplexExponential(_, _, _) => {
-                panic!("complex operation on real vector indicates a bug");
-            }
-            Operation::MapComplex(_, _) => {
                 panic!("complex operation on real vector indicates a bug");
             }
             // General Ops
@@ -656,6 +627,13 @@ impl<T> PerformOperationSimd<T> for T::Reg
     }
 }
 
+/// An `Identifier` args values plus its counters value at a certain point in time.
+type IdAndVersion = (usize, usize);
+
+/// A list of `IdAndVersion` and an operation. If the operation requires another identifier
+/// at a certain point in time then a second `IdAndVersion` will be present.
+type OpsVec<T> = Vec<(IdAndVersion, Operation<T>, Option<IdAndVersion>)>;
+
 /// An identifier is just a placeholder for a data type
 /// used to ensure already at compile time that operations are valid.
 pub struct Identifier<T, N, D>
@@ -664,8 +642,8 @@ pub struct Identifier<T, N, D>
           N: NumberSpace
 {
     arg: usize,
-    ops: Vec<(u64, Operation<T>)>,
-    counter: Arc<Mutex<u64>>,
+    ops: OpsVec<T>,
+    counter: usize,
     domain: D,
     number_space: N,
 }
@@ -688,13 +666,23 @@ impl<T, N, D> Identifier<T, N, D>
           D: Domain,
           N: NumberSpace
 {
+    /// Pushes an operation to the queue.
     fn add_op(&mut self, op: Operation<T>) {
         let seq = {
-            let mut value = self.counter.lock().unwrap();
-            *value += 1;
-            *value
+            self.counter += 1;
+            self.counter
         };
-        self.ops.push((seq, op));
+        self.ops.push(((self.arg, seq), op, None));
+    }
+    
+    /// Pushed a binary vector operation to the queue. To restore the correct order later on
+    /// this operation remembers the id and version of the other operation. 
+    fn add_arg_op(&mut self, op: Operation<T>, other: &Self) {
+        let seq = {
+            self.counter += 1;
+            self.counter
+        };
+        self.ops.push(((self.arg, seq), op, Some((other.arg, other.counter))));
     }
 }
 
@@ -1094,7 +1082,6 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
 
 #[cfg(test)]
 mod tests {
-    use num_complex::Complex32;
     use super::super::*;
     use super::*;
 
@@ -1246,32 +1233,33 @@ mod tests {
         let expected = [11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0];
         assert_eq!(&a[..], &expected);
     }
-
+    
+    /// This test case provokes an invalid execution order which happens unless the argument versions
+    /// are taken into account to.
     #[test]
-    fn map_inplace_real_test() {
-        let a = vec![1.0, 2.0, 3.0, 4.0].to_real_time_vec();
-        let mut buffer = SingleBuffer::new();
-        let ops = multi_ops1(a);
-        let ops = ops.add_ops(|mut a| {
-            a.map_inplace(|v, i| v * i as f32);
-            a
+    fn execution_order() {
+        let ops = prepare32_2(RealData, TimeData, RealData, TimeData);
+        let ops = ops.add_ops(|mut a, mut b| {
+            a.sin();
+            b.cos();
+            b.sin();
+            a.add(&b).unwrap();
+            a.tan();
+            b.sub_points();
+            (a, b)
         });
-        let a = ops.get(&mut buffer).unwrap();
-        let expected = [0.0, 2.0, 6.0, 12.0];
-        assert_eq!(&a[..], &expected);
-    }
-
-    #[test]
-    fn map_inplace_complex_test() {
-        let a = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0].to_complex_time_vec();
-        let mut buffer = SingleBuffer::new();
-        let ops = multi_ops1(a);
-        let ops = ops.add_ops(|mut a| {
-            a.map_inplace(|v, i| v * Complex32::new(i as f32, 0.0));
-            a
-        });
-        let a = ops.get(&mut buffer).unwrap();
-        let expected = [0.0, 0.0, 3.0, 4.0, 10.0, 12.0];
-        assert_eq!(&a[..], &expected);
+        let ops = ops.ops;
+        let expected = [ 
+            Operation::Sin(0),
+            Operation::Cos(1),
+            Operation::Sin(1),
+            Operation::AddVector(0, 1),
+            Operation::Tan(0),
+            Operation::SubPoints(1),
+            ];
+            
+        for i in 0..ops.len() {
+            assert_eq!(ops[i], expected[i]);
+        }        
     }
 }

@@ -1,15 +1,15 @@
 use numbers::*;
-use std::sync::Arc;
 
 /// An alternative way to define operations on a vector.
 #[derive(Clone)]
+#[derive(Debug)]
+#[derive(PartialEq)]
 pub enum Operation<T> {
     // Real Ops
     AddReal(usize, T),
     MultiplyReal(usize, T),
     Abs(usize),
     ToComplex(usize),
-    MapReal(usize, Arc<Fn(T, usize) -> T + Send + Sync + 'static>),
     // Complex Ops
     AddComplex(usize, Complex<T>),
     MultiplyComplex(usize, Complex<T>),
@@ -20,7 +20,6 @@ pub enum Operation<T> {
     ToImag(usize),
     Phase(usize),
     MultiplyComplexExponential(usize, T, T),
-    MapComplex(usize, Arc<Fn(Complex<T>, usize) -> Complex<T> + Send + Sync + 'static>),
     // General Ops
     AddVector(usize, usize),
     SubVector(usize, usize),

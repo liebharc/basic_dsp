@@ -3,10 +3,9 @@ use numbers::*;
 use super::super::{RealNumberSpace, ComplexNumberSpace, NumberSpace, TransRes, VoidResult,
                    DataDomain, TimeData, FrequencyData, RealData, ComplexData, RealOrComplexData,
                    TimeOrFrequencyData, Domain, ToRealResult, ToComplexResult, ScaleOps,
-                   OffsetOps, PowerOps, TrigOps, RealOps, MapInplaceNoArgsOps,
+                   OffsetOps, PowerOps, TrigOps, RealOps,
                    RealToComplexTransformsOps, ComplexOps, ElementaryOps,
                    ComplexToRealTransformsOps, RededicateForceOps};
-use std::sync::Arc;
 
 /// Operations for all kind of vectors which can be used in combination
 /// with multi ops or prepared ops.
@@ -429,33 +428,6 @@ impl<T, N, D> RealOps for Identifier<T, N, D>
     }
 }
 
-impl<T, N, D> MapInplaceNoArgsOps<T> for Identifier<T, N, D>
-    where T: RealNumber,
-          N: RealNumberSpace,
-          D: Domain
-{
-    fn map_inplace<F>(&mut self, map: F)
-        where F: Fn(T, usize) -> T + 'static + Sync + Send
-    {
-        let arg = self.arg;
-        self.add_op(Operation::MapReal(arg, Arc::new(map)))
-    }
-}
-
-
-impl<T, N, D> MapInplaceNoArgsOps<Complex<T>> for Identifier<T, N, D>
-    where T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
-{
-    fn map_inplace<F>(&mut self, map: F)
-        where F: Fn(Complex<T>, usize) -> Complex<T> + 'static + Sync + Send
-    {
-        let arg = self.arg;
-        self.add_op(Operation::MapComplex(arg, Arc::new(map)))
-    }
-}
-
 impl<T, N, D> ComplexOps<T> for Identifier<T, N, D>
     where T: RealNumber,
           N: ComplexNumberSpace,
@@ -480,28 +452,28 @@ impl<T, N, D> ElementaryOps<Identifier<T, N, D>> for Identifier<T, N, D>
     fn add(&mut self, summand: &Self) -> VoidResult {
         let arg = self.arg;
         let other = summand.arg;
-        self.add_op(Operation::AddVector(arg, other));
+        self.add_arg_op(Operation::AddVector(arg, other), summand);
         Ok(())
     }
 
     fn sub(&mut self, subtrahend: &Self) -> VoidResult {
         let arg = self.arg;
         let other = subtrahend.arg;
-        self.add_op(Operation::SubVector(arg, other));
+        self.add_arg_op(Operation::SubVector(arg, other), subtrahend);
         Ok(())
     }
 
     fn mul(&mut self, factor: &Self) -> VoidResult {
         let arg = self.arg;
         let other = factor.arg;
-        self.add_op(Operation::MulVector(arg, other));
+        self.add_arg_op(Operation::MulVector(arg, other), factor);
         Ok(())
     }
 
     fn div(&mut self, divisor: &Self) -> VoidResult {
         let arg = self.arg;
         let other = divisor.arg;
-        self.add_op(Operation::DivVector(arg, other));
+        self.add_arg_op(Operation::DivVector(arg, other), divisor);
         Ok(())
     }
 }
@@ -522,7 +494,7 @@ impl<T, N, D> IdentifierOps for Identifier<T, N, D>
     fn clone_from(&mut self, source: &Self) {
         let arg = self.arg;
         let other = source.arg;
-        self.add_op(Operation::CloneFrom(arg, other));
+        self.add_arg_op(Operation::CloneFrom(arg, other), source);
     }
 
     fn add_points(&mut self) {

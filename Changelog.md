@@ -8,6 +8,7 @@ Changes:
 - Removed deprecated functions `swap_halves_b`, `statistics_splitted`
 - Removed `MapInplaceNoArgsOps` for combined ops since they seem to not fit in their independent on how this module progresses.
 - Restructured statistics traits.
+- Mapping operations now only borrow a function. That also allows them to work internally without any reference counting.
 
 ## Version 0.4.3
 Minor additions.

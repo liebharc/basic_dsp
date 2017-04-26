@@ -1,8 +1,7 @@
 use numbers::*;
 use std::result;
-use std::sync::{Arc, Mutex};
 use super::{generic_vector_from_any_vector, generic_vector_back_to_vector, Identifier,
-            PreparedOperation1, PreparedOperation2, Operation};
+            PreparedOperation1, PreparedOperation2, Operation, OpsVec};
 use super::super::{Domain, NumberSpace, ToSliceMut, DspVec, ErrorReason, RededicateForceOps,
                    Buffer, Owner, TimeOrFrequencyData, RealOrComplexData};
 
@@ -147,11 +146,10 @@ impl<T, NI, DI, NO, DO> PreparedOperation1<T, NI, DI, NO, DO>
     {
         let mut ops = self.ops;
         let (new_ops, domain_new, number_space_new) = {
-            let counter = Arc::new(Mutex::new(0));
             let t1 = Identifier {
                 arg: ARGUMENT1,
                 ops: Vec::new(),
-                counter: counter,
+                counter: 0,
                 domain: self.domain_out.clone(),
                 number_space: self.number_space_out.clone(),
             };
@@ -219,6 +217,146 @@ impl<T, S, B, NI, DI, NO, DO> PreparedOperation1Exec<B, DspVec<S, T, NI, DI>, Ds
 	}
 }
 
+/// Lists all operations which must be executed on on argument.
+type ArgVec<T> = Vec<(Operation<T>, Option<usize>)>;
+
+fn sort_by_arg<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> (ArgVec<T>, ArgVec<T>) {
+    let mut res1 = ArgVec::with_capacity(ops1.len() + ops2.len());
+    let mut res2 = ArgVec::with_capacity(ops1.len() + ops2.len());
+    for n in &ops1[..] {
+        let id = n.0;
+        let other_count = 
+            match n.2 {
+                Some(other) => Some(other.1),
+                None => None
+            };
+        if id.0 == 0 {
+            res1.push((n.1.clone(), other_count));
+        }
+        else {
+            res2.push((n.1.clone(), other_count));
+        }
+    }
+    
+    for n in &ops2[..] {
+        let id = n.0;
+        let other_count = 
+            match n.2 {
+                Some(other) => Some(other.1),
+                None => None
+            };
+        if id.0 == 0 {
+            if id.1 < res1.len() {
+                res1.insert(id.1, (n.1.clone(), other_count));
+            }
+            else {
+                res1.push((n.1.clone(), other_count));
+            }
+        }
+        else {
+            if id.1 < res2.len() {
+                res2.insert(id.1, (n.1.clone(), other_count));
+            }
+            else {
+                res2.push((n.1.clone(), other_count));
+            }
+        }
+    }
+    
+    (res1, res2)
+}
+
+/// Returns the first index bigger than `start` which holds a binary operation.
+fn find_first_binary_op_pos<T>(ops: &ArgVec<T>, start: usize) -> Option<usize> {
+    for i in start..ops.len() {
+        if ops[i].1.is_some() {
+            return Some(i);
+        }
+    }
+    
+    None
+}
+
+/// Returns the indices which must be processed first and then the binary op which must be handled next.
+fn first_op<T> (
+    ops1: &ArgVec<T>, pos1: Option<usize>,
+    ops2: &ArgVec<T>, pos2: Option<usize>) 
+     -> (usize, usize, u32) {
+    assert!(pos1.is_some() || pos2.is_some());
+    if pos1.is_some() && pos2.is_some() {
+        let op1 = &ops1[pos1.unwrap()];
+        let other1 = op1.1.unwrap();
+        let op2 = &ops2[pos2.unwrap()];
+        let other2 = op2.1.unwrap();
+        if pos1.unwrap() > other2
+        {
+            // `op1` follows after `op2`
+            (other2, pos2.unwrap(), 1)
+        }
+        else if pos1.unwrap() < pos2.unwrap()
+        {
+            // `op2` follows after `op1`
+            (pos1.unwrap(), other1, 0)
+        }
+        else {
+            panic!("Failed to determine the sequence of operations");
+        }
+    }
+    else if pos1.is_some() {
+        let op = &ops1[pos1.unwrap()];
+        let other = op.1.unwrap();
+        (pos1.unwrap(), other, 0)
+    }
+    else {
+        let op = &ops2[pos2.unwrap()];
+        let other = op.1.unwrap();
+        (other, pos2.unwrap(), 1)
+    }
+}
+
+/// Merges two ops vectors in a correct order.
+fn merge_operations<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> Vec<Operation<T>> {
+    let mut res = Vec::with_capacity(ops1.len() + ops2.len());
+    let (arg1, arg2) =  sort_by_arg(ops1, ops2);
+    let mut ops1pos = 0;
+    let mut ops2pos = 0;
+    let mut bin1 = find_first_binary_op_pos(&arg1, ops1pos);
+    let mut bin2 = find_first_binary_op_pos(&arg2, ops2pos);
+    while bin1.is_some() || bin2.is_some() {
+        let (pos1, pos2, bin_op) = first_op(&arg1, bin1, &arg2, bin2);
+        for i in ops1pos..pos1 {
+            res.push(arg1[i].0.clone());
+        }
+        for i in ops2pos..pos2 {
+            res.push(arg2[i].0.clone());
+        }
+        ops1pos = pos1;
+        ops2pos = pos2;
+        
+        if bin_op == 0 {
+            res.push(arg1[ops1pos].0.clone());
+            ops1pos += 1;
+        }
+        else {
+            res.push(arg1[ops2pos].0.clone());
+            ops2pos += 1;
+        }
+        
+        bin1 = find_first_binary_op_pos(&arg1, ops1pos);
+        bin2 = find_first_binary_op_pos(&arg2, ops2pos);
+    }
+    
+    // Handle remaining elements
+    for i in ops1pos..arg1.len() {
+        res.push(arg1[i].0.clone());
+    }
+    for i in ops2pos..arg2.len() {
+        res.push(arg2[i].0.clone());
+    }
+    
+    res
+}
+
 /// An operation which can be prepared in advance and operates on one
 /// input and produces one output
 impl<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2<T,
@@ -258,13 +396,11 @@ impl<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2<T,
               NT2: NumberSpace
     {
         let mut ops = self.ops;
-        let mut new_ops = Vec::new();
         let (swap, domain_new1, number_space_new1, domain_new2, number_space_new2) = {
-            let counter = Arc::new(Mutex::new(0));
             let t1 = Identifier {
                 arg: if self.swap { ARGUMENT2 } else { ARGUMENT1 },
                 ops: Vec::new(),
-                counter: counter.clone(),
+                counter: 0,
                 domain: self.domain_out1.clone(),
                 number_space: self.number_space_out1.clone(),
             };
@@ -272,26 +408,17 @@ impl<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2<T,
             let t2 = Identifier {
                 arg: if self.swap { ARGUMENT1 } else { ARGUMENT2 },
                 ops: Vec::new(),
-                counter: counter,
+                counter: 0,
                 domain: self.domain_out2.clone(),
                 number_space: self.number_space_out2.clone(),
             };
 
-            let (mut r1, mut r2) = operation(t1, t2);
+            let (r1, r2) = operation(t1, t2);
             let r1arg = r1.arg;
-            new_ops.append(&mut r1.ops);
-            new_ops.append(&mut r2.ops);
+            let mut new_ops = merge_operations(&r1.ops, &r2.ops);
+            ops.append(&mut new_ops);
             (r1arg == ARGUMENT2, r1.domain, r1.number_space, r2.domain, r2.number_space)
         };
-
-        // In theory the sequence counter could overflow.
-        // In practice if we assume that the counter is increment
-        // every microsecond than the program needs to run for 500,000
-        // years until an overflow occurs.
-        new_ops.sort_by(|a, b| a.0.cmp(&b.0));
-        for v in new_ops {
-            ops.push(v.1);
-        }
 
         PreparedOperation2 {
             domain_in1: self.domain_in1,
