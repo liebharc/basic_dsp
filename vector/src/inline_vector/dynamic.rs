@@ -41,6 +41,10 @@ impl<T> InlineVector<T> {
         }
     }
 
+    pub fn with_default_capcacity() -> InlineVector<T> {
+        Self::with_capacity(64)
+    }
+
     pub fn with_elem(elem: T) -> InlineVector<T> {
         let mut vector = Self::with_capacity(1);
         vector.push(elem);
@@ -96,6 +100,19 @@ impl<T> InlineVector<T> {
             &InlineVector::Dynamic(ref v) => v.iter()
         }
 	}
+
+    pub fn append(&mut self, other: &mut Self) {
+        while !other.is_empty() {
+            self.push(other.pop().unwrap());
+        }
+    }
+
+    pub fn insert(&mut self, index: usize, element: T) {
+        match self {
+            &mut InlineVector::Inline(ref mut v) => { let _ = v.insert(index, element).unwrap(); },
+            &mut InlineVector::Dynamic(ref mut v) => v.insert(index, element)
+        }
+    }
 }
 
 impl<T: Zero + Clone> InlineVector<T> {

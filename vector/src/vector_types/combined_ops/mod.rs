@@ -674,9 +674,9 @@ impl<T, N, D> Identifier<T, N, D>
         };
         self.ops.push(((self.arg, seq), op, None));
     }
-    
+
     /// Pushed a binary vector operation to the queue. To restore the correct order later on
-    /// this operation remembers the id and version of the other operation. 
+    /// this operation remembers the id and version of the other operation.
     fn add_arg_op(&mut self, op: Operation<T>, other: &Self) {
         let seq = {
             self.counter += 1;
@@ -702,7 +702,7 @@ pub struct PreparedOperation1<T, NI, DI, NO, DO>
     domain_in: DI,
     number_space_out: NO,
     domain_out: DO,
-    ops: Vec<Operation<T>>,
+    ops: InlineVector<Operation<T>>,
 }
 
 /// An operation on two data vectors which has been prepared in
@@ -729,7 +729,7 @@ pub struct PreparedOperation2<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2>
     domain_out1: DO1,
     number_space_out2: NO2,
     domain_out2: DO2,
-    ops: Vec<Operation<T>>,
+    ops: InlineVector<Operation<T>>,
     swap: bool,
 }
 
@@ -1233,7 +1233,7 @@ mod tests {
         let expected = [11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0];
         assert_eq!(&a[..], &expected);
     }
-    
+
     /// This test case provokes an invalid execution order which happens unless the argument versions
     /// are taken into account to.
     #[test]
@@ -1249,7 +1249,7 @@ mod tests {
             (a, b)
         });
         let ops = ops.ops;
-        let expected = [ 
+        let expected = [
             Operation::Sin(0),
             Operation::Cos(1),
             Operation::Sin(1),
@@ -1257,9 +1257,9 @@ mod tests {
             Operation::Tan(0),
             Operation::SubPoints(1),
             ];
-            
+
         for i in 0..ops.len() {
             assert_eq!(ops[i], expected[i]);
-        }        
+        }
     }
 }

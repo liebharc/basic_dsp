@@ -1,5 +1,6 @@
 use numbers::*;
 use std::result;
+use inline_vector::InlineVector;
 use super::{generic_vector_from_any_vector, generic_vector_back_to_vector, Identifier,
             PreparedOperation1, PreparedOperation2, Operation, OpsVec};
 use super::super::{Domain, NumberSpace, ToSliceMut, DspVec, ErrorReason, RededicateForceOps,
@@ -24,7 +25,7 @@ pub fn prepare32_1<N, D>(number_space: N, domain: D) -> PreparedOperation1<f32, 
         domain_in: domain.clone(),
         number_space_out: number_space,
         domain_out: domain,
-        ops: Vec::new(),
+        ops: InlineVector::with_default_capcacity(),
     }
 }
 
@@ -38,7 +39,7 @@ pub fn prepare64_1<N, D>(number_space: N, domain: D) -> PreparedOperation1<f64, 
         domain_in: domain.clone(),
         number_space_out: number_space,
         domain_out: domain,
-        ops: Vec::new(),
+        ops: InlineVector::with_default_capcacity(),
     }
 }
 
@@ -72,7 +73,7 @@ pub fn prepare32_2<N1, D1, N2, D2>(number_space1: N1,
         domain_out1: domain1,
         number_space_out2: number_space2,
         domain_out2: domain2,
-        ops: Vec::new(),
+        ops: InlineVector::with_default_capcacity(),
         swap: false,
     }
 }
@@ -97,7 +98,7 @@ pub fn prepare64_2<N1, D1, N2, D2>(number_space1: N1,
         domain_out1: domain1,
         number_space_out2: number_space2,
         domain_out2: domain2,
-        ops: Vec::new(),
+        ops: InlineVector::with_default_capcacity(),
         swap: false,
     }
 }
@@ -197,7 +198,7 @@ impl<T, S, B, NI, DI, NO, DO> PreparedOperation1Exec<B, DspVec<S, T, NI, DI>, Ds
 		// at this point we would execute all ops and cast the result to the right types
 		let result =
             DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(
-                buffer, vec, &self.ops);
+                buffer, vec, &self.ops[..]);
 
 		match result {
 			Err((reason, mut vec)) => {
@@ -218,14 +219,14 @@ impl<T, S, B, NI, DI, NO, DO> PreparedOperation1Exec<B, DspVec<S, T, NI, DI>, Ds
 }
 
 /// Lists all operations which must be executed on on argument.
-type ArgVec<T> = Vec<(Operation<T>, Option<usize>)>;
+type ArgVec<T> = InlineVector<(Operation<T>, Option<usize>)>;
 
 fn sort_by_arg<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> (ArgVec<T>, ArgVec<T>) {
     let mut res1 = ArgVec::with_capacity(ops1.len() + ops2.len());
     let mut res2 = ArgVec::with_capacity(ops1.len() + ops2.len());
     for n in &ops1[..] {
         let id = n.0;
-        let other_count = 
+        let other_count =
             match n.2 {
                 Some(other) => Some(other.1),
                 None => None
@@ -237,10 +238,10 @@ fn sort_by_arg<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> (ArgVec<T>, ArgV
             res2.push((n.1.clone(), other_count));
         }
     }
-    
+
     for n in &ops2[..] {
         let id = n.0;
-        let other_count = 
+        let other_count =
             match n.2 {
                 Some(other) => Some(other.1),
                 None => None
@@ -262,7 +263,7 @@ fn sort_by_arg<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> (ArgVec<T>, ArgV
             }
         }
     }
-    
+
     (res1, res2)
 }
 
@@ -273,14 +274,14 @@ fn find_first_binary_op_pos<T>(ops: &ArgVec<T>, start: usize) -> Option<usize> {
             return Some(i);
         }
     }
-    
+
     None
 }
 
 /// Returns the indices which must be processed first and then the binary op which must be handled next.
 fn first_op<T> (
     ops1: &ArgVec<T>, pos1: Option<usize>,
-    ops2: &ArgVec<T>, pos2: Option<usize>) 
+    ops2: &ArgVec<T>, pos2: Option<usize>)
      -> (usize, usize, u32) {
     assert!(pos1.is_some() || pos2.is_some());
     if pos1.is_some() && pos2.is_some() {
@@ -315,8 +316,8 @@ fn first_op<T> (
 }
 
 /// Merges two ops vectors in a correct order.
-fn merge_operations<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> Vec<Operation<T>> {
-    let mut res = Vec::with_capacity(ops1.len() + ops2.len());
+fn merge_operations<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> InlineVector<Operation<T>> {
+    let mut res = InlineVector::with_capacity(ops1.len() + ops2.len());
     let (arg1, arg2) =  sort_by_arg(ops1, ops2);
     let mut ops1pos = 0;
     let mut ops2pos = 0;
@@ -332,7 +333,7 @@ fn merge_operations<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> Vec<Operati
         }
         ops1pos = pos1;
         ops2pos = pos2;
-        
+
         if bin_op == 0 {
             res.push(arg1[ops1pos].0.clone());
             ops1pos += 1;
@@ -341,11 +342,11 @@ fn merge_operations<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> Vec<Operati
             res.push(arg2[ops2pos].0.clone());
             ops2pos += 1;
         }
-        
+
         bin1 = find_first_binary_op_pos(&arg1, ops1pos);
         bin2 = find_first_binary_op_pos(&arg2, ops2pos);
     }
-    
+
     // Handle remaining elements
     for i in ops1pos..arg1.len() {
         res.push(arg1[i].0.clone());
@@ -353,7 +354,7 @@ fn merge_operations<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> Vec<Operati
     for i in ops2pos..arg2.len() {
         res.push(arg2[i].0.clone());
     }
-    
+
     res
 }
 
@@ -473,7 +474,7 @@ impl<T, S, B, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2Exec<
         // at this point we would execute all ops and cast the result to the right types
 		let result =
             DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(
-                buffer, vec, &self.ops);
+                buffer, vec, &self.ops[..]);
 
         match result {
 			Err((reason, mut vec)) => {

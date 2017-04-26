@@ -1,5 +1,6 @@
 use numbers::*;
 use std::result;
+use inline_vector::InlineVector;
 use super::super::{ToSlice, ToSliceMut, Owner, NumberSpace, Domain, RealOrComplexData,
                    TimeOrFrequencyData, DspVec, ErrorReason, RededicateForceOps, Buffer};
 
@@ -64,7 +65,7 @@ pub fn multi_ops1<S, T, NI, DI>(vector: DspVec<S, T, NI, DI>) -> MultiOperation1
             domain_in: gen_domain,
             number_space_out: number_space,
             domain_out: domain,
-            ops: Vec::new(),
+            ops: InlineVector::with_default_capcacity(),
         };
     MultiOperation1 {
         a: a,
@@ -115,7 +116,7 @@ pub fn multi_ops2<S, T, NI1, DI1, NI2, DI2>(a: DspVec<S, T, NI1, DI1>,
         domain_out1: domain1,
         number_space_out2: number_space2,
         domain_out2: domain2,
-        ops: Vec::new(),
+        ops: InlineVector::with_default_capcacity(),
         swap: false,
     };
     MultiOperation2 {
