@@ -30,7 +30,7 @@ impl<T> InlineVector<T>
 }
 
 impl<T> InlineVector<T> {
-    pub fn with_capacity(n: usize) -> InlineVector<T> {
+    pub fn with_capacity(_: usize) -> InlineVector<T> {
         InlineVector::Inline(ArrayVec::<[T; 64]>::new())
     }
 
@@ -57,6 +57,14 @@ impl<T> InlineVector<T> {
                 }
             },
         };
+    }
+
+    pub fn remove(&mut self, index: usize) -> T {
+        match self {
+            &mut InlineVector::Inline(ref mut v) => {
+                v.remove(index).unwrap()
+            },
+        }
     }
 
     pub fn pop(&mut self) -> Option<T> {
@@ -91,7 +99,7 @@ impl<T> InlineVector<T> {
 
     pub fn append(&mut self, other: &mut Self) {
         while !other.is_empty() {
-            self.push(other.pop().unwrap());
+            self.push(other.remove(0));
         }
     }
 

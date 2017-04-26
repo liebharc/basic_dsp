@@ -1,10 +1,8 @@
 //! Defines the buffers. Finding a good general purpose buffering scheme is hard.
 //! So the best option seems to be to create an abstraction so that the buffering can be adjusted
 //! to what an application needs.
-
 use numbers::*;
 use super::ToSliceMut;
-use std::mem;
 
 /// A buffer which can be used by other types. Types will call buffers to create new arrays.
 /// A buffer may can implement any buffering strategy.
@@ -29,56 +27,4 @@ pub trait Buffer<S, T>
 
     /// Returns the allocated length of all storage within this buffer.
     fn alloc_len(&self) -> usize;
-}
-
-/// A buffer which stores a single vector and never shrinks.
-#[cfg(any(feature="std", test))]
-pub struct SingleBuffer<T>
-    where T: RealNumber
-{
-    temp: Vec<T>,
-}
-
-#[cfg(any(feature="std", test))]
-impl<T> SingleBuffer<T>
-    where T: RealNumber
-{
-    /// Creates a new buffer which is ready to be passed around.
-    pub fn new() -> SingleBuffer<T> {
-        SingleBuffer { temp: Vec::new() }
-    }
-
-    /// Creates a new buffer which is ready to be passed around.
-    pub fn with_capacity(len: usize) -> SingleBuffer<T> {
-        SingleBuffer { temp: vec![T::zero(); len] }
-    }
-}
-
-#[cfg(any(feature="std", test))]
-impl<T> Buffer<Vec<T>, T> for SingleBuffer<T>
-    where T: RealNumber
-{
-    fn get(&mut self, len: usize) -> Vec<T> {
-        if len <= self.temp.len() {
-            let mut result = Vec::new();
-            mem::swap(&mut result, &mut self.temp);
-            return result;
-        }
-
-        vec![T::zero(); len]
-    }
-
-    fn construct_new(&mut self, len: usize) -> Vec<T> {
-        vec![T::zero(); len]
-    }
-
-    fn free(&mut self, storage: Vec<T>) {
-        if storage.len() > self.temp.len() {
-            self.temp = storage;
-        }
-    }
-
-    fn alloc_len(&self) -> usize {
-        self.temp.capacity()
-    }
 }

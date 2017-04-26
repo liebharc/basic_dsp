@@ -23,10 +23,10 @@ impl Chunk {
     /// Executes the given function on the first `array_length` elements of the given array in
     /// parallel and passes the argument to all function calls.
     #[inline]
-    pub fn execute_partial<'a, T, S, F>(complexity: Complexity,
-                                        settings: &MultiCoreSettings,
+    pub fn execute_partial<'a, T, S, F>(_: Complexity,
+                                        _: &MultiCoreSettings,
                                         array: &mut [T],
-                                        step_size: usize,
+                                        _: usize,
                                         arguments: S,
                                         ref function: F)
         where F: Fn(&mut [T], S) + 'a + Sync,
@@ -39,11 +39,11 @@ impl Chunk {
     /// Executes the given function on the first `array_length` elements of the given list of
     /// arrays in parallel and passes the argument to all function calls.
     #[inline]
-    pub fn execute_partial_multidim<'a, T, S, F>(complexity: Complexity,
-                                                 settings: &MultiCoreSettings,
+    pub fn execute_partial_multidim<'a, T, S, F>(_: Complexity,
+                                                 _: &MultiCoreSettings,
                                                  array: &mut [&mut [T]],
                                                  range: Range<usize>,
-                                                 step_size: usize,
+                                                 _: usize,
                                                  arguments: S,
                                                  ref function: F)
         where F: Fn(&mut InlineVector<&mut [T]>, Range<usize>, S) + 'a + Sync,
@@ -58,10 +58,10 @@ impl Chunk {
     /// Executes the given function on the all elements of the array and also tells the function
     /// on which range/chunk it operates on.
     #[inline]
-    pub fn execute_with_range<'a, T, S, F>(complexity: Complexity,
-                                           settings: &MultiCoreSettings,
+    pub fn execute_with_range<'a, T, S, F>(_: Complexity,
+                                           _: &MultiCoreSettings,
                                            array: &mut [T],
-                                           step_size: usize,
+                                           _: usize,
                                            arguments: S,
                                            ref function: F)
         where F: Fn(&mut [T], Range<usize>, S) + 'a + Sync,
@@ -80,10 +80,10 @@ impl Chunk {
     /// Executes the given function on an unspecified number and size of chunks on the array and
     /// returns the result of each chunk.
     #[inline]
-    pub fn map_on_array_chunks<'a, T, S, F, R>(complexity: Complexity,
-                                               settings: &MultiCoreSettings,
+    pub fn map_on_array_chunks<'a, T, S, F, R>(_: Complexity,
+                                               _: &MultiCoreSettings,
                                                array: &[T],
-                                               step_size: usize,
+                                               _: usize,
                                                arguments: S,
                                                ref function: F)
                                                -> InlineVector<R>
@@ -111,8 +111,8 @@ impl Chunk {
     /// around 0. This allows `function` to make use of symmetry properties of the
     /// underlying data or the argument.
     #[inline]
-    pub fn execute_sym_pairs_with_range<'a, T, S, F>(complexity: Complexity,
-                                                     settings: &MultiCoreSettings,
+    pub fn execute_sym_pairs_with_range<'a, T, S, F>(_: Complexity,
+                                                     _: &MultiCoreSettings,
                                                      array: &mut [T],
                                                      step_size: usize,
                                                      arguments: S,
@@ -146,12 +146,12 @@ impl Chunk {
     /// Executes the given function on the all elements of the array in parallel. A result is
     /// returned for each chunk.
     #[inline]
-    pub fn get_a_fold_b<'a, F, T, R>(complexity: Complexity,
-                                     settings: &MultiCoreSettings,
+    pub fn get_a_fold_b<'a, F, T, R>(_: Complexity,
+                                     _: &MultiCoreSettings,
                                      a: &[T],
-                                     a_step: usize,
+                                     _: usize,
                                      b: &[T],
-                                     b_step: usize,
+                                     _: usize,
                                      ref function: F)
                                      -> InlineVector<R>
         where F: Fn(&[T], Range<usize>, &[T]) -> R + 'a + Sync,
@@ -172,10 +172,10 @@ impl Chunk {
     /// Executes the given function on the all elements of the array in parallel. A result is
     /// returned for each chunk.
     #[inline]
-    pub fn get_chunked_results<'a, F, S, T, R>(complexity: Complexity,
-                                               settings: &MultiCoreSettings,
+    pub fn get_chunked_results<'a, F, S, T, R>(_: Complexity,
+                                               _: &MultiCoreSettings,
                                                a: &[T],
-                                               a_step: usize,
+                                               _: usize,
                                                arguments: S,
                                                ref function: F)
                                                -> InlineVector<R>
@@ -197,12 +197,12 @@ impl Chunk {
     /// Executes the given function on the all elements of the array in parallel and passes
     /// the argument to all function calls.. Results are intended to be stored in the target array.
     #[inline]
-    pub fn from_src_to_dest<'a, T, S, F>(complexity: Complexity,
-                                         settings: &MultiCoreSettings,
+    pub fn from_src_to_dest<'a, T, S, F>(_: Complexity,
+                                         _: &MultiCoreSettings,
                                          original: &[T],
-                                         original_step: usize,
+                                         _: usize,
                                          target: &mut [T],
-                                         target_step: usize,
+                                         _: usize,
                                          arguments: S,
                                          ref function: F)
         where F: Fn(&[T], Range<usize>, &mut [T], S) + 'a + Sync,

@@ -6,10 +6,8 @@ pub mod tools;
 mod conv_test {
     use basic_dsp::*;
     use basic_dsp::conv_types::*;
-    use basic_dsp::window_functions::*;
     use tools::*;
-    use std::os::raw::c_void;
-
+    
     #[test]
     fn compare_conv_freq_multiplication_for_rc() {
         for iteration in 0..3 {
@@ -238,81 +236,5 @@ mod conv_test {
             }
         }
         result
-    }
-
-    /// Calls to another window with the only
-    /// difference that it doesn't allow to make use of symmetry
-    fn unsym_triag_window() -> ForeignWindowFunction<f32> {
-        ForeignWindowFunction {
-            window_data: 0,
-            window_function: call_triag,
-            is_symmetric: false,
-        }
-    }
-
-    extern "C" fn call_triag(_arg: *const c_void, i: usize, points: usize) -> f32 {
-        let triag: &WindowFunction<f32> = &TriangularWindow;
-        triag.window(i, points)
-    }
-
-    /// Calls to another window with the only
-    /// difference that it doesn't allow to make use of symmetry
-    fn unsym_rc_mul() -> ForeignRealConvolutionFunction<f32> {
-        ForeignRealConvolutionFunction {
-            conv_data: 0,
-            conv_function: call_freq_rc,
-            is_symmetric: false,
-        }
-    }
-
-    extern "C" fn call_freq_rc(_arg: *const c_void, x: f32) -> f32 {
-        let rc: &RealFrequencyResponse<f32> = &RaisedCosineFunction::new(0.35);
-        rc.calc(x)
-    }
-
-    #[test]
-    fn compare_sym_optimized_window_with_normal_version() {
-        parameterized_vector_test(|iteration, range| {
-            let a = create_data_even(20160116, iteration, range.start, range.end);
-            let delta = create_delta(201601161, iteration);
-            let mut time = a.to_complex_time_vec();
-            time.set_delta(delta);
-            let triag_sym = TriangularWindow;
-            let triag_unsym = unsym_triag_window();
-            let mut result_sym = time.clone();
-            result_sym.apply_window(&triag_sym);
-            let mut result_unsym = time;
-            result_unsym.apply_window(&triag_unsym);
-            assert_vector_eq_with_reason_and_tolerance(&result_sym[..],
-                                                       &result_unsym[..],
-                                                       1e-2,
-                                                       "Results should match with or without \
-                                                        symmetry optimization");
-        });
-    }
-
-    #[test]
-    fn compare_sym_optimized_freq_mul_with_normal_version() {
-        parameterized_vector_test(|iteration, range| {
-            let a = create_data_even(201601162, iteration, range.start, range.end);
-            let delta = create_delta(201601163, iteration);
-            let mut freq = a.to_complex_freq_vec();
-            freq.set_delta(delta);
-            let rc_sym: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
-            let rc_unsym = unsym_rc_mul();
-            // Should get us a range [0.5 .. 1.0]
-            let ratio = create_delta(201601164, iteration).abs() / 20.0 + 0.5;
-            let mut result_sym = freq.clone();
-            result_sym.multiply_frequency_response(
-                &rc_sym as &RealFrequencyResponse<f32>, 1.0 / ratio);
-            let mut result_unsym = freq;
-            result_unsym.multiply_frequency_response(
-                &rc_unsym as &RealFrequencyResponse<f32>, 1.0 / ratio);
-            assert_vector_eq_with_reason_and_tolerance(&result_sym[..],
-                                                       &result_unsym[..],
-                                                       1e-2,
-                                                       "Results should match with or without \
-                                                        symmetry optimization");
-        });
     }
 }

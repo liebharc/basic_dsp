@@ -76,6 +76,15 @@ impl<T> InlineVector<T> {
         }
     }
 
+    pub fn remove(&mut self, index: usize) -> T {
+        match self {
+            &mut InlineVector::Inline(ref mut v) => {
+                v.remove(index).unwrap()
+            },
+            &mut InlineVector::Dynamic(ref mut v) => v.remove(index)
+        }
+    }
+
     pub fn len(&self) -> usize {
         match self {
             &InlineVector::Inline(ref v) => v.len(),
@@ -103,7 +112,7 @@ impl<T> InlineVector<T> {
 
     pub fn append(&mut self, other: &mut Self) {
         while !other.is_empty() {
-            self.push(other.pop().unwrap());
+            self.push(other.remove(0));
         }
     }
 

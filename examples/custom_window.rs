@@ -7,7 +7,7 @@ struct Identity;
 impl RealImpulseResponse<f64> for Identity {
     fn is_symmetric(&self) -> bool { true }
     
-    fn calc(&self, x: f64) -> f64 { x }
+    fn calc(&self, x: f64) -> f64 { if x == 0.0 { 1.0 } else { 0.0 } }
 }
 
 /// This example is just supposed to make the syntax clearer on how to implement one 
