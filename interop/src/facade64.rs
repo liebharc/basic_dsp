@@ -3,7 +3,6 @@
 //! Please refer to the other chapters of the help for documentation of the functions.
 use super::*;
 use basic_dsp_vector::*;
-use basic_dsp_vector::window_functions::*;
 use basic_dsp_vector::conv_types::*;
 use num_complex::*;
 use std::slice;

@@ -12,6 +12,7 @@ use basic_dsp_vector::{VoidResult, SingleBuffer, TransRes, PaddingOption, GenDsp
 use basic_dsp_vector::window_functions::*;
 use basic_dsp_vector::conv_types::*;
 use basic_dsp_vector::numbers::RealNumber;
+use num_complex::Complex;
 
 pub struct InteropVec<T>
     where T: RealNumber
@@ -215,4 +216,131 @@ pub struct ScalarInteropResult<T>
 
     /// The result
     pub result: T,
+}
+
+/// A window function which can be constructed outside this crate.
+struct ForeignWindowFunction<T>
+    where T: RealNumber
+{
+    /// The window function
+    pub window_function: extern "C" fn(*const std::os::raw::c_void, usize, usize) -> T,
+
+    /// The data which is passed to the window function
+    ///
+    /// Actual data type is a `const* c_void`, but Rust doesn't allow that because it's
+    /// unsafe so we store
+    /// it as `usize` and transmute it when necessary. Callers should make very sure safety
+    /// is guaranteed.
+    pub window_data: usize,
+
+    /// Indicates whether this function is symmetric around 0 or not.
+    /// Symmetry is defined as `self.window(x) == self.window(-x)`.
+    pub is_symmetric: bool,
+}
+
+impl<T> WindowFunction<T> for ForeignWindowFunction<T>
+    where T: RealNumber
+{
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    fn window(&self, idx: usize, points: usize) -> T {
+        let fun = self.window_function;
+        fun(self.window_data as *const std::os::raw::c_void, idx, points)
+    }
+}
+
+/// A real function which can be constructed outside this crate.
+struct ForeignRealConvolutionFunction<T>
+    where T: RealNumber
+{
+    /// The function
+    pub conv_function: extern "C" fn(*const std::os::raw::c_void, T) -> T,
+
+    /// The data which is passed to the function.
+    ///
+    /// Actual data type is a `const* c_void`, but Rust doesn't allow that
+    /// because it's unsafe so we store
+    /// it as `usize` and transmute it when necessary. Callers should make
+    /// very sure safety is guaranteed.
+    pub conv_data: usize,
+
+    /// Indicates whether this function is symmetric around 0 or not.
+    /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
+    pub is_symmetric: bool,
+}
+
+impl<T> RealImpulseResponse<T> for ForeignRealConvolutionFunction<T>
+    where T: RealNumber
+{
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    fn calc(&self, x: T) -> T {
+        let fun = self.conv_function;
+        fun(self.conv_data as *const std::os::raw::c_void, x)
+    }
+}
+
+impl<T> RealFrequencyResponse<T> for ForeignRealConvolutionFunction<T>
+    where T: RealNumber
+{
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    fn calc(&self, x: T) -> T {
+        let fun = self.conv_function;
+        fun(self.conv_data as *const std::os::raw::c_void, x)
+    }
+}
+
+/// A complex function which can be constructed outside this crate.
+struct ForeignComplexConvolutionFunction<T>
+    where T: RealNumber
+{
+    /// The function
+    pub conv_function: extern "C" fn(*const std::os::raw::c_void, T) -> Complex<T>,
+
+    /// The data which is passed to the window function
+    ///
+    /// Actual data type is a `const* c_void`, but Rust doesn't allow that
+    /// because it's unsafe so we store
+    /// it as `usize` and transmute it when necessary. Callers should make very
+    /// sure safety is guaranteed.
+    pub conv_data: usize,
+
+    /// Indicates whether this function is symmetric around 0 or not.
+    /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
+    pub is_symmetric: bool,
+}
+
+impl<T> ComplexImpulseResponse<T> for ForeignComplexConvolutionFunction<T>
+    where T: RealNumber
+{
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    fn calc(&self, x: T) -> Complex<T> {
+        let fun = self.conv_function;
+        fun(self.conv_data as *const std::os::raw::c_void, x)
+    }
+}
+
+impl<T> ComplexFrequencyResponse<T> for ForeignComplexConvolutionFunction<T>
+    where T: RealNumber
+{
+    fn is_symmetric(&self) -> bool {
+        self.is_symmetric
+    }
+
+    /// Indicates whether this function is symmetric around 0 or not.
+    /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
+    fn calc(&self, x: T) -> Complex<T> {
+        let fun = self.conv_function;
+        fun(self.conv_data as *const std::os::raw::c_void, x)
+    }
 }

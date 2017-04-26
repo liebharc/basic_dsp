@@ -1,8 +1,6 @@
 //! This mod contains a definition for window functions and provides implementations for a
 //! few standard windows. See the `WindowFunction` type for more information.
 use numbers::*;
-use std::mem;
-use std;
 
 /// A window function for FFT windows. See `https://en.wikipedia.org/wiki/Window_function`
 /// for details. Window functions should document if they aren't applicable for
@@ -81,58 +79,6 @@ impl<T> WindowFunction<T> for HammingWindow<T>
         let n = T::from(n).unwrap();
         let length = T::from(length).unwrap();
         self.alpha - self.beta * (two * pi * n / (length - one)).cos()
-    }
-}
-
-/// A window function which can be constructed outside this crate.
-#[cfg(any(feature="std", test))]
-pub struct ForeignWindowFunction<T>
-    where T: RealNumber
-{
-    /// The window function
-    pub window_function: extern "C" fn(*const std::os::raw::c_void, usize, usize) -> T,
-
-    /// The data which is passed to the window function
-    ///
-    /// Actual data type is a `const* c_void`, but Rust doesn't allow that because it's
-    /// unsafe so we store
-    /// it as `usize` and transmute it when necessary. Callers should make very sure safety
-    /// is guaranteed.
-    pub window_data: usize,
-
-    /// Indicates whether this function is symmetric around 0 or not.
-    /// Symmetry is defined as `self.window(x) == self.window(-x)`.
-    pub is_symmetric: bool,
-}
-
-#[cfg(any(feature="std", test))]
-impl<T> ForeignWindowFunction<T>
-    where T: RealNumber
-{
-    /// Creates a new window function
-    pub unsafe fn new(window: extern "C" fn(*const std::os::raw::c_void, usize, usize) -> T,
-               window_data: *const std::os::raw::c_void,
-               is_symmetric: bool)
-               -> Self {
-        ForeignWindowFunction {
-            window_function: window,
-            window_data: mem::transmute(window_data),
-            is_symmetric: is_symmetric,
-        }
-    }
-}
-
-#[cfg(any(feature="std", test))]
-impl<T> WindowFunction<T> for ForeignWindowFunction<T>
-    where T: RealNumber
-{
-    fn is_symmetric(&self) -> bool {
-        self.is_symmetric
-    }
-
-    fn window(&self, idx: usize, points: usize) -> T {
-        let fun = self.window_function;
-        fun(self.window_data as *const std::os::raw::c_void, idx, points)
     }
 }
 
