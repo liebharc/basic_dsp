@@ -4,8 +4,8 @@ use multicore_support::*;
 use simd_extensions::*;
 use arrayvec::ArrayVec;
 use super::super::{Vector, DspVec, ToSlice, Domain, RealNumberSpace,
-                   ComplexNumberSpace};
-                  
+                   ComplexNumberSpace, ScalarResult, ErrorReason};
+
 #[repr(C)]
 #[derive(Copy)]
 #[derive(Clone)]
@@ -75,7 +75,7 @@ pub trait StatisticsSplitOps<T>
     /// Calculates the statistics of the data contained in the vector as if the vector would
     /// have been split into `len` pieces. `self.len` should be dividable by
     /// `len` without a remainder,
-    /// but this isn't enforced by the implementation. 
+    /// but this isn't enforced by the implementation.
     /// For implementation reasons `len <= 16` must be true.
     ///
     /// # Example
@@ -87,12 +87,12 @@ pub trait StatisticsSplitOps<T>
     /// use basic_dsp_vector::*;
     /// # fn main() {
     /// let vector = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0).to_complex_time_vec();
-    /// let result = vector.statistics_split(2);
+    /// let result = vector.statistics_split(2).expect("Ignoring error handling in examples");
     /// assert_eq!(result[0].sum, Complex32::new(6.0, 8.0));
     /// assert_eq!(result[1].sum, Complex32::new(3.0, 4.0));
     /// }
     /// ```
-    fn statistics_split(&self, len: usize) -> Self::Result;
+    fn statistics_split(&self, len: usize) -> ScalarResult<Self::Result>;
 }
 
 /// Offers operations to calculate the sum or the sum of squares.
@@ -381,8 +381,8 @@ impl<S, T, N, D> StatisticsOps<T> for DspVec<S, T, N, D>
 
         Statistics::merge(&chunks[..])
     }
-}    
-    
+}
+
 impl<S, T, N, D> StatisticsSplitOps<T> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
@@ -390,14 +390,14 @@ impl<S, T, N, D> StatisticsSplitOps<T> for DspVec<S, T, N, D>
           D: Domain
 {
     type Result = StatsVec<Statistics<T>>;
- 
-    fn statistics_split(&self, len: usize) -> StatsVec<Statistics<T>> {
+
+    fn statistics_split(&self, len: usize) -> ScalarResult<StatsVec<Statistics<T>>> {
         if len == 0 {
-            return StatsVec::new();
+            return Ok(StatsVec::new());
         }
-        
+
         if len > STATS_VEC_CAPACTIY {
-            panic!("len bigger than maximum value");
+            return Err(ErrorReason::InvalidArgumentLength);
         }
 
         let data_length = self.len();
@@ -419,7 +419,7 @@ impl<S, T, N, D> StatisticsSplitOps<T> for DspVec<S, T, N, D>
             results
         });
 
-        Statistics::merge_cols(&chunks[..])
+        Ok(Statistics::merge_cols(&chunks[..]))
     }
 }
 
@@ -528,22 +528,22 @@ impl<S, T, N, D> StatisticsOps<Complex<T>> for DspVec<S, T, N, D>
         Statistics::merge(&chunks[..])
     }
 }
-    
+
 impl<S, T, N, D> StatisticsSplitOps<Complex<T>> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
           D: Domain
-{    
+{
     type Result = StatsVec<Statistics<Complex<T>>>;
 
-    fn statistics_split(&self, len: usize) -> StatsVec<Statistics<Complex<T>>> {
+    fn statistics_split(&self, len: usize) -> ScalarResult<StatsVec<Statistics<Complex<T>>>> {
         if len == 0 {
-            return StatsVec::new();
+            return Ok(StatsVec::new());
         }
-        
+
         if len > STATS_VEC_CAPACTIY {
-            panic!("len bigger than maximum value");
+            return Err(ErrorReason::InvalidArgumentLength);
         }
 
         let data_length = self.len();
@@ -566,7 +566,7 @@ impl<S, T, N, D> StatisticsSplitOps<Complex<T>> for DspVec<S, T, N, D>
             results
         });
 
-        Statistics::merge_cols(&chunks[..])
+        Ok(Statistics::merge_cols(&chunks[..]))
     }
 }
 

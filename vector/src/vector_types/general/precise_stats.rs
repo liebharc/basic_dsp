@@ -3,7 +3,8 @@ use numbers::*;
 use num_complex::{Complex64};
 use multicore_support::*;
 use super::super::{Vector, DspVec, ToSlice, Domain, RealNumberSpace,
-                   ComplexNumberSpace, Statistics, Stats, StatsVec, STATS_VEC_CAPACTIY};
+                   ComplexNumberSpace, Statistics, Stats, StatsVec, STATS_VEC_CAPACTIY,
+                   ScalarResult, ErrorReason};
 use super::{kahan_sum, kahan_sumb};
 
 /// Offers the same functionality as the `StatisticsOps` trait but
@@ -38,7 +39,7 @@ pub trait PreciseStatisticsOps<T>
     /// ```
     fn statistics_prec(&self) -> Self::Result;
 }
-    
+
 /// Offers the same functionality as the `StatisticsOps` trait but
 /// the statistics are calculated in a more precise (and slower) way.
 pub trait PreciseStatisticsSplitOps<T>
@@ -62,12 +63,12 @@ pub trait PreciseStatisticsSplitOps<T>
     /// # fn main() {
     /// let vector: Vec<f32> = vec!(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
     /// let vector = vector.to_complex_time_vec();
-    /// let result = vector.statistics_split_prec(2);
+    /// let result = vector.statistics_split_prec(2).expect("Ignoring error handling in examples");
     /// assert_eq!(result[0].sum, Complex64::new(6.0, 8.0));
     /// assert_eq!(result[1].sum, Complex64::new(3.0, 4.0));
     /// }
     /// ```
-    fn statistics_split_prec(&self, len: usize) -> Self::Result;
+    fn statistics_split_prec(&self, len: usize) -> ScalarResult<Self::Result>;
 }
 
 /// Offers the same functionality as the `SumOps` trait but
@@ -154,13 +155,13 @@ impl<S, N, D> PreciseStatisticsSplitOps<f64> for DspVec<S, f32, N, D>
 {
     type Result = StatsVec<Statistics<f64>>;
 
-    fn statistics_split_prec(&self, len: usize) -> StatsVec<Statistics<f64>> {
+    fn statistics_split_prec(&self, len: usize) -> ScalarResult<StatsVec<Statistics<f64>>> {
         if len == 0 {
-            return StatsVec::new();
+            return Ok(StatsVec::new());
         }
-        
+
         if len > STATS_VEC_CAPACTIY {
-            panic!("len bigger than maximum value");
+            return Err(ErrorReason::InvalidArgumentLength);
         }
 
         let data_length = self.len();
@@ -182,7 +183,7 @@ impl<S, N, D> PreciseStatisticsSplitOps<f64> for DspVec<S, f32, N, D>
             results
         });
 
-        Statistics::merge_cols(&chunks[..])
+        Ok(Statistics::merge_cols(&chunks[..]))
     }
 }
 
@@ -224,13 +225,13 @@ impl<S, N, D> PreciseStatisticsSplitOps<f64> for DspVec<S, f64, N, D>
 {
     type Result = StatsVec<Statistics<f64>>;
 
-    fn statistics_split_prec(&self, len: usize) -> StatsVec<Statistics<f64>> {
+    fn statistics_split_prec(&self, len: usize) -> ScalarResult<StatsVec<Statistics<f64>>> {
         if len == 0 {
-            return StatsVec::new();
+            return Ok(StatsVec::new());
         }
-        
+
         if len > STATS_VEC_CAPACTIY {
-            panic!("len bigger than maximum value");
+            return Err(ErrorReason::InvalidArgumentLength);
         }
 
         let data_length = self.len();
@@ -254,7 +255,7 @@ impl<S, N, D> PreciseStatisticsSplitOps<f64> for DspVec<S, f64, N, D>
             results
         });
 
-        Statistics::merge_cols(&chunks[..])
+        Ok(Statistics::merge_cols(&chunks[..]))
     }
 }
 
@@ -376,13 +377,13 @@ impl<S, N, D> PreciseStatisticsSplitOps<Complex<f64>> for DspVec<S, f32, N, D>
 {
     type Result = StatsVec<Statistics<Complex<f64>>>;
 
-    fn statistics_split_prec(&self, len: usize) -> StatsVec<Statistics<Complex<f64>>> {
+    fn statistics_split_prec(&self, len: usize) -> ScalarResult<StatsVec<Statistics<Complex<f64>>>> {
         if len == 0 {
-            return StatsVec::new();
+            return Ok(StatsVec::new());
         }
-        
+
         if len > STATS_VEC_CAPACTIY {
-            panic!("len bigger than maximum value");
+            return Err(ErrorReason::InvalidArgumentLength);
         }
 
         let data_length = self.len();
@@ -404,8 +405,8 @@ impl<S, N, D> PreciseStatisticsSplitOps<Complex<f64>> for DspVec<S, f32, N, D>
 
             results
         });
-        
-        Statistics::merge_cols(&chunks[..])
+
+        Ok(Statistics::merge_cols(&chunks[..]))
     }
 }
 
@@ -448,13 +449,13 @@ impl<S, N, D> PreciseStatisticsSplitOps<Complex<f64>> for DspVec<S, f64, N, D>
 {
     type Result = StatsVec<Statistics<Complex<f64>>>;
 
-    fn statistics_split_prec(&self, len: usize) -> StatsVec<Statistics<Complex<f64>>> {
+    fn statistics_split_prec(&self, len: usize) -> ScalarResult<StatsVec<Statistics<Complex<f64>>>> {
         if len == 0 {
-            return StatsVec::new();
+            return Ok(StatsVec::new());
         }
-        
+
         if len > STATS_VEC_CAPACTIY {
-            panic!("len bigger than maximum value");
+            return Err(ErrorReason::InvalidArgumentLength);
         }
 
         let data_length = self.len();
@@ -479,7 +480,7 @@ impl<S, N, D> PreciseStatisticsSplitOps<Complex<f64>> for DspVec<S, f64, N, D>
             results
         });
 
-        Statistics::merge_cols(&chunks[..])
+        Ok(Statistics::merge_cols(&chunks[..]))
     }
 }
 

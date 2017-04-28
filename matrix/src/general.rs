@@ -767,14 +767,14 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsSplitOps<T>
 {
     type Result=Vec<StatsVec<Statistics<T>>>;
 
-    fn statistics_split(&self, len: usize) -> Vec<StatsVec<Statistics<T>>> {
+    fn statistics_split(&self, len: usize) -> ScalarResult<Vec<StatsVec<Statistics<T>>>> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = v.statistics_split(len);
+            let res = try!(v.statistics_split(len));
             result.push(res);
         }
 
-        result
+        Ok(result)
     }
 }
 
@@ -801,14 +801,14 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsSplitOps<T>
 {
     type Result=[StatsVec<Statistics<T>>; 2];
 
-    fn statistics_split(&self, len: usize) -> Self::Result {
+    fn statistics_split(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = v.statistics_split(len);
+            let res = try!(v.statistics_split(len));
             result.push(res);
         }
 
-        result.into_fixed_length()
+        Ok(result.into_fixed_length())
     }
 }
 
@@ -835,14 +835,14 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsSplitOps<T>
 {
     type Result=[StatsVec<Statistics<T>>; 3];
 
-    fn statistics_split(&self, len: usize) -> Self::Result {
+    fn statistics_split(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = v.statistics_split(len);
+            let res = try!(v.statistics_split(len));
             result.push(res);
         }
 
-        result.into_fixed_length()
+        Ok(result.into_fixed_length())
     }
 }
 
@@ -869,14 +869,14 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsSplitOps<T>
 {
     type Result=[StatsVec<Statistics<T>>; 4];
 
-    fn statistics_split(&self, len: usize) -> Self::Result {
+    fn statistics_split(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = v.statistics_split(len);
+            let res = try!(v.statistics_split(len));
             result.push(res);
         }
 
-        result.into_fixed_length()
+        Ok(result.into_fixed_length())
     }
 }
 
@@ -999,14 +999,14 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsSplitOps<T>
 {
     type Result=Vec<StatsVec<Statistics<T>>>;
 
-    fn statistics_split_prec(&self, len: usize) -> Vec<StatsVec<Statistics<T>>> {
+    fn statistics_split_prec(&self, len: usize) -> ScalarResult<Vec<StatsVec<Statistics<T>>>> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = v.statistics_split_prec(len);
+            let res = try!(v.statistics_split_prec(len));
             result.push(res);
         }
 
-        result
+        Ok(result)
     }
 }
 
@@ -1033,14 +1033,14 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsSplitOps<T>
 {
     type Result=[StatsVec<Statistics<T>>; 2];
 
-    fn statistics_split_prec(&self, len: usize) -> Self::Result {
+    fn statistics_split_prec(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = v.statistics_split_prec(len);
+            let res = try!(v.statistics_split_prec(len));
             result.push(res);
         }
 
-        result.into_fixed_length()
+        Ok(result.into_fixed_length())
     }
 }
 
@@ -1067,14 +1067,14 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsSplitOps<T>
 {
     type Result=[StatsVec<Statistics<T>>; 3];
 
-    fn statistics_split_prec(&self, len: usize) -> Self::Result {
+    fn statistics_split_prec(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = v.statistics_split_prec(len);
+            let res = try!(v.statistics_split_prec(len));
             result.push(res);
         }
 
-        result.into_fixed_length()
+        Ok(result.into_fixed_length())
     }
 }
 
@@ -1101,18 +1101,18 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsSplitOps<T>
 {
     type Result=[StatsVec<Statistics<T>>; 4];
 
-    fn statistics_split_prec(&self, len: usize) -> Self::Result {
+    fn statistics_split_prec(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res = v.statistics_split_prec(len);
+            let res = try!(v.statistics_split_prec(len));
             result.push(res);
         }
 
-        result.into_fixed_length()
+        Ok(result.into_fixed_length())
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, O: RealNumber> PreciseSumOps<Vec<O>> 
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, O: RealNumber> PreciseSumOps<Vec<O>>
     for MatrixMxN<V, S, T>
     where V: PreciseSumOps<O>
 {
@@ -1137,7 +1137,7 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, O: RealNumber> PreciseSumOps<Ve
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, O: RealNumber> PreciseSumOps<[O; 2]> 
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, O: RealNumber> PreciseSumOps<[O; 2]>
     for Matrix2xN<V, S, T>
     where V: PreciseSumOps<O>
 {
@@ -1162,7 +1162,7 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, O: RealNumber> PreciseSumOps<[O
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, O: RealNumber> PreciseSumOps<[O; 3]> 
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, O: RealNumber> PreciseSumOps<[O; 3]>
     for Matrix3xN<V, S, T>
     where V: PreciseSumOps<O>
 {
@@ -1187,7 +1187,7 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, O: RealNumber> PreciseSumOps<[O
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, O: RealNumber> PreciseSumOps<[O; 4]> 
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, O: RealNumber> PreciseSumOps<[O; 4]>
     for Matrix4xN<V, S, T>
     where V: PreciseSumOps<O>
 {

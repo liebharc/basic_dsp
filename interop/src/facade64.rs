@@ -542,7 +542,7 @@ pub extern "C" fn map_aggregate_real64(vector: &VecBuf,
         let aggr = move |a: usize, b: usize| {
                         mem::transmute(aggregate(mem::transmute(a),mem::transmute(b)))
                     };
-                    
+
         let result = vector.convert_scalar(|v| {
                 v.map_aggregate((), &map, &aggr)
             },
@@ -566,7 +566,7 @@ pub extern "C" fn map_aggregate_complex64(vector: &VecBuf,
         let aggr = move |a: usize, b: usize| {
                         mem::transmute(aggregate(mem::transmute(a),mem::transmute(b)))
                     };
-                    
+
         let result = vector.convert_scalar(|v| {
                 v.map_aggregate((), &map, &aggr)
             },
@@ -764,11 +764,16 @@ pub extern "C" fn real_statistics_split64(vector: &VecBuf,
     let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
     let vec = &vector.vec as &StatisticsSplitOps<f64, Result=StatsVec<Statistics<f64>>>;
     let stats = vec.statistics_split(data.len());
-    for i in 0..stats.len() {
-        data[i] = stats[i];
-    }
+    match stats {
+        Ok(s) => {
+            for i in 0..s.len() {
+                data[i] = s[i];
+            }
 
-    0
+            0
+        },
+        Err(r) => translate_error(r)
+    }
 }
 
 #[no_mangle]
@@ -779,11 +784,56 @@ pub extern "C" fn complex_statistics_split64(vector: &VecBuf,
     let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
     let vec = &vector.vec as &StatisticsSplitOps<Complex64, Result=StatsVec<Statistics<Complex64>>>;
     let stats = vec.statistics_split(data.len());
-    for i in 0..stats.len() {
-        data[i] = stats[i];
-    }
+    match stats {
+        Ok(s) => {
+            for i in 0..s.len() {
+                data[i] = s[i];
+            }
 
-    0
+            0
+        },
+        Err(r) => translate_error(r)
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn real_statistics_split_prec64(vector: &VecBuf,
+                                             data: *mut Statistics<f64>,
+                                             len: usize)
+                                             -> i32 {
+    let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
+    let vec = &vector.vec as &PreciseStatisticsSplitOps<f64, Result=StatsVec<Statistics<f64>>>;
+    let stats = vec.statistics_split_prec(data.len());
+    match stats {
+        Ok(s) => {
+            for i in 0..s.len() {
+                data[i] = s[i];
+            }
+
+            0
+        },
+        Err(r) => translate_error(r)
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn complex_statistics_split_prec64(vector: &VecBuf,
+                                                data: *mut Statistics<Complex64>,
+                                                len: usize)
+                                                -> i32 {
+    let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
+    let vec = &vector.vec as &PreciseStatisticsSplitOps<Complex64, Result=StatsVec<Statistics<Complex64>>>;
+    let stats = vec.statistics_split_prec(data.len());
+    match stats {
+        Ok(s) => {
+            for i in 0..s.len() {
+                data[i] = s[i];
+            }
+
+            0
+        },
+        Err(r) => translate_error(r)
+    }
 }
 
 #[no_mangle]
