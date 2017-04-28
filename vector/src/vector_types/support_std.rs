@@ -76,6 +76,26 @@ impl<T> Buffer<Vec<T>, T> for SingleBuffer<T>
     }
 }
 
+/// This type can be used everytime the API asks for a buffer to disable any buffering.
+pub struct NoBuffer;
+
+impl<T> Buffer<Vec<T>, T> for NoBuffer
+    where T: RealNumber
+{
+    fn get(&mut self, len: usize) -> Vec<T> {
+        vec![T::zero(); len]
+    }
+
+    fn construct_new(&mut self, len: usize) -> Vec<T> {
+        vec![T::zero(); len]
+    }
+
+    fn free(&mut self, _: Vec<T>) { }
+
+    fn alloc_len(&self) -> usize {
+        0
+    }
+}
 
 /// A vector with real numbers in time domain.
 pub type RealTimeVec32 = DspVec<Vec<f32>, f32, RealData, TimeData>;
