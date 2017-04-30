@@ -35,6 +35,8 @@ mod general;
 pub use self::general::*;
 mod buffer;
 pub use self::buffer::*;
+mod buffer2;
+pub use self::buffer2::*;
 
 /// Result for operations which transform a type (most commonly the type is a vector).
 /// On success the transformed type is returned.
@@ -320,6 +322,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
           N: NumberSpace,
           D: Domain
 {
+    /// Swaps the data of two vectors.
     fn swap_data<N1, D1>(&mut self, other: &mut DspVec<S, T, N1, D1>)
         where N1: NumberSpace, D1: Domain {
             let self_len = self.len();
@@ -331,6 +334,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 .expect("Resize after swap should succeed");
     }
 
+    /// Returns the ownership of the data inside this vector. The vector data is replaced
+    /// with `empty` which is intended to be an empty array
     fn take_ownership(&mut self, empty: S) -> Self {
         let meta_data = self.get_meta_data();
         let mut other = empty.to_dsp_vec(&meta_data);

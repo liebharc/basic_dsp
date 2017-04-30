@@ -1,11 +1,12 @@
 ///! Support for types in Rust std
 use numbers::*;
 use std::mem;
+use std::ops::*;
 use std::result;
 use super::{round_len, DataDomain, NumberSpace, Domain, ErrorReason, DspVec, GenDspVec,
             RealTimeVec, RealFreqVec, ComplexTimeVec, ComplexFreqVec, RealData, ComplexData,
             RealOrComplexData, TimeData, FrequencyData, TimeOrFrequencyData, ToSlice,
-            TypeMetaData, MetaData};
+            TypeMetaData, MetaData, BufferBorrow, BufferNew};
 use super::{ToComplexVector, ToRealVector, ToDspVector, ToSliceMut, Owner,
             VoidResult, Resize, Buffer};
 use multicore_support::MultiCoreSettings;
@@ -25,6 +26,32 @@ pub trait InterleaveToVector<T>: ToSlice<T>
     fn interleave_to_complex_freq_vec(&self,
                                       other: &Self)
                                       -> result::Result<ComplexFreqVec<Vec<T>, T>, ErrorReason>;
+}
+
+/// Buffer borrow type for `SingleBuffer`.
+pub struct SingleBufferBurrow<'a, T: RealNumber + 'a> {
+    owner: &'a mut SingleBuffer<T>,
+    len: usize
+}
+
+impl<'a, T: RealNumber> Deref for SingleBufferBurrow<'a, T> {
+    type Target = [T];
+
+    fn deref(&self) -> &[T] {
+        &self.owner.temp[0..self.len]
+    }
+}
+
+impl<'a, T: RealNumber> DerefMut for SingleBufferBurrow<'a, T> {
+    fn deref_mut(&mut self) -> &mut[T] {
+        &mut self.owner.temp[0..self.len]
+    }
+}
+
+impl<'a, T: RealNumber> BufferBorrow<Vec<T>, T> for SingleBufferBurrow<'a, T> {  
+    fn swap(self, storage: &mut Vec<T>) {
+        mem::swap(&mut self.owner.temp, storage);
+    }
 }
 
 /// A buffer which stores a single vector and never shrinks.
@@ -76,8 +103,78 @@ impl<T> Buffer<Vec<T>, T> for SingleBuffer<T>
     }
 }
 
+impl<'a, T> BufferNew<'a, Vec<T>, T> for SingleBuffer<T>
+    where T: RealNumber + 'a
+{
+    type Borrow = SingleBufferBurrow<'a, T>;
+
+    fn get(&'a mut self, len: usize) -> Self::Borrow {
+        if self.temp.len() < len {
+            self.temp = vec![T::zero(); len];
+        }
+        
+        SingleBufferBurrow { 
+            owner: self,
+            len: len
+        }
+    }
+
+    fn construct_new(&mut self, len: usize) -> Vec<T> {
+        vec![T::zero(); len]
+    }
+
+    fn alloc_len(&self) -> usize {
+        self.temp.capacity()
+    }
+}
+
 /// This type can be used everytime the API asks for a buffer to disable any buffering.
 pub struct NoBuffer;
+
+/// Buffer borrow type for `NoBuffer`.
+pub struct NoBufferBurrow<T: RealNumber> {
+    data: Vec<T>
+}
+
+impl<T: RealNumber> Deref for NoBufferBurrow<T> {
+    type Target = [T];
+
+    fn deref(&self) -> &[T] {
+        &self.data
+    }
+}
+
+impl<T: RealNumber> DerefMut for NoBufferBurrow<T> {
+    fn deref_mut(&mut self) -> &mut[T] {
+        &mut self.data
+    }
+}
+
+impl<T: RealNumber> BufferBorrow<Vec<T>, T> for NoBufferBurrow<T> {  
+    fn swap(mut self, storage: &mut Vec<T>) {
+        mem::swap(&mut self.data, storage);
+    }
+}
+
+impl<'a, T> BufferNew<'a, Vec<T>, T> for NoBuffer
+    where T: RealNumber + 'a
+{
+    type Borrow = NoBufferBurrow<T>;
+
+    fn get(&'a mut self, len: usize) -> Self::Borrow {
+        NoBufferBurrow { 
+            data: vec![T::zero(); len]
+        }
+    }
+
+    fn construct_new(&mut self, len: usize) -> Vec<T> {
+        vec![T::zero(); len]
+    }
+
+    fn alloc_len(&self) -> usize {
+        0
+    }
+}
 
 impl<T> Buffer<Vec<T>, T> for NoBuffer
     where T: RealNumber

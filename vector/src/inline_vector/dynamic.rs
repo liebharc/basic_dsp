@@ -1,4 +1,5 @@
 use std::ops::*;
+use std::usize;
 use arrayvec::*;
 use {VoidResult, ErrorReason, Buffer};
 use numbers::*;
@@ -31,6 +32,10 @@ impl<T> InlineVector<T>
 }
 
 impl<T> InlineVector<T> {
+    pub fn max_capacity() -> usize {
+        usize::MAX
+    }
+
     pub fn with_capacity(n: usize) -> InlineVector<T> {
         if n <= 64 {
             InlineVector::Inline(ArrayVec::<[T; 64]>::new())

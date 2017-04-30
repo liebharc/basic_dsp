@@ -1,14 +1,88 @@
 ///! Supprot for types in the Rust core
 use numbers::*;
+use std;
+use std::ops::*;
 use super::{TimeData, FrequencyData, RealData, ComplexData, RealOrComplexData,
             TimeOrFrequencyData, NumberSpace, Domain, DspVec, TypeMetaData, DataDomain,
             ToSlice, MetaData, ErrorReason,
             ToComplexVector, ToRealVector, ToDspVector, ToSliceMut, Owner,
-            VoidResult, complex_to_array_mut, complex_to_array};
+            VoidResult, complex_to_array_mut, complex_to_array, BufferBorrow, BufferNew};
 use multicore_support::MultiCoreSettings;
 use inline_vector::InlineVector;
 use arrayvec;
 use arrayvec::{Array, ArrayVec};
+
+/// Buffer borrow type for `SingleBuffer`.
+pub struct FixedLenBufferBurrow<'a, T: RealNumber + 'a> {
+    data: &'a mut [T]
+}
+
+impl<'a, T: RealNumber> Deref for FixedLenBufferBurrow<'a, T> {
+    type Target = [T];
+
+    fn deref(&self) -> &[T] {
+        self.data
+    }
+}
+
+impl<'a, T: RealNumber> DerefMut for FixedLenBufferBurrow<'a, T> {
+    fn deref_mut(&mut self) -> &mut[T] {
+        self.data
+    }
+}
+
+impl<'a, S: ToSliceMut<T>, T: RealNumber> BufferBorrow<S, T> for FixedLenBufferBurrow<'a, T> {  
+    fn swap(self, storage: &mut S) {
+        let len = std::cmp::min(storage.len(), self.data.len());
+        let mut storage = storage.to_slice_mut();
+        &mut storage[0..len].to_slice_mut().copy_from_slice(&mut self.data[0..len]);
+    }
+}
+
+/// A buffer which gets initalized with a data storage type and then always keeps that.
+pub struct FixedLenBuffer<S, T>
+    where S: ToSliceMut<T>,
+        T: RealNumber
+{
+    data: S,
+    data_type: std::marker::PhantomData<T>
+}
+
+impl<S, T> FixedLenBuffer<S, T>
+    where S: ToSliceMut<T>,
+        T: RealNumber
+{
+    /// Creates a new buffer from a storage type. The buffer will internally hold
+    /// its storage for it's complete life time.
+    pub fn new(storage: S) -> FixedLenBuffer<S, T> {
+        FixedLenBuffer { data: storage, data_type: std::marker::PhantomData }
+    }
+}
+
+impl<'a, S, T> BufferNew<'a, S, T> for FixedLenBuffer<S, T>
+    where S: ToSliceMut<T>,
+        T: RealNumber + 'a
+{
+    type Borrow = FixedLenBufferBurrow<'a, T>;
+
+    fn get(&'a mut self, len: usize) -> Self::Borrow {
+        if self.data.len() < len {
+            panic!("FixedLenBuffer: Out of memory");
+        }
+        
+        FixedLenBufferBurrow { 
+            data: &mut self.data.to_slice_mut()[0..len]
+        }
+    }
+
+    fn construct_new(&mut self, len: usize) -> S {
+         panic!("TODO");
+    }
+
+    fn alloc_len(&self) -> usize {
+        self.data.len()
+    }
+}
 
 /// A vector with real numbers in time domain.
 pub type RealTimeVec<S, T> = DspVec<S, T, RealData, TimeData>;

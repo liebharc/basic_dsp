@@ -6,6 +6,8 @@ use std::mem;
 use std::iter::FromIterator;
 use std::slice::Iter;
 
+const MAX_CAPACITY: usize = 64;
+
 /// A type which internally switches between stack and heap allocation.
 /// This is supposed to perform faster but the main reason is that this
 /// way we automatically have a limited stack allocation available on systems
@@ -14,7 +16,7 @@ use std::slice::Iter;
 ///
 /// Thanks to: http://stackoverflow.com/questions/27859822/alloca-variable-length-arrays-in-rust
 pub enum InlineVector<T> {
-    Inline(ArrayVec<[T; 64]>),
+    Inline(ArrayVec<[T; MAX_CAPACITY]>),
 }
 
 impl<T> InlineVector<T>
@@ -30,12 +32,16 @@ impl<T> InlineVector<T>
 }
 
 impl<T> InlineVector<T> {
+    pub fn max_capacity() -> usize {
+        MAX_CAPACITY
+    }
+
     pub fn with_capacity(_: usize) -> InlineVector<T> {
-        InlineVector::Inline(ArrayVec::<[T; 64]>::new())
+        InlineVector::Inline(ArrayVec::<[T; MAX_CAPACITY]>::new())
     }
 
     pub fn with_default_capcacity() -> InlineVector<T> {
-        Self::with_capacity(64)
+        Self::with_capacity(Self::max_capacity())
     }
 
     pub fn with_elem(elem: T) -> InlineVector<T> {
@@ -213,7 +219,7 @@ impl<T: Clone> Clone for InlineVector<T> {
 
 impl<T> FromIterator<T> for InlineVector<T> {
     fn from_iter<I: IntoIterator<Item=T>>(iter: I) -> Self {
-        let mut c = InlineVector::with_capacity(64);
+        let mut c = InlineVector::with_default_capcacity();
 
         for i in iter {
             c.push(i);

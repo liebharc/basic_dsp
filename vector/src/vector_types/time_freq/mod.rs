@@ -124,7 +124,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     /// Only calculate the convolution in the inverse range from the given range.
     /// This is intended to be used together with convolution implementations which
     /// are faster but don't handle the beginning and end of a vector correctly.
-    fn convolve_vector_range(&mut self, target: &mut [T], vector: &Self, range: Range<usize>)
+    fn convolve_vector_range<SO>(&mut self, target: &mut [T], vector: &DspVec<SO, T, N, D>, range: Range<usize>)
+        where SO: ToSliceMut<T>
     {
         let points = self.points();
         let other_points = vector.points();
@@ -161,8 +162,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
-    fn convolve_signal_scalar<B>(&mut self, buffer: &mut B, vector: &Self)
-        where B: Buffer<S, T>
+    fn convolve_signal_scalar<B, SO>(&mut self, buffer: &mut B, vector: &DspVec<SO, T, N, D>)
+        where B: Buffer<S, T>,
+              SO: ToSliceMut<T>
     {
         let points = self.points();
         let other_points = vector.points();
@@ -347,8 +349,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         sum
     }
 
-    fn convolve_signal_simd<B>(&mut self, buffer: &mut B, vector: &Self)
-        where B: Buffer<S, T>
+    fn convolve_signal_simd<B, SO>(&mut self, buffer: &mut B, vector: &DspVec<SO, T, N, D>)
+        where B: Buffer<S, T>,
+              SO: ToSliceMut<T>
     {
         if self.is_complex() {
             self.convolve_signal_simd_impl(buffer,
@@ -455,14 +458,15 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         shifted_copies
     }
 
-    fn convolve_signal_simd_impl<B, TT, C, CMut, RMul, RSum>(&mut self,
+    fn convolve_signal_simd_impl<B, TT, SO, C, CMut, RMul, RSum>(&mut self,
                                                              buffer: &mut B,
-                                                             vector: &Self,
+                                                             vector: &DspVec<SO, T, N, D>,
                                                              convert: C,
                                                              convert_mut: CMut,
                                                              simd_mul: RMul,
                                                              simd_sum: RSum)
         where B: Buffer<S, T>,
+              SO: ToSliceMut<T>,
               TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT> + Send + Sync,
               C: Fn(&[T]) -> &[TT],
               CMut: Fn(&mut [T]) -> &mut [TT],
@@ -486,7 +490,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let dest = convert_mut(&mut temp[0..len]);
             let other_iter = &other[other_start..other_end];
 
-            let shifts = Self::create_shifted_copies(vector);
+            let shifts = vector.create_shifted_copies();
 
             // The next lines uses + $reg::len() due to rounding of odd numbers
             let scalar_len = conv_len + T::Reg::len();

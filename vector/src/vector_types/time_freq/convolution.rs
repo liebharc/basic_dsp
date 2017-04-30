@@ -1,6 +1,7 @@
 use {array_to_complex, array_to_complex_mut};
 use conv_types::*;
 use numbers::*;
+use inline_vector::InlineVector;
 use multicore_support::*;
 use rustfft::FFT;
 use std::mem;
@@ -53,7 +54,7 @@ pub trait ConvolutionOps<S, T, A>
     ///    are not in the same number space and same domain.
     /// 3. `InvalidArgumentLength`: if `self.points() < impulse_response.points()`.
     fn convolve_signal<B>(&mut self, buffer: &mut B, impulse_response: &A) -> VoidResult
-        where B: Buffer<S, T>; // TODO: Consider to rename this function with 0.5
+        where B: Buffer<S, T>;
 }
 
 /// Provides a frequency response multiplication operations.
@@ -100,7 +101,7 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a RealImpulseResponse<T>> for DspVe
           T: RealNumber,
           N: NumberSpace,
           D: TimeDomain,
-          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone
+          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone + ConvolutionOps<S, T, DspVec<InlineVector<T>, T, N, D>>
 {
     fn convolve<B>(&mut self,
                    buffer: &mut B,
@@ -121,27 +122,30 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a RealImpulseResponse<T>> for DspVe
                     .expect("Converting ratio to usize failed, is the interpolation factor \
                              perhaps really huge?");
                 let points = (2 * len + 1) * ratio;
-                let mut imp_resp = DspVec {
-                    data: buffer.construct_new(points),
-                    delta: self.delta(),
-                    domain: self.domain.clone(),
-                    number_space: self.number_space.clone(),
-                    valid_len: self.valid_len,
-                    multicore_settings: MultiCoreSettings::default(),
-                };
+                if points <= InlineVector::<T>::max_capacity() {
+                    let mut imp_resp = DspVec {
+                        data: InlineVector::of_size(T::zero(), points),
+                        delta: self.delta(),
+                        domain: self.domain.clone(),
+                        number_space: self.number_space.clone(),
+                        valid_len: self.valid_len,
+                        multicore_settings: MultiCoreSettings::default(),
+                    };
 
-                let mut i = 0;
-                let mut j = -(T::from(len).unwrap());
-                while i < imp_resp.len() {
-                    let value = function.calc(j * ratio_inv);
-                    imp_resp[i] = value;
-                    i += 1;
-                    j = j + T::one();
-                }
+                    let mut i = 0;
+                    let mut j = -(T::from(len).unwrap());
+                    while i < imp_resp.len() {
+                        let value = function.calc(j * ratio_inv);
+                        imp_resp[i] = value;
+                        i += 1;
+                        j = j + T::one();
+                    }
 
-                self.convolve_signal(buffer, &imp_resp)
-                    .expect("Meta data should agree since we constructed the argument from this \
-                             vector");
+                    self.convolve_signal(buffer, &imp_resp)
+                        .expect("Meta data should agree since we constructed the argument from this \
+                                 vector");
+                    return;
+                 }
             }
 
             self.convolve_function_priv(buffer,
@@ -161,27 +165,30 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a RealImpulseResponse<T>> for DspVe
                     .expect("Converting ratio to usize failed, is the interpolation factor \
                              perhaps really huge?");
                 let points = (2 * len + 1) * ratio;
-                let mut imp_resp = DspVec {
-                    data: buffer.construct_new(2 * points),
-                    delta: self.delta(),
-                    domain: self.domain.clone(),
-                    number_space: self.number_space.clone(),
-                    valid_len: 2 * points,
-                    multicore_settings: MultiCoreSettings::default(),
-                };
+                if 2 * points <= InlineVector::<T>::max_capacity() {
+                    let mut imp_resp = DspVec {
+                        data: InlineVector::of_size(T::zero(), 2 * points),
+                        delta: self.delta(),
+                        domain: self.domain.clone(),
+                        number_space: self.number_space.clone(),
+                        valid_len: 2 * points,
+                        multicore_settings: MultiCoreSettings::default(),
+                    };
 
-                let mut i = 0;
-                let mut j = -(T::from(len).unwrap());
-                while i < imp_resp.len() {
-                    let value = function.calc(j * ratio_inv);
-                    imp_resp[i] = value;
-                    i += 2;
-                    j = j + T::one();
+                    let mut i = 0;
+                    let mut j = -(T::from(len).unwrap());
+                    while i < imp_resp.len() {
+                        let value = function.calc(j * ratio_inv);
+                        imp_resp[i] = value;
+                        i += 2;
+                        j = j + T::one();
+                    }
+
+                    self.convolve_signal(buffer, &imp_resp)
+                        .expect("Meta data should agree since we constructed the argument from this \
+                                 vector");
+                    return;
                 }
-
-                self.convolve_signal(buffer, &imp_resp)
-                    .expect("Meta data should agree since we constructed the argument from this \
-                             vector");
             }
 
             self.convolve_function_priv(buffer,
@@ -199,7 +206,7 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a ComplexImpulseResponse<T>> for Ds
           T: RealNumber,
           N: ComplexNumberSpace,
           D: TimeDomain,
-          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone
+          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone + ConvolutionOps<S, T, DspVec<InlineVector<T>, T, N, D>>
 {
     fn convolve<B>(&mut self,
                    buffer: &mut B,
@@ -221,29 +228,32 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a ComplexImpulseResponse<T>> for Ds
                 .expect("Converting ratio to usize failed, is the interpolation factor perhaps \
                          really huge?");
             let points = (2 * len + 1) * ratio;
-            let mut imp_resp = DspVec {
-                data: buffer.construct_new(2 * points),
-                delta: self.delta(),
-                domain: self.domain.clone(),
-                number_space: self.number_space.clone(),
-                valid_len: self.valid_len,
-                multicore_settings: MultiCoreSettings::default(),
-            };
+            if 2 * points <= InlineVector::<T>::max_capacity() {
+                let mut imp_resp = DspVec {
+                    data: InlineVector::of_size(T::zero(), 2 * points),
+                    delta: self.delta(),
+                    domain: self.domain.clone(),
+                    number_space: self.number_space.clone(),
+                    valid_len: self.valid_len,
+                    multicore_settings: MultiCoreSettings::default(),
+                };
 
-            let mut i = 0;
-            let mut j = -T::from(len).unwrap();
-            while i < imp_resp.len() {
-                let value = function.calc(j * ratio_inv);
-                imp_resp[i] = value.re;
-                i += 2;
-                imp_resp[i] = value.im;
-                i += 1;
-                j = j + T::one();
-            }
+                let mut i = 0;
+                let mut j = -T::from(len).unwrap();
+                while i < imp_resp.len() {
+                    let value = function.calc(j * ratio_inv);
+                    imp_resp[i] = value.re;
+                    i += 2;
+                    imp_resp[i] = value.im;
+                    i += 1;
+                    j = j + T::one();
+                }
 
-            self.convolve_signal(buffer, &imp_resp)
-                .expect("Meta data should agree since we constructed the argument from this \
-                         vector");
+                self.convolve_signal(buffer, &imp_resp)
+                    .expect("Meta data should agree since we constructed the argument from this \
+                             vector");
+                return;
+             }
         }
 
         self.convolve_function_priv(buffer,
@@ -307,8 +317,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
           D: TimeDomain,
           DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone
 {
-    fn overlap_discard<B>(&mut self, buffer: &mut B, impulse_response: &Self, fft_len: usize) -> VoidResult
-        where B: Buffer<S, T>
+    fn overlap_discard<B, SO>(&mut self, buffer: &mut B, impulse_response: &DspVec<SO, T, N, D>, fft_len: usize) -> VoidResult
+        where B: Buffer<S, T>,
+              SO: ToSliceMut<T>
     {
         if !self.is_complex() {
             return Err(ErrorReason::InputMustBeComplex);
@@ -422,14 +433,16 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     }
 }
 
-impl<S, T, N, D> ConvolutionOps<S, T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
+impl<S, SO, T, N, D> ConvolutionOps<S, T, DspVec<SO, T, N, D>> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
+          SO: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
           D: TimeDomain,
-          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone
+          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone,
+          DspVec<SO, T, N, D>: TimeToFrequencyDomainOperations<SO, T> + Clone
 {
-    fn convolve_signal<B>(&mut self, buffer: &mut B, impulse_response: &Self) -> VoidResult
+    fn convolve_signal<B>(&mut self, buffer: &mut B, impulse_response: &DspVec<SO, T, N, D>) -> VoidResult
         where B: Buffer<S, T>
     {
         assert_meta_data!(self, impulse_response);
