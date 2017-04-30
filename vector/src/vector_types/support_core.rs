@@ -5,7 +5,7 @@ use std::ops::*;
 use super::{TimeData, FrequencyData, RealData, ComplexData, RealOrComplexData,
             TimeOrFrequencyData, NumberSpace, Domain, DspVec, TypeMetaData, DataDomain,
             ToSlice, MetaData, ErrorReason,
-            ToComplexVector, ToRealVector, ToDspVector, ToSliceMut, Owner,
+            ToComplexVector, ToRealVector, ToDspVector, ToSliceMut,
             VoidResult, complex_to_array_mut, complex_to_array, BufferBorrow, BufferNew};
 use multicore_support::MultiCoreSettings;
 use inline_vector::InlineVector;
@@ -175,8 +175,6 @@ impl<T> ToSliceMut<T> for [T] {
     }
 }
 
-impl<T> Owner for [T] {}
-
 impl<'a, T> ToSlice<T> for &'a mut [T] {
     fn to_slice(&self) -> &[T] {
         self
@@ -255,8 +253,6 @@ impl<A: arrayvec::Array> ToSliceMut<A::Item> for arrayvec::ArrayVec<A>
     }
 }
 
-impl<A: arrayvec::Array> Owner for arrayvec::ArrayVec<A> {}
-
 impl<T> ToSlice<T> for InlineVector<T>
     where T: RealNumber
 {
@@ -288,8 +284,6 @@ impl<T> ToSliceMut<T> for InlineVector<T>
         &mut self[..]
     }
 }
-
-impl<T> Owner for InlineVector<T> {}
 
 impl<A: Array> ToDspVector<A::Item> for ArrayVec<A>
     where A::Item: RealNumber

@@ -7,7 +7,7 @@ use super::{round_len, DataDomain, NumberSpace, Domain, ErrorReason, DspVec, Gen
             RealTimeVec, RealFreqVec, ComplexTimeVec, ComplexFreqVec, RealData, ComplexData,
             RealOrComplexData, TimeData, FrequencyData, TimeOrFrequencyData, ToSlice,
             TypeMetaData, MetaData, BufferBorrow, BufferNew};
-use super::{ToComplexVector, ToRealVector, ToDspVector, ToSliceMut, Owner,
+use super::{ToComplexVector, ToRealVector, ToDspVector, ToSliceMut,
             VoidResult, Resize, Buffer};
 use multicore_support::MultiCoreSettings;
 
@@ -257,8 +257,6 @@ impl<T> Resize for Vec<T>
     }
 }
 
-impl<T> Owner for Vec<T> {}
-
 impl<T> ToSlice<T> for Box<[T]> {
     fn to_slice(&self) -> &[T] {
         self
@@ -290,8 +288,6 @@ impl<T> ToSliceMut<T> for Box<[T]> {
         self
     }
 }
-
-impl<T> Owner for Box<[T]> {}
 
 impl<T> ToDspVector<T> for Vec<T>
     where T: RealNumber

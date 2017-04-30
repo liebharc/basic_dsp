@@ -37,12 +37,3 @@ pub trait Resize {
     /// specified in the parameter.
     fn resize(&mut self, len: usize);
 }
-
-/// A marker trait which states the the type owns its storage.
-///
-/// Some operations would be possible on data even if doesn't
-/// own the storage (usually a slice). However the result
-/// would be likely not as desired. E.g. if suddenly half
-/// the storage is in real number space and the other half in
-/// complex.
-pub trait Owner {}

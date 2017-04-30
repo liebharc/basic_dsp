@@ -47,15 +47,16 @@ pub trait PreciseDotProductOps<R, A>: Sized
     fn dot_product_prec(&self, factor: &A) -> Self::Output;
 }
 
-impl<S, T, N, D> DotProductOps<T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
+impl<S, SO, T, N, D> DotProductOps<T, DspVec<SO, T, N, D>> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
+          SO: ToSlice<T>,
           T: RealNumber,
           N: RealNumberSpace,
           D: Domain
 {
     type Output = ScalarResult<T>;
 
-    fn dot_product(&self, factor: &Self) -> ScalarResult<T> {
+    fn dot_product(&self, factor: &DspVec<SO, T, N, D>) -> ScalarResult<T> {
         if self.is_complex() {
             return Err(ErrorReason::InputMustBeReal);
         }
@@ -104,15 +105,16 @@ impl<S, T, N, D> DotProductOps<T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, T, N, D> DotProductOps<Complex<T>, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
+impl<S, SO, T, N, D> DotProductOps<Complex<T>, DspVec<SO, T, N, D>> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
+          SO: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
           D: Domain
 {
     type Output = ScalarResult<Complex<T>>;
 
-    fn dot_product(&self, factor: &Self) -> ScalarResult<Complex<T>> {
+    fn dot_product(&self, factor: &DspVec<SO, T, N, D>) -> ScalarResult<Complex<T>> {
         if !self.is_complex() {
             return Err(ErrorReason::InputMustBeComplex);
         }
@@ -170,15 +172,16 @@ impl<S, T, N, D> DotProductOps<Complex<T>, DspVec<S, T, N, D>> for DspVec<S, T, 
     }
 }
 
-impl<S, T, N, D> PreciseDotProductOps<T, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
+impl<S, SO, T, N, D> PreciseDotProductOps<T, DspVec<SO, T, N, D>> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
+          SO: ToSlice<T>,
           T: RealNumber,
           N: RealNumberSpace,
           D: Domain
 {
     type Output = ScalarResult<T>;
 
-    fn dot_product_prec(&self, factor: &Self) -> ScalarResult<T> {
+    fn dot_product_prec(&self, factor: &DspVec<SO, T, N, D>) -> ScalarResult<T> {
         if self.is_complex() {
             return Err(ErrorReason::InputMustBeReal);
         }
@@ -222,15 +225,16 @@ impl<S, T, N, D> PreciseDotProductOps<T, DspVec<S, T, N, D>> for DspVec<S, T, N,
     }
 }
 
-impl<S, T, N, D> PreciseDotProductOps<Complex<T>, DspVec<S, T, N, D>> for DspVec<S, T, N, D>
+impl<S, SO, T, N, D> PreciseDotProductOps<Complex<T>, DspVec<SO, T, N, D>> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
+          SO: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
           D: Domain
 {
     type Output = ScalarResult<Complex<T>>;
 
-    fn dot_product_prec(&self, factor: &Self) -> ScalarResult<Complex<T>> {
+    fn dot_product_prec(&self, factor: &DspVec<SO, T, N, D>) -> ScalarResult<Complex<T>> {
         if !self.is_complex() {
             return Err(ErrorReason::InputMustBeComplex);
         }

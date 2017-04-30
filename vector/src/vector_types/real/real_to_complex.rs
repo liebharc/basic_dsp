@@ -1,5 +1,5 @@
 use numbers::*;
-use super::super::{Owner, ToComplexResult, TransRes, Buffer, InsertZerosOps,
+use super::super::{ToComplexResult, TransRes, Buffer, InsertZerosOps,
                    InsertZerosOpsBuffered, DspVec, ToSliceMut, MetaData, Domain, RealNumberSpace,
                    RededicateForceOps, ErrorReason};
 
@@ -52,7 +52,7 @@ impl<S, T, N, D> RealToComplexTransformsOps<T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToComplexResult + InsertZerosOps<T>,
           <DspVec<S, T, N, D> as ToComplexResult>::ComplexResult:
             RededicateForceOps<DspVec<S, T, N, D>>,
-          S: ToSliceMut<T> + Owner,
+          S: ToSliceMut<T>,
           T: RealNumber,
           N: RealNumberSpace,
           D: Domain {
@@ -79,7 +79,7 @@ impl<S, T, N, D> RealToComplexTransformsOpsBuffered<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToComplexResult + InsertZerosOpsBuffered<S, T>,
           <DspVec<S, T, N, D> as ToComplexResult>::ComplexResult:
             RededicateForceOps<DspVec<S, T, N, D>>,
-          S: ToSliceMut<T> + Owner,
+          S: ToSliceMut<T>,
           T: RealNumber,
           N: RealNumberSpace,
           D: Domain {

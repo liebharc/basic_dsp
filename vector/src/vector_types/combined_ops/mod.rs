@@ -81,7 +81,7 @@ use simd_extensions::*;
 use multicore_support::*;
 use std::ops::Range;
 use super::{round_len, ToSliceMut, DspVec, ErrorReason, MetaData, TransRes, Vector,
-            RealToComplexTransformsOpsBuffered, ComplexToRealTransformsOps, Buffer, Owner,
+            RealToComplexTransformsOpsBuffered, ComplexToRealTransformsOps, Buffer,
             RealOrComplexData, TimeOrFrequencyData, Domain, NumberSpace, DataDomain};
 use std::fmt;
 use numbers::*;
@@ -737,7 +737,7 @@ fn generic_vector_from_any_vector<S, T, N, D>
     (vec: DspVec<S, T, N, D>)
      -> (N, D, DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>)
     where T: RealNumber + 'static,
-          S: ToSliceMut<T> + Owner,
+          S: ToSliceMut<T>,
           N: NumberSpace,
           D: Domain
 {
@@ -762,7 +762,7 @@ fn generic_vector_back_to_vector<S, T, N, D>(number_space: N,
                                                          TimeOrFrequencyData>)
                                              -> DspVec<S, T, N, D>
     where T: RealNumber + 'static,
-          S: ToSliceMut<T> + Owner,
+          S: ToSliceMut<T>,
           N: NumberSpace,
           D: Domain
 {
@@ -873,7 +873,7 @@ fn perform_real_operations_par<T>(array: &mut InlineVector<&mut [T]>,
 }
 
 impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
-    where S: ToSliceMut<T> + Owner,
+    where S: ToSliceMut<T>,
           T: RealNumber + 'static
 {
     fn perform_operations<B>(buffer: &mut B,

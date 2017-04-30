@@ -1,7 +1,7 @@
 use numbers::*;
 use std::result;
 use inline_vector::InlineVector;
-use super::super::{ToSlice, ToSliceMut, Owner, NumberSpace, Domain, RealOrComplexData,
+use super::super::{ToSlice, ToSliceMut, NumberSpace, Domain, RealOrComplexData,
                    TimeOrFrequencyData, DspVec, ErrorReason, RededicateForceOps, Buffer};
 
 use super::{generic_vector_from_any_vector, Identifier, PreparedOperation1, PreparedOperation2,
@@ -47,7 +47,7 @@ pub struct MultiOperation2<S, T, NO1, DO1, NO2, DO2>
 
 /// Creates a new multi operation for one vectors.
 pub fn multi_ops1<S, T, NI, DI>(vector: DspVec<S, T, NI, DI>) -> MultiOperation1<S, T, NI, DI>
-    where S: ToSliceMut<T> + Owner,
+    where S: ToSliceMut<T>,
           DspVec<S, T, NI, DI>: RededicateForceOps<DspVec<S,
                                                           T,
                                                           RealOrComplexData,
@@ -78,7 +78,7 @@ pub fn multi_ops1<S, T, NI, DI>(vector: DspVec<S, T, NI, DI>) -> MultiOperation1
 pub fn multi_ops2<S, T, NI1, DI1, NI2, DI2>(a: DspVec<S, T, NI1, DI1>,
                                             b: DspVec<S, T, NI2, DI2>)
                                             -> MultiOperation2<S, T, NI1, DI1, NI2, DI2>
-    where S: ToSliceMut<T> + Owner,
+    where S: ToSliceMut<T>,
           DspVec<S, T, NI1, DI1>: RededicateForceOps<DspVec<S,
                                                             T,
                                                             RealOrComplexData,
@@ -130,7 +130,7 @@ pub fn multi_ops2<S, T, NI1, DI1, NI2, DI2>(a: DspVec<S, T, NI1, DI1>,
 /// vectors. A call to `get` then runs all recorded operations on the vectors
 /// and returns them. See the modules description for why this can be beneficial.
 impl<S, T, NO, DO> MultiOperation1<S, T, NO, DO>
-    where S: ToSliceMut<T> + Owner,
+    where S: ToSliceMut<T>,
           DspVec<S, T, NO, DO>: RededicateForceOps<DspVec<S,
                                                           T,
                                                           RealOrComplexData,
@@ -210,7 +210,7 @@ impl<S, T, NO, DO> MultiOperation1<S, T, NO, DO>
 /// vectors. A call to `get` then runs all recorded operations on the vectors
 /// and returns them. See the modules description for why this can be beneficial.
 impl<S, T, NO1, DO1, NO2, DO2> MultiOperation2<S, T, NO1, DO1, NO2, DO2>
-    where S: ToSliceMut<T> + Owner,
+    where S: ToSliceMut<T>,
           DspVec<S, T, NO1, DO1>: RededicateForceOps<DspVec<S,
                                                             T,
                                                             RealOrComplexData,

@@ -5,7 +5,7 @@ use std::ops::{Add, Mul};
 use super::WrappingIterator;
 use simd_extensions::*;
 use multicore_support::*;
-use super::super::{VoidResult, DspVec, Domain, ToComplexVector, ComplexOps, PaddingOption, Owner,
+use super::super::{VoidResult, DspVec, Domain, ToComplexVector, ComplexOps, PaddingOption,
                    NumberSpace, ToSliceMut, GenDspVec, ToDspVector, DataDomain, Buffer, Vector,
                    RealNumberSpace, ErrorReason, InsertZerosOpsBuffered, ScaleOps, MetaData,
                    ResizeOps, FrequencyToTimeDomainOperations,
@@ -327,7 +327,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
 impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: InsertZerosOpsBuffered<S, T> + ScaleOps<T>,
-          S: ToSliceMut<T> + ToComplexVector<S, T> + Owner + ToDspVector<T>,
+          S: ToSliceMut<T> + ToComplexVector<S, T> + ToDspVector<T>,
           T: RealNumber,
           N: NumberSpace,
           D: Domain

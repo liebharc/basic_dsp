@@ -1,7 +1,7 @@
 use numbers::*;
 use std::mem;
 use super::super::{ToTimeResult, DspVec, Vector, Buffer, ToSliceMut, RededicateForceOps, MetaData,
-                   ComplexNumberSpace, Owner, FrequencyDomain, DataDomain};
+                   ComplexNumberSpace, FrequencyDomain, DataDomain};
 
 /// Defines all operations which are valid on `DataVecs` containing frequency domain data.
 /// # Failures
@@ -38,7 +38,7 @@ pub trait FrequencyDomainOperations<S, T>
 impl<S, T, N, D> FrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToTimeResult,
           <DspVec<S, T, N, D> as ToTimeResult>::TimeResult: RededicateForceOps<DspVec<S, T, N, D>>,
-          S: ToSliceMut<T> + Owner,
+          S: ToSliceMut<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
           D: FrequencyDomain

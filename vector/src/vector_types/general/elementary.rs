@@ -360,7 +360,7 @@ macro_rules! assert_meta_data {
 
 macro_rules! impl_binary_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method(&mut self, $arg_name: &Self) -> VoidResult
+        fn $method<SO: ToSliceMut<T>>(&mut self, $arg_name: &DspVec<SO, T, N, D>) -> VoidResult
         {
             {
                 let len = self.len();
@@ -402,7 +402,7 @@ macro_rules! impl_binary_vector_operation {
 
 macro_rules! impl_binary_complex_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method(&mut self, $arg_name: &Self) -> VoidResult
+        fn $method<SO: ToSliceMut<T>>(&mut self, $arg_name: &DspVec<SO, T, N, D>) -> VoidResult
         {
             {
                 let len = self.len();
@@ -457,7 +457,7 @@ macro_rules! impl_binary_complex_vector_operation {
 
 macro_rules! impl_binary_smaller_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method(&mut self, $arg_name: &Self) -> VoidResult
+        fn $method<SO: ToSliceMut<T>>(&mut self, $arg_name: &DspVec<SO, T, N, D>) -> VoidResult
         {
             {
                 let len = self.len();
@@ -487,7 +487,7 @@ macro_rules! impl_binary_smaller_vector_operation {
 
 macro_rules! impl_binary_smaller_complex_vector_ops {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method(&mut self, $arg_name: &Self) -> VoidResult
+        fn $method<SO: ToSliceMut<T>>(&mut self, $arg_name: &DspVec<SO, T, N, D>) -> VoidResult
         {
             {
                 let len = self.len();
@@ -523,6 +523,10 @@ impl<S, T, N, D> DspVec<S, T, N, D>
           N: NumberSpace,
           D: Domain
 {
+    impl_binary_smaller_vector_operation!(fn add_smaller_inter, summand, add, add);
+    impl_binary_smaller_vector_operation!(fn sub_smaller_inter, subtrahend, sub, sub);
+    impl_binary_vector_operation!(fn add_inter, summand, add, add);
+    impl_binary_vector_operation!(fn sub_inter, subtrahend, sub, sub);
     impl_binary_complex_vector_operation!(fn mul_complex, factor, mul_complex, mul);
     impl_binary_smaller_complex_vector_ops!(fn mul_smaller_complex, factor, mul_complex, mul);
     impl_binary_vector_operation!(fn mul_real, factor, mul, mul);
@@ -533,16 +537,22 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     impl_binary_smaller_vector_operation!(fn div_smaller_real, divisor, div, div);
 }
 
-impl<S, T, N, D> ElementaryOps<DspVec<S, T, N, D>> for DspVec<S, T, N, D>
+impl<S, SO, T, N, D> ElementaryOps<DspVec<SO, T, N, D>> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
+          SO: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
           D: Domain
 {
-    impl_binary_vector_operation!(fn add, summand, add, add);
-    impl_binary_vector_operation!(fn sub, summand, sub, sub);
+    fn add(&mut self, summand: &DspVec<SO, T, N, D>) -> VoidResult {
+        self.add_inter(summand)
+    }
+    
+    fn sub(&mut self, subtrahend: &DspVec<SO, T, N, D>) -> VoidResult {
+        self.sub_inter(subtrahend)
+    }
 
-    fn mul(&mut self, factor: &Self) -> VoidResult {
+    fn mul(&mut self, factor: &DspVec<SO, T, N, D>) -> VoidResult {
         let len = self.len();
         reject_if!(self, len != factor.len(), ErrorReason::InputMustHaveTheSameSize);
         assert_meta_data!(self, factor);
@@ -554,7 +564,7 @@ impl<S, T, N, D> ElementaryOps<DspVec<S, T, N, D>> for DspVec<S, T, N, D>
         }
     }
 
-    fn div(&mut self, divisor: &Self) -> VoidResult {
+    fn div(&mut self, divisor: &DspVec<SO, T, N, D>) -> VoidResult {
         let len = self.len();
         reject_if!(self, len != divisor.len(), ErrorReason::InputMustHaveTheSameSize);
         assert_meta_data!(self, divisor);
@@ -567,16 +577,22 @@ impl<S, T, N, D> ElementaryOps<DspVec<S, T, N, D>> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, T, N, D> ElementaryWrapAroundOps<DspVec<S, T, N, D>> for DspVec<S, T, N, D>
+impl<S, SO, T, N, D> ElementaryWrapAroundOps<DspVec<SO, T, N, D>> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
+          SO: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
           D: Domain
 {
-    impl_binary_smaller_vector_operation!(fn add_smaller, summand, add, add);
-    impl_binary_smaller_vector_operation!(fn sub_smaller, summand, sub, sub);
+    fn add_smaller(&mut self, summand: &DspVec<SO, T, N, D>) -> VoidResult {
+        self.add_smaller_inter(summand)
+    }
+    
+    fn sub_smaller(&mut self, subtrahend: &DspVec<SO, T, N, D>) -> VoidResult {
+        self.sub_smaller_inter(subtrahend)
+    }
 
-    fn mul_smaller(&mut self, factor: &Self) -> VoidResult {
+    fn mul_smaller(&mut self, factor: &DspVec<SO, T, N, D>) -> VoidResult {
         let len = self.len();
         reject_if!(self, len % factor.len() != 0, ErrorReason::InvalidArgumentLength);
         assert_meta_data!(self, factor);
@@ -588,7 +604,7 @@ impl<S, T, N, D> ElementaryWrapAroundOps<DspVec<S, T, N, D>> for DspVec<S, T, N,
         }
     }
 
-    fn div_smaller(&mut self, divisor: &Self) -> VoidResult {
+    fn div_smaller(&mut self, divisor: &DspVec<SO, T, N, D>) -> VoidResult {
         let len = self.len();
         reject_if!(self, len % divisor.len() != 0, ErrorReason::InvalidArgumentLength);
         assert_meta_data!(self, divisor);

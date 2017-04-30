@@ -2,7 +2,7 @@ use multicore_support::*;
 use simd_extensions::*;
 use numbers::*;
 use std::ops::*;
-use super::super::{Owner, ToRealResult, ErrorReason, Buffer, Vector, Resize, MetaData, ResizeOps,
+use super::super::{ToRealResult, ErrorReason, Buffer, Vector, Resize, MetaData, ResizeOps,
                    DspVec, ToSliceMut, ToSlice, VoidResult, Domain, ComplexNumberSpace,
                    RededicateForceOps};
 
@@ -328,7 +328,7 @@ macro_rules! assert_complex {
 impl<S, T, N, D> ComplexToRealTransformsOps<T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToRealResult,
           <DspVec<S, T, N, D> as ToRealResult>::RealResult: RededicateForceOps<DspVec<S, T, N, D>>,
-          S: ToSliceMut<T> + Owner,
+          S: ToSliceMut<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
           D: Domain
@@ -370,7 +370,7 @@ impl<S, T, N, D> ComplexToRealTransformsOps<T> for DspVec<S, T, N, D>
 impl<S, T, N, D> ComplexToRealTransformsOpsBuffered<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToRealResult,
           <DspVec<S, T, N, D> as ToRealResult>::RealResult: RededicateForceOps<DspVec<S, T, N, D>>,
-          S: ToSliceMut<T> + Owner,
+          S: ToSliceMut<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
           D: Domain
@@ -635,7 +635,7 @@ impl<S, T, N, D> ComplexToRealSetterOps<T> for DspVec<S, T, N, D>
           <DspVec<S, T, N, D> as ToRealResult>::RealResult:
             Index<Range<usize>, Output=[T]>
             + Vector<T>,
-          S: ToSliceMut<T> + Owner + Resize,
+          S: ToSliceMut<T> + Resize,
           T: RealNumber,
           N: ComplexNumberSpace,
           D: Domain {

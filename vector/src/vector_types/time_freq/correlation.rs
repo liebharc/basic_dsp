@@ -1,6 +1,6 @@
 use numbers::*;
 use super::super::{DspVec, Buffer, ComplexOps, ScaleOps, FrequencyDomainOperations,
-                   TimeToFrequencyDomainOperations, RededicateForceOps, ToSliceMut, Owner,
+                   TimeToFrequencyDomainOperations, RededicateForceOps, ToSliceMut,
                    PaddingOption, VoidResult, Vector, FromVector, MetaData, ComplexNumberSpace,
                    TimeDomain, ElementaryOps, ToFreqResult, InsertZerosOpsBuffered, DataDomain,
                    ErrorReason, ReorganizeDataOps, ToComplexVector, FrequencyToTimeDomainOperations,
@@ -81,7 +81,7 @@ impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
         + FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T>
         + ElementaryOps<<DspVec<S, T, N, D> as ToFreqResult>::FreqResult>
         + FromVector<T, Output=S>,
-	  S: ToSliceMut<T> + Owner,
+	  S: ToSliceMut<T>,
 	  T: RealNumber,
 	  N: ComplexNumberSpace,
 	  D: TimeDomain {
@@ -115,7 +115,7 @@ impl<S, T, N, D> CrossCorrelationOps<S, T, <DspVec<S, T, N, D> as ToFreqResult>:
           FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T>
         + ElementaryOps<<DspVec<S, T, N, D> as ToFreqResult>::FreqResult>
         + FromVector<T, Output=S> + FrequencyToTimeDomainOperations<S, T>,
-	  S: ToSliceMut<T> + Owner + ToDspVector<T> + ToComplexVector<S, T>,
+	  S: ToSliceMut<T> + ToDspVector<T> + ToComplexVector<S, T>,
 	  T: RealNumber,
 	  N: ComplexNumberSpace,
 	  D: TimeDomain

@@ -1,6 +1,6 @@
 use numbers::*;
 use super::super::{ToTimeResult, ToRealTimeResult, TransRes, DspVec, Vector, Buffer, ToSliceMut,
-                   RededicateForceOps, ErrorReason, MetaData, ComplexNumberSpace, Owner,
+                   RededicateForceOps, ErrorReason, MetaData, ComplexNumberSpace,
                    FrequencyDomain, DataDomain, InsertZerosOpsBuffered, ScaleOps,
                    TimeDomainOperations, FrequencyDomainOperations};
 use super::fft;
@@ -112,7 +112,7 @@ impl<S, T, N, D> FrequencyToTimeDomainOperations<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToTimeResult,
           <DspVec<S, T, N, D> as ToTimeResult>::TimeResult:
                 RededicateForceOps<DspVec<S, T, N, D>> + TimeDomainOperations<S, T>,
-          S: ToSliceMut<T> + Owner,
+          S: ToSliceMut<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
           D: FrequencyDomain {
@@ -156,7 +156,7 @@ impl<S, T, N, D> SymmetricFrequencyToTimeDomainOperations<S, T> for DspVec<S, T,
      where DspVec<S, T, N, D>: ToRealTimeResult + ToTimeResult + FrequencyDomainOperations<S, T>,
            <DspVec<S, T, N, D> as ToRealTimeResult>::RealTimeResult:
                 RededicateForceOps<DspVec<S, T, N, D>> + TimeDomainOperations<S, T>,
-           S: ToSliceMut<T> + Owner,
+           S: ToSliceMut<T>,
            T: RealNumber,
            N: ComplexNumberSpace,
            D: FrequencyDomain {

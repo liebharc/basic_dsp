@@ -4,7 +4,7 @@ use inline_vector::InlineVector;
 use super::{generic_vector_from_any_vector, generic_vector_back_to_vector, Identifier,
             PreparedOperation1, PreparedOperation2, Operation, OpsVec};
 use super::super::{Domain, NumberSpace, ToSliceMut, DspVec, ErrorReason, RededicateForceOps,
-                   Buffer, Owner, TimeOrFrequencyData, RealOrComplexData};
+                   Buffer, TimeOrFrequencyData, RealOrComplexData};
 
 const ARGUMENT1: usize = 0;
 const ARGUMENT2: usize = 1;
@@ -181,7 +181,7 @@ impl<T, NI, DI, NO, DO> PreparedOperation1<T, NI, DI, NO, DO>
 impl<T, S, B, NI, DI, NO, DO> PreparedOperation1Exec<B, DspVec<S, T, NI, DI>, DspVec<S, T, NO, DO>>
     for PreparedOperation1<T, NI, DI, NO, DO>
 	where T: RealNumber + 'static,
-        S: ToSliceMut<T> + Owner,
+        S: ToSliceMut<T>,
         DspVec<S, T, NO, DO>: RededicateForceOps<DspVec<S, T, NI, DI>>,
 		NI: NumberSpace, DI: Domain,
 		NO: NumberSpace, DO: Domain,
@@ -447,7 +447,7 @@ impl<T, S, B, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2Exec<
         DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>>
     for PreparedOperation2<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2>
 	where T: RealNumber + 'static,
-        S: ToSliceMut<T> + Owner,
+        S: ToSliceMut<T>,
         DspVec<S, T, NO1, DO1>: RededicateForceOps<DspVec<S, T, NI1, DI1>>,
         DspVec<S, T, NO2, DO2>: RededicateForceOps<DspVec<S, T, NI2, DI2>>,
 		NI1: NumberSpace, DI1: Domain,

@@ -1,6 +1,6 @@
 use array_to_complex_mut;
 use numbers::*;
-use super::super::{Owner, ToFreqResult, TimeDomain, MetaData, DspVec,
+use super::super::{ToFreqResult, TimeDomain, MetaData, DspVec,
                    ToSliceMut, NumberSpace, RededicateForceOps};
 use window_functions::*;
 
@@ -21,7 +21,7 @@ pub trait TimeDomainOperations<S, T>
 impl<S, T, N, D> TimeDomainOperations<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToFreqResult,
           <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>>,
-          S: ToSliceMut<T> + Owner,
+          S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
           D: TimeDomain

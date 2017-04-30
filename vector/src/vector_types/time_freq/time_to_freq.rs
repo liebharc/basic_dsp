@@ -1,5 +1,5 @@
 use numbers::*;
-use super::super::{Owner, ToFreqResult, TransRes, TimeDomain, Buffer, Vector, DataDomain,
+use super::super::{ToFreqResult, TransRes, TimeDomain, Buffer, Vector, DataDomain,
                    MetaData, ResizeOps, DspVec, ToSliceMut, RealNumberSpace, NumberSpace,
                    RededicateForceOps, ErrorReason, InsertZerosOpsBuffered,
                    FrequencyDomainOperations, TimeDomainOperations};
@@ -123,7 +123,7 @@ impl<S, T, N, D> TimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
           <DspVec<S, T, N, D> as ToFreqResult>::FreqResult:
             RededicateForceOps<DspVec<S, T, N, D>>
             + FrequencyDomainOperations<S, T>,
-          S: ToSliceMut<T> + Owner,
+          S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
           D: TimeDomain {
@@ -175,7 +175,7 @@ impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T,
     where DspVec<S, T, N, D>: ToFreqResult,
           <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>>
             + FrequencyDomainOperations<S, T> + Vector<T>,
-          S: ToSliceMut<T> + Owner,
+          S: ToSliceMut<T>,
           T: RealNumber,
           N: RealNumberSpace,
           D: TimeDomain {

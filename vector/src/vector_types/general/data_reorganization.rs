@@ -3,7 +3,7 @@ use std::ptr;
 use {array_to_complex_mut, memcpy, memzero};
 use numbers::*;
 use multicore_support::*;
-use super::super::{VoidResult, Buffer, Owner, ErrorReason, NumberSpace,
+use super::super::{VoidResult, Buffer, ErrorReason, NumberSpace,
                    Domain, ResizeOps, DspVec, Vector, ToSliceMut, MetaData};
 
 /// This trait allows to reorganize the data by changing positions of the individual elements.
@@ -217,7 +217,7 @@ fn reverse_array<T>(data: &mut [T])
 }
 
 impl<S, T, N, D> ReorganizeDataOps<T> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T> + Owner,
+    where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
           D: Domain
@@ -384,7 +384,7 @@ impl<S, T, N, D> InsertZerosOps<T> for DspVec<S, T, N, D>
 
 
 impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T> + Owner,
+    where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
           D: Domain
@@ -459,7 +459,7 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> SplitOps for DspVec<S, T, N, D>
-    where S: ToSliceMut<T> + Owner,
+    where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
           D: Domain
@@ -496,7 +496,7 @@ impl<S, T, N, D> SplitOps for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> MergeOps for DspVec<S, T, N, D>
-    where S: ToSliceMut<T> + Owner,
+    where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
           D: Domain
