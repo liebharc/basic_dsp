@@ -9,6 +9,7 @@ Changes:
 - Removed `MapInplaceNoArgsOps` for combined ops since they seem to not fit in their independent on how this module progresses.
 - Restructured statistics traits.
 - Mapping operations now only borrow a function. That also allows them to work internally without any reference counting.
+- Binary operations are now more flexible regarding what kind of argument they accept.
 
 ## Version 0.4.3
 Minor additions.
