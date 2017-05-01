@@ -164,8 +164,8 @@ impl<S, T, N, D> TimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
 }
 
 macro_rules! unmirror {
-    ($self_: ident) => {
-        let len = $self_.points();
+    ($self_: ident, $points: ident) => {
+        let len = $points;
         let len = len / 2 + 1;
         $self_.resize(len).expect("Shrinking a vector should always succeed");
     }
@@ -174,7 +174,7 @@ macro_rules! unmirror {
 impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToFreqResult,
           <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>>
-            + FrequencyDomainOperations<S, T> + Vector<T>,
+            + FrequencyDomainOperations<S, T> + ResizeOps,
           S: ToSliceMut<T>,
           T: RealNumber,
           N: RealNumberSpace,
@@ -200,8 +200,9 @@ impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T,
 
       self.zero_interleave_b(buffer, 2);
       self.number_space.to_complex();
+      let points = self.points();
       let mut result = self.plain_fft(buffer);
-      unmirror!(result);
+      unmirror!(result, points);
       Ok(result)
     }
 
@@ -226,8 +227,9 @@ impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T,
 
       self.zero_interleave_b(buffer, 2);
       self.number_space.to_complex();
+      let points = self.points();
       let mut result = self.fft(buffer);
-      unmirror!(result);
+      unmirror!(result, points);
       Ok(result)
     }
 
@@ -254,8 +256,9 @@ impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T,
       self.zero_interleave_b(buffer, 2);
       self.number_space.to_complex();
       self.apply_window(window);
+      let points = self.points();
       let mut result = self.fft(buffer);
-      unmirror!(result);
+      unmirror!(result, points);
       Ok(result)
     }
 }

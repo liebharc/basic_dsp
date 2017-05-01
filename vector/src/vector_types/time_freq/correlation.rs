@@ -74,13 +74,9 @@ pub trait CrossCorrelationOps<S, T, A>
 
 impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
 	where DspVec<S, T, N, D>: ToFreqResult
-        + TimeToFrequencyDomainOperations<S, T>
-        + ScaleOps<T>
-		+ ReorganizeDataOps<T> + Clone,
-	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>>
-        + FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T>
-        + ElementaryOps<<DspVec<S, T, N, D> as ToFreqResult>::FreqResult>
-        + FromVector<T, Output=S>,
+        + TimeToFrequencyDomainOperations<S, T>,
+	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: FrequencyDomainOperations<S, T>
+        + ComplexOps<T>,
 	  S: ToSliceMut<T>,
 	  T: RealNumber,
 	  N: ComplexNumberSpace,
@@ -103,7 +99,7 @@ impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
 		result
 	}
 }
-
+/*
 impl<S, T, N, D> CrossCorrelationOps<S, T, <DspVec<S, T, N, D> as ToFreqResult>::FreqResult>
     for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToFreqResult
@@ -145,7 +141,7 @@ impl<S, T, N, D> CrossCorrelationOps<S, T, <DspVec<S, T, N, D> as ToFreqResult>:
         self.swap_halves();
 		Ok(())
 	}
-}
+}*/
 
 #[cfg(test)]
 mod tests {

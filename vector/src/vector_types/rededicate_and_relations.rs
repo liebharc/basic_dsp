@@ -2,7 +2,7 @@
 use numbers::*;
 use super::{DspVec, GenDspVec, MetaData, RealTimeVec, RealFreqVec, ResizeOps, ComplexTimeVec,
             ComplexFreqVec, ToSlice, NumberSpace, Domain, DataDomain, RealData, ComplexData,
-            RealOrComplexData, TimeData, FrequencyData, TimeOrFrequencyData};
+            RealOrComplexData, TimeData, FrequencyData, TimeOrFrequencyData, Vector};
 
 /// This trait allows to change a data type. The operations will
 /// convert a type to a different one and set `self.len()` to zero.
@@ -11,7 +11,10 @@ use super::{DspVec, GenDspVec, MetaData, RealTimeVec, RealFreqVec, ResizeOps, Co
 ///
 /// If a type should always be converted without any checks then the `RededicateForceOps`
 /// trait provides option for that.
-pub trait RededicateOps<Other>: RededicateForceOps<Other> {
+pub trait RededicateOps<Other, N, D>: RededicateForceOps<Other>
+    where Other: MetaData<N, D>,
+          N: NumberSpace,
+          D: Domain {
     /// Make `Other` a `Self`.
     /// # Example
     ///
@@ -51,7 +54,10 @@ pub trait RededicateForceOps<Other> {
 /// convert a type to a different one and set `self.len()` to zero.
 /// However `self.allocated_len()` will remain unchanged. The use case for this
 /// is to allow to reuse the memory of a vector for different operations.
-pub trait RededicateToOps<Other> {
+pub trait RededicateToOps<Other, N, D>
+    where Other: MetaData<N, D>,
+          N: NumberSpace,
+          D: Domain {
     /// Make `Selfr` a `SelOther`.
     fn rededicate(self) -> Other;
 }
@@ -291,11 +297,15 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for GenDspVec<S, T>
     }
 }
 
-impl<U, V> RededicateOps<U> for V
-    where V: RededicateForceOps<U> + MetaData + ResizeOps,
-          U: MetaData
+impl<S, T, N, NO, D, DO, O> RededicateOps<O, NO, DO> for DspVec<S, T, N, D>
+    where S: ToSlice<T>,
+          T: RealNumber,
+          DspVec<S, T, N, D>: RededicateForceOps<O>,
+          N: NumberSpace, NO: NumberSpace,
+          D: Domain, DO: Domain,
+          O: Vector<T, NO, DO>
 {
-    fn rededicate_from(origin: U) -> Self {
+    fn rededicate_from(origin: O) -> Self {
         let is_complex = origin.is_complex();
         let domain = origin.domain();
         let mut result = Self::rededicate_from_force(origin);
@@ -306,10 +316,14 @@ impl<U, V> RededicateOps<U> for V
     }
 }
 
-impl<T, U> RededicateToOps<U> for T
-    where U: RededicateOps<T>
+impl<S, T, N, NO, D, DO, O> RededicateToOps<O, NO, DO> for DspVec<S, T, N, D>
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: NumberSpace, NO: NumberSpace,
+          D: Domain, DO: Domain,
+          O: Vector<T, NO, DO> + RededicateOps<Self, N, D>
 {
-    fn rededicate(self) -> U {
-        U::rededicate_from(self)
+    fn rededicate(self) -> O {
+        O::rededicate_from(self)
     }
 }

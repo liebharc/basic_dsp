@@ -348,9 +348,9 @@ macro_rules! reject_if {
 macro_rules! assert_meta_data {
     ($self_: ident, $other: ident) => {
          {
-            let delta_ratio = $self_.delta / $other.delta;
+            let delta_ratio = $self_.delta() / $other.delta();
             if $self_.is_complex() != $other.is_complex() ||
-                $self_.domain != $other.domain ||
+                $self_.domain() != $other.domain() ||
                 delta_ratio > T::from(1.1).unwrap() || delta_ratio < T::from(0.9).unwrap() {
                 return Err(ErrorReason::InputMetaDataMustAgree);
             }
@@ -360,7 +360,7 @@ macro_rules! assert_meta_data {
 
 macro_rules! impl_binary_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<SO: ToSliceMut<T>>(&mut self, $arg_name: &DspVec<SO, T, N, D>) -> VoidResult
+        fn $method<O: Vector<T, N, D> + Index<RangeFull, Output=[T]>>(&mut self, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -371,7 +371,7 @@ macro_rules! impl_binary_vector_operation {
                 let mut array = self.data.to_slice_mut();
                 let (scalar_left, scalar_right, vectorization_length) =
                     T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
-                let other = &$arg_name.data.to_slice();
+                let other = &$arg_name[..];
                 if vectorization_length > 0 {
                     Chunk::from_src_to_dest(
                         Complexity::Small, &self.multicore_settings,
@@ -402,7 +402,7 @@ macro_rules! impl_binary_vector_operation {
 
 macro_rules! impl_binary_complex_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<SO: ToSliceMut<T>>(&mut self, $arg_name: &DspVec<SO, T, N, D>) -> VoidResult
+        fn $method<O: Vector<T, N, D> + Index<RangeFull, Output=[T]>>(&mut self, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -413,7 +413,7 @@ macro_rules! impl_binary_complex_vector_operation {
                 let mut array = self.data.to_slice_mut();
                 let (scalar_left, scalar_right, vectorization_length) =
                     T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
-                let other = &$arg_name.data.to_slice();
+                let other = &$arg_name[..];
                 if vectorization_length > 0 {
                     Chunk::from_src_to_dest(
                         Complexity::Small, &self.multicore_settings,
@@ -457,7 +457,7 @@ macro_rules! impl_binary_complex_vector_operation {
 
 macro_rules! impl_binary_smaller_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<SO: ToSliceMut<T>>(&mut self, $arg_name: &DspVec<SO, T, N, D>) -> VoidResult
+        fn $method<O: Vector<T, N, D> + Index<RangeFull, Output=[T]>>(&mut self, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -466,7 +466,7 @@ macro_rules! impl_binary_smaller_vector_operation {
 
                 let data_length = self.len();
                 let mut array = self.data.to_slice_mut();
-                let other = $arg_name.data.to_slice();
+                let other = &$arg_name[..];
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
                     &other, T::Reg::len(),
@@ -487,7 +487,7 @@ macro_rules! impl_binary_smaller_vector_operation {
 
 macro_rules! impl_binary_smaller_complex_vector_ops {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<SO: ToSliceMut<T>>(&mut self, $arg_name: &DspVec<SO, T, N, D>) -> VoidResult
+        fn $method<O: Vector<T, N, D> + Index<RangeFull, Output=[T]>>(&mut self, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -496,7 +496,7 @@ macro_rules! impl_binary_smaller_complex_vector_ops {
 
                 let data_length = self.len();
                 let mut array = self.data.to_slice_mut();
-                let other = $arg_name.data.to_slice();
+                let other = &$arg_name[..];
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
                     &other, T::Reg::len(),
@@ -537,22 +537,22 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     impl_binary_smaller_vector_operation!(fn div_smaller_real, divisor, div, div);
 }
 
-impl<S, SO, T, N, D> ElementaryOps<DspVec<SO, T, N, D>> for DspVec<S, T, N, D>
+impl<S, T, N, D, O> ElementaryOps<O> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
-          SO: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain
+          D: Domain,
+          O: Vector<T, N, D> + Index<RangeFull, Output=[T]>
 {
-    fn add(&mut self, summand: &DspVec<SO, T, N, D>) -> VoidResult {
+    fn add(&mut self, summand: &O) -> VoidResult {
         self.add_inter(summand)
     }
-    
-    fn sub(&mut self, subtrahend: &DspVec<SO, T, N, D>) -> VoidResult {
+
+    fn sub(&mut self, subtrahend: &O) -> VoidResult {
         self.sub_inter(subtrahend)
     }
 
-    fn mul(&mut self, factor: &DspVec<SO, T, N, D>) -> VoidResult {
+    fn mul(&mut self, factor: &O) -> VoidResult {
         let len = self.len();
         reject_if!(self, len != factor.len(), ErrorReason::InputMustHaveTheSameSize);
         assert_meta_data!(self, factor);
@@ -564,7 +564,7 @@ impl<S, SO, T, N, D> ElementaryOps<DspVec<SO, T, N, D>> for DspVec<S, T, N, D>
         }
     }
 
-    fn div(&mut self, divisor: &DspVec<SO, T, N, D>) -> VoidResult {
+    fn div(&mut self, divisor: &O) -> VoidResult {
         let len = self.len();
         reject_if!(self, len != divisor.len(), ErrorReason::InputMustHaveTheSameSize);
         assert_meta_data!(self, divisor);
@@ -577,22 +577,22 @@ impl<S, SO, T, N, D> ElementaryOps<DspVec<SO, T, N, D>> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, SO, T, N, D> ElementaryWrapAroundOps<DspVec<SO, T, N, D>> for DspVec<S, T, N, D>
+impl<S, T, N, D, O> ElementaryWrapAroundOps<O> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
-          SO: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain
+          D: Domain,
+          O: Vector<T, N, D> + Index<RangeFull, Output=[T]>
 {
-    fn add_smaller(&mut self, summand: &DspVec<SO, T, N, D>) -> VoidResult {
+    fn add_smaller(&mut self, summand: &O) -> VoidResult {
         self.add_smaller_inter(summand)
     }
-    
-    fn sub_smaller(&mut self, subtrahend: &DspVec<SO, T, N, D>) -> VoidResult {
+
+    fn sub_smaller(&mut self, subtrahend: &O) -> VoidResult {
         self.sub_smaller_inter(subtrahend)
     }
 
-    fn mul_smaller(&mut self, factor: &DspVec<SO, T, N, D>) -> VoidResult {
+    fn mul_smaller(&mut self, factor: &O) -> VoidResult {
         let len = self.len();
         reject_if!(self, len % factor.len() != 0, ErrorReason::InvalidArgumentLength);
         assert_meta_data!(self, factor);
@@ -604,7 +604,7 @@ impl<S, SO, T, N, D> ElementaryWrapAroundOps<DspVec<SO, T, N, D>> for DspVec<S, 
         }
     }
 
-    fn div_smaller(&mut self, divisor: &DspVec<SO, T, N, D>) -> VoidResult {
+    fn div_smaller(&mut self, divisor: &O) -> VoidResult {
         let len = self.len();
         reject_if!(self, len % divisor.len() != 0, ErrorReason::InvalidArgumentLength);
         assert_meta_data!(self, divisor);
