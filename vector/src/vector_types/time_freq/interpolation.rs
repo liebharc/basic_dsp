@@ -321,6 +321,31 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
         sum
     }
+
+    /// Applies a linear phase to a vector. Vector is assumed to be in frequency domain.
+    /// This operation is equivalent with adding a dealy in time domain.
+    fn apply_linear_phase(&mut self, delay: T) {
+        let pi = T::PI();
+        let two = T::one() + T::one();
+        let points = self.len() / 2;
+        let pos_points = points / 2;
+        let neg_points = points - pos_points;
+        let phase_inc = two * pi * delay
+                        / T::from(points).unwrap();
+        {
+            let len = self.len();
+            let mut freq = (&mut self[2*pos_points..len]).to_complex_freq_vec();
+            // Negative frequencies
+            let start = -T::from(neg_points).unwrap() * phase_inc;
+            freq.multiply_complex_exponential(phase_inc, start);
+        }
+        {
+            let mut freq = (&mut self[0..2*pos_points]).to_complex_freq_vec();
+            // Zero and psoitive frequencies
+            let start = T::zero();
+            freq.multiply_complex_exponential(phase_inc, start);
+        }
+    }
 }
 
 impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
@@ -506,29 +531,10 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
 
         let mut complex = complex.plain_fft(buffer);
 
-        let pi = T::PI();
-        let two = T::one() + T::one();
         // Add the delay, which is a linear phase in frequency domain
         if delay != T::zero()
         {
-            let points = complex.len() / 2;
-            let pos_points = points / 2;
-            let neg_points = points - pos_points;
-            let phase_inc = two * pi * delay / delta_t
-                            / T::from(points).unwrap();
-            {
-                let len = complex.len();
-                let mut freq = (&mut complex[2*pos_points..len]).to_complex_freq_vec();
-                // Negative frequencies
-                let start = -T::from(neg_points).unwrap() * phase_inc;
-                freq.multiply_complex_exponential(phase_inc, start);
-            }
-            {
-                let mut freq = (&mut complex[0..2*pos_points]).to_complex_freq_vec();
-                // Zero and psoitive frequencies
-                let start = T::zero();
-                freq.multiply_complex_exponential(phase_inc, start);
-            }
+            complex.apply_linear_phase(delay / delta_t);
         }
 
         if dest_len > orig_len {
