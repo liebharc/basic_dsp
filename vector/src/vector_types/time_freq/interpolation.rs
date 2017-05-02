@@ -497,7 +497,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
             self.zero_interleave_b(buffer, interpolation_factor);
         }
 
-        let len = if self.is_complex() { 1 } else { 2 } * self.len();
+        let len = self.len();
         let mut temp = buffer.borrow(len);
         // The next steps: fft, mul, ifft
         // However to keep the impl definition simpler and to avoid uncessary copies

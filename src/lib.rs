@@ -1,4 +1,5 @@
 extern crate basic_dsp_vector;
+#[cfg(feature = "basic_dsp_matrix")]
 extern crate basic_dsp_matrix;
 #[cfg(feature = "basic_dsp_interop")]
 extern crate basic_dsp_interop;
