@@ -9,7 +9,7 @@ use std::ops::*;
 pub trait BufferBorrow<S: ToSliceMut<T>, T: RealNumber> : DerefMut<Target=[T]> {
     /// Moves the content of this slice into `storage`.
     /// This operation might just copy all contents into `storage` or 
-    fn swap(self, storage: &mut S);
+    fn trade(self, storage: &mut S);
 }
 
 /// A buffer which can be used by other types. Types will call buffers to create new arrays.
@@ -23,13 +23,7 @@ pub trait BufferNew<'a, S, T>
 
     /// Asks the buffer for new storage of exactly size `len`.
     /// S doesn't need to have be initialized with any default value.
-    fn get(&'a mut self, len: usize) -> Self::Borrow;
-
-    /// Asks the buffer for newly created storage which isn't buffered.
-    ///
-    /// The purpose if this method is to abstract the creation of a
-    /// certain storage type.
-    fn construct_new(&mut self, len: usize) -> S;
+    fn borrow(&'a mut self, len: usize) -> Self::Borrow;
 
     /// Returns the allocated length of all storage within this buffer.
     fn alloc_len(&self) -> usize;

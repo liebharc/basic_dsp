@@ -3,7 +3,7 @@ use std::ptr;
 use {array_to_complex_mut, memcpy, memzero};
 use numbers::*;
 use multicore_support::*;
-use super::super::{VoidResult, Buffer, ErrorReason, NumberSpace,
+use super::super::{VoidResult, Buffer, BufferNew, BufferBorrow, ErrorReason, NumberSpace,
                    Domain, ResizeOps, DspVec, Vector, ToSliceMut, MetaData};
 
 /// This trait allows to reorganize the data by changing positions of the individual elements.
@@ -134,6 +134,9 @@ pub trait InsertZerosOpsBuffered<S, T>
     /// ```
     fn zero_pad_b<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption) -> VoidResult
         where B: Buffer<S, T>;
+        
+    fn zero_pad_b2<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption) -> VoidResult
+        where B: for<'a> BufferNew<'a, S, T>; // TODO remove
 
     /// Interleaves zeros `factor - 1`times after every vector element, so that the resulting
     /// vector will have a length of `self.len() * factor`.
@@ -444,6 +447,64 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
 
         mem::swap(&mut self.data, &mut target);
         buffer.free(target);
+        Ok(())
+    }
+    
+    fn zero_pad_b2<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption) -> VoidResult
+        where B: for<'a> BufferNew<'a, S, T>
+    {
+        let len_before = self.len();
+        let is_complex = self.is_complex();
+        let len = if is_complex { 2 * points } else { points };
+        if len <= len_before {
+            return Err(ErrorReason::InvalidArgumentLength);
+        }
+
+        let mut target = buffer.borrow(len);
+        {
+            let data = self.data.to_slice();
+            let target = &mut target[..];
+            self.valid_len = len;
+            match option {
+                PaddingOption::End => {
+                    // Zero target
+                    &mut target[0..len_before].copy_from_slice(&data[0..len_before]);
+                    memzero(target, len_before .. len);
+                }
+                PaddingOption::Surround => {
+                    let diff = (len - len_before) / if is_complex { 2 } else { 1 };
+                    let mut right = (diff) / 2;
+                    let mut left = diff - right;
+                    if is_complex {
+                        right *= 2;
+                        left *= 2;
+                    }
+
+                    &mut target[left..left+len_before].copy_from_slice(&data[0..len_before]);
+                    if right > 0 {
+                        memzero(target, len - right .. len);
+                    }
+                    memzero(target, 0 .. left);
+                }
+                PaddingOption::Center => {
+                    let step = if is_complex { 2 } else { 1 };
+                    let points_before = len_before / step;
+                    let mut right = points_before / 2;
+                    let mut left = points_before - right;
+                    if is_complex {
+                        right *= 2;
+                        left *= 2;
+                    }
+
+                    &mut target[len - right .. len].copy_from_slice(&data[len_before - right .. len_before]);
+                    &mut target[0 .. left].copy_from_slice(&data[0 .. left]);
+                    memzero(target, left .. len - len_before);
+                }
+            }
+        }
+
+        target.trade(&mut self.data);
+        
         Ok(())
     }
 

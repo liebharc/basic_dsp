@@ -226,21 +226,21 @@ impl<S, O, T, N, D> PreciseDotProductOps<T, O> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, SO, T, N, D> PreciseDotProductOps<Complex<T>, DspVec<SO, T, N, D>> for DspVec<S, T, N, D>
+impl<S, O,  T, N, D> PreciseDotProductOps<Complex<T>, O> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
-          SO: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
-          D: Domain
+          D: Domain,
+          O: Vector<T, N, D> + Index<RangeFull, Output=[T]>
 {
     type Output = ScalarResult<Complex<T>>;
 
-    fn dot_product_prec(&self, factor: &DspVec<SO, T, N, D>) -> ScalarResult<Complex<T>> {
+    fn dot_product_prec(&self, factor: &O) -> ScalarResult<Complex<T>> {
         if !self.is_complex() {
             return Err(ErrorReason::InputMustBeComplex);
         }
 
-        if !factor.is_complex() || self.domain != factor.domain {
+        if !factor.is_complex() || self.domain() != factor.domain() {
             return Err(ErrorReason::InputMetaDataMustAgree);
         }
 
@@ -248,7 +248,7 @@ impl<S, SO, T, N, D> PreciseDotProductOps<Complex<T>, DspVec<SO, T, N, D>> for D
         let array = self.data.to_slice();
         let (scalar_left, scalar_right, vectorization_length) =
             T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let other = factor.data.to_slice();
+        let other = &factor[..];
         let chunks = if vectorization_length > 0 {
             Chunk::get_a_fold_b(Complexity::Small,
                                 &self.multicore_settings,

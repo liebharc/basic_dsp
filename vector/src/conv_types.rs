@@ -8,6 +8,7 @@ use num_complex::{Complex32, Complex64};
 use std::marker::PhantomData;
 use vector_types::*;
 use inline_vector::{InlineVector, InternalBuffer};
+use super::FixedLenBuffer;
 
 /// A convolution function in time domain and real number space
 pub trait RealImpulseResponse<T> : Sync
@@ -207,7 +208,7 @@ macro_rules! add_real_linear_table_impl {
                     /// Convert the lookup table into complex number space
                     pub fn to_complex(&self) -> $complex<$data_type> {
                         let vector = self.table.clone().to_real_time_vec();
-                        let mut buffer = InternalBuffer::new();
+                        let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), 2* vector.len()));
                         let complex = vector.to_complex_b(&mut buffer);
                         let complex = complex.complex(..);
                         let is_symmetric = self.is_symmetric;
@@ -274,7 +275,7 @@ macro_rules! add_complex_time_linear_table_impl {
                     }
                     let mut vector = interleaved.to_complex_time_vec();
                     vector.set_delta(self.delta);
-                    let mut buffer = InternalBuffer::new();
+                    let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), vector.len()));
                     let freq = vector.fft(&mut buffer);
                     let delta = freq.delta();
                     let freq = freq.complex(..);
@@ -302,7 +303,7 @@ macro_rules! add_real_time_linear_table_impl {
                 pub fn fft(self) -> RealFrequencyLinearTableLookup<$data_type> {
                     let mut vector = self.table.clone().to_real_time_vec();
                     vector.set_delta(self.delta);
-                    let mut buffer = InternalBuffer::new();
+                    let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), 2 * vector.len()));
                     let freq = vector.fft(&mut buffer);
                     let freq = freq.magnitude_b(&mut buffer);
                     let is_symmetric = self.is_symmetric;
@@ -338,7 +339,7 @@ macro_rules! add_complex_frequency_linear_table_impl {
                     }
                     let mut vector = interleaved.to_complex_freq_vec();
                     vector.set_delta(self.delta);
-                    let mut buffer = InternalBuffer::new();
+                    let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), vector.len()));
                     let time = vector.ifft(&mut buffer);
                     let delta = time.delta();
                     let time = time.complex(..);

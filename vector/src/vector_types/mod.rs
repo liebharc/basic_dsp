@@ -7,6 +7,7 @@ use std::cmp;
 use std::result;
 use simd_extensions::*;
 use std::fmt;
+use std;
 
 mod requirements;
 pub use self::requirements::*;
@@ -667,6 +668,73 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 });
             }
         }
+    }
+}
+
+/// Buffer borrow type for `NoTradeBufferBurrow`.
+pub struct NoTradeBufferBurrow<'a, T: RealNumber + 'a> {
+    data: &'a mut [T]
+}
+
+impl<'a, T: RealNumber> Deref for NoTradeBufferBurrow<'a, T> {
+    type Target = [T];
+
+    fn deref(&self) -> &[T] {
+        self.data
+    }
+}
+
+impl<'a, T: RealNumber> DerefMut for NoTradeBufferBurrow<'a, T> {
+    fn deref_mut(&mut self) -> &mut[T] {
+        self.data
+    }
+}
+
+impl<'a, S: ToSliceMut<T>, T: RealNumber> BufferBorrow<S, T> for NoTradeBufferBurrow<'a, T> {  
+    fn trade(self, _: &mut S) {
+        // No trade
+    }
+}
+
+/// For internal use only. A buffer which doesn't implement the `swap` routine. Swapping is a no-op in this 
+/// implementation. This can be useful in cases where an implementation will do the swap step on its own.
+struct NoTradeBuffer<S, T>
+    where S: ToSliceMut<T>,
+        T: RealNumber
+{
+    data: S,
+    data_type: std::marker::PhantomData<T>
+}
+
+impl<S, T> NoTradeBuffer<S, T>
+    where S: ToSliceMut<T>,
+        T: RealNumber
+{
+    /// Creates a new buffer from a storage type. The buffer will internally hold
+    /// its storage for it's complete life time.
+    pub fn new(storage: S) -> NoTradeBuffer<S, T> {
+        NoTradeBuffer { data: storage, data_type: std::marker::PhantomData }
+    }
+}
+
+impl<'a, S, T> BufferNew<'a, S, T> for &'a mut NoTradeBuffer<S, T>
+    where S: ToSliceMut<T>,
+        T: RealNumber
+{
+    type Borrow = NoTradeBufferBurrow<'a, T>;
+
+    fn borrow(&'a mut self, len: usize) -> Self::Borrow {
+        if self.data.len() < len {
+            panic!("NoTradeBuffer: Out of memory");
+        }
+        
+        NoTradeBufferBurrow { 
+            data: &mut self.data.to_slice_mut()[0..len]
+        }
+    }
+
+    fn alloc_len(&self) -> usize {
+        self.data.len()
     }
 }
 

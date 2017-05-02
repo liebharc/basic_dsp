@@ -102,7 +102,7 @@ impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
 	}
 }
 
-impl<S, T, N, D, DF> CrossCorrelationOps<S, T, N, DF, <DspVec<S, T, N, D> as ToFreqResult>::FreqResult>
+impl<S, T, N, D, DF, O> CrossCorrelationOps<S, T, N, DF, O>
     for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToFreqResult
         + TimeToFrequencyDomainOperations<S, T>
@@ -111,18 +111,19 @@ impl<S, T, N, D, DF> CrossCorrelationOps<S, T, N, DF, <DspVec<S, T, N, D> as ToF
 		+ ReorganizeDataOps<T> + Clone,
 	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult:
           FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T, N, DF>
-        + ElementaryOps<<DspVec<S, T, N, D> as ToFreqResult>::FreqResult>
+        + ElementaryOps<O>
         + FromVector<T, Output=S> + FrequencyToTimeDomainOperations<S, T>,
 	  S: ToSliceMut<T> + ToDspVector<T> + ToComplexVector<S, T>,
 	  T: RealNumber,
 	  N: ComplexNumberSpace,
 	  D: TimeDomain,
-      DF: FrequencyDomain
+      DF: FrequencyDomain,
+      O: Vector<T, N, DF>
 {
     fn correlate<B>(
             &mut self,
             buffer: &mut B,
-            other: &<DspVec<S, T, N, D> as ToFreqResult>::FreqResult) -> VoidResult
+            other: &O) -> VoidResult
 	 	where B: Buffer<S, T> {
 		if self.domain() != DataDomain::Time
 		   || !self.is_complex() {

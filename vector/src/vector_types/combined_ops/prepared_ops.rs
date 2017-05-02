@@ -9,10 +9,11 @@ use super::super::{Domain, NumberSpace, ToSliceMut, DspVec, ErrorReason, Rededic
 const ARGUMENT1: usize = 0;
 const ARGUMENT2: usize = 1;
 
-/// Executes the prepared operations to convert `S`to `D`.
-pub trait PreparedOperation1Exec<B, S, D> {
-    /// Executes the prepared operations to convert `S`to `D`.
-    fn exec(&self, buffer: &mut B, source: S) -> result::Result<D, (ErrorReason, D)>;
+/// Executes the prepared operations to convert `A`to `D`.
+pub trait PreparedOperation1Exec<S: ToSliceMut<T>, T: RealNumber, A, D> {
+    /// Executes the prepared operations to convert `A`to `D`.
+    fn exec<B>(&self, buffer: &mut B, source: A) -> result::Result<D, (ErrorReason, D)>
+        where B: Buffer<S, T>;
 }
 
 /// Prepares an operation with one input and one output.
@@ -43,14 +44,15 @@ pub fn prepare64_1<N, D>(number_space: N, domain: D) -> PreparedOperation1<f64, 
     }
 }
 
-/// Executes the prepared operations to convert `S1` and `S2` to `D1` and `D2`.
-pub trait PreparedOperation2Exec<B, S1, S2, D1, D2> {
-    /// Executes the prepared operations to convert `S1` and `S2` to `D1` and `D2`.
-    fn exec(&self,
+/// Executes the prepared operations to convert `A1` and `A2` to `D1` and `D2`.
+pub trait PreparedOperation2Exec<S: ToSliceMut<T>, T: RealNumber, A1, A2, D1, D2> {
+    /// Executes the prepared operations to convert `A1` and `A2` to `D1` and `D2`.
+    fn exec<B>(&self,
             buffer: &mut B,
-            source1: S1,
-            source2: S2)
-            -> result::Result<(D1, D2), (ErrorReason, D1, D2)>;
+            source1: A1,
+            source2: A2)
+            -> result::Result<(D1, D2), (ErrorReason, D1, D2)>
+        where B: Buffer<S, T>;
 }
 
 /// Prepares an operation with one input and one output.
@@ -178,17 +180,17 @@ impl<T, NI, DI, NO, DO> PreparedOperation1<T, NI, DI, NO, DO>
     }
 }
 
-impl<T, S, B, NI, DI, NO, DO> PreparedOperation1Exec<B, DspVec<S, T, NI, DI>, DspVec<S, T, NO, DO>>
+impl<T, S, NI, DI, NO, DO> PreparedOperation1Exec<S, T, DspVec<S, T, NI, DI>, DspVec<S, T, NO, DO>>
     for PreparedOperation1<T, NI, DI, NO, DO>
 	where T: RealNumber + 'static,
         S: ToSliceMut<T>,
         DspVec<S, T, NO, DO>: RededicateForceOps<DspVec<S, T, NI, DI>>,
 		NI: NumberSpace, DI: Domain,
-		NO: NumberSpace, DO: Domain,
-        B: Buffer<S, T> {
+		NO: NumberSpace, DO: Domain {
 	/// Executes all recorded operations on the input vectors.
-	fn exec(&self, buffer: &mut B, a: DspVec<S, T, NI, DI>)
-        -> result::Result<DspVec<S, T, NO, DO>, (ErrorReason, DspVec<S, T, NO, DO>)> {
+	fn exec<B>(&self, buffer: &mut B, a: DspVec<S, T, NI, DI>)
+        -> result::Result<DspVec<S, T, NO, DO>, (ErrorReason, DspVec<S, T, NO, DO>)>
+        where B: Buffer<S,T>  {
 
 		let mut vec = Vec::new();
 		let (number_space, domain, gen) = generic_vector_from_any_vector(a);
@@ -442,8 +444,8 @@ impl<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2<T,
     }
 }
 
-impl<T, S, B, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2Exec<
-        B, DspVec<S, T, NI1, DI1>, DspVec<S, T, NI2, DI2>,
+impl<T, S, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2Exec<
+        S, T, DspVec<S, T, NI1, DI1>, DspVec<S, T, NI2, DI2>,
         DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>>
     for PreparedOperation2<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2>
 	where T: RealNumber + 'static,
@@ -453,14 +455,14 @@ impl<T, S, B, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2Exec<
 		NI1: NumberSpace, DI1: Domain,
         NI2: NumberSpace, DI2: Domain,
 		NO1: NumberSpace, DO1: Domain,
-        NO2: NumberSpace, DO2: Domain,
-        B: Buffer<S, T> {
+        NO2: NumberSpace, DO2: Domain {
 
     /// Executes all recorded operations on the input vectors.
-    fn exec(&self, buffer: &mut B, a: DspVec<S, T, NI1, DI1>, b: DspVec<S, T, NI2, DI2>)
+    fn exec<B>(&self, buffer: &mut B, a: DspVec<S, T, NI1, DI1>, b: DspVec<S, T, NI2, DI2>)
         -> result::Result<
             (DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>),
-            (ErrorReason, DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>)> {
+            (ErrorReason, DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>)>
+            where B: Buffer<S, T> {
         // First "cast" the vectors to generic vectors. This is done with the
         // the rededicate trait since in contrast to the to_gen method it
         // can be used in a generic context.

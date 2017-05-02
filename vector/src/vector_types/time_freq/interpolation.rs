@@ -2,7 +2,7 @@ use {array_to_complex, array_to_complex_mut, Zero, memcpy};
 use conv_types::{RealImpulseResponse, RealFrequencyResponse};
 use numbers::*;
 use std::ops::{Add, Mul};
-use super::WrappingIterator;
+use super::{WrappingIterator, create_shifted_copies};
 use simd_extensions::*;
 use multicore_support::*;
 use super::super::{VoidResult, DspVec, Domain, ToComplexVector, ComplexOps, PaddingOption,
@@ -219,7 +219,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                               delay);
             let mut shifts = InlineVector::with_capacity(vectors.len() * number_of_shifts);
             for vector in &vectors[..] {
-                let shifted_copies = DspVec::create_shifted_copies(vector);
+                let shifted_copies = create_shifted_copies(vector);
                 for shift in shifted_copies.iter() {
                     shifts.push(shift.clone());
                 }

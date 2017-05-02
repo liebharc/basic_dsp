@@ -2,6 +2,7 @@
 Changes:
 
 ## Version 0.5.0
+API cleanup and fixes. Most API changes should be transparent to users.
 
 - `zero_pad_b` now returns a result, which may contain an error if the passed argument is smaller than the actual vector length
 - Renamed `interpolate_vector` to `interpolate_signal`
@@ -10,6 +11,7 @@ Changes:
 - Restructured statistics traits.
 - Mapping operations now only borrow a function. That also allows them to work internally without any reference counting.
 - Binary operations are now more flexible regarding what kind of argument they accept.
+- Restructured buffers to avoid two classes of errors.
 
 ## Version 0.4.3
 Minor additions.

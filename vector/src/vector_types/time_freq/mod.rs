@@ -74,6 +74,101 @@ fn fft_swap_x<T: RealNumber>(is_fft_shifted: bool, x_value: T, x_max: T) -> T {
     }
 }
 
+
+
+/// Creates shifted and reversed copies of the given data vector.
+/// This function is especially designed for convolutions.
+fn create_shifted_copies<O, T, N, D>(vec: &O) -> InlineVector<InlineVector<T::Reg>> 
+    where 
+        O: Vector<T, N, D> + Index<RangeFull, Output = [T]>,
+        T: RealNumber,
+        N: NumberSpace,
+        D: Domain {
+    let step = if vec.is_complex() { 2 } else { 1 };
+    let number_of_shifts = T::Reg::len() / step;
+    let mut shifted_copies = InlineVector::with_capacity(number_of_shifts);
+    let mut i = 0;
+    let len = vec.len();
+    let data = &vec[..];
+    let data = &data[0..len];
+    while i < number_of_shifts {
+        let mut data = data.iter().rev();
+
+        // In general (number_of_shifts - i) indicates which prepared vector we need to use
+        // if we later calculate end % number_of_shifts. Some examples:
+        // number_of_shifts: 4, end: 13 -> mod: 1. The code will round end to the next
+        // SIMD register
+        // which ends at 16. In order to get back to 13 we therefore have to ignore 3 numbers.
+        // Ignoring is done by shifting and inserting zeros. So in this example the correct
+        // shift is 3
+        // which equals number_of_shifts(4) - mod(1).
+        // Now mod: 0 is a special case. This is because if we round up to the next SIMD
+        // register then
+        // we still don't need to add any offset and so for the case 0, 0 is the right shift.
+        let shift = match i {
+            0 => 0,
+            x => (number_of_shifts - x) * step,
+        };
+        let min_len = vec.len() + shift;
+        let len = (min_len + T::Reg::len() - 1) / T::Reg::len();
+        let mut copy: InlineVector<T::Reg> = InlineVector::with_capacity(len);
+
+        let mut j = len * T::Reg::len();
+        let mut k = 0;
+        let mut current = InlineVector::of_size(T::zero(), T::Reg::len());
+        while j > 0 {
+            j -= step;
+            if j < shift || j >= min_len {
+                // Insert zeros
+                current[k] = T::zero();
+                k += 1;
+                if k >= current.len() {
+                    copy.push(T::Reg::load_unchecked(&current[..], 0));
+                    k = 0;
+                }
+                if step > 1 {
+                    current[k] = T::zero();
+                    k += 1;
+                    if k >= current.len() {
+                        copy.push(T::Reg::load_unchecked(&current[..], 0));
+                        k = 0;
+                    }
+                }
+            } else if step > 1 {
+                // Push complex number onto vector
+                let im = *data.next().unwrap();
+                let re = *data.next().unwrap();
+                current[k] = re;
+                k += 1;
+                if k >= current.len() {
+                    copy.push(T::Reg::load_unchecked(&current[..], 0));
+                    k = 0;
+                }
+                current[k] = im;
+                k += 1;
+                if k >= current.len() {
+                    copy.push(T::Reg::load_unchecked(&current[..], 0));
+                    k = 0;
+                }
+            } else {
+                // Push real number onto vector
+                current[k] = *data.next().unwrap();
+                k += 1;
+                if k >= current.len() {
+                    copy.push(T::Reg::load_unchecked(&current[..], 0));
+                    k = 0;
+                }
+            }
+        }
+
+        assert_eq!(k, 0);
+        assert_eq!(copy.len(), len);
+        shifted_copies.push(copy);
+        i += 1;
+    }
+    shifted_copies
+}
+
 impl<S, T, N, D> DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
@@ -124,8 +219,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     /// Only calculate the convolution in the inverse range from the given range.
     /// This is intended to be used together with convolution implementations which
     /// are faster but don't handle the beginning and end of a vector correctly.
-    fn convolve_vector_range<SO>(&mut self, target: &mut [T], vector: &DspVec<SO, T, N, D>, range: Range<usize>)
-        where SO: ToSliceMut<T>
+    fn convolve_vector_range<O>(&mut self, target: &mut [T], vector: &O, range: Range<usize>)
+        where O: Vector<T, N, D> + Index<RangeFull, Output = [T]>
     {
         let points = self.points();
         let other_points = vector.points();
@@ -138,7 +233,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         };
         let len = self.len();
         if self.is_complex() {
-            let other = vector.data.to_slice();
+            let other = &vector[..];
             let data = self.data.to_slice();
             let other = array_to_complex(&other[0..vector.len()]);
             let complex = array_to_complex(&data[0..len]);
@@ -149,7 +244,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 dest[i] = Self::convolve_iteration(complex, other_iter, i as isize, conv_len, full_conv_len);
             }
         } else {
-            let other = vector.data.to_slice();
+            let other = &vector[..];
             let data = self.data.to_slice();
             let other = &other[0..vector.len()];
             let data = &data[0..len];
@@ -162,9 +257,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
-    fn convolve_signal_scalar<B, SO>(&mut self, buffer: &mut B, vector: &DspVec<SO, T, N, D>)
+    fn convolve_signal_scalar<B, O>(&mut self, buffer: &mut B, vector: &O)
         where B: Buffer<S, T>,
-              SO: ToSliceMut<T>
+              O: Vector<T, N, D> + Index<RangeFull, Output = [T]>
     {
         let points = self.points();
         let other_points = vector.points();
@@ -179,7 +274,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let len = self.len();
             let mut temp = buffer.get(len);
             {
-                let other = vector.data.to_slice();
+                let other = &vector[..];
                 let data = self.data.to_slice();
                 let temp = temp.to_slice_mut();
                 let other = array_to_complex(&other[0..vector.len()]);
@@ -205,7 +300,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let len = self.len();
             let mut temp = buffer.get(len);
             {
-                let other = vector.data.to_slice();
+                let other = &vector[..];
                 let data = self.data.to_slice();
                 let temp = temp.to_slice_mut();
                 let other = &other[0..vector.len()];
@@ -349,9 +444,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         sum
     }
 
-    fn convolve_signal_simd<B, SO>(&mut self, buffer: &mut B, vector: &DspVec<SO, T, N, D>)
+    fn convolve_signal_simd<B, O>(&mut self, buffer: &mut B, vector: &O)
         where B: Buffer<S, T>,
-              SO: ToSliceMut<T>
+              O: Vector<T, N, D> + Index<RangeFull, Output = [T]>
     {
         if self.is_complex() {
             self.convolve_signal_simd_impl(buffer,
@@ -370,103 +465,15 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
-    /// Creates shifted and reversed copies of the given data vector.
-    /// This function is especially designed for convolutions.
-    fn create_shifted_copies(&self) -> InlineVector<InlineVector<T::Reg>> {
-        let step = if self.is_complex() { 2 } else { 1 };
-        let number_of_shifts = T::Reg::len() / step;
-        let mut shifted_copies = InlineVector::with_capacity(number_of_shifts);
-        let mut i = 0;
-        let len = self.len();
-        let data = self.data.to_slice();
-        let data = &data[0..len];
-        while i < number_of_shifts {
-            let mut data = data.iter().rev();
-
-            // In general (number_of_shifts - i) indicates which prepared vector we need to use
-            // if we later calculate end % number_of_shifts. Some examples:
-            // number_of_shifts: 4, end: 13 -> mod: 1. The code will round end to the next
-            // SIMD register
-            // which ends at 16. In order to get back to 13 we therefore have to ignore 3 numbers.
-            // Ignoring is done by shifting and inserting zeros. So in this example the correct
-            // shift is 3
-            // which equals number_of_shifts(4) - mod(1).
-            // Now mod: 0 is a special case. This is because if we round up to the next SIMD
-            // register then
-            // we still don't need to add any offset and so for the case 0, 0 is the right shift.
-            let shift = match i {
-                0 => 0,
-                x => (number_of_shifts - x) * step,
-            };
-            let min_len = self.len() + shift;
-            let len = (min_len + T::Reg::len() - 1) / T::Reg::len();
-            let mut copy: InlineVector<T::Reg> = InlineVector::with_capacity(len);
-
-            let mut j = len * T::Reg::len();
-            let mut k = 0;
-            let mut current = InlineVector::of_size(T::zero(), T::Reg::len());
-            while j > 0 {
-                j -= step;
-                if j < shift || j >= min_len {
-                    // Insert zeros
-                    current[k] = T::zero();
-                    k += 1;
-                    if k >= current.len() {
-                        copy.push(T::Reg::load_unchecked(&current[..], 0));
-                        k = 0;
-                    }
-                    if step > 1 {
-                        current[k] = T::zero();
-                        k += 1;
-                        if k >= current.len() {
-                            copy.push(T::Reg::load_unchecked(&current[..], 0));
-                            k = 0;
-                        }
-                    }
-                } else if step > 1 {
-                    // Push complex number onto vector
-                    let im = *data.next().unwrap();
-                    let re = *data.next().unwrap();
-                    current[k] = re;
-                    k += 1;
-                    if k >= current.len() {
-                        copy.push(T::Reg::load_unchecked(&current[..], 0));
-                        k = 0;
-                    }
-                    current[k] = im;
-                    k += 1;
-                    if k >= current.len() {
-                        copy.push(T::Reg::load_unchecked(&current[..], 0));
-                        k = 0;
-                    }
-                } else {
-                    // Push real number onto vector
-                    current[k] = *data.next().unwrap();
-                    k += 1;
-                    if k >= current.len() {
-                        copy.push(T::Reg::load_unchecked(&current[..], 0));
-                        k = 0;
-                    }
-                }
-            }
-
-            assert_eq!(k, 0);
-            assert_eq!(copy.len(), len);
-            shifted_copies.push(copy);
-            i += 1;
-        }
-        shifted_copies
-    }
-
-    fn convolve_signal_simd_impl<B, TT, SO, C, CMut, RMul, RSum>(&mut self,
+    fn convolve_signal_simd_impl<B, TT, O, C, CMut, RMul, RSum>(&mut self,
                                                              buffer: &mut B,
-                                                             vector: &DspVec<SO, T, N, D>,
+                                                             vector: &O,
                                                              convert: C,
                                                              convert_mut: CMut,
                                                              simd_mul: RMul,
                                                              simd_sum: RSum)
         where B: Buffer<S, T>,
-              SO: ToSliceMut<T>,
+              O: Vector<T, N, D> + Index<RangeFull, Output = [T]>,
               TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT> + Send + Sync,
               C: Fn(&[T]) -> &[TT],
               CMut: Fn(&mut [T]) -> &mut [TT],
@@ -481,7 +488,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         let len = self.len();
         let mut temp = buffer.get(len);
         {
-            let other = vector.data.to_slice();
+            let other = &vector[..];
             let data = self.data.to_slice();
             let temp = temp.to_slice_mut();
             let points = self.points();
@@ -490,7 +497,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let dest = convert_mut(&mut temp[0..len]);
             let other_iter = &other[other_start..other_end];
 
-            let shifts = vector.create_shifted_copies();
+            let shifts = create_shifted_copies(vector);
 
             // The next lines uses + $reg::len() due to rounding of odd numbers
             let scalar_len = conv_len + T::Reg::len();

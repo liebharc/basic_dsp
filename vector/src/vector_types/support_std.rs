@@ -49,7 +49,7 @@ impl<'a, T: RealNumber> DerefMut for SingleBufferBurrow<'a, T> {
 }
 
 impl<'a, T: RealNumber> BufferBorrow<Vec<T>, T> for SingleBufferBurrow<'a, T> {  
-    fn swap(self, storage: &mut Vec<T>) {
+    fn trade(self, storage: &mut Vec<T>) {
         mem::swap(&mut self.owner.temp, storage);
     }
 }
@@ -108,7 +108,7 @@ impl<'a, T> BufferNew<'a, Vec<T>, T> for SingleBuffer<T>
 {
     type Borrow = SingleBufferBurrow<'a, T>;
 
-    fn get(&'a mut self, len: usize) -> Self::Borrow {
+    fn borrow(&'a mut self, len: usize) -> Self::Borrow {
         if self.temp.len() < len {
             self.temp = vec![T::zero(); len];
         }
@@ -117,10 +117,6 @@ impl<'a, T> BufferNew<'a, Vec<T>, T> for SingleBuffer<T>
             owner: self,
             len: len
         }
-    }
-
-    fn construct_new(&mut self, len: usize) -> Vec<T> {
-        vec![T::zero(); len]
     }
 
     fn alloc_len(&self) -> usize {
@@ -150,25 +146,21 @@ impl<T: RealNumber> DerefMut for NoBufferBurrow<T> {
     }
 }
 
-impl<T: RealNumber> BufferBorrow<Vec<T>, T> for NoBufferBurrow<T> {  
-    fn swap(mut self, storage: &mut Vec<T>) {
+impl<'a, T: RealNumber> BufferBorrow<Vec<T>, T> for NoBufferBurrow<T> {  
+    fn trade(mut self, storage: &mut Vec<T>) {
         mem::swap(&mut self.data, storage);
     }
 }
 
 impl<'a, T> BufferNew<'a, Vec<T>, T> for NoBuffer
-    where T: RealNumber + 'a
+    where T: RealNumber
 {
     type Borrow = NoBufferBurrow<T>;
 
-    fn get(&'a mut self, len: usize) -> Self::Borrow {
+    fn borrow(&mut self, len: usize) -> Self::Borrow {
         NoBufferBurrow { 
             data: vec![T::zero(); len]
         }
-    }
-
-    fn construct_new(&mut self, len: usize) -> Vec<T> {
-        vec![T::zero(); len]
     }
 
     fn alloc_len(&self) -> usize {
