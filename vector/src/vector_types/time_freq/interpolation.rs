@@ -346,6 +346,48 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             freq.multiply_complex_exponential(phase_inc, start);
         }
     }
+
+    fn interpolate_upsample<B>(
+            &mut self,
+            buffer: &mut B,
+            function: Option<&RealFrequencyResponse<T>>,
+            dest_points: usize) -> VoidResult
+                where B: for<'a> BufferNew<'a, S, T> {
+        let orig_points = self.points();
+        let interpolation_factorf = T::from(dest_points).unwrap() / T::from(orig_points).unwrap();
+        try!(self.zero_pad_b(buffer, dest_points, PaddingOption::Center));
+        match function {
+            None => {
+                self.scale(T::from(dest_points).unwrap() / T::from(orig_points).unwrap());
+            },
+            Some(func) => {
+                // Apply the window function
+                self.multiply_function_priv(
+                    func.is_symmetric(),
+                    true,
+                    interpolation_factorf,
+                    |array| array_to_complex_mut(array),
+                    func,
+                    |f, x| Complex::<T>::new(f.calc(x), T::zero()));
+            }
+        };
+        Ok(())
+    }
+
+    fn interpolate_downsample(&mut self, dest_points: usize) {
+        let orig_len = self.len();
+        let neg_points = dest_points / 2;
+        let pos_points = dest_points - neg_points;
+        let step = 2;
+        {
+            let copyrange = orig_len - step * neg_points .. orig_len;
+            memcpy(self.data.to_slice_mut(),
+                   copyrange,
+                   step * pos_points);
+        }
+        self.resize(step * (neg_points + pos_points)).expect("Shrinking should always succeed");
+        self.scale(T::from(step * (neg_points + pos_points)).unwrap() / T::from(orig_len).unwrap());
+    }
 }
 
 impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
@@ -515,7 +557,6 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
 
         let delta_t = self.delta();
         let is_complex = self.is_complex();
-        let orig_points = self.points();
         let orig_len = self.len();
         let dest_len = if is_complex { 2 * dest_points } else { dest_points };
         let interpolation_factorf = T::from(dest_points).unwrap() / T::from(self.points()).unwrap();
@@ -532,41 +573,15 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
         let mut complex = complex.plain_fft(buffer);
 
         // Add the delay, which is a linear phase in frequency domain
-        if delay != T::zero()
-        {
+        if delay != T::zero() {
             complex.apply_linear_phase(delay / delta_t);
         }
 
         if dest_len > orig_len {
-            try!(complex.zero_pad_b(buffer, dest_points, PaddingOption::Center));
-            match function {
-                None => {
-                    complex.scale(T::from(dest_points).unwrap() / T::from(orig_points).unwrap());
-                },
-                Some(func) => {
-                    // Apply the window function
-                    complex.multiply_function_priv(
-                        func.is_symmetric(),
-                        true,
-                        interpolation_factorf,
-                        |array| array_to_complex_mut(array),
-                        func,
-                        |f, x| Complex::<T>::new(f.calc(x), T::zero()));
-                }
-            };
+            try!(complex.interpolate_upsample(buffer, function, dest_points));
         }
         else if dest_len < orig_len {
-            let neg_points = dest_points / 2;
-            let pos_points = dest_points - neg_points;
-            let step = 2;
-            {
-                let copyrange = orig_len - step * neg_points .. orig_len;
-                memcpy(complex.data.to_slice_mut(),
-                       copyrange,
-                       step * pos_points);
-            }
-        	complex.resize(step * (neg_points + pos_points)).expect("Shrinking should always succeed");
-        	complex.scale(T::from(step * (neg_points + pos_points)).unwrap() / T::from(orig_len).unwrap());
+            complex.interpolate_downsample(dest_points);
         }
 
     	let mut complex = complex.plain_ifft(buffer);
