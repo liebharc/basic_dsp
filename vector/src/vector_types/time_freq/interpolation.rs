@@ -1,6 +1,7 @@
 use {array_to_complex, array_to_complex_mut, Zero, memcpy};
 use conv_types::{RealImpulseResponse, RealFrequencyResponse};
 use numbers::*;
+use std;
 use std::ops::{Add, Mul};
 use super::{WrappingIterator, create_shifted_copies};
 use simd_extensions::*;
@@ -8,7 +9,7 @@ use multicore_support::*;
 use super::super::{VoidResult, DspVec, Domain, ToComplexVector, ComplexOps, PaddingOption,
                    NumberSpace, ToSliceMut, GenDspVec, ToDspVector, DataDomain, Buffer, BufferNew, BufferBorrow, Vector,
                    RealNumberSpace, ErrorReason, InsertZerosOpsBuffered, ScaleOps, MetaData,
-                   ResizeOps, FrequencyToTimeDomainOperations,
+                   ResizeOps, FrequencyToTimeDomainOperations, ResizeBufferedOps,
                    TimeToFrequencyDomainOperations, NoTradeBuffer};
 use inline_vector::InlineVector;
 
@@ -347,18 +348,13 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
-    fn interpolate_upsample<B>(
+    fn interpolate_upsample(
             &mut self,
-            buffer: &mut B,
             function: Option<&RealFrequencyResponse<T>>,
-            dest_points: usize) -> VoidResult
-                where B: for<'a> BufferNew<'a, S, T> {
-        let orig_points = self.points();
-        let interpolation_factorf = T::from(dest_points).unwrap() / T::from(orig_points).unwrap();
-        try!(self.zero_pad_b(buffer, dest_points, PaddingOption::Center));
+            interpolation_factorf: T) {
         match function {
             None => {
-                self.scale(T::from(dest_points).unwrap() / T::from(orig_points).unwrap());
+                self.scale(interpolation_factorf);
             },
             Some(func) => {
                 // Apply the window function
@@ -371,7 +367,6 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                     |f, x| Complex::<T>::new(f.calc(x), T::zero()));
             }
         };
-        Ok(())
     }
 
     fn interpolate_downsample(&mut self, dest_points: usize) {
@@ -391,7 +386,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
-    where DspVec<S, T, N, D>: InsertZerosOpsBuffered<S, T> + ScaleOps<T>,
+    where DspVec<S, T, N, D>: InsertZerosOpsBuffered<S, T> + ScaleOps<T> + ResizeBufferedOps<S, T>,
           S: ToSliceMut<T> + ToComplexVector<S, T> + ToDspVector<T>,
           T: RealNumber + 'static,
           N: NumberSpace,
@@ -521,9 +516,6 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                                         |array| array_to_complex_mut(array),
                                         function,
                                         |f, x| Complex::<T>::new(f.calc(x), T::zero()));
-        }
-        {
-            let complex = (&mut temp[..]).to_complex_freq_vec();
             let mut buffer = NoTradeBuffer::new(&mut self[..]);
             complex.plain_ifft(&mut buffer); // the result is now back in `self`.
         }
@@ -567,27 +559,40 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
             self.zero_interleave_b(buffer, 2);
         }
 
-        let mut complex = buffer.construct_new(0).to_complex_time_vec();
-        self.swap_data(&mut complex);
-
-        let mut complex = complex.plain_fft(buffer);
-
-        // Add the delay, which is a linear phase in frequency domain
-        if delay != T::zero() {
-            complex.apply_linear_phase(delay / delta_t);
+        let complex_orig_len = self.len();
+        let complex_dest_len = 2 * dest_points;
+        let temp_len = std::cmp::max(complex_orig_len, complex_dest_len);
+        try!(self.resize_b(buffer, temp_len)); // allocate space
+        let mut temp = buffer.borrow(temp_len);
+        {
+            let complex = (&mut self[0..complex_orig_len]).to_complex_time_vec();
+            let mut buffer = NoTradeBuffer::new(&mut temp[0..temp_len]);
+            complex.plain_fft(&mut buffer); // after this operation, our result is in `temp`. See also definition of `NoTradeBuffer`.
         }
+        {
+            let mut complex = (&mut temp[0..temp_len]).to_complex_freq_vec();
+            complex.resize(complex_orig_len).expect("Shrinking should always succeed");
+            let mut buffer = NoTradeBuffer::new(&mut self[0..temp_len]);
+            // Add the delay, which is a linear phase in frequency domain
+            if delay != T::zero() {
+                complex.apply_linear_phase(delay / delta_t);
+            }
 
-        if dest_len > orig_len {
-            try!(complex.interpolate_upsample(buffer, function, dest_points));
-        }
-        else if dest_len < orig_len {
-            complex.interpolate_downsample(dest_points);
-        }
+            if dest_len > orig_len {
+                try!(complex.zero_pad_b(&mut buffer, dest_points, PaddingOption::Center));
+                // data is in `self` now, so we have to copy it back into `temp` so that
+                // it finally ends up at the correct destination after `plain_ifft`
+                (&mut complex[0..complex_dest_len]).copy_from_slice(&buffer.borrow(complex_dest_len)[..]);
+                complex.interpolate_upsample(function, interpolation_factorf);
+            }
+            else if dest_len < orig_len {
+                complex.interpolate_downsample(dest_points);
+            }
 
-    	let mut complex = complex.plain_ifft(buffer);
-        let points = complex.len() / 2;
-        complex.scale(T::one() / T::from(points).unwrap());
-        complex.swap_data(self);
+            complex.plain_ifft(&mut buffer); // the result is now back in `self`.
+        }
+        self.resize(complex_dest_len).expect("Shrinking should always succeed");
+        self.scale(T::one() / T::from(dest_points).unwrap());
         self.delta = delta_t / interpolation_factorf;
         if !is_complex {
             // Convert vector back into real number space
@@ -980,7 +985,6 @@ mod tests {
         assert_eq_tol(&result[..], &expected, 0.1);
     }
 
-
     #[test]
     fn interpolate_delayed_sinc_test() {
     	// We use different test data for `interpolate` then for `interpolatef`
@@ -1002,6 +1006,18 @@ mod tests {
         let expected = [0.132513, 0.244227, 0.347660, 0.390094, 0.347660, 0.244227,
 				        0.132513, 0.054953, 0.019827, 0.011546, 0.019827, 0.054953];
         assert_eq_tol(&result[..], &expected, 0.1);
+    }
+
+    #[test]
+    fn interpolate_identity() {
+        let mut time = vec!(0.019827, 0.132513, 0.347660, 0.347660, 0.132513, 0.019827).to_real_time_vec();
+        let len = time.len();
+        let mut buffer = SingleBuffer::new();
+        time.interpft(&mut buffer,
+                          len);
+        // expected in Octave: interpft([time(2:end) 0], 12);
+        let expected = [0.019827, 0.132513, 0.347660, 0.347660, 0.132513, 0.019827];
+        assert_eq_tol(&time[..], &expected, 0.1);
     }
 
     #[test]

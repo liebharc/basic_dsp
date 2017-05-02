@@ -152,9 +152,6 @@ impl<S, T, N, D, DF, O> CrossCorrelationOps<S, T, N, DF, O>
             let other = (&other[..]).to_complex_freq_vec();
             let mut complex = (&mut temp[..]).to_complex_freq_vec();
             try!(complex.mul(&other));
-        }
-        {
-            let complex = (&mut temp[..]).to_complex_freq_vec();
             let mut buffer = NoTradeBuffer::new(&mut self[..]);
             complex.plain_ifft(&mut buffer); // the result is now back in `self`.
         }

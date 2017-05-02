@@ -318,25 +318,6 @@ fn complex_to_array_mut<T>(complex: &mut [Complex<T>]) -> &mut [T]
 }
 
 impl<S, T, N, D> DspVec<S, T, N, D>
-    where S: ToSliceMut<T> + ToDspVector<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
-{
-    /// Swaps the data of two vectors.
-    fn swap_data<N1, D1>(&mut self, other: &mut DspVec<S, T, N1, D1>)
-        where N1: NumberSpace, D1: Domain {
-            let self_len = self.len();
-            let other_len = other.len();
-            mem::swap(&mut self.data, &mut other.data);
-            self.resize(other_len)
-                .expect("Resize after swap should succeed");
-            other.resize(self_len)
-                .expect("Resize after swap should succeed");
-    }
-}
-
-impl<S, T, N, D> DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
@@ -679,13 +660,13 @@ impl<'a, T: RealNumber> DerefMut for NoTradeBufferBurrow<'a, T> {
     }
 }
 
-impl<'a, S: ToSliceMut<T>, T: RealNumber> BufferBorrow<S, T> for NoTradeBufferBurrow<'a, T> {  
+impl<'a, S: ToSliceMut<T>, T: RealNumber> BufferBorrow<S, T> for NoTradeBufferBurrow<'a, T> {
     fn trade(self, _: &mut S) {
         // No trade
     }
 }
 
-/// For internal use only. A buffer which doesn't implement the `swap` routine. Swapping is a no-op in this 
+/// For internal use only. A buffer which doesn't implement the `swap` routine. Swapping is a no-op in this
 /// implementation. This can be useful in cases where an implementation will do the swap step on its own.
 struct NoTradeBuffer<S, T>
     where S: ToSliceMut<T>,
@@ -716,8 +697,8 @@ impl<'a, S, T> BufferNew<'a, S, T> for NoTradeBuffer<S, T>
         if self.data.len() < len {
             panic!("NoTradeBuffer: Out of memory");
         }
-        
-        NoTradeBufferBurrow { 
+
+        NoTradeBufferBurrow {
             data: &mut self.data.to_slice_mut()[0..len]
         }
     }

@@ -1,6 +1,6 @@
 //! This module defines the basic vector trait and indexers.
 use {array_to_complex, array_to_complex_mut};
-use super::{DspVec, NumberSpace, ComplexNumberSpace,
+use super::{DspVec, NumberSpace, ComplexNumberSpace, BufferNew, BufferBorrow,
             Domain, DataDomain, ToSlice, ToSliceMut, ErrorReason, VoidResult, TypeMetaData};
 use multicore_support::MultiCoreSettings;
 use std::ops::*;
@@ -54,6 +54,16 @@ pub trait ResizeOps {
     /// If `self.is_complex()` is true then `len` must be an even number.
     /// `len > self.alloc_len()` is only possible if the underlying storage supports resizing.
     fn resize(&mut self, len: usize) -> VoidResult;
+}
+
+/// Operations to resize a data type.
+pub trait ResizeBufferedOps<S: ToSliceMut<T>, T: RealNumber> {
+    /// Changes `self.len()`.
+    /// If `self.is_complex()` is true then `len` must be an even number.
+    /// `len > self.alloc_len()` is only possible if the underlying storage or the buffer
+    /// supports resizing.
+    fn resize_b<B>(&mut self, buffer: &mut B, len: usize) -> VoidResult
+        where B: for<'a> BufferNew<'a, S, T>;
 }
 
 /// A trait for vector types.
@@ -166,6 +176,34 @@ impl<S, T, N, D> ResizeOps for DspVec<S, T, N, D>
         self.valid_len = len;
 
         Ok(())
+    }
+}
+
+impl<S, T, N, D> ResizeBufferedOps<S, T> for DspVec<S, T, N, D>
+    where S: ToSliceMut<T>,
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain
+{
+    fn resize_b<B>(&mut self, buffer: &mut B, len: usize) -> VoidResult
+        where B: for<'a> BufferNew<'a, S, T> {
+        if self.is_complex() && len % 2 != 0 {
+            return Err(ErrorReason::InputMustHaveAnEvenLength);
+        }
+        let res = self.resize(len);
+        match res {
+            Ok(_) => Ok(()),
+            Err(_) => {
+                let orig_len = self.len();
+                let mut temp = buffer.borrow(len);
+                {
+                    &mut temp[0..orig_len].clone_from_slice(&self[..]);
+                }
+                temp.trade(&mut self.data);
+                self.valid_len = len;
+                Ok(())
+            },
+        }
     }
 }
 
