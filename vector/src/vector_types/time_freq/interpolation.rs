@@ -7,7 +7,7 @@ use super::{WrappingIterator, create_shifted_copies};
 use simd_extensions::*;
 use multicore_support::*;
 use super::super::{VoidResult, DspVec, Domain, ToComplexVector, ComplexOps, PaddingOption,
-                   NumberSpace, ToSliceMut, GenDspVec, ToDspVector, DataDomain, BufferNew, BufferBorrow, Vector,
+                   NumberSpace, ToSliceMut, GenDspVec, ToDspVector, DataDomain, Buffer, BufferBorrow, Vector,
                    RealNumberSpace, ErrorReason, InsertZerosOpsBuffered, ScaleOps, MetaData,
                    ResizeOps, FrequencyToTimeDomainOperations, ResizeBufferedOps,
                    TimeToFrequencyDomainOperations, NoTradeBuffer};
@@ -42,7 +42,7 @@ pub trait InterpolationOps<S, T>
                        interpolation_factor: T,
                        delay: T,
                        conv_len: usize)
-        where B: for<'a> BufferNew<'a, S, T>;
+        where B: for<'a> Buffer<'a, S, T>;
 
     /// Interpolates `self` with the convolution function `function` by the interger value
     /// `interpolation_factor`. InterpolationOps is done in in frequency domain.
@@ -60,7 +60,7 @@ pub trait InterpolationOps<S, T>
                        function: &RealFrequencyResponse<T>,
                        interpolation_factor: u32)
                        -> VoidResult
-        where B: for<'a> BufferNew<'a, S, T>;
+        where B: for<'a> Buffer<'a, S, T>;
 
     /// Interpolates the signal in frequency domain by padding it with zeros.
     fn interpolate<B>(&mut self,
@@ -69,7 +69,7 @@ pub trait InterpolationOps<S, T>
                    target_points: usize,
                    delay: T)
                    -> VoidResult
-            where B: for<'a> BufferNew<'a, S, T>;
+            where B: for<'a> Buffer<'a, S, T>;
 
     /// Interpolates the signal in frequency domain by padding it with zeros.
     /// This function preserves the shape of the signal in frequency domain.
@@ -79,7 +79,7 @@ pub trait InterpolationOps<S, T>
     fn interpft<B>(&mut self,
                    buffer: &mut B,
                    target_points: usize)
-            where B: for<'a> BufferNew<'a, S, T>;
+            where B: for<'a> Buffer<'a, S, T>;
 
     /// Decimates or downsamples `self`. `decimatei` is the inverse function to `interpolatei`.
     fn decimatei(&mut self, decimation_factor: u32, delay: u32);
@@ -99,14 +99,14 @@ pub trait RealInterpolationOps<S, T>
     /// This operation and `interpolate_lin` might be merged into one function with an
     /// additional argument in future.
     fn interpolate_hermite<B>(&mut self, buffer: &mut B, interpolation_factor: T, delay: T)
-        where B: for<'a> BufferNew<'a, S, T>;
+        where B: for<'a> Buffer<'a, S, T>;
 
     /// Linear interpolation between samples.
     /// # Unstable
     /// This operation and `interpolate_hermite` might be merged into one function with an
     /// additional argument in future.
     fn interpolate_lin<B>(&mut self, buffer: &mut B, interpolation_factor: T, delay: T)
-        where B: for<'a> BufferNew<'a, S, T>;
+        where B: for<'a> Buffer<'a, S, T>;
 }
 
 fn interpolate_priv_scalar<T, TT>(temp: &mut [TT],
@@ -205,7 +205,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
               CMut: Fn(&mut [T]) -> &mut [TT],
               RMul: Fn(T::Reg, T::Reg) -> T::Reg + Sync,
               RSum: Fn(T::Reg) -> TT + Sync,
-              B: for<'a> BufferNew<'a, S, T>
+              B: for<'a> Buffer<'a, S, T>
     {
         let data_len = self.len();
         let mut temp = buffer.borrow(new_len);
@@ -398,7 +398,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                        interpolation_factor: T,
                        delay: T,
                        conv_len: usize)
-        where B: for<'a> BufferNew<'a, S, T>
+        where B: for<'a> Buffer<'a, S, T>
     {
         let delay = delay / self.delta;
         let len = self.len();
@@ -479,7 +479,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                        function: &RealFrequencyResponse<T>,
                        interpolation_factor: u32)
                        -> VoidResult
-        where B: for<'a> BufferNew<'a, S, T>
+        where B: for<'a> Buffer<'a, S, T>
     {
         if interpolation_factor <= 1 {
             return Ok(());
@@ -532,7 +532,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
     fn interpft<B>(&mut self,
                    buffer: &mut B,
                    dest_points: usize)
-            where B: for<'a> BufferNew<'a, S, T> {
+            where B: for<'a> Buffer<'a, S, T> {
         self.interpolate(buffer, None, dest_points, T::zero()).expect("interpolate with no frequency response should never fail");
     }
 
@@ -542,7 +542,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                    dest_points: usize,
                    delay: T)
                    -> VoidResult
-            where B: for<'a> BufferNew<'a, S, T> {
+            where B: for<'a> Buffer<'a, S, T> {
         if function.is_some() && !function.unwrap().is_symmetric() && !self.is_complex() {
             return Err(ErrorReason::ArgumentFunctionMustBeSymmetric);
         }
@@ -638,7 +638,7 @@ impl<S, T, N, D> RealInterpolationOps<S, T> for DspVec<S, T, N, D>
           D: Domain
 {
     fn interpolate_lin<B>(&mut self, buffer: &mut B, interpolation_factor: T, delay: T)
-        where B: for<'a> BufferNew<'a, S, T>
+        where B: for<'a> Buffer<'a, S, T>
     {
         let data_len = self.len();
         let dest_len = (T::from(data_len - 1).unwrap() * interpolation_factor)
@@ -676,7 +676,7 @@ impl<S, T, N, D> RealInterpolationOps<S, T> for DspVec<S, T, N, D>
     }
 
     fn interpolate_hermite<B>(&mut self, buffer: &mut B, interpolation_factor: T, delay: T)
-        where B: for<'a> BufferNew<'a, S, T>
+        where B: for<'a> Buffer<'a, S, T>
     {
         let data_len = self.len();
         let dest_len = (T::from(data_len - 1).unwrap() * interpolation_factor)

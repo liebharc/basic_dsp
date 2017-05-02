@@ -1,5 +1,5 @@
 use numbers::*;
-use super::super::{ToComplexResult, TransRes, BufferNew, InsertZerosOps,
+use super::super::{ToComplexResult, TransRes, Buffer, InsertZerosOps,
                    InsertZerosOpsBuffered, DspVec, ToSliceMut, MetaData, Domain, RealNumberSpace,
                    RededicateForceOps, ErrorReason};
 
@@ -45,7 +45,7 @@ pub trait RealToComplexTransformsOpsBuffered<S, T>: ToComplexResult
     /// let result = vector.to_complex_b(&mut buffer);
     /// assert_eq!([1.0, 0.0, 2.0, 0.0], result[..]);
     /// ```
-    fn to_complex_b<B>(self, buffer: &mut B) -> Self::ComplexResult where B: for<'a> BufferNew<'a, S, T>;
+    fn to_complex_b<B>(self, buffer: &mut B) -> Self::ComplexResult where B: for<'a> Buffer<'a, S, T>;
 }
 
 impl<S, T, N, D> RealToComplexTransformsOps<T> for DspVec<S, T, N, D>
@@ -84,7 +84,7 @@ impl<S, T, N, D> RealToComplexTransformsOpsBuffered<S, T> for DspVec<S, T, N, D>
           N: RealNumberSpace,
           D: Domain {
       fn to_complex_b<B>(mut self, buffer: &mut B) -> Self::ComplexResult
-          where B: for<'a> BufferNew<'a, S, T> {
+          where B: for<'a> Buffer<'a, S, T> {
           if self.is_complex() {
               self.number_space.to_complex();
               self.valid_len = 0;

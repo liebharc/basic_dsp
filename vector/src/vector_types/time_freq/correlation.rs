@@ -1,6 +1,6 @@
 use numbers::*;
 use std::ops::*;
-use super::super::{DspVec, BufferNew, ComplexOps, ScaleOps, FrequencyDomainOperations,
+use super::super::{DspVec, Buffer, ComplexOps, ScaleOps, FrequencyDomainOperations,
                    TimeToFrequencyDomainOperations, ToSliceMut,
                    PaddingOption, VoidResult, Vector, MetaData, ComplexNumberSpace,
                    TimeDomain, ElementaryOps, ToFreqResult, InsertZerosOpsBuffered, DataDomain,
@@ -53,12 +53,12 @@ pub trait CrossCorrelationArgumentOps<S, T>: ToFreqResult
     ///
     /// 1. Calculate the plain FFT
     /// 2. Calculate the complex conjugate
-    fn prepare_argument<B>(self, buffer: &mut B) -> Self::FreqResult where B: for<'a> BufferNew<'a, S, T>;
+    fn prepare_argument<B>(self, buffer: &mut B) -> Self::FreqResult where B: for<'a> Buffer<'a, S, T>;
 
     /// Prepares an argument to be used for convolution. The argument is zero padded to
     /// length of `2 * self.points() - 1`
     /// and then the same operations are performed as described for `prepare_argument`.
-    fn prepare_argument_padded<B>(self, buffer: &mut B) -> Self::FreqResult where B: for<'a> BufferNew<'a, S, T>;
+    fn prepare_argument_padded<B>(self, buffer: &mut B) -> Self::FreqResult where B: for<'a> Buffer<'a, S, T>;
 }
 
 /// A trait to calculate the cross correlation.
@@ -73,7 +73,7 @@ pub trait CrossCorrelationOps<S, T, N, D, A>
     /// needs to be a time vector which
     /// went through one of the prepare functions `prepare_argument` or `prepare_argument_padded`.
     /// See also the trait description for more details.
-    fn correlate<B>(&mut self, buffer: &mut B, other: &A) -> VoidResult where B: for<'a> BufferNew<'a, S, T>;
+    fn correlate<B>(&mut self, buffer: &mut B, other: &A) -> VoidResult where B: for<'a> Buffer<'a, S, T>;
 }
 
 impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
@@ -87,14 +87,14 @@ impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
 	  D: TimeDomain {
 
 	fn prepare_argument<B>(self, buffer: &mut B) -> Self::FreqResult
-	 	where B: for<'a> BufferNew<'a, S, T> {
+	 	where B: for<'a> Buffer<'a, S, T> {
 		let mut result = self.plain_fft(buffer);
 		result.conj();
 		result
 	}
 
 	fn prepare_argument_padded<B>(mut self, buffer: &mut B) -> Self::FreqResult
-		where B: for<'a> BufferNew<'a, S, T> {
+		where B: for<'a> Buffer<'a, S, T> {
 		let points = self.points();
 		self.zero_pad_b(buffer, 2 * points - 1, PaddingOption::Surround)
             .expect("zero_pad_b shouldn't fail since the argument is always larger than the vector");
@@ -119,7 +119,7 @@ impl<S, T, N, D, DF, O> CrossCorrelationOps<S, T, N, DF, O>
             &mut self,
             buffer: &mut B,
             other: &O) -> VoidResult
-	 	where B: for<'a> BufferNew<'a, S, T> {
+	 	where B: for<'a> Buffer<'a, S, T> {
 		if self.domain() != DataDomain::Time
 		   || !self.is_complex() {
             self.valid_len = 0;

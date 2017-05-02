@@ -1,5 +1,5 @@
 use numbers::*;
-use super::super::{ToTimeResult, DspVec, Vector, BufferNew, BufferBorrow, ToSliceMut, RededicateForceOps, MetaData,
+use super::super::{ToTimeResult, DspVec, Vector, Buffer, BufferBorrow, ToSliceMut, RededicateForceOps, MetaData,
                    ComplexNumberSpace, FrequencyDomain, DataDomain};
 
 /// Defines all operations which are valid on `DataVecs` containing frequency domain data.
@@ -25,7 +25,7 @@ pub trait FrequencyDomainOperations<S, T>
     /// vector.mirror(&mut buffer);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, -6.0, 3.0, -4.0], &vector[..]);
     /// ```
-    fn mirror<B>(&mut self, buffer: &mut B) where B: for<'a> BufferNew<'a, S, T>;
+    fn mirror<B>(&mut self, buffer: &mut B) where B: for<'a> Buffer<'a, S, T>;
 
     /// Swaps vector halves after a Fourier Transformation.
     fn fft_shift(&mut self);
@@ -43,7 +43,7 @@ impl<S, T, N, D> FrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
           D: FrequencyDomain
 {
     fn mirror<B>(&mut self, buffer: &mut B)
-        where B: for<'a> BufferNew<'a, S, T>
+        where B: for<'a> Buffer<'a, S, T>
     {
         if self.domain() != DataDomain::Frequency && !self.is_complex() {
             self.valid_len = 0;

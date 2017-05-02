@@ -6,7 +6,7 @@ use std::result;
 use super::{round_len, DataDomain, NumberSpace, Domain, ErrorReason, DspVec, GenDspVec,
             RealTimeVec, RealFreqVec, ComplexTimeVec, ComplexFreqVec, RealData, ComplexData,
             RealOrComplexData, TimeData, FrequencyData, TimeOrFrequencyData, ToSlice,
-            TypeMetaData, MetaData, BufferBorrow, BufferNew};
+            TypeMetaData, MetaData, BufferBorrow, Buffer};
 use super::{ToComplexVector, ToRealVector, ToDspVector, ToSliceMut,
             VoidResult, Resize};
 use multicore_support::MultiCoreSettings;
@@ -75,7 +75,7 @@ impl<T> SingleBuffer<T>
     }
 }
 
-impl<'a, T> BufferNew<'a, Vec<T>, T> for SingleBuffer<T>
+impl<'a, T> Buffer<'a, Vec<T>, T> for SingleBuffer<T>
     where T: RealNumber + 'a
 {
     type Borrow = SingleBufferBurrow<'a, T>;
@@ -124,7 +124,7 @@ impl<'a, T: RealNumber> BufferBorrow<Vec<T>, T> for NoBufferBurrow<T> {
     }
 }
 
-impl<'a, T> BufferNew<'a, Vec<T>, T> for NoBuffer
+impl<'a, T> Buffer<'a, Vec<T>, T> for NoBuffer
     where T: RealNumber
 {
     type Borrow = NoBufferBurrow<T>;

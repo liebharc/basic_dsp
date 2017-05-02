@@ -6,7 +6,7 @@ use super::{TimeData, FrequencyData, RealData, ComplexData, RealOrComplexData,
             TimeOrFrequencyData, NumberSpace, Domain, DspVec, TypeMetaData, DataDomain,
             ToSlice, MetaData, ErrorReason,
             ToComplexVector, ToRealVector, ToDspVector, ToSliceMut,
-            VoidResult, complex_to_array_mut, complex_to_array, BufferBorrow, BufferNew};
+            VoidResult, complex_to_array_mut, complex_to_array, BufferBorrow, Buffer};
 use multicore_support::MultiCoreSettings;
 use inline_vector::InlineVector;
 use arrayvec;
@@ -59,7 +59,7 @@ impl<S, T> FixedLenBuffer<S, T>
     }
 }
 
-impl<'a, S, T> BufferNew<'a, S, T> for FixedLenBuffer<S, T>
+impl<'a, S, T> Buffer<'a, S, T> for FixedLenBuffer<S, T>
     where S: ToSliceMut<T>,
         T: RealNumber + 'a
 {

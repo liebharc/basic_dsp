@@ -3,7 +3,7 @@ use std::ptr;
 use {array_to_complex_mut, memcpy, memzero};
 use numbers::*;
 use multicore_support::*;
-use super::super::{VoidResult, BufferNew, BufferBorrow, ErrorReason, NumberSpace,
+use super::super::{VoidResult, Buffer, BufferBorrow, ErrorReason, NumberSpace,
                    Domain, ResizeOps, DspVec, Vector, ToSliceMut, MetaData};
 
 /// This trait allows to reorganize the data by changing positions of the individual elements.
@@ -133,7 +133,7 @@ pub trait InsertZerosOpsBuffered<S, T>
     /// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
     /// ```
     fn zero_pad_b<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption) -> VoidResult
-        where B: for<'a> BufferNew<'a, S, T>;
+        where B: for<'a> Buffer<'a, S, T>;
 
     /// Interleaves zeros `factor - 1`times after every vector element, so that the resulting
     /// vector will have a length of `self.len() * factor`.
@@ -154,7 +154,7 @@ pub trait InsertZerosOpsBuffered<S, T>
     /// vector.zero_interleave_b(&mut buffer, 2);
     /// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], vector[..]);
     /// ```
-    fn zero_interleave_b<B>(&mut self, buffer: &mut B, factor: u32) where B: for<'a> BufferNew<'a, S, T>;
+    fn zero_interleave_b<B>(&mut self, buffer: &mut B, factor: u32) where B: for<'a> Buffer<'a, S, T>;
 }
 
 /// Splits the data into several smaller pieces of equal size.
@@ -389,7 +389,7 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
           D: Domain
 {
     fn zero_pad_b<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption) -> VoidResult
-        where B: for<'a> BufferNew<'a, S, T>
+        where B: for<'a> Buffer<'a, S, T>
     {
         let len_before = self.len();
         let is_complex = self.is_complex();
@@ -446,7 +446,7 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
     }
 
     fn zero_interleave_b<B>(&mut self, buffer: &mut B, factor: u32)
-        where B: for<'a> BufferNew<'a, S, T>
+        where B: for<'a> Buffer<'a, S, T>
     {
         if self.is_complex() {
             zero_interleave!(self, buffer, factor, 2)

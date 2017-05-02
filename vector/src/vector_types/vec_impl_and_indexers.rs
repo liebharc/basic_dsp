@@ -1,6 +1,6 @@
 //! This module defines the basic vector trait and indexers.
 use {array_to_complex, array_to_complex_mut};
-use super::{DspVec, NumberSpace, ComplexNumberSpace, BufferNew, BufferBorrow,
+use super::{DspVec, NumberSpace, ComplexNumberSpace, Buffer, BufferBorrow,
             Domain, DataDomain, ToSlice, ToSliceMut, ErrorReason, VoidResult, TypeMetaData};
 use multicore_support::MultiCoreSettings;
 use std::ops::*;
@@ -63,7 +63,7 @@ pub trait ResizeBufferedOps<S: ToSliceMut<T>, T: RealNumber> {
     /// `len > self.alloc_len()` is only possible if the underlying storage or the buffer
     /// supports resizing.
     fn resize_b<B>(&mut self, buffer: &mut B, len: usize) -> VoidResult
-        where B: for<'a> BufferNew<'a, S, T>;
+        where B: for<'a> Buffer<'a, S, T>;
 }
 
 /// A trait for vector types.
@@ -186,7 +186,7 @@ impl<S, T, N, D> ResizeBufferedOps<S, T> for DspVec<S, T, N, D>
           D: Domain
 {
     fn resize_b<B>(&mut self, buffer: &mut B, len: usize) -> VoidResult
-        where B: for<'a> BufferNew<'a, S, T> {
+        where B: for<'a> Buffer<'a, S, T> {
         if self.is_complex() && len % 2 != 0 {
             return Err(ErrorReason::InputMustHaveAnEvenLength);
         }

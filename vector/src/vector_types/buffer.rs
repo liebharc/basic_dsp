@@ -14,7 +14,7 @@ pub trait BufferBorrow<S: ToSliceMut<T>, T: RealNumber> : DerefMut<Target=[T]> {
 
 /// A buffer which can be used by other types. Types will call buffers to create new arrays.
 /// A buffer may can implement any buffering strategy.
-pub trait BufferNew<'a, S, T>
+pub trait Buffer<'a, S, T>
     where S: ToSliceMut<T>,
           T: RealNumber
 {

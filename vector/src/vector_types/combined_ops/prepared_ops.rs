@@ -4,7 +4,7 @@ use inline_vector::InlineVector;
 use super::{generic_vector_from_any_vector, generic_vector_back_to_vector, Identifier,
             PreparedOperation1, PreparedOperation2, Operation, OpsVec};
 use super::super::{Domain, NumberSpace, ToSliceMut, DspVec, ErrorReason, RededicateForceOps,
-                   BufferNew, TimeOrFrequencyData, RealOrComplexData};
+                   Buffer, TimeOrFrequencyData, RealOrComplexData};
 
 const ARGUMENT1: usize = 0;
 const ARGUMENT2: usize = 1;
@@ -13,7 +13,7 @@ const ARGUMENT2: usize = 1;
 pub trait PreparedOperation1Exec<S: ToSliceMut<T>, T: RealNumber, A, D> {
     /// Executes the prepared operations to convert `A`to `D`.
     fn exec<B>(&self, buffer: &mut B, source: A) -> result::Result<D, (ErrorReason, D)>
-        where B: for<'a> BufferNew<'a, S, T>;
+        where B: for<'a> Buffer<'a, S, T>;
 }
 
 /// Prepares an operation with one input and one output.
@@ -52,7 +52,7 @@ pub trait PreparedOperation2Exec<S: ToSliceMut<T>, T: RealNumber, A1, A2, D1, D2
             source1: A1,
             source2: A2)
             -> result::Result<(D1, D2), (ErrorReason, D1, D2)>
-        where B: for<'a> BufferNew<'a, S, T>;
+        where B: for<'a> Buffer<'a, S, T>;
 }
 
 /// Prepares an operation with one input and one output.
@@ -190,7 +190,7 @@ impl<T, S, NI, DI, NO, DO> PreparedOperation1Exec<S, T, DspVec<S, T, NI, DI>, Ds
 	/// Executes all recorded operations on the input vectors.
 	fn exec<B>(&self, buffer: &mut B, a: DspVec<S, T, NI, DI>)
         -> result::Result<DspVec<S, T, NO, DO>, (ErrorReason, DspVec<S, T, NO, DO>)>
-        where B: for<'a> BufferNew<'a, S, T> {
+        where B: for<'a> Buffer<'a, S, T> {
 
 		let mut vec = Vec::new();
 		let (number_space, domain, gen) = generic_vector_from_any_vector(a);
@@ -462,7 +462,7 @@ impl<T, S, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2Exec<
         -> result::Result<
             (DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>),
             (ErrorReason, DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>)>
-            where B: for<'a> BufferNew<'a, S, T> {
+            where B: for<'a> Buffer<'a, S, T> {
         // First "cast" the vectors to generic vectors. This is done with the
         // the rededicate trait since in contrast to the to_gen method it
         // can be used in a generic context.

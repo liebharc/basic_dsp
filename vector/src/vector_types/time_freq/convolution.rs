@@ -9,7 +9,7 @@ use std::slice;
 use gpu_support::GpuSupport;
 use super::super::{VoidResult, ToSliceMut, MetaData,
                    DspVec, NumberSpace, TimeDomain, FrequencyDomain, DataDomain, Vector,
-                   ComplexNumberSpace, BufferNew, BufferBorrow, ErrorReason, TimeToFrequencyDomainOperations, ToComplexVector,
+                   ComplexNumberSpace, Buffer, BufferBorrow, ErrorReason, TimeToFrequencyDomainOperations, ToComplexVector,
                    FromVector, PaddingOption, ResizeOps, InsertZerosOps};
 
 /// Provides a convolution operations.
@@ -31,7 +31,7 @@ pub trait Convolution<'a, S, T, C: 'a>
     ///    `impulse_response` is in complex number space.
     /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
     fn convolve<B>(&mut self, buffer: &mut B, impulse_response: C, ratio: T, len: usize)
-        where B: for<'b> BufferNew<'b, S, T>;
+        where B: for<'b> Buffer<'b, S, T>;
 }
 
 /// Provides a convolution operation for types which at some point are slice based.
@@ -54,7 +54,7 @@ pub trait ConvolutionOps<S, T, A>
     ///    are not in the same number space and same domain.
     /// 3. `InvalidArgumentLength`: if `self.points() < impulse_response.points()`.
     fn convolve_signal<B>(&mut self, buffer: &mut B, impulse_response: &A) -> VoidResult
-        where B: for<'a> BufferNew<'a, S, T>;
+        where B: for<'a> Buffer<'a, S, T>;
 }
 
 /// Provides a frequency response multiplication operations.
@@ -108,7 +108,7 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a RealImpulseResponse<T>> for DspVe
                    function: &RealImpulseResponse<T>,
                    ratio: T,
                    len: usize)
-        where B: for<'b> BufferNew<'b, S, T>
+        where B: for<'b> Buffer<'b, S, T>
     {
         assert_time!(self);
         if !self.is_complex() {
@@ -213,7 +213,7 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a ComplexImpulseResponse<T>> for Ds
                    function: &ComplexImpulseResponse<T>,
                    ratio: T,
                    len: usize)
-        where B: for<'b> BufferNew<'b, S, T>
+        where B: for<'b> Buffer<'b, S, T>
     {
         assert_complex!(self);
         assert_time!(self);
@@ -318,7 +318,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
           DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone
 {
     fn overlap_discard<B, SO>(&mut self, buffer: &mut B, impulse_response: &DspVec<SO, T, N, D>, fft_len: usize) -> VoidResult
-        where B: for<'a> BufferNew<'a, S, T>,
+        where B: for<'a> Buffer<'a, S, T>,
               SO: ToSliceMut<T>
     {
         if !self.is_complex() {
@@ -442,7 +442,7 @@ impl<S, SO, T, N, D> ConvolutionOps<S, T, DspVec<SO, T, N, D>> for DspVec<S, T, 
           DspVec<SO, T, N, D>: TimeToFrequencyDomainOperations<SO, T> + Clone
 {
     fn convolve_signal<B>(&mut self, buffer: &mut B, impulse_response: &DspVec<SO, T, N, D>) -> VoidResult
-        where B: for<'a> BufferNew<'a, S, T>
+        where B: for<'a> Buffer<'a, S, T>
     {
         assert_meta_data!(self, impulse_response);
         if self.domain() != DataDomain::Time {

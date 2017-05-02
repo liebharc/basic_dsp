@@ -2,7 +2,7 @@ use numbers::*;
 use std::result;
 use inline_vector::InlineVector;
 use super::super::{ToSlice, ToSliceMut, NumberSpace, Domain, RealOrComplexData,
-                   TimeOrFrequencyData, DspVec, ErrorReason, RededicateForceOps, BufferNew};
+                   TimeOrFrequencyData, DspVec, ErrorReason, RededicateForceOps, Buffer};
 
 use super::{generic_vector_from_any_vector, Identifier, PreparedOperation1, PreparedOperation2,
             PreparedOperation1Exec, PreparedOperation2Exec, Operation};
@@ -176,7 +176,7 @@ impl<S, T, NO, DO> MultiOperation1<S, T, NO, DO>
     pub fn get<B>(self,
                   buffer: &mut B)
                   -> result::Result<DspVec<S, T, NO, DO>, (ErrorReason, DspVec<S, T, NO, DO>)>
-        where B: for<'a> BufferNew<'a, S, T>
+        where B: for<'a> Buffer<'a, S, T>
     {
         self.prepared_ops.exec(buffer, self.a)
     }
@@ -230,7 +230,7 @@ impl<S, T, NO1, DO1, NO2, DO2> MultiOperation2<S, T, NO1, DO1, NO2, DO2>
                   buffer: &mut B)
                   -> result::Result<(DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>),
                                     (ErrorReason, DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>)>
-        where B: for<'a> BufferNew<'a, S, T>
+        where B: for<'a> Buffer<'a, S, T>
     {
         self.prepared_ops.exec(buffer, self.a, self.b)
     }

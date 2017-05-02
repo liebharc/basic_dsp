@@ -452,7 +452,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                                complexity: Complexity)
         where A: Sync + Copy + Send,
               F: Fn(Complex<T>, A) -> T + 'static + Sync,
-              B: for<'a> BufferNew<'a, S, T>
+              B: for<'a> Buffer<'a, S, T>
     {
         {
             let data_length = self.len();
@@ -507,7 +507,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         where A: Sync + Copy + Send,
               F: Fn(T::Reg, A) -> T::Reg + 'static + Sync,
               G: Fn(Complex<T>, A) -> T + 'static + Sync,
-              B: for<'a> BufferNew<'a, S, T>
+              B: for<'a> Buffer<'a, S, T>
     {
         let data_length = self.len();
         let mut result = buffer.borrow(data_length / 2);
@@ -685,7 +685,7 @@ impl<S, T> NoTradeBuffer<S, T>
     }
 }
 
-impl<'a, S, T> BufferNew<'a, S, T> for NoTradeBuffer<S, T>
+impl<'a, S, T> Buffer<'a, S, T> for NoTradeBuffer<S, T>
     where S: ToSliceMut<T>,
         T: RealNumber + 'a
 {

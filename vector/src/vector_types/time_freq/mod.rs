@@ -18,7 +18,7 @@ use {array_to_complex, array_to_complex_mut};
 use std::ops::*;
 use simd_extensions::*;
 use multicore_support::*;
-use super::{BufferNew, BufferBorrow, Vector, MetaData, DspVec, ToSliceMut,
+use super::{Buffer, BufferBorrow, Vector, MetaData, DspVec, ToSliceMut,
             NumberSpace, Domain, ErrorReason, VoidResult};
 use numbers::*;
 use std::fmt::Debug;
@@ -30,7 +30,7 @@ fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: boo
           T: RealNumber,
           N: NumberSpace,
           D: Domain,
-          B: for<'a> BufferNew<'a, S, T>
+          B: for<'a> Buffer<'a, S, T>
 {
     let len = vec.len();
     let mut temp = buffer.borrow(len);
@@ -180,7 +180,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                                  convert: C,
                                                  convert_mut: CMut,
                                                  fun: F)
-        where B: for<'a> BufferNew<'a, S, T>,
+        where B: for<'a> Buffer<'a, S, T>,
               C: Fn(&[T]) -> &[TT],
               CMut: Fn(&mut [T]) -> &mut [TT],
               F: Fn(T) -> TT,
@@ -255,7 +255,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     }
 
     fn convolve_signal_scalar<B, O>(&mut self, buffer: &mut B, vector: &O)
-        where B: for<'a> BufferNew<'a, S, T>,
+        where B: for<'a> Buffer<'a, S, T>,
               O: Vector<T, N, D> + Index<RangeFull, Output = [T]>
     {
         let points = self.points();
@@ -440,7 +440,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     }
 
     fn convolve_signal_simd<B, O>(&mut self, buffer: &mut B, vector: &O)
-        where B: for<'a> BufferNew<'a, S, T>,
+        where B: for<'a> Buffer<'a, S, T>,
               O: Vector<T, N, D> + Index<RangeFull, Output = [T]>
     {
         if self.is_complex() {
@@ -467,7 +467,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                                              convert_mut: CMut,
                                                              simd_mul: RMul,
                                                              simd_sum: RSum)
-        where B: for<'a> BufferNew<'a, S, T>,
+        where B: for<'a> Buffer<'a, S, T>,
               O: Vector<T, N, D> + Index<RangeFull, Output = [T]>,
               TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT> + Send + Sync,
               C: Fn(&[T]) -> &[TT],
