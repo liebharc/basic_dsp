@@ -68,7 +68,7 @@ macro_rules! add_mat_impl {
 					where <V as ToRealResult>::RealResult: Vector<T>,
                           V: ComplexToRealTransformsOpsBuffered<S, T> {
 				fn magnitude_b<B>(self, buffer: &mut B) -> Self::RealResult
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform(|v|v.magnitude_b(buffer));
                     $matrix {
                         rows: rows,
@@ -78,7 +78,7 @@ macro_rules! add_mat_impl {
 				}
 
 				fn magnitude_squared_b<B>(self, buffer: &mut B) -> Self::RealResult
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
                     let rows = self.rows.transform(|v|v.magnitude_squared_b(buffer));
                     $matrix {
                         rows: rows,
@@ -88,7 +88,7 @@ macro_rules! add_mat_impl {
 				}
 
 				fn to_real_b<B>(self, buffer: &mut B) -> Self::RealResult
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
                     let rows = self.rows.transform(|v|v.to_real_b(buffer));
                     $matrix {
                         rows: rows,
@@ -98,7 +98,7 @@ macro_rules! add_mat_impl {
 				}
 
 				fn to_imag_b<B>(self, buffer: &mut B) -> Self::RealResult
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
                     let rows = self.rows.transform(|v|v.to_imag_b(buffer));
                     $matrix {
                         rows: rows,
@@ -108,7 +108,7 @@ macro_rules! add_mat_impl {
 				}
 
 				fn phase_b<B>(self, buffer: &mut B) -> Self::RealResult
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
                     let rows = self.rows.transform(|v|v.phase_b(buffer));
                     $matrix {
                         rows: rows,

@@ -54,7 +54,7 @@ macro_rules! add_mat_impl {
 					where <V as ToFreqResult>::FreqResult: Vector<T>,
                           V: TimeToFrequencyDomainOperations<S, T> {
 				fn plain_fft<B>(self, buffer: &mut B) -> Self::FreqResult
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform(|v|v.plain_fft(buffer));
                     $matrix {
                         rows: rows,
@@ -64,7 +64,7 @@ macro_rules! add_mat_impl {
 				}
 
 				fn fft<B>(self, buffer: &mut B) -> Self::FreqResult
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform(|v|v.fft(buffer));
                     $matrix {
                         rows: rows,
@@ -74,7 +74,7 @@ macro_rules! add_mat_impl {
 				}
 
 				fn windowed_fft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> Self::FreqResult
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform(|v|v.windowed_fft(buffer, window));
                     $matrix {
                         rows: rows,
@@ -89,13 +89,13 @@ macro_rules! add_mat_impl {
 					where <V as ToFreqResult>::FreqResult: Vector<T>,
                           V: SymmetricTimeToFrequencyDomainOperations<S, T> {
 				fn plain_sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult>
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform_res(|v|v.plain_sfft(buffer));
 					try_transform!(rows, $matrix)
 				}
 
 				fn sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult>
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform_res(|v|v.sfft(buffer));
 					try_transform!(rows, $matrix)
 				}
@@ -104,7 +104,7 @@ macro_rules! add_mat_impl {
 						self,
 						buffer: &mut B,
 						window: &WindowFunction<T>) -> TransRes<Self::FreqResult>
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform_res(|v|v.windowed_sfft(buffer, window));
 					try_transform!(rows, $matrix)
 				}
@@ -115,7 +115,7 @@ macro_rules! add_mat_impl {
 					where <V as ToTimeResult>::TimeResult: Vector<T>,
                           V: FrequencyToTimeDomainOperations<S, T> {
 				fn plain_ifft<B>(self, buffer: &mut B) -> Self::TimeResult
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform(|v|v.plain_ifft(buffer));
                     $matrix {
                         rows: rows,
@@ -125,7 +125,7 @@ macro_rules! add_mat_impl {
 				}
 
 				fn ifft<B>(self, buffer: &mut B) -> Self::TimeResult
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform(|v|v.ifft(buffer));
                     $matrix {
                         rows: rows,
@@ -135,7 +135,7 @@ macro_rules! add_mat_impl {
 				}
 
 				fn windowed_ifft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> Self::TimeResult
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform(|v|v.windowed_ifft(buffer, window));
                     $matrix {
                         rows: rows,
@@ -150,13 +150,13 @@ macro_rules! add_mat_impl {
 					where <V as ToRealTimeResult>::RealTimeResult: Vector<T>,
                           V: SymmetricFrequencyToTimeDomainOperations<S, T> {
 				fn plain_sifft<B>(self, buffer: &mut B) -> TransRes<Self::RealTimeResult>
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform_res(|v|v.plain_sifft(buffer));
 					try_transform!(rows, $matrix)
 				}
 
 				fn sifft<B>(self, buffer: &mut B) -> TransRes<Self::RealTimeResult>
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform_res(|v|v.sifft(buffer));
 					try_transform!(rows, $matrix)
 				}
@@ -165,7 +165,7 @@ macro_rules! add_mat_impl {
 						self,
 						buffer: &mut B,
 						window: &WindowFunction<T>) -> TransRes<Self::RealTimeResult>
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform_res(|v|v.windowed_sifft(buffer, window));
 					try_transform!(rows, $matrix)
 				}
@@ -174,7 +174,7 @@ macro_rules! add_mat_impl {
 			impl<V: Vector<T>, S: ToSliceMut<T>, T: RealNumber> FrequencyDomainOperations<S, T>
                     for $matrix<V, S, T>
                     where V: FrequencyDomainOperations<S, T> {
-				fn mirror<B>(&mut self, buffer: &mut B) where B: Buffer<S, T> {
+				fn mirror<B>(&mut self, buffer: &mut B) where B: for<'b> Buffer<'b, S, T> {
                     for v in self.rows_mut() {
                         v.mirror(buffer);
                     }
@@ -214,7 +214,7 @@ macro_rules! add_mat_impl {
 					where <V as ToFreqResult>::FreqResult: Vector<T>,
                           V: CrossCorrelationArgumentOps<S, T> {
 				fn prepare_argument<B>(self, buffer: &mut B) -> Self::FreqResult
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform(|v|v.prepare_argument(buffer));
                     $matrix {
                         rows: rows,
@@ -224,7 +224,7 @@ macro_rules! add_mat_impl {
 				}
 
 				fn prepare_argument_padded<B>(self, buffer: &mut B) -> Self::FreqResult
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform(|v|v.prepare_argument_padded(buffer));
                     $matrix {
                         rows: rows,
@@ -259,7 +259,7 @@ macro_rules! add_mat_impl {
 						buffer: &mut B,
 						other: &$matrix<<DspVec<S, T, N, D> as ToFreqResult>::FreqResult, S, T>)
 						-> VoidResult
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					for (v, o) in self.rows_mut().iter_mut().zip(other.rows()) {
 						try!(v.correlate(buffer, o));
 					}
@@ -278,7 +278,7 @@ macro_rules! add_mat_impl {
 						interpolation_factor: T,
 						delay: T,
 						conv_len: usize)
-				 	where B: Buffer<S, T> {
+				 	where B: for<'b> Buffer<'b, S, T> {
                     for v in self.rows_mut() {
                         v.interpolatef(buffer, function, interpolation_factor, delay, conv_len);
                     }
@@ -289,7 +289,7 @@ macro_rules! add_mat_impl {
 						buffer: &mut B,
                         function: &RealFrequencyResponse<T>,
                         interpolation_factor: u32) -> VoidResult
-					where B: Buffer<S, T> {
+					where B: for<'b> Buffer<'b, S, T> {
                     for v in self.rows_mut() {
                         try!(v.interpolatei(buffer, function, interpolation_factor));
                     }
@@ -303,7 +303,7 @@ macro_rules! add_mat_impl {
                         function: Option<&RealFrequencyResponse<T>>,
                         dest_points: usize,
                         delay: T) -> VoidResult
-					where B: Buffer<S, T> {
+					where B: for<'b> Buffer<'b, S, T> {
                     for v in self.rows_mut() {
                         try!(v.interpolate(buffer, function, dest_points, delay));
                     }
@@ -315,7 +315,7 @@ macro_rules! add_mat_impl {
 						&mut self,
 						buffer: &mut B,
                         dest_points: usize)
-					where B: Buffer<S, T> {
+					where B: for<'b> Buffer<'b, S, T> {
                     for v in self.rows_mut() {
                         v.interpft(buffer, dest_points);
                     }
@@ -339,7 +339,7 @@ macro_rules! add_mat_impl {
 						buffer: &mut B,
 						interpolation_factor: T,
 						delay: T)
-				 	where B: Buffer<S, T> {
+				 	where B: for<'b> Buffer<'b, S, T> {
                     for v in self.rows_mut() {
                         v.interpolate_hermite(buffer, interpolation_factor, delay);
                     }
@@ -350,7 +350,7 @@ macro_rules! add_mat_impl {
 						buffer: &mut B,
 						interpolation_factor: T,
 						delay: T)
-					where B: Buffer<S, T> {
+					where B: for<'b> Buffer<'b, S, T> {
                     for v in self.rows_mut() {
                         v.interpolate_lin(buffer, interpolation_factor, delay);
                     }
@@ -367,7 +367,7 @@ macro_rules! add_mat_impl {
 						impulse_response: &'a RealImpulseResponse<T>,
 						ratio: T,
 						len: usize)
-				 	where B: Buffer<S, T> {
+				 	where B: for<'b> Buffer<'b, S, T> {
                     for v in self.rows_mut() {
                         v.convolve(buffer, impulse_response, ratio, len);
                     }
@@ -384,7 +384,7 @@ macro_rules! add_mat_impl {
 						impulse_response: &'a ComplexImpulseResponse<T>,
 						ratio: T,
 						len: usize)
-				 	where B: Buffer<S, T> {
+				 	where B: for<'b> Buffer<'b, S, T> {
                     for v in self.rows_mut() {
                         v.convolve(buffer, impulse_response, ratio, len);
                     }
@@ -427,7 +427,7 @@ macro_rules! add_mat_impl {
 						&mut self,
 						buffer: &mut B,
 						impulse_response: &DspVec<S, T, N, D>) -> VoidResult
-							where B: Buffer<S, T> {
+							where B: for<'b> Buffer<'b, S, T> {
                     for v in self.rows_mut() {
                         try!(v.convolve_signal(buffer, impulse_response));
                     }
@@ -483,7 +483,7 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
             &mut self,
             buffer: &mut B,
             impulse_response: &Vec<&Vec<&DspVec<S, T, N, D>>>) -> VoidResult
-                where B: Buffer<S, T> {
+                where B: for<'b> Buffer<'b, S, T> {
         convolve_signal!(self, buffer, impulse_response)
     }
 }
@@ -495,7 +495,7 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
             &mut self,
             buffer: &mut B,
             impulse_response: &[[&'a DspVec<S, T, N, D>; 2]; 2]) -> VoidResult
-                where B: Buffer<S, T> {
+                where B: for<'b> Buffer<'b, S, T> {
         convolve_signal!(self, buffer, impulse_response)
     }
 }
@@ -507,7 +507,7 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
             &mut self,
             buffer: &mut B,
             impulse_response: &[[&'a DspVec<S, T, N, D>; 3]; 3]) -> VoidResult
-                where B: Buffer<S, T> {
+                where B: for<'b> Buffer<'b, S, T> {
         convolve_signal!(self, buffer, impulse_response)
     }
 }
@@ -519,7 +519,7 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
             &mut self,
             buffer: &mut B,
             impulse_response: &[[&'a DspVec<S, T, N, D>; 4]; 4]) -> VoidResult
-                where B: Buffer<S, T> {
+                where B: for<'b> Buffer<'b, S, T> {
         convolve_signal!(self, buffer, impulse_response)
     }
 }

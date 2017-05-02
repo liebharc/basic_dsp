@@ -49,7 +49,7 @@ macro_rules! add_mat_impl {
 					where <V as ToComplexResult>::ComplexResult: Vector<T>,
                           V: RealToComplexTransformsOpsBuffered<S, T> {
 				fn to_complex_b<B>(self, buffer: &mut B) -> Self::ComplexResult
-                    where B: Buffer<S, T> {
+                    where B: for<'b> Buffer<'b, S, T> {
 					let rows = self.rows.transform(|v|v.to_complex_b(buffer));
                     $matrix {
                         rows: rows,
