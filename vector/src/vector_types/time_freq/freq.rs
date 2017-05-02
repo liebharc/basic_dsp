@@ -1,6 +1,5 @@
 use numbers::*;
-use std::mem;
-use super::super::{ToTimeResult, DspVec, Vector, Buffer, ToSliceMut, RededicateForceOps, MetaData,
+use super::super::{ToTimeResult, DspVec, Vector, BufferNew, BufferBorrow, ToSliceMut, RededicateForceOps, MetaData,
                    ComplexNumberSpace, FrequencyDomain, DataDomain};
 
 /// Defines all operations which are valid on `DataVecs` containing frequency domain data.
@@ -26,7 +25,7 @@ pub trait FrequencyDomainOperations<S, T>
     /// vector.mirror(&mut buffer);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, -6.0, 3.0, -4.0], &vector[..]);
     /// ```
-    fn mirror<B>(&mut self, buffer: &mut B) where B: Buffer<S, T>;
+    fn mirror<B>(&mut self, buffer: &mut B) where B: for<'a> BufferNew<'a, S, T>;
 
     /// Swaps vector halves after a Fourier Transformation.
     fn fft_shift(&mut self);
@@ -44,7 +43,7 @@ impl<S, T, N, D> FrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
           D: FrequencyDomain
 {
     fn mirror<B>(&mut self, buffer: &mut B)
-        where B: Buffer<S, T>
+        where B: for<'a> BufferNew<'a, S, T>
     {
         if self.domain() != DataDomain::Frequency && !self.is_complex() {
             self.valid_len = 0;
@@ -54,7 +53,7 @@ impl<S, T, N, D> FrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
         let len = self.len();
         let step = 2;
         let temp_len = 2 * len - step;
-        let mut temp = buffer.get(temp_len);
+        let mut temp = buffer.borrow(temp_len);
         {
             let data = self.data.to_slice();
             let mut temp = temp.to_slice_mut();
@@ -72,8 +71,7 @@ impl<S, T, N, D> FrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
             self.valid_len = temp_len;
         }
 
-        mem::swap(&mut self.data, &mut temp);
-        buffer.free(temp);
+        temp.trade(&mut self.data);
     }
 
     fn fft_shift(&mut self)

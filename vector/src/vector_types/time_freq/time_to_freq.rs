@@ -1,5 +1,5 @@
 use numbers::*;
-use super::super::{ToFreqResult, TransRes, TimeDomain, Buffer, Vector, DataDomain,
+use super::super::{ToFreqResult, TransRes, TimeDomain, BufferNew, Vector, DataDomain,
                    MetaData, ResizeOps, DspVec, ToSliceMut, RealNumberSpace, NumberSpace,
                    RededicateForceOps, ErrorReason, InsertZerosOpsBuffered,
                    FrequencyDomainOperations, TimeDomainOperations};
@@ -33,7 +33,7 @@ pub trait TimeToFrequencyDomainOperations<S, T>: ToFreqResult
     ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
     /// }
     /// ```
-    fn plain_fft<B>(self, buffer: &mut B) -> Self::FreqResult where B: Buffer<S, T>;
+    fn plain_fft<B>(self, buffer: &mut B) -> Self::FreqResult where B: for<'a> BufferNew<'a, S, T>;
 
     /// Performs a Fast Fourier Transformation transforming a time domain vector
     /// into a frequency domain vector.
@@ -54,12 +54,12 @@ pub trait TimeToFrequencyDomainOperations<S, T>: ToFreqResult
     ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
     /// }
     /// ```
-    fn fft<B>(self, buffer: &mut B) -> Self::FreqResult where B: Buffer<S, T>;
+    fn fft<B>(self, buffer: &mut B) -> Self::FreqResult where B: for<'a> BufferNew<'a, S, T>;
 
     /// Applies a FFT window and performs a Fast Fourier Transformation transforming a time
     /// domain vector into a frequency domain vector.
     fn windowed_fft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> Self::FreqResult
-        where B: Buffer<S, T>;
+        where B: for<'a> BufferNew<'a, S, T>;
 }
 
 /// Defines all operations which are valid on `DataVecs` containing real time domain data.
@@ -84,7 +84,7 @@ pub trait SymmetricTimeToFrequencyDomainOperations<S, T>: ToFreqResult
     ///
     /// # Unstable
     /// Symmetric IFFTs are unstable and may only work under certain conditions.
-    fn plain_sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult> where B: Buffer<S, T>;
+    fn plain_sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult> where B: for<'a> BufferNew<'a, S, T>;
 
     /// Performs a Symmetric Fast Fourier Transformation under the assumption that `self`
     /// is symmetric around the center. This assumption
@@ -97,7 +97,7 @@ pub trait SymmetricTimeToFrequencyDomainOperations<S, T>: ToFreqResult
     ///
     /// # Unstable
     /// Symmetric IFFTs are unstable and may only work under certain conditions.
-    fn sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult> where B: Buffer<S, T>;
+    fn sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult> where B: for<'a> BufferNew<'a, S, T>;
 
     /// Performs a Symmetric Fast Fourier Transformation under the assumption that `self`
     /// is symmetric around the center. This assumption
@@ -114,7 +114,7 @@ pub trait SymmetricTimeToFrequencyDomainOperations<S, T>: ToFreqResult
                         buffer: &mut B,
                         window: &WindowFunction<T>)
                         -> TransRes<Self::FreqResult>
-        where B: Buffer<S, T>;
+        where B: for<'a> BufferNew<'a, S, T>;
 }
 
 
@@ -128,7 +128,7 @@ impl<S, T, N, D> TimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
           N: NumberSpace,
           D: TimeDomain {
     fn plain_fft<B>(mut self, buffer: &mut B) -> Self::FreqResult
-        where B: Buffer<S, T> {
+        where B: for<'a> BufferNew<'a, S, T> {
         if self.domain() != DataDomain::Time {
             self.valid_len = 0;
             self.number_space.to_complex();
@@ -148,14 +148,14 @@ impl<S, T, N, D> TimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
     }
 
     fn fft<B>(self, buffer: &mut B) -> Self::FreqResult
-        where B: Buffer<S, T> {
+        where B: for<'a> BufferNew<'a, S, T> {
         let mut result = self.plain_fft(buffer);
         result.fft_shift();
         result
     }
 
     fn windowed_fft<B>(mut self, buffer: &mut B, window: &WindowFunction<T>) -> Self::FreqResult
-        where B: Buffer<S, T> {
+        where B: for<'a> BufferNew<'a, S, T> {
         self.apply_window(window);
         let mut result = self.plain_fft(buffer);
         result.fft_shift();
@@ -180,7 +180,7 @@ impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T,
           N: RealNumberSpace,
           D: TimeDomain {
     fn plain_sfft<B>(mut self, buffer: &mut B) -> TransRes<Self::FreqResult>
-      where B: Buffer<S, T> {
+      where B: for<'a> BufferNew<'a, S, T> {
       if self.domain() != DataDomain::Time ||
          self.is_complex() {
           self.valid_len = 0;
@@ -207,7 +207,7 @@ impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T,
     }
 
     fn sfft<B>(mut self, buffer: &mut B) -> TransRes<Self::FreqResult>
-      where B: Buffer<S, T> {
+      where B: for<'a> BufferNew<'a, S, T> {
       if self.domain() != DataDomain::Time ||
          self.is_complex() {
           self.valid_len = 0;
@@ -235,7 +235,7 @@ impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T,
 
     fn windowed_sfft<B>(mut self, buffer: &mut B, window: &WindowFunction<T>)
         -> TransRes<Self::FreqResult>
-      where B: Buffer<S, T> {
+      where B: for<'a> BufferNew<'a, S, T> {
       if self.domain() != DataDomain::Time ||
          self.is_complex() {
           self.valid_len = 0;

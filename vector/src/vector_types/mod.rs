@@ -334,15 +334,6 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             other.resize(self_len)
                 .expect("Resize after swap should succeed");
     }
-
-    /// Returns the ownership of the data inside this vector. The vector data is replaced
-    /// with `empty` which is intended to be an empty array
-    fn take_ownership(&mut self, empty: S) -> Self {
-        let meta_data = self.get_meta_data();
-        let mut other = empty.to_dsp_vec(&meta_data);
-        self.swap_data(&mut other);
-        other
-    }
 }
 
 impl<S, T, N, D> DspVec<S, T, N, D>
@@ -482,11 +473,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                                complexity: Complexity)
         where A: Sync + Copy + Send,
               F: Fn(Complex<T>, A) -> T + 'static + Sync,
-              B: Buffer<S, T>
+              B: for<'a> BufferNew<'a, S, T>
     {
         {
             let data_length = self.len();
-            let mut result = buffer.get(data_length / 2);
+            let mut result = buffer.borrow(data_length / 2);
             {
                 let array = self.data.to_slice_mut();
                 let mut temp = result.to_slice_mut();
@@ -506,8 +497,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 });
                 self.valid_len = data_length / 2;
             }
-            mem::swap(&mut self.data, &mut result);
-            buffer.free(result);
+            result.trade(&mut self.data);
         }
     }
 
@@ -538,10 +528,10 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         where A: Sync + Copy + Send,
               F: Fn(T::Reg, A) -> T::Reg + 'static + Sync,
               G: Fn(Complex<T>, A) -> T + 'static + Sync,
-              B: Buffer<S, T>
+              B: for<'a> BufferNew<'a, S, T>
     {
         let data_length = self.len();
-        let mut result = buffer.get(data_length / 2);
+        let mut result = buffer.borrow(data_length / 2);
         {
             let array = self.data.to_slice_mut();
             let mut temp = result.to_slice_mut();
@@ -582,8 +572,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
             self.valid_len /= 2;
         }
-        mem::swap(&mut self.data, &mut result);
-        buffer.free(result);
+        result.trade(&mut self.data);
     }
 
     #[inline]
@@ -717,9 +706,9 @@ impl<S, T> NoTradeBuffer<S, T>
     }
 }
 
-impl<'a, S, T> BufferNew<'a, S, T> for &'a mut NoTradeBuffer<S, T>
+impl<'a, S, T> BufferNew<'a, S, T> for NoTradeBuffer<S, T>
     where S: ToSliceMut<T>,
-        T: RealNumber
+        T: RealNumber + 'a
 {
     type Borrow = NoTradeBufferBurrow<'a, T>;
 

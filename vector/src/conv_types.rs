@@ -7,7 +7,7 @@ use numbers::*;
 use num_complex::{Complex32, Complex64};
 use std::marker::PhantomData;
 use vector_types::*;
-use inline_vector::{InlineVector, InternalBuffer};
+use inline_vector::InlineVector;
 use super::FixedLenBuffer;
 
 /// A convolution function in time domain and real number space
@@ -207,8 +207,13 @@ macro_rules! add_real_linear_table_impl {
                 impl $name<$data_type> {
                     /// Convert the lookup table into complex number space
                     pub fn to_complex(&self) -> $complex<$data_type> {
-                        let vector = self.table.clone().to_real_time_vec();
-                        let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), 2* vector.len()));
+                        let len = self.table.len();
+                        let vector = InlineVector::of_size($data_type::zero(), 2 * len);
+                        let mut vector = vector.to_real_time_vec();
+                        vector.resize(len).expect("shrinking should always succeed");
+                        &mut vector[0.. len].copy_from_slice(&self.table[..]);
+                        vector.set_delta(self.delta);
+                        let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), 2 * vector.len()));
                         let complex = vector.to_complex_b(&mut buffer);
                         let complex = complex.complex(..);
                         let is_symmetric = self.is_symmetric;
@@ -242,7 +247,7 @@ macro_rules! add_complex_linear_table_impl {
                         }
                         let mut vector = interleaved.to_complex_time_vec();
                         vector.set_delta(self.delta);
-                        let mut buffer = InternalBuffer::new();
+                        let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), complex.len()));
                         let real = vector.to_real_b(&mut buffer);
                         let real = &real[..];
                         let is_symmetric = self.is_symmetric;
@@ -299,11 +304,15 @@ macro_rules! add_real_time_linear_table_impl {
     ($($data_type: ident),*) => {
         $(
             impl RealTimeLinearTableLookup<$data_type> {
-/// Convert the lookup table into a magnitude spectrum
+                /// Convert the lookup table into a magnitude spectrum
                 pub fn fft(self) -> RealFrequencyLinearTableLookup<$data_type> {
-                    let mut vector = self.table.clone().to_real_time_vec();
+                    let len = self.table.len();
+                    let vector = InlineVector::of_size($data_type::zero(), 2 * len);
+                    let mut vector = vector.to_real_time_vec();
+                    vector.resize(len).expect("shrinking should always succeed");
+                    &mut vector[0.. len].copy_from_slice(&self.table[..]);
                     vector.set_delta(self.delta);
-                    let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), 2 * vector.len()));
+                    let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), 2 * len));
                     let freq = vector.fft(&mut buffer);
                     let freq = freq.magnitude_b(&mut buffer);
                     let is_symmetric = self.is_symmetric;

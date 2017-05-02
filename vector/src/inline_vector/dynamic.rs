@@ -1,9 +1,8 @@
 use std::ops::*;
 use std::usize;
 use arrayvec::*;
-use {VoidResult, ErrorReason, Buffer};
+use {VoidResult, ErrorReason};
 use numbers::*;
-use std::mem;
 use std::iter::FromIterator;
 use std::slice::Iter;
 
@@ -154,13 +153,6 @@ impl<T: Zero + Clone> InlineVector<T> {
     }
 }
 
-/// A buffer which stores a single inline vector and never shrinks.
-pub struct InternalBuffer<T>
-    where T: RealNumber
-{
-    temp: InlineVector<T>,
-}
-
 impl<T> Index<usize> for InlineVector<T> {
     type Output = T;
 
@@ -259,42 +251,5 @@ impl<T> FromIterator<T> for InlineVector<T> {
         }
 
         c
-    }
-}
-
-impl<T> InternalBuffer<T>
-    where T: RealNumber
-{
-    /// Creates a new buffer which is ready to be passed around.
-    pub fn new() -> InternalBuffer<T> {
-        InternalBuffer { temp: InlineVector::with_capacity(0) }
-    }
-}
-
-impl<T> Buffer<InlineVector<T>, T> for InternalBuffer<T>
-    where T: RealNumber
-{
-    fn get(&mut self, len: usize) -> InlineVector<T> {
-        if len <= self.temp.len() {
-            let mut result = InlineVector::with_capacity(0);
-            mem::swap(&mut result, &mut self.temp);
-            return result;
-        }
-
-        InlineVector::of_size(T::zero(), len)
-    }
-
-    fn construct_new(&mut self, len: usize) -> InlineVector<T> {
-        InlineVector::of_size(T::zero(), len)
-    }
-
-    fn free(&mut self, storage: InlineVector<T>) {
-        if storage.len() > self.temp.len() {
-            self.temp = storage;
-        }
-    }
-
-    fn alloc_len(&self) -> usize {
-        self.temp.capacity()
     }
 }

@@ -13,13 +13,12 @@ pub use self::convolution::*;
 mod interpolation;
 pub use self::interpolation::*;
 
-use std::mem;
 use rustfft::FFT;
 use {array_to_complex, array_to_complex_mut};
 use std::ops::*;
 use simd_extensions::*;
 use multicore_support::*;
-use super::{Buffer, Vector, MetaData, DspVec, ToSliceMut,
+use super::{BufferNew, BufferBorrow, Vector, MetaData, DspVec, ToSliceMut,
             NumberSpace, Domain, ErrorReason, VoidResult};
 use numbers::*;
 use std::fmt::Debug;
@@ -31,10 +30,10 @@ fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: boo
           T: RealNumber,
           N: NumberSpace,
           D: Domain,
-          B: Buffer<S, T>
+          B: for<'a> BufferNew<'a, S, T>
 {
     let len = vec.len();
-    let mut temp = buffer.get(len);
+    let mut temp = buffer.borrow(len);
     {
         let temp = temp.to_slice_mut();
         let signal = vec.data.to_slice();
@@ -54,8 +53,7 @@ fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: boo
         }
     }
 
-    mem::swap(&mut vec.data, &mut temp);
-    buffer.free(temp);
+    temp.trade(&mut vec.data);
 }
 
 /// Transform a value on the x-axis the same way as a fft shift transforms the
@@ -78,8 +76,8 @@ fn fft_swap_x<T: RealNumber>(is_fft_shifted: bool, x_value: T, x_max: T) -> T {
 
 /// Creates shifted and reversed copies of the given data vector.
 /// This function is especially designed for convolutions.
-fn create_shifted_copies<O, T, N, D>(vec: &O) -> InlineVector<InlineVector<T::Reg>> 
-    where 
+fn create_shifted_copies<O, T, N, D>(vec: &O) -> InlineVector<InlineVector<T::Reg>>
+    where
         O: Vector<T, N, D> + Index<RangeFull, Output = [T]>,
         T: RealNumber,
         N: NumberSpace,
@@ -182,14 +180,14 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                                  convert: C,
                                                  convert_mut: CMut,
                                                  fun: F)
-        where B: Buffer<S, T>,
+        where B: for<'a> BufferNew<'a, S, T>,
               C: Fn(&[T]) -> &[TT],
               CMut: Fn(&mut [T]) -> &mut [TT],
               F: Fn(T) -> TT,
               TT: Zero + Mul<Output = TT> + Copy + Add<Output = TT>
     {
         let len = self.len();
-        let mut temp = buffer.get(len);
+        let mut temp = buffer.borrow(len);
         {
             let data = self.data.to_slice();
             let temp = temp.to_slice_mut();
@@ -212,8 +210,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             }
         }
 
-        mem::swap(&mut temp, &mut self.data);
-        buffer.free(temp);
+        temp.trade(&mut self.data);
     }
 
     /// Only calculate the convolution in the inverse range from the given range.
@@ -258,7 +255,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     }
 
     fn convolve_signal_scalar<B, O>(&mut self, buffer: &mut B, vector: &O)
-        where B: Buffer<S, T>,
+        where B: for<'a> BufferNew<'a, S, T>,
               O: Vector<T, N, D> + Index<RangeFull, Output = [T]>
     {
         let points = self.points();
@@ -272,7 +269,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         };
         if self.is_complex() {
             let len = self.len();
-            let mut temp = buffer.get(len);
+            let mut temp = buffer.borrow(len);
             {
                 let other = &vector[..];
                 let data = self.data.to_slice();
@@ -294,11 +291,10 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                     }
                 });
             }
-            mem::swap(&mut temp, &mut self.data);
-            buffer.free(temp);
+            temp.trade(&mut self.data);
         } else {
             let len = self.len();
-            let mut temp = buffer.get(len);
+            let mut temp = buffer.borrow(len);
             {
                 let other = &vector[..];
                 let data = self.data.to_slice();
@@ -320,8 +316,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                     }
                 });
             }
-            mem::swap(&mut temp, &mut self.data);
-            buffer.free(temp);
+            temp.trade(&mut self.data);
         }
     }
 
@@ -445,7 +440,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     }
 
     fn convolve_signal_simd<B, O>(&mut self, buffer: &mut B, vector: &O)
-        where B: Buffer<S, T>,
+        where B: for<'a> BufferNew<'a, S, T>,
               O: Vector<T, N, D> + Index<RangeFull, Output = [T]>
     {
         if self.is_complex() {
@@ -472,7 +467,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                                              convert_mut: CMut,
                                                              simd_mul: RMul,
                                                              simd_sum: RSum)
-        where B: Buffer<S, T>,
+        where B: for<'a> BufferNew<'a, S, T>,
               O: Vector<T, N, D> + Index<RangeFull, Output = [T]>,
               TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT> + Send + Sync,
               C: Fn(&[T]) -> &[TT],
@@ -486,7 +481,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         let (other_start, other_end, full_conv_len, conv_len) =
             (0, other_points, other_points, other_points - other_points / 2);
         let len = self.len();
-        let mut temp = buffer.get(len);
+        let mut temp = buffer.borrow(len);
         {
             let other = &vector[..];
             let data = self.data.to_slice();
@@ -540,8 +535,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 i += 1;
             }
         }
-        mem::swap(&mut temp, &mut self.data);
-        buffer.free(temp);
+        temp.trade(&mut self.data);
     }
 
         fn multiply_function_priv<TT, CMut, FA, F>(&mut self,

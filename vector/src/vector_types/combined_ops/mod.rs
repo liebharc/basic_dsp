@@ -81,7 +81,7 @@ use simd_extensions::*;
 use multicore_support::*;
 use std::ops::Range;
 use super::{round_len, ToSliceMut, DspVec, ErrorReason, MetaData, TransRes, Vector,
-            RealToComplexTransformsOpsBuffered, ComplexToRealTransformsOps, Buffer,
+            RealToComplexTransformsOpsBuffered, ComplexToRealTransformsOps, BufferNew,
             RealOrComplexData, TimeOrFrequencyData, Domain, NumberSpace, DataDomain};
 use std::fmt;
 use numbers::*;
@@ -880,7 +880,7 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
                              mut vectors: Vec<Self>,
                              operations: &[Operation<T>])
                              -> TransRes<Vec<Self>>
-        where B: Buffer<S, T>
+        where B: for<'a> BufferNew<'a, S, T>
     {
         if vectors.is_empty() {
             return Err((ErrorReason::InvalidNumberOfArgumentsForCombinedOp, vectors));

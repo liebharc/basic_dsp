@@ -9,7 +9,7 @@ use std::slice;
 use gpu_support::GpuSupport;
 use super::super::{VoidResult, ToSliceMut, MetaData,
                    DspVec, NumberSpace, TimeDomain, FrequencyDomain, DataDomain, Vector,
-                   ComplexNumberSpace, Buffer, ErrorReason, TimeToFrequencyDomainOperations, ToComplexVector,
+                   ComplexNumberSpace, BufferNew, BufferBorrow, ErrorReason, TimeToFrequencyDomainOperations, ToComplexVector,
                    FromVector, PaddingOption, ResizeOps, InsertZerosOps};
 
 /// Provides a convolution operations.
@@ -31,7 +31,7 @@ pub trait Convolution<'a, S, T, C: 'a>
     ///    `impulse_response` is in complex number space.
     /// 2. `VectorMustBeInTimeDomain`: if `self` is in frequency domain.
     fn convolve<B>(&mut self, buffer: &mut B, impulse_response: C, ratio: T, len: usize)
-        where B: Buffer<S, T>;
+        where B: for<'b> BufferNew<'b, S, T>;
 }
 
 /// Provides a convolution operation for types which at some point are slice based.
@@ -54,7 +54,7 @@ pub trait ConvolutionOps<S, T, A>
     ///    are not in the same number space and same domain.
     /// 3. `InvalidArgumentLength`: if `self.points() < impulse_response.points()`.
     fn convolve_signal<B>(&mut self, buffer: &mut B, impulse_response: &A) -> VoidResult
-        where B: Buffer<S, T>;
+        where B: for<'a> BufferNew<'a, S, T>;
 }
 
 /// Provides a frequency response multiplication operations.
@@ -108,7 +108,7 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a RealImpulseResponse<T>> for DspVe
                    function: &RealImpulseResponse<T>,
                    ratio: T,
                    len: usize)
-        where B: Buffer<S, T>
+        where B: for<'b> BufferNew<'b, S, T>
     {
         assert_time!(self);
         if !self.is_complex() {
@@ -213,7 +213,7 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a ComplexImpulseResponse<T>> for Ds
                    function: &ComplexImpulseResponse<T>,
                    ratio: T,
                    len: usize)
-        where B: Buffer<S, T>
+        where B: for<'b> BufferNew<'b, S, T>
     {
         assert_complex!(self);
         assert_time!(self);
@@ -318,13 +318,13 @@ impl<S, T, N, D> DspVec<S, T, N, D>
           DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone
 {
     fn overlap_discard<B, SO>(&mut self, buffer: &mut B, impulse_response: &DspVec<SO, T, N, D>, fft_len: usize) -> VoidResult
-        where B: Buffer<S, T>,
+        where B: for<'a> BufferNew<'a, S, T>,
               SO: ToSliceMut<T>
     {
         if !self.is_complex() {
             return Err(ErrorReason::InputMustBeComplex);
         }
-        
+
         assert_meta_data!(self, impulse_response);
 
         let h_time = impulse_response;
@@ -341,7 +341,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         let x_freq_len = 2*fft_len;
         let tmp_len = 2*fft_len;
         let remainder_len = x_len - x_len % fft_len;
-        let mut array = buffer.get(h_time_padded_len + h_freq_len + x_freq_len + tmp_len + remainder_len);
+        let mut array = buffer.borrow(h_time_padded_len + h_freq_len + x_freq_len + tmp_len + remainder_len);
         {
             let mut array = array.to_slice_mut();
             let (mut h_freq, mut array) = array.split_at_mut(h_freq_len);
@@ -428,7 +428,6 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             // (6) Copy over the end result which was calculated at the beginning (2)
             (&mut x_time[x_len - remainder_len / 2 .. ]).copy_from_slice(&end[..]);
         }
-        buffer.free(array);
         Ok(())
     }
 }
@@ -443,7 +442,7 @@ impl<S, SO, T, N, D> ConvolutionOps<S, T, DspVec<SO, T, N, D>> for DspVec<S, T, 
           DspVec<SO, T, N, D>: TimeToFrequencyDomainOperations<SO, T> + Clone
 {
     fn convolve_signal<B>(&mut self, buffer: &mut B, impulse_response: &DspVec<SO, T, N, D>) -> VoidResult
-        where B: Buffer<S, T>
+        where B: for<'a> BufferNew<'a, S, T>
     {
         assert_meta_data!(self, impulse_response);
         if self.domain() != DataDomain::Time {
@@ -470,7 +469,7 @@ impl<S, SO, T, N, D> ConvolutionOps<S, T, DspVec<SO, T, N, D>> for DspVec<S, T, 
             let is_complex = self.is_complex();
             let source_len = self.len();
             let imp_resp_len = impulse_response.len();
-            let mut target = buffer.get(source_len);
+            let mut target = buffer.borrow(source_len);
             let range_done = {
                 let source = self.data.to_slice();
                 let imp_resp = impulse_response.data.to_slice();
@@ -482,12 +481,10 @@ impl<S, SO, T, N, D> ConvolutionOps<S, T, DspVec<SO, T, N, D>> for DspVec<S, T, 
                     &imp_resp[0..imp_resp_len])
             };
             match range_done {
-                None =>
-                    buffer.free(target), // The GPU code can't handle this go to the next cases
+                None => (), // The GPU code can't handle this go to the next cases
                 Some(range) => {
                     self.convolve_vector_range(target.to_slice_mut(), impulse_response, range);
-                    mem::swap(&mut target, &mut self.data);
-                    buffer.free(target);
+                    target.trade(&mut self.data);
                     return Ok(());
                 }
             };
@@ -821,7 +818,7 @@ mod tests {
         let conv = conv.magnitude();
         assert_eq_tol(&mul[..], &conv[..], 1e-4);
     }
-    
+
     #[test]
     fn overlap_discard_test() {
         let a: Vec<f32> = (0..100).map(|x|x as f32).collect();

@@ -1,10 +1,11 @@
 use numbers::*;
-use super::super::{DspVec, Buffer, ComplexOps, ScaleOps, FrequencyDomainOperations,
-                   TimeToFrequencyDomainOperations, RededicateForceOps, ToSliceMut,
-                   PaddingOption, VoidResult, Vector, FromVector, MetaData, ComplexNumberSpace,
+use std::ops::*;
+use super::super::{DspVec, BufferNew, ComplexOps, ScaleOps, FrequencyDomainOperations,
+                   TimeToFrequencyDomainOperations, ToSliceMut,
+                   PaddingOption, VoidResult, Vector, MetaData, ComplexNumberSpace,
                    TimeDomain, ElementaryOps, ToFreqResult, InsertZerosOpsBuffered, DataDomain,
                    ErrorReason, ReorganizeDataOps, ToComplexVector, FrequencyToTimeDomainOperations,
-                   ToDspVector, ToTimeResult, NumberSpace, Domain, FrequencyDomain};
+                   NumberSpace, Domain, FrequencyDomain, NoTradeBuffer};
 
 /// Cross-correlation of data vectors. See also https://en.wikipedia.org/wiki/Cross-correlation
 ///
@@ -52,12 +53,12 @@ pub trait CrossCorrelationArgumentOps<S, T>: ToFreqResult
     ///
     /// 1. Calculate the plain FFT
     /// 2. Calculate the complex conjugate
-    fn prepare_argument<B>(self, buffer: &mut B) -> Self::FreqResult where B: Buffer<S, T>;
+    fn prepare_argument<B>(self, buffer: &mut B) -> Self::FreqResult where B: for<'a> BufferNew<'a, S, T>;
 
     /// Prepares an argument to be used for convolution. The argument is zero padded to
     /// length of `2 * self.points() - 1`
     /// and then the same operations are performed as described for `prepare_argument`.
-    fn prepare_argument_padded<B>(self, buffer: &mut B) -> Self::FreqResult where B: Buffer<S, T>;
+    fn prepare_argument_padded<B>(self, buffer: &mut B) -> Self::FreqResult where B: for<'a> BufferNew<'a, S, T>;
 }
 
 /// A trait to calculate the cross correlation.
@@ -65,13 +66,14 @@ pub trait CrossCorrelationOps<S, T, N, D, A>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain
+          D: Domain,
+          A: MetaData<N, D>
 {
     /// Calculates the correlation between `self` and `other`. `other`
     /// needs to be a time vector which
     /// went through one of the prepare functions `prepare_argument` or `prepare_argument_padded`.
     /// See also the trait description for more details.
-    fn correlate<B>(&mut self, buffer: &mut B, other: &A) -> VoidResult where B: Buffer<S, T>;
+    fn correlate<B>(&mut self, buffer: &mut B, other: &A) -> VoidResult where B: for<'a> BufferNew<'a, S, T>;
 }
 
 impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
@@ -85,14 +87,14 @@ impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
 	  D: TimeDomain {
 
 	fn prepare_argument<B>(self, buffer: &mut B) -> Self::FreqResult
-	 	where B: Buffer<S, T> {
+	 	where B: for<'a> BufferNew<'a, S, T> {
 		let mut result = self.plain_fft(buffer);
 		result.conj();
 		result
 	}
 
 	fn prepare_argument_padded<B>(mut self, buffer: &mut B) -> Self::FreqResult
-		where B: Buffer<S, T> {
+		where B: for<'a> BufferNew<'a, S, T> {
 		let points = self.points();
 		self.zero_pad_b(buffer, 2 * points - 1, PaddingOption::Surround)
             .expect("zero_pad_b shouldn't fail since the argument is always larger than the vector");
@@ -104,27 +106,20 @@ impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
 
 impl<S, T, N, D, DF, O> CrossCorrelationOps<S, T, N, DF, O>
     for DspVec<S, T, N, D>
-    where DspVec<S, T, N, D>: ToFreqResult
-        + TimeToFrequencyDomainOperations<S, T>
-        + RededicateForceOps<<<DspVec<S, T, N, D> as ToFreqResult>::FreqResult as ToTimeResult>::TimeResult>
-        + ScaleOps<T>
-		+ ReorganizeDataOps<T> + Clone,
-	  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult:
-          FrequencyDomainOperations<S, T> + ComplexOps<T> + Vector<T, N, DF>
-        + ElementaryOps<O>
-        + FromVector<T, Output=S> + FrequencyToTimeDomainOperations<S, T>,
-	  S: ToSliceMut<T> + ToDspVector<T> + ToComplexVector<S, T>,
-	  T: RealNumber,
+    where DspVec<S, T, N, D>:
+         ScaleOps<T>,
+	  S: ToSliceMut<T>,
+	  T: RealNumber + 'static,
 	  N: ComplexNumberSpace,
 	  D: TimeDomain,
       DF: FrequencyDomain,
-      O: Vector<T, N, DF>
+      O: Vector<T, N, DF> + Index<RangeFull, Output = [T]>
 {
     fn correlate<B>(
             &mut self,
             buffer: &mut B,
             other: &O) -> VoidResult
-	 	where B: Buffer<S, T> {
+	 	where B: for<'a> BufferNew<'a, S, T> {
 		if self.domain() != DataDomain::Time
 		   || !self.is_complex() {
             self.valid_len = 0;
@@ -132,14 +127,37 @@ impl<S, T, N, D, DF, O> CrossCorrelationOps<S, T, N, DF, O>
             self.domain.to_freq();
             return Err(ErrorReason::InputMustBeInTimeDomain);
         }
+
+        if other.domain() != DataDomain::Frequency
+            || !other.is_complex() {
+            self.valid_len = 0;
+            self.number_space.to_complex();
+            self.domain.to_freq();
+            return Err(ErrorReason::InputMustBeInTimeDomain);
+        }
+
 		let points = other.points();
 		try!(self.zero_pad_b(buffer, points, PaddingOption::Surround));
-        let complex = self.take_ownership(buffer.construct_new(0));
-        let mut complex = complex.plain_fft(buffer);
-        try!(complex.mul(other));
-		let complex = complex.plain_ifft(buffer);
-        let mut complex = Self::rededicate_from_force(complex);
-		self.swap_data(&mut complex);
+        let len = self.len();
+        let mut temp = buffer.borrow(len);
+        // The next steps: fft, mul, ifft
+        // However to keep the impl definition simpler and to avoid uncessary copies
+        // we have to to be creative with where we store our signal and what's the buffer.
+        {
+            let complex = (&mut self[..]).to_complex_time_vec();
+            let mut buffer = NoTradeBuffer::new(&mut temp[..]);
+            complex.plain_fft(&mut buffer); // after this operation, our result is in `temp`. See also definition of `NoTradeBuffer`.
+        }
+        {
+            let other = (&other[..]).to_complex_freq_vec();
+            let mut complex = (&mut temp[..]).to_complex_freq_vec();
+            try!(complex.mul(&other));
+        }
+        {
+            let complex = (&mut temp[..]).to_complex_freq_vec();
+            let mut buffer = NoTradeBuffer::new(&mut self[..]);
+            complex.plain_ifft(&mut buffer); // the result is now back in `self`.
+        }
 		let p = self.points();
 		self.scale(T::one() / T::from(p).unwrap());
         self.swap_halves();

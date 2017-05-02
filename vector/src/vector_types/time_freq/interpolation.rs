@@ -6,11 +6,10 @@ use super::{WrappingIterator, create_shifted_copies};
 use simd_extensions::*;
 use multicore_support::*;
 use super::super::{VoidResult, DspVec, Domain, ToComplexVector, ComplexOps, PaddingOption,
-                   NumberSpace, ToSliceMut, GenDspVec, ToDspVector, DataDomain, Buffer, Vector,
+                   NumberSpace, ToSliceMut, GenDspVec, ToDspVector, DataDomain, Buffer, BufferNew, BufferBorrow, Vector,
                    RealNumberSpace, ErrorReason, InsertZerosOpsBuffered, ScaleOps, MetaData,
                    ResizeOps, FrequencyToTimeDomainOperations,
-                   TimeToFrequencyDomainOperations};
-use std::mem;
+                   TimeToFrequencyDomainOperations, NoTradeBuffer};
 use inline_vector::InlineVector;
 
 /// Provides interpolation operations for real and complex data vectors.
@@ -42,7 +41,7 @@ pub trait InterpolationOps<S, T>
                        interpolation_factor: T,
                        delay: T,
                        conv_len: usize)
-        where B: Buffer<S, T>;
+        where B: for<'a> BufferNew<'a, S, T>;
 
     /// Interpolates `self` with the convolution function `function` by the interger value
     /// `interpolation_factor`. InterpolationOps is done in in frequency domain.
@@ -60,7 +59,7 @@ pub trait InterpolationOps<S, T>
                        function: &RealFrequencyResponse<T>,
                        interpolation_factor: u32)
                        -> VoidResult
-        where B: Buffer<S, T>;
+        where B: for<'a> BufferNew<'a, S, T>;
 
     /// Interpolates the signal in frequency domain by padding it with zeros.
     fn interpolate<B>(&mut self,
@@ -69,7 +68,7 @@ pub trait InterpolationOps<S, T>
                    target_points: usize,
                    delay: T)
                    -> VoidResult
-            where B: Buffer<S, T>;
+            where B: Buffer<S, T> + for<'a> BufferNew<'a, S, T>;
 
     /// Interpolates the signal in frequency domain by padding it with zeros.
     /// This function preserves the shape of the signal in frequency domain.
@@ -79,7 +78,7 @@ pub trait InterpolationOps<S, T>
     fn interpft<B>(&mut self,
                    buffer: &mut B,
                    target_points: usize)
-            where B: Buffer<S, T>;
+            where B: Buffer<S, T> + for<'a> BufferNew<'a, S, T>;
 
     /// Decimates or downsamples `self`. `decimatei` is the inverse function to `interpolatei`.
     fn decimatei(&mut self, decimation_factor: u32, delay: u32);
@@ -99,14 +98,14 @@ pub trait RealInterpolationOps<S, T>
     /// This operation and `interpolate_lin` might be merged into one function with an
     /// additional argument in future.
     fn interpolate_hermite<B>(&mut self, buffer: &mut B, interpolation_factor: T, delay: T)
-        where B: Buffer<S, T>;
+        where B: for<'a> BufferNew<'a, S, T>;
 
     /// Linear interpolation between samples.
     /// # Unstable
     /// This operation and `interpolate_hermite` might be merged into one function with an
     /// additional argument in future.
     fn interpolate_lin<B>(&mut self, buffer: &mut B, interpolation_factor: T, delay: T)
-        where B: Buffer<S, T>;
+        where B: for<'a> BufferNew<'a, S, T>;
 }
 
 fn interpolate_priv_scalar<T, TT>(temp: &mut [TT],
@@ -205,10 +204,10 @@ impl<S, T, N, D> DspVec<S, T, N, D>
               CMut: Fn(&mut [T]) -> &mut [TT],
               RMul: Fn(T::Reg, T::Reg) -> T::Reg + Sync,
               RSum: Fn(T::Reg) -> TT + Sync,
-              B: Buffer<S, T>
+              B: for<'a> BufferNew<'a, S, T>
     {
         let data_len = self.len();
-        let mut temp = buffer.get(new_len);
+        let mut temp = buffer.borrow(new_len);
         {
             let step = if self.is_complex() { 2 } else { 1 };
             let number_of_shifts = T::Reg::len() / step;
@@ -296,8 +295,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             }
         }
         self.valid_len = new_len;
-        mem::swap(&mut temp, &mut self.data);
-        buffer.free(temp);
+        temp.trade(&mut self.data);
     }
 
     #[inline]
@@ -328,7 +326,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: InsertZerosOpsBuffered<S, T> + ScaleOps<T>,
           S: ToSliceMut<T> + ToComplexVector<S, T> + ToDspVector<T>,
-          T: RealNumber,
+          T: RealNumber + 'static,
           N: NumberSpace,
           D: Domain
 {
@@ -338,7 +336,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                        interpolation_factor: T,
                        delay: T,
                        conv_len: usize)
-        where B: Buffer<S, T>
+        where B: for<'a> BufferNew<'a, S, T>
     {
         let delay = delay / self.delta;
         let len = self.len();
@@ -378,7 +376,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                                                   |x| x.sum_real());
             }
         } else if is_complex {
-            let mut temp = buffer.get(new_len);
+            let mut temp = buffer.borrow(new_len);
             {
                 let data = self.data.to_slice();
                 let data = &data[0..len];
@@ -393,10 +391,9 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                                         conv_len,
                                         &self.multicore_settings);
             }
-            mem::swap(&mut temp, &mut self.data);
-            buffer.free(temp);
+            temp.trade(&mut self.data);
         } else {
-            let mut temp = buffer.get(new_len);
+            let mut temp = buffer.borrow(new_len);
             {
                 let data = self.data.to_slice();
                 let data = &data[0..len];
@@ -409,8 +406,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                                         conv_len,
                                         &self.multicore_settings);
             }
-            mem::swap(&mut temp, &mut self.data);
-            buffer.free(temp);
+            temp.trade(&mut self.data);
         }
 
         self.valid_len = new_len;
@@ -421,7 +417,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                        function: &RealFrequencyResponse<T>,
                        interpolation_factor: u32)
                        -> VoidResult
-        where B: Buffer<S, T>
+        where B: for<'a> BufferNew<'a, S, T>
     {
         if interpolation_factor <= 1 {
             return Ok(());
@@ -439,19 +435,32 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
             self.zero_interleave_b(buffer, interpolation_factor);
         }
 
-        let mut complex = buffer.construct_new(0).to_complex_time_vec();
-        self.swap_data(&mut complex);
-        let mut complex = complex.plain_fft(buffer);
-        let points = complex.len() / 2;
-        let interpolation_factorf = T::from(interpolation_factor).unwrap();
-        complex.multiply_function_priv(function.is_symmetric(),
-                                    true,
-                                    interpolation_factorf,
-                                    |array| array_to_complex_mut(array),
-                                    function,
-                                    |f, x| Complex::<T>::new(f.calc(x), T::zero()));
-        let mut complex = complex.plain_ifft(buffer);
-        self.swap_data(&mut complex);
+        let len = if self.is_complex() { 1 } else { 2 } * self.len();
+        let mut temp = buffer.borrow(len);
+        // The next steps: fft, mul, ifft
+        // However to keep the impl definition simpler and to avoid uncessary copies
+        // we have to to be creative with where we store our signal and what's the buffer.
+        {
+            let complex = (&mut self[..]).to_complex_time_vec();
+            let mut buffer = NoTradeBuffer::new(&mut temp[..]);
+            complex.plain_fft(&mut buffer); // after this operation, our result is in `temp`. See also definition of `NoTradeBuffer`.
+        }
+        {
+            let mut complex = (&mut temp[..]).to_complex_freq_vec();
+            let interpolation_factorf = T::from(interpolation_factor).unwrap();
+            complex.multiply_function_priv(function.is_symmetric(),
+                                        true,
+                                        interpolation_factorf,
+                                        |array| array_to_complex_mut(array),
+                                        function,
+                                        |f, x| Complex::<T>::new(f.calc(x), T::zero()));
+        }
+        {
+            let complex = (&mut temp[..]).to_complex_freq_vec();
+            let mut buffer = NoTradeBuffer::new(&mut self[..]);
+            complex.plain_ifft(&mut buffer); // the result is now back in `self`.
+        }
+        let points = self.points();
         self.scale(T::one() / T::from(points).unwrap());
         if !is_complex {
             // Convert vector back into real number space
@@ -464,7 +473,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
     fn interpft<B>(&mut self,
                    buffer: &mut B,
                    dest_points: usize)
-            where B: Buffer<S, T> {
+            where B: Buffer<S, T> + for<'a> BufferNew<'a, S, T> {
         self.interpolate(buffer, None, dest_points, T::zero()).expect("interpolate with no frequency response should never fail");
     }
 
@@ -474,7 +483,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                    dest_points: usize,
                    delay: T)
                    -> VoidResult
-            where B: Buffer<S, T> {
+            where B: Buffer<S, T> + for<'a> BufferNew<'a, S, T> {
         if function.is_some() && !function.unwrap().is_symmetric() && !self.is_complex() {
             return Err(ErrorReason::ArgumentFunctionMustBeSymmetric);
         }
@@ -603,14 +612,14 @@ impl<S, T, N, D> RealInterpolationOps<S, T> for DspVec<S, T, N, D>
           D: Domain
 {
     fn interpolate_lin<B>(&mut self, buffer: &mut B, interpolation_factor: T, delay: T)
-        where B: Buffer<S, T>
+        where B: for<'a> BufferNew<'a, S, T>
     {
         let data_len = self.len();
         let dest_len = (T::from(data_len - 1).unwrap() * interpolation_factor)
             .round()
             .to_usize()
             .unwrap() + 1;
-        let mut temp = buffer.get(dest_len);
+        let mut temp = buffer.borrow(dest_len);
         {
             if self.is_complex() {
                 self.valid_len = 0;
@@ -637,19 +646,18 @@ impl<S, T, N, D> RealInterpolationOps<S, T> for DspVec<S, T, N, D>
             dest[dest_len - 1] = data[data_len - 1];
             self.valid_len = dest_len;
         }
-        mem::swap(&mut self.data, &mut temp);
-        buffer.free(temp);
+        temp.trade(&mut self.data);
     }
 
     fn interpolate_hermite<B>(&mut self, buffer: &mut B, interpolation_factor: T, delay: T)
-        where B: Buffer<S, T>
+        where B: for<'a> BufferNew<'a, S, T>
     {
         let data_len = self.len();
         let dest_len = (T::from(data_len - 1).unwrap() * interpolation_factor)
             .round()
             .to_usize()
             .unwrap() + 1;
-        let mut temp = buffer.get(dest_len);
+        let mut temp = buffer.borrow(dest_len);
         {
             if self.is_complex() {
                 self.valid_len = 0;
@@ -741,8 +749,7 @@ impl<S, T, N, D> RealInterpolationOps<S, T> for DspVec<S, T, N, D>
             }
         }
         self.valid_len = dest_len;
-        mem::swap(&mut self.data, &mut temp);
-        buffer.free(temp);
+        temp.trade(&mut self.data);
     }
 }
 
