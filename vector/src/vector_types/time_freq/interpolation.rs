@@ -7,7 +7,7 @@ use super::{WrappingIterator, create_shifted_copies};
 use simd_extensions::*;
 use multicore_support::*;
 use super::super::{VoidResult, DspVec, Domain, ToComplexVector, ComplexOps, PaddingOption,
-                   NumberSpace, ToSliceMut, GenDspVec, ToDspVector, DataDomain, Buffer, BufferNew, BufferBorrow, Vector,
+                   NumberSpace, ToSliceMut, GenDspVec, ToDspVector, DataDomain, BufferNew, BufferBorrow, Vector,
                    RealNumberSpace, ErrorReason, InsertZerosOpsBuffered, ScaleOps, MetaData,
                    ResizeOps, FrequencyToTimeDomainOperations, ResizeBufferedOps,
                    TimeToFrequencyDomainOperations, NoTradeBuffer};
@@ -69,7 +69,7 @@ pub trait InterpolationOps<S, T>
                    target_points: usize,
                    delay: T)
                    -> VoidResult
-            where B: Buffer<S, T> + for<'a> BufferNew<'a, S, T>;
+            where B: for<'a> BufferNew<'a, S, T>;
 
     /// Interpolates the signal in frequency domain by padding it with zeros.
     /// This function preserves the shape of the signal in frequency domain.
@@ -79,7 +79,7 @@ pub trait InterpolationOps<S, T>
     fn interpft<B>(&mut self,
                    buffer: &mut B,
                    target_points: usize)
-            where B: Buffer<S, T> + for<'a> BufferNew<'a, S, T>;
+            where B: for<'a> BufferNew<'a, S, T>;
 
     /// Decimates or downsamples `self`. `decimatei` is the inverse function to `interpolatei`.
     fn decimatei(&mut self, decimation_factor: u32, delay: u32);
@@ -532,7 +532,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
     fn interpft<B>(&mut self,
                    buffer: &mut B,
                    dest_points: usize)
-            where B: Buffer<S, T> + for<'a> BufferNew<'a, S, T> {
+            where B: for<'a> BufferNew<'a, S, T> {
         self.interpolate(buffer, None, dest_points, T::zero()).expect("interpolate with no frequency response should never fail");
     }
 
@@ -542,7 +542,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                    dest_points: usize,
                    delay: T)
                    -> VoidResult
-            where B: Buffer<S, T> + for<'a> BufferNew<'a, S, T> {
+            where B: for<'a> BufferNew<'a, S, T> {
         if function.is_some() && !function.unwrap().is_symmetric() && !self.is_complex() {
             return Err(ErrorReason::ArgumentFunctionMustBeSymmetric);
         }

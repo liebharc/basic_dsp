@@ -36,8 +36,6 @@ mod general;
 pub use self::general::*;
 mod buffer;
 pub use self::buffer::*;
-mod buffer2;
-pub use self::buffer2::*;
 
 /// Result for operations which transform a type (most commonly the type is a vector).
 /// On success the transformed type is returned.

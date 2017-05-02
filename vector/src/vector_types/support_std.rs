@@ -8,7 +8,7 @@ use super::{round_len, DataDomain, NumberSpace, Domain, ErrorReason, DspVec, Gen
             RealOrComplexData, TimeData, FrequencyData, TimeOrFrequencyData, ToSlice,
             TypeMetaData, MetaData, BufferBorrow, BufferNew};
 use super::{ToComplexVector, ToRealVector, ToDspVector, ToSliceMut,
-            VoidResult, Resize, Buffer};
+            VoidResult, Resize};
 use multicore_support::MultiCoreSettings;
 
 /// Conversion from two instances of a generic data type into a dsp vector with complex data.
@@ -48,7 +48,7 @@ impl<'a, T: RealNumber> DerefMut for SingleBufferBurrow<'a, T> {
     }
 }
 
-impl<'a, T: RealNumber> BufferBorrow<Vec<T>, T> for SingleBufferBurrow<'a, T> {  
+impl<'a, T: RealNumber> BufferBorrow<Vec<T>, T> for SingleBufferBurrow<'a, T> {
     fn trade(self, storage: &mut Vec<T>) {
         mem::swap(&mut self.owner.temp, storage);
     }
@@ -75,34 +75,6 @@ impl<T> SingleBuffer<T>
     }
 }
 
-impl<T> Buffer<Vec<T>, T> for SingleBuffer<T>
-    where T: RealNumber
-{
-    fn get(&mut self, len: usize) -> Vec<T> {
-        if len <= self.temp.len() {
-            let mut result = Vec::new();
-            mem::swap(&mut result, &mut self.temp);
-            return result;
-        }
-
-        vec![T::zero(); len]
-    }
-
-    fn construct_new(&mut self, len: usize) -> Vec<T> {
-        vec![T::zero(); len]
-    }
-
-    fn free(&mut self, storage: Vec<T>) {
-        if storage.len() > self.temp.len() {
-            self.temp = storage;
-        }
-    }
-
-    fn alloc_len(&self) -> usize {
-        self.temp.capacity()
-    }
-}
-
 impl<'a, T> BufferNew<'a, Vec<T>, T> for SingleBuffer<T>
     where T: RealNumber + 'a
 {
@@ -112,8 +84,8 @@ impl<'a, T> BufferNew<'a, Vec<T>, T> for SingleBuffer<T>
         if self.temp.len() < len {
             self.temp = vec![T::zero(); len];
         }
-        
-        SingleBufferBurrow { 
+
+        SingleBufferBurrow {
             owner: self,
             len: len
         }
@@ -146,7 +118,7 @@ impl<T: RealNumber> DerefMut for NoBufferBurrow<T> {
     }
 }
 
-impl<'a, T: RealNumber> BufferBorrow<Vec<T>, T> for NoBufferBurrow<T> {  
+impl<'a, T: RealNumber> BufferBorrow<Vec<T>, T> for NoBufferBurrow<T> {
     fn trade(mut self, storage: &mut Vec<T>) {
         mem::swap(&mut self.data, storage);
     }
@@ -158,28 +130,10 @@ impl<'a, T> BufferNew<'a, Vec<T>, T> for NoBuffer
     type Borrow = NoBufferBurrow<T>;
 
     fn borrow(&mut self, len: usize) -> Self::Borrow {
-        NoBufferBurrow { 
+        NoBufferBurrow {
             data: vec![T::zero(); len]
         }
     }
-
-    fn alloc_len(&self) -> usize {
-        0
-    }
-}
-
-impl<T> Buffer<Vec<T>, T> for NoBuffer
-    where T: RealNumber
-{
-    fn get(&mut self, len: usize) -> Vec<T> {
-        vec![T::zero(); len]
-    }
-
-    fn construct_new(&mut self, len: usize) -> Vec<T> {
-        vec![T::zero(); len]
-    }
-
-    fn free(&mut self, _: Vec<T>) { }
 
     fn alloc_len(&self) -> usize {
         0

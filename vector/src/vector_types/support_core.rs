@@ -5,7 +5,7 @@ use std::ops::*;
 use super::{TimeData, FrequencyData, RealData, ComplexData, RealOrComplexData,
             TimeOrFrequencyData, NumberSpace, Domain, DspVec, TypeMetaData, DataDomain,
             ToSlice, MetaData, ErrorReason,
-            ToComplexVector, ToRealVector, ToDspVector, ToSliceMut, Buffer,
+            ToComplexVector, ToRealVector, ToDspVector, ToSliceMut,
             VoidResult, complex_to_array_mut, complex_to_array, BufferBorrow, BufferNew};
 use multicore_support::MultiCoreSettings;
 use inline_vector::InlineVector;
@@ -31,7 +31,7 @@ impl<'a, T: RealNumber> DerefMut for FixedLenBufferBurrow<'a, T> {
     }
 }
 
-impl<'a, S: ToSliceMut<T>, T: RealNumber> BufferBorrow<S, T> for FixedLenBufferBurrow<'a, T> {  
+impl<'a, S: ToSliceMut<T>, T: RealNumber> BufferBorrow<S, T> for FixedLenBufferBurrow<'a, T> {
     fn trade(self, storage: &mut S) {
         let len = std::cmp::min(storage.len(), self.data.len());
         let mut storage = storage.to_slice_mut();
@@ -69,33 +69,14 @@ impl<'a, S, T> BufferNew<'a, S, T> for FixedLenBuffer<S, T>
         if self.data.len() < len {
             panic!("FixedLenBuffer: Out of memory");
         }
-        
-        FixedLenBufferBurrow { 
+
+        FixedLenBufferBurrow {
             data: &mut self.data.to_slice_mut()[0..len]
         }
     }
 
     fn alloc_len(&self) -> usize {
         self.data.len()
-    }
-}
-
-impl<S, T> Buffer<S, T> for FixedLenBuffer<S, T>
-    where T: RealNumber,
-          S: ToSliceMut<T> + std::clone::Clone
-{
-    fn get(&mut self, _: usize) -> S {
-        self.data.clone()
-    }
-
-    fn construct_new(&mut self, _: usize) -> S {
-        panic!("TODO: Remove this trait impl")
-    }
-
-    fn free(&mut self, _: S) { }
-
-    fn alloc_len(&self) -> usize {
-        0
     }
 }
 
