@@ -12,6 +12,8 @@ mod convolution;
 pub use self::convolution::*;
 mod interpolation;
 pub use self::interpolation::*;
+mod real_interpolation;
+pub use self::real_interpolation::*;
 
 use rustfft::FFT;
 use {array_to_complex, array_to_complex_mut};
