@@ -4,7 +4,7 @@ use numbers::*;
 use std::ops::*;
 use super::super::{ToRealResult, ErrorReason, Buffer, Vector, Resize, MetaData, DspVec,
                    ToSliceMut, ToSlice, VoidResult, Domain, ComplexNumberSpace,
-                   RededicateForceOps, RealNumberSpace, NumberSpace, GetMetaData};
+                   RededicateForceOps, RealNumberSpace, NumberSpace, GetMetaData, PosEq};
 
 /// Defines transformations from complex to real number space.
 ///
@@ -549,17 +549,18 @@ macro_rules! assert_self_complex_and_targets_real {
     }
 }
 
-impl<S, T, N, NR, D, O> ComplexToRealGetterOps<O, T, NR, D> for DspVec<S, T, N, D>
+impl<S, T, N, NR, D, O, DO> ComplexToRealGetterOps<O, T, NR, DO> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToRealResult,
           O:
-            Vector<T> + GetMetaData<T, NR, D>
+            Vector<T> + GetMetaData<T, NR, DO>
             + Index<Range<usize>, Output=[T]>
             + IndexMut<Range<usize>>,
           S: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
           NR: RealNumberSpace,
-          D: Domain {
+          D: Domain,
+          DO: PosEq<D> + Domain {
     fn get_real(&self, destination: &mut O) {
         assert_self_complex_and_target_real!(self, destination);
         destination.resize(self.len()).expect("Target is real and thus all values are valid");
@@ -638,14 +639,15 @@ impl<S, T, N, NR, D, O> ComplexToRealGetterOps<O, T, NR, D> for DspVec<S, T, N, 
     }
 }
 
-impl<S, T, N, NR, D, O> ComplexToRealSetterOps<O, T, NR, D> for DspVec<S, T, N, D>
+impl<S, T, N, NR, D, O, DO> ComplexToRealSetterOps<O, T, NR, DO> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToRealResult,
-          O: Index<Range<usize>, Output = [T]> + Vector<T> + GetMetaData<T, NR, D>,
+          O: Index<Range<usize>, Output = [T]> + Vector<T> + GetMetaData<T, NR, DO>,
           S: ToSliceMut<T> + Resize,
           T: RealNumber,
           N: ComplexNumberSpace,
           NR: RealNumberSpace,
-          D: Domain
+          D: Domain,
+          DO: PosEq<D> + Domain
 {
     fn set_real_imag(&mut self, real: &O, imag: &O) -> VoidResult {
         {

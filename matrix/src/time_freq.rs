@@ -418,9 +418,9 @@ macro_rules! add_mat_impl {
 			}
 
 			impl<S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
-                    ConvolutionOps<DspVec<S, T, N, D>, S, T>
+                    ConvolutionOps<DspVec<S, T, N, D>, S, T, N, D>
                     for $matrix<DspVec<S, T, N, D>, S, T>
-                    where DspVec<S, T, N, D>: ConvolutionOps<DspVec<S, T, N, D>, S, T> {
+                    where DspVec<S, T, N, D>: ConvolutionOps<DspVec<S, T, N, D>, S, T, N, D> {
 				fn convolve_signal<B>(
 						&mut self,
 						buffer: &mut B,
@@ -467,7 +467,7 @@ macro_rules! convolve_signal {
 }
 
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
-        ConvolutionOps<Vec<&'a Vec<&'a DspVec<S, T, N, D>>>, S, T>
+        ConvolutionOps<Vec<&'a Vec<&'a DspVec<S, T, N, D>>>, S, T, N, D>
         for MatrixMxN<DspVec<S, T, N, D>, S, T> {
     fn convolve_signal<B>(
             &mut self,
@@ -479,7 +479,7 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
 }
 
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
-        ConvolutionOps<[[&'a DspVec<S, T, N, D>; 2]; 2], S, T>
+        ConvolutionOps<[[&'a DspVec<S, T, N, D>; 2]; 2], S, T, N, D>
         for Matrix2xN<DspVec<S, T, N, D>, S, T> {
     fn convolve_signal<B>(
             &mut self,
@@ -491,7 +491,7 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
 }
 
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
-        ConvolutionOps<[[&'a DspVec<S, T, N, D>; 3]; 3], S, T>
+        ConvolutionOps<[[&'a DspVec<S, T, N, D>; 3]; 3], S, T, N, D>
         for Matrix3xN<DspVec<S, T, N, D>, S, T> {
     fn convolve_signal<B>(
             &mut self,
@@ -503,7 +503,7 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
 }
 
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
-        ConvolutionOps<[[&'a DspVec<S, T, N, D>; 4]; 4], S, T>
+        ConvolutionOps<[[&'a DspVec<S, T, N, D>; 4]; 4], S, T, N, D>
         for Matrix4xN<DspVec<S, T, N, D>, S, T> {
     fn convolve_signal<B>(
             &mut self,

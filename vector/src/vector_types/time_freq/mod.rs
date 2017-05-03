@@ -212,8 +212,10 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     /// Only calculate the convolution in the inverse range from the given range.
     /// This is intended to be used together with convolution implementations which
     /// are faster but don't handle the beginning and end of a vector correctly.
-    fn convolve_vector_range<O>(&mut self, target: &mut [T], vector: &O, range: Range<usize>)
-        where O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, N, D>
+    fn convolve_vector_range<O, NO, DO>(&mut self, target: &mut [T], vector: &O, range: Range<usize>)
+        where O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
+              NO: NumberSpace,
+              DO: Domain
     {
         let points = self.points();
         let other_points = vector.points();
@@ -255,9 +257,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
-    fn convolve_signal_scalar<B, O>(&mut self, buffer: &mut B, vector: &O)
+    fn convolve_signal_scalar<B, O, NO, DO>(&mut self, buffer: &mut B, vector: &O)
         where B: for<'a> Buffer<'a, S, T>,
-              O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, N, D>
+              O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
+              NO: NumberSpace,
+              DO: Domain
     {
         let points = self.points();
         let other_points = vector.points();

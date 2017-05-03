@@ -5,7 +5,7 @@ use simd_extensions::*;
 use numbers::*;
 use std::ops::*;
 use super::super::{ErrorReason, VoidResult, Vector, GetMetaData, DspVec, ToSliceMut, MetaData,
-                   Domain, NumberSpace, ComplexNumberSpace};
+                   Domain, NumberSpace, ComplexNumberSpace, PosEq};
 
 /// An operation which multiplies each vector element with a constant
 pub trait ScaleOps<T>: Sized
@@ -60,7 +60,8 @@ pub trait OffsetOps<T>: Sized
 }
 
 /// Elementary algebra on types: addition, subtraction, multiplication and division
-pub trait ElementaryOps<A> {
+pub trait ElementaryOps<A, T: RealNumber, N: NumberSpace, D: Domain> 
+    where A: GetMetaData<T, N, D> {
     /// Calculates the sum of `self + summand`. It consumes self and returns the result.
     /// # Failures
     /// TransRes may report the following `ErrorReason` members:
@@ -155,7 +156,8 @@ pub trait ElementaryOps<A> {
 }
 
 /// Elementary algebra on types where the argument might contain less data points than `self`.
-pub trait ElementaryWrapAroundOps<A> {
+pub trait ElementaryWrapAroundOps<A, T: RealNumber, N: NumberSpace, D: Domain> 
+    where A: GetMetaData<T, N, D> {
     /// Calculates the sum of `self + summand`. `summand` may be smaller than `self` as long
     /// as `self.len() % summand.len() == 0`. THe result is the same as it would be if
     /// you would repeat `summand` until it has the same length as `self`.
@@ -537,12 +539,14 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     impl_binary_smaller_vector_operation!(fn div_smaller_real, divisor, div, div);
 }
 
-impl<S, T, N, D, O> ElementaryOps<O> for DspVec<S, T, N, D>
+impl<S, T, N, D, O, NO, DO> ElementaryOps<O, T, NO, DO> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
           D: Domain,
-          O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, N, D>
+          O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
+          NO: PosEq<N> + NumberSpace,
+          DO: PosEq<D> + Domain
 {
     fn add(&mut self, summand: &O) -> VoidResult {
         self.add_inter(summand)
@@ -577,13 +581,14 @@ impl<S, T, N, D, O> ElementaryOps<O> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, T, N, D, O> ElementaryWrapAroundOps<O> for DspVec<S, T, N, D>
+impl<S, T, N, D, O, NO, DO> ElementaryWrapAroundOps<O, T, NO, DO> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
           D: Domain,
-          O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, N, D>
-{
+          O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
+          NO: PosEq<N> + NumberSpace,
+          DO: PosEq<D> + Domain {
     fn add_smaller(&mut self, summand: &O) -> VoidResult {
         self.add_smaller_inter(summand)
     }

@@ -10,7 +10,7 @@ use gpu_support::GpuSupport;
 use super::super::{VoidResult, ToSliceMut, MetaData, DspVec, NumberSpace, TimeDomain,
                    FrequencyDomain, DataDomain, Vector, ComplexNumberSpace, Buffer, BufferBorrow,
                    ErrorReason, TimeToFrequencyDomainOperations, ToComplexVector, FromVector,
-                   PaddingOption, ResizeOps, InsertZerosOps};
+                   PaddingOption, ResizeOps, InsertZerosOps, PosEq, Domain};
 
 /// Provides a convolution operations.
 pub trait Convolution<'a, S, T, C: 'a>
@@ -35,9 +35,11 @@ pub trait Convolution<'a, S, T, C: 'a>
 }
 
 /// Provides a convolution operation for types which at some point are slice based.
-pub trait ConvolutionOps<A, S, T>
+pub trait ConvolutionOps<A, S, T, N, D>
     where S: ToSliceMut<T>,
-          T: RealNumber
+          T: RealNumber,
+          N: NumberSpace,
+          D: Domain
 {
     /// Convolves `self` with the convolution function `impulse_response`.
     /// For performance it's recommended
@@ -101,7 +103,7 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a RealImpulseResponse<T>> for DspVe
           T: RealNumber,
           N: NumberSpace,
           D: TimeDomain,
-          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone + ConvolutionOps<DspVec<InlineVector<T>, T, N, D>, S, T>
+          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone + ConvolutionOps<DspVec<InlineVector<T>, T, N, D>, S, T, N, D>
 {
     fn convolve<B>(&mut self,
                    buffer: &mut B,
@@ -206,7 +208,7 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a ComplexImpulseResponse<T>> for Ds
           T: RealNumber,
           N: ComplexNumberSpace,
           D: TimeDomain,
-          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone + ConvolutionOps<DspVec<InlineVector<T>, T, N, D>, S, T,>
+          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone + ConvolutionOps<DspVec<InlineVector<T>, T, N, D>, S, T, N, D>
 {
     fn convolve<B>(&mut self,
                    buffer: &mut B,
@@ -270,7 +272,7 @@ macro_rules! assert_meta_data {
          {
             let delta_ratio = $self_.delta / $other.delta;
             if $self_.is_complex() != $other.is_complex() ||
-                $self_.domain != $other.domain ||
+                $self_.domain() != $other.domain() ||
                 delta_ratio > T::from(1.1).unwrap() || delta_ratio < T::from(0.9).unwrap() {
                 return Err(ErrorReason::InputMetaDataMustAgree);
             }
@@ -317,13 +319,15 @@ impl<S, T, N, D> DspVec<S, T, N, D>
           D: TimeDomain,
           DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone
 {
-    fn overlap_discard<B, SO>(&mut self,
+    fn overlap_discard<B, SO, NO, DO>(&mut self,
                               buffer: &mut B,
-                              impulse_response: &DspVec<SO, T, N, D>,
+                              impulse_response: &DspVec<SO, T, NO, DO>,
                               fft_len: usize)
                               -> VoidResult
         where B: for<'a> Buffer<'a, S, T>,
-              SO: ToSliceMut<T>
+              SO: ToSliceMut<T>,
+              NO: NumberSpace,
+              DO: Domain
     {
         if !self.is_complex() {
             return Err(ErrorReason::InputMustBeComplex);
@@ -450,18 +454,20 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     }
 }
 
-impl<S, SO, T, N, D> ConvolutionOps<DspVec<SO, T, N, D>, S, T> for DspVec<S, T, N, D>
+impl<S, SO, T, N, D, NO, DO> ConvolutionOps<DspVec<SO, T, NO, DO>, S, T, NO, DO> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           SO: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
           D: TimeDomain,
           DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone,
-          DspVec<SO, T, N, D>: TimeToFrequencyDomainOperations<SO, T> + Clone
+          DspVec<SO, T, N, D>: TimeToFrequencyDomainOperations<SO, T> + Clone,
+          NO: PosEq<N> + NumberSpace,
+          DO: TimeDomain
 {
     fn convolve_signal<B>(&mut self,
                           buffer: &mut B,
-                          impulse_response: &DspVec<SO, T, N, D>)
+                          impulse_response: &DspVec<SO, T, NO, DO>)
                           -> VoidResult
         where B: for<'a> Buffer<'a, S, T>
     {

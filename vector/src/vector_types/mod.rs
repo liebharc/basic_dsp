@@ -201,6 +201,24 @@ impl Domain for TimeOrFrequencyData {
 impl TimeDomain for TimeOrFrequencyData {}
 impl FrequencyDomain for TimeOrFrequencyData {}
 
+/// Expresses at compile time that two classes could potentially represent 
+pub trait PosEq<O> { }
+impl PosEq<RealData> for RealData { }
+impl PosEq<RealOrComplexData> for RealData { }
+impl PosEq<RealData> for RealOrComplexData { }
+impl PosEq<ComplexData> for RealOrComplexData { }
+impl PosEq<RealOrComplexData> for RealOrComplexData { }
+impl PosEq<ComplexData> for ComplexData { }
+impl PosEq<RealOrComplexData> for ComplexData { }
+
+impl PosEq<TimeData> for TimeData { }
+impl PosEq<TimeOrFrequencyData> for TimeData { }
+impl PosEq<TimeData> for TimeOrFrequencyData { }
+impl PosEq<FrequencyData> for TimeOrFrequencyData { }
+impl PosEq<TimeOrFrequencyData> for TimeOrFrequencyData { }
+impl PosEq<FrequencyData> for FrequencyData { }
+impl PosEq<TimeOrFrequencyData> for FrequencyData { }
+    
 /// A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing
 /// (DSP) operations. All data vector operations consume the vector they operate on and return a
 /// new vector. A consumed vector

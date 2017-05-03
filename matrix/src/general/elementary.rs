@@ -44,9 +44,9 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber> ElementaryOps<$matrix<V, S, T>>
+			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber, N: NumberSpace, D: Domain> ElementaryOps<$matrix<V, S, T>, T, N, D>
                     for $matrix<V, S, T>
-                    where V: ElementaryOps<V> {
+                    where V: ElementaryOps<V, T, N, D> + GetMetaData<T, N, D> {
 				fn add(&mut self, summand: &Self) -> VoidResult {
 					for (v, o) in self.rows_mut().iter_mut().zip(summand.rows()) {
 						try!(v.add(o));
@@ -80,9 +80,9 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber> ElementaryOps<V>
+			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber, N: NumberSpace, D: Domain> ElementaryOps<V, T, N, D>
                     for $matrix<V, S, T>
-                    where V: ElementaryOps<V> {
+                    where V: ElementaryOps<V, T, N, D> + GetMetaData<T, N, D> {
 				fn add(&mut self, summand: &V) -> VoidResult {
                     for v in self.rows_mut() {
 						try!(v.add(summand));
@@ -116,10 +116,10 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber>
-                    ElementaryWrapAroundOps<$matrix<V, S, T>>
+			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber, N: NumberSpace, D: Domain>
+                    ElementaryWrapAroundOps<$matrix<V, S, T>, T, N, D>
                     for $matrix<V, S, T>
-                    where V: ElementaryWrapAroundOps<V> {
+                    where V: ElementaryWrapAroundOps<V, T, N, D> + GetMetaData<T, N, D> {
 				fn add_smaller(&mut self, summand: &Self) -> VoidResult {
 					for (v, o) in self.rows_mut().iter_mut().zip(summand.rows()) {
 						try!(v.add_smaller(o));
@@ -153,9 +153,9 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber> ElementaryWrapAroundOps<V>
+			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber, N: NumberSpace, D: Domain> ElementaryWrapAroundOps<V, T, N, D>
                     for $matrix<V, S, T>
-                    where V: ElementaryWrapAroundOps<V> {
+                    where V: ElementaryWrapAroundOps<V, T, N, D> + GetMetaData<T, N, D> {
 				fn add_smaller(&mut self, summand: &V) -> VoidResult {
                     for v in self.rows_mut() {
 						try!(v.add_smaller(summand));

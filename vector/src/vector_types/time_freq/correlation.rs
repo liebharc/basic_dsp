@@ -5,7 +5,7 @@ use super::super::{DspVec, Buffer, ComplexOps, ScaleOps, FrequencyDomainOperatio
                    VoidResult, Vector, MetaData, ComplexNumberSpace, TimeDomain, ElementaryOps,
                    ToFreqResult, InsertZerosOpsBuffered, DataDomain, ErrorReason,
                    ReorganizeDataOps, ToComplexVector, FrequencyToTimeDomainOperations,
-                   NumberSpace, Domain, FrequencyDomain, NoTradeBuffer};
+                   NumberSpace, Domain, FrequencyDomain, NoTradeBuffer, PosEq};
 
 /// Cross-correlation of data vectors. See also https://en.wikipedia.org/wiki/Cross-correlation
 ///
@@ -107,14 +107,15 @@ impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
 	}
 }
 
-impl<S, T, N, D, DF, O> CrossCorrelationOps<O, S, T, N, DF> for DspVec<S, T, N, D>
+impl<S, T, N, D, DF, O, NO> CrossCorrelationOps<O, S, T, NO, DF> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ScaleOps<T>,
           S: ToSliceMut<T>,
           T: RealNumber + 'static,
           N: ComplexNumberSpace,
           D: TimeDomain,
           DF: FrequencyDomain,
-          O: Vector<T> + GetMetaData<T, N, DF> + Index<RangeFull, Output = [T]>
+          O: Vector<T> + GetMetaData<T, NO, DF> + Index<RangeFull, Output = [T]>,
+          NO: PosEq<N> + NumberSpace
 {
     fn correlate<B>(&mut self, buffer: &mut B, other: &O) -> VoidResult
         where B: for<'a> Buffer<'a, S, T>

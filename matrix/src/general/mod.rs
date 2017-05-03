@@ -8,9 +8,9 @@ pub use self::elementary::*;
 mod statistics;
 pub use self::statistics::*;
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<MatrixMxN<V, S, T>, T>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, N: NumberSpace, D: Domain> DotProductOps<MatrixMxN<V, S, T>, T, T, N, D>
    for MatrixMxN<V, S, T>
-    where V: DotProductOps<V, T, Output=ScalarResult<T>> {
+    where V: DotProductOps<V, T, T, N, D, Output=ScalarResult<T>> + GetMetaData<T, N, D> {
     type Output = ScalarResult<Vec<T>>;
 
     fn dot_product(&self, factor: &MatrixMxN<V, S, T>) -> ScalarResult<Vec<T>> {
@@ -24,9 +24,9 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<MatrixMxN<V, S, T
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<Matrix2xN<V, S, T>, T>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, N: NumberSpace, D: Domain> DotProductOps<Matrix2xN<V, S, T>, T, T, N, D>
    for Matrix2xN<V, S, T>
-    where V: DotProductOps<V, T, Output=ScalarResult<T>> {
+    where V: DotProductOps<V, T, T, N, D, Output=ScalarResult<T>> + GetMetaData<T, N, D> {
     type Output = ScalarResult<Vec<T>>;
 
     fn dot_product(&self, factor: &Matrix2xN<V, S, T>) -> ScalarResult<Vec<T>> {
@@ -40,9 +40,9 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<Matrix2xN<V, S, T
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<Matrix3xN<V, S, T>, T>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, N: NumberSpace, D: Domain> DotProductOps<Matrix3xN<V, S, T>, T, T, N, D>
    for Matrix3xN<V, S, T>
-    where V: DotProductOps<V, T, Output=ScalarResult<T>> {
+    where V: DotProductOps<V, T, T, N, D, Output=ScalarResult<T>> + GetMetaData<T, N, D> {
     type Output = ScalarResult<Vec<T>>;
 
     fn dot_product(&self, factor: &Matrix3xN<V, S, T>) -> ScalarResult<Vec<T>> {
@@ -56,9 +56,9 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<Matrix3xN<V, S, T
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<Matrix4xN<V, S, T>, T>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, N: NumberSpace, D: Domain> DotProductOps<Matrix4xN<V, S, T>, T, T, N, D>
    for Matrix4xN<V, S, T>
-    where V: DotProductOps<V, T, Output=ScalarResult<T>> {
+    where V: DotProductOps<V, T, T, N, D, Output=ScalarResult<T>> + GetMetaData<T, N, D> {
     type Output = ScalarResult<Vec<T>>;
 
     fn dot_product(&self, factor: &Matrix4xN<V, S, T>) -> ScalarResult<Vec<T>> {
@@ -72,8 +72,8 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<Matrix4xN<V, S, T
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<V, T> for MatrixMxN<V, S, T>
-    where V: DotProductOps<V, T, Output = ScalarResult<T>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, N: NumberSpace, D: Domain> DotProductOps<V, T, T, N, D> for MatrixMxN<V, S, T>
+    where V: DotProductOps<V, T, T, N, D, Output = ScalarResult<T>> + GetMetaData<T, N, D>
 {
     type Output = ScalarResult<Vec<T>>;
 
@@ -88,8 +88,8 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<V, T> for MatrixM
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<V, T> for Matrix2xN<V, S, T>
-    where V: DotProductOps<V, T, Output = ScalarResult<T>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, N: NumberSpace, D: Domain> DotProductOps<V, T, T, N, D> for Matrix2xN<V, S, T>
+    where V: DotProductOps<V, T, T, N, D, Output = ScalarResult<T>> + GetMetaData<T, N, D>
 {
     type Output = ScalarResult<[T; 2]>;
 
@@ -104,8 +104,8 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<V, T> for Matrix2
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<V, T> for Matrix3xN<V, S, T>
-    where V: DotProductOps<V, T, Output = ScalarResult<T>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, N: NumberSpace, D: Domain> DotProductOps<V, T, T, N, D> for Matrix3xN<V, S, T>
+    where V: DotProductOps<V, T, T, N, D, Output = ScalarResult<T>> + GetMetaData<T, N, D>
 {
     type Output = ScalarResult<[T; 3]>;
 
@@ -120,8 +120,8 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<V, T> for Matrix3
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<V, T> for Matrix4xN<V, S, T>
-    where V: DotProductOps<V, T, Output = ScalarResult<T>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, N: NumberSpace, D: Domain> DotProductOps<V, T, T, N, D> for Matrix4xN<V, S, T>
+    where V: DotProductOps<V, T, T, N, D, Output = ScalarResult<T>> + GetMetaData<T, N, D>
 {
     type Output = ScalarResult<[T; 4]>;
 
@@ -136,9 +136,9 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> DotProductOps<V, T> for Matrix4
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseDotProductOps<MatrixMxN<V, S, T>, T>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, N: NumberSpace, D: Domain> PreciseDotProductOps<MatrixMxN<V, S, T>, T, T, N, D>
    for MatrixMxN<V, S, T>
-    where V: PreciseDotProductOps<V, T, Output=ScalarResult<T>> {
+    where V: PreciseDotProductOps<V, T, T, N, D, Output=ScalarResult<T>> + GetMetaData<T, N, D> {
     type Output = ScalarResult<Vec<T>>;
 
     fn dot_product_prec(&self, factor: &MatrixMxN<V, S, T>) -> ScalarResult<Vec<T>> {
@@ -152,9 +152,9 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseDotProductOps<MatrixMxN<
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseDotProductOps<Matrix2xN<V, S, T>, T>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, N: NumberSpace, D: Domain> PreciseDotProductOps<Matrix2xN<V, S, T>, T, T, N, D>
    for Matrix2xN<V, S, T>
-    where V: PreciseDotProductOps<V, T, Output=ScalarResult<T>> {
+    where V: PreciseDotProductOps<V, T, T, N, D, Output=ScalarResult<T>> + GetMetaData<T, N, D> {
     type Output = ScalarResult<Vec<T>>;
 
     fn dot_product_prec(&self, factor: &Matrix2xN<V, S, T>) -> ScalarResult<Vec<T>> {
@@ -168,9 +168,9 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseDotProductOps<Matrix2xN<
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseDotProductOps<Matrix3xN<V, S, T>, T>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, N: NumberSpace, D: Domain> PreciseDotProductOps<Matrix3xN<V, S, T>, T, T, N, D>
    for Matrix3xN<V, S, T>
-    where V: PreciseDotProductOps<V, T, Output=ScalarResult<T>> {
+    where V: PreciseDotProductOps<V, T, T, N, D, Output=ScalarResult<T>> + GetMetaData<T, N, D> {
     type Output = ScalarResult<Vec<T>>;
 
     fn dot_product_prec(&self, factor: &Matrix3xN<V, S, T>) -> ScalarResult<Vec<T>> {
@@ -184,9 +184,9 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseDotProductOps<Matrix3xN<
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseDotProductOps<Matrix4xN<V, S, T>, T>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, N: NumberSpace, D: Domain> PreciseDotProductOps<Matrix4xN<V, S, T>, T, T, N, D>
    for Matrix4xN<V, S, T>
-    where V: PreciseDotProductOps<V, T, Output=ScalarResult<T>> {
+    where V: PreciseDotProductOps<V, T, T, N, D, Output=ScalarResult<T>> + GetMetaData<T, N, D> {
     type Output = ScalarResult<Vec<T>>;
 
     fn dot_product_prec(&self, factor: &Matrix4xN<V, S, T>) -> ScalarResult<Vec<T>> {
@@ -200,8 +200,8 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseDotProductOps<Matrix4xN<
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseDotProductOps<V, T> for MatrixMxN<V, S, T>
-    where V: PreciseDotProductOps<V, T, Output = ScalarResult<T>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, N: NumberSpace, D: Domain> PreciseDotProductOps<V, T, T, N, D> for MatrixMxN<V, S, T>
+    where V: PreciseDotProductOps<V, T, T, N, D, Output = ScalarResult<T>> + GetMetaData<T, N, D>
 {
     type Output = ScalarResult<Vec<T>>;
 
@@ -216,8 +216,8 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseDotProductOps<V, T> for 
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseDotProductOps<V, T> for Matrix2xN<V, S, T>
-    where V: PreciseDotProductOps<V, T, Output = ScalarResult<T>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, N: NumberSpace, D: Domain> PreciseDotProductOps<V, T, T, N, D> for Matrix2xN<V, S, T>
+    where V: PreciseDotProductOps<V, T, T, N, D, Output = ScalarResult<T>> + GetMetaData<T, N, D>
 {
     type Output = ScalarResult<[T; 2]>;
 
@@ -232,8 +232,8 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseDotProductOps<V, T> for 
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseDotProductOps<V, T> for Matrix3xN<V, S, T>
-    where V: PreciseDotProductOps<V, T, Output = ScalarResult<T>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, N: NumberSpace, D: Domain> PreciseDotProductOps<V, T, T, N, D> for Matrix3xN<V, S, T>
+    where V: PreciseDotProductOps<V, T, T, N, D, Output = ScalarResult<T>> + GetMetaData<T, N, D>
 {
     type Output = ScalarResult<[T; 3]>;
 
@@ -248,8 +248,8 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseDotProductOps<V, T> for 
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseDotProductOps<V, T> for Matrix4xN<V, S, T>
-    where V: PreciseDotProductOps<V, T, Output = ScalarResult<T>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, N: NumberSpace, D: Domain> PreciseDotProductOps<V, T, T, N, D> for Matrix4xN<V, S, T>
+    where V: PreciseDotProductOps<V, T, T, N, D, Output = ScalarResult<T>> + GetMetaData<T, N, D>
 {
     type Output = ScalarResult<[T; 4]>;
 

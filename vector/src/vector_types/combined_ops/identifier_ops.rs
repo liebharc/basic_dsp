@@ -4,7 +4,8 @@ use super::super::{RealNumberSpace, ComplexNumberSpace, NumberSpace, TransRes, V
                    DataDomain, TimeData, FrequencyData, RealData, ComplexData, RealOrComplexData,
                    TimeOrFrequencyData, Domain, ToRealResult, ToComplexResult, ScaleOps,
                    OffsetOps, PowerOps, TrigOps, RealOps, RealToComplexTransformsOps, ComplexOps,
-                   ElementaryOps, ComplexToRealTransformsOps, RededicateForceOps};
+                   ElementaryOps, ComplexToRealTransformsOps, RededicateForceOps, GetMetaData,
+                   TypeMetaData, MultiCoreSettings};
 
 /// Operations for all kind of vectors which can be used in combination
 /// with multi ops or prepared ops.
@@ -142,6 +143,21 @@ impl<T> ToComplexResult for GenDspIdent<T>
     where T: RealNumber
 {
     type ComplexResult = GenDspIdent<T>;
+}
+
+impl<T, N, D> GetMetaData<T, N, D> for Identifier<T, N, D>
+    where T: RealNumber,
+          N: NumberSpace,
+          D: Domain
+{
+    fn get_meta_data(&self) -> TypeMetaData<T, N, D> {
+        TypeMetaData {
+            number_space: self.number_space.clone(),
+            domain: self.domain.clone(),
+            delta: T::one(),
+            multicore_settings: MultiCoreSettings::default(),
+        }
+    }
 }
 
 impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for RealTimeIdent<T>
@@ -443,7 +459,7 @@ impl<T, N, D> ComplexOps<T> for Identifier<T, N, D>
     }
 }
 
-impl<T, N, D> ElementaryOps<Identifier<T, N, D>> for Identifier<T, N, D>
+impl<T, N, D> ElementaryOps<Identifier<T, N, D>, T, N, D> for Identifier<T, N, D>
     where T: RealNumber,
           N: NumberSpace,
           D: Domain

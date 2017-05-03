@@ -3,12 +3,17 @@ use multicore_support::*;
 use simd_extensions::*;
 use std::ops::*;
 use super::super::{Vector, ScalarResult, ErrorReason, DspVec, ToSlice, MetaData, Domain,
-                   RealNumberSpace, ComplexNumberSpace, GetMetaData};
+                   RealNumberSpace, ComplexNumberSpace, GetMetaData, PosEq,
+                   NumberSpace};
 use super::kahan_sum;
 use inline_vector::InlineVector;
 
 /// An operation which multiplies each vector element with a constant
-pub trait DotProductOps<A, T> {
+pub trait DotProductOps<A, R, T, N, D> 
+    where T: RealNumber,
+          N: NumberSpace,
+          D: Domain,
+          A: GetMetaData<T, N, D> {
     type Output;
 
     /// Calculates the dot product of self and factor. Self and factor remain unchanged.
@@ -26,7 +31,11 @@ pub trait DotProductOps<A, T> {
 }
 
 /// An operation which multiplies each vector element with a constant
-pub trait PreciseDotProductOps<A, T> {
+pub trait PreciseDotProductOps<A, R, T, N, D> 
+    where T: RealNumber,
+          N: NumberSpace,
+          D: Domain,
+          A: GetMetaData<T, N, D> {
     type Output;
 
     /// Calculates the dot product of self and factor using a more precise
@@ -44,13 +53,14 @@ pub trait PreciseDotProductOps<A, T> {
     fn dot_product_prec(&self, factor: &A) -> Self::Output;
 }
 
-impl<S, O, T, N, D> DotProductOps<O, T> for DspVec<S, T, N, D>
+impl<S, O, T, N, D, NO, DO> DotProductOps<O, T, T, NO, DO> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: RealNumberSpace,
           D: Domain,
-          O: Vector<T> + GetMetaData<T, N, D> + Index<RangeFull, Output = [T]>
-{
+          O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
+          NO: PosEq<N> + NumberSpace,
+          DO: PosEq<D> + Domain {
     type Output = ScalarResult<T>;
 
     fn dot_product(&self, factor: &O) -> ScalarResult<T> {
@@ -102,13 +112,14 @@ impl<S, O, T, N, D> DotProductOps<O, T> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, O, T, N, D> DotProductOps<O, Complex<T>> for DspVec<S, T, N, D>
+impl<S, O, T, N, D, NO, DO> DotProductOps<O, Complex<T>, T, NO, DO> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
           D: Domain,
-          O: Vector<T> + GetMetaData<T, N, D> + Index<RangeFull, Output = [T]>
-{
+          O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
+          NO: PosEq<N> + NumberSpace,
+          DO: PosEq<D> + Domain {
     type Output = ScalarResult<Complex<T>>;
 
     fn dot_product(&self, factor: &O) -> ScalarResult<Complex<T>> {
@@ -170,13 +181,14 @@ impl<S, O, T, N, D> DotProductOps<O, Complex<T>> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, O, T, N, D> PreciseDotProductOps<O, T> for DspVec<S, T, N, D>
+impl<S, O, T, N, D, NO, DO> PreciseDotProductOps<O, T, T, NO, DO> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: RealNumberSpace,
           D: Domain,
-          O: Vector<T> + GetMetaData<T, N, D> + Index<RangeFull, Output = [T]>
-{
+          O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
+          NO: PosEq<N> + NumberSpace,
+          DO: PosEq<D> + Domain {
     type Output = ScalarResult<T>;
 
     fn dot_product_prec(&self, factor: &O) -> ScalarResult<T> {
@@ -224,13 +236,14 @@ impl<S, O, T, N, D> PreciseDotProductOps<O, T> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, O, T, N, D> PreciseDotProductOps<O, Complex<T>> for DspVec<S, T, N, D>
+impl<S, O, T, N, D, NO, DO> PreciseDotProductOps<O, Complex<T>, T, NO, DO> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
           D: Domain,
-          O: Vector<T> + GetMetaData<T, N, D> + Index<RangeFull, Output = [T]>
-{
+          O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
+          NO: PosEq<N> + NumberSpace,
+          DO: PosEq<D> + Domain {
     type Output = ScalarResult<Complex<T>>;
 
     fn dot_product_prec(&self, factor: &O) -> ScalarResult<Complex<T>> {
@@ -284,5 +297,63 @@ impl<S, O, T, N, D> PreciseDotProductOps<O, Complex<T>> for DspVec<S, T, N, D>
             .iter()
             .fold(Complex::<T>::new(T::zero(), T::zero()), |a, b| a + b);
         Ok(chunk_sum + sum)
+    }
+}
+
+// The test cases for dot product check mainly that the compiler accepts certain combinations of vectors
+// and less about the result of the dot product.
+#[cfg(test)]
+mod tests {
+    use super::super::super::*;
+    use num_complex::Complex32;
+    
+    #[test]
+    fn real_and_real() {
+        let vec1: Vec<f32> = vec![1.0, 2.0, 3.0];
+        let vec2: Vec<f32> = vec![1.0, 2.0, 3.0];
+        let dsp1 = vec1.to_real_time_vec();
+        let dsp2 = vec2.to_real_time_vec();
+        let res = dsp1.dot_product(&dsp2).unwrap();
+        assert_eq!(res, 14.0);
+    }
+    
+    #[test]
+    fn real_and_gen() {
+        let vec1: Vec<f32> = vec![1.0, 2.0, 3.0];
+        let vec2: Vec<f32> = vec![1.0, 2.0, 3.0];
+        let dsp1 = vec1.to_real_time_vec();
+        let dsp2 = vec2.to_gen_dsp_vec(false, DataDomain::Time);
+        let res = dsp1.dot_product(&dsp2).unwrap();
+        assert_eq!(res, 14.0);
+    }
+    
+    #[test]
+    fn complex_and_complex() {
+        let vec1: Vec<f32> = vec![1.0, 0.0, 3.0, 0.0];
+        let vec2: Vec<f32> = vec![1.0, 0.0, 3.0, 0.0];
+        let dsp1 = vec1.to_complex_time_vec();
+        let dsp2 = vec2.to_complex_time_vec();
+        let res = dsp1.dot_product(&dsp2).unwrap();
+        assert_eq!(res, Complex32::new(10.0, 0.0));
+    }
+    
+    #[test]
+    fn complex_and_gen() {
+        let vec1: Vec<f32> = vec![1.0, 0.0, 3.0, 0.0];
+        let vec2: Vec<f32> = vec![1.0, 0.0, 3.0, 0.0];
+        let dsp1 = vec1.to_complex_time_vec();
+        let dsp2 = vec2.to_gen_dsp_vec(true, DataDomain::Time);
+        let res = dsp1.dot_product(&dsp2).unwrap();
+        assert_eq!(res, Complex32::new(10.0, 0.0));
+    }
+    
+    #[test]
+    fn freq_and_freq() {
+        let vec1: Vec<f32> = vec![1.0, 0.0, 3.0, 0.0];
+        let vec2: Vec<f32> = vec![1.0, 0.0, 3.0, 0.0];
+        let dsp1 = vec1.to_complex_freq_vec();
+        let dsp2 = vec2.to_complex_freq_vec();
+        let res = dsp1.dot_product(&dsp2).unwrap();
+        assert_eq!(res, Complex32::new(10.0, 0.0));
     }
 }

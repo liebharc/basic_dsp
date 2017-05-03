@@ -147,7 +147,7 @@ pub extern "C" fn real_dot_product32(vector: &VecBuf,
                                      operand: &VecBuf)
                                      -> ScalarInteropResult<f32> {
     vector.convert_scalar(|v| {
-        DotProductOps::<GenDspVec<Vec<f32>, f32>, f32>::dot_product(v, &operand.vec)
+        DotProductOps::<GenDspVec<Vec<f32>, f32>, f32, f32, RealOrComplexData, TimeOrFrequencyData>::dot_product(v, &operand.vec)
     },
     0.0)
 }
@@ -157,7 +157,7 @@ pub extern "C" fn complex_dot_product32(vector: &VecBuf,
                                         operand: &VecBuf)
                                         -> ScalarInteropResult<Complex32> {
     vector.convert_scalar(|v| {
-        DotProductOps::<GenDspVec<Vec<f32>, f32>, Complex32>::dot_product(v, &operand.vec)
+        DotProductOps::<GenDspVec<Vec<f32>, f32>, Complex32, f32, RealOrComplexData, TimeOrFrequencyData>::dot_product(v, &operand.vec)
     },
     Complex32::new(0.0, 0.0))
 }
@@ -198,7 +198,7 @@ pub extern "C" fn real_dot_product_prec32(vector: &VecBuf,
                                           operand: &VecBuf)
                                           -> ScalarInteropResult<f32> {
     vector.convert_scalar(|v| {
-        PreciseDotProductOps::<GenDspVec<Vec<f32>, f32>, f32>::dot_product_prec(v, &operand.vec)
+        PreciseDotProductOps::<GenDspVec<Vec<f32>, f32>, f32, f32, RealOrComplexData, TimeOrFrequencyData>::dot_product_prec(v, &operand.vec)
     },
     0.0)
 }
@@ -208,7 +208,7 @@ pub extern "C" fn complex_dot_product_prec32(vector: &VecBuf,
                                              operand: &VecBuf)
                                              -> ScalarInteropResult<Complex32> {
     vector.convert_scalar(|v| {
-        PreciseDotProductOps::<GenDspVec<Vec<f32>, f32>, Complex32>::dot_product_prec(v, &operand.vec)
+        PreciseDotProductOps::<GenDspVec<Vec<f32>, f32>, Complex32, f32, RealOrComplexData, TimeOrFrequencyData>::dot_product_prec(v, &operand.vec)
     },
     Complex32::new(0.0, 0.0))
 }
