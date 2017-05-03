@@ -4,7 +4,7 @@ use numbers::*;
 use std::ops::*;
 use super::super::{ToRealResult, ErrorReason, Buffer, Vector, Resize, MetaData,
                    DspVec, ToSliceMut, ToSlice, VoidResult, Domain, ComplexNumberSpace,
-                   RededicateForceOps, RealNumberSpace, NumberSpace};
+                   RededicateForceOps, RealNumberSpace, NumberSpace, GetMetaData};
 
 /// Defines transformations from complex to real number space.
 ///
@@ -188,10 +188,11 @@ pub trait ComplexToRealTransformsOpsBuffered<S, T>: ToRealResult
 /// # Failures
 /// All operations in this trait set the arguments `len()` to `0` if the type isn't in
 /// the complex number space.
-pub trait ComplexToRealGetterOps<A, N, D>
-    where N: NumberSpace,
+pub trait ComplexToRealGetterOps<A, T, N, D>
+    where T: RealNumber,
+          N: NumberSpace,
           D: Domain,
-          A: MetaData<N, D>
+          A: GetMetaData<T, N, D>
 {
     /// Copies all real elements into the given vector.
     /// # Example
@@ -303,10 +304,11 @@ pub trait ComplexToRealGetterOps<A, N, D>
 /// # Failures
 /// All operations in this trait set `self.len()` to `0` if the type isn't in
 /// the complex number space.
-pub trait ComplexToRealSetterOps<A, N, D>
-    where N: NumberSpace,
+pub trait ComplexToRealSetterOps<A, T, N, D>
+    where T: RealNumber,
+          N: NumberSpace,
           D: Domain,
-          A: MetaData<N, D>
+          A: GetMetaData<T, N, D>
 {
     /// Overrides the `self` vectors data with the real and imaginary data in the given vectors.
     /// `real` and `imag` must have the same size.
@@ -440,15 +442,14 @@ impl<S, T, N, D> DspVec<S, T, N, D>
           D: Domain
 {
     #[inline]
-    fn pure_complex_into_real_target_operation<A, F, V, NR>(&self,
+    fn pure_complex_into_real_target_operation<A, F, V>(&self,
                                                         destination: &mut V,
                                                         op: F,
                                                         argument: A,
                                                         complexity: Complexity)
         where A: Sync + Copy + Send,
               F: Fn(Complex<T>, A) -> T + 'static + Sync,
-              V: Vector<T, NR, D> + Index<Range<usize>, Output = [T]> + IndexMut<Range<usize>>,
-              NR: RealNumberSpace
+              V: Vector<T> + Index<Range<usize>, Output = [T]> + IndexMut<Range<usize>>
     {
         let len = self.len();
         destination.resize(len / 2)
@@ -476,15 +477,14 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     }
 
     #[inline]
-    fn simd_complex_into_real_target_operation<FSimd, F, V, NR>(&self,
+    fn simd_complex_into_real_target_operation<FSimd, F, V>(&self,
                                                             destination: &mut V,
                                                             op_simd: FSimd,
                                                             op: F,
                                                             complexity: Complexity)
         where F: Fn(Complex<T>) -> T + 'static + Sync,
               FSimd: Fn(T::Reg) -> T::Reg + 'static + Sync,
-              V: Vector<T, NR, D> + Index<Range<usize>, Output = [T]> + IndexMut<Range<usize>>,
-              NR: RealNumberSpace
+              V: Vector<T> + Index<Range<usize>, Output = [T]> + IndexMut<Range<usize>>
     {
         let data_length = self.len();
         destination.resize(data_length / 2)
@@ -548,10 +548,10 @@ macro_rules! assert_self_complex_and_targets_real {
     }
 }
 
-impl<S, T, N, NR, D, O> ComplexToRealGetterOps<O, NR, D> for DspVec<S, T, N, D>
+impl<S, T, N, NR, D, O> ComplexToRealGetterOps<O, T, NR, D> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToRealResult,
           O:
-            Vector<T, NR, D>
+            Vector<T> + GetMetaData<T, NR, D>
             + Index<Range<usize>, Output=[T]>
             + IndexMut<Range<usize>>,
           S: ToSlice<T>,
@@ -637,11 +637,11 @@ impl<S, T, N, NR, D, O> ComplexToRealGetterOps<O, NR, D> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, T, N, NR, D, O> ComplexToRealSetterOps<O, NR, D> for DspVec<S, T, N, D>
+impl<S, T, N, NR, D, O> ComplexToRealSetterOps<O, T, NR, D> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToRealResult,
           O:
             Index<Range<usize>, Output=[T]>
-            + Vector<T, NR, D>,
+            + Vector<T> + GetMetaData<T, NR, D>,
           S: ToSliceMut<T> + Resize,
           T: RealNumber,
           N: ComplexNumberSpace,

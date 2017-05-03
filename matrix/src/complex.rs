@@ -118,45 +118,43 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber>
-					ComplexToRealGetterOps<T> for $matrix<V, S, T>
-					where <V as ToRealResult>::RealResult: Vector<T>,
-                          <$matrix<V, S, T> as ToRealResult>::RealResult:
-                            Matrix<<V as ToRealResult>::RealResult, T>,
-                          V: ComplexToRealGetterOps<T> {
-				fn get_real(&self, destination: &mut Self::RealResult) {
+			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber, N: NumberSpace, D: Domain, O>
+					ComplexToRealGetterOps<O, T, N, D> for $matrix<V, S, T>
+					where O: Matrix<V, T> + GetMetaData<T, N, D>,
+                          V: ComplexToRealGetterOps<V, T, N, D> + GetMetaData<T, N, D> {
+				fn get_real(&self, destination: &mut O) {
                     for (o, v) in destination.rows_mut().iter_mut().zip(self.rows()) {
 						v.get_real(o);
 					}
 				}
 
-				fn get_imag(&self, destination: &mut Self::RealResult) {
+				fn get_imag(&self, destination: &mut O) {
                     for (o, v) in destination.rows_mut().iter_mut().zip(self.rows()) {
 						v.get_imag(o);
 					}
 				}
 
-				fn get_magnitude(&self, destination: &mut Self::RealResult) {
+				fn get_magnitude(&self, destination: &mut O) {
                     for (o, v) in destination.rows_mut().iter_mut().zip(self.rows()) {
 						v.get_imag(o);
 					}
 				}
 
-				fn get_magnitude_squared(&self, destination: &mut Self::RealResult) {
+				fn get_magnitude_squared(&self, destination: &mut O) {
                     for (o, v) in destination.rows_mut().iter_mut().zip(self.rows()) {
 						v.get_imag(o);
 					}
 				}
 
-				fn get_phase(&self, destination: &mut Self::RealResult) {
+				fn get_phase(&self, destination: &mut O) {
                     for (o, v) in destination.rows_mut().iter_mut().zip(self.rows()) {
 						v.get_imag(o);
 					}
 				}
 
 				fn get_real_imag(&self,
-                                 real: &mut Self::RealResult,
-                                 imag: &mut Self::RealResult) {
+                                 real: &mut O,
+                                 imag: &mut O) {
                     for ((r, i), v) in real.rows_mut().iter_mut()
                                     .zip(imag.rows_mut())
                                     .zip(self.rows()) {
@@ -165,8 +163,8 @@ macro_rules! add_mat_impl {
 				}
 
 				fn get_mag_phase(&self,
-                                 mag: &mut Self::RealResult,
-                                 phase: &mut Self::RealResult) {
+                                 mag: &mut O,
+                                 phase: &mut O) {
                     for ((r, i), v) in mag.rows_mut().iter_mut()
                                      .zip(phase.rows_mut())
                                      .zip(self.rows()) {
@@ -175,15 +173,13 @@ macro_rules! add_mat_impl {
 				}
 			}
 
-			impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber>
-					ComplexToRealSetterOps<T> for $matrix<V, S, T>
-					where <V as ToRealResult>::RealResult: Vector<T>,
-                          <$matrix<V, S, T> as ToRealResult>::RealResult:
-                            Matrix<<V as ToRealResult>::RealResult, T>,
-                          V: ComplexToRealSetterOps<T> {
+            impl<V: Vector<T>, S: ToSlice<T>, T: RealNumber, N: NumberSpace, D: Domain, O>
+					ComplexToRealSetterOps<O, T, N, D> for $matrix<V, S, T>
+					where O: Matrix<V, T> + GetMetaData<T, N, D>,
+                          V: ComplexToRealSetterOps<V, T, N, D> + GetMetaData<T, N, D> {
 				fn set_real_imag(&mut self,
-                                 real: &Self::RealResult,
-                                 imag: &Self::RealResult) -> VoidResult {
+                                 real: &O,
+                                 imag: &O) -> VoidResult {
                     for ((v, r), i) in self.rows_mut().iter_mut()
                                     .zip(real.rows())
                                     .zip(imag.rows()) {
@@ -194,8 +190,8 @@ macro_rules! add_mat_impl {
 				}
 
 				fn set_mag_phase(&mut self,
-                                 mag: &Self::RealResult,
-                                 phase: &Self::RealResult) -> VoidResult {
+                                 mag: &O,
+                                 phase: &O) -> VoidResult {
                     for ((v, r), i) in self.rows_mut().iter_mut()
                                      .zip(mag.rows())
                                      .zip(phase.rows()) {

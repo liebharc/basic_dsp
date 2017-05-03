@@ -3,13 +3,12 @@ use multicore_support::*;
 use simd_extensions::*;
 use std::ops::*;
 use super::super::{Vector, ScalarResult, ErrorReason, DspVec, ToSlice, MetaData, Domain,
-                   RealNumberSpace, ComplexNumberSpace};
+                   RealNumberSpace, ComplexNumberSpace, GetMetaData};
 use super::kahan_sum;
 use inline_vector::InlineVector;
 
 /// An operation which multiplies each vector element with a constant
-pub trait DotProductOps<R, A>: Sized
-    where R: Sized
+pub trait DotProductOps<A, T>
 {
     type Output;
 
@@ -28,8 +27,7 @@ pub trait DotProductOps<R, A>: Sized
 }
 
 /// An operation which multiplies each vector element with a constant
-pub trait PreciseDotProductOps<R, A>: Sized
-    where R: Sized
+pub trait PreciseDotProductOps<A, T>
 {
     type Output;
 
@@ -48,12 +46,12 @@ pub trait PreciseDotProductOps<R, A>: Sized
     fn dot_product_prec(&self, factor: &A) -> Self::Output;
 }
 
-impl<S, O, T, N, D> DotProductOps<T, O> for DspVec<S, T, N, D>
+impl<S, O, T, N, D> DotProductOps<O, T> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: RealNumberSpace,
           D: Domain,
-          O: Vector<T, N, D> + Index<RangeFull, Output=[T]>
+          O: Vector<T> + GetMetaData<T, N, D> + Index<RangeFull, Output=[T]>
 {
     type Output = ScalarResult<T>;
 
@@ -106,12 +104,12 @@ impl<S, O, T, N, D> DotProductOps<T, O> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, O, T, N, D> DotProductOps<Complex<T>, O> for DspVec<S, T, N, D>
+impl<S, O, T, N, D> DotProductOps<O, Complex<T>> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
           D: Domain,
-          O: Vector<T, N, D> + Index<RangeFull, Output=[T]>
+          O: Vector<T> + GetMetaData<T, N, D> + Index<RangeFull, Output=[T]>
 {
     type Output = ScalarResult<Complex<T>>;
 
@@ -173,12 +171,12 @@ impl<S, O, T, N, D> DotProductOps<Complex<T>, O> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, O, T, N, D> PreciseDotProductOps<T, O> for DspVec<S, T, N, D>
+impl<S, O, T, N, D> PreciseDotProductOps<O, T> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: RealNumberSpace,
           D: Domain,
-          O: Vector<T, N, D> + Index<RangeFull, Output=[T]>
+          O: Vector<T> + GetMetaData<T, N, D> + Index<RangeFull, Output=[T]>
 {
     type Output = ScalarResult<T>;
 
@@ -226,12 +224,12 @@ impl<S, O, T, N, D> PreciseDotProductOps<T, O> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, O,  T, N, D> PreciseDotProductOps<Complex<T>, O> for DspVec<S, T, N, D>
+impl<S, O,  T, N, D> PreciseDotProductOps<O, Complex<T>> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
           D: Domain,
-          O: Vector<T, N, D> + Index<RangeFull, Output=[T]>
+          O: Vector<T> + GetMetaData<T, N, D> + Index<RangeFull, Output=[T]>
 {
     type Output = ScalarResult<Complex<T>>;
 

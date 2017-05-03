@@ -32,9 +32,7 @@ pub trait ComplexIndexMut<Idx>: ComplexIndex<Idx>
 }
 
 /// A trait which provides information about number space and domain.
-pub trait MetaData<N, D>
-    where N: NumberSpace,
-          D: Domain {
+pub trait MetaData {
     /// The domain in which the data vector resides. Basically specifies the x-axis and the
     /// type of operations which are valid on this vector.
     ///
@@ -67,10 +65,8 @@ pub trait ResizeBufferedOps<S: ToSliceMut<T>, T: RealNumber> {
 }
 
 /// A trait for vector types.
-pub trait Vector<T, N, D>: MetaData<N, D> + ResizeOps
-    where T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+pub trait Vector<T>: MetaData + ResizeOps
+    where T: RealNumber
 {
     /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`,
     /// in frequency domain `delta` is in `[Hz]`.
@@ -129,7 +125,7 @@ pub trait GetMetaData<T, N, D>
     fn get_meta_data(&self) -> TypeMetaData<T, N, D>;
 }
 
-impl<S, T, N, D> MetaData<N, D> for DspVec<S, T, N, D>
+impl<S, T, N, D> MetaData for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: NumberSpace,
@@ -144,7 +140,7 @@ impl<S, T, N, D> MetaData<N, D> for DspVec<S, T, N, D>
     }
 }
 
-impl<T, N, D> MetaData<N, D> for TypeMetaData<T, N, D>
+impl<T, N, D> MetaData for TypeMetaData<T, N, D>
     where T: RealNumber,
           N: NumberSpace,
           D: Domain
@@ -207,7 +203,7 @@ impl<S, T, N, D> ResizeBufferedOps<S, T> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, T, N, D> Vector<T, N, D> for DspVec<S, T, N, D>
+impl<S, T, N, D> Vector<T> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: NumberSpace,

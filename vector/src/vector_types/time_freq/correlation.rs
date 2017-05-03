@@ -1,7 +1,7 @@
 use numbers::*;
 use std::ops::*;
 use super::super::{DspVec, Buffer, ComplexOps, ScaleOps, FrequencyDomainOperations,
-                   TimeToFrequencyDomainOperations, ToSliceMut,
+                   TimeToFrequencyDomainOperations, ToSliceMut, GetMetaData,
                    PaddingOption, VoidResult, Vector, MetaData, ComplexNumberSpace,
                    TimeDomain, ElementaryOps, ToFreqResult, InsertZerosOpsBuffered, DataDomain,
                    ErrorReason, ReorganizeDataOps, ToComplexVector, FrequencyToTimeDomainOperations,
@@ -62,12 +62,12 @@ pub trait CrossCorrelationArgumentOps<S, T>: ToFreqResult
 }
 
 /// A trait to calculate the cross correlation.
-pub trait CrossCorrelationOps<S, T, N, D, A>
+pub trait CrossCorrelationOps<A, S, T, N, D>
     where S: ToSliceMut<T>,
           T: RealNumber,
           N: NumberSpace,
           D: Domain,
-          A: MetaData<N, D>
+          A: GetMetaData<T, N, D>
 {
     /// Calculates the correlation between `self` and `other`. `other`
     /// needs to be a time vector which
@@ -104,7 +104,7 @@ impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
 	}
 }
 
-impl<S, T, N, D, DF, O> CrossCorrelationOps<S, T, N, DF, O>
+impl<S, T, N, D, DF, O> CrossCorrelationOps<O, S, T, N, DF>
     for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>:
          ScaleOps<T>,
@@ -113,7 +113,7 @@ impl<S, T, N, D, DF, O> CrossCorrelationOps<S, T, N, DF, O>
 	  N: ComplexNumberSpace,
 	  D: TimeDomain,
       DF: FrequencyDomain,
-      O: Vector<T, N, DF> + Index<RangeFull, Output = [T]>
+      O: Vector<T> + GetMetaData<T, N, DF> + Index<RangeFull, Output = [T]>
 {
     fn correlate<B>(
             &mut self,

@@ -31,7 +31,7 @@ fn print_diff<F1: FnMut(&mut RealTimeVec64), F2: FnMut(&mut RealTimeVec64)>(
     should.sub(&is).expect("Vectors should have the same length");
     should.abs();
     if is_relative {
-        should.div(&x_vec).expect("Vectors should have the same length");
+        should.div(x_vec).expect("Vectors should have the same length");
     }
     print!("{}, ", name);
 	for n in &should[..] {

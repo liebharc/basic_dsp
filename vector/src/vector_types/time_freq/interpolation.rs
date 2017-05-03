@@ -519,7 +519,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
             let mut buffer = NoTradeBuffer::new(&mut self[..]);
             complex.plain_ifft(&mut buffer); // the result is now back in `self`.
         }
-        let points = self.points();
+        let points = len / 2;
         self.scale(T::one() / T::from(points).unwrap());
         if !is_complex {
             // Convert vector back into real number space

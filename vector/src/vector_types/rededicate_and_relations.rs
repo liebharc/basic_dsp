@@ -11,10 +11,8 @@ use super::{DspVec, GenDspVec, MetaData, RealTimeVec, RealFreqVec, ResizeOps, Co
 ///
 /// If a type should always be converted without any checks then the `RededicateForceOps`
 /// trait provides option for that.
-pub trait RededicateOps<Other, N, D>: RededicateForceOps<Other>
-    where Other: MetaData<N, D>,
-          N: NumberSpace,
-          D: Domain {
+pub trait RededicateOps<Other>: RededicateForceOps<Other>
+    where Other: MetaData {
     /// Make `Other` a `Self`.
     /// # Example
     ///
@@ -54,10 +52,8 @@ pub trait RededicateForceOps<Other> {
 /// convert a type to a different one and set `self.len()` to zero.
 /// However `self.allocated_len()` will remain unchanged. The use case for this
 /// is to allow to reuse the memory of a vector for different operations.
-pub trait RededicateToOps<Other, N, D>
-    where Other: MetaData<N, D>,
-          N: NumberSpace,
-          D: Domain {
+pub trait RededicateToOps<Other>
+    where Other: MetaData {
     /// Make `Selfr` a `SelOther`.
     fn rededicate(self) -> Other;
 }
@@ -297,13 +293,13 @@ impl<S, T, N, D> RededicateForceOps<DspVec<S, T, N, D>> for GenDspVec<S, T>
     }
 }
 
-impl<S, T, N, NO, D, DO, O> RededicateOps<O, NO, DO> for DspVec<S, T, N, D>
+impl<S, T, N, D, O> RededicateOps<O> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           DspVec<S, T, N, D>: RededicateForceOps<O>,
-          N: NumberSpace, NO: NumberSpace,
-          D: Domain, DO: Domain,
-          O: Vector<T, NO, DO>
+          N: NumberSpace, 
+          D: Domain,
+          O: Vector<T>
 {
     fn rededicate_from(origin: O) -> Self {
         let is_complex = origin.is_complex();
@@ -316,12 +312,12 @@ impl<S, T, N, NO, D, DO, O> RededicateOps<O, NO, DO> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, T, N, NO, D, DO, O> RededicateToOps<O, NO, DO> for DspVec<S, T, N, D>
+impl<S, T, N, D, O> RededicateToOps<O> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
-          N: NumberSpace, NO: NumberSpace,
-          D: Domain, DO: Domain,
-          O: Vector<T, NO, DO> + RededicateOps<Self, N, D>
+          N: NumberSpace,
+          D: Domain,
+          O: Vector<T> + RededicateOps<Self>
 {
     fn rededicate(self) -> O {
         O::rededicate_from(self)

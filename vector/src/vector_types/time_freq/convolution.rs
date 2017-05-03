@@ -35,7 +35,7 @@ pub trait Convolution<'a, S, T, C: 'a>
 }
 
 /// Provides a convolution operation for types which at some point are slice based.
-pub trait ConvolutionOps<S, T, A>
+pub trait ConvolutionOps<A, S, T>
     where S: ToSliceMut<T>,
           T: RealNumber
 {
@@ -101,7 +101,7 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a RealImpulseResponse<T>> for DspVe
           T: RealNumber,
           N: NumberSpace,
           D: TimeDomain,
-          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone + ConvolutionOps<S, T, DspVec<InlineVector<T>, T, N, D>>
+          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone + ConvolutionOps<DspVec<InlineVector<T>, T, N, D>, S, T>
 {
     fn convolve<B>(&mut self,
                    buffer: &mut B,
@@ -206,7 +206,7 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a ComplexImpulseResponse<T>> for Ds
           T: RealNumber,
           N: ComplexNumberSpace,
           D: TimeDomain,
-          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone + ConvolutionOps<S, T, DspVec<InlineVector<T>, T, N, D>>
+          DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone + ConvolutionOps<DspVec<InlineVector<T>, T, N, D>, S, T,>
 {
     fn convolve<B>(&mut self,
                    buffer: &mut B,
@@ -432,7 +432,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     }
 }
 
-impl<S, SO, T, N, D> ConvolutionOps<S, T, DspVec<SO, T, N, D>> for DspVec<S, T, N, D>
+impl<S, SO, T, N, D> ConvolutionOps<DspVec<SO, T, N, D>, S, T> for DspVec<S, T, N, D>
     where S: ToSliceMut<T>,
           SO: ToSliceMut<T>,
           T: RealNumber,

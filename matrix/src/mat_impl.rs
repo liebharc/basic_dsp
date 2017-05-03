@@ -121,6 +121,17 @@ macro_rules! add_mat_impl {
                     &mut self.rows[..]
                 }
             }
+            
+            impl<V, S, T, N, D> GetMetaData<T, N, D> for $matrix<V, S, T>
+                where T: RealNumber,
+					  S: ToSlice<T>,
+                  	  V: Vector<T> + GetMetaData<T, N, D>,
+                      N: NumberSpace,
+                      D: Domain {
+                 fn get_meta_data(&self) -> TypeMetaData<T, N, D> {
+                    self.rows[0].get_meta_data()
+                 }
+            }
         )*
     }
 }

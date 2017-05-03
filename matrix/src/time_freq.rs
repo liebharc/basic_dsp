@@ -5,7 +5,6 @@ use basic_dsp_vector::conv_types::*;
 use super::*;
 use TransformContent;
 use std::marker;
-use std::mem;
 
 macro_rules! try_transform {
     ($op: expr, $matrix: ident) => {
@@ -241,23 +240,22 @@ macro_rules! add_mat_impl {
             // now this is what it is, until a) we figure out a solution for this
             // or b) Rust adds a new feature so that we can specify that FreqResult is
             // either a matrix or a vecor but never both (Negative bounds could be helpful).
-			impl<S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
-					CrossCorrelationOps<
-						S,
-						T,
-						$matrix<<DspVec<S, T, N, D> as ToFreqResult>::FreqResult, S, T>>
-					for $matrix<DspVec<S, T, N, D>, S, T>
-					where DspVec<S, T, N, D>:
+			impl<S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain, O, V>
+					CrossCorrelationOps<O, S, T, N, D>
+					for $matrix<V, S, T>
+                    where O: Matrix<V, T> + GetMetaData<T, N, D>,
+                          V: CrossCorrelationOps<V, S, T, N, D> + GetMetaData<T, N, D> + Vector<T> {
+					/*where DspVec<S, T, N, D>:
 						  	ToFreqResult
 							+ CrossCorrelationOps<
 								S,
 								T,
 								<DspVec<S, T, N, D> as ToFreqResult>::FreqResult>,
-						  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: Vector<T> {
+						  <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: Vector<T> {*/
 				fn correlate<B>(
 						&mut self,
 						buffer: &mut B,
-						other: &$matrix<<DspVec<S, T, N, D> as ToFreqResult>::FreqResult, S, T>)
+						other: &O)
 						-> VoidResult
                     where B: for<'b> Buffer<'b, S, T> {
 					for (v, o) in self.rows_mut().iter_mut().zip(other.rows()) {
@@ -420,9 +418,9 @@ macro_rules! add_mat_impl {
 			}
 
 			impl<S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
-                    ConvolutionOps<S, T, DspVec<S, T, N, D>>
+                    ConvolutionOps<DspVec<S, T, N, D>, S, T>
                     for $matrix<DspVec<S, T, N, D>, S, T>
-                    where DspVec<S, T, N, D>: ConvolutionOps<S, T, DspVec<S, T, N, D>> {
+                    where DspVec<S, T, N, D>: ConvolutionOps<DspVec<S, T, N, D>, S, T> {
 				fn convolve_signal<B>(
 						&mut self,
 						buffer: &mut B,
@@ -444,40 +442,32 @@ add_mat_impl!(MatrixMxN; Matrix2xN; Matrix3xN; Matrix4xN);
 macro_rules! convolve_signal {
     ($self_: expr, $buffer: ident, $impulse_response: ident) => {
         {
-            let mut error = None;
-            let mut result: Vec<S> = {
+            let col_len = $self_.col_len();
+            let row_len = $self_.row_len();
+            let mut target = $buffer.borrow(row_len * col_len);
+            {
                 let rows: Vec<&DspVec<S, T, N, D>> = $self_.rows().iter().collect();
-                $impulse_response.iter().map(|i| {
-                    let mut target = $buffer.get($self_.row_len());
-                    let res = DspVec::<S, T, N, D>::convolve_mat(&rows, i, &mut target);
+                for (i, n) in $impulse_response.iter().zip(0..col_len) {
+                    let res = DspVec::<S, T, N, D>::convolve_mat(&rows, i, &mut target[n*row_len..(n+1)*row_len]);
                     match res {
                         Ok(()) => (),
-                        Err(reason) => error = Some(reason)
+                        Err(reason) => return Err(reason)
                     };
-                    target
-                }).collect()
-           };
+                };
+            }
 
-           match error {
-               None => (),
-               Some(err) => return Err(err)
-           }
+            for n in 0..col_len {
+                let row = &mut $self_.rows_mut()[n];
+                (&mut row[..]).clone_from_slice(&target[n*row_len..(n+1)*row_len]);
+            }
 
-           for (res, row) in result.iter_mut().zip($self_.rows.iter_mut()) {
-               mem::swap(res, &mut row.data)
-           }
-
-           while result.len() > 0 {
-            $buffer.free(result.pop().expect("Result should not be empty"));
-           }
-
-           Ok(())
+            Ok(())
         }
     }
 }
 
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
-        ConvolutionOps<S, T, Vec<&'a Vec<&'a DspVec<S, T, N, D>>>>
+        ConvolutionOps<Vec<&'a Vec<&'a DspVec<S, T, N, D>>>, S, T>
         for MatrixMxN<DspVec<S, T, N, D>, S, T> {
     fn convolve_signal<B>(
             &mut self,
@@ -489,7 +479,7 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
 }
 
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
-        ConvolutionOps<S, T, [[&'a DspVec<S, T, N, D>; 2]; 2]>
+        ConvolutionOps<[[&'a DspVec<S, T, N, D>; 2]; 2], S, T>
         for Matrix2xN<DspVec<S, T, N, D>, S, T> {
     fn convolve_signal<B>(
             &mut self,
@@ -501,7 +491,7 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
 }
 
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
-        ConvolutionOps<S, T, [[&'a DspVec<S, T, N, D>; 3]; 3]>
+        ConvolutionOps<[[&'a DspVec<S, T, N, D>; 3]; 3], S, T>
         for Matrix3xN<DspVec<S, T, N, D>, S, T> {
     fn convolve_signal<B>(
             &mut self,
@@ -513,7 +503,7 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
 }
 
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
-        ConvolutionOps<S, T, [[&'a DspVec<S, T, N, D>; 4]; 4]>
+        ConvolutionOps<[[&'a DspVec<S, T, N, D>; 4]; 4], S, T>
         for Matrix4xN<DspVec<S, T, N, D>, S, T> {
     fn convolve_signal<B>(
             &mut self,

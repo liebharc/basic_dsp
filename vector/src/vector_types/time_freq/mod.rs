@@ -19,7 +19,7 @@ use std::ops::*;
 use simd_extensions::*;
 use multicore_support::*;
 use super::{Buffer, BufferBorrow, Vector, MetaData, DspVec, ToSliceMut,
-            NumberSpace, Domain, ErrorReason, VoidResult};
+            NumberSpace, Domain, ErrorReason, VoidResult, GetMetaData};
 use numbers::*;
 use std::fmt::Debug;
 use gpu_support::GpuSupport;
@@ -76,12 +76,10 @@ fn fft_swap_x<T: RealNumber>(is_fft_shifted: bool, x_value: T, x_max: T) -> T {
 
 /// Creates shifted and reversed copies of the given data vector.
 /// This function is especially designed for convolutions.
-fn create_shifted_copies<O, T, N, D>(vec: &O) -> InlineVector<InlineVector<T::Reg>>
+fn create_shifted_copies<O, T>(vec: &O) -> InlineVector<InlineVector<T::Reg>>
     where
-        O: Vector<T, N, D> + Index<RangeFull, Output = [T]>,
-        T: RealNumber,
-        N: NumberSpace,
-        D: Domain {
+        O: Vector<T> + Index<RangeFull, Output = [T]>,
+        T: RealNumber{
     let step = if vec.is_complex() { 2 } else { 1 };
     let number_of_shifts = T::Reg::len() / step;
     let mut shifted_copies = InlineVector::with_capacity(number_of_shifts);
@@ -217,7 +215,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     /// This is intended to be used together with convolution implementations which
     /// are faster but don't handle the beginning and end of a vector correctly.
     fn convolve_vector_range<O>(&mut self, target: &mut [T], vector: &O, range: Range<usize>)
-        where O: Vector<T, N, D> + Index<RangeFull, Output = [T]>
+        where O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, N, D>
     {
         let points = self.points();
         let other_points = vector.points();
@@ -256,7 +254,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
     fn convolve_signal_scalar<B, O>(&mut self, buffer: &mut B, vector: &O)
         where B: for<'a> Buffer<'a, S, T>,
-              O: Vector<T, N, D> + Index<RangeFull, Output = [T]>
+              O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, N, D>
     {
         let points = self.points();
         let other_points = vector.points();
@@ -325,7 +323,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     pub fn convolve_mat(
         matrix: &[&Self],
         impulse_response: &[&Self],
-        target: &mut S) -> VoidResult
+        target: &mut [T]) -> VoidResult
     {
         // Since this function mainly exists to be used by the matrix lib
         // we just decide to ignore invalid calls.
@@ -361,7 +359,6 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let len = matrix[0].len();
             let others: InlineVector<&[T]> = impulse_response.iter().map(|v|v.data.to_slice()).collect();
             let data_vecs: InlineVector<&[T]> = matrix.iter().map(|v|v.data.to_slice()).collect();
-            let target = target.to_slice_mut();
             let others: InlineVector<&[Complex<T>]>
                 = others.iter().map(|o| {
                     let c = array_to_complex(&o[0..impulse_response[0].len()]);
@@ -381,7 +378,6 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let len = matrix[0].len();
             let others: InlineVector<&[T]> = impulse_response.iter().map(|v|v.data.to_slice()).collect();
             let data_vecs: InlineVector<&[T]> = matrix.iter().map(|v|v.data.to_slice()).collect();
-            let target = target.to_slice_mut();
             let others: InlineVector<&[T]>
                 = others.iter().map(|o| {
                     &o[other_start..other_end]
@@ -441,7 +437,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
     fn convolve_signal_simd<B, O>(&mut self, buffer: &mut B, vector: &O)
         where B: for<'a> Buffer<'a, S, T>,
-              O: Vector<T, N, D> + Index<RangeFull, Output = [T]>
+              O: Vector<T> + Index<RangeFull, Output = [T]>
     {
         if self.is_complex() {
             self.convolve_signal_simd_impl(buffer,
@@ -468,7 +464,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                                              simd_mul: RMul,
                                                              simd_sum: RSum)
         where B: for<'a> Buffer<'a, S, T>,
-              O: Vector<T, N, D> + Index<RangeFull, Output = [T]>,
+              O: Vector<T> + Index<RangeFull, Output = [T]>,
               TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT> + Send + Sync,
               C: Fn(&[T]) -> &[TT],
               CMut: Fn(&mut [T]) -> &mut [TT],

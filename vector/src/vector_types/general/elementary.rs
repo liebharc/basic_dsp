@@ -4,7 +4,7 @@ use multicore_support::*;
 use simd_extensions::*;
 use numbers::*;
 use std::ops::*;
-use super::super::{ErrorReason, VoidResult, Vector,
+use super::super::{ErrorReason, VoidResult, Vector, GetMetaData,
                    DspVec, ToSliceMut, MetaData, Domain, NumberSpace, ComplexNumberSpace};
 
 /// An operation which multiplies each vector element with a constant
@@ -360,7 +360,7 @@ macro_rules! assert_meta_data {
 
 macro_rules! impl_binary_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<O: Vector<T, N, D> + Index<RangeFull, Output=[T]>>(&mut self, $arg_name: &O) -> VoidResult
+        fn $method<O: Vector<T> + Index<RangeFull, Output=[T]>>(&mut self, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -402,7 +402,7 @@ macro_rules! impl_binary_vector_operation {
 
 macro_rules! impl_binary_complex_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<O: Vector<T, N, D> + Index<RangeFull, Output=[T]>>(&mut self, $arg_name: &O) -> VoidResult
+        fn $method<O: Vector<T> + Index<RangeFull, Output=[T]>>(&mut self, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -457,7 +457,7 @@ macro_rules! impl_binary_complex_vector_operation {
 
 macro_rules! impl_binary_smaller_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<O: Vector<T, N, D> + Index<RangeFull, Output=[T]>>(&mut self, $arg_name: &O) -> VoidResult
+        fn $method<O: Vector<T> + Index<RangeFull, Output=[T]>>(&mut self, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -487,7 +487,7 @@ macro_rules! impl_binary_smaller_vector_operation {
 
 macro_rules! impl_binary_smaller_complex_vector_ops {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<O: Vector<T, N, D> + Index<RangeFull, Output=[T]>>(&mut self, $arg_name: &O) -> VoidResult
+        fn $method<O: Vector<T> + Index<RangeFull, Output=[T]>>(&mut self, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -542,7 +542,7 @@ impl<S, T, N, D, O> ElementaryOps<O> for DspVec<S, T, N, D>
           T: RealNumber,
           N: NumberSpace,
           D: Domain,
-          O: Vector<T, N, D> + Index<RangeFull, Output=[T]>
+          O: Vector<T> + Index<RangeFull, Output=[T]> + GetMetaData<T, N, D>
 {
     fn add(&mut self, summand: &O) -> VoidResult {
         self.add_inter(summand)
@@ -582,7 +582,7 @@ impl<S, T, N, D, O> ElementaryWrapAroundOps<O> for DspVec<S, T, N, D>
           T: RealNumber,
           N: NumberSpace,
           D: Domain,
-          O: Vector<T, N, D> + Index<RangeFull, Output=[T]>
+          O: Vector<T> + Index<RangeFull, Output=[T]> + GetMetaData<T, N, D>
 {
     fn add_smaller(&mut self, summand: &O) -> VoidResult {
         self.add_smaller_inter(summand)
