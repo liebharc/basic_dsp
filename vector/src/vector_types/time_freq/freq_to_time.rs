@@ -1,8 +1,8 @@
 use numbers::*;
 use super::super::{ToTimeResult, ToRealTimeResult, TransRes, DspVec, Vector, Buffer, ToSliceMut,
-                   RededicateForceOps, ErrorReason, MetaData, ComplexNumberSpace,
-                   FrequencyDomain, DataDomain, InsertZerosOpsBuffered, ScaleOps,
-                   TimeDomainOperations, FrequencyDomainOperations};
+                   RededicateForceOps, ErrorReason, MetaData, ComplexNumberSpace, FrequencyDomain,
+                   DataDomain, InsertZerosOpsBuffered, ScaleOps, TimeDomainOperations,
+                   FrequencyDomainOperations};
 use super::fft;
 use window_functions::*;
 use multicore_support::*;
@@ -82,7 +82,8 @@ pub trait SymmetricFrequencyToTimeDomainOperations<S, T>: ToRealTimeResult
     ///
     /// This version of the IFFT neither applies a window nor does it scale the
     /// vector.
-    fn plain_sifft<B>(self, buffer: &mut B) -> TransRes<Self::RealTimeResult> where B: for<'a> Buffer<'a, S, T>;
+    fn plain_sifft<B>(self, buffer: &mut B) -> TransRes<Self::RealTimeResult>
+        where B: for<'a> Buffer<'a, S, T>;
 
     /// Performs a Symmetric Inverse Fast Fourier Transformation under the assumption that `self`
     /// contains half of a symmetric spectrum starting from 0 Hz. This assumption
@@ -91,7 +92,8 @@ pub trait SymmetricFrequencyToTimeDomainOperations<S, T>: ToRealTimeResult
     ///
     /// The argument indicates whether the resulting real vector should have `2*N` or
     /// `2*N-1` points.
-    fn sifft<B>(self, buffer: &mut B) -> TransRes<Self::RealTimeResult> where B: for<'a> Buffer<'a, S, T>;
+    fn sifft<B>(self, buffer: &mut B) -> TransRes<Self::RealTimeResult>
+        where B: for<'a> Buffer<'a, S, T>;
 
     /// Performs a Symmetric Inverse Fast Fourier Transformation (SIFFT) and removes the FFT
     /// window. The SIFFT is performed under the assumption that `self`

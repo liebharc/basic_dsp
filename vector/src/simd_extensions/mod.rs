@@ -64,8 +64,9 @@ pub trait SimdGeneric<T>: Simd<T>
     fn store(self, array: &mut [T], index: usize);
 }
 
-pub trait SimdApproximations<T> : Simd<T>
-    where T: Sized + Sync + Send {
+pub trait SimdApproximations<T>: Simd<T>
+    where T: Sized + Sync + Send
+{
     fn ln_approx(self) -> Self;
 
     fn exp_approx(self) -> Self;
@@ -213,7 +214,7 @@ mod sse;
 #[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
 pub use self::sse::{Reg32, Reg64, IntReg32, IntReg64, UIntReg32, UIntReg64};
 
-//#[cfg(any(feature = "doc", any(feature = "use_sse", feature = "use_avx")))]
+// #[cfg(any(feature = "doc", any(feature = "use_sse", feature = "use_avx")))]
 #[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
 mod approximations;
 

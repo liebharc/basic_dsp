@@ -148,7 +148,7 @@ pub extern "C" fn real_dot_product64(vector: &VecBuf,
                                      operand: &VecBuf)
                                      -> ScalarInteropResult<f64> {
     vector.convert_scalar(|v| {
-        DotProductOps::<f64, GenDspVec<Vec<f64>, f64>>::dot_product(v, &operand.vec)
+        DotProductOps::<GenDspVec<Vec<f64>, f64>, f64>::dot_product(v, &operand.vec)
     },
     0.0)
 }
@@ -158,20 +158,20 @@ pub extern "C" fn complex_dot_product64(vector: &VecBuf,
                                         operand: &VecBuf)
                                         -> ScalarInteropResult<Complex64> {
     vector.convert_scalar(|v| {
-        DotProductOps::<Complex64, GenDspVec<Vec<f64>, f64>>::dot_product(v, &operand.vec)
+        DotProductOps::<GenDspVec<Vec<f64>, f64>, Complex64>::dot_product(v, &operand.vec)
     },
     Complex64::new(0.0, 0.0))
 }
 
 #[no_mangle]
 pub extern "C" fn real_statistics64(vector: &VecBuf) -> Statistics<f64> {
-    let vec = &vector.vec as &StatisticsOps<f64, Result=Statistics<f64>>;
+    let vec = &vector.vec as &StatisticsOps<f64, Result = Statistics<f64>>;
     vec.statistics()
 }
 
 #[no_mangle]
 pub extern "C" fn complex_statistics64(vector: &VecBuf) -> Statistics<Complex64> {
-    let vec = &vector.vec as &StatisticsOps<Complex64, Result=Statistics<Complex64>>;
+    let vec = &vector.vec as &StatisticsOps<Complex64, Result = Statistics<Complex64>>;
     vec.statistics()
 }
 
@@ -196,33 +196,33 @@ pub extern "C" fn complex_sum_sq64(vector: &VecBuf) -> Complex64 {
 }
 #[no_mangle]
 pub extern "C" fn real_dot_product_prec64(vector: &VecBuf,
-                                     operand: &VecBuf)
-                                     -> ScalarInteropResult<f64> {
+                                          operand: &VecBuf)
+                                          -> ScalarInteropResult<f64> {
     vector.convert_scalar(|v| {
-        PreciseDotProductOps::<f64, GenDspVec<Vec<f64>, f64>>::dot_product_prec(v, &operand.vec)
+        PreciseDotProductOps::<GenDspVec<Vec<f64>, f64>, f64>::dot_product_prec(v, &operand.vec)
     },
     0.0)
 }
 
 #[no_mangle]
 pub extern "C" fn complex_dot_product_prec64(vector: &VecBuf,
-                                        operand: &VecBuf)
-                                        -> ScalarInteropResult<Complex64> {
+                                             operand: &VecBuf)
+                                             -> ScalarInteropResult<Complex64> {
     vector.convert_scalar(|v| {
-        PreciseDotProductOps::<Complex64, GenDspVec<Vec<f64>, f64>>::dot_product_prec(v, &operand.vec)
+        PreciseDotProductOps::<GenDspVec<Vec<f64>, f64>, Complex64>::dot_product_prec(v, &operand.vec)
     },
     Complex64::new(0.0, 0.0))
 }
 
 #[no_mangle]
 pub extern "C" fn real_statistics_prec64(vector: &VecBuf) -> Statistics<f64> {
-    let vec = &vector.vec as &PreciseStatisticsOps<f64, Result=Statistics<f64>>;
+    let vec = &vector.vec as &PreciseStatisticsOps<f64, Result = Statistics<f64>>;
     vec.statistics_prec()
 }
 
 #[no_mangle]
 pub extern "C" fn complex_statistics_prec64(vector: &VecBuf) -> Statistics<Complex64> {
-    let vec = &vector.vec as &PreciseStatisticsOps<Complex64, Result=Statistics<Complex64>>;
+    let vec = &vector.vec as &PreciseStatisticsOps<Complex64, Result = Statistics<Complex64>>;
     vec.statistics_prec()
 }
 
@@ -536,17 +536,13 @@ pub extern "C" fn map_aggregate_real64(vector: &VecBuf,
                                                                 -> *const c_void)
                                        -> ScalarResult<*const c_void> {
     unsafe {
-        let map  = move |v, i, _| {
-                        mem::transmute(map(v, i))
-                    };
+        let map = move |v, i, _| mem::transmute(map(v, i));
         let aggr = move |a: usize, b: usize| {
-                        mem::transmute(aggregate(mem::transmute(a),mem::transmute(b)))
-                    };
+            mem::transmute(aggregate(mem::transmute(a), mem::transmute(b)))
+        };
 
-        let result = vector.convert_scalar(|v| {
-                v.map_aggregate((), &map, &aggr)
-            },
-            mem::transmute(0usize));
+        let result =
+            vector.convert_scalar(|v| v.map_aggregate((), &map, &aggr), mem::transmute(0usize));
         mem::transmute(result)
     }
 }
@@ -560,17 +556,13 @@ pub extern "C" fn map_aggregate_complex64(vector: &VecBuf,
                                                                    -> *const c_void)
                                           -> ScalarResult<*const c_void> {
     unsafe {
-        let map  = move |v, i, _| {
-                        mem::transmute(map(v, i))
-                    };
+        let map = move |v, i, _| mem::transmute(map(v, i));
         let aggr = move |a: usize, b: usize| {
-                        mem::transmute(aggregate(mem::transmute(a),mem::transmute(b)))
-                    };
+            mem::transmute(aggregate(mem::transmute(a), mem::transmute(b)))
+        };
 
-        let result = vector.convert_scalar(|v| {
-                v.map_aggregate((), &map, &aggr)
-            },
-            mem::transmute(0usize));
+        let result =
+            vector.convert_scalar(|v| v.map_aggregate((), &map, &aggr), mem::transmute(0usize));
         mem::transmute(result)
     }
 }
@@ -758,11 +750,11 @@ pub extern "C" fn overwrite_data64(mut vector: Box<VecBuf>,
 
 #[no_mangle]
 pub extern "C" fn real_statistics_split64(vector: &VecBuf,
-                                             data: *mut Statistics<f64>,
-                                             len: usize)
-                                             -> i32 {
+                                          data: *mut Statistics<f64>,
+                                          len: usize)
+                                          -> i32 {
     let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
-    let vec = &vector.vec as &StatisticsSplitOps<f64, Result=StatsVec<Statistics<f64>>>;
+    let vec = &vector.vec as &StatisticsSplitOps<f64, Result = StatsVec<Statistics<f64>>>;
     let stats = vec.statistics_split(data.len());
     match stats {
         Ok(s) => {
@@ -771,18 +763,19 @@ pub extern "C" fn real_statistics_split64(vector: &VecBuf,
             }
 
             0
-        },
-        Err(r) => translate_error(r)
+        }
+        Err(r) => translate_error(r),
     }
 }
 
 #[no_mangle]
 pub extern "C" fn complex_statistics_split64(vector: &VecBuf,
-                                                data: *mut Statistics<Complex64>,
-                                                len: usize)
-                                                -> i32 {
+                                             data: *mut Statistics<Complex64>,
+                                             len: usize)
+                                             -> i32 {
     let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
-    let vec = &vector.vec as &StatisticsSplitOps<Complex64, Result=StatsVec<Statistics<Complex64>>>;
+    let vec = &vector.vec as &StatisticsSplitOps<Complex64,
+                                                 Result = StatsVec<Statistics<Complex64>>>;
     let stats = vec.statistics_split(data.len());
     match stats {
         Ok(s) => {
@@ -791,18 +784,18 @@ pub extern "C" fn complex_statistics_split64(vector: &VecBuf,
             }
 
             0
-        },
-        Err(r) => translate_error(r)
+        }
+        Err(r) => translate_error(r),
     }
 }
 
 #[no_mangle]
 pub extern "C" fn real_statistics_split_prec64(vector: &VecBuf,
-                                             data: *mut Statistics<f64>,
-                                             len: usize)
-                                             -> i32 {
+                                               data: *mut Statistics<f64>,
+                                               len: usize)
+                                               -> i32 {
     let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
-    let vec = &vector.vec as &PreciseStatisticsSplitOps<f64, Result=StatsVec<Statistics<f64>>>;
+    let vec = &vector.vec as &PreciseStatisticsSplitOps<f64, Result = StatsVec<Statistics<f64>>>;
     let stats = vec.statistics_split_prec(data.len());
     match stats {
         Ok(s) => {
@@ -811,18 +804,19 @@ pub extern "C" fn real_statistics_split_prec64(vector: &VecBuf,
             }
 
             0
-        },
-        Err(r) => translate_error(r)
+        }
+        Err(r) => translate_error(r),
     }
 }
 
 #[no_mangle]
 pub extern "C" fn complex_statistics_split_prec64(vector: &VecBuf,
-                                                data: *mut Statistics<Complex64>,
-                                                len: usize)
-                                                -> i32 {
+                                                  data: *mut Statistics<Complex64>,
+                                                  len: usize)
+                                                  -> i32 {
     let mut data = unsafe { slice::from_raw_parts_mut(data, len) };
-    let vec = &vector.vec as &PreciseStatisticsSplitOps<Complex64, Result=StatsVec<Statistics<Complex64>>>;
+    let vec = &vector.vec as &PreciseStatisticsSplitOps<Complex64,
+                                                        Result = StatsVec<Statistics<Complex64>>>;
     let stats = vec.statistics_split_prec(data.len());
     match stats {
         Ok(s) => {
@@ -831,8 +825,8 @@ pub extern "C" fn complex_statistics_split_prec64(vector: &VecBuf,
             }
 
             0
-        },
-        Err(r) => translate_error(r)
+        }
+        Err(r) => translate_error(r),
     }
 }
 
@@ -1234,12 +1228,12 @@ pub extern "C" fn interpolatef64(vector: Box<VecBuf>,
 /// function at every call and can be used to store parameters.
 #[no_mangle]
 pub extern "C" fn interpolate_custom64(vector: Box<VecBuf>,
-                                        frequency_response: extern "C" fn(*const c_void, f64) -> f64,
-                                        frequency_response_data: *const c_void,
-                                        is_symmetric: bool,
-                                        dest_points: usize,
-                                        delay: f64)
-                                        -> VectorInteropResult<VecBuf> {
+                                       frequency_response: extern "C" fn(*const c_void, f64) -> f64,
+                                       frequency_response_data: *const c_void,
+                                       is_symmetric: bool,
+                                       dest_points: usize,
+                                       delay: f64)
+                                       -> VectorInteropResult<VecBuf> {
     unsafe {
         let function: &RealFrequencyResponse<f64> = &ForeignRealConvolutionFunction {
             conv_function: frequency_response,
@@ -1258,24 +1252,20 @@ pub extern "C" fn interpolate_custom64(vector: Box<VecBuf>,
 /// `rolloff` is only used if this is a valid parameter for the selected `impulse_response`
 #[no_mangle]
 pub extern "C" fn interpolate64(vector: Box<VecBuf>,
-                                 frequency_response: i32,
-                                 rolloff: f64,
-                                 dest_points: usize,
-                                 delay: f64)
-                                 -> VectorInteropResult<VecBuf> {
+                                frequency_response: i32,
+                                rolloff: f64,
+                                dest_points: usize,
+                                delay: f64)
+                                -> VectorInteropResult<VecBuf> {
     let function = translate_to_real_frequency_response(frequency_response, rolloff);
-    vector.convert_vec(|v, b| {
-        v.interpolate(b, Some(function.as_ref()), dest_points, delay)
-    })
+    vector.convert_vec(|v, b| v.interpolate(b, Some(function.as_ref()), dest_points, delay))
 }
 
 #[no_mangle]
 pub extern "C" fn interpft64(vector: Box<VecBuf>,
-                                 dest_points: usize)
-                                 -> VectorInteropResult<VecBuf> {
-    vector.convert_vec(|v, b| {
-        Ok(v.interpft(b, dest_points))
-    })
+                             dest_points: usize)
+                             -> VectorInteropResult<VecBuf> {
+    vector.convert_vec(|v, b| Ok(v.interpft(b, dest_points)))
 }
 
 /// Convolves the vector with an impulse response defined by `frequency_response` and

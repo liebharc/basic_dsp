@@ -282,8 +282,7 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send> MapAggregateOps<T, R>
     {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res =
-                try!(v.map_aggregate(argument, &map, &aggregate));
+            let res = try!(v.map_aggregate(argument, &map, &aggregate));
             result.push(res);
         }
 
@@ -309,8 +308,7 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send> MapAggregateOps<T, R>
     {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res =
-                try!(v.map_aggregate(argument, &map, &aggregate));
+            let res = try!(v.map_aggregate(argument, &map, &aggregate));
             result.push(res);
         }
 
@@ -336,8 +334,7 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send> MapAggregateOps<T, R>
     {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res =
-                try!(v.map_aggregate(argument, &map, &aggregate));
+            let res = try!(v.map_aggregate(argument, &map, &aggregate));
             result.push(res);
         }
 
@@ -363,8 +360,7 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber, R: Send> MapAggregateOps<T, R>
     {
         let mut result = Vec::with_capacity(self.col_len());
         for v in self.rows() {
-            let res =
-                try!(v.map_aggregate(argument, &map, &aggregate));
+            let res = try!(v.map_aggregate(argument, &map, &aggregate));
             result.push(res);
         }
 

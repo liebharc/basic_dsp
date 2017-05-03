@@ -2,7 +2,7 @@ use array_to_complex_mut;
 use numbers::*;
 use super::super::{Vector, DspVec, ToSliceMut, Domain, NumberSpace, MetaData};
 
-/// A trait to calculate the diff (1st derivative in a discrete number space) or cumulative sum 
+/// A trait to calculate the diff (1st derivative in a discrete number space) or cumulative sum
 /// (integral  in a discrete number space).
 pub trait DiffSumOps {
     /// Calculates the delta of each elements to its previous element. This will decrease

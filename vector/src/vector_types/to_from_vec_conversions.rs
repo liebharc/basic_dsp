@@ -1,9 +1,8 @@
 //! Conversions to and from vectors which serve as constructors.
 use numbers::*;
-use super::{DataDomain, NumberSpace, Domain, DspVec, GenDspVec,
-            RealTimeVec, RealFreqVec, ComplexTimeVec, ComplexFreqVec, RealData, ComplexData,
-            TimeData, FrequencyData, ToSlice,
-            TypeMetaData};
+use super::{DataDomain, NumberSpace, Domain, DspVec, GenDspVec, RealTimeVec, RealFreqVec,
+            ComplexTimeVec, ComplexFreqVec, RealData, ComplexData, TimeData, FrequencyData,
+            ToSlice, TypeMetaData};
 use multicore_support::MultiCoreSettings;
 use std::convert::From;
 
@@ -25,7 +24,8 @@ pub trait ToDspVector<T>: Sized + ToSlice<T>
     /// retrieved from an existing vector. If no existing vector is available
     /// then one of the other constructor methods should be used.
     fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
-        where N: NumberSpace, D: Domain;
+        where N: NumberSpace,
+              D: Domain;
 }
 
 /// Conversion from a generic data type into a dsp vector with real data.

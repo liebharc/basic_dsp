@@ -7,10 +7,10 @@ use rustfft::FFT;
 use std::mem;
 use std::slice;
 use gpu_support::GpuSupport;
-use super::super::{VoidResult, ToSliceMut, MetaData,
-                   DspVec, NumberSpace, TimeDomain, FrequencyDomain, DataDomain, Vector,
-                   ComplexNumberSpace, Buffer, BufferBorrow, ErrorReason, TimeToFrequencyDomainOperations, ToComplexVector,
-                   FromVector, PaddingOption, ResizeOps, InsertZerosOps};
+use super::super::{VoidResult, ToSliceMut, MetaData, DspVec, NumberSpace, TimeDomain,
+                   FrequencyDomain, DataDomain, Vector, ComplexNumberSpace, Buffer, BufferBorrow,
+                   ErrorReason, TimeToFrequencyDomainOperations, ToComplexVector, FromVector,
+                   PaddingOption, ResizeOps, InsertZerosOps};
 
 /// Provides a convolution operations.
 pub trait Convolution<'a, S, T, C: 'a>
@@ -281,7 +281,7 @@ macro_rules! assert_meta_data {
 fn next_power_of_two(value: usize) -> usize {
     let mut count = 0;
     let mut n = value;
-    if n != 0 && (n & (n-1)) == 0 {
+    if n != 0 && (n & (n - 1)) == 0 {
         return n;
     }
     while n != 0 {
@@ -317,7 +317,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
           D: TimeDomain,
           DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone
 {
-    fn overlap_discard<B, SO>(&mut self, buffer: &mut B, impulse_response: &DspVec<SO, T, N, D>, fft_len: usize) -> VoidResult
+    fn overlap_discard<B, SO>(&mut self,
+                              buffer: &mut B,
+                              impulse_response: &DspVec<SO, T, N, D>,
+                              fft_len: usize)
+                              -> VoidResult
         where B: for<'a> Buffer<'a, S, T>,
               SO: ToSliceMut<T>
     {
@@ -332,16 +336,21 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         let x_len = self.points();
         let overlap = imp_len - 1;
         let min_fft_len = next_power_of_two(4 * overlap);
-        let fft_len = if fft_len > min_fft_len { fft_len } else { min_fft_len };
+        let fft_len = if fft_len > min_fft_len {
+            fft_len
+        } else {
+            min_fft_len
+        };
         let mut fft = FFT::new(fft_len, false);
         let mut ifft = FFT::new(fft_len, true);
         let step_size = fft_len - overlap;
-        let h_time_padded_len = 2*fft_len;
-        let h_freq_len = 2*fft_len;
-        let x_freq_len = 2*fft_len;
-        let tmp_len = 2*fft_len;
+        let h_time_padded_len = 2 * fft_len;
+        let h_freq_len = 2 * fft_len;
+        let x_freq_len = 2 * fft_len;
+        let tmp_len = 2 * fft_len;
         let remainder_len = x_len - x_len % fft_len;
-        let mut array = buffer.borrow(h_time_padded_len + h_freq_len + x_freq_len + tmp_len + remainder_len);
+        let mut array =
+            buffer.borrow(h_time_padded_len + h_freq_len + x_freq_len + tmp_len + remainder_len);
         {
             let mut array = array.to_slice_mut();
             let (mut h_freq, mut array) = array.split_at_mut(h_freq_len);
@@ -350,33 +359,42 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let (mut h_time_padded, array) = array.split_at_mut(h_time_padded_len);
             let mut end = array;
             let h_time = h_time.data.to_slice();
-            (&mut h_time_padded[0..2*imp_len]).copy_from_slice(&h_time[0..2*imp_len]);
+            (&mut h_time_padded[0..2 * imp_len]).copy_from_slice(&h_time[0..2 * imp_len]);
 
             let mut h_time_padded = (&mut h_time_padded[..]).to_complex_time_vec();
             h_time_padded.resize(2 * imp_len).expect("Shrinking a vector should always succeed");
-            h_time_padded.zero_pad(fft_len, PaddingOption::End).expect("zero padding should always have enough space");
+            h_time_padded.zero_pad(fft_len, PaddingOption::End)
+                .expect("zero padding should always have enough space");
             let (h_time_padded, _) = h_time_padded.get();
 
             let x_time = self.data.to_slice_mut();
             let h_time: &[Complex<T>] = array_to_complex(&h_time[..]);
-            let h_time_padded: &[Complex<T>] = array_to_complex(&h_time_padded[0..2*fft_len]);
-            let x_time: &mut [Complex<T>] = array_to_complex_mut(&mut x_time[0..2*x_len]);
-            let h_freq: &mut [Complex<T>] = array_to_complex_mut(&mut h_freq[0..2*fft_len]);
-            let mut x_freq: &mut [Complex<T>] = array_to_complex_mut(&mut x_freq[0..2*fft_len]);
-            let mut tmp: &mut [Complex<T>] = array_to_complex_mut(&mut tmp[0..2*fft_len]);
+            let h_time_padded: &[Complex<T>] = array_to_complex(&h_time_padded[0..2 * fft_len]);
+            let x_time: &mut [Complex<T>] = array_to_complex_mut(&mut x_time[0..2 * x_len]);
+            let h_freq: &mut [Complex<T>] = array_to_complex_mut(&mut h_freq[0..2 * fft_len]);
+            let mut x_freq: &mut [Complex<T>] = array_to_complex_mut(&mut x_freq[0..2 * fft_len]);
+            let mut tmp: &mut [Complex<T>] = array_to_complex_mut(&mut tmp[0..2 * fft_len]);
             let end: &mut [Complex<T>] = array_to_complex_mut(&mut end[0..remainder_len]);
             fft.process(h_time_padded, h_freq);
             let mut position = 0;
             {
                 // (1) Scalar convolution of the beginning
-                for num in &mut tmp[0..imp_len/2] {
-                    *num = Self::convolve_iteration(x_time, h_time, position, ((imp_len + 1) / 2) as isize, imp_len);
+                for num in &mut tmp[0..imp_len / 2] {
+                    *num = Self::convolve_iteration(x_time,
+                                                    h_time,
+                                                    position,
+                                                    ((imp_len + 1) / 2) as isize,
+                                                    imp_len);
                     position += 1;
                 }
                 // (2) Scalar convolution of the end/tail
                 position = (x_time.len() - end.len()) as isize;
-                for num in &mut end[0..remainder_len/2] {
-                    *num = Self::convolve_iteration(x_time, h_time, position, ((imp_len + 1) / 2) as isize, imp_len);
+                for num in &mut end[0..remainder_len / 2] {
+                    *num = Self::convolve_iteration(x_time,
+                                                    h_time,
+                                                    position,
+                                                    ((imp_len + 1) / 2) as isize,
+                                                    imp_len);
                     position += 1;
                 }
             }
@@ -386,22 +404,20 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 // GPU implementation of overlap_discard `thinks` in interleaved arrays
                 // while this implementation `thinks` in complex arrays. Therefore a factor
                 // of 2 needs to be taken into account in the method call.
-                position = T::overlap_discard(
-                    array_to_real_mut(x_time),
-                    array_to_real_mut(tmp),
-                    array_to_real_mut(x_freq),
-                    array_to_real(h_freq),
-                    2 * imp_len,
-                    2 * step_size) / 2;
-            }
-            else {
+                position = T::overlap_discard(array_to_real_mut(x_time),
+                                              array_to_real_mut(tmp),
+                                              array_to_real_mut(x_freq),
+                                              array_to_real(h_freq),
+                                              2 * imp_len,
+                                              2 * step_size) / 2;
+            } else {
                 let scaling = T::from(fft_len).unwrap();
                 {
-                    let range = position .. fft_len+position;
+                    let range = position..fft_len + position;
                     // (3) The first iteration is different since it copies over the results which have been calculated for the beginning
                     fft.process(&x_time[range], x_freq);
                     // Copy over the results of the scalar convolution (1)
-                    (&mut x_time[0..imp_len/2]).copy_from_slice(&tmp[0..imp_len/2]);
+                    (&mut x_time[0..imp_len / 2]).copy_from_slice(&tmp[0..imp_len / 2]);
                     for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_freq.iter()) {
                         *n = *n * *v / scaling;
                     }
@@ -409,11 +425,12 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                     position += step_size;
                 }
 
-                while position+fft_len < x_len {
-                    let range = position .. fft_len+position;
+                while position + fft_len < x_len {
+                    let range = position..fft_len + position;
                     fft.process(&x_time[range], x_freq);
                     // (4) Same as (3) except that the results of the previous iteration gets copied over
-                    (&mut x_time[position-step_size+imp_len/2 .. position+imp_len/2]).copy_from_slice(&tmp[imp_len-1..fft_len]);
+                    (&mut x_time[position - step_size + imp_len / 2..position + imp_len / 2])
+                        .copy_from_slice(&tmp[imp_len - 1..fft_len]);
                     for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_freq.iter()) {
                         *n = *n * *v / scaling;
                     }
@@ -423,10 +440,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             }
 
             // (5) now store the result of the last iteration
-            (&mut x_time[position-step_size+imp_len/2 .. position+imp_len/2]).copy_from_slice(&tmp[imp_len-1..fft_len]);
+            (&mut x_time[position - step_size + imp_len / 2..position + imp_len / 2])
+                .copy_from_slice(&tmp[imp_len - 1..fft_len]);
 
             // (6) Copy over the end result which was calculated at the beginning (2)
-            (&mut x_time[x_len - remainder_len / 2 .. ]).copy_from_slice(&end[..]);
+            (&mut x_time[x_len - remainder_len / 2..]).copy_from_slice(&end[..]);
         }
         Ok(())
     }
@@ -441,7 +459,10 @@ impl<S, SO, T, N, D> ConvolutionOps<DspVec<SO, T, N, D>, S, T> for DspVec<S, T, 
           DspVec<S, T, N, D>: TimeToFrequencyDomainOperations<S, T> + Clone,
           DspVec<SO, T, N, D>: TimeToFrequencyDomainOperations<SO, T> + Clone
 {
-    fn convolve_signal<B>(&mut self, buffer: &mut B, impulse_response: &DspVec<SO, T, N, D>) -> VoidResult
+    fn convolve_signal<B>(&mut self,
+                          buffer: &mut B,
+                          impulse_response: &DspVec<SO, T, N, D>)
+                          -> VoidResult
         where B: for<'a> Buffer<'a, S, T>
     {
         assert_meta_data!(self, impulse_response);
@@ -458,9 +479,7 @@ impl<S, SO, T, N, D> ConvolutionOps<DspVec<SO, T, N, D>, S, T> for DspVec<S, T, 
         // For the SIMD operation we need to clone `vector` several
         // times and this only is worthwhile if `vector.len() << self.len()`
         // where `<<` means "significant smaller".
-        if self.len() > 1000
-           && impulse_response.len() <= 202
-           && impulse_response.len() > 11 {
+        if self.len() > 1000 && impulse_response.len() <= 202 && impulse_response.len() > 11 {
             self.convolve_signal_simd(buffer, impulse_response);
             return Ok(());
         }
@@ -474,11 +493,10 @@ impl<S, SO, T, N, D> ConvolutionOps<DspVec<SO, T, N, D>, S, T> for DspVec<S, T, 
                 let source = self.data.to_slice();
                 let imp_resp = impulse_response.data.to_slice();
                 let mut target = target.to_slice_mut();
-                T::gpu_convolve_vector(
-                    is_complex,
-                    &source[0..source_len],
-                    &mut target[0..source_len],
-                    &imp_resp[0..imp_resp_len])
+                T::gpu_convolve_vector(is_complex,
+                                       &source[0..source_len],
+                                       &mut target[0..source_len],
+                                       &imp_resp[0..imp_resp_len])
             };
             match range_done {
                 None => (), // The GPU code can't handle this go to the next cases
@@ -494,8 +512,7 @@ impl<S, SO, T, N, D> ConvolutionOps<DspVec<SO, T, N, D>, S, T> for DspVec<S, T, 
             && impulse_response.len() > 15
             // Overlap-discard creates a lot of copies of the size of impulse_response
             // and that only seems to be worthwhile if the vector is long enough
-            && self.len() > 10 * impulse_response.len()
-            && self.is_complex() {
+            && self.len() > 10 * impulse_response.len() && self.is_complex() {
             let fft_len = next_power_of_two(impulse_response.len());
             return self.overlap_discard(buffer, impulse_response, fft_len);
         }
@@ -821,7 +838,7 @@ mod tests {
 
     #[test]
     fn overlap_discard_test() {
-        let a: Vec<f32> = (0..100).map(|x|x as f32).collect();
+        let a: Vec<f32> = (0..100).map(|x| x as f32).collect();
         let b: Vec<f32> = vec![0.1, 0.2, 0.3, 0.5, 0.1, 0.2];
         let a = a.to_real_time_vec();
         let b = b.to_real_time_vec();

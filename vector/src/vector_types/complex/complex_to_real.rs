@@ -2,8 +2,8 @@ use multicore_support::*;
 use simd_extensions::*;
 use numbers::*;
 use std::ops::*;
-use super::super::{ToRealResult, ErrorReason, Buffer, Vector, Resize, MetaData,
-                   DspVec, ToSliceMut, ToSlice, VoidResult, Domain, ComplexNumberSpace,
+use super::super::{ToRealResult, ErrorReason, Buffer, Vector, Resize, MetaData, DspVec,
+                   ToSliceMut, ToSlice, VoidResult, Domain, ComplexNumberSpace,
                    RededicateForceOps, RealNumberSpace, NumberSpace, GetMetaData};
 
 /// Defines transformations from complex to real number space.
@@ -130,7 +130,8 @@ pub trait ComplexToRealTransformsOpsBuffered<S, T>: ToRealResult
     /// assert_eq!([25.0, 25.0], result[0..]);
     /// # }
     /// ```
-    fn magnitude_squared_b<B>(self, buffer: &mut B) -> Self::RealResult where B: for<'a> Buffer<'a, S, T>;
+    fn magnitude_squared_b<B>(self, buffer: &mut B) -> Self::RealResult
+        where B: for<'a> Buffer<'a, S, T>;
 
     /// Gets all real elements.
     /// # Example
@@ -639,14 +640,13 @@ impl<S, T, N, NR, D, O> ComplexToRealGetterOps<O, T, NR, D> for DspVec<S, T, N, 
 
 impl<S, T, N, NR, D, O> ComplexToRealSetterOps<O, T, NR, D> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ToRealResult,
-          O:
-            Index<Range<usize>, Output=[T]>
-            + Vector<T> + GetMetaData<T, NR, D>,
+          O: Index<Range<usize>, Output = [T]> + Vector<T> + GetMetaData<T, NR, D>,
           S: ToSliceMut<T> + Resize,
           T: RealNumber,
           N: ComplexNumberSpace,
           NR: RealNumberSpace,
-          D: Domain {
+          D: Domain
+{
     fn set_real_imag(&mut self, real: &O, imag: &O) -> VoidResult {
         {
             if real.len() != imag.len() {

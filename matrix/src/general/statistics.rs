@@ -3,11 +3,10 @@ use basic_dsp_vector::numbers::*;
 use super::*;
 use IntoFixedLength;
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
-    for MatrixMxN<V, S, T>
-    where V: StatisticsOps<Statistics<T>, Result=Statistics<T>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T> for MatrixMxN<V, S, T>
+    where V: StatisticsOps<Statistics<T>, Result = Statistics<T>>
 {
-    type Result=Vec<Statistics<T>>;
+    type Result = Vec<Statistics<T>>;
 
     fn statistics(&self) -> Vec<Statistics<T>> {
         let mut result = Vec::with_capacity(self.col_len());
@@ -20,11 +19,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsSplitOps<T>
-    for MatrixMxN<V, S, T>
-    where V: StatisticsSplitOps<Statistics<T>, Result=StatsVec<Statistics<T>>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsSplitOps<T> for MatrixMxN<V, S, T>
+    where V: StatisticsSplitOps<Statistics<T>, Result = StatsVec<Statistics<T>>>
 {
-    type Result=Vec<StatsVec<Statistics<T>>>;
+    type Result = Vec<StatsVec<Statistics<T>>>;
 
     fn statistics_split(&self, len: usize) -> ScalarResult<Vec<StatsVec<Statistics<T>>>> {
         let mut result = Vec::with_capacity(self.col_len());
@@ -37,11 +35,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsSplitOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
-    for Matrix2xN<V, S, T>
-    where V: StatisticsOps<Statistics<T>, Result=Statistics<T>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T> for Matrix2xN<V, S, T>
+    where V: StatisticsOps<Statistics<T>, Result = Statistics<T>>
 {
-    type Result=[Statistics<T>; 2];
+    type Result = [Statistics<T>; 2];
 
     fn statistics(&self) -> Self::Result {
         let mut result = Vec::with_capacity(self.col_len());
@@ -54,11 +51,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsSplitOps<T>
-    for Matrix2xN<V, S, T>
-    where V: StatisticsSplitOps<Statistics<T>, Result=StatsVec<Statistics<T>>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsSplitOps<T> for Matrix2xN<V, S, T>
+    where V: StatisticsSplitOps<Statistics<T>, Result = StatsVec<Statistics<T>>>
 {
-    type Result=[StatsVec<Statistics<T>>; 2];
+    type Result = [StatsVec<Statistics<T>>; 2];
 
     fn statistics_split(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
@@ -71,11 +67,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsSplitOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
-    for Matrix3xN<V, S, T>
-    where V: StatisticsOps<Statistics<T>, Result=Statistics<T>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T> for Matrix3xN<V, S, T>
+    where V: StatisticsOps<Statistics<T>, Result = Statistics<T>>
 {
-    type Result=[Statistics<T>; 3];
+    type Result = [Statistics<T>; 3];
 
     fn statistics(&self) -> Self::Result {
         let mut result = Vec::with_capacity(self.col_len());
@@ -88,11 +83,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsSplitOps<T>
-    for Matrix3xN<V, S, T>
-    where V: StatisticsSplitOps<Statistics<T>, Result=StatsVec<Statistics<T>>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsSplitOps<T> for Matrix3xN<V, S, T>
+    where V: StatisticsSplitOps<Statistics<T>, Result = StatsVec<Statistics<T>>>
 {
-    type Result=[StatsVec<Statistics<T>>; 3];
+    type Result = [StatsVec<Statistics<T>>; 3];
 
     fn statistics_split(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
@@ -105,11 +99,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsSplitOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
-    for Matrix4xN<V, S, T>
-    where V: StatisticsOps<Statistics<T>, Result=Statistics<T>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T> for Matrix4xN<V, S, T>
+    where V: StatisticsOps<Statistics<T>, Result = Statistics<T>>
 {
-    type Result=[Statistics<T>; 4];
+    type Result = [Statistics<T>; 4];
 
     fn statistics(&self) -> Self::Result {
         let mut result = Vec::with_capacity(self.col_len());
@@ -122,11 +115,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsSplitOps<T>
-    for Matrix4xN<V, S, T>
-    where V: StatisticsSplitOps<Statistics<T>, Result=StatsVec<Statistics<T>>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsSplitOps<T> for Matrix4xN<V, S, T>
+    where V: StatisticsSplitOps<Statistics<T>, Result = StatsVec<Statistics<T>>>
 {
-    type Result=[StatsVec<Statistics<T>>; 4];
+    type Result = [StatsVec<Statistics<T>>; 4];
 
     fn statistics_split(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
@@ -235,11 +227,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> SumOps<[T; 4]> for Matrix2xN<V,
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsOps<T>
-    for MatrixMxN<V, S, T>
-    where V: PreciseStatisticsOps<Statistics<T>, Result=Statistics<T>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsOps<T> for MatrixMxN<V, S, T>
+    where V: PreciseStatisticsOps<Statistics<T>, Result = Statistics<T>>
 {
-    type Result=Vec<Statistics<T>>;
+    type Result = Vec<Statistics<T>>;
 
     fn statistics_prec(&self) -> Vec<Statistics<T>> {
         let mut result = Vec::with_capacity(self.col_len());
@@ -252,11 +243,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsSplitOps<T>
-    for MatrixMxN<V, S, T>
-    where V: PreciseStatisticsSplitOps<Statistics<T>, Result=StatsVec<Statistics<T>>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsSplitOps<T> for MatrixMxN<V, S, T>
+    where V: PreciseStatisticsSplitOps<Statistics<T>, Result = StatsVec<Statistics<T>>>
 {
-    type Result=Vec<StatsVec<Statistics<T>>>;
+    type Result = Vec<StatsVec<Statistics<T>>>;
 
     fn statistics_split_prec(&self, len: usize) -> ScalarResult<Vec<StatsVec<Statistics<T>>>> {
         let mut result = Vec::with_capacity(self.col_len());
@@ -269,11 +259,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsSplitOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsOps<T>
-    for Matrix2xN<V, S, T>
-    where V: PreciseStatisticsOps<Statistics<T>, Result=Statistics<T>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsOps<T> for Matrix2xN<V, S, T>
+    where V: PreciseStatisticsOps<Statistics<T>, Result = Statistics<T>>
 {
-    type Result=[Statistics<T>; 2];
+    type Result = [Statistics<T>; 2];
 
     fn statistics_prec(&self) -> Self::Result {
         let mut result = Vec::with_capacity(self.col_len());
@@ -286,11 +275,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsSplitOps<T>
-    for Matrix2xN<V, S, T>
-    where V: PreciseStatisticsSplitOps<Statistics<T>, Result=StatsVec<Statistics<T>>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsSplitOps<T> for Matrix2xN<V, S, T>
+    where V: PreciseStatisticsSplitOps<Statistics<T>, Result = StatsVec<Statistics<T>>>
 {
-    type Result=[StatsVec<Statistics<T>>; 2];
+    type Result = [StatsVec<Statistics<T>>; 2];
 
     fn statistics_split_prec(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
@@ -303,11 +291,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsSplitOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsOps<T>
-    for Matrix3xN<V, S, T>
-    where V: PreciseStatisticsOps<Statistics<T>, Result=Statistics<T>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsOps<T> for Matrix3xN<V, S, T>
+    where V: PreciseStatisticsOps<Statistics<T>, Result = Statistics<T>>
 {
-    type Result=[Statistics<T>; 3];
+    type Result = [Statistics<T>; 3];
 
     fn statistics_prec(&self) -> Self::Result {
         let mut result = Vec::with_capacity(self.col_len());
@@ -320,11 +307,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsSplitOps<T>
-    for Matrix3xN<V, S, T>
-    where V: PreciseStatisticsSplitOps<Statistics<T>, Result=StatsVec<Statistics<T>>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsSplitOps<T> for Matrix3xN<V, S, T>
+    where V: PreciseStatisticsSplitOps<Statistics<T>, Result = StatsVec<Statistics<T>>>
 {
-    type Result=[StatsVec<Statistics<T>>; 3];
+    type Result = [StatsVec<Statistics<T>>; 3];
 
     fn statistics_split_prec(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());
@@ -337,11 +323,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsSplitOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsOps<T>
-    for Matrix4xN<V, S, T>
-    where V: PreciseStatisticsOps<Statistics<T>, Result=Statistics<T>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsOps<T> for Matrix4xN<V, S, T>
+    where V: PreciseStatisticsOps<Statistics<T>, Result = Statistics<T>>
 {
-    type Result=[Statistics<T>; 4];
+    type Result = [Statistics<T>; 4];
 
     fn statistics_prec(&self) -> Self::Result {
         let mut result = Vec::with_capacity(self.col_len());
@@ -354,11 +339,10 @@ impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsOps<T>
     }
 }
 
-impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsSplitOps<T>
-    for Matrix4xN<V, S, T>
-    where V: PreciseStatisticsSplitOps<Statistics<T>, Result=StatsVec<Statistics<T>>>
+impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> PreciseStatisticsSplitOps<T> for Matrix4xN<V, S, T>
+    where V: PreciseStatisticsSplitOps<Statistics<T>, Result = StatsVec<Statistics<T>>>
 {
-    type Result=[StatsVec<Statistics<T>>; 4];
+    type Result = [StatsVec<Statistics<T>>; 4];
 
     fn statistics_split_prec(&self, len: usize) -> ScalarResult<Self::Result> {
         let mut result = Vec::with_capacity(self.col_len());

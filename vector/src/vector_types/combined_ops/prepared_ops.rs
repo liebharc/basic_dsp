@@ -45,13 +45,14 @@ pub fn prepare64_1<N, D>(number_space: N, domain: D) -> PreparedOperation1<f64, 
 }
 
 /// Executes the prepared operations to convert `A1` and `A2` to `D1` and `D2`.
-pub trait PreparedOperation2Exec<S: ToSliceMut<T>, T: RealNumber, A1, A2, D1, D2> {
+pub trait PreparedOperation2Exec<S: ToSliceMut<T>, T: RealNumber, A1, A2, D1, D2>
+     {
     /// Executes the prepared operations to convert `A1` and `A2` to `D1` and `D2`.
     fn exec<B>(&self,
-            buffer: &mut B,
-            source1: A1,
-            source2: A2)
-            -> result::Result<(D1, D2), (ErrorReason, D1, D2)>
+               buffer: &mut B,
+               source1: A1,
+               source2: A2)
+               -> result::Result<(D1, D2), (ErrorReason, D1, D2)>
         where B: for<'a> Buffer<'a, S, T>;
 }
 
@@ -228,39 +229,33 @@ fn sort_by_arg<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> (ArgVec<T>, ArgV
     let mut res2 = ArgVec::with_capacity(ops1.len() + ops2.len());
     for n in &ops1[..] {
         let id = n.0;
-        let other_count =
-            match n.2 {
-                Some(other) => Some(other.1),
-                None => None
-            };
+        let other_count = match n.2 {
+            Some(other) => Some(other.1),
+            None => None,
+        };
         if id.0 == 0 {
             res1.push((n.1.clone(), other_count));
-        }
-        else {
+        } else {
             res2.push((n.1.clone(), other_count));
         }
     }
 
     for n in &ops2[..] {
         let id = n.0;
-        let other_count =
-            match n.2 {
-                Some(other) => Some(other.1),
-                None => None
-            };
+        let other_count = match n.2 {
+            Some(other) => Some(other.1),
+            None => None,
+        };
         if id.0 == 0 {
             if id.1 < res1.len() {
                 res1.insert(id.1, (n.1.clone(), other_count));
-            }
-            else {
+            } else {
                 res1.push((n.1.clone(), other_count));
             }
-        }
-        else {
+        } else {
             if id.1 < res2.len() {
                 res2.insert(id.1, (n.1.clone(), other_count));
-            }
-            else {
+            } else {
                 res2.push((n.1.clone(), other_count));
             }
         }
@@ -281,36 +276,31 @@ fn find_first_binary_op_pos<T>(ops: &ArgVec<T>, start: usize) -> Option<usize> {
 }
 
 /// Returns the indices which must be processed first and then the binary op which must be handled next.
-fn first_op<T> (
-    ops1: &ArgVec<T>, pos1: Option<usize>,
-    ops2: &ArgVec<T>, pos2: Option<usize>)
-     -> (usize, usize, u32) {
+fn first_op<T>(ops1: &ArgVec<T>,
+               pos1: Option<usize>,
+               ops2: &ArgVec<T>,
+               pos2: Option<usize>)
+               -> (usize, usize, u32) {
     assert!(pos1.is_some() || pos2.is_some());
     if pos1.is_some() && pos2.is_some() {
         let op1 = &ops1[pos1.unwrap()];
         let other1 = op1.1.unwrap();
         let op2 = &ops2[pos2.unwrap()];
         let other2 = op2.1.unwrap();
-        if pos1.unwrap() > other2
-        {
+        if pos1.unwrap() > other2 {
             // `op1` follows after `op2`
             (other2, pos2.unwrap(), 1)
-        }
-        else if pos1.unwrap() < pos2.unwrap()
-        {
+        } else if pos1.unwrap() < pos2.unwrap() {
             // `op2` follows after `op1`
             (pos1.unwrap(), other1, 0)
-        }
-        else {
+        } else {
             panic!("Failed to determine the sequence of operations");
         }
-    }
-    else if pos1.is_some() {
+    } else if pos1.is_some() {
         let op = &ops1[pos1.unwrap()];
         let other = op.1.unwrap();
         (pos1.unwrap(), other, 0)
-    }
-    else {
+    } else {
         let op = &ops2[pos2.unwrap()];
         let other = op.1.unwrap();
         (other, pos2.unwrap(), 1)
@@ -320,7 +310,7 @@ fn first_op<T> (
 /// Merges two ops vectors in a correct order.
 fn merge_operations<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> InlineVector<Operation<T>> {
     let mut res = InlineVector::with_capacity(ops1.len() + ops2.len());
-    let (arg1, arg2) =  sort_by_arg(ops1, ops2);
+    let (arg1, arg2) = sort_by_arg(ops1, ops2);
     let mut ops1pos = 0;
     let mut ops2pos = 0;
     let mut bin1 = find_first_binary_op_pos(&arg1, ops1pos);
@@ -339,8 +329,7 @@ fn merge_operations<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> InlineVecto
         if bin_op == 0 {
             res.push(arg1[ops1pos].0.clone());
             ops1pos += 1;
-        }
-        else {
+        } else {
             res.push(arg2[ops2pos].0.clone());
             ops2pos += 1;
         }

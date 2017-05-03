@@ -3,8 +3,8 @@ use numbers::*;
 use multicore_support::*;
 use simd_extensions::*;
 use arrayvec::ArrayVec;
-use super::super::{Vector, DspVec, ToSlice, Domain, RealNumberSpace,
-                   ComplexNumberSpace, ScalarResult, ErrorReason};
+use super::super::{Vector, DspVec, ToSlice, Domain, RealNumberSpace, ComplexNumberSpace,
+                   ScalarResult, ErrorReason};
 
 #[repr(C)]
 #[derive(Copy)]
@@ -38,8 +38,7 @@ pub const STATS_VEC_CAPACTIY: usize = 16;
 pub type StatsVec<T> = ArrayVec<[T; STATS_VEC_CAPACTIY]>;
 
 /// This trait offers operations to calculate statistics about the data in a type.
-pub trait StatisticsOps<T>
-{
+pub trait StatisticsOps<T> {
     type Result;
 
     /// Calculates the statistics of the data.
@@ -68,8 +67,7 @@ pub trait StatisticsOps<T>
 }
 
 /// This trait offers operations to calculate statistics about the data in a type.
-pub trait StatisticsSplitOps<T>
-{
+pub trait StatisticsSplitOps<T> {
     type Result;
 
     /// Calculates the statistics of the data contained in the vector as if the vector would
@@ -448,7 +446,8 @@ impl<S, T, N, D> SumOps<T> for DspVec<S, T, N, D>
                 }
                 sum
             });
-            (&chunks[..]).iter()
+            (&chunks[..])
+                .iter()
                 .map(|v| v.sum_real())
                 .fold(T::zero(), |a, b| a + b)
         } else {
@@ -482,7 +481,8 @@ impl<S, T, N, D> SumOps<T> for DspVec<S, T, N, D>
                 }
                 sum
             });
-            (&chunks[..]).iter()
+            (&chunks[..])
+                .iter()
                 .map(|v| v.sum_real())
                 .fold(T::zero(), |a, b| a + b)
         } else {
@@ -595,7 +595,8 @@ impl<S, T, N, D> SumOps<Complex<T>> for DspVec<S, T, N, D>
                 }
                 sum
             });
-            (&chunks[..]).iter()
+            (&chunks[..])
+                .iter()
                 .map(|v| v.sum_complex())
                 .fold(Complex::<T>::new(T::zero(), T::zero()), |acc, x| acc + x)
         } else {
@@ -629,7 +630,8 @@ impl<S, T, N, D> SumOps<Complex<T>> for DspVec<S, T, N, D>
                 }
                 sum
             });
-            (&chunks[..]).iter()
+            (&chunks[..])
+                .iter()
                 .map(|v| v.sum_complex())
                 .fold(Complex::<T>::new(T::zero(), T::zero()), |acc, x| acc + x)
         } else {

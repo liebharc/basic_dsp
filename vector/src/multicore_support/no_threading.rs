@@ -1,4 +1,4 @@
-use std::slice:: ChunksMut;
+use std::slice::ChunksMut;
 use numbers::*;
 use std::ops::Range;
 use inline_vector::InlineVector;
@@ -51,7 +51,7 @@ impl Chunk {
               S: Sync + Copy + Send
     {
         let mut shortened: InlineVector<&mut [T]> =
-                array.iter_mut().map(|a| &mut a[range.start..range.end]).collect();
+            array.iter_mut().map(|a| &mut a[range.start..range.end]).collect();
         function(&mut shortened, range, arguments);
     }
 
@@ -70,11 +70,11 @@ impl Chunk {
     {
         let array_length = array.len();
         function(array,
-                     Range {
-                         start: 0,
-                         end: array_length,
-                     },
-                     arguments);
+                 Range {
+                     start: 0,
+                     end: array_length,
+                 },
+                 arguments);
     }
 
     /// Executes the given function on an unspecified number and size of chunks on the array and
@@ -93,14 +93,14 @@ impl Chunk {
               R: Send
     {
         let array_len = array.len();
-		let result = function(array,
-                                  Range {
-                                      start: 0,
-                                      end: array_len,
-                                  },
-                                  arguments);
+        let result = function(array,
+                              Range {
+                                  start: 0,
+                                  end: array_len,
+                              },
+                              arguments);
 
-		InlineVector::with_elem(result)
+        InlineVector::with_elem(result)
     }
 
     /// Executes the given function on the all elements of the array and also tells the
@@ -126,7 +126,7 @@ impl Chunk {
               S: Sync + Copy + Send
     {
         let array_length = array.len();
-		let mut chunks = Chunk::partition_mut(array, step_size, 2);
+        let mut chunks = Chunk::partition_mut(array, step_size, 2);
         let mut chunks1 = chunks.next().unwrap();
         let len1 = chunks1.len();
         let mut chunks2 = chunks.next().unwrap();
@@ -160,13 +160,13 @@ impl Chunk {
     {
         let a_len = a.len();
         let b_len = b.len();
-		let result = function(a,
-                                  Range {
-                                      start: 0,
-                                      end: a_len,
-                                  },
-                                  &b[0..b_len]);
-		InlineVector::with_elem(result)
+        let result = function(a,
+                              Range {
+                                  start: 0,
+                                  end: a_len,
+                              },
+                              &b[0..b_len]);
+        InlineVector::with_elem(result)
     }
 
     /// Executes the given function on the all elements of the array in parallel. A result is
@@ -185,13 +185,13 @@ impl Chunk {
               S: Sync + Copy + Send
     {
         let a_len = a.len();
-		let result = function(&a[0..a_len],
-                                  Range {
-                                      start: 0,
-                                      end: a_len,
-                                  },
-                                  arguments);
-		InlineVector::with_elem(result)
+        let result = function(&a[0..a_len],
+                              Range {
+                                  start: 0,
+                                  end: a_len,
+                              },
+                              arguments);
+        InlineVector::with_elem(result)
     }
 
     /// Executes the given function on the all elements of the array in parallel and passes
@@ -210,14 +210,15 @@ impl Chunk {
               S: Sync + Copy + Send
     {
         let original_length = original.len();
-		function(original,
-                     Range {
-                         start: 0,
-                         end: original_length,
-                     },
-                     target,
-                     arguments);
-    }#[inline]
+        function(original,
+                 Range {
+                     start: 0,
+                     end: original_length,
+                 },
+                 target,
+                 arguments);
+    }
+    #[inline]
     fn partition_mut<T>(array: &mut [T], step_size: usize, number_of_chunks: usize) -> ChunksMut<T>
         where T: Copy + Clone + Send
     {

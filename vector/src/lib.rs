@@ -31,10 +31,11 @@
 //! on memory. On normal desktop computers there is usually plenty of
 //! memory available so that the optimization focus is on decreasing the processing time
 //! for every (common) operation and to spent little time with memory allocations.
-/*
-#![cfg_attr(not(any(feature="std", test)), no_std)]
-#[cfg(not(any(feature="std", test)))]
-extern crate core as std;*/
+//!
+//! #![cfg_attr(not(any(feature="std", test)), no_std)]
+//! #[cfg(not(any(feature="std", test)))]
+//! extern crate core as std;
+
 
 #[cfg(any(feature = "doc", feature="use_sse", feature="use_avx"))]
 extern crate simd;
@@ -90,9 +91,7 @@ pub mod numbers {
     /// Associates a number type with a SIMD register type.
     pub trait ToSimd: Sized + Sync + Send {
         /// Type for the SIMD register on the CPU.
-        type Reg: Simd<Self> + SimdGeneric<Self> + SimdApproximations<Self>
-            + Copy + Sync + Send
-            + Add<Output = Self::Reg> + Sub<Output = Self::Reg> + Mul<Output = Self::Reg> + Div<Output = Self::Reg> + Zero;
+        type Reg: Simd<Self> + SimdGeneric<Self> + SimdApproximations<Self> + Copy + Sync + Send + Add<Output = Self::Reg> + Sub<Output = Self::Reg> + Mul<Output = Self::Reg> + Div<Output = Self::Reg> + Zero;
         /// Type for the SIMD register on the GPU. Defaults to an arbitrary type if GPU support is not
         /// compiled in.
         type GpuReg: GpuRegTrait;
@@ -109,14 +108,8 @@ pub mod numbers {
     }
 
     /// A real floating pointer number intended to abstract over `f32` and `f64`.
-    pub trait RealNumber
-        : Float + DspNumber + GpuFloat + num_traits::FloatConst
-    {
-    }
-    impl<T> RealNumber for T
-        where T: Float + DspNumber + GpuFloat + num_traits::FloatConst
-    {
-    }
+    pub trait RealNumber: Float + DspNumber + GpuFloat + num_traits::FloatConst {}
+    impl<T> RealNumber for T where T: Float + DspNumber + GpuFloat + num_traits::FloatConst {}
 
     /// This trait is necessary so that we can define zero for types outside this crate.
     /// It calls the `num_traits::Zero` trait where possible.
@@ -125,14 +118,16 @@ pub mod numbers {
     }
 
     impl<T> Zero for T
-        where T: DspNumber {
+        where T: DspNumber
+    {
         fn zero() -> Self {
             <Self as num_traits::Zero>::zero()
         }
     }
 
     impl<T> Zero for Complex<T>
-        where T: DspNumber {
+        where T: DspNumber
+    {
         fn zero() -> Self {
             <Self as num_traits::Zero>::zero()
         }
@@ -174,7 +169,7 @@ fn memcpy<T: Copy>(data: &mut [T], from: Range<usize>, to: usize) {
         copy(ptr.offset(from.start as isize),
              ptr.offset(to as isize),
              from.end - from.start)
-     }
+    }
 }
 
 // Zeros a range within the slice
@@ -182,10 +177,10 @@ fn memzero<T: Copy>(data: &mut [T], range: Range<usize>) {
     use std::ptr::write_bytes;
     assert!(range.start <= range.end);
     assert!(range.end <= data.len());
-     unsafe {
-         let ptr = data.as_mut_ptr();
-         write_bytes(ptr.offset(range.start as isize), 0, range.end - range.start);
-     }
+    unsafe {
+        let ptr = data.as_mut_ptr();
+        write_bytes(ptr.offset(range.start as isize), 0, range.end - range.start);
+    }
 }
 
 #[cfg(test)]

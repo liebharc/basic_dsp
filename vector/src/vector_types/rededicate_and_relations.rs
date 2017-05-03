@@ -12,7 +12,8 @@ use super::{DspVec, GenDspVec, MetaData, RealTimeVec, RealFreqVec, ResizeOps, Co
 /// If a type should always be converted without any checks then the `RededicateForceOps`
 /// trait provides option for that.
 pub trait RededicateOps<Other>: RededicateForceOps<Other>
-    where Other: MetaData {
+    where Other: MetaData
+{
     /// Make `Other` a `Self`.
     /// # Example
     ///
@@ -53,7 +54,8 @@ pub trait RededicateForceOps<Other> {
 /// However `self.allocated_len()` will remain unchanged. The use case for this
 /// is to allow to reuse the memory of a vector for different operations.
 pub trait RededicateToOps<Other>
-    where Other: MetaData {
+    where Other: MetaData
+{
     /// Make `Selfr` a `SelOther`.
     fn rededicate(self) -> Other;
 }
@@ -297,7 +299,7 @@ impl<S, T, N, D, O> RededicateOps<O> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           DspVec<S, T, N, D>: RededicateForceOps<O>,
-          N: NumberSpace, 
+          N: NumberSpace,
           D: Domain,
           O: Vector<T>
 {

@@ -1,8 +1,7 @@
 use std::ops::*;
 use arrayvec::*;
-use {VoidResult, ErrorReason, Buffer};
+use {VoidResult, ErrorReason};
 use numbers::*;
-use std::mem;
 use std::iter::FromIterator;
 use std::slice::Iter;
 
@@ -20,7 +19,8 @@ pub enum InlineVector<T> {
 }
 
 impl<T> InlineVector<T>
-    where T: Copy {
+    where T: Copy
+{
     pub fn of_size(default: T, n: usize) -> InlineVector<T> {
         let mut result = Self::with_capacity(n);
         for _ in 0..n {
@@ -59,25 +59,22 @@ impl<T> InlineVector<T> {
             &mut InlineVector::Inline(ref mut v) => {
                 let res = v.push(elem);
                 if res.is_some() {
-                    panic!("InlineVector capacity exceeded, please open a defect against `basic_dsp`");
+                    panic!("InlineVector capacity exceeded, please open a defect against \
+                            `basic_dsp`");
                 }
-            },
+            }
         };
     }
 
     pub fn remove(&mut self, index: usize) -> T {
         match self {
-            &mut InlineVector::Inline(ref mut v) => {
-                v.remove(index).unwrap()
-            },
+            &mut InlineVector::Inline(ref mut v) => v.remove(index).unwrap(),
         }
     }
 
     pub fn pop(&mut self) -> Option<T> {
         match self {
-            &mut InlineVector::Inline(ref mut v) => {
-                v.pop()
-            },
+            &mut InlineVector::Inline(ref mut v) => v.pop(),
         }
     }
 
@@ -97,11 +94,11 @@ impl<T> InlineVector<T> {
         self.len() == 0
     }
 
-	pub fn iter(&self) -> Iter<T> {
-		match self {
+    pub fn iter(&self) -> Iter<T> {
+        match self {
             &InlineVector::Inline(ref v) => v.iter(),
         }
-	}
+    }
 
     pub fn append(&mut self, other: &mut Self) {
         while !other.is_empty() {
@@ -111,7 +108,9 @@ impl<T> InlineVector<T> {
 
     pub fn insert(&mut self, index: usize, element: T) {
         match self {
-            &mut InlineVector::Inline(ref mut v) => { let _ = v.insert(index, element).unwrap(); }
+            &mut InlineVector::Inline(ref mut v) => {
+                let _ = v.insert(index, element).unwrap();
+            }
         }
     }
 }
@@ -125,16 +124,9 @@ impl<T: Zero + Clone> InlineVector<T> {
                 } else {
                     Err(ErrorReason::TypeCanNotResize)
                 }
-            },
+            }
         }
     }
-}
-
-/// A buffer which stores a single inline vector and never shrinks.
-pub struct InternalBuffer<T>
-    where T: RealNumber
-{
-    temp: InlineVector<T>,
 }
 
 impl<T> Index<usize> for InlineVector<T> {
@@ -211,14 +203,14 @@ impl<T> IndexMut<RangeTo<usize>> for InlineVector<T> {
 
 impl<T: Clone> Clone for InlineVector<T> {
     fn clone(&self) -> Self {
-         match self {
+        match self {
             &InlineVector::Inline(ref v) => InlineVector::Inline(v.clone()),
         }
     }
 }
 
 impl<T> FromIterator<T> for InlineVector<T> {
-    fn from_iter<I: IntoIterator<Item=T>>(iter: I) -> Self {
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
         let mut c = InlineVector::with_default_capcacity();
 
         for i in iter {

@@ -2,8 +2,7 @@ use array_to_complex_mut;
 use multicore_support::*;
 use simd_extensions::Simd;
 use numbers::*;
-use super::super::{Vector, DspVec, ToSliceMut, MetaData, Domain,
-                   ComplexNumberSpace};
+use super::super::{Vector, DspVec, ToSliceMut, MetaData, Domain, ComplexNumberSpace};
 
 /// Operations on complex types.
 ///
@@ -91,8 +90,7 @@ impl<S, T, N, D> ComplexOps<T> for DspVec<S, T, N, D>
             let (a, b) = args;
             let mut exponential =
                 Complex::<T>::from_polar(&T::one(), &b) *
-                Complex::<T>::from_polar(&T::one(),
-                                         &(a * T::from(range.start).unwrap() / two));
+                Complex::<T>::from_polar(&T::one(), &(a * T::from(range.start).unwrap() / two));
             let increment = Complex::<T>::from_polar(&T::one(), &a);
             let array = array_to_complex_mut(array);
             for complex in array {

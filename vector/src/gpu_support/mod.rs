@@ -20,28 +20,24 @@ pub trait GpuSupport<T: RealNumber> {
     fn has_gpu_support() -> bool;
 
     /// Convolve a vector on the GPU.
-    fn gpu_convolve_vector(
-        is_complex: bool,
-        source: &[T],
-        target: &mut [T],
-        imp_resp: &[T]) -> Option<Range<usize>>;
+    fn gpu_convolve_vector(is_complex: bool,
+                           source: &[T],
+                           target: &mut [T],
+                           imp_resp: &[T])
+                           -> Option<Range<usize>>;
 
     /// Indicates whether or not the parameters are supported by the FFT implementation.
     fn is_supported_fft_len(is_complex: bool, len: usize) -> bool;
 
     /// FFT on the GPU.
-    fn fft(
-        is_complex: bool,
-        source: &[T],
-        target: &mut [T],
-        reverse: bool);
+    fn fft(is_complex: bool, source: &[T], target: &mut [T], reverse: bool);
 
     /// Applys a frequence response to a time domain signal.
-    fn overlap_discard(
-        x_time: &mut [T],
-        tmp: &mut [T],
-        x_freq: &mut [T],
-        h_freq: &[T],
-        imp_len: usize,
-        step_size: usize) -> usize;
+    fn overlap_discard(x_time: &mut [T],
+                       tmp: &mut [T],
+                       x_freq: &mut [T],
+                       h_freq: &[T],
+                       imp_len: usize,
+                       step_size: usize)
+                       -> usize;
 }

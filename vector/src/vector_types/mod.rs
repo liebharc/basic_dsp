@@ -278,9 +278,7 @@ fn swap_array_halves<T>(data: &mut [T], forward: bool)
             mem::swap(lo, up);
         }
     } else {
-        let step =
-            if forward { len / 2 }
-            else { len / 2 + 1 };
+        let step = if forward { len / 2 } else { len / 2 + 1 };
         let mut temp = data[0];
         let mut pos = step;
         for _ in 0..len {
@@ -555,8 +553,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     }
 
     #[inline]
-    fn swap_halves_priv(&mut self, forward: bool)
-    {
+    fn swap_halves_priv(&mut self, forward: bool) {
         let len = self.len();
         if len == 0 {
             return;
@@ -641,7 +638,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
 /// Buffer borrow type for `NoTradeBufferBurrow`.
 pub struct NoTradeBufferBurrow<'a, T: RealNumber + 'a> {
-    data: &'a mut [T]
+    data: &'a mut [T],
 }
 
 impl<'a, T: RealNumber> Deref for NoTradeBufferBurrow<'a, T> {
@@ -653,7 +650,7 @@ impl<'a, T: RealNumber> Deref for NoTradeBufferBurrow<'a, T> {
 }
 
 impl<'a, T: RealNumber> DerefMut for NoTradeBufferBurrow<'a, T> {
-    fn deref_mut(&mut self) -> &mut[T] {
+    fn deref_mut(&mut self) -> &mut [T] {
         self.data
     }
 }
@@ -668,26 +665,29 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber> BufferBorrow<S, T> for NoTradeBufferBu
 /// implementation. This can be useful in cases where an implementation will do the swap step on its own.
 struct NoTradeBuffer<S, T>
     where S: ToSliceMut<T>,
-        T: RealNumber
+          T: RealNumber
 {
     data: S,
-    data_type: std::marker::PhantomData<T>
+    data_type: std::marker::PhantomData<T>,
 }
 
 impl<S, T> NoTradeBuffer<S, T>
     where S: ToSliceMut<T>,
-        T: RealNumber
+          T: RealNumber
 {
     /// Creates a new buffer from a storage type. The buffer will internally hold
     /// its storage for it's complete life time.
     pub fn new(storage: S) -> NoTradeBuffer<S, T> {
-        NoTradeBuffer { data: storage, data_type: std::marker::PhantomData }
+        NoTradeBuffer {
+            data: storage,
+            data_type: std::marker::PhantomData,
+        }
     }
 }
 
 impl<'a, S, T> Buffer<'a, S, T> for NoTradeBuffer<S, T>
     where S: ToSliceMut<T>,
-        T: RealNumber + 'a
+          T: RealNumber + 'a
 {
     type Borrow = NoTradeBufferBurrow<'a, T>;
 
@@ -696,9 +696,7 @@ impl<'a, S, T> Buffer<'a, S, T> for NoTradeBuffer<S, T>
             panic!("NoTradeBuffer: Out of memory");
         }
 
-        NoTradeBufferBurrow {
-            data: &mut self.data.to_slice_mut()[0..len]
-        }
+        NoTradeBufferBurrow { data: &mut self.data.to_slice_mut()[0..len] }
     }
 
     fn alloc_len(&self) -> usize {

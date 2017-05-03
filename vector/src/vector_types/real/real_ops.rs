@@ -84,7 +84,8 @@ pub trait ModuloOps<T>
 /// the resulting types will already check at compile time (using the type system)
 /// that the data is real.
 pub trait ApproximatedOps<T>
-    where T: RealNumber {
+    where T: RealNumber
+{
     /// Computes the principal value approximation of natural logarithm of every element in the vector.
     ///
     /// Error should be below `1%` as long as the values in the vector are larger than `1`.
@@ -339,9 +340,9 @@ impl<S, T, N, D> ApproximatedOps<T> for DspVec<S, T, N, D>
         // x^y = e^(ln(x)*y)
         let base_ln = T::Reg::splat(base.ln());
         self.simd_real_operation(|y, x| (x * y).exp_approx(),
-                         |y, x| (x.extract(0) * y).exp(),
-                         (base_ln),
-                          APPROX_COMPLEXITY);
+                                 |y, x| (x.extract(0) * y).exp(),
+                                 (base_ln),
+                                 APPROX_COMPLEXITY);
     }
 
     fn powf_approx(&mut self, exponent: T) {
@@ -349,9 +350,9 @@ impl<S, T, N, D> ApproximatedOps<T> for DspVec<S, T, N, D>
         // Transform base with the same equation as for `expf_approx`
         let exponent = T::Reg::splat(exponent);
         self.simd_real_operation(|x, y| (x.ln_approx() * y).exp_approx(),
-                |x, y| (x.ln() * y.extract(0)).exp(),
-                (exponent),
-                APPROX_COMPLEXITY);
+                                 |x, y| (x.ln() * y.extract(0)).exp(),
+                                 (exponent),
+                                 APPROX_COMPLEXITY);
 
     }
 }

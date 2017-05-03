@@ -3,9 +3,8 @@ use numbers::*;
 use super::super::{RealNumberSpace, ComplexNumberSpace, NumberSpace, TransRes, VoidResult,
                    DataDomain, TimeData, FrequencyData, RealData, ComplexData, RealOrComplexData,
                    TimeOrFrequencyData, Domain, ToRealResult, ToComplexResult, ScaleOps,
-                   OffsetOps, PowerOps, TrigOps, RealOps,
-                   RealToComplexTransformsOps, ComplexOps, ElementaryOps,
-                   ComplexToRealTransformsOps, RededicateForceOps};
+                   OffsetOps, PowerOps, TrigOps, RealOps, RealToComplexTransformsOps, ComplexOps,
+                   ElementaryOps, ComplexToRealTransformsOps, RededicateForceOps};
 
 /// Operations for all kind of vectors which can be used in combination
 /// with multi ops or prepared ops.

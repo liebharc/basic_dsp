@@ -20,8 +20,8 @@ use {array_to_complex, array_to_complex_mut};
 use std::ops::*;
 use simd_extensions::*;
 use multicore_support::*;
-use super::{Buffer, BufferBorrow, Vector, MetaData, DspVec, ToSliceMut,
-            NumberSpace, Domain, ErrorReason, VoidResult, GetMetaData};
+use super::{Buffer, BufferBorrow, Vector, MetaData, DspVec, ToSliceMut, NumberSpace, Domain,
+            ErrorReason, VoidResult, GetMetaData};
 use numbers::*;
 use std::fmt::Debug;
 use gpu_support::GpuSupport;
@@ -39,8 +39,7 @@ fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: boo
     {
         let temp = temp.to_slice_mut();
         let signal = vec.data.to_slice();
-        if !T::has_gpu_support() || len < 10000
-           || !T::is_supported_fft_len(true, len) {
+        if !T::has_gpu_support() || len < 10000 || !T::is_supported_fft_len(true, len) {
             let points = len / 2; // By two since vector is always complex
             let rbw = (T::from(points).unwrap()) * vec.delta;
             vec.delta = rbw;
@@ -49,8 +48,7 @@ fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: boo
             let signal = array_to_complex(&signal[0..len]);
             let spectrum = array_to_complex_mut(spectrum);
             fft.process(signal, spectrum);
-        }
-        else {
+        } else {
             T::fft(true, &signal[0..len], &mut temp[0..len], reverse);
         }
     }
@@ -63,12 +61,10 @@ fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: boo
 fn fft_swap_x<T: RealNumber>(is_fft_shifted: bool, x_value: T, x_max: T) -> T {
     if !is_fft_shifted {
         x_value / x_max
-    }
-    else if x_value <= T::zero() {
+    } else if x_value <= T::zero() {
         let x_value = x_value / x_max;
         T::one() + x_value
-    }
-    else {
+    } else {
         let x_value = x_max - x_value + T::one();
         -x_value / x_max
     }
@@ -79,9 +75,9 @@ fn fft_swap_x<T: RealNumber>(is_fft_shifted: bool, x_value: T, x_max: T) -> T {
 /// Creates shifted and reversed copies of the given data vector.
 /// This function is especially designed for convolutions.
 fn create_shifted_copies<O, T>(vec: &O) -> InlineVector<InlineVector<T::Reg>>
-    where
-        O: Vector<T> + Index<RangeFull, Output = [T]>,
-        T: RealNumber{
+    where O: Vector<T> + Index<RangeFull, Output = [T]>,
+          T: RealNumber
+{
     let step = if vec.is_complex() { 2 } else { 1 };
     let number_of_shifts = T::Reg::len() / step;
     let mut shifted_copies = InlineVector::with_capacity(number_of_shifts);
@@ -237,8 +233,12 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let dest = array_to_complex_mut(&mut target[0..len]);
             let other_iter = &other[other_start..other_end];
             let conv_len = conv_len as isize;
-            for i in 0..range.start/2 {
-                dest[i] = Self::convolve_iteration(complex, other_iter, i as isize, conv_len, full_conv_len);
+            for i in 0..range.start / 2 {
+                dest[i] = Self::convolve_iteration(complex,
+                                                   other_iter,
+                                                   i as isize,
+                                                   conv_len,
+                                                   full_conv_len);
             }
         } else {
             let other = &vector[..];
@@ -249,7 +249,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let other_iter = &other[other_start..other_end];
             let conv_len = conv_len as isize;
             for i in 0..range.start {
-                dest[i] = Self::convolve_iteration(data, other_iter, i as isize, conv_len, full_conv_len);
+                dest[i] =
+                    Self::convolve_iteration(data, other_iter, i as isize, conv_len, full_conv_len);
             }
         }
     }
@@ -280,14 +281,17 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 let other_iter = &other[other_start..other_end];
                 let conv_len = conv_len as isize;
                 Chunk::execute_with_range(Complexity::Large,
-                                      &self.multicore_settings,
-                                      dest,
-                                      1,
-                                      (complex, other_iter),
-                                      move |dest, range, (complex, other_iter)| {
+                                          &self.multicore_settings,
+                                          dest,
+                                          1,
+                                          (complex, other_iter),
+                                          move |dest, range, (complex, other_iter)| {
                     for (num, i) in dest.iter_mut().zip(range) {
-                    *num =
-                        Self::convolve_iteration(complex, other_iter, i as isize, conv_len, full_conv_len);
+                        *num = Self::convolve_iteration(complex,
+                                                        other_iter,
+                                                        i as isize,
+                                                        conv_len,
+                                                        full_conv_len);
                     }
                 });
             }
@@ -305,14 +309,17 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 let other_iter = &other[other_start..other_end];
                 let conv_len = conv_len as isize;
                 Chunk::execute_with_range(Complexity::Large,
-                                      &self.multicore_settings,
-                                      dest,
-                                      1,
-                                      (data, other_iter),
-                                      move |dest, range, (data, other_iter)| {
+                                          &self.multicore_settings,
+                                          dest,
+                                          1,
+                                          (data, other_iter),
+                                          move |dest, range, (data, other_iter)| {
                     for (num, i) in dest.iter_mut().zip(range) {
-                    *num =
-                        Self::convolve_iteration(data, other_iter, i as isize, conv_len, full_conv_len);
+                        *num = Self::convolve_iteration(data,
+                                                        other_iter,
+                                                        i as isize,
+                                                        conv_len,
+                                                        full_conv_len);
                     }
                 });
             }
@@ -322,15 +329,13 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
     /// Convolves a vector of vectors (in this lib also considered a matrix) with a vector
     /// of impulse responses and stores the result in `target`.
-    pub fn convolve_mat(
-        matrix: &[&Self],
-        impulse_response: &[&Self],
-        target: &mut [T]) -> VoidResult
-    {
+    pub fn convolve_mat(matrix: &[&Self],
+                        impulse_response: &[&Self],
+                        target: &mut [T])
+                        -> VoidResult {
         // Since this function mainly exists to be used by the matrix lib
         // we just decide to ignore invalid calls.
-        if impulse_response.len() != matrix.len() ||
-           impulse_response.len() == 0 {
+        if impulse_response.len() != matrix.len() || impulse_response.len() == 0 {
             return Err(ErrorReason::InvalidArgumentLength);
         }
 
@@ -359,39 +364,46 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         };
         if matrix[0].is_complex() {
             let len = matrix[0].len();
-            let others: InlineVector<&[T]> = impulse_response.iter().map(|v|v.data.to_slice()).collect();
-            let data_vecs: InlineVector<&[T]> = matrix.iter().map(|v|v.data.to_slice()).collect();
-            let others: InlineVector<&[Complex<T>]>
-                = others.iter().map(|o| {
+            let others: InlineVector<&[T]> =
+                impulse_response.iter().map(|v| v.data.to_slice()).collect();
+            let data_vecs: InlineVector<&[T]> = matrix.iter().map(|v| v.data.to_slice()).collect();
+            let others: InlineVector<&[Complex<T>]> = others.iter()
+                .map(|o| {
                     let c = array_to_complex(&o[0..impulse_response[0].len()]);
                     &c[other_start..other_end]
-                }).collect();
-            let data_vecs: InlineVector<&[Complex<T>]>
-                = data_vecs.iter().map(|o| {
-                    array_to_complex(&o[0..impulse_response[0].len()])
-                }).collect();
+                })
+                .collect();
+            let data_vecs: InlineVector<&[Complex<T>]> = data_vecs.iter()
+                .map(|o| array_to_complex(&o[0..impulse_response[0].len()]))
+                .collect();
             let dest = array_to_complex_mut(&mut target[0..len]);
             let conv_len = conv_len as isize;
             for (num, i) in dest.iter_mut().zip(0..) {
-                *num =
-                    Self::convolve_mat_iteration(&data_vecs[..], &others[..], i, conv_len, full_conv_len);
+                *num = Self::convolve_mat_iteration(&data_vecs[..],
+                                                    &others[..],
+                                                    i,
+                                                    conv_len,
+                                                    full_conv_len);
             }
         } else {
             let len = matrix[0].len();
-            let others: InlineVector<&[T]> = impulse_response.iter().map(|v|v.data.to_slice()).collect();
-            let data_vecs: InlineVector<&[T]> = matrix.iter().map(|v|v.data.to_slice()).collect();
-            let others: InlineVector<&[T]>
-                = others.iter().map(|o| {
-                    &o[other_start..other_end]
-                }).collect();
-            let data_vecs: InlineVector<&[T]>
-                = data_vecs.iter().map(|o| {
-                    &o[0..len]
-                }).collect();
+            let others: InlineVector<&[T]> =
+                impulse_response.iter().map(|v| v.data.to_slice()).collect();
+            let data_vecs: InlineVector<&[T]> = matrix.iter().map(|v| v.data.to_slice()).collect();
+            let others: InlineVector<&[T]> = others.iter()
+                .map(|o| &o[other_start..other_end])
+                .collect();
+            let data_vecs: InlineVector<&[T]> = data_vecs.iter()
+                .map(|o| &o[0..len])
+                .collect();
             let dest = &mut target[0..len];
             let conv_len = conv_len as isize;
             for (num, i) in dest.iter_mut().zip(0..) {
-                *num = Self::convolve_mat_iteration(&data_vecs[..], &others[..], i, conv_len, full_conv_len);
+                *num = Self::convolve_mat_iteration(&data_vecs[..],
+                                                    &others[..],
+                                                    i,
+                                                    conv_len,
+                                                    full_conv_len);
             }
         }
 
@@ -418,11 +430,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
     #[inline]
     fn convolve_mat_iteration<TT>(matrix: &[&[TT]],
-                              imp_resp: &[&[TT]],
-                              i: isize,
-                              conv_len: isize,
-                              full_conv_len: usize)
-                              -> TT
+                                  imp_resp: &[&[TT]],
+                                  i: isize,
+                                  conv_len: isize,
+                                  full_conv_len: usize)
+                                  -> TT
         where TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT> + Debug
     {
         let mut sum = TT::zero();
@@ -459,12 +471,12 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     }
 
     fn convolve_signal_simd_impl<B, TT, O, C, CMut, RMul, RSum>(&mut self,
-                                                             buffer: &mut B,
-                                                             vector: &O,
-                                                             convert: C,
-                                                             convert_mut: CMut,
-                                                             simd_mul: RMul,
-                                                             simd_sum: RSum)
+                                                                buffer: &mut B,
+                                                                vector: &O,
+                                                                convert: C,
+                                                                convert_mut: CMut,
+                                                                simd_mul: RMul,
+                                                                simd_sum: RSum)
         where B: for<'a> Buffer<'a, S, T>,
               O: Vector<T> + Index<RangeFull, Output = [T]>,
               TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT> + Send + Sync,
@@ -510,22 +522,22 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                       1,
                                       simd,
                                       move |dest_range, range, simd| {
-                      let mut i = (scalar_len + range.start) as isize;
-                      for num in dest_range {
-                          let end = (i + conv_len) as usize;
-                          let shift = end % shifts.len();
-                          let end = (end + shifts.len() - 1) / shifts.len();
-                          let mut sum = T::Reg::splat(T::zero());
-                          let shifted = &shifts[shift];
-                          let simd_iter = simd[end - shifted.len()..end].iter();
-                          let iteration = simd_iter.zip(shifted.iter());
-                          for (this, other) in iteration {
-                              sum = sum + simd_mul(*this, *other);
-                          }
-                          (*num) = simd_sum(sum);
-                          i += 1;
-                      }
-                });
+                let mut i = (scalar_len + range.start) as isize;
+                for num in dest_range {
+                    let end = (i + conv_len) as usize;
+                    let shift = end % shifts.len();
+                    let end = (end + shifts.len() - 1) / shifts.len();
+                    let mut sum = T::Reg::splat(T::zero());
+                    let shifted = &shifts[shift];
+                    let simd_iter = simd[end - shifted.len()..end].iter();
+                    let iteration = simd_iter.zip(shifted.iter());
+                    for (this, other) in iteration {
+                        sum = sum + simd_mul(*this, *other);
+                    }
+                    (*num) = simd_sum(sum);
+                    i += 1;
+                }
+            });
 
             let mut i = (points - scalar_len) as isize;
             for num in &mut dest[points - scalar_len..points] {
@@ -536,7 +548,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         temp.trade(&mut self.data);
     }
 
-        fn multiply_function_priv<TT, CMut, FA, F>(&mut self,
+    fn multiply_function_priv<TT, CMut, FA, F>(&mut self,
                                                is_symmetric: bool,
                                                is_fft_shifted: bool,
                                                ratio: T,
@@ -603,13 +615,15 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                     let mut iter2 = array2.iter_mut().rev();
                     while j1 < j2 {
                         let num = iter1.next().unwrap();
-                        (*num) = (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j1, max) * ratio);
+                        (*num) = (*num) * scale *
+                                 fun(arg, fft_swap_x(is_fft_shifted, j1, max) * ratio);
                         j1 = j1 + T::one();
                         i1 += 1;
                     }
                     while j2 < j1 {
                         let num = iter2.next().unwrap();
-                        (*num) = (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j2, max) * ratio);
+                        (*num) = (*num) * scale *
+                                 fun(arg, fft_swap_x(is_fft_shifted, j2, max) * ratio);
                         j2 = j2 + T::one();
                         i2 += 1;
                     }
@@ -629,11 +643,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 let pos2 = len2 - i2;
                 let common_length = if pos1 < pos2 { pos1 } else { pos2 };
                 for num in &mut array1[i1 + common_length..len1] {
-                    (*num) = (*num) * scale * fun(arg,  fft_swap_x(is_fft_shifted, j1, max) * ratio);
+                    (*num) = (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j1, max) * ratio);
                     j1 = j1 + T::one();
                 }
                 for num in &mut array2[0..len2 - common_length - i2] {
-                    (*num) = (*num) * scale * fun(arg,  fft_swap_x(is_fft_shifted, j2, max) * ratio);
+                    (*num) = (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j2, max) * ratio);
                     j2 = j2 + T::one();
                 }
             });
@@ -763,13 +777,10 @@ impl<T> ReverseWrappingIterator<T>
 mod tests {
     use super::fft_swap_x;
 
-     #[test]
-    fn fft_swap_x_test()
-    {
-        let input = [-4.0, -3.0, -2.0, -1.0, 0.0,
-                      1.0, 2.0, 3.0, 4.0];
-        let expected = [0.0, 0.25, 0.5, 0.75, 1.0,
-                       -1.0, -0.75, -0.5, -0.25];
+    #[test]
+    fn fft_swap_x_test() {
+        let input = [-4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0];
+        let expected = [0.0, 0.25, 0.5, 0.75, 1.0, -1.0, -0.75, -0.5, -0.25];
         let mut actual = [0.0; 9];
         for i in 0..actual.len() {
             actual[i] = fft_swap_x(true, input[i], 4.0);

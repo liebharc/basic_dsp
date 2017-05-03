@@ -542,9 +542,9 @@ mod tests {
             let sinc: SincFunction<f32> = SincFunction::new();
             let mut buffer = SingleBuffer::new();
             mat.convolve(&mut buffer,
-                          &sinc as &RealImpulseResponse<f32>,
-                          0.5,
-                          len / 2);
+                         &sinc as &RealImpulseResponse<f32>,
+                         0.5,
+                         len / 2);
             mat.magnitude()
         };
 
@@ -571,16 +571,16 @@ mod tests {
             let mut time = vec!(0.0; len).to_real_time_vec();
             time[len / 2] = 1.0;
             let time2 = time.clone();
-            vec!(time, time2).to_mat()
+            vec![time, time2].to_mat()
         };
 
         let len = 3;
         let empty = vec!(0.0; len).to_real_time_vec();
         let mut delay = vec!(0.0; len).to_real_time_vec();
         delay[0] = 1.0;
-        let conv1 = vec!(&delay, &empty);
-        let conv2 = vec!(&empty, &delay);
-        let conv = vec!(&conv1, &conv2);
+        let conv1 = vec![&delay, &empty];
+        let conv2 = vec![&empty, &delay];
+        let conv = vec![&conv1, &conv2];
 
         let mut buffer = SingleBuffer::new();
         mat.convolve_signal(&mut buffer, &conv).unwrap();
@@ -590,7 +590,7 @@ mod tests {
             let mut time = vec!(0.0; len).to_real_time_vec();
             time[len / 2 - 1] = 1.0;
             let time2 = time.clone();
-            vec!(time, time2)
+            vec![time, time2]
         };
 
         let (res, _) = mat.get();
@@ -627,7 +627,7 @@ mod tests {
             time[len / 2 - 1] = 2.0;
             let mut time2 = vec!(0.0; len).to_real_time_vec();
             time2[len / 2 - 1] = 0.5;
-            vec!(time, time2)
+            vec![time, time2]
         };
 
         let (res, _) = mat.get();

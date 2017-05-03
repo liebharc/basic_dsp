@@ -51,5 +51,3 @@ pub enum Operation<T> {
     MulPoints(usize),
     DivPoints(usize),
 }
-
-

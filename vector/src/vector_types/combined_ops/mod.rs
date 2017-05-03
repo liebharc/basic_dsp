@@ -121,29 +121,26 @@ fn require_real(is_complex: bool) -> Result<bool, ErrorReason> {
 }
 
 fn evaluate_number_space_transition<T>(is_complex: bool,
-                                           operation: &Operation<T>)
-                                           -> Result<bool, ErrorReason>
+                                       operation: &Operation<T>)
+                                       -> Result<bool, ErrorReason>
     where T: RealNumber
 {
     match *operation {
         // Real Ops
         Operation::AddReal(_, _) |
         Operation::MultiplyReal(_, _) |
-        Operation::Abs(_)
-            => require_real(is_complex),
+        Operation::Abs(_) => require_real(is_complex),
         Operation::ToComplex(_) => real_to_complex(is_complex),
         // Complex Ops
         Operation::AddComplex(_, _) |
         Operation::MultiplyComplex(_, _) |
         Operation::ComplexConj(_) |
-        Operation::MultiplyComplexExponential(_, _, _)
-            => require_complex(is_complex),
+        Operation::MultiplyComplexExponential(_, _, _) => require_complex(is_complex),
         Operation::Magnitude(_) |
         Operation::MagnitudeSquared(_) |
         Operation::ToReal(_) |
         Operation::ToImag(_) |
-        Operation::Phase(_)
-            => complex_to_real(is_complex),
+        Operation::Phase(_) => complex_to_real(is_complex),
         // General Ops
         Operation::AddPoints(_) |
         Operation::SubPoints(_) |
@@ -173,8 +170,7 @@ fn evaluate_number_space_transition<T>(is_complex: bool,
         Operation::ASinh(_) |
         Operation::ACosh(_) |
         Operation::ATanh(_) |
-        Operation::CloneFrom(_, _)
-            => Ok(is_complex)
+        Operation::CloneFrom(_, _) => Ok(is_complex),
     }
 }
 
@@ -1037,11 +1033,7 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
             vectors.reverse();
             for num_space in &final_number_space {
                 let vector = vectors.pop().unwrap();
-                let right_domain = if *num_space {
-                    vector
-                } else {
-                    vector.to_real()
-                };
+                let right_domain = if *num_space { vector } else { vector.to_real() };
                 correct_domain.push(right_domain);
             }
 
@@ -1249,14 +1241,12 @@ mod tests {
             (a, b)
         });
         let ops = ops.ops;
-        let expected = [
-            Operation::Sin(0),
-            Operation::Cos(1),
-            Operation::Sin(1),
-            Operation::AddVector(0, 1),
-            Operation::Tan(0),
-            Operation::SubPoints(1),
-            ];
+        let expected = [Operation::Sin(0),
+                        Operation::Cos(1),
+                        Operation::Sin(1),
+                        Operation::AddVector(0, 1),
+                        Operation::Tan(0),
+                        Operation::SubPoints(1)];
 
         for i in 0..ops.len() {
             assert_eq!(ops[i], expected[i]);

@@ -1,4 +1,4 @@
-///! Support for types in Rust std
+/// ! Support for types in Rust std
 use numbers::*;
 use std::mem;
 use std::ops::*;
@@ -7,8 +7,7 @@ use super::{round_len, DataDomain, NumberSpace, Domain, ErrorReason, DspVec, Gen
             RealTimeVec, RealFreqVec, ComplexTimeVec, ComplexFreqVec, RealData, ComplexData,
             RealOrComplexData, TimeData, FrequencyData, TimeOrFrequencyData, ToSlice,
             TypeMetaData, MetaData, BufferBorrow, Buffer};
-use super::{ToComplexVector, ToRealVector, ToDspVector, ToSliceMut,
-            VoidResult, Resize};
+use super::{ToComplexVector, ToRealVector, ToDspVector, ToSliceMut, VoidResult, Resize};
 use multicore_support::MultiCoreSettings;
 
 /// Conversion from two instances of a generic data type into a dsp vector with complex data.
@@ -31,7 +30,7 @@ pub trait InterleaveToVector<T>: ToSlice<T>
 /// Buffer borrow type for `SingleBuffer`.
 pub struct SingleBufferBurrow<'a, T: RealNumber + 'a> {
     owner: &'a mut SingleBuffer<T>,
-    len: usize
+    len: usize,
 }
 
 impl<'a, T: RealNumber> Deref for SingleBufferBurrow<'a, T> {
@@ -43,7 +42,7 @@ impl<'a, T: RealNumber> Deref for SingleBufferBurrow<'a, T> {
 }
 
 impl<'a, T: RealNumber> DerefMut for SingleBufferBurrow<'a, T> {
-    fn deref_mut(&mut self) -> &mut[T] {
+    fn deref_mut(&mut self) -> &mut [T] {
         &mut self.owner.temp[0..self.len]
     }
 }
@@ -87,7 +86,7 @@ impl<'a, T> Buffer<'a, Vec<T>, T> for SingleBuffer<T>
 
         SingleBufferBurrow {
             owner: self,
-            len: len
+            len: len,
         }
     }
 
@@ -101,7 +100,7 @@ pub struct NoBuffer;
 
 /// Buffer borrow type for `NoBuffer`.
 pub struct NoBufferBurrow<T: RealNumber> {
-    data: Vec<T>
+    data: Vec<T>,
 }
 
 impl<T: RealNumber> Deref for NoBufferBurrow<T> {
@@ -113,7 +112,7 @@ impl<T: RealNumber> Deref for NoBufferBurrow<T> {
 }
 
 impl<T: RealNumber> DerefMut for NoBufferBurrow<T> {
-    fn deref_mut(&mut self) -> &mut[T] {
+    fn deref_mut(&mut self) -> &mut [T] {
         &mut self.data
     }
 }
@@ -130,9 +129,7 @@ impl<'a, T> Buffer<'a, Vec<T>, T> for NoBuffer
     type Borrow = NoBufferBurrow<T>;
 
     fn borrow(&mut self, len: usize) -> Self::Borrow {
-        NoBufferBurrow {
-            data: vec![T::zero(); len]
-        }
+        NoBufferBurrow { data: vec![T::zero(); len] }
     }
 
     fn alloc_len(&self) -> usize {
@@ -254,7 +251,9 @@ impl<T> ToDspVector<T> for Vec<T>
     }
 
     fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
-        where N: NumberSpace, D: Domain {
+        where N: NumberSpace,
+              D: Domain
+    {
         let mut len = self.len();
         if len % 2 != 0 && meta_data.is_complex() {
             len = 0;
@@ -265,7 +264,7 @@ impl<T> ToDspVector<T> for Vec<T>
             domain: meta_data.domain.clone(),
             number_space: meta_data.number_space.clone(),
             valid_len: len,
-            multicore_settings: meta_data.multicore_settings
+            multicore_settings: meta_data.multicore_settings,
         }
     }
 }
@@ -379,7 +378,9 @@ impl<T> ToDspVector<T> for Box<[T]>
     }
 
     fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
-        where N: NumberSpace, D: Domain {
+        where N: NumberSpace,
+              D: Domain
+    {
         let mut len = self.len();
         if len % 2 != 0 && meta_data.is_complex() {
             len = 0;
@@ -390,7 +391,7 @@ impl<T> ToDspVector<T> for Box<[T]>
             domain: meta_data.domain.clone(),
             number_space: meta_data.number_space.clone(),
             valid_len: len,
-            multicore_settings: meta_data.multicore_settings
+            multicore_settings: meta_data.multicore_settings,
         }
     }
 }

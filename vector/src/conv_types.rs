@@ -11,8 +11,9 @@ use inline_vector::InlineVector;
 use super::FixedLenBuffer;
 
 /// A convolution function in time domain and real number space
-pub trait RealImpulseResponse<T> : Sync
-    where T: RealNumber {
+pub trait RealImpulseResponse<T>: Sync
+    where T: RealNumber
+{
     /// Indicates whether this function is symmetric around 0 or not.
     /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
     fn is_symmetric(&self) -> bool;
@@ -22,8 +23,9 @@ pub trait RealImpulseResponse<T> : Sync
 }
 
 /// A convolution function in frequency domain and real number space
-pub trait RealFrequencyResponse<T> : Sync
-    where T: RealNumber {
+pub trait RealFrequencyResponse<T>: Sync
+    where T: RealNumber
+{
     /// Indicates whether this function is symmetric around 0 or not.
     /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
     fn is_symmetric(&self) -> bool;
@@ -33,8 +35,9 @@ pub trait RealFrequencyResponse<T> : Sync
 }
 
 /// A convolution function in time domain and complex number space
-pub trait ComplexImpulseResponse<T> : Sync
-    where T: RealNumber {
+pub trait ComplexImpulseResponse<T>: Sync
+    where T: RealNumber
+{
     /// Indicates whether this function is symmetric around 0 or not.
     /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
     fn is_symmetric(&self) -> bool;
@@ -44,8 +47,9 @@ pub trait ComplexImpulseResponse<T> : Sync
 }
 
 /// A convolution function in frequency domain and complex number space
-pub trait ComplexFrequencyResponse<T> : Sync
-    where T: RealNumber {
+pub trait ComplexFrequencyResponse<T>: Sync
+    where T: RealNumber
+{
     /// Indicates whether this function is symmetric around 0 or not.
     /// Symmetry is defined as `self.calc(x) == self.calc(-x)`.
     fn is_symmetric(&self) -> bool;
@@ -162,7 +166,7 @@ macro_rules! add_linear_table_lookup_impl {
                 }
 
                 impl $name<$data_type> {
-                    /// Creates a lookup table by putting the pieces together.
+/// Creates a lookup table by putting the pieces together.
                     pub fn from_raw_parts(table: &[$result_type],
                                           delta: $data_type,
                                           is_symmetric: bool) -> Self {
@@ -173,8 +177,8 @@ macro_rules! add_linear_table_lookup_impl {
                         $name { table: owned_table, delta: delta, is_symmetric: is_symmetric }
                     }
 
-                    /// Creates a lookup table from another convolution function. The `delta` argument
-                    /// can be used to balance performance vs. accuracy.
+/// Creates a lookup table from another convolution function. The `delta` argument
+/// can be used to balance performance vs. accuracy.
                     pub fn from_conv_function(other: &$conv_type<$data_type>,
                                               delta: $data_type,
                                               len: usize) -> Self {
@@ -205,7 +209,7 @@ macro_rules! add_real_linear_table_impl {
         $(
             $(
                 impl $name<$data_type> {
-                    /// Convert the lookup table into complex number space
+/// Convert the lookup table into complex number space
                     pub fn to_complex(&self) -> $complex<$data_type> {
                         let len = self.table.len();
                         let vector = InlineVector::of_size($data_type::zero(), 2 * len);
@@ -237,7 +241,7 @@ macro_rules! add_complex_linear_table_impl {
         $(
             $(
                 impl $name<$data_type> {
-                    /// Convert the lookup table into real number space
+/// Convert the lookup table into real number space
                     pub fn to_real(self) -> $real<$data_type> {
                         let complex = &self.table[..];
                         let mut interleaved = InlineVector::with_capacity(2 * complex.len());
@@ -270,7 +274,7 @@ macro_rules! add_complex_time_linear_table_impl {
     ($($data_type: ident),*) => {
         $(
             impl ComplexTimeLinearTableLookup<$data_type> {
-                /// Convert the lookup table into frequency domain
+/// Convert the lookup table into frequency domain
                 pub fn fft(self) -> ComplexFrequencyLinearTableLookup<$data_type> {
                     let complex = &self.table[..];
                     let mut interleaved = InlineVector::with_capacity(2 * complex.len());
@@ -304,7 +308,7 @@ macro_rules! add_real_time_linear_table_impl {
     ($($data_type: ident),*) => {
         $(
             impl RealTimeLinearTableLookup<$data_type> {
-                /// Convert the lookup table into a magnitude spectrum
+/// Convert the lookup table into a magnitude spectrum
                 pub fn fft(self) -> RealFrequencyLinearTableLookup<$data_type> {
                     let len = self.table.len();
                     let vector = InlineVector::of_size($data_type::zero(), 2 * len);
@@ -338,7 +342,7 @@ macro_rules! add_complex_frequency_linear_table_impl {
     ($($data_type: ident),*) => {
         $(
             impl ComplexFrequencyLinearTableLookup<$data_type> {
-                /// Convert the lookup table into time domain
+/// Convert the lookup table into time domain
                 pub fn ifft(self) -> ComplexTimeLinearTableLookup<$data_type> {
                     let complex = &self.table[..];
                     let mut interleaved = InlineVector::with_capacity(2 * complex.len());

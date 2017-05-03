@@ -4,8 +4,8 @@ use multicore_support::*;
 use simd_extensions::*;
 use numbers::*;
 use std::ops::*;
-use super::super::{ErrorReason, VoidResult, Vector, GetMetaData,
-                   DspVec, ToSliceMut, MetaData, Domain, NumberSpace, ComplexNumberSpace};
+use super::super::{ErrorReason, VoidResult, Vector, GetMetaData, DspVec, ToSliceMut, MetaData,
+                   Domain, NumberSpace, ComplexNumberSpace};
 
 /// An operation which multiplies each vector element with a constant
 pub trait ScaleOps<T>: Sized
@@ -542,7 +542,7 @@ impl<S, T, N, D, O> ElementaryOps<O> for DspVec<S, T, N, D>
           T: RealNumber,
           N: NumberSpace,
           D: Domain,
-          O: Vector<T> + Index<RangeFull, Output=[T]> + GetMetaData<T, N, D>
+          O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, N, D>
 {
     fn add(&mut self, summand: &O) -> VoidResult {
         self.add_inter(summand)
@@ -582,7 +582,7 @@ impl<S, T, N, D, O> ElementaryWrapAroundOps<O> for DspVec<S, T, N, D>
           T: RealNumber,
           N: NumberSpace,
           D: Domain,
-          O: Vector<T> + Index<RangeFull, Output=[T]> + GetMetaData<T, N, D>
+          O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, N, D>
 {
     fn add_smaller(&mut self, summand: &O) -> VoidResult {
         self.add_smaller_inter(summand)

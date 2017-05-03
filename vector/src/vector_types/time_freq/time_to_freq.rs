@@ -1,6 +1,6 @@
 use numbers::*;
-use super::super::{ToFreqResult, TransRes, TimeDomain, Buffer, Vector, DataDomain,
-                   MetaData, ResizeOps, DspVec, ToSliceMut, RealNumberSpace, NumberSpace,
+use super::super::{ToFreqResult, TransRes, TimeDomain, Buffer, Vector, DataDomain, MetaData,
+                   ResizeOps, DspVec, ToSliceMut, RealNumberSpace, NumberSpace,
                    RededicateForceOps, ErrorReason, InsertZerosOpsBuffered,
                    FrequencyDomainOperations, TimeDomainOperations};
 use super::fft;
@@ -84,7 +84,8 @@ pub trait SymmetricTimeToFrequencyDomainOperations<S, T>: ToFreqResult
     ///
     /// # Unstable
     /// Symmetric IFFTs are unstable and may only work under certain conditions.
-    fn plain_sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult> where B: for<'a> Buffer<'a, S, T>;
+    fn plain_sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult>
+        where B: for<'a> Buffer<'a, S, T>;
 
     /// Performs a Symmetric Fast Fourier Transformation under the assumption that `self`
     /// is symmetric around the center. This assumption

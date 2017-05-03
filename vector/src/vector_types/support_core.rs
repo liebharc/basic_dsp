@@ -1,11 +1,10 @@
-///! Supprot for types in the Rust core
+/// ! Supprot for types in the Rust core
 use numbers::*;
 use std;
 use std::ops::*;
 use super::{TimeData, FrequencyData, RealData, ComplexData, RealOrComplexData,
-            TimeOrFrequencyData, NumberSpace, Domain, DspVec, TypeMetaData, DataDomain,
-            ToSlice, MetaData, ErrorReason,
-            ToComplexVector, ToRealVector, ToDspVector, ToSliceMut,
+            TimeOrFrequencyData, NumberSpace, Domain, DspVec, TypeMetaData, DataDomain, ToSlice,
+            MetaData, ErrorReason, ToComplexVector, ToRealVector, ToDspVector, ToSliceMut,
             VoidResult, complex_to_array_mut, complex_to_array, BufferBorrow, Buffer};
 use multicore_support::MultiCoreSettings;
 use inline_vector::InlineVector;
@@ -14,7 +13,7 @@ use arrayvec::{Array, ArrayVec};
 
 /// Buffer borrow type for `SingleBuffer`.
 pub struct FixedLenBufferBurrow<'a, T: RealNumber + 'a> {
-    data: &'a mut [T]
+    data: &'a mut [T],
 }
 
 impl<'a, T: RealNumber> Deref for FixedLenBufferBurrow<'a, T> {
@@ -26,7 +25,7 @@ impl<'a, T: RealNumber> Deref for FixedLenBufferBurrow<'a, T> {
 }
 
 impl<'a, T: RealNumber> DerefMut for FixedLenBufferBurrow<'a, T> {
-    fn deref_mut(&mut self) -> &mut[T] {
+    fn deref_mut(&mut self) -> &mut [T] {
         self.data
     }
 }
@@ -42,26 +41,29 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber> BufferBorrow<S, T> for FixedLenBufferB
 /// A buffer which gets initalized with a data storage type and then always keeps that.
 pub struct FixedLenBuffer<S, T>
     where S: ToSliceMut<T>,
-        T: RealNumber
+          T: RealNumber
 {
     data: S,
-    data_type: std::marker::PhantomData<T>
+    data_type: std::marker::PhantomData<T>,
 }
 
 impl<S, T> FixedLenBuffer<S, T>
     where S: ToSliceMut<T>,
-        T: RealNumber
+          T: RealNumber
 {
     /// Creates a new buffer from a storage type. The buffer will internally hold
     /// its storage for it's complete life time.
     pub fn new(storage: S) -> FixedLenBuffer<S, T> {
-        FixedLenBuffer { data: storage, data_type: std::marker::PhantomData }
+        FixedLenBuffer {
+            data: storage,
+            data_type: std::marker::PhantomData,
+        }
     }
 }
 
 impl<'a, S, T> Buffer<'a, S, T> for FixedLenBuffer<S, T>
     where S: ToSliceMut<T>,
-        T: RealNumber + 'a
+          T: RealNumber + 'a
 {
     type Borrow = FixedLenBufferBurrow<'a, T>;
 
@@ -70,9 +72,7 @@ impl<'a, S, T> Buffer<'a, S, T> for FixedLenBuffer<S, T>
             panic!("FixedLenBuffer: Out of memory");
         }
 
-        FixedLenBufferBurrow {
-            data: &mut self.data.to_slice_mut()[0..len]
-        }
+        FixedLenBufferBurrow { data: &mut self.data.to_slice_mut()[0..len] }
     }
 
     fn alloc_len(&self) -> usize {
@@ -231,8 +231,7 @@ impl<A: arrayvec::Array> ToSlice<A::Item> for arrayvec::ArrayVec<A>
             while len > self.len() {
                 self.push(A::Item::zero());
             }
-        }
-        else {
+        } else {
             while len < self.len() {
                 self.pop();
             }
@@ -299,8 +298,12 @@ impl<A: Array> ToDspVector<A::Item> for ArrayVec<A>
         }
     }
 
-    fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<A::Item, N, D>) -> DspVec<Self, A::Item, N, D>
-        where N: NumberSpace, D: Domain {
+    fn to_dsp_vec<N, D>(self,
+                        meta_data: &TypeMetaData<A::Item, N, D>)
+                        -> DspVec<Self, A::Item, N, D>
+        where N: NumberSpace,
+              D: Domain
+    {
         let mut len = self.len();
         if len % 2 != 0 && meta_data.is_complex() {
             len = 0;
@@ -311,7 +314,7 @@ impl<A: Array> ToDspVector<A::Item> for ArrayVec<A>
             domain: meta_data.domain.clone(),
             number_space: meta_data.number_space.clone(),
             valid_len: len,
-            multicore_settings: meta_data.multicore_settings
+            multicore_settings: meta_data.multicore_settings,
         }
     }
 }
@@ -391,7 +394,9 @@ impl<T> ToDspVector<T> for InlineVector<T>
     }
 
     fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
-        where N: NumberSpace, D: Domain {
+        where N: NumberSpace,
+              D: Domain
+    {
         let mut len = self.len();
         if len % 2 != 0 && meta_data.is_complex() {
             len = 0;
@@ -402,7 +407,7 @@ impl<T> ToDspVector<T> for InlineVector<T>
             domain: meta_data.domain.clone(),
             number_space: meta_data.number_space.clone(),
             valid_len: len,
-            multicore_settings: meta_data.multicore_settings
+            multicore_settings: meta_data.multicore_settings,
         }
     }
 }
@@ -479,7 +484,9 @@ impl<'a, T> ToDspVector<T> for &'a [T]
     }
 
     fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
-        where N: NumberSpace, D: Domain {
+        where N: NumberSpace,
+              D: Domain
+    {
         let mut len = self.len();
         if len % 2 != 0 && meta_data.is_complex() {
             len = 0;
@@ -490,7 +497,7 @@ impl<'a, T> ToDspVector<T> for &'a [T]
             domain: meta_data.domain.clone(),
             number_space: meta_data.number_space.clone(),
             valid_len: len,
-            multicore_settings: meta_data.multicore_settings
+            multicore_settings: meta_data.multicore_settings,
         }
     }
 }
@@ -600,7 +607,9 @@ impl<'a, T> ToDspVector<T> for &'a mut [T]
     }
 
     fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
-        where N: NumberSpace, D: Domain {
+        where N: NumberSpace,
+              D: Domain
+    {
         let mut len = self.len();
         if len % 2 != 0 && meta_data.is_complex() {
             len = 0;
@@ -611,7 +620,7 @@ impl<'a, T> ToDspVector<T> for &'a mut [T]
             domain: meta_data.domain.clone(),
             number_space: meta_data.number_space.clone(),
             valid_len: len,
-            multicore_settings: meta_data.multicore_settings
+            multicore_settings: meta_data.multicore_settings,
         }
     }
 }

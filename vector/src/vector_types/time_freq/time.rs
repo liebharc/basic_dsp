@@ -1,7 +1,7 @@
 use array_to_complex_mut;
 use numbers::*;
-use super::super::{ToFreqResult, TimeDomain, MetaData, DspVec,
-                   ToSliceMut, NumberSpace, RededicateForceOps};
+use super::super::{ToFreqResult, TimeDomain, MetaData, DspVec, ToSliceMut, NumberSpace,
+                   RededicateForceOps};
 use window_functions::*;
 
 /// Defines all operations which are valid on `DataVecs` containing time domain data.

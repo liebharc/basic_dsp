@@ -15,7 +15,7 @@ use inline_vector::InlineVector;
 #[repr(C)]
 pub struct MultiCoreSettings {
     /// All operations will be limited to not create more threads than specified here
-    pub core_limit: usize
+    pub core_limit: usize,
 }
 
 impl MultiCoreSettings {
@@ -28,9 +28,7 @@ impl MultiCoreSettings {
 
     /// Creates multi core settings with the given values.
     pub fn new(core_limit: usize) -> MultiCoreSettings {
-        MultiCoreSettings {
-            core_limit: if core_limit >= 1 { core_limit } else { 1 }
-        }
+        MultiCoreSettings { core_limit: if core_limit >= 1 { core_limit } else { 1 } }
     }
 }
 

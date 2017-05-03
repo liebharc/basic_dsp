@@ -1,10 +1,10 @@
 use {array_to_complex, array_to_complex_mut};
 use numbers::*;
 use multicore_support::*;
-use super::super::{ScalarResult, ErrorReason, DspVec,
-                   ToSlice, ToSliceMut, MetaData, Domain, RealNumberSpace, ComplexNumberSpace};
+use super::super::{ScalarResult, ErrorReason, DspVec, ToSlice, ToSliceMut, MetaData, Domain,
+                   RealNumberSpace, ComplexNumberSpace};
 use inline_vector::InlineVector;
-                   
+
 /// Operations which allow to iterate over the vector and to derive results
 /// or to change the vector.
 pub trait MapInplaceOps<T>: Sized

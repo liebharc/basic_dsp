@@ -1,6 +1,6 @@
 use numbers::*;
-use super::super::{ToTimeResult, DspVec, Vector, Buffer, BufferBorrow, ToSliceMut, RededicateForceOps, MetaData,
-                   ComplexNumberSpace, FrequencyDomain, DataDomain};
+use super::super::{ToTimeResult, DspVec, Vector, Buffer, BufferBorrow, ToSliceMut,
+                   RededicateForceOps, MetaData, ComplexNumberSpace, FrequencyDomain, DataDomain};
 
 /// Defines all operations which are valid on `DataVecs` containing frequency domain data.
 /// # Failures
@@ -74,13 +74,11 @@ impl<S, T, N, D> FrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
         temp.trade(&mut self.data);
     }
 
-    fn fft_shift(&mut self)
-    {
+    fn fft_shift(&mut self) {
         self.swap_halves_priv(true)
     }
 
-    fn ifft_shift(&mut self)
-    {
+    fn ifft_shift(&mut self) {
         self.swap_halves_priv(false)
     }
 }

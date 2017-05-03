@@ -1,7 +1,6 @@
 use numbers::*;
-use super::super::{DspVec, Domain,
-                   ToSliceMut, Buffer, BufferBorrow, Vector,
-                   RealNumberSpace, MetaData};
+use super::super::{DspVec, Domain, ToSliceMut, Buffer, BufferBorrow, Vector, RealNumberSpace,
+                   MetaData};
 
 /// Provides interpolation operations which are only applicable for real data vectors.
 /// # Failures
@@ -176,7 +175,6 @@ impl<S, T, N, D> RealInterpolationOps<S, T> for DspVec<S, T, N, D>
 }
 #[cfg(test)]
 mod tests {
-    use conv_types::*;
     use super::super::super::*;
 
     fn assert_eq_tol<T>(left: &[T], right: &[T], tol: T)

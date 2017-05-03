@@ -8,8 +8,7 @@ use super::kahan_sum;
 use inline_vector::InlineVector;
 
 /// An operation which multiplies each vector element with a constant
-pub trait DotProductOps<A, T>
-{
+pub trait DotProductOps<A, T> {
     type Output;
 
     /// Calculates the dot product of self and factor. Self and factor remain unchanged.
@@ -27,8 +26,7 @@ pub trait DotProductOps<A, T>
 }
 
 /// An operation which multiplies each vector element with a constant
-pub trait PreciseDotProductOps<A, T>
-{
+pub trait PreciseDotProductOps<A, T> {
     type Output;
 
     /// Calculates the dot product of self and factor using a more precise
@@ -51,7 +49,7 @@ impl<S, O, T, N, D> DotProductOps<O, T> for DspVec<S, T, N, D>
           T: RealNumber,
           N: RealNumberSpace,
           D: Domain,
-          O: Vector<T> + GetMetaData<T, N, D> + Index<RangeFull, Output=[T]>
+          O: Vector<T> + GetMetaData<T, N, D> + Index<RangeFull, Output = [T]>
 {
     type Output = ScalarResult<T>;
 
@@ -109,7 +107,7 @@ impl<S, O, T, N, D> DotProductOps<O, Complex<T>> for DspVec<S, T, N, D>
           T: RealNumber,
           N: ComplexNumberSpace,
           D: Domain,
-          O: Vector<T> + GetMetaData<T, N, D> + Index<RangeFull, Output=[T]>
+          O: Vector<T> + GetMetaData<T, N, D> + Index<RangeFull, Output = [T]>
 {
     type Output = ScalarResult<Complex<T>>;
 
@@ -165,7 +163,8 @@ impl<S, O, T, N, D> DotProductOps<O, Complex<T>> for DspVec<S, T, N, D>
             i += 2;
         }
 
-        let chunk_sum: Complex<T> = (&chunks[..]).iter()
+        let chunk_sum: Complex<T> = (&chunks[..])
+            .iter()
             .fold(Complex::<T>::new(T::zero(), T::zero()), |a, b| a + b);
         Ok(chunk_sum + sum)
     }
@@ -176,7 +175,7 @@ impl<S, O, T, N, D> PreciseDotProductOps<O, T> for DspVec<S, T, N, D>
           T: RealNumber,
           N: RealNumberSpace,
           D: Domain,
-          O: Vector<T> + GetMetaData<T, N, D> + Index<RangeFull, Output=[T]>
+          O: Vector<T> + GetMetaData<T, N, D> + Index<RangeFull, Output = [T]>
 {
     type Output = ScalarResult<T>;
 
@@ -198,10 +197,11 @@ impl<S, O, T, N, D> PreciseDotProductOps<O, T> for DspVec<S, T, N, D>
                                 &array[0..vectorization_length],
                                 T::Reg::len(),
                                 |original, range, target| {
-                let original = T::Reg::array_to_regs(&original[range]);
-                let target = T::Reg::array_to_regs(&target[..]);
-                kahan_sum(original.iter().zip(target).map(|a|*a.0 * *a.1)).sum_real()
-            })
+                                    let original = T::Reg::array_to_regs(&original[range]);
+                                    let target = T::Reg::array_to_regs(&target[..]);
+                                    kahan_sum(original.iter().zip(target).map(|a| *a.0 * *a.1))
+                                        .sum_real()
+                                })
         } else {
             InlineVector::empty()
         };
@@ -224,12 +224,12 @@ impl<S, O, T, N, D> PreciseDotProductOps<O, T> for DspVec<S, T, N, D>
     }
 }
 
-impl<S, O,  T, N, D> PreciseDotProductOps<O, Complex<T>> for DspVec<S, T, N, D>
+impl<S, O, T, N, D> PreciseDotProductOps<O, Complex<T>> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: ComplexNumberSpace,
           D: Domain,
-          O: Vector<T> + GetMetaData<T, N, D> + Index<RangeFull, Output=[T]>
+          O: Vector<T> + GetMetaData<T, N, D> + Index<RangeFull, Output = [T]>
 {
     type Output = ScalarResult<Complex<T>>;
 
@@ -257,7 +257,7 @@ impl<S, O,  T, N, D> PreciseDotProductOps<O, Complex<T>> for DspVec<S, T, N, D>
                                 |original, range, target| {
                 let original = T::Reg::array_to_regs(&original[range]);
                 let target = T::Reg::array_to_regs(&target[..]);
-                kahan_sum(original.iter().zip(target).map(|a|a.0.mul_complex(*a.1))).sum_complex()
+                kahan_sum(original.iter().zip(target).map(|a| a.0.mul_complex(*a.1))).sum_complex()
             })
         } else {
             InlineVector::empty()
@@ -280,7 +280,8 @@ impl<S, O,  T, N, D> PreciseDotProductOps<O, Complex<T>> for DspVec<S, T, N, D>
             i += 2;
         }
 
-        let chunk_sum: Complex<T> = (&chunks[..]).iter()
+        let chunk_sum: Complex<T> = (&chunks[..])
+            .iter()
             .fold(Complex::<T>::new(T::zero(), T::zero()), |a, b| a + b);
         Ok(chunk_sum + sum)
     }

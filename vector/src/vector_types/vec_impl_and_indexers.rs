@@ -1,7 +1,7 @@
 //! This module defines the basic vector trait and indexers.
 use {array_to_complex, array_to_complex_mut};
-use super::{DspVec, NumberSpace, ComplexNumberSpace, Buffer, BufferBorrow,
-            Domain, DataDomain, ToSlice, ToSliceMut, ErrorReason, VoidResult, TypeMetaData};
+use super::{DspVec, NumberSpace, ComplexNumberSpace, Buffer, BufferBorrow, Domain, DataDomain,
+            ToSlice, ToSliceMut, ErrorReason, VoidResult, TypeMetaData};
 use multicore_support::MultiCoreSettings;
 use std::ops::*;
 use numbers::*;
@@ -119,7 +119,8 @@ pub trait Vector<T>: MetaData + ResizeOps
 pub trait GetMetaData<T, N, D>
     where T: RealNumber,
           N: NumberSpace,
-          D: Domain {
+          D: Domain
+{
     /// Gets a copy of the vector meta data. This can be used to create
     /// new types with the same meta data.
     fn get_meta_data(&self) -> TypeMetaData<T, N, D>;
@@ -182,7 +183,8 @@ impl<S, T, N, D> ResizeBufferedOps<S, T> for DspVec<S, T, N, D>
           D: Domain
 {
     fn resize_b<B>(&mut self, buffer: &mut B, len: usize) -> VoidResult
-        where B: for<'a> Buffer<'a, S, T> {
+        where B: for<'a> Buffer<'a, S, T>
+    {
         if self.is_complex() && len % 2 != 0 {
             return Err(ErrorReason::InputMustHaveAnEvenLength);
         }
@@ -198,7 +200,7 @@ impl<S, T, N, D> ResizeBufferedOps<S, T> for DspVec<S, T, N, D>
                 temp.trade(&mut self.data);
                 self.valid_len = len;
                 Ok(())
-            },
+            }
         }
     }
 }
@@ -246,13 +248,14 @@ impl<S, T, N, D> GetMetaData<T, N, D> for DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
           N: NumberSpace,
-          D: Domain {
+          D: Domain
+{
     fn get_meta_data(&self) -> TypeMetaData<T, N, D> {
         TypeMetaData {
             number_space: self.number_space.clone(),
             domain: self.domain.clone(),
             delta: self.delta,
-            multicore_settings: self.multicore_settings
+            multicore_settings: self.multicore_settings,
         }
     }
 }

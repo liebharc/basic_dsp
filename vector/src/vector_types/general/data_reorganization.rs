@@ -3,8 +3,8 @@ use std::ptr;
 use {array_to_complex_mut, memcpy, memzero};
 use numbers::*;
 use multicore_support::*;
-use super::super::{VoidResult, Buffer, BufferBorrow, ErrorReason, NumberSpace,
-                   Domain, ResizeOps, DspVec, Vector, ToSliceMut, MetaData};
+use super::super::{VoidResult, Buffer, BufferBorrow, ErrorReason, NumberSpace, Domain, ResizeOps,
+                   DspVec, Vector, ToSliceMut, MetaData};
 
 /// This trait allows to reorganize the data by changing positions of the individual elements.
 pub trait ReorganizeDataOps<T>
@@ -132,7 +132,11 @@ pub trait InsertZerosOpsBuffered<S, T>
     /// vector.zero_pad_b(&mut buffer, 2, PaddingOption::End).expect("Ignoring error handling in examples");
     /// assert_eq!([1.0, 2.0, 0.0, 0.0], vector[..]);
     /// ```
-    fn zero_pad_b<B>(&mut self, buffer: &mut B, points: usize, option: PaddingOption) -> VoidResult
+    fn zero_pad_b<B>(&mut self,
+                     buffer: &mut B,
+                     points: usize,
+                     option: PaddingOption)
+                     -> VoidResult
         where B: for<'a> Buffer<'a, S, T>;
 
     /// Interleaves zeros `factor - 1`times after every vector element, so that the resulting
@@ -154,7 +158,8 @@ pub trait InsertZerosOpsBuffered<S, T>
     /// vector.zero_interleave_b(&mut buffer, 2);
     /// assert_eq!([1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 0.0, 0.0], vector[..]);
     /// ```
-    fn zero_interleave_b<B>(&mut self, buffer: &mut B, factor: u32) where B: for<'a> Buffer<'a, S, T>;
+    fn zero_interleave_b<B>(&mut self, buffer: &mut B, factor: u32)
+        where B: for<'a> Buffer<'a, S, T>;
 }
 
 /// Splits the data into several smaller pieces of equal size.
@@ -206,7 +211,8 @@ pub trait MergeOps {
 }
 
 fn reverse_array<T>(data: &mut [T])
-    where T: Copy {
+    where T: Copy
+{
     let len = data.len();
     // +1 makes sure that for odd numbers the first `lo` gets the extra item
     // (which is later on ignored)
@@ -305,13 +311,13 @@ impl<S, T, N, D> InsertZerosOps<T> for DspVec<S, T, N, D>
         match option {
             PaddingOption::End => {
                 // Zero target
-                memzero(data, len_before .. len);
+                memzero(data, len_before..len);
                 Ok(())
             }
             PaddingOption::Surround => {
                 let diff = (len - len_before) / step;
                 let mut right = (diff - 1) / 2;
-                let mut left = diff - right ;
+                let mut left = diff - right;
                 if is_complex {
                     right *= 2;
                     left *= 2;
@@ -319,15 +325,15 @@ impl<S, T, N, D> InsertZerosOps<T> for DspVec<S, T, N, D>
 
                 memcpy(data, 0..len_before, left);
                 if right > 0 {
-                    memzero(data, len - right .. len);
+                    memzero(data, len - right..len);
                 }
-                memzero(data, 0 .. left);
+                memzero(data, 0..left);
                 Ok(())
             }
             PaddingOption::Center => {
                 let points_before = len_before / step;
                 let mut right = (points_before - 1) / 2;
-                let mut left = points_before - right ;
+                let mut left = points_before - right;
                 if is_complex {
                     right *= 2;
                     left *= 2;
@@ -337,7 +343,7 @@ impl<S, T, N, D> InsertZerosOps<T> for DspVec<S, T, N, D>
                     memcpy(data, left..left + right, len - right);
                 }
 
-                memzero(data, left .. len - right);
+                memzero(data, left..len - right);
                 Ok(())
             }
         }
@@ -407,7 +413,7 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
                 PaddingOption::End => {
                     // Zero target
                     &mut target[0..len_before].copy_from_slice(&data[0..len_before]);
-                    memzero(target, len_before .. len);
+                    memzero(target, len_before..len);
                 }
                 PaddingOption::Surround => {
                     let diff = (len - len_before) / if is_complex { 2 } else { 1 };
@@ -418,11 +424,11 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
                         left *= 2;
                     }
 
-                    &mut target[left..left+len_before].copy_from_slice(&data[0..len_before]);
+                    &mut target[left..left + len_before].copy_from_slice(&data[0..len_before]);
                     if right > 0 {
-                        memzero(target, len - right .. len);
+                        memzero(target, len - right..len);
                     }
-                    memzero(target, 0 .. left);
+                    memzero(target, 0..left);
                 }
                 PaddingOption::Center => {
                     let step = if is_complex { 2 } else { 1 };
@@ -434,9 +440,10 @@ impl<S, T, N, D> InsertZerosOpsBuffered<S, T> for DspVec<S, T, N, D>
                         left *= 2;
                     }
 
-                    &mut target[len - right .. len].copy_from_slice(&data[len_before - right .. len_before]);
-                    &mut target[0 .. left].copy_from_slice(&data[0 .. left]);
-                    memzero(target, left .. len - len_before);
+                    &mut target[len - right..len]
+                        .copy_from_slice(&data[len_before - right..len_before]);
+                    &mut target[0..left].copy_from_slice(&data[0..left]);
+                    memzero(target, left..len - len_before);
                 }
             }
         }
@@ -593,8 +600,8 @@ mod tests {
     fn zero_pad_center_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0].to_complex_time_vec();
         v.zero_pad(10, PaddingOption::Center).unwrap();
-        let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 7.0, 8.0, 9.0, 10.0];
+        let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                        0.0, 7.0, 8.0, 9.0, 10.0];
         assert_eq!(&v[..], &expected);
     }
 
@@ -604,14 +611,15 @@ mod tests {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0].to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
         v.zero_pad_b(&mut buffer, 10, PaddingOption::Center).unwrap();
-        let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 7.0, 8.0, 9.0, 10.0];
+        let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                        0.0, 7.0, 8.0, 9.0, 10.0];
         assert_eq!(&v[..], &expected);
     }
 
     #[test]
     fn zero_pad_surround_odd_signal_test() {
-        let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0].to_real_time_vec();
+        let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0]
+            .to_real_time_vec();
         v.zero_pad(20, PaddingOption::Surround).unwrap();
         // The expected result is required so that the convolution theorem holds true
         // (mul in freq is the same as conv)
@@ -642,11 +650,12 @@ mod tests {
 
     #[test]
     fn zero_pad_b_surround_odd_signal_test() {
-        let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0].to_complex_time_vec();
+        let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0]
+            .to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
         v.zero_pad_b(&mut buffer, 10, PaddingOption::Surround).unwrap();
-        let expected = [0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
-                        10.0, 11.0, 12.0, 0.0, 0.0, 0.0, 0.0];
+        let expected = [0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+                        11.0, 12.0, 0.0, 0.0, 0.0, 0.0];
         assert_eq!(&v[..], &expected);
     }
 
@@ -674,7 +683,8 @@ mod tests {
     fn zero_pad_surround_overlap_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0].to_complex_time_vec();
         v.zero_pad(8, PaddingOption::Surround).unwrap();
-        let expected = [0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 0.0, 0.0];
+        let expected = [0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+                        0.0, 0.0];
         assert_eq!(&v[..], &expected);
     }
 
@@ -682,7 +692,8 @@ mod tests {
     fn zero_pad_center_overlap_test() {
         let mut v = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0].to_complex_time_vec();
         v.zero_pad(8, PaddingOption::Center).unwrap();
-        let expected = [ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 7.0, 8.0, 9.0, 10.0];
+        let expected = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 7.0, 8.0, 9.0,
+                        10.0];
         assert_eq!(&v[..], &expected);
     }
 
