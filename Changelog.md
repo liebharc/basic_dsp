@@ -2,8 +2,12 @@
 Changes:
 
 ## Version 0.5.0
-API cleanup and fixes. Most API changes should be transparent to users.
+API cleanup and fixes. Most API changes should be transparent to users. A few tips for the version update: 
+- Deprecated functions have been removed. The traits have replacements available, so the documentation should provide an idea what's the intended replacement.
+- In some cases in was possible to pass references of references (e.g. `&&vec`) as argument for binary ops (e.g. `div`) and that's no longer legal. 
+- Some traits have been redefined. It's assumed that most users won't use the traits directly except for calling functions on vectors. And so most users shouldn't be affected by this change. If this doesn't hold true for your project then feedback in form of a bug or enhancement request is welcomed.
 
+Changes:
 - `zero_pad_b` now returns a result, which may contain an error if the passed argument is smaller than the actual vector length
 - Renamed `interpolate_vector` to `interpolate_signal`
 - Removed deprecated functions `swap_halves_b`, `statistics_splitted`
