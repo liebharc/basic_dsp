@@ -4,6 +4,7 @@
 //! frequency domain the convolution is automatically transformed into a multiplication
 //! which is the analog operation to a convolution in time domain.
 use numbers::*;
+use std::ops::*;
 use num_complex::{Complex32, Complex64};
 use std::marker::PhantomData;
 use vector_types::*;
@@ -118,6 +119,32 @@ macro_rules! define_complex_lookup_table {
 }
 define_complex_lookup_table!(ComplexTimeLinearTableLookup; ComplexFrequencyLinearTableLookup);
 
+/// Linear interpolation between two points.
+fn linear_interpolation_between_bins<T: RealNumber, C>(x: T, round: usize, table: &[C]) -> C 
+    where C: Mul<C, Output = C> + Add<C, Output = C> + Sub<C, Output = C> + Mul<T, Output = C> + Copy {
+    let round_float = T::from(round).unwrap();
+    let len = table.len();
+    if x > round_float {
+        let other = round + 1;
+        if other >= len {
+            return table[round];
+        }
+        let y0 = table[round];
+        let x0 = round_float;
+        let y1 = table[other];
+        y0 + (y1 - y0) * (x - x0)
+    } else {
+        if round == 0 {
+            return table[round];
+        }
+        let other = round - 1;
+        let y0 = table[round];
+        let x0 = round_float;
+        let y1 = table[other];
+        y0 + (y1 - y0) * (x0 - x)
+    }
+}
+
 macro_rules! add_linear_table_lookup_impl {
     ($($name: ident: $conv_type: ident, $($data_type: ident, $result_type:ident),*);*) => {
         $(
@@ -139,34 +166,17 @@ macro_rules! add_linear_table_lookup_impl {
                         }
 
                         let round_tolerance = 1e-6;
-                        if (x - round_float).abs() < round_tolerance {
+                        let is_exactly_at_bin = (x - round_float).abs() < round_tolerance;
+                        if is_exactly_at_bin {
                             return self.table[round];
                         }
 
-                        if x > round_float {
-                            let other = round + 1;
-                            if other >= len {
-                                return self.table[round];
-                            }
-                            let y0 = self.table[round];
-                            let x0 = round_float;
-                            let y1 = self.table[other];
-                            y0 + (y1 - y0) * (x - x0)
-                        } else {
-                            if round == 0 {
-                                return self.table[round];
-                            }
-                            let other = round - 1;
-                            let y0 = self.table[round];
-                            let x0 = round_float;
-                            let y1 = self.table[other];
-                            y0 + (y1 - y0) * (x0 - x)
-                        }
+                        linear_interpolation_between_bins(x, round, &self.table[..])
                     }
                 }
 
                 impl $name<$data_type> {
-/// Creates a lookup table by putting the pieces together.
+                    /// Creates a lookup table by putting the pieces together.
                     pub fn from_raw_parts(table: &[$result_type],
                                           delta: $data_type,
                                           is_symmetric: bool) -> Self {
@@ -177,8 +187,8 @@ macro_rules! add_linear_table_lookup_impl {
                         $name { table: owned_table, delta: delta, is_symmetric: is_symmetric }
                     }
 
-/// Creates a lookup table from another convolution function. The `delta` argument
-/// can be used to balance performance vs. accuracy.
+                    /// Creates a lookup table from another convolution function. The `delta` argument
+                    /// can be used to balance performance vs. accuracy.
                     pub fn from_conv_function(other: &$conv_type<$data_type>,
                                               delta: $data_type,
                                               len: usize) -> Self {
@@ -209,7 +219,7 @@ macro_rules! add_real_linear_table_impl {
         $(
             $(
                 impl $name<$data_type> {
-/// Convert the lookup table into complex number space
+                    /// Convert the lookup table into complex number space
                     pub fn to_complex(&self) -> $complex<$data_type> {
                         let len = self.table.len();
                         let vector = InlineVector::of_size($data_type::zero(), 2 * len);
@@ -241,7 +251,7 @@ macro_rules! add_complex_linear_table_impl {
         $(
             $(
                 impl $name<$data_type> {
-/// Convert the lookup table into real number space
+                    /// Convert the lookup table into real number space
                     pub fn to_real(self) -> $real<$data_type> {
                         let complex = &self.table[..];
                         let mut interleaved = InlineVector::with_capacity(2 * complex.len());
@@ -274,7 +284,7 @@ macro_rules! add_complex_time_linear_table_impl {
     ($($data_type: ident),*) => {
         $(
             impl ComplexTimeLinearTableLookup<$data_type> {
-/// Convert the lookup table into frequency domain
+                /// Convert the lookup table into frequency domain
                 pub fn fft(self) -> ComplexFrequencyLinearTableLookup<$data_type> {
                     let complex = &self.table[..];
                     let mut interleaved = InlineVector::with_capacity(2 * complex.len());
@@ -308,7 +318,7 @@ macro_rules! add_real_time_linear_table_impl {
     ($($data_type: ident),*) => {
         $(
             impl RealTimeLinearTableLookup<$data_type> {
-/// Convert the lookup table into a magnitude spectrum
+                /// Convert the lookup table into a magnitude spectrum
                 pub fn fft(self) -> RealFrequencyLinearTableLookup<$data_type> {
                     let len = self.table.len();
                     let vector = InlineVector::of_size($data_type::zero(), 2 * len);
@@ -342,7 +352,7 @@ macro_rules! add_complex_frequency_linear_table_impl {
     ($($data_type: ident),*) => {
         $(
             impl ComplexFrequencyLinearTableLookup<$data_type> {
-/// Convert the lookup table into time domain
+                /// Convert the lookup table into time domain
                 pub fn ifft(self) -> ComplexTimeLinearTableLookup<$data_type> {
                     let complex = &self.table[..];
                     let mut interleaved = InlineVector::with_capacity(2 * complex.len());

@@ -109,7 +109,7 @@ pub fn prepare64_2<N1, D1, N2, D2>(number_space1: N1,
 /// An operation which can be prepared in advance and operates on one
 /// input and produces one output
 impl<T, NI, DI, NO, DO> PreparedOperation1<T, NI, DI, NO, DO>
-    where T: RealNumber + 'static,
+    where T: RealNumber,
           NI: NumberSpace,
           DI: Domain,
           NO: NumberSpace,
@@ -183,7 +183,7 @@ impl<T, NI, DI, NO, DO> PreparedOperation1<T, NI, DI, NO, DO>
 
 impl<T, S, NI, DI, NO, DO> PreparedOperation1Exec<S, T, DspVec<S, T, NI, DI>, DspVec<S, T, NO, DO>>
     for PreparedOperation1<T, NI, DI, NO, DO>
-	where T: RealNumber + 'static,
+	where T: RealNumber,
         S: ToSliceMut<T>,
         DspVec<S, T, NO, DO>: RededicateForceOps<DspVec<S, T, NI, DI>>,
 		NI: NumberSpace, DI: Domain,
@@ -360,7 +360,7 @@ impl<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2<T,
                                                                    DO1,
                                                                    NO2,
                                                                    DO2>
-    where T: RealNumber + 'static,
+    where T: RealNumber,
           NI1: NumberSpace,
           DI1: Domain,
           NI2: NumberSpace,
@@ -437,7 +437,7 @@ impl<T, S, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2Exec<
         S, T, DspVec<S, T, NI1, DI1>, DspVec<S, T, NI2, DI2>,
         DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>>
     for PreparedOperation2<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2>
-	where T: RealNumber + 'static,
+	where T: RealNumber,
         S: ToSliceMut<T>,
         DspVec<S, T, NO1, DO1>: RededicateForceOps<DspVec<S, T, NI1, DI1>>,
         DspVec<S, T, NO2, DO2>: RededicateForceOps<DspVec<S, T, NI2, DI2>>,

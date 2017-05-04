@@ -26,6 +26,8 @@ and this to your crate root:
 extern crate basic_dsp;
 ```
 
+See also [advanced building options](https://github.com/liebharc/basic_dsp/blob/master/building.md).
+
 ## Vector flavors
 This crate brings vectors in different flavors.
 

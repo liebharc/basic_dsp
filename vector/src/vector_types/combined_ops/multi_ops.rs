@@ -52,7 +52,7 @@ pub fn multi_ops1<S, T, NI, DI>(vector: DspVec<S, T, NI, DI>) -> MultiOperation1
                                                           T,
                                                           RealOrComplexData,
                                                           TimeOrFrequencyData>>,
-          T: RealNumber + 'static,
+          T: RealNumber,
           NI: NumberSpace,
           DI: Domain
 {
@@ -87,7 +87,7 @@ pub fn multi_ops2<S, T, NI1, DI1, NI2, DI2>(a: DspVec<S, T, NI1, DI1>,
                                                             T,
                                                             RealOrComplexData,
                                                             TimeOrFrequencyData>>,
-          T: RealNumber + 'static,
+          T: RealNumber,
           NI1: NumberSpace,
           DI1: Domain,
           NI2: NumberSpace,
@@ -135,7 +135,7 @@ impl<S, T, NO, DO> MultiOperation1<S, T, NO, DO>
                                                           T,
                                                           RealOrComplexData,
                                                           TimeOrFrequencyData>>,
-          T: RealNumber + 'static,
+          T: RealNumber,
           NO: NumberSpace,
           DO: Domain
 {
@@ -219,7 +219,7 @@ impl<S, T, NO1, DO1, NO2, DO2> MultiOperation2<S, T, NO1, DO1, NO2, DO2>
                                                             T,
                                                             RealOrComplexData,
                                                             TimeOrFrequencyData>>,
-          T: RealNumber + 'static,
+          T: RealNumber,
           NO1: NumberSpace,
           DO1: Domain,
           NO2: NumberSpace,

@@ -357,7 +357,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: InsertZerosOpsBuffered<S, T> + ScaleOps<T> + ResizeBufferedOps<S, T>,
           S: ToSliceMut<T> + ToComplexVector<S, T> + ToDspVector<T>,
-          T: RealNumber + 'static,
+          T: RealNumber,
           N: NumberSpace,
           D: Domain
 {

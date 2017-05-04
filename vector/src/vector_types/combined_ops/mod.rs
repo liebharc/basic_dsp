@@ -31,8 +31,6 @@
 //! Only operations can be combined where the result of every element in the vector
 //! is independent from any other element in the vector.
 //!
-//! Note: `combined_ops` is not available if explicitly compiled without `std`.
-//!
 //! # Examples
 //!
 //! ```no_run
@@ -732,7 +730,7 @@ pub struct PreparedOperation2<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2>
 fn generic_vector_from_any_vector<S, T, N, D>
     (vec: DspVec<S, T, N, D>)
      -> (N, D, DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>)
-    where T: RealNumber + 'static,
+    where T: RealNumber,
           S: ToSliceMut<T>,
           N: NumberSpace,
           D: Domain
@@ -757,7 +755,7 @@ fn generic_vector_back_to_vector<S, T, N, D>(number_space: N,
                                                          RealOrComplexData,
                                                          TimeOrFrequencyData>)
                                              -> DspVec<S, T, N, D>
-    where T: RealNumber + 'static,
+    where T: RealNumber,
           S: ToSliceMut<T>,
           N: NumberSpace,
           D: Domain
@@ -791,7 +789,7 @@ fn generic_vector_back_to_vector<S, T, N, D>(number_space: N,
 fn perform_complex_operations_par<T>(array: &mut InlineVector<&mut [T]>,
                                      range: Range<usize>,
                                      arguments: (&[Operation<T>], usize))
-    where T: RealNumber + 'static
+    where T: RealNumber
 {
     let (operations, points) = arguments;
     let mut vectors = Vec::with_capacity(array.len());
@@ -831,7 +829,7 @@ fn perform_complex_operations_par<T>(array: &mut InlineVector<&mut [T]>,
 fn perform_real_operations_par<T>(array: &mut InlineVector<&mut [T]>,
                                   range: Range<usize>,
                                   arguments: (&[Operation<T>], usize))
-    where T: RealNumber + 'static
+    where T: RealNumber
 {
     let (operations, points) = arguments;
     let mut vectors = Vec::with_capacity(array.len());
@@ -870,7 +868,7 @@ fn perform_real_operations_par<T>(array: &mut InlineVector<&mut [T]>,
 
 impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
     where S: ToSliceMut<T>,
-          T: RealNumber + 'static
+          T: RealNumber
 {
     fn perform_operations<B>(buffer: &mut B,
                              mut vectors: Vec<Self>,

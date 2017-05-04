@@ -110,7 +110,7 @@ impl<S, T, N, D> CrossCorrelationArgumentOps<S, T> for DspVec<S, T, N, D>
 impl<S, T, N, D, DF, O, NO> CrossCorrelationOps<O, S, T, NO, DF> for DspVec<S, T, N, D>
     where DspVec<S, T, N, D>: ScaleOps<T>,
           S: ToSliceMut<T>,
-          T: RealNumber + 'static,
+          T: RealNumber,
           N: ComplexNumberSpace,
           D: TimeDomain,
           DF: FrequencyDomain,

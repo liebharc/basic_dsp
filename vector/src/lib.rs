@@ -4,38 +4,54 @@
 //! Vectors are expected to typically have a size which is at least in the order
 //! of magnitude of a couple of thousand elements. This crate tries to balance between a clear
 //! API and performance in terms of processing speed.
-//! This project started as small pet project to learn more about DSP, CPU architecture and Rust.
-//! Since learning
-//! involves making mistakes, don't expect things to be flawless or even close to flawless.
 //!
-//! This library isn't suited - from my point of view - for game programming. If you are looking
-//! for vector types to do
-//! 2D or 3D graphics calculations then you unfortunately have to continue with your search.
-//! However there seem to be
-//! a lot of suitable crates on `crates.io` for you.
+//! Take this example:
 //!
-//! The vector types don't distinguish between 1xN or Nx1. This is a difference to other
+//! ```
+//! # extern crate num_complex;
+//! # extern crate basic_dsp_vector;
+//! # use basic_dsp_vector::*;
+//! # fn main() {
+//! let mut vector1 = vec!(1.0, 2.0).to_real_time_vec();
+//! let vector2 = vec!(10.0, 11.0).to_real_time_vec();
+//! vector1.add(&vector2).expect("Ignoring error handling in examples");
+//! # }
+//!
+//! ```
+//! If `vector2` would be a complex or frequency vector then this won't compile. The type mismatch
+//! indicates that a conversation is missing and that this might be a programming mistake. This lib uses
+//! the Rust type system to catch such errors.
+//!
+//! DSP algorithms are often executed in loops. If you work with large vectors you typically try to avoid
+//! allocating buffers in every iteration. Preallocating buffers is a common practice to safe a little time
+//! with every iteration later on, but also to avoid heap fragmentation. At the same time it's a tedious task
+//! to calculate the right buffer sizes for all operations. As an attempt to provide a more convenient solution
+//! buffer types exist which don't preallocate, but store temporary memory segments so that they can be reused in the
+//! next iteration. Here is an example:
+//!
+//! ```
+//! # use std::f32;
+//! # use basic_dsp_vector::*;
+//! let vector = vec!(1.0, 0.0, -0.5, 0.8660254, -0.5, -0.8660254).to_complex_time_vec();
+//! let mut buffer = SingleBuffer::new();
+//! let _ = vector.fft(&mut buffer);
+//! ```
+//!
+//! The vector types don't distinguish between the shapes 1xN or Nx1. This is a difference to other
 //! conventions such as in MATLAB or GNU Octave.
-//! The reason for this decision is that it seems to be more practical to ignore the
-//! shape of the vector.
+//! The reason for this decision is that most operations are only defined if the shape of the 
+//! vector matches. So it appears to be more practical and clearer to implement the few operations
+//! where the arguments can be of different shapes as seperate methods. The methods `mul` and `dot_product`
+//! are one example for this.
 //!
-//! Right now the library uses pretty aggressive parallelization. So this means that it will
-//! keep all CPU cores busy
-//! even if the performance gain is minimal e.g. because the multi core overhead is nearly as
-//! large as the performance boost
-//! of multiple cores. In future there will be likely an option which tells the library how it
-//! should balance between processing time
-//! and CPU utilization. The library also avoids to allocate and free memory so it allocates
-//! all of the required temporary memory when a new vector
-//! is constructed. Therefore the library is likely not suitable for devices which are tight
-//! on memory. On normal desktop computers there is usually plenty of
-//! memory available so that the optimization focus is on decreasing the processing time
-//! for every (common) operation and to spent little time with memory allocations.
-//!
-//! #![cfg_attr(not(any(feature="std", test)), no_std)]
-//! #[cfg(not(any(feature="std", test)))]
-//! extern crate core as std;
-
+//! The trait definitions in this lib can look complex and might be overwhelming at the beginning.
+//! There is a wide range of DSP vectors, e.g. a slice can be DSP vector, a boxed array can be a DSP vector,
+//! a standard vector can be a DSP vector and so on. This lib tries to work with all of that and tries
+//! to allow all those different DSP vector types to work together. The price for this flexibility is a more complex
+//! trait definition. As a mental model, this is what the traits are specifiying: 
+//! Whenever you have a complex vector in time domain, it's binary operations will work with all other
+//! complex vectors in time domain, but not with real valued vectors or frequency domain vectors. 
+//! And the type `GenDspVec` serves as wild card at compile time since it defers all checks to run time.
 
 #[cfg(any(feature = "doc", feature="use_sse", feature="use_avx"))]
 extern crate simd;
@@ -80,11 +96,11 @@ pub mod numbers {
     /// Can be an integer or a floating point number. In order to have support for all operations in this crate
     /// a must implement the `RealNumber`.
     pub trait DspNumber
-        : Num + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive
+        : Num + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive + 'static
     {
     }
     impl<T> DspNumber for T
-        where T: Num + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive
+        where T: Num + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive + 'static
     {
     }
 
