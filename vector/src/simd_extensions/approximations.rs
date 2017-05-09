@@ -47,20 +47,20 @@ macro_rules! simd_approx_impl {
             fn ln_approx(self) -> Self {
                 let x = self;
 
-// integer constants
+                // integer constants
                 let (hex7fi, min_norm_pos, inv_mant_mask, mant_len) =
                     if $bit_len == 32 {
                         ($regi::splat(0x7f), $regu::splat(1 << 23), $regu::splat(!0x7f800000), 23)
                     }
                     else {
-// We would get a warning for f32 with those constants, but that can be ignored
+                        // We would get a warning for f32 with those constants, but that can be ignored
                         #[allow(overflowing_literals)]
                         {
                             ($regi::splat(0x3ff), $regu::splat(1 << ($bit_len - 12)), $regu::splat(!0x7ff0000000000000), 52)
                         }
                     };
 
-// floating point constants
+                // floating point constants
                 let one = $regf::splat(1.0);
                 let onef_as_uint: $regu = unsafe { mem::transmute(one) };
                 let half = $regf::splat(0.5);
@@ -82,7 +82,7 @@ macro_rules! simd_approx_impl {
                 let x: $regi = unsafe { mem::transmute(x) };
                 let emm0 = x.shr(mant_len);
 
-// keep only the fractional part
+                // keep only the fractional part
                 let x: $regu = unsafe { mem::transmute(x) };
                 let x = x.bitand(inv_mant_mask);
                 let x = x.bitor(unsafe { mem::transmute(half) });
@@ -144,7 +144,7 @@ macro_rules! simd_approx_impl {
             fn exp_approx(self) -> Self {
                 let x = self;
 
-// integer constants
+                // integer constants
                 let (hex7fi, mant_len) =
                     if $bit_len == 32 {
                         ($regi::splat(0x7f), 23)
@@ -153,7 +153,7 @@ macro_rules! simd_approx_impl {
                         ($regi::splat(0x3ff), 52)
                     };
 
-// floating point constants
+                // floating point constants
                 let half = $regf::splat(0.5);
                 let one = $regf::splat(1.0);
                 let exp_hi = $regf::splat(88.3762626647949);
@@ -172,14 +172,14 @@ macro_rules! simd_approx_impl {
                 let x = x.min(exp_hi);
                 let x = x.max(exp_lo);
 
-// express exp(x) as exp(g + n*log(2))
+                // express exp(x) as exp(g + n*log(2))
                 let fx = x * log2ef + half;
 
-// how to perform a floorf with SSE: just below
+                // how to perform a floorf with SSE: just below
                 let emm0 = fx.$toi();
                 let tmp = emm0.$tof();
 
-// if greater, substract 1
+                // if greater, substract 1
                 let mask = tmp.gt(fx);
                 let mask = mask.bitand(unsafe { mem::transmute(one) });
                 let mask: $regf = unsafe { mem::transmute(mask) };
@@ -205,7 +205,7 @@ macro_rules! simd_approx_impl {
                 let y = y + x;
                 let y = y + one;
 
-// build 2^n
+                // build 2^n
                 let emm0 = fx.$toi();
                 let emm0 = emm0 + hex7fi;
                 let emm0: $regu = unsafe { mem::transmute(emm0) };
@@ -230,7 +230,7 @@ macro_rules! simd_approx_impl {
             fn sin_cos_approx(self, is_sin: bool) -> Self {
                 let x = self;
 
-// integer constants
+                // integer constants
                 let sign_mask = 1 << ($bit_len - 1);
                 let inv_sign_mask = $regu::splat(!sign_mask);
                 let sign_mask = $regu::splat(sign_mask);
@@ -239,7 +239,7 @@ macro_rules! simd_approx_impl {
                 let two = $regi::splat(2);
                 let four = $regi::splat(4);
 
-// floating point constants
+                // floating point constants
                 let half = $regf::splat(0.5);
                 let fopi = $regf::splat(1.27323954473516);  // 4 / M_PI
                 let dp1 = $regf::splat(-0.78515625);
@@ -254,18 +254,18 @@ macro_rules! simd_approx_impl {
 
                 let x: $regu = unsafe { mem::transmute(x) };
 
-// extract the sign bit (upper one)
+                // extract the sign bit (upper one)
                 let sign_bit = x.bitand(sign_mask); // Only used for `sin` implementation
                 // take the absolute value
                 let x = x.bitand(inv_sign_mask);
 
-// scale by 4/Pi
+                // scale by 4/Pi
                 let x: $regf = unsafe { mem::transmute(x) };
                 let y = x * fopi;
 
-// store the integer part of y in mm0
+                // store the integer part of y in mm0
                 let emm2 = y.$toi();
-// j=(j+1) & (~1) (see the cephes sources)
+                // j=(j+1) & (~1) (see the cephes sources)
                 let emm2 = emm2 + one;
                 let mut emm2 = emm2.bitand(inv_one);
                 let y = emm2.$tof();
@@ -273,7 +273,7 @@ macro_rules! simd_approx_impl {
                     emm2 = emm2 - two;
                 }
 
-// get the swap sign flag
+                // get the swap sign flag
                 let emm0 =
                     if is_sin {
                         emm2.bitand(four)
@@ -282,11 +282,11 @@ macro_rules! simd_approx_impl {
                     };
                 let emm0: $regu = unsafe { mem::transmute(emm0) };
                 let emm0 = emm0.shl($bit_len - 3);
-// get the polynom selection mask
-// there is one polynom for 0 <= x <= Pi/4
-// and another one for Pi/4<x<=Pi/2
-//
-// Both branches will be computed.
+                // get the polynom selection mask
+                // there is one polynom for 0 <= x <= Pi/4
+                // and another one for Pi/4<x<=Pi/2
+                //
+                // Both branches will be computed.
                 let emm2 = emm2.bitand(two);
                 let emm2 = emm2.eq($regi::splat(0));
 
@@ -298,8 +298,8 @@ macro_rules! simd_approx_impl {
                         emm0
                     };
 
-// The magic pass: "Extended precision modular arithmetic"
-// x = ((x - y * DP1) - y * DP2) - y * DP3;
+                // The magic pass: "Extended precision modular arithmetic"
+                // x = ((x - y * DP1) - y * DP2) - y * DP3;
                 let xmm1 = y * dp1;
                 let xmm2 = y * dp2;
                 let xmm3 = y * dp3;
@@ -307,7 +307,7 @@ macro_rules! simd_approx_impl {
                 let x = x + xmm2;
                 let x = x + xmm3;
 
-// Evaluate the first polynom  (0 <= x <= Pi/4)
+                // Evaluate the first polynom  (0 <= x <= Pi/4)
                 let y = coscof_p0;
                 let z = x * x;
 
@@ -320,7 +320,7 @@ macro_rules! simd_approx_impl {
                 let y = y - tmp;
                 let y = y + $regf::splat(1.0);
 
-// Evaluate the second polynom  (Pi/4 <= x <= 0)
+                // Evaluate the second polynom  (Pi/4 <= x <= 0)
                 let y2 = sincof_p0;
                 let y2 = y2 * z;
                 let y2 = y2 + sincof_p1;
@@ -329,7 +329,7 @@ macro_rules! simd_approx_impl {
                 let y2 = y2 * z * x;
                 let y2 = y2 + x;
 
-// select the correct result from the two polynoms
+                // select the correct result from the two polynoms
                 let xmm3: $regu = unsafe { mem::transmute(poly_mask) };
                 let y2 : $regu = unsafe { mem::transmute(y2) };
                 let y : $regu = unsafe { mem::transmute(y) };
@@ -339,7 +339,7 @@ macro_rules! simd_approx_impl {
                 let y : $regf = unsafe { mem::transmute(y) };
                 let y = y + y2;
 
-// update the sign
+                // update the sign
                 let y : $regu = unsafe { mem::transmute(y) };
                 let y = y.bitxor(sign_bit);
                 let y : $regf = unsafe { mem::transmute(y) };

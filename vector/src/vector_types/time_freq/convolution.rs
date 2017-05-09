@@ -130,7 +130,7 @@ impl<'a, S, T, N, D> Convolution<'a, S, T, &'a RealImpulseResponse<T>> for DspVe
                         delta: self.delta(),
                         domain: self.domain.clone(),
                         number_space: self.number_space.clone(),
-                        valid_len: self.valid_len,
+                        valid_len: points,
                         multicore_settings: MultiCoreSettings::default(),
                     };
 
@@ -856,5 +856,16 @@ mod tests {
         let mut overlap_discard = a;
         overlap_discard.overlap_discard(&mut buffer, &b, 0).unwrap();
         assert_eq_tol(&overlap_discard[..], &conv[..], 1e-4);
+    }
+
+    /// This test triggered an index out of range error in the past
+    #[test]
+    fn index_out_of_range_error_test() {
+        let data: Vec<f32> = vec![0.0; 5000];
+        let mut vec = data.clone().to_real_time_vec();
+        let mut buffer = SingleBuffer::new();
+        let sinc = SincFunction::new();
+        vec.convolve(&mut buffer, &sinc as &RealImpulseResponse<f32>, 1.0, 12);
+        assert_eq_tol(&data[..], &vec[..], 1e-4);
     }
 }

@@ -13,7 +13,14 @@ pub struct MultiCoreSettings;
 impl MultiCoreSettings {
     /// Creates multi core settings with default values
     pub fn default() -> MultiCoreSettings {
-        MultiCoreSettings {}
+        MultiCoreSettings
+    }
+
+    /// Creates multi core settings. The argument will be ignored
+    /// since multi threading is disabled. The method only exists
+    /// to stay compatible with the multi-threaded version of this lib.
+    pub fn new(_: usize) -> MultiCoreSettings {
+        MultiCoreSettings
     }
 }
 
@@ -218,6 +225,7 @@ impl Chunk {
                  target,
                  arguments);
     }
+    
     #[inline]
     fn partition_mut<T>(array: &mut [T], step_size: usize, number_of_chunks: usize) -> ChunksMut<T>
         where T: Copy + Clone + Send

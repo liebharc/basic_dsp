@@ -1,3 +1,13 @@
+//! Abstraction of threading. If the vector becomes large then the lib will start  
+//! to spawn worker threads to perform the calculation. Since spawning threads
+//! for tiny tasks like isn't very benificial users might want to implement their
+//! algorithm in a multi-threaded design and deactivate threading this "auto-threading"
+//! behaviour. The `MultiCoreSettings` mechanism allows to do that on a fine grained level.
+//!
+//! If compiled without the `std` feature then only the `no_threading` implementation
+//! will be used which just implements single threaded loops. We then rely on the Rust
+//! compiler to remove the overhead of this implementation - and it seems to do that
+//! very well.
 
 #[cfg(feature="std")]
 mod threading;

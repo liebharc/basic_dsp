@@ -1,3 +1,6 @@
+mod ocl_kernels32;
+mod ocl_kernels64;
+
 use ocl::*;
 use ocl::builders::ProgramBuilder;
 use ocl::aliases::{ClFloat4, ClDouble2};
@@ -10,9 +13,17 @@ use std::ops::Range;
 use super::GpuSupport;
 use {RealNumber, array_to_complex, array_to_complex_mut, Zero};
 use clfft::{ClFftPrm, builder, Precision, Layout, Direction};
+use self::ocl_kernels32 as o32;
+use self::ocl_kernels64 as o64;
 
+/// This trait is required to interface between `basic_dsp` and `opencl`.
+/// Without the feature flag `use_gpu` is will default to a `num` trait so 
+/// that other code can always rely that this type is defined.
 pub type Gpu32 = ClFloat4;
 
+/// This trait is required to interface between `basic_dsp` and `opencl`.
+/// Without the feature flag `use_gpu` is will default to a `num` trait so 
+/// that other code can always rely that this type is defined.
 pub type Gpu64 = ClDouble2;
 
 pub trait GpuRegTrait: OclPrm + OclVec {}
@@ -22,151 +33,6 @@ pub trait GpuFloat: ClFftPrm {}
 impl<T> GpuRegTrait for T where T: OclPrm + OclVec {}
 
 impl<T> GpuFloat for T where T: ClFftPrm {}
-
-const KERNEL_SRC_32: &'static str = r#"
-    #define mulc32(a,b) ((float4)((float)mad(-(a).y, (b).y, (a).x * (b).x), (float)mad((a).y, (b).x, (a).x * (b).y), (float)mad(-(a).z, (b).z, (a).w * (b).w), (float)mad((a).z, (b).w, (a).w * (b).z)))
-
-    __kernel
-    void conv_vecs_r(
-                __global float4 const* const src,
-                __global float4 const* const conv,
-                __global float4* const res)
-    {
-        ulong const idx = get_global_id(0);
-
-        float4 sum1 = (float4)0.0;
-        float4 sum2 = (float4)0.0;
-        float4 sum3 = (float4)0.0;
-        float4 sum4 = (float4)0.0;
-        long start = idx - FILTER_LENGTH / 2;
-        long end = start + FILTER_LENGTH;
-        long j = 0;
-        for (long i = start; i < end; i++) {
-            float4 current = src[i];
-            sum1 += current * conv[j];
-            j++;
-            sum2 += current * conv[j];
-            j++;
-            sum3 += current * conv[j];
-            j++;
-            sum4 += current * conv[j];
-            j++;
-        }
-
-        res[idx] = (float4)
-                   (sum1.x+sum1.y+sum1.z+sum1.w,
-                    sum2.x+sum2.y+sum2.z+sum2.w,
-                    sum3.x+sum3.y+sum3.z+sum3.w,
-                    sum4.x+sum4.y+sum4.z+sum4.w);
-    }
-
-    __kernel
-    void conv_vecs_c(
-                __global float4 const* const src,
-                __global float4 const* const conv,
-                __global float4* const res)
-    {
-        ulong const idx = get_global_id(0);
-
-        float4 sum1 = (float4)0.0;
-        float4 sum2 = (float4)0.0;
-        long start = idx - FILTER_LENGTH / 2;
-        long end = start + FILTER_LENGTH;
-        long j = 0;
-        for (long i = start; i < end; i++) {
-            float4 current = src[i];
-            sum1 += mulc32(current, conv[j]);
-            j++;
-            sum2 += mulc32(current, conv[j]);
-            j++;
-        }
-
-        // float4 order is: xyzw
-        res[idx] = (float4)
-                   (sum1.x+sum1.z,
-                    sum1.y+sum1.w,
-                    sum2.x+sum2.z,
-                    sum2.y+sum2.w);
-    }
-"#;
-
-const KERNEL_SRC_64: &'static str = r#"
-    #pragma OPENCL EXTENSION cl_khr_fp64 : enable
-    #define mulc64(a,b) ((double2)((double)mad(-(a).y, (b).y, (a).x * (b).x), (double)mad((a).y, (b).x, (a).x * (b).y)))
-
-    __kernel
-    void conv_vecs_r(
-                __global double2 const* const src,
-                __global double2 const* const conv,
-                __global double2* const res)
-    {
-        ulong const idx = get_global_id(0);
-
-        double2 sum1 = (double2)0.0;
-        double2 sum2 = (double2)0.0;
-        long start = idx - FILTER_LENGTH / 2;
-        long end = start + FILTER_LENGTH;
-        long j = 0;
-        for (long i = start; i < end; i++) {
-            double2 current = src[i];
-            sum1 += current * conv[j];
-            j++;
-            sum2 += current * conv[j];
-            j++;
-        }
-
-        res[idx] = (double2)
-                   (sum1.x+sum1.y,
-                    sum2.x+sum2.y);
-    }
-
-
-    __kernel
-    void conv_vecs_c(
-                __global double2 const* const src,
-                __global double2 const* const conv,
-                __global double2* const res)
-    {
-        ulong const idx = get_global_id(0);
-
-        double2 sum = (double2)0.0;
-        long start = idx - FILTER_LENGTH / 2;
-        long end = start + FILTER_LENGTH;
-        long j = 0;
-        for (long i = start; i < end; i++) {
-            double2 current = src[i];
-            sum += mulc64(current, conv[j]);
-            j++;
-        }
-
-        res[idx] = sum;
-    }
-"#;
-
-static KERNEL_MUL_SRC32: &'static str = r#"
-    #define mulc32(a,b) ((float2)((float)mad(-(a).y, (b).y, (a).x * (b).x), (float)mad((a).y, (b).x, (a).x * (b).y)))
-
-    __kernel void multiply_vector(
-                __global float2 const* const coeff,
-                __global float2* const srcres)
-    {
-        uint const idx = get_global_id(0);
-        srcres[idx] = mulc32(srcres[idx], coeff[idx]);
-    }
-"#;
-
-static KERNEL_MUL_SRC64: &'static str = r#"
-    #pragma OPENCL EXTENSION cl_khr_fp64 : enable
-    #define mulc64(a,b) ((double2)((double)mad(-(a).y, (b).y, (a).x * (b).x), (double)mad((a).y, (b).x, (a).x * (b).y)))
-
-    __kernel void multiply_vector(
-                __global double2 const* const coeff,
-                __global double2* const srcres)
-    {
-        uint const idx = get_global_id(0);
-        srcres[idx] = mulc64(srcres[idx], coeff[idx]);
-    }
-"#;
 
 fn has_f64_support(device: Device) -> bool {
     const F64_SUPPORT: &'static str = "cl_khr_fp64";
@@ -314,7 +180,7 @@ impl<T> GpuSupport<T> for T
         let (platform, device) = find_gpu_device(is_f64, data_set_size)
             .expect("No GPU device available which supports this data type");
 
-        let kernel_src = if is_f64 { KERNEL_SRC_64 } else { KERNEL_SRC_32 };
+        let kernel_src = if is_f64 { o64::CONV_KERNEL } else { o32::CONV_KERNEL };
         // Create an all-in-one context, program, and command queue:
         let prog_bldr = ProgramBuilder::new()
             .cmplr_def("FILTER_LENGTH", num_conv_vectors as i32)
@@ -431,7 +297,11 @@ impl<T> GpuSupport<T> for T
         }
     }
 
-    fn fft(_: bool, source: &[T], target: &mut [T], reverse: bool) {
+    fn fft(is_complex: bool, source: &[T], target: &mut [T], reverse: bool) {
+        if !is_complex {
+            panic!("Real fft isn't supported, call `has_gpu_support` first.")
+
+        }
         let len = source.len();
         // Build ocl ProQue
         let prog_bldr = ProgramBuilder::new();
@@ -490,9 +360,9 @@ impl<T> GpuSupport<T> for T
                        -> usize {
         let is_f64 = mem::size_of::<T>() == 8;
         let kernel = if is_f64 {
-            KERNEL_MUL_SRC64
+            o64::MUL_KERNEL
         } else {
-            KERNEL_MUL_SRC32
+            o32::MUL_KERNEL
         };
         let fft_len = h_freq.len();
         let x_len = x_time.len();

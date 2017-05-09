@@ -12,8 +12,6 @@ const MAX_CAPACITY: usize = 64;
 /// way we automatically have a limited stack allocation available on systems
 /// without heap, and on systems with heap allocation we don't have to worry
 /// about introducing artifical limits.
-///
-/// Thanks to: http://stackoverflow.com/questions/27859822/alloca-variable-length-arrays-in-rust
 pub enum InlineVector<T> {
     Inline(ArrayVec<[T; MAX_CAPACITY]>),
 }
@@ -21,6 +19,7 @@ pub enum InlineVector<T> {
 impl<T> InlineVector<T>
     where T: Copy
 {
+    /// Create a new vector of a given size filled with a given default value.
     pub fn of_size(default: T, n: usize) -> InlineVector<T> {
         let mut result = Self::with_capacity(n);
         for _ in 0..n {
@@ -31,25 +30,35 @@ impl<T> InlineVector<T>
     }
 }
 
+/// Most of the operations behave as defined for `std::Vec`.
 impl<T> InlineVector<T> {
+    /// Returns the maximimum size the vector can possibly have.
     pub fn max_capacity() -> usize {
         MAX_CAPACITY
     }
 
+    /// Returns a vector with a given capacity.
     pub fn with_capacity(_: usize) -> InlineVector<T> {
         InlineVector::Inline(ArrayVec::<[T; MAX_CAPACITY]>::new())
     }
 
+    /// Returns a vector with a default capacity. The default
+    /// capacity will be relativly small and should only be used 
+    /// to store small lookup tables or results. 
+    ///
+    /// As of today the default capacity is `64`.
     pub fn with_default_capcacity() -> InlineVector<T> {
         Self::with_capacity(Self::max_capacity())
     }
 
+    /// Returns a vector holding a single element.
     pub fn with_elem(elem: T) -> InlineVector<T> {
         let mut vector = Self::with_capacity(1);
         vector.push(elem);
         vector
     }
 
+    /// Returns an empty vector.
     pub fn empty() -> InlineVector<T> {
         Self::with_capacity(0)
     }

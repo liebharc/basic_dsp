@@ -8,17 +8,17 @@ use numbers::*;
 ///
 /// The contract for window functions is as follows:
 ///
-/// 1. The second argument is of the function is always `self.points()` and the possible values
-///    for the first argument ranges from `0..self.points()`.
-/// 2. A window function must be symmetric about the y-axis.
-/// 3. All real return values are allowed
+/// 1. The second argument is of the function is always `vector.points()` and the possible values
+///    for the first argument ranges from `0..vector.points()`.
+/// 2. All real return values are allowed
 pub trait WindowFunction<T>: Sync
     where T: RealNumber
 {
-    /// Indicates whether this function is symmetric around 0 or not.
+    /// Indicates whether this function is symmetric around the y axis or not.
     /// Symmetry is defined as `self.window(x) == self.window(-x)`.
     fn is_symmetric(&self) -> bool;
-    /// Calculates a point of the window function
+    
+    /// Calculates a point of the window function. Callers will ensure that `n <= length`.
     fn window(&self, n: usize, length: usize) -> T;
 }
 

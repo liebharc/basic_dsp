@@ -1,3 +1,12 @@
+//! Fallback implementation in case no explicit `sse` or `avx` support is available.
+//! In this case we use the standard versions of all functions which and no approximations.
+//! We do that since this way the API doesn't change (so much) depending on the selected features.
+//! However at the same time finding an alternative approximation implementation without
+//! explicit SIMD support would be too much effort and therefore we use the standard functions.
+//! This way we can also be sure that we achieve the promised unertainty :). 
+//! The Rust compiler does a good job to remove the otherhead of this implementation.
+//! So in benchmarks this implementation has the same speed as the the standard functions.
+
 use super::{SimdApproximations, SimdGeneric, Reg32, Reg64};
 
 macro_rules! simd_approx_impl {
