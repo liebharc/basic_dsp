@@ -1,4 +1,4 @@
-/// ! Supprot for types in the Rust core
+/// ! Support for types in the Rust core
 use numbers::*;
 use std;
 use std::ops::*;

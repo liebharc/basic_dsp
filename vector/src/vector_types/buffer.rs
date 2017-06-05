@@ -22,7 +22,7 @@ pub trait Buffer<'a, S, T>
     type Borrow: BufferBorrow<S, T>;
 
     /// Asks the buffer for new storage of exactly size `len`.
-    /// S doesn't need to have be initialized with any default value.
+    /// The returned array doesn't need to have be initialized with any default value.
     fn borrow(&'a mut self, len: usize) -> Self::Borrow;
 
     /// Returns the allocated length of all storage within this buffer.

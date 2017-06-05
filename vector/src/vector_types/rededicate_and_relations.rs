@@ -56,7 +56,7 @@ pub trait RededicateForceOps<Other> {
 pub trait RededicateToOps<Other>
     where Other: MetaData
 {
-    /// Make `Selfr` a `SelOther`.
+    /// Converts `Self` inot `Other`.
     fn rededicate(self) -> Other;
 }
 

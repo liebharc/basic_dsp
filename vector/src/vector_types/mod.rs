@@ -55,9 +55,9 @@ pub type ScalarResult<T> = result::Result<T, ErrorReason>;
 #[derive(PartialEq)]
 #[derive(Debug)]
 pub enum DataDomain {
-    /// Time domain, the x-axis is in [s]
+    /// Time domain, the x-axis is in [s].
     Time,
-    /// Frequency domain, the x-axis in [Hz]
+    /// Frequency domain, the x-axis is in [Hz].
     Frequency,
 }
 
@@ -71,7 +71,7 @@ pub trait NumberSpace: fmt::Debug + cmp::PartialEq + Clone {
     /// they may leave this empty.
     fn to_complex(&mut self);
 
-    /// See `RealNumberSpace` for some more details.
+    /// See `to_complex` for more details.
     fn to_real(&mut self);
 }
 
@@ -79,10 +79,10 @@ pub trait NumberSpace: fmt::Debug + cmp::PartialEq + Clone {
 pub trait Domain: fmt::Debug + cmp::PartialEq + Clone {
     fn domain(&self) -> DataDomain;
 
-    /// See `RealNumberSpace` for some more details.
+    /// See `to_complex` for some details.
     fn to_freq(&mut self);
 
-    /// See `RealNumberSpace` for some more details.
+    /// See `to_complex` for some details.
     fn to_time(&mut self);
 }
 
@@ -201,7 +201,7 @@ impl Domain for TimeOrFrequencyData {
 impl TimeDomain for TimeOrFrequencyData {}
 impl FrequencyDomain for TimeOrFrequencyData {}
 
-/// Expresses at compile time that two classes could potentially represent 
+/// Expresses at compile time that two classes could potentially represent the same number space or domain. 
 pub trait PosEq<O> { }
 impl PosEq<RealData> for RealData { }
 impl PosEq<RealOrComplexData> for RealData { }
@@ -220,9 +220,7 @@ impl PosEq<FrequencyData> for FrequencyData { }
 impl PosEq<TimeOrFrequencyData> for FrequencyData { }
     
 /// A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing
-/// (DSP) operations. All data vector operations consume the vector they operate on and return a
-/// new vector. A consumed vector
-/// must not be accessed again.
+/// (DSP) operations.
 ///
 /// Vectors come in different flavors:
 ///
@@ -282,10 +280,16 @@ impl<S, T, N, D> fmt::Debug for DspVec<S, T, N, D>
     }
 }
 
+/// Rounds a length so that it always devides by the length of a SIMD
+/// register. This function assumes that `Reg32::len() > Reg64::len()`.
 fn round_len(len: usize) -> usize {
     ((len + Reg32::len() - 1) / Reg32::len()) * Reg32::len()
 }
 
+/// Swaps the halves of two arrays. The `forward` paremeter
+/// specifies what should happen then the `data.len()` is odd.
+/// The function should always produce the same results as `fft_shift`
+/// and `ifft_shift` in GNU Octave.
 fn swap_array_halves<T>(data: &mut [T], forward: bool)
     where T: Copy
 {
@@ -307,6 +311,7 @@ fn swap_array_halves<T>(data: &mut [T], forward: bool)
     }
 }
 
+/// Creates an interleaved array slice from a complex array.
 fn complex_to_array<T>(complex: &[Complex<T>]) -> &[T]
     where T: RealNumber
 {
@@ -319,6 +324,7 @@ fn complex_to_array<T>(complex: &[Complex<T>]) -> &[T]
     }
 }
 
+/// Creates an interleaved array slice from a complex array.
 fn complex_to_array_mut<T>(complex: &mut [Complex<T>]) -> &mut [T]
     where T: RealNumber
 {
@@ -337,6 +343,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
           N: NumberSpace,
           D: Domain
 {
+	/// Executes a real function.
     #[inline]
     fn pure_real_operation<A, F>(&mut self, op: F, argument: A, complexity: Complexity)
         where A: Sync + Copy + Send,
@@ -358,6 +365,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
+	/// Executes a complex function.
     #[inline]
     fn pure_complex_operation<A, F>(&mut self, op: F, argument: A, complexity: Complexity)
         where A: Sync + Copy + Send,
@@ -380,6 +388,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
+	/// Executes a real function with SIMD optimization.
     #[inline]
     fn simd_real_operation<A, F, G>(&mut self,
                                     simd_op: F,
@@ -417,6 +426,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
+	/// Executes a complex function with SIMD optimization.
     #[inline]
     fn simd_complex_operation<A, F, G>(&mut self,
                                        simd_op: F,
@@ -460,6 +470,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
+	/// Executes a function which converts a complex array into a real array.
     #[inline]
     fn pure_complex_to_real_operation<A, F, B>(&mut self,
                                                buffer: &mut B,
@@ -496,6 +507,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
+	/// Executes a function which converts a complex array into a real array. Conversion is applied in-place.
     #[inline]
     fn pure_complex_to_real_operation_inplace<A, F>(&mut self, op: F, argument: A)
         where A: Sync + Copy + Send,
@@ -513,6 +525,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
+	/// Executes a function which converts a complex array into a real array.
     #[inline]
     fn simd_complex_to_real_operation<A, F, G, B>(&mut self,
                                                   buffer: &mut B,
@@ -570,6 +583,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         result.trade(&mut self.data);
     }
 
+	/// Forwards calls to `swap_array_halves`.
     #[inline]
     fn swap_halves_priv(&mut self, forward: bool) {
         let len = self.len();
@@ -587,6 +601,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
+	/// Multiplies the vector with a window function.
     #[inline]
     fn multiply_window_priv<TT, CMut, FA, F>(&mut self,
                                              is_symmetric: bool,
