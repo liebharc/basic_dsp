@@ -5,7 +5,7 @@
 
 Digital signal processing based on real or complex vectors in time or frequency domain. Vectors come with basic arithmetic, convolution, Fourier transformation and interpolation operations.
 
-[Documentation](https://liebharc.github.io/basic_dsp/basic_dsp/)
+[Documentation](https://liebharc.github.io/basic_dsp/basic_dsp_vector/index.html)
 
 [Examples](https://github.com/liebharc/basic_dsp/blob/master/examples/)
 
