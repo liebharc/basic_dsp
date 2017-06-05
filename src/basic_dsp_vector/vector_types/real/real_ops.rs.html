@@ -400,8 +400,9 @@
 <span id="355">355</span>
 <span id="356">356</span>
 <span id="357">357</span>
+<span id="358">358</span>
 </pre><pre class="rust ">
-<span class="kw">use</span> <span class="ident">RealNumber</span>;
+<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">multicore_support</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">simd_extensions</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{<span class="ident">Vector</span>, <span class="ident">MetaData</span>, <span class="ident">DspVec</span>, <span class="ident">ToSliceMut</span>, <span class="ident">Domain</span>, <span class="ident">RealNumberSpace</span>};
@@ -487,7 +488,8 @@
 <span class="doccomment">/// the resulting types will already check at compile time (using the type system)</span>
 <span class="doccomment">/// that the data is real.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ApproximatedOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span> {
+    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>
+{
     <span class="doccomment">/// Computes the principal value approximation of natural logarithm of every element in the vector.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// Error should be below `1%` as long as the values in the vector are larger than `1`.</span>
@@ -742,9 +744,9 @@
         <span class="comment">// x^y = e^(ln(x)*y)</span>
         <span class="kw">let</span> <span class="ident">base_ln</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">splat</span>(<span class="ident">base</span>.<span class="ident">ln</span>());
         <span class="self">self</span>.<span class="ident">simd_real_operation</span>(<span class="op">|</span><span class="ident">y</span>, <span class="ident">x</span><span class="op">|</span> (<span class="ident">x</span> <span class="op">*</span> <span class="ident">y</span>).<span class="ident">exp_approx</span>(),
-                         <span class="op">|</span><span class="ident">y</span>, <span class="ident">x</span><span class="op">|</span> (<span class="ident">x</span>.<span class="ident">extract</span>(<span class="number">0</span>) <span class="op">*</span> <span class="ident">y</span>).<span class="ident">exp</span>(),
-                         (<span class="ident">base_ln</span>),
-                          <span class="ident">APPROX_COMPLEXITY</span>);
+                                 <span class="op">|</span><span class="ident">y</span>, <span class="ident">x</span><span class="op">|</span> (<span class="ident">x</span>.<span class="ident">extract</span>(<span class="number">0</span>) <span class="op">*</span> <span class="ident">y</span>).<span class="ident">exp</span>(),
+                                 (<span class="ident">base_ln</span>),
+                                 <span class="ident">APPROX_COMPLEXITY</span>);
     }
 
     <span class="kw">fn</span> <span class="ident">powf_approx</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">exponent</span>: <span class="ident">T</span>) {
@@ -752,9 +754,9 @@
         <span class="comment">// Transform base with the same equation as for `expf_approx`</span>
         <span class="kw">let</span> <span class="ident">exponent</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">splat</span>(<span class="ident">exponent</span>);
         <span class="self">self</span>.<span class="ident">simd_real_operation</span>(<span class="op">|</span><span class="ident">x</span>, <span class="ident">y</span><span class="op">|</span> (<span class="ident">x</span>.<span class="ident">ln_approx</span>() <span class="op">*</span> <span class="ident">y</span>).<span class="ident">exp_approx</span>(),
-                <span class="op">|</span><span class="ident">x</span>, <span class="ident">y</span><span class="op">|</span> (<span class="ident">x</span>.<span class="ident">ln</span>() <span class="op">*</span> <span class="ident">y</span>.<span class="ident">extract</span>(<span class="number">0</span>)).<span class="ident">exp</span>(),
-                (<span class="ident">exponent</span>),
-                <span class="ident">APPROX_COMPLEXITY</span>);
+                                 <span class="op">|</span><span class="ident">x</span>, <span class="ident">y</span><span class="op">|</span> (<span class="ident">x</span>.<span class="ident">ln</span>() <span class="op">*</span> <span class="ident">y</span>.<span class="ident">extract</span>(<span class="number">0</span>)).<span class="ident">exp</span>(),
+                                 (<span class="ident">exponent</span>),
+                                 <span class="ident">APPROX_COMPLEXITY</span>);
 
     }
 }

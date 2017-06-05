@@ -48,7 +48,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../../src/basic_dsp_vector/vector_types/combined_ops/mod.rs.html#1-1278' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../../src/basic_dsp_vector/vector_types/combined_ops/mod.rs.html#1-873' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>This module allows to combine certain operations into one operation. Since one
 many machines the speed of many DSP operations is limited by the memory bus speed
 this approach may result in better register and cache usage and thus decrease
@@ -75,7 +75,6 @@ have increased locality this way. This should help us by making better use of re
 CPU caches.</p>
 <p>Only operations can be combined where the result of every element in the vector
 is independent from any other element in the vector.</p>
-<p>Note: <code>combined_ops</code> is not available if explicitly compiled without <code>std</code>.</p>
 <h1 id="examples" class="section-header"><a href="#examples">Examples</a></h1>
 <pre class="rust rust-example-rendered">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">f32</span>::<span class="ident">consts</span>::<span class="ident">PI</span>;
@@ -173,7 +172,7 @@ with multi ops or prepared ops.</p>
                            <td><a class="trait" href="trait.PreparedOperation1Exec.html"
                                   title='trait basic_dsp_vector::combined_ops::PreparedOperation1Exec'>PreparedOperation1Exec</a></td>
                            <td class='docblock-short'>
-                                <p>Executes the prepared operations to convert <code>S</code>to <code>D</code>.</p>
+                                <p>Executes the prepared operations to convert <code>A</code>to <code>D</code>.</p>
 
                            </td>
                        </tr>
@@ -181,7 +180,7 @@ with multi ops or prepared ops.</p>
                            <td><a class="trait" href="trait.PreparedOperation2Exec.html"
                                   title='trait basic_dsp_vector::combined_ops::PreparedOperation2Exec'>PreparedOperation2Exec</a></td>
                            <td class='docblock-short'>
-                                <p>Executes the prepared operations to convert <code>S1</code> and <code>S2</code> to <code>D1</code> and <code>D2</code>.</p>
+                                <p>Executes the prepared operations to convert <code>A1</code> and <code>A2</code> to <code>D1</code> and <code>D2</code>.</p>
 
                            </td>
                        </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>

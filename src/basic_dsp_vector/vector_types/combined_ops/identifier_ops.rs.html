@@ -636,31 +636,15 @@
 <span id="591">591</span>
 <span id="592">592</span>
 <span id="593">593</span>
-<span id="594">594</span>
-<span id="595">595</span>
-<span id="596">596</span>
-<span id="597">597</span>
-<span id="598">598</span>
-<span id="599">599</span>
-<span id="600">600</span>
-<span id="601">601</span>
-<span id="602">602</span>
-<span id="603">603</span>
-<span id="604">604</span>
-<span id="605">605</span>
-<span id="606">606</span>
-<span id="607">607</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Identifier</span>, <span class="ident">Operation</span>};
-<span class="kw">use</span> <span class="ident">RealNumber</span>;
 <span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{<span class="ident">RealNumberSpace</span>, <span class="ident">ComplexNumberSpace</span>, <span class="ident">NumberSpace</span>, <span class="ident">TransRes</span>, <span class="ident">VoidResult</span>,
                    <span class="ident">DataDomain</span>, <span class="ident">TimeData</span>, <span class="ident">FrequencyData</span>, <span class="ident">RealData</span>, <span class="ident">ComplexData</span>, <span class="ident">RealOrComplexData</span>,
                    <span class="ident">TimeOrFrequencyData</span>, <span class="ident">Domain</span>, <span class="ident">ToRealResult</span>, <span class="ident">ToComplexResult</span>, <span class="ident">ScaleOps</span>,
-                   <span class="ident">OffsetOps</span>, <span class="ident">PowerOps</span>, <span class="ident">TrigOps</span>, <span class="ident">RealOps</span>, <span class="ident">MapInplaceNoArgsOps</span>,
-                   <span class="ident">RealToComplexTransformsOps</span>, <span class="ident">ComplexOps</span>, <span class="ident">ElementaryOps</span>,
-                   <span class="ident">ComplexToRealTransformsOps</span>, <span class="ident">RededicateForceOps</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
+                   <span class="ident">OffsetOps</span>, <span class="ident">PowerOps</span>, <span class="ident">TrigOps</span>, <span class="ident">RealOps</span>, <span class="ident">RealToComplexTransformsOps</span>, <span class="ident">ComplexOps</span>,
+                   <span class="ident">ElementaryOps</span>, <span class="ident">ComplexToRealTransformsOps</span>, <span class="ident">RededicateForceOps</span>, <span class="ident">GetMetaData</span>,
+                   <span class="ident">TypeMetaData</span>, <span class="ident">MultiCoreSettings</span>};
 
 <span class="doccomment">/// Operations for all kind of vectors which can be used in combination</span>
 <span class="doccomment">/// with multi ops or prepared ops.</span>
@@ -798,6 +782,21 @@
     <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>
 {
     <span class="kw">type</span> <span class="ident">ComplexResult</span> <span class="op">=</span> <span class="ident">GenDspIdent</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">GetMetaData</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Identifier</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
+    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+          <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
+          <span class="ident">D</span>: <span class="ident">Domain</span>
+{
+    <span class="kw">fn</span> <span class="ident">get_meta_data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">TypeMetaData</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> {
+        <span class="ident">TypeMetaData</span> {
+            <span class="ident">number_space</span>: <span class="self">self</span>.<span class="ident">number_space</span>.<span class="ident">clone</span>(),
+            <span class="ident">domain</span>: <span class="self">self</span>.<span class="ident">domain</span>.<span class="ident">clone</span>(),
+            <span class="ident">delta</span>: <span class="ident">T</span>::<span class="ident">one</span>(),
+            <span class="ident">multicore_settings</span>: <span class="ident">MultiCoreSettings</span>::<span class="ident">default</span>(),
+        }
+    }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">RededicateForceOps</span><span class="op">&lt;</span><span class="ident">Identifier</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">RealTimeIdent</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
@@ -1083,33 +1082,6 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">MapInplaceNoArgsOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Identifier</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>,
-          <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
-{
-    <span class="kw">fn</span> <span class="ident">map_inplace</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">map</span>: <span class="ident">F</span>)
-        <span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">T</span>, <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">T</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="ident">Send</span>
-    {
-        <span class="kw">let</span> <span class="ident">arg</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">arg</span>;
-        <span class="self">self</span>.<span class="ident">add_op</span>(<span class="ident">Operation</span>::<span class="ident">MapReal</span>(<span class="ident">arg</span>, <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">map</span>)))
-    }
-}
-
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">MapInplaceNoArgsOps</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">Identifier</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>,
-          <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
-{
-    <span class="kw">fn</span> <span class="ident">map_inplace</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">map</span>: <span class="ident">F</span>)
-        <span class="kw">where</span> <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="ident">Send</span>
-    {
-        <span class="kw">let</span> <span class="ident">arg</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">arg</span>;
-        <span class="self">self</span>.<span class="ident">add_op</span>(<span class="ident">Operation</span>::<span class="ident">MapComplex</span>(<span class="ident">arg</span>, <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">map</span>)))
-    }
-}
-
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">ComplexOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Identifier</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
     <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>,
           <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
@@ -1126,7 +1098,7 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">ElementaryOps</span><span class="op">&lt;</span><span class="ident">Identifier</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">Identifier</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">ElementaryOps</span><span class="op">&lt;</span><span class="ident">Identifier</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Identifier</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
     <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>,
           <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
           <span class="ident">D</span>: <span class="ident">Domain</span>
@@ -1134,28 +1106,28 @@
     <span class="kw">fn</span> <span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">summand</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-&gt;</span> <span class="ident">VoidResult</span> {
         <span class="kw">let</span> <span class="ident">arg</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">arg</span>;
         <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">summand</span>.<span class="ident">arg</span>;
-        <span class="self">self</span>.<span class="ident">add_op</span>(<span class="ident">Operation</span>::<span class="ident">AddVector</span>(<span class="ident">arg</span>, <span class="ident">other</span>));
+        <span class="self">self</span>.<span class="ident">add_arg_op</span>(<span class="ident">Operation</span>::<span class="ident">AddVector</span>(<span class="ident">arg</span>, <span class="ident">other</span>), <span class="ident">summand</span>);
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="kw">fn</span> <span class="ident">sub</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">subtrahend</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-&gt;</span> <span class="ident">VoidResult</span> {
         <span class="kw">let</span> <span class="ident">arg</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">arg</span>;
         <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">subtrahend</span>.<span class="ident">arg</span>;
-        <span class="self">self</span>.<span class="ident">add_op</span>(<span class="ident">Operation</span>::<span class="ident">SubVector</span>(<span class="ident">arg</span>, <span class="ident">other</span>));
+        <span class="self">self</span>.<span class="ident">add_arg_op</span>(<span class="ident">Operation</span>::<span class="ident">SubVector</span>(<span class="ident">arg</span>, <span class="ident">other</span>), <span class="ident">subtrahend</span>);
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="kw">fn</span> <span class="ident">mul</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-&gt;</span> <span class="ident">VoidResult</span> {
         <span class="kw">let</span> <span class="ident">arg</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">arg</span>;
         <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">factor</span>.<span class="ident">arg</span>;
-        <span class="self">self</span>.<span class="ident">add_op</span>(<span class="ident">Operation</span>::<span class="ident">MulVector</span>(<span class="ident">arg</span>, <span class="ident">other</span>));
+        <span class="self">self</span>.<span class="ident">add_arg_op</span>(<span class="ident">Operation</span>::<span class="ident">MulVector</span>(<span class="ident">arg</span>, <span class="ident">other</span>), <span class="ident">factor</span>);
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="kw">fn</span> <span class="ident">div</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">divisor</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-&gt;</span> <span class="ident">VoidResult</span> {
         <span class="kw">let</span> <span class="ident">arg</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">arg</span>;
         <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">divisor</span>.<span class="ident">arg</span>;
-        <span class="self">self</span>.<span class="ident">add_op</span>(<span class="ident">Operation</span>::<span class="ident">DivVector</span>(<span class="ident">arg</span>, <span class="ident">other</span>));
+        <span class="self">self</span>.<span class="ident">add_arg_op</span>(<span class="ident">Operation</span>::<span class="ident">DivVector</span>(<span class="ident">arg</span>, <span class="ident">other</span>), <span class="ident">divisor</span>);
         <span class="prelude-val">Ok</span>(())
     }
 }
@@ -1176,7 +1148,7 @@
     <span class="kw">fn</span> <span class="ident">clone_from</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) {
         <span class="kw">let</span> <span class="ident">arg</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">arg</span>;
         <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">arg</span>;
-        <span class="self">self</span>.<span class="ident">add_op</span>(<span class="ident">Operation</span>::<span class="ident">CloneFrom</span>(<span class="ident">arg</span>, <span class="ident">other</span>));
+        <span class="self">self</span>.<span class="ident">add_arg_op</span>(<span class="ident">Operation</span>::<span class="ident">CloneFrom</span>(<span class="ident">arg</span>, <span class="ident">other</span>), <span class="ident">source</span>);
     }
 
     <span class="kw">fn</span> <span class="ident">add_points</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {

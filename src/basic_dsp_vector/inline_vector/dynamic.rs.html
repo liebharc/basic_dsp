@@ -304,14 +304,12 @@
 <span id="259">259</span>
 <span id="260">260</span>
 <span id="261">261</span>
-<span id="262">262</span>
-<span id="263">263</span>
-<span id="264">264</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">usize</span>;
 <span class="kw">use</span> <span class="ident">arrayvec</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> {<span class="ident">Zero</span>, <span class="ident">VoidResult</span>, <span class="ident">ErrorReason</span>, <span class="ident">RealNumber</span>, <span class="ident">Buffer</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
+<span class="kw">use</span> {<span class="ident">VoidResult</span>, <span class="ident">ErrorReason</span>};
+<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">iter</span>::<span class="ident">FromIterator</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">slice</span>::<span class="ident">Iter</span>;
 
@@ -320,15 +318,15 @@
 <span class="doccomment">/// way we automatically have a limited stack allocation available on systems</span>
 <span class="doccomment">/// without heap, and on systems with heap allocation we don&#39;t have to worry</span>
 <span class="doccomment">/// about introducing artifical limits.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Thanks to: http://stackoverflow.com/questions/27859822/alloca-variable-length-arrays-in-rust</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="ident">Inline</span>(<span class="ident">ArrayVec</span><span class="op">&lt;</span>[<span class="ident">T</span>; <span class="number">64</span>]<span class="op">&gt;</span>),
     <span class="ident">Dynamic</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>),
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">Copy</span> {
+    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">Copy</span>
+{
+    <span class="doccomment">/// Create a new vector of a given size filled with a given default value.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">of_size</span>(<span class="ident">default</span>: <span class="ident">T</span>, <span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">with_capacity</span>(<span class="ident">n</span>);
         <span class="kw">for</span> _ <span class="kw">in</span> <span class="number">0</span>..<span class="ident">n</span> {
@@ -339,23 +337,39 @@
     }
 }
 
+<span class="doccomment">/// Most of the operations behave as defined for `std::Vec`.</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Returns the maximimum size the vector can possibly have.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_capacity</span>() <span class="op">-&gt;</span> <span class="ident">usize</span> {
+        <span class="ident">usize</span>::<span class="ident">MAX</span>
+    }
+
+    <span class="doccomment">/// Returns a vector with a given capacity.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_capacity</span>(<span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="ident">n</span> <span class="op">&lt;=</span> <span class="number">64</span> {
             <span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="ident">ArrayVec</span>::<span class="op">&lt;</span>[<span class="ident">T</span>; <span class="number">64</span>]<span class="op">&gt;</span>::<span class="ident">new</span>())
         } <span class="kw">else</span> {
-            <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(
-                <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">n</span>)
-            )
+            <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">n</span>))
         }
     }
 
+    <span class="doccomment">/// Returns a vector with a default capacity. The default</span>
+    <span class="doccomment">/// capacity will be relativly small and should only be used </span>
+    <span class="doccomment">/// to store small lookup tables or results. </span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// As of today the default capacity is `64`.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_default_capcacity</span>() <span class="op">-&gt;</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="self">Self</span>::<span class="ident">with_capacity</span>(<span class="number">64</span>)
+    }
+
+    <span class="doccomment">/// Returns a vector holding a single element.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_elem</span>(<span class="ident">elem</span>: <span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vector</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">with_capacity</span>(<span class="number">1</span>);
         <span class="ident">vector</span>.<span class="ident">push</span>(<span class="ident">elem</span>);
         <span class="ident">vector</span>
     }
-
+    
+    <span class="doccomment">/// Returns an empty vector.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">empty</span>() <span class="op">-&gt;</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="self">Self</span>::<span class="ident">with_capacity</span>(<span class="number">0</span>)
     }
@@ -367,40 +381,64 @@
                 <span class="kw">if</span> <span class="ident">res</span>.<span class="ident">is_some</span>() {
                     <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;InlineVector capacity exceeded, please open a defect against `basic_dsp`&quot;</span>);
                 }
-            },
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">push</span>(<span class="ident">elem</span>)
+            }
+            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">push</span>(<span class="ident">elem</span>),
         };
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> {
-                <span class="ident">v</span>.<span class="ident">pop</span>()
-            },
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">pop</span>()
+            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">pop</span>(),
+            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">pop</span>(),
+        }
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">index</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">T</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">remove</span>(<span class="ident">index</span>).<span class="ident">unwrap</span>(),
+            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">remove</span>(<span class="ident">index</span>),
         }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">len</span>(),
-            <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">len</span>()
+            <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">len</span>(),
         }
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_empty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">0</span>
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">capacity</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">capacity</span>(),
-            <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">capacity</span>()
+            <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">capacity</span>(),
         }
     }
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Iter</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="self">self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Iter</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
             <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">iter</span>(),
-            <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">iter</span>()
+            <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">iter</span>(),
         }
-	}
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">append</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>) {
+        <span class="kw">while</span> <span class="op">!</span><span class="ident">other</span>.<span class="ident">is_empty</span>() {
+            <span class="self">self</span>.<span class="ident">push</span>(<span class="ident">other</span>.<span class="ident">remove</span>(<span class="number">0</span>));
+        }
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">index</span>: <span class="ident">usize</span>, <span class="ident">element</span>: <span class="ident">T</span>) {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> {
+                <span class="kw">let</span> _ <span class="op">=</span> <span class="ident">v</span>.<span class="ident">insert</span>(<span class="ident">index</span>, <span class="ident">element</span>).<span class="ident">unwrap</span>();
+            }
+            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">v</span>.<span class="ident">insert</span>(<span class="ident">index</span>, <span class="ident">element</span>),
+        }
+    }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Zero</span> <span class="op">+</span> <span class="ident">Clone</span><span class="op">&gt;</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
@@ -412,11 +450,11 @@
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">ErrorReason</span>::<span class="ident">TypeCanNotResize</span>)
                 }
-            },
+            }
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> {
                 <span class="kw">if</span> <span class="ident">v</span>.<span class="ident">capacity</span>() <span class="op">&gt;=</span> <span class="ident">len</span> {
                     <span class="ident">v</span>.<span class="ident">resize</span>(<span class="ident">len</span>, <span class="ident">T</span>::<span class="ident">zero</span>());
-                <span class="prelude-val">Ok</span>(())
+                    <span class="prelude-val">Ok</span>(())
                 } <span class="kw">else</span> {
                     <span class="comment">// We could increase the vector capacity, but then</span>
                     <span class="comment">// Inline and Dynamic would behave very different and we want</span>
@@ -428,20 +466,13 @@
     }
 }
 
-<span class="doccomment">/// A buffer which stores a single inline vector and never shrinks.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InternalBuffer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>
-{
-    <span class="ident">temp</span>: <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-}
-
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span>;
 
     <span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="ident">T</span> {
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[<span class="ident">index</span>],
-            <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[<span class="ident">index</span>]
+            <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[<span class="ident">index</span>],
         }
     }
 }
@@ -450,7 +481,7 @@
     <span class="kw">fn</span> <span class="ident">index_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">index</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span> {
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>[<span class="ident">index</span>],
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>[<span class="ident">index</span>]
+            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>[<span class="ident">index</span>],
         }
     }
 }
@@ -461,7 +492,7 @@
     <span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_index</span>: <span class="ident">RangeFull</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">T</span>] {
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[..],
-            <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[..]
+            <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[..],
         }
     }
 }
@@ -470,7 +501,7 @@
     <span class="kw">fn</span> <span class="ident">index_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">_index</span>: <span class="ident">RangeFull</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">T</span>] {
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>[..],
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>[..]
+            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>[..],
         }
     }
 }
@@ -481,7 +512,7 @@
     <span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">RangeFrom</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">T</span>] {
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[<span class="ident">index</span>],
-            <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[<span class="ident">index</span>]
+            <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[<span class="ident">index</span>],
         }
     }
 }
@@ -490,7 +521,7 @@
     <span class="kw">fn</span> <span class="ident">index_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">index</span>: <span class="ident">RangeFrom</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">T</span>] {
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>[<span class="ident">index</span>],
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>[<span class="ident">index</span>]
+            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>[<span class="ident">index</span>],
         }
     }
 }
@@ -501,7 +532,7 @@
     <span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">RangeTo</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span>[<span class="ident">T</span>] {
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[<span class="ident">index</span>],
-            <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[<span class="ident">index</span>]
+            <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[<span class="ident">index</span>],
         }
     }
 }
@@ -510,22 +541,22 @@
     <span class="kw">fn</span> <span class="ident">index_mut</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">index</span>: <span class="ident">RangeTo</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">T</span>] {
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>[<span class="ident">index</span>],
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>[<span class="ident">index</span>]
+            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">v</span>[<span class="ident">index</span>],
         }
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Clone</span><span class="op">&gt;</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
-         <span class="kw">match</span> <span class="self">self</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
             <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">InlineVector</span>::<span class="ident">Inline</span>(<span class="ident">v</span>.<span class="ident">clone</span>()),
-            <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="ident">v</span>.<span class="ident">clone</span>())
+            <span class="kw-2">&amp;</span><span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="kw-2">ref</span> <span class="ident">v</span>) <span class="op">=&gt;</span> <span class="ident">InlineVector</span>::<span class="ident">Dynamic</span>(<span class="ident">v</span>.<span class="ident">clone</span>()),
         }
     }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">FromIterator</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">from_iter</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span><span class="op">=</span><span class="ident">T</span><span class="op">&gt;&gt;</span>(<span class="ident">iter</span>: <span class="ident">I</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">from_iter</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;&gt;</span>(<span class="ident">iter</span>: <span class="ident">I</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">InlineVector</span>::<span class="ident">with_capacity</span>(<span class="number">64</span>);
 
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">iter</span> {
@@ -533,43 +564,6 @@
         }
 
         <span class="ident">c</span>
-    }
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">InternalBuffer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>
-{
-    <span class="doccomment">/// Creates a new buffer which is ready to be passed around.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-&gt;</span> <span class="ident">InternalBuffer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">InternalBuffer</span> { <span class="ident">temp</span>: <span class="ident">InlineVector</span>::<span class="ident">with_capacity</span>(<span class="number">0</span>) }
-    }
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">InternalBuffer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>
-{
-    <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">len</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="ident">len</span> <span class="op">&lt;=</span> <span class="self">self</span>.<span class="ident">temp</span>.<span class="ident">len</span>() {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">InlineVector</span>::<span class="ident">with_capacity</span>(<span class="number">0</span>);
-            <span class="ident">mem</span>::<span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">result</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">temp</span>);
-            <span class="kw">return</span> <span class="ident">result</span>;
-        }
-
-        <span class="ident">InlineVector</span>::<span class="ident">of_size</span>(<span class="ident">T</span>::<span class="ident">zero</span>(), <span class="ident">len</span>)
-    }
-
-    <span class="kw">fn</span> <span class="ident">construct_new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">len</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">InlineVector</span>::<span class="ident">of_size</span>(<span class="ident">T</span>::<span class="ident">zero</span>(), <span class="ident">len</span>)
-    }
-
-    <span class="kw">fn</span> <span class="ident">free</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">storage</span>: <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
-        <span class="kw">if</span> <span class="ident">storage</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">temp</span>.<span class="ident">len</span>() {
-            <span class="self">self</span>.<span class="ident">temp</span> <span class="op">=</span> <span class="ident">storage</span>;
-        }
-    }
-
-    <span class="kw">fn</span> <span class="ident">alloc_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
-        <span class="self">self</span>.<span class="ident">temp</span>.<span class="ident">capacity</span>()
     }
 }
 </pre>

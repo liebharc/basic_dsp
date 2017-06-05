@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `FixedLenBuffer` struct in crate `basic_dsp_vector`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, FixedLenBuffer">
+
+    <title>basic_dsp_vector::FixedLenBuffer - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc struct">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>basic_dsp_vector</a></p><script>window.sidebarCurrent = {name: 'FixedLenBuffer', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>basic_dsp_vector</a>::<wbr><a class="struct" href=''>FixedLenBuffer</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/support_core.rs.html#42-48' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct FixedLenBuffer&lt;S, T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../basic_dsp_vector/trait.ToSliceMut.html" title="trait basic_dsp_vector::ToSliceMut">ToSliceMut</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/numbers/trait.RealNumber.html" title="trait basic_dsp_vector::numbers::RealNumber">RealNumber</a>,&nbsp;</span> { /* fields omitted */ }</pre><div class='docblock'><p>A buffer which gets initalized with a data storage type and then always keeps that.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;S, T&gt; <a class="struct" href="../basic_dsp_vector/struct.FixedLenBuffer.html" title="struct basic_dsp_vector::FixedLenBuffer">FixedLenBuffer</a>&lt;S, T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../basic_dsp_vector/trait.ToSliceMut.html" title="trait basic_dsp_vector::ToSliceMut">ToSliceMut</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/numbers/trait.RealNumber.html" title="trait basic_dsp_vector::numbers::RealNumber">RealNumber</a>,&nbsp;</span></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/basic_dsp_vector/vector_types/support_core.rs.html#50-62' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(storage: S) -&gt; <a class="struct" href="../basic_dsp_vector/struct.FixedLenBuffer.html" title="struct basic_dsp_vector::FixedLenBuffer">FixedLenBuffer</a>&lt;S, T&gt;</code></span></h4>
+<div class='docblock'><p>Creates a new buffer from a storage type. The buffer will internally hold
+its storage for it's complete life time.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a, S, T&gt; <a class="trait" href="../basic_dsp_vector/trait.Buffer.html" title="trait basic_dsp_vector::Buffer">Buffer</a>&lt;'a, S, T&gt; for <a class="struct" href="../basic_dsp_vector/struct.FixedLenBuffer.html" title="struct basic_dsp_vector::FixedLenBuffer">FixedLenBuffer</a>&lt;S, T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../basic_dsp_vector/trait.ToSliceMut.html" title="trait basic_dsp_vector::ToSliceMut">ToSliceMut</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/numbers/trait.RealNumber.html" title="trait basic_dsp_vector::numbers::RealNumber">RealNumber</a> + 'a,&nbsp;</span></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/basic_dsp_vector/vector_types/support_core.rs.html#64-81' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='associatedtype.Borrow' class="type"><span id='Borrow.t' class='invisible'><code>type <a href='../basic_dsp_vector/trait.Buffer.html#associatedtype.Borrow' class="type">Borrow</a> = <a class="struct" href="../basic_dsp_vector/struct.FixedLenBufferBurrow.html" title="struct basic_dsp_vector::FixedLenBufferBurrow">FixedLenBufferBurrow</a>&lt;'a, T&gt;</code></span></h4>
+<div class='docblock'><p>The type of the burrow which is returned.</p>
+</div><h4 id='method.borrow' class="method"><span id='borrow.v' class='invisible'><code>fn <a href='../basic_dsp_vector/trait.Buffer.html#tymethod.borrow' class='fnname'>borrow</a>(&amp;'a mut self, len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Self::<a class="trait" href="../basic_dsp_vector/trait.Buffer.html" title="trait basic_dsp_vector::Buffer">Borrow</a></code></span></h4>
+<div class='docblock'><p>Asks the buffer for new storage of exactly size <code>len</code>. The returned array doesn't need to have be initialized with any default value. <a href="../basic_dsp_vector/trait.Buffer.html#tymethod.borrow">Read more</a></p>
+</div><h4 id='method.alloc_len' class="method"><span id='alloc_len.v' class='invisible'><code>fn <a href='../basic_dsp_vector/trait.Buffer.html#tymethod.alloc_len' class='fnname'>alloc_len</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span></h4>
+<div class='docblock'><p>Returns the allocated length of all storage within this buffer.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "basic_dsp_vector";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

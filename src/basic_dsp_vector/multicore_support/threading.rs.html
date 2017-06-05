@@ -625,14 +625,6 @@
 <span id="580">580</span>
 <span id="581">581</span>
 <span id="582">582</span>
-<span id="583">583</span>
-<span id="584">584</span>
-<span id="585">585</span>
-<span id="586">586</span>
-<span id="587">587</span>
-<span id="588">588</span>
-<span id="589">589</span>
-<span id="590">590</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="ident">num_cpus</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">slice</span>::{<span class="ident">Chunks</span>, <span class="ident">ChunksMut</span>};
@@ -641,7 +633,6 @@
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Range</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Mutex</span>, <span class="ident">Arc</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">mem</span>;
-<span class="kw">use</span> <span class="ident">RealNumber</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">iter</span>::<span class="ident">Iterator</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Complexity</span>;
 <span class="kw">use</span> <span class="ident">inline_vector</span>::<span class="ident">InlineVector</span>;
@@ -653,10 +644,6 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MultiCoreSettings</span> {
     <span class="doccomment">/// All operations will be limited to not create more threads than specified here</span>
     <span class="kw">pub</span> <span class="ident">core_limit</span>: <span class="ident">usize</span>,
-
-    <span class="doccomment">/// Indicates whether the temp arrays of a vector should already be allocated during</span>
-    <span class="doccomment">/// construction</span>
-    <span class="kw">pub</span> <span class="ident">early_temp_allocation</span>: <span class="ident">bool</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">MultiCoreSettings</span> {
@@ -664,15 +651,12 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-&gt;</span> <span class="ident">MultiCoreSettings</span> {
         <span class="comment">// Half because we assume hyper threading and that we will keep a core so busy</span>
         <span class="comment">// that hyper threading isn&#39;t of any use</span>
-        <span class="self">Self</span>::<span class="ident">new</span>(<span class="ident">num_cpus</span>::<span class="ident">get</span>() <span class="op">/</span> <span class="number">2</span>, <span class="bool-val">false</span>)
+        <span class="self">Self</span>::<span class="ident">new</span>(<span class="ident">num_cpus</span>::<span class="ident">get</span>() <span class="op">/</span> <span class="number">2</span>)
     }
 
     <span class="doccomment">/// Creates multi core settings with the given values.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">core_limit</span>: <span class="ident">usize</span>, <span class="ident">early_temp_allocation</span>: <span class="ident">bool</span>) <span class="op">-&gt;</span> <span class="ident">MultiCoreSettings</span> {
-        <span class="ident">MultiCoreSettings</span> {
-            <span class="ident">core_limit</span>: <span class="kw">if</span> <span class="ident">core_limit</span> <span class="op">&gt;=</span> <span class="number">1</span> { <span class="ident">core_limit</span> } <span class="kw">else</span> { <span class="number">1</span> },
-            <span class="ident">early_temp_allocation</span>: <span class="ident">early_temp_allocation</span>,
-        }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">core_limit</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">MultiCoreSettings</span> {
+        <span class="ident">MultiCoreSettings</span> { <span class="ident">core_limit</span>: <span class="kw">if</span> <span class="ident">core_limit</span> <span class="op">&gt;=</span> <span class="number">1</span> { <span class="ident">core_limit</span> } <span class="kw">else</span> { <span class="number">1</span> } }
     }
 }
 

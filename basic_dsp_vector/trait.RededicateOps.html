@@ -48,8 +48,8 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/rededicate_and_relations.rs.html#14-29' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait RededicateOps&lt;Other&gt;: <a class="trait" href="../basic_dsp_vector/trait.RededicateForceOps.html" title="trait basic_dsp_vector::RededicateForceOps">RededicateForceOps</a>&lt;Other&gt; {
+               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/rededicate_and_relations.rs.html#14-31' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait RededicateOps&lt;Other&gt;: <a class="trait" href="../basic_dsp_vector/trait.RededicateForceOps.html" title="trait basic_dsp_vector::RededicateForceOps">RededicateForceOps</a>&lt;Other&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;Other: <a class="trait" href="../basic_dsp_vector/trait.MetaData.html" title="trait basic_dsp_vector::MetaData">MetaData</a>,&nbsp;</span>{
     fn <a href='#tymethod.rededicate_from' class='fnname'>rededicate_from</a>(origin: Other) -&gt; Self;
 }</pre><div class='docblock'><p>This trait allows to change a data type. The operations will
 convert a type to a different one and set <code>self.len()</code> to zero.
@@ -74,7 +74,7 @@ trait provides option for that.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;U, V&gt; RededicateOps&lt;U&gt; for V <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;V: <a class="trait" href="../basic_dsp_vector/trait.RededicateForceOps.html" title="trait basic_dsp_vector::RededicateForceOps">RededicateForceOps</a>&lt;U&gt; + <a class="trait" href="../basic_dsp_vector/trait.MetaData.html" title="trait basic_dsp_vector::MetaData">MetaData</a> + <a class="trait" href="../basic_dsp_vector/trait.ResizeOps.html" title="trait basic_dsp_vector::ResizeOps">ResizeOps</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;U: <a class="trait" href="../basic_dsp_vector/trait.MetaData.html" title="trait basic_dsp_vector::MetaData">MetaData</a>,&nbsp;</span></code></li>
+    <li><code>impl&lt;S, T, N, D, O&gt; RededicateOps&lt;O&gt; for <a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../basic_dsp_vector/trait.ToSlice.html" title="trait basic_dsp_vector::ToSlice">ToSlice</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/numbers/trait.RealNumber.html" title="trait basic_dsp_vector::numbers::RealNumber">RealNumber</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;<a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt;: <a class="trait" href="../basic_dsp_vector/trait.RededicateForceOps.html" title="trait basic_dsp_vector::RededicateForceOps">RededicateForceOps</a>&lt;O&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;N: <a class="trait" href="../basic_dsp_vector/trait.NumberSpace.html" title="trait basic_dsp_vector::NumberSpace">NumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;D: <a class="trait" href="../basic_dsp_vector/trait.Domain.html" title="trait basic_dsp_vector::Domain">Domain</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;O: <a class="trait" href="../basic_dsp_vector/trait.Vector.html" title="trait basic_dsp_vector::Vector">Vector</a>&lt;T&gt;,&nbsp;</span></code></li>
 </ul><script type="text/javascript" async
                          src="../implementors/basic_dsp_vector/trait.RededicateOps.js">
                  </script></section>

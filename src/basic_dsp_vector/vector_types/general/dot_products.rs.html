@@ -328,20 +328,97 @@
 <span id="283">283</span>
 <span id="284">284</span>
 <span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
 </pre><pre class="rust ">
-<span class="kw">use</span> <span class="ident">RealNumber</span>;
 <span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">multicore_support</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">simd_extensions</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{<span class="ident">Vector</span>, <span class="ident">ScalarResult</span>, <span class="ident">ErrorReason</span>, <span class="ident">DspVec</span>, <span class="ident">ToSlice</span>, <span class="ident">MetaData</span>, <span class="ident">Domain</span>,
-                   <span class="ident">RealNumberSpace</span>, <span class="ident">ComplexNumberSpace</span>};
+                   <span class="ident">RealNumberSpace</span>, <span class="ident">ComplexNumberSpace</span>, <span class="ident">GetMetaData</span>, <span class="ident">PosEq</span>,
+                   <span class="ident">NumberSpace</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">kahan_sum</span>;
 <span class="kw">use</span> <span class="ident">inline_vector</span>::<span class="ident">InlineVector</span>;
 
 <span class="doccomment">/// An operation which multiplies each vector element with a constant</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">DotProductOps</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">A</span><span class="op">&gt;</span>: <span class="ident">Sized</span>
-    <span class="kw">where</span> <span class="ident">R</span>: <span class="ident">Sized</span>
-{
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">DotProductOps</span><span class="op">&lt;</span><span class="ident">A</span>, <span class="ident">R</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> 
+    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+          <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
+          <span class="ident">D</span>: <span class="ident">Domain</span>,
+          <span class="ident">A</span>: <span class="ident">GetMetaData</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Output</span>;
 
     <span class="doccomment">/// Calculates the dot product of self and factor. Self and factor remain unchanged.</span>
@@ -359,9 +436,11 @@
 }
 
 <span class="doccomment">/// An operation which multiplies each vector element with a constant</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">PreciseDotProductOps</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">A</span><span class="op">&gt;</span>: <span class="ident">Sized</span>
-    <span class="kw">where</span> <span class="ident">R</span>: <span class="ident">Sized</span>
-{
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">PreciseDotProductOps</span><span class="op">&lt;</span><span class="ident">A</span>, <span class="ident">R</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> 
+    <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+          <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
+          <span class="ident">D</span>: <span class="ident">Domain</span>,
+          <span class="ident">A</span>: <span class="ident">GetMetaData</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Output</span>;
 
     <span class="doccomment">/// Calculates the dot product of self and factor using a more precise</span>
@@ -379,15 +458,17 @@
     <span class="kw">fn</span> <span class="ident">dot_product_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">A</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">Output</span>;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">DotProductOps</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">O</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span> <span class="ident">DotProductOps</span><span class="op">&lt;</span><span class="ident">O</span>, <span class="ident">T</span>, <span class="ident">T</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
     <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
           <span class="ident">T</span>: <span class="ident">RealNumber</span>,
           <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
-{
+          <span class="ident">D</span>: <span class="ident">Domain</span>,
+          <span class="ident">O</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">GetMetaData</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="ident">RangeFull</span>, <span class="ident">Output</span> <span class="op">=</span> [<span class="ident">T</span>]<span class="op">&gt;</span>,
+          <span class="ident">NO</span>: <span class="ident">PosEq</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">NumberSpace</span>,
+          <span class="ident">DO</span>: <span class="ident">PosEq</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Domain</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">O</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_complex</span>() {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ErrorReason</span>::<span class="ident">InputMustBeReal</span>);
         }
@@ -396,7 +477,7 @@
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
         <span class="kw">let</span> (<span class="ident">scalar_left</span>, <span class="ident">scalar_right</span>, <span class="ident">vectorization_length</span>) <span class="op">=</span>
             <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">calc_data_alignment_reqs</span>(<span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>]);
-        <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">factor</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
+        <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">factor</span>[..];
         <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">vectorization_length</span> <span class="op">&gt;</span> <span class="number">0</span> {
             <span class="ident">Chunk</span>::<span class="ident">get_a_fold_b</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
                                 <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
@@ -436,20 +517,22 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">DotProductOps</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">O</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span> <span class="ident">DotProductOps</span><span class="op">&lt;</span><span class="ident">O</span>, <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
     <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
           <span class="ident">T</span>: <span class="ident">RealNumber</span>,
           <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
-{
+          <span class="ident">D</span>: <span class="ident">Domain</span>,
+          <span class="ident">O</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">GetMetaData</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="ident">RangeFull</span>, <span class="ident">Output</span> <span class="op">=</span> [<span class="ident">T</span>]<span class="op">&gt;</span>,
+          <span class="ident">NO</span>: <span class="ident">PosEq</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">NumberSpace</span>,
+          <span class="ident">DO</span>: <span class="ident">PosEq</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Domain</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">O</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_complex</span>() {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ErrorReason</span>::<span class="ident">InputMustBeComplex</span>);
         }
 
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">factor</span>.<span class="ident">is_complex</span>() <span class="op">||</span> <span class="self">self</span>.<span class="ident">domain</span> <span class="op">!=</span> <span class="ident">factor</span>.<span class="ident">domain</span> {
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">factor</span>.<span class="ident">is_complex</span>() <span class="op">||</span> <span class="self">self</span>.<span class="ident">domain</span>() <span class="op">!=</span> <span class="ident">factor</span>.<span class="ident">domain</span>() {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ErrorReason</span>::<span class="ident">InputMetaDataMustAgree</span>);
         }
 
@@ -457,7 +540,7 @@
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
         <span class="kw">let</span> (<span class="ident">scalar_left</span>, <span class="ident">scalar_right</span>, <span class="ident">vectorization_length</span>) <span class="op">=</span>
             <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">calc_data_alignment_reqs</span>(<span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>]);
-        <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">factor</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
+        <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">factor</span>[..];
         <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">vectorization_length</span> <span class="op">&gt;</span> <span class="number">0</span> {
             <span class="ident">Chunk</span>::<span class="ident">get_a_fold_b</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
                                 <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
@@ -496,21 +579,24 @@
             <span class="ident">i</span> <span class="op">+=</span> <span class="number">2</span>;
         }
 
-        <span class="kw">let</span> <span class="ident">chunk_sum</span>: <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..]).<span class="ident">iter</span>()
+        <span class="kw">let</span> <span class="ident">chunk_sum</span>: <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..])
+            .<span class="ident">iter</span>()
             .<span class="ident">fold</span>(<span class="ident">Complex</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="ident">T</span>::<span class="ident">zero</span>(), <span class="ident">T</span>::<span class="ident">zero</span>()), <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>);
         <span class="prelude-val">Ok</span>(<span class="ident">chunk_sum</span> <span class="op">+</span> <span class="ident">sum</span>)
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">PreciseDotProductOps</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">O</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span> <span class="ident">PreciseDotProductOps</span><span class="op">&lt;</span><span class="ident">O</span>, <span class="ident">T</span>, <span class="ident">T</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
     <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
           <span class="ident">T</span>: <span class="ident">RealNumber</span>,
           <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
-{
+          <span class="ident">D</span>: <span class="ident">Domain</span>,
+          <span class="ident">O</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">GetMetaData</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="ident">RangeFull</span>, <span class="ident">Output</span> <span class="op">=</span> [<span class="ident">T</span>]<span class="op">&gt;</span>,
+          <span class="ident">NO</span>: <span class="ident">PosEq</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">NumberSpace</span>,
+          <span class="ident">DO</span>: <span class="ident">PosEq</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Domain</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">dot_product_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">dot_product_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">O</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_complex</span>() {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ErrorReason</span>::<span class="ident">InputMustBeReal</span>);
         }
@@ -519,7 +605,7 @@
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
         <span class="kw">let</span> (<span class="ident">scalar_left</span>, <span class="ident">scalar_right</span>, <span class="ident">vectorization_length</span>) <span class="op">=</span>
             <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">calc_data_alignment_reqs</span>(<span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>]);
-        <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">factor</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
+        <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">factor</span>[..];
         <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">vectorization_length</span> <span class="op">&gt;</span> <span class="number">0</span> {
             <span class="ident">Chunk</span>::<span class="ident">get_a_fold_b</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
                                 <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
@@ -528,10 +614,11 @@
                                 <span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">vectorization_length</span>],
                                 <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">len</span>(),
                                 <span class="op">|</span><span class="ident">original</span>, <span class="ident">range</span>, <span class="ident">target</span><span class="op">|</span> {
-                <span class="kw">let</span> <span class="ident">original</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">array_to_regs</span>(<span class="kw-2">&amp;</span><span class="ident">original</span>[<span class="ident">range</span>]);
-                <span class="kw">let</span> <span class="ident">target</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">array_to_regs</span>(<span class="kw-2">&amp;</span><span class="ident">target</span>[..]);
-                <span class="ident">kahan_sum</span>(<span class="ident">original</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">target</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span><span class="kw-2">*</span><span class="ident">a</span>.<span class="number">0</span> <span class="op">*</span> <span class="kw-2">*</span><span class="ident">a</span>.<span class="number">1</span>)).<span class="ident">sum_real</span>()
-            })
+                                    <span class="kw">let</span> <span class="ident">original</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">array_to_regs</span>(<span class="kw-2">&amp;</span><span class="ident">original</span>[<span class="ident">range</span>]);
+                                    <span class="kw">let</span> <span class="ident">target</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">array_to_regs</span>(<span class="kw-2">&amp;</span><span class="ident">target</span>[..]);
+                                    <span class="ident">kahan_sum</span>(<span class="ident">original</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">target</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">a</span>.<span class="number">0</span> <span class="op">*</span> <span class="kw-2">*</span><span class="ident">a</span>.<span class="number">1</span>))
+                                        .<span class="ident">sum_real</span>()
+                                })
         } <span class="kw">else</span> {
             <span class="ident">InlineVector</span>::<span class="ident">empty</span>()
         };
@@ -554,20 +641,22 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">PreciseDotProductOps</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">O</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span> <span class="ident">PreciseDotProductOps</span><span class="op">&lt;</span><span class="ident">O</span>, <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
     <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
           <span class="ident">T</span>: <span class="ident">RealNumber</span>,
           <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
-          <span class="ident">D</span>: <span class="ident">Domain</span>
-{
+          <span class="ident">D</span>: <span class="ident">Domain</span>,
+          <span class="ident">O</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">GetMetaData</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="ident">RangeFull</span>, <span class="ident">Output</span> <span class="op">=</span> [<span class="ident">T</span>]<span class="op">&gt;</span>,
+          <span class="ident">NO</span>: <span class="ident">PosEq</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">NumberSpace</span>,
+          <span class="ident">DO</span>: <span class="ident">PosEq</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Domain</span> {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">dot_product_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">dot_product_prec</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">factor</span>: <span class="kw-2">&amp;</span><span class="ident">O</span>) <span class="op">-&gt;</span> <span class="ident">ScalarResult</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span> {
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_complex</span>() {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ErrorReason</span>::<span class="ident">InputMustBeComplex</span>);
         }
 
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">factor</span>.<span class="ident">is_complex</span>() <span class="op">||</span> <span class="self">self</span>.<span class="ident">domain</span> <span class="op">!=</span> <span class="ident">factor</span>.<span class="ident">domain</span> {
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">factor</span>.<span class="ident">is_complex</span>() <span class="op">||</span> <span class="self">self</span>.<span class="ident">domain</span>() <span class="op">!=</span> <span class="ident">factor</span>.<span class="ident">domain</span>() {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ErrorReason</span>::<span class="ident">InputMetaDataMustAgree</span>);
         }
 
@@ -575,7 +664,7 @@
         <span class="kw">let</span> <span class="ident">array</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
         <span class="kw">let</span> (<span class="ident">scalar_left</span>, <span class="ident">scalar_right</span>, <span class="ident">vectorization_length</span>) <span class="op">=</span>
             <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">calc_data_alignment_reqs</span>(<span class="kw-2">&amp;</span><span class="ident">array</span>[<span class="number">0</span>..<span class="ident">data_length</span>]);
-        <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="ident">factor</span>.<span class="ident">data</span>.<span class="ident">to_slice</span>();
+        <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">factor</span>[..];
         <span class="kw">let</span> <span class="ident">chunks</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">vectorization_length</span> <span class="op">&gt;</span> <span class="number">0</span> {
             <span class="ident">Chunk</span>::<span class="ident">get_a_fold_b</span>(<span class="ident">Complexity</span>::<span class="ident">Small</span>,
                                 <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">multicore_settings</span>,
@@ -586,7 +675,7 @@
                                 <span class="op">|</span><span class="ident">original</span>, <span class="ident">range</span>, <span class="ident">target</span><span class="op">|</span> {
                 <span class="kw">let</span> <span class="ident">original</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">array_to_regs</span>(<span class="kw-2">&amp;</span><span class="ident">original</span>[<span class="ident">range</span>]);
                 <span class="kw">let</span> <span class="ident">target</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">array_to_regs</span>(<span class="kw-2">&amp;</span><span class="ident">target</span>[..]);
-                <span class="ident">kahan_sum</span>(<span class="ident">original</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">target</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span><span class="ident">a</span>.<span class="number">0</span>.<span class="ident">mul_complex</span>(<span class="kw-2">*</span><span class="ident">a</span>.<span class="number">1</span>))).<span class="ident">sum_complex</span>()
+                <span class="ident">kahan_sum</span>(<span class="ident">original</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">target</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="number">0</span>.<span class="ident">mul_complex</span>(<span class="kw-2">*</span><span class="ident">a</span>.<span class="number">1</span>))).<span class="ident">sum_complex</span>()
             })
         } <span class="kw">else</span> {
             <span class="ident">InlineVector</span>::<span class="ident">empty</span>()
@@ -609,12 +698,70 @@
             <span class="ident">i</span> <span class="op">+=</span> <span class="number">2</span>;
         }
 
-        <span class="kw">let</span> <span class="ident">chunk_sum</span>: <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..]).<span class="ident">iter</span>()
+        <span class="kw">let</span> <span class="ident">chunk_sum</span>: <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="ident">chunks</span>[..])
+            .<span class="ident">iter</span>()
             .<span class="ident">fold</span>(<span class="ident">Complex</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="ident">T</span>::<span class="ident">zero</span>(), <span class="ident">T</span>::<span class="ident">zero</span>()), <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">+</span> <span class="ident">b</span>);
         <span class="prelude-val">Ok</span>(<span class="ident">chunk_sum</span> <span class="op">+</span> <span class="ident">sum</span>)
     }
 }
-</pre>
+
+<span class="comment">// The test cases for dot product check mainly that the compiler accepts certain combinations of vectors</span>
+<span class="comment">// and less about the result of the dot product.</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="kw">super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use</span> <span class="ident">num_complex</span>::<span class="ident">Complex32</span>;
+    
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">real_and_real</span>() {
+        <span class="kw">let</span> <span class="ident">vec1</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>];
+        <span class="kw">let</span> <span class="ident">vec2</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>];
+        <span class="kw">let</span> <span class="ident">dsp1</span> <span class="op">=</span> <span class="ident">vec1</span>.<span class="ident">to_real_time_vec</span>();
+        <span class="kw">let</span> <span class="ident">dsp2</span> <span class="op">=</span> <span class="ident">vec2</span>.<span class="ident">to_real_time_vec</span>();
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">dsp1</span>.<span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="ident">dsp2</span>).<span class="ident">unwrap</span>();
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">res</span>, <span class="number">14.0</span>);
+    }
+    
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">real_and_gen</span>() {
+        <span class="kw">let</span> <span class="ident">vec1</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>];
+        <span class="kw">let</span> <span class="ident">vec2</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>];
+        <span class="kw">let</span> <span class="ident">dsp1</span> <span class="op">=</span> <span class="ident">vec1</span>.<span class="ident">to_real_time_vec</span>();
+        <span class="kw">let</span> <span class="ident">dsp2</span> <span class="op">=</span> <span class="ident">vec2</span>.<span class="ident">to_gen_dsp_vec</span>(<span class="bool-val">false</span>, <span class="ident">DataDomain</span>::<span class="ident">Time</span>);
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">dsp1</span>.<span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="ident">dsp2</span>).<span class="ident">unwrap</span>();
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">res</span>, <span class="number">14.0</span>);
+    }
+    
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">complex_and_complex</span>() {
+        <span class="kw">let</span> <span class="ident">vec1</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">3.0</span>, <span class="number">0.0</span>];
+        <span class="kw">let</span> <span class="ident">vec2</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">3.0</span>, <span class="number">0.0</span>];
+        <span class="kw">let</span> <span class="ident">dsp1</span> <span class="op">=</span> <span class="ident">vec1</span>.<span class="ident">to_complex_time_vec</span>();
+        <span class="kw">let</span> <span class="ident">dsp2</span> <span class="op">=</span> <span class="ident">vec2</span>.<span class="ident">to_complex_time_vec</span>();
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">dsp1</span>.<span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="ident">dsp2</span>).<span class="ident">unwrap</span>();
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">res</span>, <span class="ident">Complex32</span>::<span class="ident">new</span>(<span class="number">10.0</span>, <span class="number">0.0</span>));
+    }
+    
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">complex_and_gen</span>() {
+        <span class="kw">let</span> <span class="ident">vec1</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">3.0</span>, <span class="number">0.0</span>];
+        <span class="kw">let</span> <span class="ident">vec2</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">3.0</span>, <span class="number">0.0</span>];
+        <span class="kw">let</span> <span class="ident">dsp1</span> <span class="op">=</span> <span class="ident">vec1</span>.<span class="ident">to_complex_time_vec</span>();
+        <span class="kw">let</span> <span class="ident">dsp2</span> <span class="op">=</span> <span class="ident">vec2</span>.<span class="ident">to_gen_dsp_vec</span>(<span class="bool-val">true</span>, <span class="ident">DataDomain</span>::<span class="ident">Time</span>);
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">dsp1</span>.<span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="ident">dsp2</span>).<span class="ident">unwrap</span>();
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">res</span>, <span class="ident">Complex32</span>::<span class="ident">new</span>(<span class="number">10.0</span>, <span class="number">0.0</span>));
+    }
+    
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">freq_and_freq</span>() {
+        <span class="kw">let</span> <span class="ident">vec1</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">3.0</span>, <span class="number">0.0</span>];
+        <span class="kw">let</span> <span class="ident">vec2</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">3.0</span>, <span class="number">0.0</span>];
+        <span class="kw">let</span> <span class="ident">dsp1</span> <span class="op">=</span> <span class="ident">vec1</span>.<span class="ident">to_complex_freq_vec</span>();
+        <span class="kw">let</span> <span class="ident">dsp2</span> <span class="op">=</span> <span class="ident">vec2</span>.<span class="ident">to_complex_freq_vec</span>();
+        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">dsp1</span>.<span class="ident">dot_product</span>(<span class="kw-2">&amp;</span><span class="ident">dsp2</span>).<span class="ident">unwrap</span>();
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">res</span>, <span class="ident">Complex32</span>::<span class="ident">new</span>(<span class="number">10.0</span>, <span class="number">0.0</span>));
+    }
+}</pre>
 </section>
     <section id='search' class="content hidden"></section>
 

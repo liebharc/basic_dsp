@@ -309,10 +309,12 @@
 <span id="264">264</span>
 <span id="265">265</span>
 <span id="266">266</span>
+<span id="267">267</span>
 </pre><pre class="rust ">
-<span class="kw">use</span> <span class="ident">RealNumber</span>;
+<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">result</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{<span class="ident">ToSlice</span>, <span class="ident">ToSliceMut</span>, <span class="ident">Owner</span>, <span class="ident">NumberSpace</span>, <span class="ident">Domain</span>, <span class="ident">RealOrComplexData</span>,
+<span class="kw">use</span> <span class="ident">inline_vector</span>::<span class="ident">InlineVector</span>;
+<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{<span class="ident">ToSlice</span>, <span class="ident">ToSliceMut</span>, <span class="ident">NumberSpace</span>, <span class="ident">Domain</span>, <span class="ident">RealOrComplexData</span>,
                    <span class="ident">TimeOrFrequencyData</span>, <span class="ident">DspVec</span>, <span class="ident">ErrorReason</span>, <span class="ident">RededicateForceOps</span>, <span class="ident">Buffer</span>};
 
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">generic_vector_from_any_vector</span>, <span class="ident">Identifier</span>, <span class="ident">PreparedOperation1</span>, <span class="ident">PreparedOperation2</span>,
@@ -358,12 +360,12 @@
 
 <span class="doccomment">/// Creates a new multi operation for one vectors.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">multi_ops1</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NI</span>, <span class="ident">DI</span><span class="op">&gt;</span>(<span class="ident">vector</span>: <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NI</span>, <span class="ident">DI</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">MultiOperation1</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NI</span>, <span class="ident">DI</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Owner</span>,
+    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
           <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NI</span>, <span class="ident">DI</span><span class="op">&gt;</span>: <span class="ident">RededicateForceOps</span><span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>,
                                                           <span class="ident">T</span>,
                                                           <span class="ident">RealOrComplexData</span>,
                                                           <span class="ident">TimeOrFrequencyData</span><span class="op">&gt;&gt;</span>,
-          <span class="ident">T</span>: <span class="ident">RealNumber</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+          <span class="ident">T</span>: <span class="ident">RealNumber</span>,
           <span class="ident">NI</span>: <span class="ident">NumberSpace</span>,
           <span class="ident">DI</span>: <span class="ident">Domain</span>
 {
@@ -376,7 +378,7 @@
             <span class="ident">domain_in</span>: <span class="ident">gen_domain</span>,
             <span class="ident">number_space_out</span>: <span class="ident">number_space</span>,
             <span class="ident">domain_out</span>: <span class="ident">domain</span>,
-            <span class="ident">ops</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
+            <span class="ident">ops</span>: <span class="ident">InlineVector</span>::<span class="ident">with_default_capcacity</span>(),
         };
     <span class="ident">MultiOperation1</span> {
         <span class="ident">a</span>: <span class="ident">a</span>,
@@ -389,7 +391,7 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">multi_ops2</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NI1</span>, <span class="ident">DI1</span>, <span class="ident">NI2</span>, <span class="ident">DI2</span><span class="op">&gt;</span>(<span class="ident">a</span>: <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NI1</span>, <span class="ident">DI1</span><span class="op">&gt;</span>,
                                             <span class="ident">b</span>: <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NI2</span>, <span class="ident">DI2</span><span class="op">&gt;</span>)
                                             <span class="op">-&gt;</span> <span class="ident">MultiOperation2</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NI1</span>, <span class="ident">DI1</span>, <span class="ident">NI2</span>, <span class="ident">DI2</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Owner</span>,
+    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
           <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NI1</span>, <span class="ident">DI1</span><span class="op">&gt;</span>: <span class="ident">RededicateForceOps</span><span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>,
                                                             <span class="ident">T</span>,
                                                             <span class="ident">RealOrComplexData</span>,
@@ -398,7 +400,7 @@
                                                             <span class="ident">T</span>,
                                                             <span class="ident">RealOrComplexData</span>,
                                                             <span class="ident">TimeOrFrequencyData</span><span class="op">&gt;&gt;</span>,
-          <span class="ident">T</span>: <span class="ident">RealNumber</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+          <span class="ident">T</span>: <span class="ident">RealNumber</span>,
           <span class="ident">NI1</span>: <span class="ident">NumberSpace</span>,
           <span class="ident">DI1</span>: <span class="ident">Domain</span>,
           <span class="ident">NI2</span>: <span class="ident">NumberSpace</span>,
@@ -427,7 +429,7 @@
         <span class="ident">domain_out1</span>: <span class="ident">domain1</span>,
         <span class="ident">number_space_out2</span>: <span class="ident">number_space2</span>,
         <span class="ident">domain_out2</span>: <span class="ident">domain2</span>,
-        <span class="ident">ops</span>: <span class="ident">Vec</span>::<span class="ident">new</span>(),
+        <span class="ident">ops</span>: <span class="ident">InlineVector</span>::<span class="ident">with_default_capcacity</span>(),
         <span class="ident">swap</span>: <span class="bool-val">false</span>,
     };
     <span class="ident">MultiOperation2</span> {
@@ -441,12 +443,12 @@
 <span class="doccomment">/// vectors. A call to `get` then runs all recorded operations on the vectors</span>
 <span class="doccomment">/// and returns them. See the modules description for why this can be beneficial.</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span> <span class="ident">MultiOperation1</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Owner</span>,
+    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
           <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span>: <span class="ident">RededicateForceOps</span><span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>,
                                                           <span class="ident">T</span>,
                                                           <span class="ident">RealOrComplexData</span>,
                                                           <span class="ident">TimeOrFrequencyData</span><span class="op">&gt;&gt;</span>,
-          <span class="ident">T</span>: <span class="ident">RealNumber</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+          <span class="ident">T</span>: <span class="ident">RealNumber</span>,
           <span class="ident">NO</span>: <span class="ident">NumberSpace</span>,
           <span class="ident">DO</span>: <span class="ident">Domain</span>
 {
@@ -487,7 +489,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>,
                   <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>)
                   <span class="op">-&gt;</span> <span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span>, (<span class="ident">ErrorReason</span>, <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NO</span>, <span class="ident">DO</span><span class="op">&gt;</span>)<span class="op">&gt;</span>
-        <span class="kw">where</span> <span class="ident">B</span>: <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
+        <span class="kw">where</span> <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
     {
         <span class="self">self</span>.<span class="ident">prepared_ops</span>.<span class="ident">exec</span>(<span class="ident">buffer</span>, <span class="self">self</span>.<span class="ident">a</span>)
     }
@@ -521,7 +523,7 @@
 <span class="doccomment">/// vectors. A call to `get` then runs all recorded operations on the vectors</span>
 <span class="doccomment">/// and returns them. See the modules description for why this can be beneficial.</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NO1</span>, <span class="ident">DO1</span>, <span class="ident">NO2</span>, <span class="ident">DO2</span><span class="op">&gt;</span> <span class="ident">MultiOperation2</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NO1</span>, <span class="ident">DO1</span>, <span class="ident">NO2</span>, <span class="ident">DO2</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Owner</span>,
+    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
           <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NO1</span>, <span class="ident">DO1</span><span class="op">&gt;</span>: <span class="ident">RededicateForceOps</span><span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>,
                                                             <span class="ident">T</span>,
                                                             <span class="ident">RealOrComplexData</span>,
@@ -530,7 +532,7 @@
                                                             <span class="ident">T</span>,
                                                             <span class="ident">RealOrComplexData</span>,
                                                             <span class="ident">TimeOrFrequencyData</span><span class="op">&gt;&gt;</span>,
-          <span class="ident">T</span>: <span class="ident">RealNumber</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+          <span class="ident">T</span>: <span class="ident">RealNumber</span>,
           <span class="ident">NO1</span>: <span class="ident">NumberSpace</span>,
           <span class="ident">DO1</span>: <span class="ident">Domain</span>,
           <span class="ident">NO2</span>: <span class="ident">NumberSpace</span>,
@@ -541,7 +543,7 @@
                   <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>)
                   <span class="op">-&gt;</span> <span class="ident">result</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NO1</span>, <span class="ident">DO1</span><span class="op">&gt;</span>, <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NO2</span>, <span class="ident">DO2</span><span class="op">&gt;</span>),
                                     (<span class="ident">ErrorReason</span>, <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NO1</span>, <span class="ident">DO1</span><span class="op">&gt;</span>, <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NO2</span>, <span class="ident">DO2</span><span class="op">&gt;</span>)<span class="op">&gt;</span>
-        <span class="kw">where</span> <span class="ident">B</span>: <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
+        <span class="kw">where</span> <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
     {
         <span class="self">self</span>.<span class="ident">prepared_ops</span>.<span class="ident">exec</span>(<span class="ident">buffer</span>, <span class="self">self</span>.<span class="ident">a</span>, <span class="self">self</span>.<span class="ident">b</span>)
     }

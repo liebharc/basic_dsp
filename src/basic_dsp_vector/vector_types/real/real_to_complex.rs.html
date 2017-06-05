@@ -140,11 +140,12 @@
 <span id="95">95</span>
 <span id="96">96</span>
 <span id="97">97</span>
+<span id="98">98</span>
 </pre><pre class="rust ">
-<span class="kw">use</span> <span class="ident">RealNumber</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{<span class="ident">Owner</span>, <span class="ident">ToComplexResult</span>, <span class="ident">TransRes</span>, <span class="ident">Buffer</span>, <span class="ident">InsertZerosOps</span>,
-                   <span class="ident">InsertZerosOpsBuffered</span>, <span class="ident">DspVec</span>, <span class="ident">ToSliceMut</span>, <span class="ident">MetaData</span>, <span class="ident">Domain</span>, <span class="ident">RealNumberSpace</span>,
-                   <span class="ident">RededicateForceOps</span>, <span class="ident">ErrorReason</span>};
+<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{<span class="ident">ToComplexResult</span>, <span class="ident">TransRes</span>, <span class="ident">Buffer</span>, <span class="ident">InsertZerosOps</span>, <span class="ident">InsertZerosOpsBuffered</span>,
+                   <span class="ident">DspVec</span>, <span class="ident">ToSliceMut</span>, <span class="ident">MetaData</span>, <span class="ident">Domain</span>, <span class="ident">RealNumberSpace</span>, <span class="ident">RededicateForceOps</span>,
+                   <span class="ident">ErrorReason</span>};
 
 <span class="doccomment">/// Defines transformations from real to complex number space.</span>
 <span class="doccomment">///</span>
@@ -188,14 +189,15 @@
     <span class="doccomment">/// let result = vector.to_complex_b(&amp;mut buffer);</span>
     <span class="doccomment">/// assert_eq!([1.0, 0.0, 2.0, 0.0], result[..]);</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">fn</span> <span class="ident">to_complex_b</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">ComplexResult</span> <span class="kw">where</span> <span class="ident">B</span>: <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">to_complex_b</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">ComplexResult</span>
+        <span class="kw">where</span> <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">RealToComplexTransformsOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
     <span class="kw">where</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>: <span class="ident">ToComplexResult</span> <span class="op">+</span> <span class="ident">InsertZerosOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
           <span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">ToComplexResult</span><span class="op">&gt;</span>::<span class="ident">ComplexResult</span>:
             <span class="ident">RededicateForceOps</span><span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;&gt;</span>,
-          <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Owner</span>,
+          <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
           <span class="ident">T</span>: <span class="ident">RealNumber</span>,
           <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
           <span class="ident">D</span>: <span class="ident">Domain</span> {
@@ -222,12 +224,12 @@
     <span class="kw">where</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>: <span class="ident">ToComplexResult</span> <span class="op">+</span> <span class="ident">InsertZerosOpsBuffered</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>,
           <span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">ToComplexResult</span><span class="op">&gt;</span>::<span class="ident">ComplexResult</span>:
             <span class="ident">RededicateForceOps</span><span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;&gt;</span>,
-          <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Owner</span>,
+          <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
           <span class="ident">T</span>: <span class="ident">RealNumber</span>,
           <span class="ident">N</span>: <span class="ident">RealNumberSpace</span>,
           <span class="ident">D</span>: <span class="ident">Domain</span> {
       <span class="kw">fn</span> <span class="ident">to_complex_b</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">ComplexResult</span>
-          <span class="kw">where</span> <span class="ident">B</span>: <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+          <span class="kw">where</span> <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> {
           <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_complex</span>() {
               <span class="self">self</span>.<span class="ident">number_space</span>.<span class="ident">to_complex</span>();
               <span class="self">self</span>.<span class="ident">valid_len</span> <span class="op">=</span> <span class="number">0</span>;

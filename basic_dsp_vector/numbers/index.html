@@ -48,9 +48,8 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../../src/basic_dsp_vector/lib.rs.html#65-87' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p>Traits from the <code>num</code> crate which are used inside <code>basic_dsp</code>. In future
-the <code>RealNumber</code> and <code>Zero</code> trait will likely be found here too.</p>
+               </span><a class='srclink' href='../../src/basic_dsp_vector/lib.rs.html#83-151' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Traits from the <code>num</code> crate which are used inside <code>basic_dsp</code> and extensions to those traits.</p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                        <tr class=' module-item'>
@@ -92,6 +91,31 @@ a must implement the <code>RealNumber</code>.</p>
                                   title='trait basic_dsp_vector::numbers::One'>One</a></td>
                            <td class='docblock-short'>
                                 <p>Defines a multiplicative identity element for <code>Self</code>.</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="trait" href="trait.RealNumber.html"
+                                  title='trait basic_dsp_vector::numbers::RealNumber'>RealNumber</a></td>
+                           <td class='docblock-short'>
+                                <p>A real floating pointer number intended to abstract over <code>f32</code> and <code>f64</code>.</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="trait" href="trait.ToSimd.html"
+                                  title='trait basic_dsp_vector::numbers::ToSimd'>ToSimd</a></td>
+                           <td class='docblock-short'>
+                                <p>Associates a number type with a SIMD register type.</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="trait" href="trait.Zero.html"
+                                  title='trait basic_dsp_vector::numbers::Zero'>Zero</a></td>
+                           <td class='docblock-short'>
+                                <p>This trait is necessary so that we can define zero for types outside this crate.
+It calls the <code>num_traits::Zero</code> trait where possible.</p>
 
                            </td>
                        </tr></table></section>

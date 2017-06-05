@@ -102,10 +102,10 @@
 <span id="57">57</span>
 <span id="58">58</span>
 </pre><pre class="rust ">
-<span class="kw">use</span> {<span class="ident">RealNumber</span>, <span class="ident">array_to_complex_mut</span>};
+<span class="kw">use</span> <span class="ident">array_to_complex_mut</span>;
 <span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{<span class="ident">Owner</span>, <span class="ident">ToFreqResult</span>, <span class="ident">TimeDomain</span>, <span class="ident">MetaData</span>, <span class="ident">DspVec</span>,
-                   <span class="ident">ToSliceMut</span>, <span class="ident">NumberSpace</span>, <span class="ident">RededicateForceOps</span>};
+<span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{<span class="ident">ToFreqResult</span>, <span class="ident">TimeDomain</span>, <span class="ident">MetaData</span>, <span class="ident">DspVec</span>, <span class="ident">ToSliceMut</span>, <span class="ident">NumberSpace</span>,
+                   <span class="ident">RededicateForceOps</span>};
 <span class="kw">use</span> <span class="ident">window_functions</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// Defines all operations which are valid on `DataVecs` containing time domain data.</span>
@@ -125,7 +125,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">TimeDomainOperations</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
     <span class="kw">where</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>: <span class="ident">ToFreqResult</span>,
           <span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">ToFreqResult</span><span class="op">&gt;</span>::<span class="ident">FreqResult</span>: <span class="ident">RededicateForceOps</span><span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;&gt;</span>,
-          <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Owner</span>,
+          <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
           <span class="ident">T</span>: <span class="ident">RealNumber</span>,
           <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
           <span class="ident">D</span>: <span class="ident">TimeDomain</span>

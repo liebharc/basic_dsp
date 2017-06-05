@@ -48,7 +48,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/general/precise_stats.rs.html#106-110' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/general/precise_stats.rs.html#113-117' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait PreciseStats&lt;T&gt;: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a> {
     fn <a href='#tymethod.add_prec' class='fnname'>add_prec</a>(&amp;mut self, elem: T, index: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, sumc: &amp;mut T, rmsc: &amp;mut T);
 }</pre><div class='docblock'><p>A trait for statistics which allows to add new values in a way so that the numerical
@@ -61,8 +61,8 @@ described here: https://en.wikipedia.org/wiki/Kahan_summation_algorithm</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;T&gt; PreciseStats&lt;T&gt; for <a class="struct" href="../basic_dsp_vector/struct.Statistics.html" title="struct basic_dsp_vector::Statistics">Statistics</a>&lt;T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,&nbsp;</span></code></li>
-<li><code>impl&lt;T&gt; PreciseStats&lt;<a class="struct" href="../basic_dsp_vector/numbers/struct.Complex.html" title="struct basic_dsp_vector::numbers::Complex">Complex</a>&lt;T&gt;&gt; for <a class="struct" href="../basic_dsp_vector/struct.Statistics.html" title="struct basic_dsp_vector::Statistics">Statistics</a>&lt;<a class="struct" href="../basic_dsp_vector/numbers/struct.Complex.html" title="struct basic_dsp_vector::numbers::Complex">Complex</a>&lt;T&gt;&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,&nbsp;</span></code></li>
+    <li><code>impl&lt;T&gt; PreciseStats&lt;T&gt; for <a class="struct" href="../basic_dsp_vector/struct.Statistics.html" title="struct basic_dsp_vector::Statistics">Statistics</a>&lt;T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/numbers/trait.RealNumber.html" title="trait basic_dsp_vector::numbers::RealNumber">RealNumber</a>,&nbsp;</span></code></li>
+<li><code>impl&lt;T&gt; PreciseStats&lt;<a class="struct" href="../basic_dsp_vector/numbers/struct.Complex.html" title="struct basic_dsp_vector::numbers::Complex">Complex</a>&lt;T&gt;&gt; for <a class="struct" href="../basic_dsp_vector/struct.Statistics.html" title="struct basic_dsp_vector::Statistics">Statistics</a>&lt;<a class="struct" href="../basic_dsp_vector/numbers/struct.Complex.html" title="struct basic_dsp_vector::numbers::Complex">Complex</a>&lt;T&gt;&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/numbers/trait.RealNumber.html" title="trait basic_dsp_vector::numbers::RealNumber">RealNumber</a>,&nbsp;</span></code></li>
 </ul><script type="text/javascript" async
                          src="../implementors/basic_dsp_vector/trait.PreciseStats.js">
                  </script></section>

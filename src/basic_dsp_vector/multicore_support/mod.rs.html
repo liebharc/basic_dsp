@@ -66,7 +66,27 @@
 <span id="21">21</span>
 <span id="22">22</span>
 <span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
 </pre><pre class="rust ">
+<span class="doccomment">//! Abstraction of threading. If the vector becomes large then the lib will start  </span>
+<span class="doccomment">//! to spawn worker threads to perform the calculation. Since spawning threads</span>
+<span class="doccomment">//! for tiny tasks like isn&#39;t very benificial users might want to implement their</span>
+<span class="doccomment">//! algorithm in a multi-threaded design and deactivate threading this &quot;auto-threading&quot;</span>
+<span class="doccomment">//! behaviour. The `MultiCoreSettings` mechanism allows to do that on a fine grained level.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! If compiled without the `std` feature then only the `no_threading` implementation</span>
+<span class="doccomment">//! will be used which just implements single threaded loops. We then rely on the Rust</span>
+<span class="doccomment">//! compiler to remove the overhead of this implementation - and it seems to do that</span>
+<span class="doccomment">//! very well.</span>
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span><span class="op">=</span><span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">mod</span> <span class="ident">threading</span>;

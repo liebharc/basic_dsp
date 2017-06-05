@@ -48,30 +48,29 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/buffer.rs.html#11-32' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait Buffer&lt;S, T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../basic_dsp_vector/trait.ToSliceMut.html" title="trait basic_dsp_vector::ToSliceMut">ToSliceMut</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,&nbsp;</span>{
-    fn <a href='#tymethod.get' class='fnname'>get</a>(&amp;mut self, len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; S;
-    fn <a href='#tymethod.construct_new' class='fnname'>construct_new</a>(&amp;mut self, len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; S;
-    fn <a href='#tymethod.free' class='fnname'>free</a>(&amp;mut self, storage: S);
+               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/buffer.rs.html#17-30' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait Buffer&lt;'a, S, T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../basic_dsp_vector/trait.ToSliceMut.html" title="trait basic_dsp_vector::ToSliceMut">ToSliceMut</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/numbers/trait.RealNumber.html" title="trait basic_dsp_vector::numbers::RealNumber">RealNumber</a>,&nbsp;</span>{
+    type <a href='#associatedtype.Borrow' class="type">Borrow</a>: <a class="trait" href="../basic_dsp_vector/trait.BufferBorrow.html" title="trait basic_dsp_vector::BufferBorrow">BufferBorrow</a>&lt;S, T&gt;;
+    fn <a href='#tymethod.borrow' class='fnname'>borrow</a>(&amp;'a mut self, len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Self::<a class="trait" href="../basic_dsp_vector/trait.Buffer.html" title="trait basic_dsp_vector::Buffer">Borrow</a>;
     fn <a href='#tymethod.alloc_len' class='fnname'>alloc_len</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
 }</pre><div class='docblock'><p>A buffer which can be used by other types. Types will call buffers to create new arrays.
 A buffer may can implement any buffering strategy.</p>
 </div>
+            <h2 id='associated-types'>Associated Types</h2>
+            <div class='methods'>
+        <h3 id='associatedtype.Borrow' class='method'><span id='Borrow.t' class='invisible'><code>type <a href='#associatedtype.Borrow' class="type">Borrow</a>: <a class="trait" href="../basic_dsp_vector/trait.BufferBorrow.html" title="trait basic_dsp_vector::BufferBorrow">BufferBorrow</a>&lt;S, T&gt;</code></span></h3><div class='docblock'><p>The type of the burrow which is returned.</p>
+</div></div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.get' class='method'><span id='get.v' class='invisible'><code>fn <a href='#tymethod.get' class='fnname'>get</a>(&amp;mut self, len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; S</code></span></h3><div class='docblock'><p>Asks the buffer for new storage.
-<code>len</code> is the minimum size the storage needs to provide.
-S doesn't need to have be initialized with any default value.</p>
-</div><h3 id='tymethod.construct_new' class='method'><span id='construct_new.v' class='invisible'><code>fn <a href='#tymethod.construct_new' class='fnname'>construct_new</a>(&amp;mut self, len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; S</code></span></h3><div class='docblock'><p>Asks the buffer for newly created storage which isn't buffered.</p>
-<p>The purpose if this method is to abstract the creation of a
-certain storage type.</p>
-</div><h3 id='tymethod.free' class='method'><span id='free.v' class='invisible'><code>fn <a href='#tymethod.free' class='fnname'>free</a>(&amp;mut self, storage: S)</code></span></h3><div class='docblock'><p>Returns a storage to the buffer. The buffer isn't required to free it and might just
-reuse the storage.</p>
+        <h3 id='tymethod.borrow' class='method'><span id='borrow.v' class='invisible'><code>fn <a href='#tymethod.borrow' class='fnname'>borrow</a>(&amp;'a mut self, len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Self::<a class="trait" href="../basic_dsp_vector/trait.Buffer.html" title="trait basic_dsp_vector::Buffer">Borrow</a></code></span></h3><div class='docblock'><p>Asks the buffer for new storage of exactly size <code>len</code>.
+The returned array doesn't need to have be initialized with any default value.</p>
 </div><h3 id='tymethod.alloc_len' class='method'><span id='alloc_len.v' class='invisible'><code>fn <a href='#tymethod.alloc_len' class='fnname'>alloc_len</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span></h3><div class='docblock'><p>Returns the allocated length of all storage within this buffer.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;T&gt; Buffer&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html" title="struct collections::vec::Vec">Vec</a>&lt;T&gt;, T&gt; for <a class="struct" href="../basic_dsp_vector/struct.SingleBuffer.html" title="struct basic_dsp_vector::SingleBuffer">SingleBuffer</a>&lt;T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/trait.RealNumber.html" title="trait basic_dsp_vector::RealNumber">RealNumber</a>,&nbsp;</span></code></li>
+    <li><code>impl&lt;'a, S, T&gt; Buffer&lt;'a, S, T&gt; for <a class="struct" href="../basic_dsp_vector/struct.FixedLenBuffer.html" title="struct basic_dsp_vector::FixedLenBuffer">FixedLenBuffer</a>&lt;S, T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../basic_dsp_vector/trait.ToSliceMut.html" title="trait basic_dsp_vector::ToSliceMut">ToSliceMut</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/numbers/trait.RealNumber.html" title="trait basic_dsp_vector::numbers::RealNumber">RealNumber</a> + 'a,&nbsp;</span></code></li>
+<li><code>impl&lt;'a, T&gt; Buffer&lt;'a, <a class="struct" href="https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html" title="struct collections::vec::Vec">Vec</a>&lt;T&gt;, T&gt; for <a class="struct" href="../basic_dsp_vector/struct.SingleBuffer.html" title="struct basic_dsp_vector::SingleBuffer">SingleBuffer</a>&lt;T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/numbers/trait.RealNumber.html" title="trait basic_dsp_vector::numbers::RealNumber">RealNumber</a> + 'a,&nbsp;</span></code></li>
+<li><code>impl&lt;'a, T&gt; Buffer&lt;'a, <a class="struct" href="https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html" title="struct collections::vec::Vec">Vec</a>&lt;T&gt;, T&gt; for <a class="struct" href="../basic_dsp_vector/struct.NoBuffer.html" title="struct basic_dsp_vector::NoBuffer">NoBuffer</a> <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/numbers/trait.RealNumber.html" title="trait basic_dsp_vector::numbers::RealNumber">RealNumber</a>,&nbsp;</span></code></li>
 </ul><script type="text/javascript" async
                          src="../implementors/basic_dsp_vector/trait.Buffer.js">
                  </script></section>

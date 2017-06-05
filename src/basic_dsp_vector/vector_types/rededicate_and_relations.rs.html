@@ -358,12 +358,24 @@
 <span id="313">313</span>
 <span id="314">314</span>
 <span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! Specifies the conversions between data types.</span>
-<span class="kw">use</span> <span class="ident">RealNumber</span>;
+<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">DspVec</span>, <span class="ident">GenDspVec</span>, <span class="ident">MetaData</span>, <span class="ident">RealTimeVec</span>, <span class="ident">RealFreqVec</span>, <span class="ident">ResizeOps</span>, <span class="ident">ComplexTimeVec</span>,
             <span class="ident">ComplexFreqVec</span>, <span class="ident">ToSlice</span>, <span class="ident">NumberSpace</span>, <span class="ident">Domain</span>, <span class="ident">DataDomain</span>, <span class="ident">RealData</span>, <span class="ident">ComplexData</span>,
-            <span class="ident">RealOrComplexData</span>, <span class="ident">TimeData</span>, <span class="ident">FrequencyData</span>, <span class="ident">TimeOrFrequencyData</span>};
+            <span class="ident">RealOrComplexData</span>, <span class="ident">TimeData</span>, <span class="ident">FrequencyData</span>, <span class="ident">TimeOrFrequencyData</span>, <span class="ident">Vector</span>};
 
 <span class="doccomment">/// This trait allows to change a data type. The operations will</span>
 <span class="doccomment">/// convert a type to a different one and set `self.len()` to zero.</span>
@@ -372,7 +384,9 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// If a type should always be converted without any checks then the `RededicateForceOps`</span>
 <span class="doccomment">/// trait provides option for that.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RededicateOps</span><span class="op">&lt;</span><span class="ident">Other</span><span class="op">&gt;</span>: <span class="ident">RededicateForceOps</span><span class="op">&lt;</span><span class="ident">Other</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RededicateOps</span><span class="op">&lt;</span><span class="ident">Other</span><span class="op">&gt;</span>: <span class="ident">RededicateForceOps</span><span class="op">&lt;</span><span class="ident">Other</span><span class="op">&gt;</span>
+    <span class="kw">where</span> <span class="ident">Other</span>: <span class="ident">MetaData</span>
+{
     <span class="doccomment">/// Make `Other` a `Self`.</span>
     <span class="doccomment">/// # Example</span>
     <span class="doccomment">///</span>
@@ -412,8 +426,10 @@
 <span class="doccomment">/// convert a type to a different one and set `self.len()` to zero.</span>
 <span class="doccomment">/// However `self.allocated_len()` will remain unchanged. The use case for this</span>
 <span class="doccomment">/// is to allow to reuse the memory of a vector for different operations.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RededicateToOps</span><span class="op">&lt;</span><span class="ident">Other</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// Make `Selfr` a `SelOther`.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RededicateToOps</span><span class="op">&lt;</span><span class="ident">Other</span><span class="op">&gt;</span>
+    <span class="kw">where</span> <span class="ident">Other</span>: <span class="ident">MetaData</span>
+{
+    <span class="doccomment">/// Converts `Self` inot `Other`.</span>
     <span class="kw">fn</span> <span class="ident">rededicate</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Other</span>;
 }
 
@@ -652,11 +668,15 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">U</span>, <span class="ident">V</span><span class="op">&gt;</span> <span class="ident">RededicateOps</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">V</span>
-    <span class="kw">where</span> <span class="ident">V</span>: <span class="ident">RededicateForceOps</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">MetaData</span> <span class="op">+</span> <span class="ident">ResizeOps</span>,
-          <span class="ident">U</span>: <span class="ident">MetaData</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="ident">RededicateOps</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
+    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+          <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+          <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>: <span class="ident">RededicateForceOps</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span>,
+          <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
+          <span class="ident">D</span>: <span class="ident">Domain</span>,
+          <span class="ident">O</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
 {
-    <span class="kw">fn</span> <span class="ident">rededicate_from</span>(<span class="ident">origin</span>: <span class="ident">U</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">rededicate_from</span>(<span class="ident">origin</span>: <span class="ident">O</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">is_complex</span> <span class="op">=</span> <span class="ident">origin</span>.<span class="ident">is_complex</span>();
         <span class="kw">let</span> <span class="ident">domain</span> <span class="op">=</span> <span class="ident">origin</span>.<span class="ident">domain</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">rededicate_from_force</span>(<span class="ident">origin</span>);
@@ -667,11 +687,15 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">U</span><span class="op">&gt;</span> <span class="ident">RededicateToOps</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">T</span>
-    <span class="kw">where</span> <span class="ident">U</span>: <span class="ident">RededicateOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span>, <span class="ident">O</span><span class="op">&gt;</span> <span class="ident">RededicateToOps</span><span class="op">&lt;</span><span class="ident">O</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
+    <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSlice</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+          <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+          <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
+          <span class="ident">D</span>: <span class="ident">Domain</span>,
+          <span class="ident">O</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">RededicateOps</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>
 {
-    <span class="kw">fn</span> <span class="ident">rededicate</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">U</span> {
-        <span class="ident">U</span>::<span class="ident">rededicate_from</span>(<span class="self">self</span>)
+    <span class="kw">fn</span> <span class="ident">rededicate</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">O</span> {
+        <span class="ident">O</span>::<span class="ident">rededicate_from</span>(<span class="self">self</span>)
     }
 }
 </pre>

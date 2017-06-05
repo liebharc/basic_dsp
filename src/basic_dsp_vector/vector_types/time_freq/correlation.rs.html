@@ -238,14 +238,29 @@
 <span id="193">193</span>
 <span id="194">194</span>
 <span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
 </pre><pre class="rust ">
-<span class="kw">use</span> <span class="ident">RealNumber</span>;
+<span class="kw">use</span> <span class="ident">numbers</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::{<span class="ident">DspVec</span>, <span class="ident">Buffer</span>, <span class="ident">ComplexOps</span>, <span class="ident">ScaleOps</span>, <span class="ident">FrequencyDomainOperations</span>,
-                   <span class="ident">TimeToFrequencyDomainOperations</span>, <span class="ident">RededicateForceOps</span>, <span class="ident">ToSliceMut</span>, <span class="ident">Owner</span>,
-                   <span class="ident">PaddingOption</span>, <span class="ident">VoidResult</span>, <span class="ident">Vector</span>, <span class="ident">FromVector</span>, <span class="ident">MetaData</span>, <span class="ident">ComplexNumberSpace</span>,
-                   <span class="ident">TimeDomain</span>, <span class="ident">ElementaryOps</span>, <span class="ident">ToFreqResult</span>, <span class="ident">InsertZerosOpsBuffered</span>, <span class="ident">DataDomain</span>,
-                   <span class="ident">ErrorReason</span>, <span class="ident">ReorganizeDataOps</span>, <span class="ident">ToComplexVector</span>, <span class="ident">FrequencyToTimeDomainOperations</span>,
-                   <span class="ident">ToDspVector</span>, <span class="ident">ToTimeResult</span>, <span class="ident">RededicateOps</span>};
+                   <span class="ident">TimeToFrequencyDomainOperations</span>, <span class="ident">ToSliceMut</span>, <span class="ident">GetMetaData</span>, <span class="ident">PaddingOption</span>,
+                   <span class="ident">VoidResult</span>, <span class="ident">Vector</span>, <span class="ident">MetaData</span>, <span class="ident">ComplexNumberSpace</span>, <span class="ident">TimeDomain</span>, <span class="ident">ElementaryOps</span>,
+                   <span class="ident">ToFreqResult</span>, <span class="ident">InsertZerosOpsBuffered</span>, <span class="ident">DataDomain</span>, <span class="ident">ErrorReason</span>,
+                   <span class="ident">ReorganizeDataOps</span>, <span class="ident">ToComplexVector</span>, <span class="ident">FrequencyToTimeDomainOperations</span>,
+                   <span class="ident">NumberSpace</span>, <span class="ident">Domain</span>, <span class="ident">FrequencyDomain</span>, <span class="ident">NoTradeBuffer</span>, <span class="ident">PosEq</span>};
 
 <span class="doccomment">/// Cross-correlation of data vectors. See also https://en.wikipedia.org/wiki/Cross-correlation</span>
 <span class="doccomment">///</span>
@@ -293,98 +308,111 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// 1. Calculate the plain FFT</span>
     <span class="doccomment">/// 2. Calculate the complex conjugate</span>
-    <span class="kw">fn</span> <span class="ident">prepare_argument</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">FreqResult</span> <span class="kw">where</span> <span class="ident">B</span>: <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">prepare_argument</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">FreqResult</span>
+        <span class="kw">where</span> <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Prepares an argument to be used for convolution. The argument is zero padded to</span>
     <span class="doccomment">/// length of `2 * self.points() - 1`</span>
     <span class="doccomment">/// and then the same operations are performed as described for `prepare_argument`.</span>
-    <span class="kw">fn</span> <span class="ident">prepare_argument_padded</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">FreqResult</span> <span class="kw">where</span> <span class="ident">B</span>: <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">prepare_argument_padded</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">FreqResult</span>
+        <span class="kw">where</span> <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// A trait to calculate the cross correlation.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">CrossCorrelationOps</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">A</span><span class="op">&gt;</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">CrossCorrelationOps</span><span class="op">&lt;</span><span class="ident">A</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
     <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-          <span class="ident">T</span>: <span class="ident">RealNumber</span>
+          <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+          <span class="ident">N</span>: <span class="ident">NumberSpace</span>,
+          <span class="ident">D</span>: <span class="ident">Domain</span>,
+          <span class="ident">A</span>: <span class="ident">GetMetaData</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
 {
     <span class="doccomment">/// Calculates the correlation between `self` and `other`. `other`</span>
     <span class="doccomment">/// needs to be a time vector which</span>
     <span class="doccomment">/// went through one of the prepare functions `prepare_argument` or `prepare_argument_padded`.</span>
     <span class="doccomment">/// See also the trait description for more details.</span>
-    <span class="kw">fn</span> <span class="ident">correlate</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">A</span>) <span class="op">-&gt;</span> <span class="ident">VoidResult</span> <span class="kw">where</span> <span class="ident">B</span>: <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">correlate</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">A</span>) <span class="op">-&gt;</span> <span class="ident">VoidResult</span>
+        <span class="kw">where</span> <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">CrossCorrelationArgumentOps</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
 	<span class="kw">where</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>: <span class="ident">ToFreqResult</span>
-        <span class="op">+</span> <span class="ident">TimeToFrequencyDomainOperations</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-        <span class="op">+</span> <span class="ident">ScaleOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-		<span class="op">+</span> <span class="ident">ReorganizeDataOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span>,
-	  <span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">ToFreqResult</span><span class="op">&gt;</span>::<span class="ident">FreqResult</span>: <span class="ident">RededicateForceOps</span><span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;&gt;</span>
-        <span class="op">+</span> <span class="ident">FrequencyDomainOperations</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">ComplexOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-        <span class="op">+</span> <span class="ident">ElementaryOps</span><span class="op">&lt;&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">ToFreqResult</span><span class="op">&gt;</span>::<span class="ident">FreqResult</span><span class="op">&gt;</span>
-        <span class="op">+</span> <span class="ident">FromVector</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Output</span><span class="op">=</span><span class="ident">S</span><span class="op">&gt;</span>,
-	  <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Owner</span>,
+        <span class="op">+</span> <span class="ident">TimeToFrequencyDomainOperations</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>,
+	  <span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">ToFreqResult</span><span class="op">&gt;</span>::<span class="ident">FreqResult</span>: <span class="ident">FrequencyDomainOperations</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
+        <span class="op">+</span> <span class="ident">ComplexOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+	  <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 	  <span class="ident">T</span>: <span class="ident">RealNumber</span>,
 	  <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
 	  <span class="ident">D</span>: <span class="ident">TimeDomain</span> {
 
 	<span class="kw">fn</span> <span class="ident">prepare_argument</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">FreqResult</span>
-	 	<span class="kw">where</span> <span class="ident">B</span>: <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+	 	<span class="kw">where</span> <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">plain_fft</span>(<span class="ident">buffer</span>);
 		<span class="ident">result</span>.<span class="ident">conj</span>();
 		<span class="ident">result</span>
 	}
 
 	<span class="kw">fn</span> <span class="ident">prepare_argument_padded</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">FreqResult</span>
-		<span class="kw">where</span> <span class="ident">B</span>: <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> {
+		<span class="kw">where</span> <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">points</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">points</span>();
-		<span class="self">self</span>.<span class="ident">zero_pad_b</span>(<span class="ident">buffer</span>, <span class="number">2</span> <span class="op">*</span> <span class="ident">points</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">PaddingOption</span>::<span class="ident">Surround</span>);
+		<span class="self">self</span>.<span class="ident">zero_pad_b</span>(<span class="ident">buffer</span>, <span class="number">2</span> <span class="op">*</span> <span class="ident">points</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">PaddingOption</span>::<span class="ident">Surround</span>)
+            .<span class="ident">expect</span>(<span class="string">&quot;zero_pad_b shouldn&#39;t fail since the argument is always larger than the vector&quot;</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">plain_fft</span>(<span class="ident">buffer</span>);
 		<span class="ident">result</span>.<span class="ident">conj</span>();
 		<span class="ident">result</span>
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">CrossCorrelationOps</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">ToFreqResult</span><span class="op">&gt;</span>::<span class="ident">FreqResult</span><span class="op">&gt;</span>
-    <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
-    <span class="kw">where</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>: <span class="ident">ToFreqResult</span>
-        <span class="op">+</span> <span class="ident">TimeToFrequencyDomainOperations</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
-        <span class="op">+</span> <span class="ident">RededicateOps</span><span class="op">&lt;&lt;</span><span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">ToFreqResult</span><span class="op">&gt;</span>::<span class="ident">FreqResult</span> <span class="kw">as</span> <span class="ident">ToTimeResult</span><span class="op">&gt;</span>::<span class="ident">TimeResult</span><span class="op">&gt;</span>
-        <span class="op">+</span> <span class="ident">ScaleOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-		<span class="op">+</span> <span class="ident">ReorganizeDataOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span>,
-	  <span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">ToFreqResult</span><span class="op">&gt;</span>::<span class="ident">FreqResult</span>:
-          <span class="ident">FrequencyDomainOperations</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">ComplexOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-        <span class="op">+</span> <span class="ident">ElementaryOps</span><span class="op">&lt;&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">ToFreqResult</span><span class="op">&gt;</span>::<span class="ident">FreqResult</span><span class="op">&gt;</span>
-        <span class="op">+</span> <span class="ident">FromVector</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Output</span><span class="op">=</span><span class="ident">S</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">FrequencyToTimeDomainOperations</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>,
-	  <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Owner</span> <span class="op">+</span> <span class="ident">ToDspVector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">ToComplexVector</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>,
-	  <span class="ident">T</span>: <span class="ident">RealNumber</span>,
-	  <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
-	  <span class="ident">D</span>: <span class="ident">TimeDomain</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span>, <span class="ident">DF</span>, <span class="ident">O</span>, <span class="ident">NO</span><span class="op">&gt;</span> <span class="ident">CrossCorrelationOps</span><span class="op">&lt;</span><span class="ident">O</span>, <span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">NO</span>, <span class="ident">DF</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>
+    <span class="kw">where</span> <span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span>: <span class="ident">ScaleOps</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+          <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+          <span class="ident">T</span>: <span class="ident">RealNumber</span>,
+          <span class="ident">N</span>: <span class="ident">ComplexNumberSpace</span>,
+          <span class="ident">D</span>: <span class="ident">TimeDomain</span>,
+          <span class="ident">DF</span>: <span class="ident">FrequencyDomain</span>,
+          <span class="ident">O</span>: <span class="ident">Vector</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">GetMetaData</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">NO</span>, <span class="ident">DF</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="ident">RangeFull</span>, <span class="ident">Output</span> <span class="op">=</span> [<span class="ident">T</span>]<span class="op">&gt;</span>,
+          <span class="ident">NO</span>: <span class="ident">PosEq</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">NumberSpace</span>
 {
-    <span class="kw">fn</span> <span class="ident">correlate</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(
-            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
-            <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>,
-            <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="op">&lt;</span><span class="ident">DspVec</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span>, <span class="ident">N</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">ToFreqResult</span><span class="op">&gt;</span>::<span class="ident">FreqResult</span>) <span class="op">-&gt;</span> <span class="ident">VoidResult</span>
-	 	<span class="kw">where</span> <span class="ident">B</span>: <span class="ident">Buffer</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span> {
-		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">domain</span>() <span class="op">!=</span> <span class="ident">DataDomain</span>::<span class="ident">Time</span>
-		   <span class="op">||</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_complex</span>() {
+    <span class="kw">fn</span> <span class="ident">correlate</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">O</span>) <span class="op">-&gt;</span> <span class="ident">VoidResult</span>
+        <span class="kw">where</span> <span class="ident">B</span>: <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Buffer</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">T</span><span class="op">&gt;</span>
+    {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">domain</span>() <span class="op">!=</span> <span class="ident">DataDomain</span>::<span class="ident">Time</span> <span class="op">||</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">is_complex</span>() {
             <span class="self">self</span>.<span class="ident">valid_len</span> <span class="op">=</span> <span class="number">0</span>;
             <span class="self">self</span>.<span class="ident">number_space</span>.<span class="ident">to_complex</span>();
             <span class="self">self</span>.<span class="ident">domain</span>.<span class="ident">to_freq</span>();
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ErrorReason</span>::<span class="ident">InputMustBeInTimeDomain</span>);
         }
-		<span class="kw">let</span> <span class="ident">points</span> <span class="op">=</span> <span class="ident">other</span>.<span class="ident">points</span>();
-		<span class="self">self</span>.<span class="ident">zero_pad_b</span>(<span class="ident">buffer</span>, <span class="ident">points</span>, <span class="ident">PaddingOption</span>::<span class="ident">Surround</span>);
-        <span class="kw">let</span> <span class="ident">complex</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">take_ownership</span>(<span class="ident">buffer</span>.<span class="ident">construct_new</span>(<span class="number">0</span>));
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">complex</span> <span class="op">=</span> <span class="ident">complex</span>.<span class="ident">plain_fft</span>(<span class="ident">buffer</span>);
-        <span class="macro">try</span><span class="macro">!</span>(<span class="ident">complex</span>.<span class="ident">mul</span>(<span class="ident">other</span>));
-		<span class="kw">let</span> <span class="ident">complex</span> <span class="op">=</span> <span class="ident">complex</span>.<span class="ident">plain_ifft</span>(<span class="ident">buffer</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">complex</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">rededicate_from</span>(<span class="ident">complex</span>);
-		<span class="self">self</span>.<span class="ident">swap_data</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">complex</span>);
-		<span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">points</span>();
-		<span class="self">self</span>.<span class="ident">scale</span>(<span class="ident">T</span>::<span class="ident">one</span>() <span class="op">/</span> <span class="ident">T</span>::<span class="ident">from</span>(<span class="ident">p</span>).<span class="ident">unwrap</span>());
+
+        <span class="kw">if</span> <span class="ident">other</span>.<span class="ident">domain</span>() <span class="op">!=</span> <span class="ident">DataDomain</span>::<span class="ident">Frequency</span> <span class="op">||</span> <span class="op">!</span><span class="ident">other</span>.<span class="ident">is_complex</span>() {
+            <span class="self">self</span>.<span class="ident">valid_len</span> <span class="op">=</span> <span class="number">0</span>;
+            <span class="self">self</span>.<span class="ident">number_space</span>.<span class="ident">to_complex</span>();
+            <span class="self">self</span>.<span class="ident">domain</span>.<span class="ident">to_freq</span>();
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ErrorReason</span>::<span class="ident">InputMustBeInTimeDomain</span>);
+        }
+
+        <span class="kw">let</span> <span class="ident">points</span> <span class="op">=</span> <span class="ident">other</span>.<span class="ident">points</span>();
+        <span class="macro">try</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">zero_pad_b</span>(<span class="ident">buffer</span>, <span class="ident">points</span>, <span class="ident">PaddingOption</span>::<span class="ident">Surround</span>));
+        <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">temp</span> <span class="op">=</span> <span class="ident">buffer</span>.<span class="ident">borrow</span>(<span class="ident">len</span>);
+        <span class="comment">// The next steps: fft, mul, ifft</span>
+        <span class="comment">// However to keep the impl definition simpler and to avoid uncessary copies</span>
+        <span class="comment">// we have to to be creative with where we store our signal and what&#39;s the buffer.</span>
+        {
+            <span class="kw">let</span> <span class="ident">complex</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>[..]).<span class="ident">to_complex_time_vec</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">NoTradeBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">temp</span>[..]);
+            <span class="ident">complex</span>.<span class="ident">plain_fft</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>); <span class="comment">// after this operation, our result is in `temp`. See also definition of `NoTradeBuffer`.</span>
+        }
+        {
+            <span class="kw">let</span> <span class="ident">other</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="ident">other</span>[..]).<span class="ident">to_complex_freq_vec</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">complex</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">temp</span>[..]).<span class="ident">to_complex_freq_vec</span>();
+            <span class="macro">try</span><span class="macro">!</span>(<span class="ident">complex</span>.<span class="ident">mul</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>));
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">NoTradeBuffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>[..]);
+            <span class="ident">complex</span>.<span class="ident">plain_ifft</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>); <span class="comment">// the result is now back in `self`.</span>
+        }
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">points</span>();
+        <span class="self">self</span>.<span class="ident">scale</span>(<span class="ident">T</span>::<span class="ident">one</span>() <span class="op">/</span> <span class="ident">T</span>::<span class="ident">from</span>(<span class="ident">p</span>).<span class="ident">unwrap</span>());
         <span class="self">self</span>.<span class="ident">swap_halves</span>();
-		<span class="prelude-val">Ok</span>(())
-	}
+        <span class="prelude-val">Ok</span>(())
+    }
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
