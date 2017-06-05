@@ -144,7 +144,8 @@ push @definitions, parse_trait_definition("$root/time_freq/convolution.rs", "Con
 push @definitions, parse_trait_definition("$root/time_freq/correlation.rs", "CrossCorrelationOps");
 push @definitions, parse_trait_definition("$root/time_freq/freq.rs", "FrequencyDomainOperations");
 push @definitions, parse_trait_definition("$root/time_freq/freq_to_time.rs", "FrequencyToTimeDomainOperations", "SymmetricFrequencyToTimeDomainOperations");
-push @definitions, parse_trait_definition("$root/time_freq/interpolation.rs", "InterpolationOps", "RealInterpolationOps");
+push @definitions, parse_trait_definition("$root/time_freq/interpolation.rs", "InterpolationOps");
+push @definitions, parse_trait_definition("$root/time_freq/real_interpolation.rs", "RealInterpolationOps");
 push @definitions, parse_trait_definition("$root/time_freq/time.rs", "TimeDomainOperations");
 push @definitions, parse_trait_definition("$root/time_freq/time_to_freq.rs", "TimeToFrequencyDomainOperations", "SymmetricTimeToFrequencyDomainOperations");
 my @impl = parse_facade("VecBuf", "facade32.rs");
