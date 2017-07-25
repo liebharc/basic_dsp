@@ -133,22 +133,4 @@ mod real {
             })
         });
     }
-
-    #[bench]
-    fn real_scale_with_multi_ops_mapping_32m_benchmark(b: &mut Bencher) {
-        let mut vector = RealTime32Box::new(Size::Medium);
-        b.iter(|| {
-            vector.execute(|v, mut buffer| {
-                let len = v.len();
-                let operand = vec!(6.0; len).to_real_time_vec();
-                let ops = multi_ops2(v, operand);
-                let ops = ops.add_ops(|mut v, o| {
-                    v.map_inplace(|v, _| 2.0 * v);
-                    (v, o)
-                });
-                let (v, _) = ops.get(buffer).unwrap();
-                v
-            })
-        });
-    }
 }

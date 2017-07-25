@@ -1,6 +1,9 @@
 # `basic_dsp`
 Changes:
 
+## Version 0.5.1
+Updated to `rustfft` version `2.0.0`.
+
 ## Version 0.5.0
 API cleanup and fixes. Most API changes should be transparent to users. A few tips for the version update: 
 - Deprecated functions have been removed. The traits have replacements available, so the documentation should provide an idea what's the intended replacement.

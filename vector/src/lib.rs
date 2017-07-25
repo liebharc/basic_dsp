@@ -87,6 +87,7 @@ pub mod numbers {
     pub use num_complex::Complex;
     pub use num_traits::Num;
     use std::fmt::Debug;
+    use rustfft;
     use num_traits;
     use simd_extensions::*;
     use gpu_support::{Gpu32, Gpu64, GpuRegTrait, GpuFloat};
@@ -96,11 +97,11 @@ pub mod numbers {
     /// Can be an integer or a floating point number. In order to have support for all operations in this crate
     /// a must implement the `RealNumber`.
     pub trait DspNumber
-        : Num + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive + 'static
+        : Num + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive + rustfft::FFTnum + 'static
     {
     }
     impl<T> DspNumber for T
-        where T: Num + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive + 'static
+        where T: Num + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive + rustfft::FFTnum + 'static
     {
     }
 

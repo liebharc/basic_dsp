@@ -3,7 +3,7 @@ use conv_types::*;
 use numbers::*;
 use inline_vector::InlineVector;
 use multicore_support::*;
-use rustfft::FFT;
+use rustfft::FFTplanner;
 use std::mem;
 use std::slice;
 use gpu_support::GpuSupport;
@@ -345,8 +345,15 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         } else {
             min_fft_len
         };
-        let mut fft = FFT::new(fft_len, false);
-        let mut ifft = FFT::new(fft_len, true);
+                
+        let fft = {
+            let mut forward_planner = FFTplanner::new(false);
+            forward_planner.plan_fft(fft_len)
+        };
+        let ifft = {
+            let mut reverse_planner = FFTplanner::new(true);
+            reverse_planner.plan_fft(fft_len)
+        };
         let step_size = fft_len - overlap;
         let h_time_padded_len = 2 * fft_len;
         let h_freq_len = 2 * fft_len;
@@ -373,7 +380,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
             let x_time = self.data.to_slice_mut();
             let h_time: &[Complex<T>] = array_to_complex(&h_time[..]);
-            let h_time_padded: &[Complex<T>] = array_to_complex(&h_time_padded[0..2 * fft_len]);
+            let h_time_padded: &mut [Complex<T>] = array_to_complex_mut(&mut h_time_padded[0..2 * fft_len]);
             let x_time: &mut [Complex<T>] = array_to_complex_mut(&mut x_time[0..2 * x_len]);
             let h_freq: &mut [Complex<T>] = array_to_complex_mut(&mut h_freq[0..2 * fft_len]);
             let mut x_freq: &mut [Complex<T>] = array_to_complex_mut(&mut x_freq[0..2 * fft_len]);
@@ -415,11 +422,16 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                               2 * imp_len,
                                               2 * step_size) / 2;
             } else {
+                // `fft.process` will invalidate `x_time` we therefore need to remember the overlap region
+                // and restore it.
+                let mut overlap_buffer = InlineVector::of_size(Complex::<T>::zero(), overlap);
+                
                 let scaling = T::from(fft_len).unwrap();
                 {
-                    let range = position..fft_len + position;
+                    let range = position .. fft_len + position;
                     // (3) The first iteration is different since it copies over the results which have been calculated for the beginning
-                    fft.process(&x_time[range], x_freq);
+                    (&mut overlap_buffer[..]).copy_from_slice(&x_time[position + step_size .. position + fft_len]);
+                    fft.process(&mut x_time[range], x_freq);
                     // Copy over the results of the scalar convolution (1)
                     (&mut x_time[0..imp_len / 2]).copy_from_slice(&tmp[0..imp_len / 2]);
                     for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_freq.iter()) {
@@ -431,7 +443,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
                 while position + fft_len < x_len {
                     let range = position..fft_len + position;
-                    fft.process(&x_time[range], x_freq);
+                    (&mut x_time[position .. position + overlap]).copy_from_slice(&mut overlap_buffer[..]);
+                    (&mut overlap_buffer[..]).copy_from_slice(&x_time[position + step_size .. position + fft_len]);
+                    fft.process(&mut x_time[range], x_freq);
                     // (4) Same as (3) except that the results of the previous iteration gets copied over
                     (&mut x_time[position - step_size + imp_len / 2..position + imp_len / 2])
                         .copy_from_slice(&tmp[imp_len - 1..fft_len]);

@@ -15,7 +15,7 @@ pub use self::interpolation::*;
 mod real_interpolation;
 pub use self::real_interpolation::*;
 
-use rustfft::FFT;
+use rustfft::FFTplanner;
 use {array_to_complex, array_to_complex_mut};
 use std::ops::*;
 use simd_extensions::*;
@@ -38,18 +38,22 @@ fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: boo
     let mut temp = buffer.borrow(len);
     {
         let temp = temp.to_slice_mut();
-        let signal = vec.data.to_slice();
+        let signal = vec.data.to_slice_mut();
         if !T::has_gpu_support() || len < 10000 || !T::is_supported_fft_len(true, len) {
             let points = len / 2; // By two since vector is always complex
             let rbw = (T::from(points).unwrap()) * vec.delta;
             vec.delta = rbw;
-            let mut fft = FFT::new(points, reverse);
+            
+            let fft = {
+                let mut planner = FFTplanner::new(reverse);
+                planner.plan_fft(points)
+            };
             let spectrum = &mut temp[0..len];
-            let signal = array_to_complex(&signal[0..len]);
+            let signal = array_to_complex_mut(&mut signal[0..len]);
             let spectrum = array_to_complex_mut(spectrum);
             fft.process(signal, spectrum);
         } else {
-            T::fft(true, &signal[0..len], &mut temp[0..len], reverse);
+            T::fft(true, &mut signal[0..len], &mut temp[0..len], reverse);
         }
     }
 

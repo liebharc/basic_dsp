@@ -125,7 +125,7 @@ mod real {
         let mut vector = RealTime32Box::new(Size::Medium);
         b.iter(|| {
             vector.execute(|mut v, _| {
-                v.map_inplace((), |v, _, _| 2.0 * v);
+                v.map_inplace((), &|v, _, _| 2.0 * v);
                 v
             })
         });
