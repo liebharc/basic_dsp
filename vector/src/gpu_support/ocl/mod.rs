@@ -3,7 +3,7 @@ mod ocl_kernels64;
 
 use ocl::*;
 use ocl::builders::ProgramBuilder;
-use ocl::aliases::{ClFloat4, ClDouble2};
+use ocl::prm::{Float4, Double2};
 use ocl::flags::DeviceType;
 use ocl::traits::{OclVec, OclPrm};
 use ocl::enums::*;
@@ -19,12 +19,12 @@ use self::ocl_kernels64 as o64;
 /// This trait is required to interface between `basic_dsp` and `opencl`.
 /// Without the feature flag `use_gpu` is will default to a `num` trait so 
 /// that other code can always rely that this type is defined.
-pub type Gpu32 = ClFloat4;
+pub type Gpu32 = Float4;
 
 /// This trait is required to interface between `basic_dsp` and `opencl`.
 /// Without the feature flag `use_gpu` is will default to a `num` trait so 
 /// that other code can always rely that this type is defined.
-pub type Gpu64 = ClDouble2;
+pub type Gpu64 = Double2;
 
 pub trait GpuRegTrait: OclPrm + OclVec {}
 
@@ -207,24 +207,26 @@ impl<T> GpuSupport<T> for T
         }
 
         // Create buffers
-        let in_buffer = Buffer::new(ocl_pq.queue().clone(),
-                                    Some(core::MEM_READ_ONLY | core::MEM_COPY_HOST_PTR),
-                                    ocl_pq.dims().clone(),
-                                    Some(source))
-            .expect("Failed to create GPU input buffer");
+        let in_buffer = Buffer::builder()
+                .queue(ocl_pq.queue().clone())
+                .flags(MemFlags::new().read_only().copy_host_ptr())
+                .dims(ocl_pq.dims().clone())
+                .host_data(source)
+                .build().expect("Failed to create GPU input buffer");
 
         let imp_vec_padded = array_to_gpu_simd::<T, T::GpuReg>(&imp_vec_padded);
-        let imp_buffer = Buffer::new(ocl_pq.queue().clone(),
-                                     Some(core::MEM_READ_ONLY | core::MEM_COPY_HOST_PTR),
-                                     [imp_vec_padded.len()],
-                                     Some(&imp_vec_padded))
-            .expect("Failed to create GPU impulse response buffer");
+        let imp_buffer = Buffer::builder()
+                .queue(ocl_pq.queue().clone())
+                .flags(MemFlags::new().read_only().copy_host_ptr())
+                .dims([imp_vec_padded.len()])
+                .host_data(&imp_vec_padded)
+                .build().expect("Failed to create GPU impulse response buffer");
 
-        let res_buffer = Buffer::<T::GpuReg>::new(ocl_pq.queue().clone(),
-                                                  Some(core::MEM_WRITE_ONLY),
-                                                  ocl_pq.dims().clone(),
-                                                  None)
-            .expect("Failed to create GPU result buffer");
+        let res_buffer = Buffer::builder()
+                .queue(ocl_pq.queue().clone())
+                .flags(MemFlags::new().write_only())
+                .dims(ocl_pq.dims().clone())
+                .build().expect("Failed to create GPU result buffer");
 
         let kenel_name = if is_complex {
             "conv_vecs_c"
@@ -314,17 +316,18 @@ impl<T> GpuSupport<T> for T
             .expect("Building ProQue");
 
         // Create buffers
-        let mut in_buffer = Buffer::new(ocl_pq.queue().clone(),
-                                        Some(flags::MEM_READ_ONLY | flags::MEM_COPY_HOST_PTR),
-                                        ocl_pq.dims().clone(),
-                                        Some(&source))
-            .expect("Failed to create GPU input buffer");
+        let mut in_buffer = Buffer::builder()
+                .queue(ocl_pq.queue().clone())
+                .flags(MemFlags::new().read_only().copy_host_ptr())
+                .dims(ocl_pq.dims().clone())
+                .host_data(&source)
+                .build().expect("Failed to create GPU input buffer");
 
-        let mut res_buffer = Buffer::<T>::new(ocl_pq.queue().clone(),
-                                              Some(flags::MEM_WRITE_ONLY),
-                                              ocl_pq.dims().clone(),
-                                              None)
-            .expect("Failed to create GPU result buffer");
+        let mut res_buffer = Buffer::builder()
+                .queue(ocl_pq.queue().clone())
+                .flags(MemFlags::new().write_only())
+                .dims(ocl_pq.dims().clone())
+                .build().expect("Failed to create GPU result buffer");
 
         // Make a plan
         let mut plan = builder::<T>()
@@ -406,11 +409,12 @@ impl<T> GpuSupport<T> for T
 
         reverse_fft = reverse_fft.ewait(&start_ifft_event);
 
-        let coef_buffer = Buffer::new(ocl_pq.queue().clone(),
-                                      Some(flags::MEM_READ_ONLY | flags::MEM_COPY_HOST_PTR),
-                                      [fft_len],
-                                      Some(&h_freq))
-            .expect("Failed to create GPU input buffer");
+        let coef_buffer = Buffer::builder()
+                .queue(ocl_pq.queue().clone())
+                .flags(MemFlags::new().read_only().copy_host_ptr())
+                .dims([fft_len])
+                .host_data(&h_freq)
+                .build().expect("Failed to create GPU input buffer");
 
         // Execute plan
         let mut position = 0;
@@ -419,11 +423,12 @@ impl<T> GpuSupport<T> for T
         let mut prev_buffer = {
             let range = position..fft_len + position;
             // Create buffers
-            let mut in_buffer = Buffer::new(ocl_pq.queue().clone(),
-                                            Some(flags::MEM_READ_WRITE | flags::MEM_COPY_HOST_PTR),
-                                            [fft_len],
-                                            Some(&x_time[range]))
-                .expect("Failed to create GPU input buffer");
+            let mut in_buffer = Buffer::builder()
+                .queue(ocl_pq.queue().clone())
+                .flags(MemFlags::new().read_write().copy_host_ptr())
+                .dims([fft_len])
+                .host_data(&x_time[range])
+                .build().expect("Failed to create GPU input buffer");
 
             forward_fft.enq(Direction::Forward, &mut in_buffer)
                 .expect("Enq FFT");
@@ -449,11 +454,12 @@ impl<T> GpuSupport<T> for T
         while position + fft_len < x_len {
             let range = position..fft_len + position;
             // Create buffers
-            let mut in_buffer = Buffer::new(ocl_pq.queue().clone(),
-                                            Some(flags::MEM_READ_WRITE | flags::MEM_COPY_HOST_PTR),
-                                            [fft_len],
-                                            Some(&x_time[range]))
-                .expect("Failed to create GPU input buffer");
+            let mut in_buffer = Buffer::builder()
+                .queue(ocl_pq.queue().clone())
+                .flags(MemFlags::new().read_write().copy_host_ptr())
+                .dims([fft_len])
+                .host_data(&x_time[range])
+                .build().expect("Failed to create GPU input buffer");
 
             forward_fft.enq(Direction::Forward, &mut in_buffer)
                 .expect("Enq FFT");
@@ -473,7 +479,7 @@ impl<T> GpuSupport<T> for T
                 .expect("Enq IFFT");
 
             prev_buffer.cmd()
-                .read(tmp)
+                .read(&mut tmp[..])
                 .enq()
                 .expect("Transferring result vector from the GPU back to memory failed");
             (&mut x_time[position - step_size + imp_len / 2..position + imp_len / 2])
@@ -482,7 +488,7 @@ impl<T> GpuSupport<T> for T
             position += step_size;
         }
         prev_buffer.cmd()
-            .read(tmp)
+            .read(&mut tmp[..])
             .enq()
             .expect("Transferring result vector from the GPU back to memory failed");
         position
@@ -522,7 +528,7 @@ mod tests {
         let mut source_vec = source.clone().to_real_time_vec();
         let imp_resp_vec = imp_resp.clone().to_real_time_vec();
         let mut buffer = SingleBuffer::new();
-        source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
+        source_vec.convolve_signal(&mut buffer, &imp_resp_vec).unwrap();
         let range = f32::gpu_convolve_vector(false, &source[..], &mut target[..], &imp_resp[..])
             .unwrap();
         assert_eq_tol(&target[range.clone()], &source_vec[range.clone()], 1e-6);
@@ -541,7 +547,7 @@ mod tests {
         let mut source_vec = source.clone().to_real_time_vec();
         let imp_resp_vec = imp_resp.clone().to_real_time_vec();
         let mut buffer = SingleBuffer::new();
-        source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
+        source_vec.convolve_signal(&mut buffer, &imp_resp_vec).unwrap();
         let range = f64::gpu_convolve_vector(false, &source[..], &mut target[..], &imp_resp[..])
             .unwrap();
         assert_eq_tol(&target[range.clone()], &source_vec[range.clone()], 1e-6);
@@ -557,7 +563,7 @@ mod tests {
         let mut source_vec = source.clone().to_complex_time_vec();
         let imp_resp_vec = imp_resp.clone().to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
-        source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
+        source_vec.convolve_signal(&mut buffer, &imp_resp_vec).unwrap();
         let range = f32::gpu_convolve_vector(true, &source[..], &mut target[..], &imp_resp[..])
             .unwrap();
         assert_eq_tol(&target[range.clone()], &source_vec[range.clone()], 1e-6);
@@ -576,7 +582,7 @@ mod tests {
         let mut source_vec = source.clone().to_complex_time_vec();
         let imp_resp_vec = imp_resp.clone().to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
-        source_vec.convolve_vector(&mut buffer, &imp_resp_vec).unwrap();
+        source_vec.convolve_signal(&mut buffer, &imp_resp_vec).unwrap();
         let range = f64::gpu_convolve_vector(true, &source[..], &mut target[..], &imp_resp[..])
             .unwrap();
         assert_eq_tol(&target[range.clone()], &source_vec[range.clone()], 1e-6);
