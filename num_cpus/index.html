@@ -48,15 +48,20 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../src/num_cpus/lib.rs.html#1-181' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p>Replaces the deprecated functionality of std::os::num_cpus.</p>
+               </span><a class='srclink' href='../src/num_cpus/lib.rs.html#1-316' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><h1 id="num_cpus" class="section-header"><a href="#num_cpus">num_cpus</a></h1>
+<p>A crate with utilities to determine the number of CPUs available on the
+current system.</p>
+<h2 id="example" class="section-header"><a href="#example">Example</a></h2>
+<pre class="rust rust-example-rendered">
+<span class="kw">let</span> <span class="ident">cpus</span> <span class="op">=</span> <span class="ident">num_cpus</span>::<span class="ident">get</span>();</pre>
 </div><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
                        <tr class=' module-item'>
                            <td><a class="fn" href="fn.get.html"
                                   title='fn num_cpus::get'>get</a></td>
                            <td class='docblock-short'>
-                                <p>Returns the number of CPUs of the current machine.</p>
+                                <p>Returns the number of available CPUs of the current system.</p>
 
                            </td>
                        </tr>
@@ -64,9 +69,7 @@
                            <td><a class="fn" href="fn.get_physical.html"
                                   title='fn num_cpus::get_physical'>get_physical</a></td>
                            <td class='docblock-short'>
-                                <p>Returns the number of physical cores of the current machine.
-If not possible on the particular architecture returns same as get() which
-is the logical CPUs.</p>
+                                <p>Returns the number of physical cores of the current system.</p>
 
                            </td>
                        </tr></table></section>

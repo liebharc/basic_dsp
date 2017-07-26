@@ -48,7 +48,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../../src/num_traits/identities.rs.html#4-25' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../../src/num_traits/identities.rs.html#5-26' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Zero: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/trait.Add.html" title="trait core::ops::Add">Add</a>&lt;Self, Output = Self&gt; {
     fn <a href='#tymethod.zero' class='fnname'>zero</a>() -&gt; Self;
     fn <a href='#tymethod.is_zero' class='fnname'>is_zero</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>;
@@ -81,6 +81,7 @@ external mutable state, for example values stored in TLS or in
 <li><code>impl Zero for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a></code></li>
 <li><code>impl Zero for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a></code></li>
 <li><code>impl Zero for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a></code></li>
+<li><code>impl&lt;T:&nbsp;<a class="trait" href="../../num_traits/identities/trait.Zero.html" title="trait num_traits::identities::Zero">Zero</a>&gt; Zero for <a class="struct" href="https://doc.rust-lang.org/nightly/core/num/struct.Wrapping.html" title="struct core::num::Wrapping">Wrapping</a>&lt;T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;<a class="struct" href="https://doc.rust-lang.org/nightly/core/num/struct.Wrapping.html" title="struct core::num::Wrapping">Wrapping</a>&lt;T&gt;: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/trait.Add.html" title="trait core::ops::Add">Add</a>&lt;Output = <a class="struct" href="https://doc.rust-lang.org/nightly/core/num/struct.Wrapping.html" title="struct core::num::Wrapping">Wrapping</a>&lt;T&gt;&gt;,&nbsp;</span></code></li>
 </ul><script type="text/javascript" async
                          src="../../implementors/num_traits/identities/trait.Zero.js">
                  </script></section>

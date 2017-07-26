@@ -48,8 +48,10 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../src/num_cpus/lib.rs.html#11-13' title='goto source code'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn get() -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></pre><div class='docblock'><p>Returns the number of CPUs of the current machine.</p>
+               </span><a class='srclink' href='../src/num_cpus/lib.rs.html#24-26' title='goto source code'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn get() -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></pre><div class='docblock'><p>Returns the number of available CPUs of the current system.</p>
+<h1 id="note" class="section-header"><a href="#note">Note</a></h1>
+<p>This will check sched affinity on Linux.</p>
 </div></section>
     <section id='search' class="content hidden"></section>
 

@@ -48,7 +48,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../../src/num_traits/sign.rs.html#7-41' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../../src/num_traits/sign.rs.html#8-42' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Signed: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a> + <a class="trait" href="../../num_traits/trait.Num.html" title="trait num_traits::Num">Num</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/trait.Neg.html" title="trait core::ops::Neg">Neg</a>&lt;Output = Self&gt; {
     fn <a href='#tymethod.abs' class='fnname'>abs</a>(&amp;self) -&gt; Self;
     fn <a href='#tymethod.abs_sub' class='fnname'>abs_sub</a>(&amp;self, other: &amp;Self) -&gt; Self;
@@ -88,6 +88,7 @@ between <code>self</code> and <code>other</code> is returned.</p>
 <li><code>impl Signed for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">i16</a></code></li>
 <li><code>impl Signed for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a></code></li>
 <li><code>impl Signed for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a></code></li>
+<li><code>impl&lt;T:&nbsp;<a class="trait" href="../../num_traits/sign/trait.Signed.html" title="trait num_traits::sign::Signed">Signed</a>&gt; Signed for <a class="struct" href="https://doc.rust-lang.org/nightly/core/num/struct.Wrapping.html" title="struct core::num::Wrapping">Wrapping</a>&lt;T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;<a class="struct" href="https://doc.rust-lang.org/nightly/core/num/struct.Wrapping.html" title="struct core::num::Wrapping">Wrapping</a>&lt;T&gt;: <a class="trait" href="../../num_traits/trait.Num.html" title="trait num_traits::Num">Num</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/trait.Neg.html" title="trait core::ops::Neg">Neg</a>&lt;Output = <a class="struct" href="https://doc.rust-lang.org/nightly/core/num/struct.Wrapping.html" title="struct core::num::Wrapping">Wrapping</a>&lt;T&gt;&gt;,&nbsp;</span></code></li>
 <li><code>impl Signed for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a></code></li>
 <li><code>impl Signed for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a></code></li>
 </ul><script type="text/javascript" async

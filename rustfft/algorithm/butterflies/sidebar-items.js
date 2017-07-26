@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Butterfly16",""],["Butterfly2",""],["Butterfly3",""],["Butterfly4",""],["Butterfly5",""],["Butterfly6",""],["Butterfly7",""],["Butterfly8",""]],"trait":[["FFTButterfly",""]]});

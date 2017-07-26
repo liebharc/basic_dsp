@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `FFTplanner` struct in crate `rustfft`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, FFTplanner">
+
+    <title>rustfft::FFTplanner - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc struct">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>rustfft</a></p><script>window.sidebarCurrent = {name: 'FFTplanner', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>rustfft</a>::<wbr><a class="struct" href=''>FFTplanner</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../src/rustfft/plan.rs.html#43-47' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct FFTplanner&lt;T&gt; { /* fields omitted */ }</pre><div class='docblock'><p>The FFT planner is used to make new FFT algorithm instances.</p>
+<p>RustFFT has several FFT algorithms available; For a given FFT size, the FFTplanner decides which of the
+available FFT algorithms to use and then initializes them.</p>
+
+<pre class="rust rust-example-rendered">
+<span class="comment">// Perform a forward FFT of size 1234</span>
+<span class="kw">use</span> <span class="ident">rustfft</span>::<span class="ident">FFTplanner</span>;
+<span class="kw">use</span> <span class="ident">rustfft</span>::<span class="ident">num_complex</span>::<span class="ident">Complex</span>;
+<span class="kw">use</span> <span class="ident">rustfft</span>::<span class="ident">num_traits</span>::<span class="ident">Zero</span>;
+
+<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">input</span>:  <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Zero</span>::<span class="ident">zero</span>(); <span class="number">1234</span>];
+<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">output</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;&gt;</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Zero</span>::<span class="ident">zero</span>(); <span class="number">1234</span>];
+
+<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">planner</span> <span class="op">=</span> <span class="ident">FFTplanner</span>::<span class="ident">new</span>(<span class="bool-val">false</span>);
+<span class="kw">let</span> <span class="ident">fft</span> <span class="op">=</span> <span class="ident">planner</span>.<span class="ident">plan_fft</span>(<span class="number">1234</span>);
+<span class="ident">fft</span>.<span class="ident">process</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">input</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">output</span>);</pre>
+<p>If you plan on creating multiple FFT instances, it is recommnded to reuse the same planner for all of them. This
+is because the planner re-uses internal data across FFT instances wherever possible, saving memory and reducing
+setup time. (FFT instances created with one planner will never re-use data and buffers with FFT instances created
+by a different planner)</p>
+<p>Each FFT instance owns <code>Arc</code>s to its internal data, rather than borrowing it from the planner, so it's perfectly
+safe to drop the planner after creating FFT instances.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;T:&nbsp;<a class="trait" href="../rustfft/trait.FFTnum.html" title="trait rustfft::FFTnum">FFTnum</a>&gt; <a class="struct" href="../rustfft/struct.FFTplanner.html" title="struct rustfft::FFTplanner">FFTplanner</a>&lt;T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/rustfft/plan.rs.html#49-204' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(inverse: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; Self</code></span></h4>
+<div class='docblock'><p>Creates a new FFT planner.</p>
+<p>If <code>inverse</code> is false, this planner will plan forward FFTs. If <code>inverse</code> is true, it will plan inverse FFTs.</p>
+</div><h4 id='method.plan_fft' class="method"><span id='plan_fft.v' class='invisible'><code>fn <a href='#method.plan_fft' class='fnname'>plan_fft</a>(&amp;mut self, len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/arc/struct.Arc.html" title="struct alloc::arc::Arc">Arc</a>&lt;<a class="trait" href="../rustfft/trait.FFT.html" title="trait rustfft::FFT">FFT</a>&lt;T&gt;&gt;</code></span></h4>
+<div class='docblock'><p>Returns a FFT instance which processes signals of size <code>len</code>
+If this is called multiple times, it will attempt to re-use internal data between instances</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "rustfft";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

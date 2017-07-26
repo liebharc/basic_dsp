@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-1ecc6299db9ec823\libc-0.2.22\src\windows.rs`.">
+    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-1ecc6299db9ec823\libc-0.2.28\src\windows.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>windows.rs.html -- source</title>
@@ -278,6 +278,18 @@
 <span id="233">233</span>
 <span id="234">234</span>
 <span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! Windows CRT definitions</span>
 
@@ -322,6 +334,18 @@
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">utimbuf</span> {
         <span class="kw">pub</span> <span class="ident">actime</span>: <span class="ident">time64_t</span>,
         <span class="kw">pub</span> <span class="ident">modtime</span>: <span class="ident">time64_t</span>,
+    }
+
+    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">tm</span> {
+        <span class="ident">tm_sec</span>: ::<span class="ident">c_int</span>,
+        <span class="ident">tm_min</span>: ::<span class="ident">c_int</span>,
+        <span class="ident">tm_hour</span>: ::<span class="ident">c_int</span>,
+        <span class="ident">tm_mday</span>: ::<span class="ident">c_int</span>,
+        <span class="ident">tm_mon</span>: ::<span class="ident">c_int</span>,
+        <span class="ident">tm_year</span>: ::<span class="ident">c_int</span>,
+        <span class="ident">tm_wday</span>: ::<span class="ident">c_int</span>,
+        <span class="ident">tm_yday</span>: ::<span class="ident">c_int</span>,
+        <span class="ident">tm_isdst</span>: ::<span class="ident">c_int</span>,
     }
 
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">timeval</span> {

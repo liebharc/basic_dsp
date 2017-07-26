@@ -48,7 +48,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../../src/num_traits/float.rs.html#13-926' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../../src/num_traits/float.rs.html#13-924' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Float: <a class="trait" href="../../num_traits/trait.Num.html" title="trait num_traits::Num">Num</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html" title="trait core::marker::Copy">Copy</a> + <a class="trait" href="../../num_traits/cast/trait.NumCast.html" title="trait num_traits::cast::NumCast">NumCast</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html" title="trait core::cmp::PartialOrd">PartialOrd</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/trait.Neg.html" title="trait core::ops::Neg">Neg</a>&lt;Output = Self&gt; {
     fn <a href='#tymethod.nan' class='fnname'>nan</a>() -&gt; Self;
     fn <a href='#tymethod.infinity' class='fnname'>infinity</a>() -&gt; Self;
@@ -344,8 +344,23 @@ number is <code>Float::nan()</code>.</p>
 <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">f64</span>::<span class="ident">NEG_INFINITY</span>.<span class="ident">signum</span>(), <span class="op">-</span><span class="number">1.0</span>);
 
 <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">f64</span>::<span class="ident">NAN</span>.<span class="ident">signum</span>().<span class="ident">is_nan</span>());<a class="test-arrow" target="_blank" href="http://play.integer32.com/?code=extern%20crate%20num_traits%3B%0Afn%20main()%20%7B%0Ause%20num_traits%3A%3AFloat%3B%0Ause%20std%3A%3Af64%3B%0A%0Alet%20f%20%3D%203.5%3B%0A%0Aassert_eq!(f.signum()%2C%201.0)%3B%0Aassert_eq!(f64%3A%3ANEG_INFINITY.signum()%2C%20-1.0)%3B%0A%0Aassert!(f64%3A%3ANAN.signum().is_nan())%3B%0A%7D">Run</a></pre>
-</div><h3 id='tymethod.is_sign_positive' class='method'><span id='is_sign_positive.v' class='invisible'><code>fn <a href='#tymethod.is_sign_positive' class='fnname'>is_sign_positive</a>(self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h3><div class='docblock'><p>Returns <code>true</code> if <code>self</code> is positive, including <code>+0.0</code> and
-<code>Float::infinity()</code>.</p>
+</div><h3 id='tymethod.is_sign_positive' class='method'><span id='is_sign_positive.v' class='invisible'><code>fn <a href='#tymethod.is_sign_positive' class='fnname'>is_sign_positive</a>(self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h3><div class='docblock'><p>Returns <code>true</code> if <code>self</code> is positive, including <code>+0.0</code>,
+<code>Float::infinity()</code>, and with newer versions of Rust <code>f64::NAN</code>.</p>
+
+<pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">num_traits</span>::<span class="ident">Float</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">f64</span>;
+
+<span class="kw">let</span> <span class="ident">neg_nan</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="op">-</span><span class="ident">f64</span>::<span class="ident">NAN</span>;
+
+<span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="number">7.0</span>;
+<span class="kw">let</span> <span class="ident">g</span> <span class="op">=</span> <span class="op">-</span><span class="number">7.0</span>;
+
+<span class="macro">assert</span><span class="macro">!</span>(<span class="ident">f</span>.<span class="ident">is_sign_positive</span>());
+<span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">g</span>.<span class="ident">is_sign_positive</span>());
+<span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">neg_nan</span>.<span class="ident">is_sign_positive</span>());<a class="test-arrow" target="_blank" href="http://play.integer32.com/?code=extern%20crate%20num_traits%3B%0Afn%20main()%20%7B%0Ause%20num_traits%3A%3AFloat%3B%0Ause%20std%3A%3Af64%3B%0A%0Alet%20neg_nan%3A%20f64%20%3D%20-f64%3A%3ANAN%3B%0A%0Alet%20f%20%3D%207.0%3B%0Alet%20g%20%3D%20-7.0%3B%0A%0Aassert!(f.is_sign_positive())%3B%0Aassert!(!g.is_sign_positive())%3B%0Aassert!(!neg_nan.is_sign_positive())%3B%0A%7D">Run</a></pre>
+</div><h3 id='tymethod.is_sign_negative' class='method'><span id='is_sign_negative.v' class='invisible'><code>fn <a href='#tymethod.is_sign_negative' class='fnname'>is_sign_negative</a>(self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h3><div class='docblock'><p>Returns <code>true</code> if <code>self</code> is negative, including <code>-0.0</code>,
+<code>Float::neg_infinity()</code>, and with newer versions of Rust <code>-f64::NAN</code>.</p>
 
 <pre class="rust rust-example-rendered">
 <span class="kw">use</span> <span class="ident">num_traits</span>::<span class="ident">Float</span>;
@@ -356,26 +371,9 @@ number is <code>Float::nan()</code>.</p>
 <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="number">7.0</span>;
 <span class="kw">let</span> <span class="ident">g</span> <span class="op">=</span> <span class="op">-</span><span class="number">7.0</span>;
 
-<span class="macro">assert</span><span class="macro">!</span>(<span class="ident">f</span>.<span class="ident">is_sign_positive</span>());
-<span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">g</span>.<span class="ident">is_sign_positive</span>());
-<span class="comment">// Requires both tests to determine if is `NaN`</span>
-<span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">nan</span>.<span class="ident">is_sign_positive</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">nan</span>.<span class="ident">is_sign_negative</span>());<a class="test-arrow" target="_blank" href="http://play.integer32.com/?code=extern%20crate%20num_traits%3B%0Afn%20main()%20%7B%0Ause%20num_traits%3A%3AFloat%3B%0Ause%20std%3A%3Af64%3B%0A%0Alet%20nan%3A%20f64%20%3D%20f64%3A%3ANAN%3B%0A%0Alet%20f%20%3D%207.0%3B%0Alet%20g%20%3D%20-7.0%3B%0A%0Aassert!(f.is_sign_positive())%3B%0Aassert!(!g.is_sign_positive())%3B%0A%2F%2F%20Requires%20both%20tests%20to%20determine%20if%20is%20%60NaN%60%0Aassert!(!nan.is_sign_positive()%20%26%26%20!nan.is_sign_negative())%3B%0A%7D">Run</a></pre>
-</div><h3 id='tymethod.is_sign_negative' class='method'><span id='is_sign_negative.v' class='invisible'><code>fn <a href='#tymethod.is_sign_negative' class='fnname'>is_sign_negative</a>(self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h3><div class='docblock'><p>Returns <code>true</code> if <code>self</code> is negative, including <code>-0.0</code> and
-<code>Float::neg_infinity()</code>.</p>
-
-<pre class="rust rust-example-rendered">
-<span class="kw">use</span> <span class="ident">num_traits</span>::<span class="ident">Float</span>;
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">f64</span>;
-
-<span class="kw">let</span> <span class="ident">nan</span> <span class="op">=</span> <span class="ident">f64</span>::<span class="ident">NAN</span>;
-
-<span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="number">7.0</span>;
-<span class="kw">let</span> <span class="ident">g</span> <span class="op">=</span> <span class="op">-</span><span class="number">7.0</span>;
-
 <span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">f</span>.<span class="ident">is_sign_negative</span>());
 <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">g</span>.<span class="ident">is_sign_negative</span>());
-<span class="comment">// Requires both tests to determine if is `NaN`.</span>
-<span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">nan</span>.<span class="ident">is_sign_positive</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">nan</span>.<span class="ident">is_sign_negative</span>());<a class="test-arrow" target="_blank" href="http://play.integer32.com/?code=extern%20crate%20num_traits%3B%0Afn%20main()%20%7B%0Ause%20num_traits%3A%3AFloat%3B%0Ause%20std%3A%3Af64%3B%0A%0Alet%20nan%20%3D%20f64%3A%3ANAN%3B%0A%0Alet%20f%20%3D%207.0%3B%0Alet%20g%20%3D%20-7.0%3B%0A%0Aassert!(!f.is_sign_negative())%3B%0Aassert!(g.is_sign_negative())%3B%0A%2F%2F%20Requires%20both%20tests%20to%20determine%20if%20is%20%60NaN%60.%0Aassert!(!nan.is_sign_positive()%20%26%26%20!nan.is_sign_negative())%3B%0A%7D">Run</a></pre>
+<span class="macro">assert</span><span class="macro">!</span>(<span class="op">!</span><span class="ident">nan</span>.<span class="ident">is_sign_negative</span>());<a class="test-arrow" target="_blank" href="http://play.integer32.com/?code=extern%20crate%20num_traits%3B%0Afn%20main()%20%7B%0Ause%20num_traits%3A%3AFloat%3B%0Ause%20std%3A%3Af64%3B%0A%0Alet%20nan%3A%20f64%20%3D%20f64%3A%3ANAN%3B%0A%0Alet%20f%20%3D%207.0%3B%0Alet%20g%20%3D%20-7.0%3B%0A%0Aassert!(!f.is_sign_negative())%3B%0Aassert!(g.is_sign_negative())%3B%0Aassert!(!nan.is_sign_negative())%3B%0A%7D">Run</a></pre>
 </div><h3 id='tymethod.mul_add' class='method'><span id='mul_add.v' class='invisible'><code>fn <a href='#tymethod.mul_add' class='fnname'>mul_add</a>(self, a: Self, b: Self) -&gt; Self</code></span></h3><div class='docblock'><p>Fused multiply-add. Computes <code>(self * a) + b</code> with only one rounding
 error. This produces a more accurate result with better performance than
 a separate multiplication operation followed by an add.</p>
