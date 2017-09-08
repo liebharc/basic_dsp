@@ -79,7 +79,7 @@ impl<S, T, N, D> ComplexOps<T> for DspVec<S, T, N, D>
         let a = a * self.delta();
         let b = b * self.delta();
         let data_length = self.len();
-        let mut array = self.data.to_slice_mut();
+        let array = self.data.to_slice_mut();
         Chunk::execute_with_range(Complexity::Small,
                                   &self.multicore_settings,
                                   &mut array[0..data_length],

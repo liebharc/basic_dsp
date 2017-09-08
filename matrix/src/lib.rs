@@ -5,7 +5,6 @@
 //! inverting the resulting matrix.
 
 extern crate basic_dsp_vector;
-extern crate num_complex;
 
 use basic_dsp_vector::*;
 use basic_dsp_vector::numbers::*;

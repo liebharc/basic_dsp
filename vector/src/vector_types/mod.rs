@@ -332,7 +332,7 @@ fn complex_to_array_mut<T>(complex: &mut [Complex<T>]) -> &mut [T]
     use std::mem;
     unsafe {
         let len = complex.len();
-        let mut trans: &mut [T] = mem::transmute(complex);
+        let trans: &mut [T] = mem::transmute(complex);
         slice::from_raw_parts_mut(&mut trans[0] as *mut T, len * 2)
     }
 }
@@ -351,7 +351,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     {
         {
             let len = self.valid_len;
-            let mut array = self.data.to_slice_mut();
+            let array = self.data.to_slice_mut();
             Chunk::execute_partial(complexity,
                                    &self.multicore_settings,
                                    &mut array[0..len],
@@ -373,7 +373,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     {
         {
             let len = self.valid_len;
-            let mut array = self.data.to_slice_mut();
+            let array = self.data.to_slice_mut();
             Chunk::execute_partial(complexity,
                                    &self.multicore_settings,
                                    &mut array[0..len],
@@ -401,7 +401,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     {
         {
             let data_length = self.valid_len;
-            let mut array = self.data.to_slice_mut();
+            let array = self.data.to_slice_mut();
             let (scalar_left, scalar_right, vectorization_length) =
                 T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if vectorization_length > 0 {
@@ -439,7 +439,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     {
         {
             let data_length = self.valid_len;
-            let mut array = self.data.to_slice_mut();
+            let array = self.data.to_slice_mut();
             let (scalar_left, scalar_right, vectorization_length) =
                 T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if vectorization_length > 0 {
@@ -486,7 +486,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let mut result = buffer.borrow(data_length / 2);
             {
                 let array = self.data.to_slice_mut();
-                let mut temp = result.to_slice_mut();
+                let temp = result.to_slice_mut();
                 Chunk::from_src_to_dest(complexity,
                                         &self.multicore_settings,
                                         &array[0..data_length],
@@ -515,7 +515,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     {
         {
             let data_length = self.len();
-            let mut array = self.data.to_slice_mut();
+            let array = self.data.to_slice_mut();
             for i in 0..data_length / 2 {
                 let input = Complex::new(array[2 * i], array[2 * i + 1]);
                 array[i] = op(input, argument);
@@ -542,7 +542,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         let mut result = buffer.borrow(data_length / 2);
         {
             let array = self.data.to_slice_mut();
-            let mut temp = result.to_slice_mut();
+            let temp = result.to_slice_mut();
             let (scalar_left, scalar_right, vectorization_length) =
                 T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if vectorization_length > 0 {
@@ -592,11 +592,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
 
         if self.is_complex() {
-            let mut data = self.data.to_slice_mut();
-            let mut data = array_to_complex_mut(&mut data[0..len]);
+            let data = self.data.to_slice_mut();
+            let data = array_to_complex_mut(&mut data[0..len]);
             swap_array_halves(data, forward);
         } else {
-            let mut data = self.data.to_slice_mut();
+            let data = self.data.to_slice_mut();
             swap_array_halves(&mut data[0..len], forward);
         }
     }

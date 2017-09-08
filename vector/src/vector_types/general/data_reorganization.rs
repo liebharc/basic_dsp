@@ -231,11 +231,11 @@ impl<S, T, N, D> ReorganizeDataOps<T> for DspVec<S, T, N, D>
     fn reverse(&mut self) {
         let len = self.len();
         if self.is_complex() {
-            let mut data = self.data.to_slice_mut();
-            let mut data = array_to_complex_mut(&mut data[0..len]);
+            let data = self.data.to_slice_mut();
+            let data = array_to_complex_mut(&mut data[0..len]);
             reverse_array(data);
         } else {
-            let mut data = self.data.to_slice_mut();
+            let data = self.data.to_slice_mut();
             reverse_array(&mut data[0..len]);
         }
     }
@@ -258,7 +258,7 @@ macro_rules! zero_interleave {
             $self_.valid_len = new_len;
             let mut target = $buffer.borrow(new_len);
 			{
-				let mut target = target.to_slice_mut();
+				let target = target.to_slice_mut();
 				let source = &$self_.data.to_slice();
                 Chunk::from_src_to_dest(
                     Complexity::Small, &$self_.multicore_settings,

@@ -51,7 +51,7 @@ impl<S, T, N, D> MapInplaceOps<T> for DspVec<S, T, N, D>
             return;
         }
 
-        let mut array = self.data.to_slice_mut();
+        let array = self.data.to_slice_mut();
         let length = array.len();
         Chunk::execute_with_range(Complexity::Small,
                                   &self.multicore_settings,
@@ -152,7 +152,7 @@ impl<S, T, N, D> MapInplaceOps<Complex<T>> for DspVec<S, T, N, D>
             return;
         }
 
-        let mut array = self.data.to_slice_mut();
+        let array = self.data.to_slice_mut();
         let length = array.len();
         Chunk::execute_with_range(Complexity::Small,
                                   &self.multicore_settings,

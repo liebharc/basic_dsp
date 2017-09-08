@@ -56,7 +56,7 @@ impl<S, T, N, D> FrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
         let mut temp = buffer.borrow(temp_len);
         {
             let data = self.data.to_slice();
-            let mut temp = temp.to_slice_mut();
+            let temp = temp.to_slice_mut();
             &mut temp[step..len].clone_from_slice(&data[step..len]);
             &mut temp[0..step].clone_from_slice(&data[0..step]);
             let mut j = step + 1;

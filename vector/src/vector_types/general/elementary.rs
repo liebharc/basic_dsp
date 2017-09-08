@@ -370,7 +370,7 @@ macro_rules! impl_binary_vector_operation {
                 assert_meta_data!(self, $arg_name);
 
                 let data_length = self.len();
-                let mut array = self.data.to_slice_mut();
+                let array = self.data.to_slice_mut();
                 let (scalar_left, scalar_right, vectorization_length) =
                     T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name[..];
@@ -382,7 +382,7 @@ macro_rules! impl_binary_vector_operation {
                         |original, range, target, _arg| {
                             let original =
                                 T::Reg::array_to_regs(&original[range.start .. range.end]);
-                            let mut target =
+                            let target =
                                 T::Reg::array_to_regs_mut(&mut target[..]);
                             for (dst, src) in &mut target.iter_mut().zip(original) {
                                 *dst = dst.$simd_op(*src);
@@ -412,7 +412,7 @@ macro_rules! impl_binary_complex_vector_operation {
                 assert_meta_data!(self, $arg_name);
 
                 let data_length = self.len();
-                let mut array = self.data.to_slice_mut();
+                let array = self.data.to_slice_mut();
                 let (scalar_left, scalar_right, vectorization_length) =
                     T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name[..];
@@ -467,7 +467,7 @@ macro_rules! impl_binary_smaller_vector_operation {
                 assert_meta_data!(self, $arg_name);
 
                 let data_length = self.len();
-                let mut array = self.data.to_slice_mut();
+                let array = self.data.to_slice_mut();
                 let other = &$arg_name[..];
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
@@ -497,14 +497,14 @@ macro_rules! impl_binary_smaller_complex_vector_ops {
                 assert_meta_data!(self, $arg_name);
 
                 let data_length = self.len();
-                let mut array = self.data.to_slice_mut();
+                let array = self.data.to_slice_mut();
                 let other = &$arg_name[..];
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
                     &other, T::Reg::len(),
                     &mut array[0..data_length], 2, (),
                     |operand, range, target, _arg| {
-                        let mut target = array_to_complex_mut(&mut target[..]);
+                        let target = array_to_complex_mut(&mut target[..]);
                         let operand = array_to_complex(&operand[..]);
                         let mut i = range.start;
                         for n in &mut target[..] {

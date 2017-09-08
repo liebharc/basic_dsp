@@ -261,7 +261,7 @@ impl<S, T, N, D> ModuloOps<T> for DspVec<S, T, N, D>
     fn unwrap(&mut self, divisor: T) {
         assert_real!(self);
         let data_length = self.len();
-        let mut data = self.data.to_slice_mut();
+        let data = self.data.to_slice_mut();
         let mut i = 0;
         let mut j = 1;
         let half = divisor / T::from(2.0).unwrap();

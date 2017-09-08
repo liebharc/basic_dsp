@@ -363,12 +363,12 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         let mut array =
             buffer.borrow(h_time_padded_len + h_freq_len + x_freq_len + tmp_len + remainder_len);
         {
-            let mut array = array.to_slice_mut();
-            let (mut h_freq, mut array) = array.split_at_mut(h_freq_len);
-            let (mut x_freq, mut array) = array.split_at_mut(x_freq_len);
-            let (mut tmp, mut array) = array.split_at_mut(tmp_len);
-            let (mut h_time_padded, array) = array.split_at_mut(h_time_padded_len);
-            let mut end = array;
+            let array = array.to_slice_mut();
+            let (h_freq, array) = array.split_at_mut(h_freq_len);
+            let (x_freq, array) = array.split_at_mut(x_freq_len);
+            let (tmp, array) = array.split_at_mut(tmp_len);
+            let (h_time_padded, array) = array.split_at_mut(h_time_padded_len);
+            let end = array;
             let h_time = h_time.data.to_slice();
             (&mut h_time_padded[0..2 * imp_len]).copy_from_slice(&h_time[0..2 * imp_len]);
 
@@ -383,8 +383,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let h_time_padded: &mut [Complex<T>] = array_to_complex_mut(&mut h_time_padded[0..2 * fft_len]);
             let x_time: &mut [Complex<T>] = array_to_complex_mut(&mut x_time[0..2 * x_len]);
             let h_freq: &mut [Complex<T>] = array_to_complex_mut(&mut h_freq[0..2 * fft_len]);
-            let mut x_freq: &mut [Complex<T>] = array_to_complex_mut(&mut x_freq[0..2 * fft_len]);
-            let mut tmp: &mut [Complex<T>] = array_to_complex_mut(&mut tmp[0..2 * fft_len]);
+            let x_freq: &mut [Complex<T>] = array_to_complex_mut(&mut x_freq[0..2 * fft_len]);
+            let tmp: &mut [Complex<T>] = array_to_complex_mut(&mut tmp[0..2 * fft_len]);
             let end: &mut [Complex<T>] = array_to_complex_mut(&mut end[0..remainder_len]);
             fft.process(h_time_padded, h_freq);
             let mut position = 0;
@@ -512,7 +512,7 @@ impl<S, SO, T, N, D, NO, DO> ConvolutionOps<DspVec<SO, T, NO, DO>, S, T, NO, DO>
             let range_done = {
                 let source = self.data.to_slice();
                 let imp_resp = impulse_response.data.to_slice();
-                let mut target = target.to_slice_mut();
+                let target = target.to_slice_mut();
                 T::gpu_convolve_vector(is_complex,
                                        &source[0..source_len],
                                        &mut target[0..source_len],

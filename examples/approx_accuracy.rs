@@ -1,6 +1,5 @@
 extern crate basic_dsp;
 extern crate docopt;
-extern crate time;
 
 use basic_dsp::*;
 use std::env;

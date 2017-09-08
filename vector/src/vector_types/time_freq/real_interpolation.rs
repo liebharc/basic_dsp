@@ -47,7 +47,7 @@ impl<S, T, N, D> RealInterpolationOps<S, T> for DspVec<S, T, N, D>
                 return;
             }
             let data = self.data.to_slice();
-            let mut temp = temp.to_slice_mut();
+            let temp = temp.to_slice_mut();
             let data = &data[0..data_len];
             let dest = &mut temp[0..dest_len];
             let mut i = T::zero();
@@ -85,7 +85,7 @@ impl<S, T, N, D> RealInterpolationOps<S, T> for DspVec<S, T, N, D>
                 return;
             }
             let data = self.data.to_slice();
-            let mut temp = temp.to_slice_mut();
+            let temp = temp.to_slice_mut();
             // Literature: http://paulbourke.net/miscellaneous/interpolation/
             let data = &data[0..data_len];
             let dest = &mut temp[0..dest_len];

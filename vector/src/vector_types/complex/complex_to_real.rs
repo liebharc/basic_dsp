@@ -456,7 +456,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         destination.resize(len / 2)
             .expect("Target should be real and thus all values for len / 2 should be valid");
         destination.set_delta(self.delta);
-        let mut array = &mut destination[0..len / 2];
+        let array = &mut destination[0..len / 2];
         let source = &self.data.to_slice();
         Chunk::from_src_to_dest(complexity,
                                 &self.multicore_settings,
@@ -491,7 +491,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         destination.resize(data_length / 2)
             .expect("Target should be real and thus all values for len / 2 should be valid");;
         destination.set_delta(self.delta);
-        let mut temp = &mut destination[0..data_length / 2];
+        let temp = &mut destination[0..data_length / 2];
         let (scalar_left, scalar_right, vectorization_length) =
             T::Reg::calc_data_alignment_reqs(temp);
         let array = &self.data.to_slice();

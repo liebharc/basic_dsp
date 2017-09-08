@@ -64,10 +64,10 @@ impl<S, T, N, D> DiffSumOps for DspVec<S, T, N, D>
         let step = if is_complex { 2 } else { 1 };
         let len = self.len();
         self.valid_len -= step;
-        let mut data = self.data.to_slice_mut();
+        let data = self.data.to_slice_mut();
 
         if is_complex {
-            let mut data = array_to_complex_mut(data);
+            let data = array_to_complex_mut(data);
             for j in 0..len / 2 - 1 {
                 unsafe {
                     let b = *data.get_unchecked(j + 1);
@@ -93,10 +93,10 @@ impl<S, T, N, D> DiffSumOps for DspVec<S, T, N, D>
             return;
         }
 
-        let mut data = self.data.to_slice_mut();
+        let data = self.data.to_slice_mut();
 
         if is_complex {
-            let mut data = array_to_complex_mut(data);
+            let data = array_to_complex_mut(data);
             let mut temp = data[0];
             for n in &mut data[1..len / 2] {
                 let diff = *n - temp;
@@ -118,7 +118,7 @@ impl<S, T, N, D> DiffSumOps for DspVec<S, T, N, D>
         let mut i = 0;
         let mut j = if self.is_complex() { 2 } else { 1 };
 
-        let mut data = self.data.to_slice_mut();
+        let data = self.data.to_slice_mut();
         while j < data_length {
             data[j] = data[j] + data[i];
             i += 1;

@@ -33,7 +33,7 @@ impl<'a, T: RealNumber> DerefMut for FixedLenBufferBurrow<'a, T> {
 impl<'a, S: ToSliceMut<T>, T: RealNumber> BufferBorrow<S, T> for FixedLenBufferBurrow<'a, T> {
     fn trade(self, storage: &mut S) {
         let len = std::cmp::min(storage.len(), self.data.len());
-        let mut storage = storage.to_slice_mut();
+        let storage = storage.to_slice_mut();
         &mut storage[0..len].to_slice_mut().copy_from_slice(&mut self.data[0..len]);
     }
 }

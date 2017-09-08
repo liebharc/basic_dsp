@@ -201,7 +201,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             }
 
             let data = self.data.to_slice();
-            let mut temp = temp.to_slice_mut();
+            let temp = temp.to_slice_mut();
             let dest = convert_mut(&mut temp[0..new_len]);
             let len = dest.len();
             let scalar_len = vectors[0].points() * interpolation_factor;
@@ -412,7 +412,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                 let data = self.data.to_slice();
                 let data = &data[0..len];
                 let temp = temp.to_slice_mut();
-                let mut temp = array_to_complex_mut(&mut temp[0..new_len]);
+                let temp = array_to_complex_mut(&mut temp[0..new_len]);
                 let data = array_to_complex(data);
                 interpolate_priv_scalar(temp,
                                         data,
@@ -584,7 +584,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
         let is_complex = self.is_complex();
         let data = self.data.to_slice_mut();
         if is_complex {
-            let mut data = array_to_complex_mut(&mut data[0..len]);
+            let data = array_to_complex_mut(&mut data[0..len]);
             let decimation_factor = decimation_factor as usize;
             while i < points {
                 data[j] = data[i];
@@ -593,7 +593,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
             }
             self.valid_len = j * 2;
         } else {
-            let mut data = &mut data[0..len];
+            let data = &mut data[0..len];
             let decimation_factor = decimation_factor as usize;
             while i < len {
                 data[j] = data[i];

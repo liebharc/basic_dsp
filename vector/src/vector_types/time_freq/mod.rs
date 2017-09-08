@@ -572,7 +572,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         if !is_symmetric {
             let len = self.len();
             let points = self.points();
-            let mut data = self.data.to_slice_mut();
+            let data = self.data.to_slice_mut();
             let converted = convert_mut(&mut data[0..len]);
             Chunk::execute_with_range(Complexity::Medium,
                                       &self.multicore_settings,
@@ -592,7 +592,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             });
         } else {
             let len = self.len();
-            let mut data = self.data.to_slice_mut();
+            let data = self.data.to_slice_mut();
             let converted = convert_mut(&mut data[0..len]);
             let points = converted.len();
             Chunk::execute_sym_pairs_with_range(Complexity::Medium,
