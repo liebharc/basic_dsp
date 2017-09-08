@@ -2,7 +2,6 @@
 #![feature(box_syntax)]
 extern crate test;
 extern crate basic_dsp;
-extern crate num;
 
 pub mod tools;
 
@@ -17,7 +16,7 @@ mod real {
     fn multi_operations_2ops1_vector_32_benchmark(b: &mut Bencher) {
         let mut vector = ComplexTime32Box::new(Size::Small);
         b.iter(|| {
-            vector.execute(|v, mut buffer| {
+            vector.execute(|v, buffer| {
                 let ops = multi_ops1(v);
                 let ops = ops.add_ops(|mut x| {
                     x.log(10.0);
@@ -45,7 +44,7 @@ mod real {
     fn multi_operations_3ops1_vector_32_benchmark(b: &mut Bencher) {
         let mut vector = ComplexTime32Box::new(Size::Small);
         b.iter(|| {
-            vector.execute(|v, mut buffer| {
+            vector.execute(|v, buffer| {
                 let ops = multi_ops1(v);
                 let ops = ops.add_ops(|mut x| {
                     x.log(10.0);
@@ -75,7 +74,7 @@ mod real {
     fn multi_operations_3ops2_vector_32_benchmark(b: &mut Bencher) {
         let mut vector = ComplexTime32Box::new(Size::Small);
         b.iter(|| {
-            vector.execute(|v, mut buffer| {
+            vector.execute(|v, buffer| {
                 let len = v.len();
                 let operand = vec!(6.0; len).to_complex_time_vec();
                 let ops = multi_ops2(v, operand);
@@ -95,7 +94,7 @@ mod real {
     fn multi_operations_6ops1_vector_32_benchmark(b: &mut Bencher) {
         let mut vector = ComplexTime32Box::new(Size::Small);
         b.iter(|| {
-            vector.execute(|v, mut buffer| {
+            vector.execute(|v, buffer| {
                 let ops = multi_ops1(v);
                 let ops = ops.add_ops(|mut x| {
                     x.square();
@@ -115,7 +114,7 @@ mod real {
     fn multi_operations_6ops2_vector_32_benchmark(b: &mut Bencher) {
         let mut vector = ComplexTime32Box::new(Size::Small);
         b.iter(|| {
-            vector.execute(|v, mut buffer| {
+            vector.execute(|v, buffer| {
                 let len = v.len();
                 let operand = vec!(6.0; len).to_complex_time_vec();
                 let ops = multi_ops2(v, operand);
