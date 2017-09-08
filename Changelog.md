@@ -2,7 +2,7 @@
 Changes:
 
 ## Version 0.5.2
-Updated to `ocl` and `clFFT` dependencies.
+Updated to `crossbeam`, `arrayvec`, `ocl` and `clFFT` dependencies.
 
 ## Version 0.5.1
 Updated to `rustfft` version `2.0.0`.
