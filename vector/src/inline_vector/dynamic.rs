@@ -70,10 +70,7 @@ impl<T> InlineVector<T> {
     pub fn push(&mut self, elem: T) {
         match self {
             &mut InlineVector::Inline(ref mut v) => {
-                let res = v.push(elem);
-                if res.is_some() {
-                    panic!("InlineVector capacity exceeded, please open a defect against `basic_dsp`");
-                }
+                v.push(elem);
             }
             &mut InlineVector::Dynamic(ref mut v) => v.push(elem),
         };
@@ -88,7 +85,7 @@ impl<T> InlineVector<T> {
 
     pub fn remove(&mut self, index: usize) -> T {
         match self {
-            &mut InlineVector::Inline(ref mut v) => v.remove(index).unwrap(),
+            &mut InlineVector::Inline(ref mut v) => v.remove(index),
             &mut InlineVector::Dynamic(ref mut v) => v.remove(index),
         }
     }
@@ -127,7 +124,7 @@ impl<T> InlineVector<T> {
     pub fn insert(&mut self, index: usize, element: T) {
         match self {
             &mut InlineVector::Inline(ref mut v) => {
-                let _ = v.insert(index, element).unwrap();
+                v.insert(index, element);
             }
             &mut InlineVector::Dynamic(ref mut v) => v.insert(index, element),
         }
