@@ -328,7 +328,7 @@ macro_rules! add_real_time_linear_table_impl {
                     vector.set_delta(self.delta);
                     let mut buffer = FixedLenBuffer::new(InlineVector::of_size($data_type::zero(), 2 * len));
                     let freq = vector.fft(&mut buffer);
-                    let freq = freq.magnitude_b(&mut buffer);
+                    let freq = freq.magnitude();
                     let is_symmetric = self.is_symmetric;
                     let delta = freq.delta();
                     let freq = &freq[..];
@@ -644,7 +644,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn fft_test() {
         let rc = RaisedCosineFunction::new(0.5);
         let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.2, 5);
