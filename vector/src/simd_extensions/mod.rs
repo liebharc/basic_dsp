@@ -71,6 +71,15 @@ pub trait Simd<T>: Sized
     /// Calculates the sum of all register elements, assuming that they
     /// are complex valued.
     fn sum_complex(&self) -> Complex<T>;
+    
+    fn max(self, other: Self) -> Self;
+    
+    fn min(self, other: Self) -> Self;
+}
+
+/// Dirty workaround since the stdsimd doesn't implement conversion traits (yet?).
+pub trait SimdFrom<T> {
+    fn regfrom(T) -> Self;
 }
 
 /// SIMD methods which share their implementation independent if it's a `f32` or `f64` register.
@@ -286,14 +295,13 @@ mod avx;
 #[cfg(any(feature = "doc", feature="use_avx"))]
 pub use self::avx::{Reg32, Reg64, IntReg32, IntReg64, UIntReg32, UIntReg64};
 
-#[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
+#[cfg(any(feature = "doc", all(feature= "use_sse", not(feature= "use_avx"))))]
 mod sse;
 
 #[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
 pub use self::sse::{Reg32, Reg64, IntReg32, IntReg64, UIntReg32, UIntReg64};
 
-// #[cfg(any(feature = "doc", any(feature = "use_sse", feature = "use_avx")))]
-#[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
+#[cfg(any(feature = "doc", any(feature = "use_sse", feature = "use_avx")))]
 mod approximations;
 
 #[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
@@ -302,7 +310,7 @@ mod fallback;
 #[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
 pub use self::fallback::{Reg32, Reg64};
 
-#[cfg(any(feature = "doc", not(feature="use_sse")))]
+#[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
 mod approx_fallback;
 
 simd_generic_impl!(f32, Reg32);

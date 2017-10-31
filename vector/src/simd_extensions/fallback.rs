@@ -294,6 +294,24 @@ impl Simd<f32> for f32x4 {
     fn sum_complex(&self) -> Complex<f32> {
         Complex::<f32>::new(self.0 + self.2, self.1 + self.3)
     }
+    
+    #[inline]
+    fn max(self, other: Self) -> Self {
+        f32x4::new(
+            f32::max(self.0, other.0),
+            f32::max(self.1, other.1),
+            f32::max(self.2, other.2),
+            f32::max(self.3, other.3))
+    }
+    
+    #[inline]
+    fn min(self, other: Self) -> Self {
+        f32x4::new(
+            f32::min(self.0, other.0),
+            f32::min(self.1, other.1),
+            f32::min(self.2, other.2),
+            f32::min(self.3, other.3))
+    }
 }
 
 impl Simd<f64> for f64x2 {
@@ -421,5 +439,19 @@ impl Simd<f64> for f64x2 {
     #[inline]
     fn sum_complex(&self) -> Complex<f64> {
         Complex::<f64>::new(self.0, self.1)
+    }
+    
+    #[inline]
+    fn max(self, other: Self) -> Self {
+        f64x2::new(
+            f64::max(self.0, other.0),
+            f64::max(self.1, other.1))
+    }
+    
+    #[inline]
+    fn min(self, other: Self) -> Self {
+        f64x2::new(
+            f64::min(self.0, other.0),
+            f64::min(self.1, other.1))
     }
 }

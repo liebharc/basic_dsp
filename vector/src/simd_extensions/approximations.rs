@@ -22,11 +22,7 @@
 // (this is the zlib license)
 //
 
-use super::{SimdApproximations, Reg32, IntReg32, UIntReg32, Reg64, IntReg64, UIntReg64};
-#[cfg(feature="use_sse")]
-use simd::x86::sse2::Sse2F64x2;
-#[cfg(feature="use_avx")]
-use simd::x86::avx::{AvxF64x4, AvxF32x8};
+use super::{Simd, SimdApproximations, Reg32, IntReg32, UIntReg32, Reg64, IntReg64, UIntReg64, SimdFrom};
 use std::mem;
 use std::ops::*;
 use numbers::*;
@@ -37,9 +33,7 @@ macro_rules! simd_approx_impl {
      $bit_len:expr,
      $regf:ident,
      $regi: ident,
-     $regu: ident,
-     $tof: ident,
-     $toi: ident)
+     $regu: ident)
     =>
     {
         impl SimdApproximations<$data_type> for $regf {
@@ -88,7 +82,7 @@ macro_rules! simd_approx_impl {
                 let x = x.bitor(unsafe { mem::transmute(half) });
 
                 let emm0: $regi = emm0 - hex7fi;
-                let e: $regf = emm0.$tof();
+                let e: $regf = $regf::regfrom(emm0);
                 let e = e + one;
 
                 let mask = unsafe { x.lt(mem::transmute(sqrthf)) };
@@ -176,8 +170,8 @@ macro_rules! simd_approx_impl {
                 let fx = x * log2ef + half;
 
                 // how to perform a floorf with SSE: just below
-                let emm0 = fx.$toi();
-                let tmp = emm0.$tof();
+                let emm0 = $regi::regfrom(fx);
+                let tmp = $regf::regfrom(emm0);
 
                 // if greater, substract 1
                 let mask = tmp.gt(fx);
@@ -206,7 +200,7 @@ macro_rules! simd_approx_impl {
                 let y = y + one;
 
                 // build 2^n
-                let emm0 = fx.$toi();
+                let emm0 = $regi::regfrom(fx);
                 let emm0 = emm0 + hex7fi;
                 let emm0: $regu = unsafe { mem::transmute(emm0) };
                 let emm0: $regu = emm0.shl(mant_len);
@@ -264,11 +258,11 @@ macro_rules! simd_approx_impl {
                 let y = x * fopi;
 
                 // store the integer part of y in mm0
-                let emm2 = y.$toi();
+                let emm2 = $regi::regfrom(y);
                 // j=(j+1) & (~1) (see the cephes sources)
                 let emm2 = emm2 + one;
                 let mut emm2 = emm2.bitand(inv_one);
-                let y = emm2.$tof();
+                let y = $regf::regfrom(emm2);
                 if !is_sin {
                     emm2 = emm2 - two;
                 }
@@ -349,8 +343,8 @@ macro_rules! simd_approx_impl {
     }
 }
 
-simd_approx_impl!(f32, 32, Reg32, IntReg32, UIntReg32, to_f32, to_i32);
-simd_approx_impl!(f64, 64, Reg64, IntReg64, UIntReg64, to_f64, to_i64);
+simd_approx_impl!(f32, 32, Reg32, IntReg32, UIntReg32);
+simd_approx_impl!(f64, 64, Reg64, IntReg64, UIntReg64);
 
 #[cfg(test)]
 mod tests {

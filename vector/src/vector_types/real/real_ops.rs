@@ -66,11 +66,11 @@ pub trait ModuloOps<T>
     fn unwrap(&mut self, divisor: T);
 }
 
-/// Recommended to be only used with feature flags `use_sse` or `use_avx`.
+/// Recommended to be only used with the CPU feature flags `sse` or `avx`.
 ///
 /// This trait provides alternative implementations for some standard functions which
 /// are less accurate but perform faster. Those approximations are written for SSE2
-/// (feature flag `use_sse`) or AVX2 (feature flag `use_avx`) processors. Without any of those
+/// (target feature flag `sse`) or AVX2 (target feature flag `avx`) processors. Without any of those
 /// feature flags the standard library functions will be used instead.
 ///
 /// Information on the error of the approximation and their performance are rough numbers.
