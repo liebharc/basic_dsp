@@ -1,6 +1,6 @@
 [package]
 name = "basic_dsp"
-version = "0.5.2"
+version = "0.5.3"
 authors = ["Christian Liebhardt"]
 license = "MIT/Apache-2.0"
 homepage = "https://github.com/liebharc/basic_dsp"
@@ -25,7 +25,7 @@ crate-type = ["dylib", "rlib"]
 [dependencies.basic_dsp_vector]
 optional = false
 path = "vector"
-version = "0.5.2"
+version = "0.5.3"
 
 [dependencies.basic_dsp_matrix]
 optional = true

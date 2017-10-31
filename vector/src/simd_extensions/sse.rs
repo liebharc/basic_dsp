@@ -1,7 +1,7 @@
 use stdsimd::simd::*;
 use stdsimd::vendor::*;
 use numbers::*;
-use super::Simd;
+use super::{Simd, SimdFrom};
 
 pub type Reg32 = f32x4;
 
@@ -319,7 +319,7 @@ impl Simd<f64> for f64x2 {
     
     #[inline]
     fn min(self, other: Self) -> Self {
-        unsafe { _mm_min_p(self, other) }
+        unsafe { _mm_min_pd(self, other) }
     }
 }
 
@@ -335,7 +335,7 @@ impl SimdFrom<i32x4> for f32x4 {
     }
 }
 
-impl SimdgFrom<f64x2> for i64x2 {
+impl SimdFrom<f64x2> for i64x2 {
     fn regfrom(value: f64x2) -> Self {
         value.as_i64x2()
     }
