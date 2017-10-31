@@ -644,6 +644,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn fft_test() {
         let rc = RaisedCosineFunction::new(0.5);
         let table = RealTimeLinearTableLookup::<f64>::from_conv_function(&rc, 0.2, 5);
