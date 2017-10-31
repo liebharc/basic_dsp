@@ -472,7 +472,7 @@ impl Chunk {
             let chunks = Chunk::partition(a, a_step, number_of_chunks);
             let ranges = Chunk::partition_in_ranges(a_len, a_step, chunks.len());
             let result = InlineVector::with_capacity(chunks.len());
-            let stack_array = Arc::new(Mutex::new(result));
+            let stack_array = Arc::new(Mutex::new(result)); 
             crossbeam::scope(|scope| {
                 for chunk in chunks.zip(ranges) {
                     let stack_array = stack_array.clone();
