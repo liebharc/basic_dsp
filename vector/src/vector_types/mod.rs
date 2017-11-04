@@ -287,7 +287,7 @@ fn round_len(len: usize) -> usize {
         Reg::len()
     }
     
-    let reg_len = get_reg_len(get_reg!(f32));
+    let reg_len = sel_reg!(get_reg_len::<f32>());
     ((len + reg_len - 1) / reg_len) * reg_len
 }
 

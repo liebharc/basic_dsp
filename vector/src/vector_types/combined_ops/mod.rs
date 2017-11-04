@@ -588,7 +588,7 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
                                                     range,
                                                     Reg::len(),
                                                     (operations, first_vec_len),
-                                                    |array, range, arg|perform_complex_operations_par(get_reg!(T), array, range, arg));
+                                                    |array, range, arg|sel_reg!(perform_complex_operations_par::<T>(array, range, arg)));
                 } else {
                     Chunk::execute_partial_multidim(complexity,
                                                     &multicore_settings,
@@ -596,7 +596,7 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
                                                     range,
                                                     Reg::len(),
                                                     (operations, first_vec_len),
-                                                    |array, range, arg|perform_real_operations_par(get_reg!(T), array, range, arg));
+                                                    |array, range, arg|sel_reg!(perform_real_operations_par::<T>(array, range, arg)));
                 }
             }
         }

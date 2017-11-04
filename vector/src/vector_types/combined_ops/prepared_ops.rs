@@ -5,7 +5,7 @@ use inline_vector::InlineVector;
 use super::{generic_vector_from_any_vector, generic_vector_back_to_vector, Identifier,
             PreparedOperation1, PreparedOperation2, Operation, OpsVec};
 use super::super::{Domain, NumberSpace, ToSliceMut, DspVec, ErrorReason, RededicateForceOps,
-                   Buffer, TimeOrFrequencyData, RealOrComplexData};
+                   Buffer, TimeOrFrequencyData, RealOrComplexData, TransRes};
 
 const ARGUMENT1: usize = 0;
 const ARGUMENT2: usize = 1;
@@ -197,12 +197,9 @@ impl<T, S, NI, DI, NO, DO> PreparedOperation1Exec<S, T, DspVec<S, T, NI, DI>, Ds
 		let mut vec = Vec::new();
 		let (number_space, domain, gen) = generic_vector_from_any_vector(a);
 		vec.push(gen);
-
-
+        
 		// at this point we would execute all ops and cast the result to the right types
-		let result =
-            DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(
-                get_reg!(T), buffer, vec, &self.ops[..]);
+		let result = sel_reg!(self.call_perform_operations::<T>(buffer, vec));
 
 		match result {
 			Err((reason, mut vec)) => {
@@ -220,6 +217,22 @@ impl<T, S, NI, DI, NO, DO> PreparedOperation1Exec<S, T, DspVec<S, T, NI, DI>, Ds
 			}
 		}
 	}
+}
+
+impl<T, NI, DI, NO, DO> PreparedOperation1<T, NI, DI, NO, DO>
+	where T: RealNumber,
+		NI: NumberSpace, DI: Domain,
+		NO: NumberSpace, DO: Domain {
+        fn call_perform_operations<Reg: SimdGeneric<T>, B, S: ToSliceMut<T>>(
+                             &self,
+                             reg: RegType<Reg>,
+                             buffer: &mut B,
+                             vectors: Vec<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>)
+                             -> TransRes<Vec<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>>
+                where B: for<'a> Buffer<'a, S, T> {
+            DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(
+                reg, buffer, vectors, &self.ops[..])                 
+        }
 }
 
 /// Lists all operations which must be executed on on argument.
@@ -464,9 +477,7 @@ impl<T, S, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2Exec<
 		vec.push(gen2);
 
         // at this point we would execute all ops and cast the result to the right types
-		let result =
-            DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(
-                get_reg!(T), buffer, vec, &self.ops[..]);
+		let result = sel_reg!(self.call_perform_operations::<T>(buffer, vec));
 
         match result {
 			Err((reason, mut vec)) => {
@@ -489,4 +500,22 @@ impl<T, S, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2Exec<
 			}
 		}
     }
+}
+
+impl<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2>
+	where T: RealNumber,
+		NI1: NumberSpace, DI1: Domain,
+        NI2: NumberSpace, DI2: Domain,
+		NO1: NumberSpace, DO1: Domain,
+        NO2: NumberSpace, DO2: Domain {
+        fn call_perform_operations<Reg: SimdGeneric<T>, B, S: ToSliceMut<T>>(
+                             &self,
+                             reg: RegType<Reg>,
+                             buffer: &mut B,
+                             vectors: Vec<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>)
+                             -> TransRes<Vec<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>>
+                where B: for<'a> Buffer<'a, S, T> {
+            DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(
+                reg, buffer, vectors, &self.ops[..])                 
+        }
 }

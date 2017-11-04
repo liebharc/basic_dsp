@@ -321,25 +321,29 @@ impl<Reg> RegType<Reg> {
     }
 }
 
-/// Return the best available SIMD register.
-macro_rules! get_reg(
-    ($type: ident) => {
-        if cfg_feature_enabled!("avx2") && cfg!(feature="use_avx2") {
-            RegType::<<$type as ToSimd>::RegFallback>::new()
-        } else if cfg_feature_enabled!("avx") && cfg!(feature="use_avx") {
-            RegType::<<$type as ToSimd>::RegFallback>::new()
-        } else if cfg_feature_enabled!("sse2") && cfg!(feature="use_sse") {
-            RegType::<<$type as ToSimd>::RegFallback>::new()
-        } else {
-            RegType::<<$type as ToSimd>::RegFallback>::new()
-        }
-    }
-);
-
 /// Selects a SIMD register type and passes it as 2nd argument to a function.
 /// The macro tries to mimic the Rust syntax of a method call.
 macro_rules! sel_reg(
     ($self_:ident.$method: ident::<$type: ident>($($args: expr),*)) => {
-        $self_.$method(get_reg!($type), $($args),*)
-    }
+        if cfg_feature_enabled!("avx2") && cfg!(feature="use_avx2") {
+            $self_.$method(RegType::<<$type as ToSimd>::RegAvx>::new(), $($args),*)
+        } else if cfg_feature_enabled!("avx") && cfg!(feature="use_avx") {
+            $self_.$method(RegType::<<$type as ToSimd>::RegAvx>::new(), $($args),*)
+        } else if cfg_feature_enabled!("sse2") && cfg!(feature="use_sse") {
+            $self_.$method(RegType::<<$type as ToSimd>::RegSse>::new(), $($args),*)
+        } else {
+            $self_.$method(RegType::<<$type as ToSimd>::RegFallback>::new(), $($args),*)
+        }
+    };
+    ($method: ident::<$type: ident>($($args: expr),*)) => {
+        if cfg_feature_enabled!("avx2") && cfg!(feature="use_avx2") {
+            $method(RegType::<<$type as ToSimd>::RegAvx>::new(), $($args),*)
+        } else if cfg_feature_enabled!("avx") && cfg!(feature="use_avx") {
+            $method(RegType::<<$type as ToSimd>::RegAvx>::new(), $($args),*)
+        } else if cfg_feature_enabled!("sse2") && cfg!(feature="use_sse") {
+            $method(RegType::<<$type as ToSimd>::RegSse>::new(), $($args),*)
+        } else {
+            $method(RegType::<<$type as ToSimd>::RegFallback>::new(), $($args),*)
+        }
+    };
 );
