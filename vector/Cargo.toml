@@ -19,7 +19,7 @@ codegen-units = 4
 codegen-units = 4
 
 [features]
-default = ["std", "use_avx", "use_sse"]
+default = ["std"]
 use_avx = []
 use_sse = []
 use_gpu = ["ocl", "clfft"]
