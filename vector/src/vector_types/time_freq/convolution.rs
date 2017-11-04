@@ -1,6 +1,7 @@
 use {array_to_complex, array_to_complex_mut};
 use conv_types::*;
 use numbers::*;
+use simd_extensions::*;
 use inline_vector::InlineVector;
 use multicore_support::*;
 use rustfft::FFTplanner;
@@ -500,7 +501,7 @@ impl<S, SO, T, N, D, NO, DO> ConvolutionOps<DspVec<SO, T, NO, DO>, S, T, NO, DO>
         // times and this only is worthwhile if `vector.len() << self.len()`
         // where `<<` means "significant smaller".
         if self.len() > 1000 && impulse_response.len() <= 202 && impulse_response.len() > 11 {
-            self.convolve_signal_simd(buffer, impulse_response);
+            sel_reg!(self.convolve_signal_simd::<T>(buffer, impulse_response));
             return Ok(());
         }
 

@@ -1,5 +1,6 @@
 use numbers::*;
 use std::result;
+use simd_extensions::*;
 use inline_vector::InlineVector;
 use super::{generic_vector_from_any_vector, generic_vector_back_to_vector, Identifier,
             PreparedOperation1, PreparedOperation2, Operation, OpsVec};
@@ -201,7 +202,7 @@ impl<T, S, NI, DI, NO, DO> PreparedOperation1Exec<S, T, DspVec<S, T, NI, DI>, Ds
 		// at this point we would execute all ops and cast the result to the right types
 		let result =
             DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(
-                buffer, vec, &self.ops[..]);
+                get_reg!(T), buffer, vec, &self.ops[..]);
 
 		match result {
 			Err((reason, mut vec)) => {
@@ -465,7 +466,7 @@ impl<T, S, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2Exec<
         // at this point we would execute all ops and cast the result to the right types
 		let result =
             DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(
-                buffer, vec, &self.ops[..]);
+                get_reg!(T), buffer, vec, &self.ops[..]);
 
         match result {
 			Err((reason, mut vec)) => {

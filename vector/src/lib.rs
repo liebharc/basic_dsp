@@ -53,7 +53,8 @@
 //! complex vectors in time domain, but not with real valued vectors or frequency domain vectors. 
 //! And the type `GenDspVec` serves as wild card at compile time since it defers all checks to run time.
 
-#[cfg(any(feature = "doc", feature="use_sse", feature="use_avx"))]
+#![feature(cfg_target_feature)]
+#[macro_use]
 extern crate stdsimd;
 #[cfg(any(feature = "doc", feature="use_gpu"))]
 extern crate ocl;
@@ -67,9 +68,10 @@ extern crate rustfft;
 #[cfg(any(feature = "doc", feature="use_gpu"))]
 extern crate clfft;
 extern crate arrayvec;
+#[macro_use]
+mod simd_extensions;
 mod vector_types;
 mod multicore_support;
-mod simd_extensions;
 pub mod window_functions;
 pub mod conv_types;
 pub use vector_types::*;

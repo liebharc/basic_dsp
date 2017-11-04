@@ -306,10 +306,10 @@ impl<S, T, N, D> PowerOps<T> for DspVec<S, T, N, D>
         if self.is_complex() {
             self.pure_complex_operation(|x, _arg| x.sqrt(), (), Complexity::Small);
         } else {
-            self.simd_real_operation(|x, _arg| x.sqrt(),
+            sel_reg!(self.simd_real_operation::<T>(|x, _arg| x.sqrt(),
                                      |x, _arg| x.sqrt(),
                                      (),
-                                     Complexity::Small);
+                                     Complexity::Small));
         }
     }
 
@@ -317,7 +317,7 @@ impl<S, T, N, D> PowerOps<T> for DspVec<S, T, N, D>
         if self.is_complex() {
             self.pure_complex_operation(|x, _arg| x * x, (), Complexity::Small);
         } else {
-            self.simd_real_operation(|x, _arg| x * x, |x, _arg| x * x, (), Complexity::Small);
+            sel_reg!(self.simd_real_operation::<T>(|x, _arg| x * x, |x, _arg| x * x, (), Complexity::Small));
         }
     }
 

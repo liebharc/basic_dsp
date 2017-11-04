@@ -240,10 +240,11 @@ impl<S, T, N, D> RealOps for DspVec<S, T, N, D>
 {
     fn abs(&mut self) {
         assert_real!(self);
-        self.simd_real_operation(|x, _arg| (x * x).sqrt(),
+        sel_reg!(self.simd_real_operation::<T>(
+                                 |x, _arg| (x * x).sqrt(),
                                  |x, _arg| x.abs(),
                                  (),
-                                 Complexity::Small);
+                                 Complexity::Small));
     }
 }
 
@@ -295,64 +296,60 @@ impl<S, T, N, D> ApproximatedOps<T> for DspVec<S, T, N, D>
 {
     fn ln_approx(&mut self) {
         assert_real!(self);
-        self.simd_real_operation(|x, _arg| x.ln_approx(),
+        sel_reg!(self.simd_real_operation::<T>(|x, _arg| x.ln_approx(),
                                  |x, _arg| x.ln(),
                                  (),
-                                 APPROX_COMPLEXITY);
+                                 APPROX_COMPLEXITY));
     }
 
     fn exp_approx(&mut self) {
         assert_real!(self);
-        self.simd_real_operation(|x, _arg| x.exp_approx(),
+        sel_reg!(self.simd_real_operation::<T>(|x, _arg| x.exp_approx(),
                                  |x, _arg| x.exp(),
                                  (),
-                                 APPROX_COMPLEXITY);
+                                 APPROX_COMPLEXITY));
     }
 
     fn sin_approx(&mut self) {
         assert_real!(self);
-        self.simd_real_operation(|x, _arg| x.sin_approx(),
+        sel_reg!(self.simd_real_operation::<T>(|x, _arg| x.sin_approx(),
                                  |x, _arg| x.sin(),
                                  (),
-                                 APPROX_COMPLEXITY);
+                                 APPROX_COMPLEXITY));
     }
 
     fn cos_approx(&mut self) {
         assert_real!(self);
-        self.simd_real_operation(|x, _arg| x.cos_approx(),
+        sel_reg!(self.simd_real_operation::<T>(|x, _arg| x.cos_approx(),
                                  |x, _arg| x.cos(),
                                  (),
-                                 APPROX_COMPLEXITY);
+                                 APPROX_COMPLEXITY));
     }
 
     fn log_approx(&mut self, base: T) {
         assert_real!(self);
-        let base_ln = T::Reg::splat(base.ln());
-        self.simd_real_operation(|x, b| x.ln_approx() / b,
+        sel_reg!(self.simd_real_operationf::<T>(|x, b| x.ln_approx() / b,
                                  |x, b| x.ln() / b.extract(0),
-                                 (base_ln),
-                                 APPROX_COMPLEXITY);
+                                 base.ln(),
+                                 APPROX_COMPLEXITY));
     }
 
     fn expf_approx(&mut self, base: T) {
         assert_real!(self);
         // Transform base with:
         // x^y = e^(ln(x)*y)
-        let base_ln = T::Reg::splat(base.ln());
-        self.simd_real_operation(|y, x| (x * y).exp_approx(),
-                                 |y, x| (x.extract(0) * y).exp(),
-                                 (base_ln),
-                                 APPROX_COMPLEXITY);
+        sel_reg!(self.simd_real_operationf::<T>(|y, x| (x * y).exp_approx(),
+                                |y, x| (x.extract(0) * y).exp(),
+                                base.ln(),
+                                APPROX_COMPLEXITY));
     }
 
     fn powf_approx(&mut self, exponent: T) {
         assert_real!(self);
         // Transform base with the same equation as for `expf_approx`
-        let exponent = T::Reg::splat(exponent);
-        self.simd_real_operation(|x, y| (x.ln_approx() * y).exp_approx(),
+        sel_reg!(self.simd_real_operationf::<T>(|x, y| (x.ln_approx() * y).exp_approx(),
                                  |x, y| (x.ln() * y.extract(0)).exp(),
-                                 (exponent),
-                                 APPROX_COMPLEXITY);
-
+                                 exponent,
+                                 APPROX_COMPLEXITY));
     }
 }

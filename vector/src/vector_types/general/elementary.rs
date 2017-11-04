@@ -280,16 +280,15 @@ impl<S, T, N, D> OffsetOps<T> for DspVec<S, T, N, D>
 {
     fn offset(&mut self, offset: T) {
         if self.is_complex() {
-            let vector_offset = T::Reg::from_complex(Complex::new(offset, T::zero()));
-            self.simd_complex_operation(|x, y| x + y,
+            sel_reg!(self.simd_complex_operationf::<T>(|x, y| x + y,
                                         |x, y| x + Complex::<T>::new(y.extract(0), y.extract(1)),
-                                        vector_offset,
-                                        Complexity::Small);
+                                        Complex::new(offset, T::zero()),
+                                        Complexity::Small));
         } else {
-            self.simd_real_operation(|x, y| x.add_real(y),
+            sel_reg!(self.simd_real_operation::<T>(|x, y| x.add_real(y),
                                      |x, y| x + y,
                                      offset,
-                                     Complexity::Small);
+                                     Complexity::Small));
         }
     }
 }
@@ -302,11 +301,10 @@ impl<S, T, N, D> OffsetOps<Complex<T>> for DspVec<S, T, N, D>
 {
     fn offset(&mut self, offset: Complex<T>) {
         assert_complex!(self);
-        let vector_offset = T::Reg::from_complex(offset);
-        self.simd_complex_operation(|x, y| x + y,
+        sel_reg!(self.simd_complex_operationf::<T>(|x, y| x + y,
                                     |x, y| x + Complex::<T>::new(y.extract(0), y.extract(1)),
-                                    vector_offset,
-                                    Complexity::Small);
+                                    offset,
+                                    Complexity::Small));
     }
 }
 
@@ -317,10 +315,10 @@ impl<S, T, D, N> ScaleOps<T> for DspVec<S, T, N, D>
           D: Domain
 {
     fn scale(&mut self, factor: T) {
-        self.simd_real_operation(|x, y| x.scale_real(y),
+        sel_reg!(self.simd_real_operation::<T>(|x, y| x.scale_real(y),
                                  |x, y| x * y,
                                  factor,
-                                 Complexity::Small);
+                                 Complexity::Small));
     }
 }
 
@@ -332,10 +330,10 @@ impl<S, T, D, N> ScaleOps<Complex<T>> for DspVec<S, T, N, D>
 {
     fn scale(&mut self, factor: Complex<T>) {
         assert_complex!(self);
-        self.simd_complex_operation(|x, y| x.scale_complex(y),
+        sel_reg!(self.simd_complex_operation::<T>(|x, y| x.scale_complex(y),
                                     |x, y| x * y,
                                     factor,
-                                    Complexity::Small);
+                                    Complexity::Small));
     }
 }
 
@@ -362,7 +360,7 @@ macro_rules! assert_meta_data {
 
 macro_rules! impl_binary_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<O: Vector<T> + Index<RangeFull, Output=[T]>>(&mut self, $arg_name: &O) -> VoidResult
+        fn $method<Reg: SimdGeneric<T>, O: Vector<T> + Index<RangeFull, Output=[T]>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -372,18 +370,18 @@ macro_rules! impl_binary_vector_operation {
                 let data_length = self.len();
                 let array = self.data.to_slice_mut();
                 let (scalar_left, scalar_right, vectorization_length) =
-                    T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+                    Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name[..];
                 if vectorization_length > 0 {
                     Chunk::from_src_to_dest(
                         Complexity::Small, &self.multicore_settings,
-                        &other[scalar_left..vectorization_length], T::Reg::len(),
-                        &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
+                        &other[scalar_left..vectorization_length], Reg::len(),
+                        &mut array[scalar_left..vectorization_length], Reg::len(), (),
                         |original, range, target, _arg| {
                             let original =
-                                T::Reg::array_to_regs(&original[range.start .. range.end]);
+                                Reg::array_to_regs(&original[range.start .. range.end]);
                             let target =
-                                T::Reg::array_to_regs_mut(&mut target[..]);
+                                Reg::array_to_regs_mut(&mut target[..]);
                             for (dst, src) in &mut target.iter_mut().zip(original) {
                                 *dst = dst.$simd_op(*src);
                             }
@@ -404,7 +402,7 @@ macro_rules! impl_binary_vector_operation {
 
 macro_rules! impl_binary_complex_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<O: Vector<T> + Index<RangeFull, Output=[T]>>(&mut self, $arg_name: &O) -> VoidResult
+        fn $method<Reg: SimdGeneric<T>, O: Vector<T> + Index<RangeFull, Output=[T]>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -414,18 +412,18 @@ macro_rules! impl_binary_complex_vector_operation {
                 let data_length = self.len();
                 let array = self.data.to_slice_mut();
                 let (scalar_left, scalar_right, vectorization_length) =
-                    T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+                    Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name[..];
                 if vectorization_length > 0 {
                     Chunk::from_src_to_dest(
                         Complexity::Small, &self.multicore_settings,
-                        &other[scalar_left..vectorization_length], T::Reg::len(),
-                        &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
+                        &other[scalar_left..vectorization_length], Reg::len(),
+                        &mut array[scalar_left..vectorization_length], Reg::len(), (),
                         |original, range, target, _arg| {
                             let original =
-                                T::Reg::array_to_regs(&original[range.start .. range.end]);
+                                Reg::array_to_regs(&original[range.start .. range.end]);
                             let target =
-                                T::Reg::array_to_regs_mut(&mut target[range.start .. range.end]);
+                                Reg::array_to_regs_mut(&mut target[range.start .. range.end]);
                             for (dst, src) in target.iter_mut().zip(original) {
                                 *dst = dst.$simd_op(*src);
                             }
@@ -459,7 +457,7 @@ macro_rules! impl_binary_complex_vector_operation {
 
 macro_rules! impl_binary_smaller_vector_operation {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<O: Vector<T> + Index<RangeFull, Output=[T]>>(&mut self, $arg_name: &O) -> VoidResult
+        fn $method<Reg: SimdGeneric<T>, O: Vector<T> + Index<RangeFull, Output=[T]>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -471,7 +469,7 @@ macro_rules! impl_binary_smaller_vector_operation {
                 let other = &$arg_name[..];
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
-                    &other, T::Reg::len(),
+                    &other, Reg::len(),
                     &mut array[0..data_length], 1, (),
                     |operand, range, target, _arg| {
                         let mut i = range.start;
@@ -489,7 +487,7 @@ macro_rules! impl_binary_smaller_vector_operation {
 
 macro_rules! impl_binary_smaller_complex_vector_ops {
     (fn $method: ident, $arg_name: ident, $simd_op: ident, $scal_op: ident) => {
-        fn $method<O: Vector<T> + Index<RangeFull, Output=[T]>>(&mut self, $arg_name: &O) -> VoidResult
+        fn $method<Reg: SimdGeneric<T>, O: Vector<T> + Index<RangeFull, Output=[T]>>(&mut self, _: RegType<Reg>, $arg_name: &O) -> VoidResult
         {
             {
                 let len = self.len();
@@ -501,7 +499,7 @@ macro_rules! impl_binary_smaller_complex_vector_ops {
                 let other = &$arg_name[..];
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
-                    &other, T::Reg::len(),
+                    &other, Reg::len(),
                     &mut array[0..data_length], 2, (),
                     |operand, range, target, _arg| {
                         let target = array_to_complex_mut(&mut target[..]);
@@ -549,11 +547,11 @@ impl<S, T, N, D, O, NO, DO> ElementaryOps<O, T, NO, DO> for DspVec<S, T, N, D>
           DO: PosEq<D> + Domain
 {
     fn add(&mut self, summand: &O) -> VoidResult {
-        self.add_inter(summand)
+        sel_reg!(self.add_inter::<T>(summand))
     }
 
     fn sub(&mut self, subtrahend: &O) -> VoidResult {
-        self.sub_inter(subtrahend)
+        sel_reg!(self.sub_inter::<T>(subtrahend))
     }
 
     fn mul(&mut self, factor: &O) -> VoidResult {
@@ -562,9 +560,9 @@ impl<S, T, N, D, O, NO, DO> ElementaryOps<O, T, NO, DO> for DspVec<S, T, N, D>
         assert_meta_data!(self, factor);
 
         if self.is_complex() {
-            self.mul_complex(factor)
+            sel_reg!(self.mul_complex::<T>(factor))
         } else {
-            self.mul_real(factor)
+            sel_reg!(self.mul_real::<T>(factor))
         }
     }
 
@@ -574,9 +572,9 @@ impl<S, T, N, D, O, NO, DO> ElementaryOps<O, T, NO, DO> for DspVec<S, T, N, D>
         assert_meta_data!(self, divisor);
 
         if self.is_complex() {
-            self.div_complex(divisor)
+            sel_reg!(self.div_complex::<T>(divisor))
         } else {
-            self.div_real(divisor)
+            sel_reg!(self.div_real::<T>(divisor))
         }
     }
 }
@@ -590,11 +588,11 @@ impl<S, T, N, D, O, NO, DO> ElementaryWrapAroundOps<O, T, NO, DO> for DspVec<S, 
           NO: PosEq<N> + NumberSpace,
           DO: PosEq<D> + Domain {
     fn add_smaller(&mut self, summand: &O) -> VoidResult {
-        self.add_smaller_inter(summand)
+        sel_reg!(self.add_smaller_inter::<T>(summand))
     }
 
     fn sub_smaller(&mut self, subtrahend: &O) -> VoidResult {
-        self.sub_smaller_inter(subtrahend)
+        sel_reg!(self.sub_smaller_inter::<T>(subtrahend))
     }
 
     fn mul_smaller(&mut self, factor: &O) -> VoidResult {
@@ -603,9 +601,9 @@ impl<S, T, N, D, O, NO, DO> ElementaryWrapAroundOps<O, T, NO, DO> for DspVec<S, 
         assert_meta_data!(self, factor);
 
         if self.is_complex() {
-            self.mul_smaller_complex(factor)
+            sel_reg!(self.mul_smaller_complex::<T>(factor))
         } else {
-            self.mul_smaller_real(factor)
+            sel_reg!(self.mul_smaller_real::<T>(factor))
         }
     }
 
@@ -615,9 +613,9 @@ impl<S, T, N, D, O, NO, DO> ElementaryWrapAroundOps<O, T, NO, DO> for DspVec<S, 
         assert_meta_data!(self, divisor);
 
         if self.is_complex() {
-            self.div_smaller_complex(divisor)
+            sel_reg!(self.div_smaller_complex::<T>(divisor))
         } else {
-            self.div_smaller_real(divisor)
+            sel_reg!(self.div_smaller_real::<T>(divisor))
         }
     }
 }

@@ -1,7 +1,7 @@
 use array_to_complex_mut;
 use multicore_support::*;
-use simd_extensions::Simd;
 use numbers::*;
+use simd_extensions::*;
 use super::super::{Vector, DspVec, ToSliceMut, MetaData, Domain, ComplexNumberSpace};
 
 /// Operations on complex types.
@@ -83,7 +83,7 @@ impl<S, T, N, D> ComplexOps<T> for DspVec<S, T, N, D>
         Chunk::execute_with_range(Complexity::Small,
                                   &self.multicore_settings,
                                   &mut array[0..data_length],
-                                  T::Reg::len(),
+                                  2,
                                   (a, b),
                                   move |array, range, args| {
             let two = T::one() + T::one();
@@ -102,7 +102,7 @@ impl<S, T, N, D> ComplexOps<T> for DspVec<S, T, N, D>
 
     fn conj(&mut self) {
         assert_complex!(self);
-        let factor = T::Reg::from_complex(Complex::<T>::new(T::one(), -T::one()));
-        self.simd_complex_operation(|x, y| x * y, |x, _| x.conj(), factor, Complexity::Small)
+        let factor = Complex::<T>::new(T::one(), -T::one());
+        sel_reg!(self.simd_complex_operationf::<T>(|x, y| x * y, |x, _| x.conj(), factor, Complexity::Small))
     }
 }

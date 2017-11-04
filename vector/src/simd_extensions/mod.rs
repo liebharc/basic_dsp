@@ -1,5 +1,7 @@
 use numbers::*;
 use std::mem;
+use std::ops::*;
+use std;
 
 /// SIMD methods which have `f32` or `f64` specific implementation.
 pub trait Simd<T>: Sized
@@ -83,7 +85,9 @@ pub trait SimdFrom<T> {
 }
 
 /// SIMD methods which share their implementation independent if it's a `f32` or `f64` register.
-pub trait SimdGeneric<T>: Simd<T>
+pub trait SimdGeneric<T>: Simd<T> 
+    + Add<Self, Output=Self> + Sub<Self, Output=Self> + Mul<Self, Output=Self> + Div<Self, Output=Self> 
+    + Copy + Clone + Sync + Send + Sized + Zero
     where T: Sized + Sync + Send
 {
     /// On some CPU architectures memory access needs to be aligned or otherwise
@@ -292,26 +296,52 @@ macro_rules! simd_generic_impl {
 #[cfg(any(feature = "doc", feature="use_avx"))]
 mod avx;
 
-#[cfg(any(feature = "doc", feature="use_avx"))]
-pub use self::avx::{Reg32, Reg64, IntReg32, IntReg64, UIntReg32, UIntReg64};
-
-#[cfg(any(feature = "doc", all(feature= "use_sse", not(feature= "use_avx"))))]
+#[cfg(any(feature = "doc", feature= "use_sse"))]
 mod sse;
 
-#[cfg(any(feature = "doc", all(feature = "use_sse", not(feature = "use_avx"))))]
-pub use self::sse::{Reg32, Reg64, IntReg32, IntReg64, UIntReg32, UIntReg64};
+//mod approximations;
 
-#[cfg(any(feature = "doc", any(feature = "use_sse", feature = "use_avx")))]
-mod approximations;
+pub mod fallback;
 
-#[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
-mod fallback;
-
-#[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
 pub use self::fallback::{Reg32, Reg64};
 
-#[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
+//#[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
 mod approx_fallback;
 
 simd_generic_impl!(f32, Reg32);
 simd_generic_impl!(f64, Reg64);
+
+pub struct RegType<Reg> {
+    _type: std::marker::PhantomData<Reg>
+}
+
+impl<Reg> RegType<Reg> {
+    pub fn new() -> Self {
+        RegType { 
+            _type: std::marker::PhantomData 
+        }
+    }
+}
+
+/// Return the best available SIMD register.
+macro_rules! get_reg(
+    ($type: ident) => {
+        if cfg_feature_enabled!("avx2") && cfg!(feature="use_avx2") {
+            RegType::<$type::Reg>::new()
+        } else if cfg_feature_enabled!("avx") && cfg!(feature="use_avx") {
+            RegType::<$type::Reg>::new()
+        } else if cfg_feature_enabled!("sse2") && cfg!(feature="use_sse") {
+            RegType::<$type::Reg>::new()
+        } else {
+            RegType::<$type::Reg>::new()
+        }
+    }
+);
+
+/// Selects a SIMD register type and passes it as 2nd argument to a function.
+/// The macro tries to mimic the Rust syntax of a method call.
+macro_rules! sel_reg(
+    ($self_:ident.$method: ident::<$type: ident>($($args: expr),*)) => {
+        $self_.$method(get_reg!($type), $($args),*)
+    }
+);

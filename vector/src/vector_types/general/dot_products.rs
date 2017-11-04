@@ -53,17 +53,16 @@ pub trait PreciseDotProductOps<A, R, T, N, D>
     fn dot_product_prec(&self, factor: &A) -> Self::Output;
 }
 
-impl<S, O, T, N, D, NO, DO> DotProductOps<O, T, T, NO, DO> for DspVec<S, T, N, D>
+impl<S, T, N, D> DspVec<S, T, N, D>
     where S: ToSlice<T>,
           T: RealNumber,
-          N: RealNumberSpace,
-          D: Domain,
+          N: NumberSpace,
+          D: Domain {
+    fn dot_product_real<Reg: SimdGeneric<T>, O, NO, DO>(&self, _: RegType<Reg>, factor: &O) -> ScalarResult<T> 
+        where
           O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
-          NO: PosEq<N> + NumberSpace,
-          DO: PosEq<D> + Domain {
-    type Output = ScalarResult<T>;
-
-    fn dot_product(&self, factor: &O) -> ScalarResult<T> {
+          NO: NumberSpace,
+          DO: Domain{      
         if self.is_complex() {
             return Err(ErrorReason::InputMustBeReal);
         }
@@ -71,19 +70,19 @@ impl<S, O, T, N, D, NO, DO> DotProductOps<O, T, T, NO, DO> for DspVec<S, T, N, D
         let data_length = self.len();
         let array = self.data.to_slice();
         let (scalar_left, scalar_right, vectorization_length) =
-            T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+            Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
         let chunks = if vectorization_length > 0 {
             Chunk::get_a_fold_b(Complexity::Small,
                                 &self.multicore_settings,
                                 &other[0..vectorization_length],
-                                T::Reg::len(),
+                                Reg::len(),
                                 &array[0..vectorization_length],
-                                T::Reg::len(),
+                                Reg::len(),
                                 |original, range, target| {
-                let mut result = T::Reg::splat(T::zero());
-                let original = T::Reg::array_to_regs(&original[range]);
-                let target = T::Reg::array_to_regs(&target[..]);
+                let mut result = Reg::splat(T::zero());
+                let original = Reg::array_to_regs(&original[range]);
+                let target = Reg::array_to_regs(&target[..]);
                 for (a, b) in original.iter().zip(target) {
                     result = result + (*a * *b);
                 }
@@ -110,19 +109,12 @@ impl<S, O, T, N, D, NO, DO> DotProductOps<O, T, T, NO, DO> for DspVec<S, T, N, D
         let chunk_sum: T = (&chunks[..]).iter().fold(T::zero(), |a, b| a + *b);
         Ok(chunk_sum + sum)
     }
-}
-
-impl<S, O, T, N, D, NO, DO> DotProductOps<O, Complex<T>, T, NO, DO> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain,
+    
+    fn dot_product_complex<Reg: SimdGeneric<T>, O, NO, DO>(&self, _: RegType<Reg>, factor: &O) -> ScalarResult<Complex<T>> 
+        where
           O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
-          NO: PosEq<N> + NumberSpace,
-          DO: PosEq<D> + Domain {
-    type Output = ScalarResult<Complex<T>>;
-
-    fn dot_product(&self, factor: &O) -> ScalarResult<Complex<T>> {
+          NO: NumberSpace,
+          DO: Domain {
         if !self.is_complex() {
             return Err(ErrorReason::InputMustBeComplex);
         }
@@ -134,19 +126,19 @@ impl<S, O, T, N, D, NO, DO> DotProductOps<O, Complex<T>, T, NO, DO> for DspVec<S
         let data_length = self.len();
         let array = self.data.to_slice();
         let (scalar_left, scalar_right, vectorization_length) =
-            T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+            Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
         let chunks = if vectorization_length > 0 {
             Chunk::get_a_fold_b(Complexity::Small,
                                 &self.multicore_settings,
                                 &other[scalar_left..vectorization_length],
-                                T::Reg::len(),
+                                Reg::len(),
                                 &array[scalar_left..vectorization_length],
-                                T::Reg::len(),
+                                Reg::len(),
                                 |original, range, target| {
-                let mut result = T::Reg::splat(T::zero());
-                let original = T::Reg::array_to_regs(&original[range]);
-                let target = T::Reg::array_to_regs(&target[..]);
+                let mut result = Reg::splat(T::zero());
+                let original = Reg::array_to_regs(&original[range]);
+                let target = Reg::array_to_regs(&target[..]);
                 for (a, b) in original.iter().zip(target) {
                     result = result + (a.mul_complex(*b));
                 }
@@ -179,19 +171,12 @@ impl<S, O, T, N, D, NO, DO> DotProductOps<O, Complex<T>, T, NO, DO> for DspVec<S
             .fold(Complex::<T>::new(T::zero(), T::zero()), |a, b| a + b);
         Ok(chunk_sum + sum)
     }
-}
-
-impl<S, O, T, N, D, NO, DO> PreciseDotProductOps<O, T, T, NO, DO> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: RealNumberSpace,
-          D: Domain,
+    
+    fn dot_product_prec_real<Reg: SimdGeneric<T>, O, NO, DO>(&self, _: RegType<Reg>, factor: &O) -> ScalarResult<T> 
+        where
           O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
-          NO: PosEq<N> + NumberSpace,
-          DO: PosEq<D> + Domain {
-    type Output = ScalarResult<T>;
-
-    fn dot_product_prec(&self, factor: &O) -> ScalarResult<T> {
+          NO: NumberSpace,
+          DO: Domain{      
         if self.is_complex() {
             return Err(ErrorReason::InputMustBeReal);
         }
@@ -199,18 +184,18 @@ impl<S, O, T, N, D, NO, DO> PreciseDotProductOps<O, T, T, NO, DO> for DspVec<S, 
         let data_length = self.len();
         let array = self.data.to_slice();
         let (scalar_left, scalar_right, vectorization_length) =
-            T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+            Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
         let chunks = if vectorization_length > 0 {
             Chunk::get_a_fold_b(Complexity::Small,
                                 &self.multicore_settings,
                                 &other[0..vectorization_length],
-                                T::Reg::len(),
+                                Reg::len(),
                                 &array[0..vectorization_length],
-                                T::Reg::len(),
+                                Reg::len(),
                                 |original, range, target| {
-                                    let original = T::Reg::array_to_regs(&original[range]);
-                                    let target = T::Reg::array_to_regs(&target[..]);
+                                    let original = Reg::array_to_regs(&original[range]);
+                                    let target = Reg::array_to_regs(&target[..]);
                                     kahan_sum(original.iter().zip(target).map(|a| *a.0 * *a.1))
                                         .sum_real()
                                 })
@@ -234,19 +219,12 @@ impl<S, O, T, N, D, NO, DO> PreciseDotProductOps<O, T, T, NO, DO> for DspVec<S, 
         let chunk_sum: T = (&chunks[..]).iter().fold(T::zero(), |a, b| a + *b);
         Ok(chunk_sum + sum)
     }
-}
-
-impl<S, O, T, N, D, NO, DO> PreciseDotProductOps<O, Complex<T>, T, NO, DO> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain,
+    
+    fn dot_product_prec_complex<Reg: SimdGeneric<T>, O, NO, DO>(&self, _: RegType<Reg>, factor: &O) -> ScalarResult<Complex<T>> 
+        where
           O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
-          NO: PosEq<N> + NumberSpace,
-          DO: PosEq<D> + Domain {
-    type Output = ScalarResult<Complex<T>>;
-
-    fn dot_product_prec(&self, factor: &O) -> ScalarResult<Complex<T>> {
+          NO: NumberSpace,
+          DO: Domain {
         if !self.is_complex() {
             return Err(ErrorReason::InputMustBeComplex);
         }
@@ -258,18 +236,18 @@ impl<S, O, T, N, D, NO, DO> PreciseDotProductOps<O, Complex<T>, T, NO, DO> for D
         let data_length = self.len();
         let array = self.data.to_slice();
         let (scalar_left, scalar_right, vectorization_length) =
-            T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+            Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
         let chunks = if vectorization_length > 0 {
             Chunk::get_a_fold_b(Complexity::Small,
                                 &self.multicore_settings,
                                 &other[scalar_left..vectorization_length],
-                                T::Reg::len(),
+                                Reg::len(),
                                 &array[scalar_left..vectorization_length],
-                                T::Reg::len(),
+                                Reg::len(),
                                 |original, range, target| {
-                let original = T::Reg::array_to_regs(&original[range]);
-                let target = T::Reg::array_to_regs(&target[..]);
+                let original = Reg::array_to_regs(&original[range]);
+                let target = Reg::array_to_regs(&target[..]);
                 kahan_sum(original.iter().zip(target).map(|a| a.0.mul_complex(*a.1))).sum_complex()
             })
         } else {
@@ -297,6 +275,66 @@ impl<S, O, T, N, D, NO, DO> PreciseDotProductOps<O, Complex<T>, T, NO, DO> for D
             .iter()
             .fold(Complex::<T>::new(T::zero(), T::zero()), |a, b| a + b);
         Ok(chunk_sum + sum)
+    }
+}
+
+impl<S, O, T, N, D, NO, DO> DotProductOps<O, T, T, NO, DO> for DspVec<S, T, N, D>
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: RealNumberSpace,
+          D: Domain,
+          O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
+          NO: PosEq<N> + NumberSpace,
+          DO: PosEq<D> + Domain {
+    type Output = ScalarResult<T>;
+
+    fn dot_product(&self, factor: &O) -> ScalarResult<T> {
+        sel_reg!(self.dot_product_real::<T>(factor))
+    }
+}
+
+impl<S, O, T, N, D, NO, DO> DotProductOps<O, Complex<T>, T, NO, DO> for DspVec<S, T, N, D>
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: ComplexNumberSpace,
+          D: Domain,
+          O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
+          NO: PosEq<N> + NumberSpace,
+          DO: PosEq<D> + Domain {
+    type Output = ScalarResult<Complex<T>>;
+
+    fn dot_product(&self, factor: &O) -> ScalarResult<Complex<T>> {
+        sel_reg!(self.dot_product_complex::<T>(factor))
+    }
+}
+
+impl<S, O, T, N, D, NO, DO> PreciseDotProductOps<O, T, T, NO, DO> for DspVec<S, T, N, D>
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: RealNumberSpace,
+          D: Domain,
+          O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
+          NO: PosEq<N> + NumberSpace,
+          DO: PosEq<D> + Domain {
+    type Output = ScalarResult<T>;
+
+    fn dot_product_prec(&self, factor: &O) -> ScalarResult<T> {
+        sel_reg!(self.dot_product_prec_real::<T>(factor))
+    }
+}
+
+impl<S, O, T, N, D, NO, DO> PreciseDotProductOps<O, Complex<T>, T, NO, DO> for DspVec<S, T, N, D>
+    where S: ToSlice<T>,
+          T: RealNumber,
+          N: ComplexNumberSpace,
+          D: Domain,
+          O: Vector<T> + GetMetaData<T, NO, DO> + Index<RangeFull, Output = [T]>,
+          NO: PosEq<N> + NumberSpace,
+          DO: PosEq<D> + Domain {
+    type Output = ScalarResult<Complex<T>>;
+
+    fn dot_product_prec(&self, factor: &O) -> ScalarResult<Complex<T>> {
+        sel_reg!(self.dot_product_prec_complex::<T>(factor))
     }
 }
 

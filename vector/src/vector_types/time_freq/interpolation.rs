@@ -164,7 +164,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
           N: NumberSpace,
           D: Domain
 {
-    fn interpolate_priv_simd<TT, C, CMut, RMul, RSum, B>(&mut self,
+    fn interpolate_priv_simd<Reg: SimdGeneric<T>, TT, C, CMut, RMul, RSum, B>(&mut self,
+                                                         _: RegType<Reg>,
                                                          buffer: &mut B,
                                                          function: &RealImpulseResponse<T>,
                                                          interpolation_factor: usize,
@@ -178,15 +179,15 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         where TT: Zero + Clone + From<T> + Copy + Add<Output = TT> + Mul<Output = TT> + Send + Sync,
               C: Fn(&[T]) -> &[TT],
               CMut: Fn(&mut [T]) -> &mut [TT],
-              RMul: Fn(T::Reg, T::Reg) -> T::Reg + Sync,
-              RSum: Fn(T::Reg) -> TT + Sync,
+              RMul: Fn(Reg, Reg) -> Reg + Sync,
+              RSum: Fn(Reg) -> TT + Sync,
               B: for<'a> Buffer<'a, S, T>
     {
         let data_len = self.len();
         let mut temp = buffer.borrow(new_len);
         {
             let step = if self.is_complex() { 2 } else { 1 };
-            let number_of_shifts = T::Reg::len() / step;
+            let number_of_shifts = Reg::len() / step;
             let vectors = function_to_vectors(function,
                                               conv_len,
                                               self.is_complex(),
@@ -219,11 +220,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             }
 
             let (scalar_left, _, vectorization_length) =
-                T::Reg::calc_data_alignment_reqs(&data[0..data_len]);
-            let simd = T::Reg::array_to_regs(&data[scalar_left..vectorization_length]);
+                Reg::calc_data_alignment_reqs(&data[0..data_len]);
+            let simd = Reg::array_to_regs(&data[scalar_left..vectorization_length]);
             // Length of a SIMD reg relative to the length of type T
             // which is 1 for real numbers or 2 for complex numbers
-            let simd_len_in_t = T::Reg::len() / step;
+            let simd_len_in_t = Reg::len() / step;
             Chunk::execute_with_range(Complexity::Large,
                                       &self.multicore_settings,
                                       &mut dest[scalar_len..len - scalar_len],
@@ -246,7 +247,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                     };
                     let selection = factor_shift * simd_len_in_t + simd_shift;
                     let shifted = &shifts[selection];
-                    let mut sum = T::Reg::splat(T::zero());
+                    let mut sum = Reg::splat(T::zero());
                     let simd_iter = simd[simd_end - shifted.len()..simd_end].iter();
                     let iteration = simd_iter.zip(shifted.iter());
                     for (this, other) in iteration {
@@ -384,7 +385,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
            (interpolation_factor.round() - interpolation_factor).abs() < T::from(1e-6).unwrap() {
             let interpolation_factor = interpolation_factor.round().to_usize().unwrap();
             if self.is_complex() {
-                return self.interpolate_priv_simd(buffer,
+                return sel_reg!(self.interpolate_priv_simd::<T>(buffer,
                                                   function,
                                                   interpolation_factor,
                                                   delay,
@@ -393,9 +394,9 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                                                   |x| array_to_complex(x),
                                                   |x| array_to_complex_mut(x),
                                                   |x, y| x.mul_complex(y),
-                                                  |x| x.sum_complex());
+                                                  |x| x.sum_complex()));
             } else {
-                return self.interpolate_priv_simd(buffer,
+                return sel_reg!(self.interpolate_priv_simd::<T>(buffer,
                                                   function,
                                                   interpolation_factor,
                                                   delay,
@@ -404,7 +405,7 @@ impl<S, T, N, D> InterpolationOps<S, T> for DspVec<S, T, N, D>
                                                   |x| x,
                                                   |x| x,
                                                   |x, y| x * y,
-                                                  |x| x.sum_real());
+                                                  |x| x.sum_real()));
             }
         } else if is_complex {
             let mut temp = buffer.borrow(new_len);

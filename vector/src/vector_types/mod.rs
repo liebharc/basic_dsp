@@ -387,31 +387,45 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                                    });
         }
     }
+    
+    #[inline]
+    fn simd_real_operationf<Reg: SimdGeneric<T>, F, G>(&mut self,
+                                    reg: RegType<Reg>,
+                                    simd_op: F,
+                                    scalar_op: G,
+                                    argument: T,
+                                    complexity: Complexity)
+        where F: Fn(Reg, Reg) -> Reg + 'static + Sync,
+              G: Fn(T, Reg) -> T + 'static + Sync
+    {
+        self.simd_real_operation(reg, simd_op, scalar_op, Reg::splat(argument), complexity);
+    }
 
 	/// Executes a real function with SIMD optimization.
     #[inline]
-    fn simd_real_operation<A, F, G>(&mut self,
+    fn simd_real_operation<Reg: SimdGeneric<T>, A, F, G>(&mut self,
+                                    _: RegType<Reg>,
                                     simd_op: F,
                                     scalar_op: G,
                                     argument: A,
                                     complexity: Complexity)
         where A: Sync + Copy + Send,
-              F: Fn(T::Reg, A) -> T::Reg + 'static + Sync,
+              F: Fn(Reg, A) -> Reg + 'static + Sync,
               G: Fn(T, A) -> T + 'static + Sync
     {
         {
             let data_length = self.valid_len;
             let array = self.data.to_slice_mut();
             let (scalar_left, scalar_right, vectorization_length) =
-                T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+                Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if vectorization_length > 0 {
                 Chunk::execute_partial(complexity,
                                        &self.multicore_settings,
                                        &mut array[scalar_left..vectorization_length],
-                                       T::Reg::len(),
+                                       Reg::len(),
                                        argument,
                                        move |array, argument| {
-                                           let array = T::Reg::array_to_regs_mut(array);
+                                           let array = Reg::array_to_regs_mut(array);
                                            for reg in array {
                                                *reg = simd_op(*reg, argument);
                                            }
@@ -425,31 +439,45 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             }
         }
     }
+    
+    #[inline]
+    fn simd_complex_operationf<Reg: SimdGeneric<T>, F, G>(&mut self,
+                                       reg: RegType<Reg>,
+                                       simd_op: F,
+                                       scalar_op: G,
+                                       argument: Complex<T>,
+                                       complexity: Complexity)
+        where F: Fn(Reg, Reg) -> Reg + 'static + Sync,
+              G: Fn(Complex<T>, Reg) -> Complex<T> + 'static + Sync
+    {
+        self.simd_complex_operation(reg, simd_op, scalar_op, Reg::from_complex(argument), complexity)
+    }
 
 	/// Executes a complex function with SIMD optimization.
     #[inline]
-    fn simd_complex_operation<A, F, G>(&mut self,
+    fn simd_complex_operation<Reg: SimdGeneric<T>, A, F, G>(&mut self,
+                                       _: RegType<Reg>,
                                        simd_op: F,
                                        scalar_op: G,
                                        argument: A,
                                        complexity: Complexity)
         where A: Sync + Copy + Send,
-              F: Fn(T::Reg, A) -> T::Reg + 'static + Sync,
+              F: Fn(Reg, A) -> Reg + 'static + Sync,
               G: Fn(Complex<T>, A) -> Complex<T> + 'static + Sync
     {
         {
             let data_length = self.valid_len;
             let array = self.data.to_slice_mut();
             let (scalar_left, scalar_right, vectorization_length) =
-                T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+                Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if vectorization_length > 0 {
                 Chunk::execute_partial(complexity,
                                        &self.multicore_settings,
                                        &mut array[scalar_left..vectorization_length],
-                                       T::Reg::len(),
+                                       Reg::len(),
                                        argument,
                                        move |array, argument| {
-                                           let array = T::Reg::array_to_regs_mut(array);
+                                           let array = Reg::array_to_regs_mut(array);
                                            for reg in array {
                                                *reg = simd_op(*reg, argument);
                                            }
@@ -527,14 +555,15 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
 	/// Executes a function which converts a complex array into a real array.
     #[inline]
-    fn simd_complex_to_real_operation<A, F, G, B>(&mut self,
+    fn simd_complex_to_real_operation<Reg: SimdGeneric<T>, A, F, G, B>(&mut self,
+                                                  _: RegType<Reg>,
                                                   buffer: &mut B,
                                                   simd_op: F,
                                                   scalar_op: G,
                                                   argument: A,
                                                   complexity: Complexity)
         where A: Sync + Copy + Send,
-              F: Fn(T::Reg, A) -> T::Reg + 'static + Sync,
+              F: Fn(Reg, A) -> Reg + 'static + Sync,
               G: Fn(Complex<T>, A) -> T + 'static + Sync,
               B: for<'a> Buffer<'a, S, T>
     {
@@ -544,22 +573,22 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let array = self.data.to_slice_mut();
             let temp = result.to_slice_mut();
             let (scalar_left, scalar_right, vectorization_length) =
-                T::Reg::calc_data_alignment_reqs(&array[0..data_length]);
+                Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if vectorization_length > 0 {
                 Chunk::from_src_to_dest(complexity,
                                         &self.multicore_settings,
                                         &array[scalar_left..vectorization_length],
-                                        T::Reg::len(),
+                                        Reg::len(),
                                         &mut temp[scalar_left / 2..vectorization_length / 2],
-                                        T::Reg::len() / 2,
+                                        Reg::len() / 2,
                                         argument,
                                         move |array, range, target, argument| {
-                    let array = T::Reg::array_to_regs(&array[range.start..range.end]);
+                    let array = Reg::array_to_regs(&array[range.start..range.end]);
                     let mut j = 0;
                     for reg in array {
                         let result = simd_op(*reg, argument);
                         result.store_half_unchecked(target, j);
-                        j += T::Reg::len() / 2;
+                        j += Reg::len() / 2;
                     }
                 });
             }

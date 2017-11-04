@@ -78,12 +78,11 @@ fn fft_swap_x<T: RealNumber>(is_fft_shifted: bool, x_value: T, x_max: T) -> T {
 
 /// Creates shifted and reversed copies of the given data vector.
 /// This function is especially designed for convolutions.
-fn create_shifted_copies<O, T>(vec: &O) -> InlineVector<InlineVector<T::Reg>>
-    where O: Vector<T> + Index<RangeFull, Output = [T]>,
-          T: RealNumber
+fn create_shifted_copies<O, T: RealNumber, Reg: SimdGeneric<T>>(vec: &O) -> InlineVector<InlineVector<Reg>>
+    where O: Vector<T> + Index<RangeFull, Output = [T]>
 {
     let step = if vec.is_complex() { 2 } else { 1 };
-    let number_of_shifts = T::Reg::len() / step;
+    let number_of_shifts = Reg::len() / step;
     let mut shifted_copies = InlineVector::with_capacity(number_of_shifts);
     let mut i = 0;
     let len = vec.len();
@@ -108,12 +107,12 @@ fn create_shifted_copies<O, T>(vec: &O) -> InlineVector<InlineVector<T::Reg>>
             x => (number_of_shifts - x) * step,
         };
         let min_len = vec.len() + shift;
-        let len = (min_len + T::Reg::len() - 1) / T::Reg::len();
-        let mut copy: InlineVector<T::Reg> = InlineVector::with_capacity(len);
+        let len = (min_len + Reg::len() - 1) / Reg::len();
+        let mut copy: InlineVector<Reg> = InlineVector::with_capacity(len);
 
-        let mut j = len * T::Reg::len();
+        let mut j = len * Reg::len();
         let mut k = 0;
-        let mut current = InlineVector::of_size(T::zero(), T::Reg::len());
+        let mut current = InlineVector::of_size(T::zero(), Reg::len());
         while j > 0 {
             j -= step;
             if j < shift || j >= min_len {
@@ -121,14 +120,14 @@ fn create_shifted_copies<O, T>(vec: &O) -> InlineVector<InlineVector<T::Reg>>
                 current[k] = T::zero();
                 k += 1;
                 if k >= current.len() {
-                    copy.push(T::Reg::load_unchecked(&current[..], 0));
+                    copy.push(Reg::load_unchecked(&current[..], 0));
                     k = 0;
                 }
                 if step > 1 {
                     current[k] = T::zero();
                     k += 1;
                     if k >= current.len() {
-                        copy.push(T::Reg::load_unchecked(&current[..], 0));
+                        copy.push(Reg::load_unchecked(&current[..], 0));
                         k = 0;
                     }
                 }
@@ -139,13 +138,13 @@ fn create_shifted_copies<O, T>(vec: &O) -> InlineVector<InlineVector<T::Reg>>
                 current[k] = re;
                 k += 1;
                 if k >= current.len() {
-                    copy.push(T::Reg::load_unchecked(&current[..], 0));
+                    copy.push(Reg::load_unchecked(&current[..], 0));
                     k = 0;
                 }
                 current[k] = im;
                 k += 1;
                 if k >= current.len() {
-                    copy.push(T::Reg::load_unchecked(&current[..], 0));
+                    copy.push(Reg::load_unchecked(&current[..], 0));
                     k = 0;
                 }
             } else {
@@ -153,7 +152,7 @@ fn create_shifted_copies<O, T>(vec: &O) -> InlineVector<InlineVector<T::Reg>>
                 current[k] = *data.next().unwrap();
                 k += 1;
                 if k >= current.len() {
-                    copy.push(T::Reg::load_unchecked(&current[..], 0));
+                    copy.push(Reg::load_unchecked(&current[..], 0));
                     k = 0;
                 }
             }
@@ -457,19 +456,19 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         sum
     }
 
-    fn convolve_signal_simd<B, O>(&mut self, buffer: &mut B, vector: &O)
+    fn convolve_signal_simd<Reg: SimdGeneric<T>, B, O>(&mut self, _: RegType<Reg>, buffer: &mut B, vector: &O)
         where B: for<'a> Buffer<'a, S, T>,
               O: Vector<T> + Index<RangeFull, Output = [T]>
     {
         if self.is_complex() {
-            self.convolve_signal_simd_impl(buffer,
+            self.convolve_signal_simd_impl::<Reg, _, _, _, _ ,_ ,_, _>(buffer,
                                            vector,
                                            |x| array_to_complex(x),
                                            |x| array_to_complex_mut(x),
                                            |x, y| x.mul_complex(y),
                                            |x| x.sum_complex())
         } else {
-            self.convolve_signal_simd_impl(buffer,
+            self.convolve_signal_simd_impl::<Reg, _, _, _, _ ,_ ,_,_>(buffer,
                                            vector,
                                            |x| x,
                                            |x| x,
@@ -478,7 +477,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
-    fn convolve_signal_simd_impl<B, TT, O, C, CMut, RMul, RSum>(&mut self,
+    fn convolve_signal_simd_impl<Reg, B, TT, O, C, CMut, RMul, RSum>(&mut self,
                                                                 buffer: &mut B,
                                                                 vector: &O,
                                                                 convert: C,
@@ -490,8 +489,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
               TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT> + Send + Sync,
               C: Fn(&[T]) -> &[TT],
               CMut: Fn(&mut [T]) -> &mut [TT],
-              RMul: Fn(T::Reg, T::Reg) -> T::Reg + Sync,
-              RSum: Fn(T::Reg) -> TT + Sync
+              RMul: Fn(Reg, Reg) -> Reg + Sync,
+              RSum: Fn(Reg) -> TT + Sync,
+              Reg: SimdGeneric<T>
     {
         let points = self.points();
         let other_points = vector.points();
@@ -513,7 +513,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let shifts = create_shifted_copies(vector);
 
             // The next lines uses + $reg::len() due to rounding of odd numbers
-            let scalar_len = conv_len + T::Reg::len();
+            let scalar_len = conv_len + Reg::len();
             let conv_len = conv_len as isize;
             let mut i = 0;
             for num in &mut dest[0..scalar_len] {
@@ -522,8 +522,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             }
 
             let (scalar_left, _, vectorization_length) =
-                T::Reg::calc_data_alignment_reqs(&data[0..len]);
-            let simd = T::Reg::array_to_regs(&data[scalar_left..vectorization_length]);
+                Reg::calc_data_alignment_reqs(&data[0..len]);
+            let simd = Reg::array_to_regs(&data[scalar_left..vectorization_length]);
             Chunk::execute_with_range(Complexity::Large,
                                       &self.multicore_settings,
                                       &mut dest[scalar_len..points - scalar_len],
@@ -535,7 +535,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                     let end = (i + conv_len) as usize;
                     let shift = end % shifts.len();
                     let end = (end + shifts.len() - 1) / shifts.len();
-                    let mut sum = T::Reg::splat(T::zero());
+                    let mut sum = Reg::splat(T::zero());
                     let shifted = &shifts[shift];
                     let simd_iter = simd[end - shifted.len()..end].iter();
                     let iteration = simd_iter.zip(shifted.iter());

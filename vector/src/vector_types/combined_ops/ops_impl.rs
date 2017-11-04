@@ -1,10 +1,11 @@
 use simd_extensions::*;
 use super::{Operation, PerformOperationSimd};
 use numbers::*;
-use std::ops::{Add, Sub, Mul, Div};
 
-impl<T> PerformOperationSimd<T> for T::Reg
-    where T: RealNumber
+impl<T, Reg> PerformOperationSimd<T> for Reg
+    where T: RealNumber,
+          Reg: SimdGeneric<T>
+        
 {
     #[inline]
     fn perform_complex_operation(vectors: &mut [Self],
@@ -48,21 +49,21 @@ impl<T> PerformOperationSimd<T> for T::Reg
                 *v = v.complex_abs_squared2();
             }
             Operation::ComplexConj(idx) => {
-                let arg = T::Reg::from_complex(Complex::<T>::new(T::one(), -T::one()));
+                let arg = Reg::from_complex(Complex::<T>::new(T::one(), -T::one()));
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.mul(arg);
             }
             Operation::ToReal(idx) => {
                 // We don't have to reorganize the data and just need to zero the imag part
-                let arg = T::Reg::from_complex(Complex::<T>::new(T::one(), T::zero()));
+                let arg = Reg::from_complex(Complex::<T>::new(T::one(), T::zero()));
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 *v = v.mul(arg);
             }
             Operation::ToImag(idx) => {
-                let arg = T::Reg::from_complex(Complex::<T>::new(T::zero(), -T::one()));
+                let arg = Reg::from_complex(Complex::<T>::new(T::zero(), -T::one()));
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
                 let swapped = v.mul_complex(arg);
-                let arg = T::Reg::from_complex(Complex::<T>::new(T::one(), T::zero()));
+                let arg = Reg::from_complex(Complex::<T>::new(T::one(), T::zero()));
                 *v = swapped.mul(arg);
             }
             Operation::Phase(idx) => {
