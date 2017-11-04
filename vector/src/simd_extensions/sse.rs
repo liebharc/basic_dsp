@@ -6,7 +6,7 @@ use super::{Simd, SimdFrom};
 /// This value must be read in groups of 2 bits:
 /// 10 means that the third position (since it's the third bit pair)
 /// will be replaced with the value of the second position (10b = 2d)
-const SHUFFLE_PS: i32 = 0b10110001;
+const SWAP_IQ_PS: i32 = 0b10110001;
 
 impl Simd<f32> for f32x4 {
     type Array = [f32; 4];
@@ -62,7 +62,7 @@ impl Simd<f32> for f32x4 {
         let scaling_real = f32x4::splat(value.re);
         let scaling_imag = f32x4::splat(value.im);
         let parallel = scaling_real * self;
-        let shuffled = unsafe { _mm_permute_ps(self, SHUFFLE_PS) };
+        let shuffled = unsafe { _mm_permute_ps(self, SWAP_IQ_PS) };
         let cross = scaling_imag * shuffled;
         unsafe { _mm_addsub_ps(parallel, cross) }
     }
@@ -80,7 +80,7 @@ impl Simd<f32> for f32x4 {
                                       value.extract(3));
 
         let parallel = scaling_real * self;
-        let shuffled = unsafe { _mm_permute_ps(self, SHUFFLE_PS) };
+        let shuffled = unsafe { _mm_permute_ps(self, SWAP_IQ_PS) };
         let cross = scaling_imag * shuffled;
         unsafe { _mm_addsub_ps(parallel, cross) }
     }
@@ -98,14 +98,14 @@ impl Simd<f32> for f32x4 {
                                       self.extract(3));
                                                       
         let parallel = scaling_real * value;
-        let shuffled = unsafe { _mm_permute_ps(value, SHUFFLE_PS) };
+        let shuffled = unsafe { _mm_permute_ps(value, SWAP_IQ_PS) };
         let cross = scaling_imag * shuffled;
         let mul = unsafe { _mm_addsub_ps(parallel, cross) };
         let square = shuffled * shuffled;
-        let square_shuffled = unsafe { _mm_permute_ps(square, SHUFFLE_PS) };
+        let square_shuffled = unsafe { _mm_permute_ps(square, SWAP_IQ_PS) };
         let sum = square + square_shuffled;
         let div = mul / sum;
-        unsafe { _mm_permute_ps(div, SHUFFLE_PS) }
+        unsafe { _mm_permute_ps(div, SWAP_IQ_PS) }
     }
 
     #[inline]
@@ -336,13 +336,14 @@ impl SimdFrom<i64x2> for f64x2 {
 }
 
 #[cfg(test)]
+#[target_feature = "+sse2"]
 mod tests {
     use super::*;
 
     #[test]
     fn shuffle_test() {
         let vec = f32x4::new(1.0, 2.0, 3.0, 4.0);
-        let result = unsafe { _mm_permute_ps(vec, SHUFFLE_PS) };
+        let result = unsafe { _mm_permute_ps(vec, SWAP_IQ_PS) };
         let expected = 
             f32x4::new(vec.extract(1),
                 vec.extract(0),

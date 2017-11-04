@@ -350,8 +350,10 @@ simd_approx_impl!(f32, 32, f32x8, i32x8, u32x8);
 simd_approx_impl!(f64, 64, f64x4, i64x4, u64x4);
 
 #[cfg(test)]
+#[target_feature = "+sse2"]
 mod tests {
     use super::super::*;
+    use stdsimd::simd::{f32x4, f64x2};
     use RealNumber;
 
     fn assert_eq_tol<T>(left: T, right: T, tol: T)
@@ -369,7 +371,7 @@ mod tests {
     #[test]
     fn ln_approx_test5() {
         let value = 5.0;
-        let reg = Reg32::splat(value);
+        let reg = f32x4::splat(value);
         let res = reg.ln_approx();
         assert_eq_tol(res.extract(0), value.ln(), 1e-9);
     }
@@ -377,7 +379,7 @@ mod tests {
     #[test]
     fn ln_approx_test1e8() {
         let value = 1e8;
-        let reg = Reg32::splat(value);
+        let reg = f32x4::splat(value);
         let res = reg.ln_approx();
         assert_eq_tol(res.extract(0), value.ln(), 1e-9);
     }
@@ -385,21 +387,21 @@ mod tests {
     #[test]
     fn ln_approx_test_small_value() {
         let value = 1e-8;
-        let reg = Reg32::splat(value);
+        let reg = f32x4::splat(value);
         let res = reg.ln_approx();
         assert_eq_tol(res.extract(0), value.ln(), 1e-9);
     }
 
     #[test]
     fn ln_approx_test_zero() {
-        let reg = Reg32::splat(0.0);
+        let reg = f32x4::splat(0.0);
         let res = reg.ln_approx();
         assert!(res.extract(0).is_nan());
     }
 
     #[test]
     fn ln_approx_test_neg() {
-        let reg = Reg32::splat(-5.0);
+        let reg = f32x4::splat(-5.0);
         let res = reg.ln_approx();
         assert!(res.extract(0).is_nan());
     }
@@ -407,7 +409,7 @@ mod tests {
     #[test]
     fn ln_approx_test_f64() {
         let value = 5.0;
-        let reg = Reg64::splat(value);
+        let reg = f64x2::splat(value);
         let res = reg.ln_approx();
         assert_eq_tol(res.extract(0), value.ln(), 1e-9);
     }
@@ -415,7 +417,7 @@ mod tests {
     #[test]
     fn exp_approx_test5() {
         let value = 5.0;
-        let reg = Reg32::splat(value);
+        let reg = f32x4::splat(value);
         let res = reg.exp_approx();
         assert_eq_tol(res.extract(0), value.exp(), 1e-9);
     }
@@ -423,7 +425,7 @@ mod tests {
     #[test]
     fn exp_approx_test_f64() {
         let value = 5.0;
-        let reg = Reg64::splat(value);
+        let reg = f64x2::splat(value);
         let res = reg.exp_approx();
         assert_eq_tol(res.extract(0), value.exp(), 1e-6);
     }
@@ -431,7 +433,7 @@ mod tests {
     #[test]
     fn sin_approx_test5() {
         let value = 5.0;
-        let reg = Reg32::splat(value);
+        let reg = f32x4::splat(value);
         let res = reg.sin_approx();
         assert_eq_tol(res.extract(0), value.sin(), 1e-9);
     }
@@ -439,7 +441,7 @@ mod tests {
     #[test]
     fn sin_approx_test_f64() {
         let value = 5.0;
-        let reg = Reg64::splat(value);
+        let reg = f64x2::splat(value);
         let res = reg.sin_approx();
         assert_eq_tol(res.extract(0), value.sin(), 1e-9);
     }
@@ -447,7 +449,7 @@ mod tests {
     #[test]
     fn cos_approx_test5() {
         let value = 5.0;
-        let reg = Reg32::splat(value);
+        let reg = f32x4::splat(value);
         let res = reg.cos_approx();
         assert_eq_tol(res.extract(0), value.cos(), 1e-7);
     }
@@ -455,7 +457,7 @@ mod tests {
     #[test]
     fn cos_approx_testf64() {
         let value = 5.0;
-        let reg = Reg64::splat(value);
+        let reg = f64x2::splat(value);
         let res = reg.cos_approx();
         assert_eq_tol(res.extract(0), value.cos(), 1e-7);
     }

@@ -53,6 +53,7 @@
 //! complex vectors in time domain, but not with real valued vectors or frequency domain vectors. 
 //! And the type `GenDspVec` serves as wild card at compile time since it defers all checks to run time.
 
+#![feature(target_feature)]
 #![feature(cfg_target_feature)]
 #[macro_use]
 extern crate stdsimd;
@@ -219,7 +220,7 @@ mod tests {
         // This is more a check for syntax. So if it compiles
         // then the test already passes. The assert is then only
         // a sanity check.
-        let reg = <f32 as ToSimd>::Reg::splat(1.0);
+        let reg = <f32 as ToSimd>::RegFallback::splat(1.0);
         let sum = reg.sum_real();
         assert!(sum > 0.0);
     }
