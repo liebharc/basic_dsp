@@ -95,6 +95,7 @@ pub mod numbers {
     use simd_extensions;
     use simd_extensions::*;
     use gpu_support::{Gpu32, Gpu64, GpuRegTrait, GpuFloat};
+    #[cfg(any(feature="use_sse", feature="use_avx"))]
     use stdsimd;
 
     /// A trait for a numeric value which at least supports a subset of the operations defined in this crate.
@@ -122,15 +123,33 @@ pub mod numbers {
 
     impl ToSimd for f32 {
         type RegFallback = simd_extensions::fallback::f32x4;
+        
+        #[cfg(feature="use_sse")]
         type RegSse = stdsimd::simd::f32x4;
+        #[cfg(not(feature="use_sse"))]
+        type RegSse = simd_extensions::fallback::f32x4;
+        
+        #[cfg(feature="use_avx")]
         type RegAvx = stdsimd::simd::f32x8;
+        #[cfg(not(feature="use_avx"))]
+        type RegAvx = simd_extensions::fallback::f32x4;
+        
         type GpuReg = Gpu32;
     }
 
     impl ToSimd for f64 {
         type RegFallback = simd_extensions::fallback::f64x2;
+        
+        #[cfg(feature="use_sse")]
         type RegSse = stdsimd::simd::f64x2;
+        #[cfg(not(feature="use_sse"))]
+        type RegSse = simd_extensions::fallback::f64x2;
+        
+        #[cfg(feature="use_avx")]
         type RegAvx = stdsimd::simd::f64x4;
+        #[cfg(not(feature="use_avx"))]
+        type RegAvx = simd_extensions::fallback::f64x2;
+        
         type GpuReg = Gpu64;
     }
 

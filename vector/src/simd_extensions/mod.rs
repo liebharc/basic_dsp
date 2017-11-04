@@ -2,6 +2,7 @@ use numbers::*;
 use std::mem;
 use std::ops::*;
 use std;
+#[cfg(any(feature="use_sse", feature="use_avx"))]
 use stdsimd::simd;
 
 /// SIMD methods which have `f32` or `f64` specific implementation.
@@ -293,14 +294,21 @@ macro_rules! simd_generic_impl {
     }
 }
 
+#[cfg(feature="use_avx")]
 mod avx;
+#[cfg(feature="use_avx")]
 simd_generic_impl!(f32, simd::f32x8);
+#[cfg(feature="use_avx")]
 simd_generic_impl!(f64, simd::f64x4);
 
+#[cfg(feature="use_sse")]
 mod sse;
+#[cfg(feature="use_sse")]
 simd_generic_impl!(f32, simd::f32x4);
+#[cfg(feature="use_sse")]
 simd_generic_impl!(f64, simd::f64x2);
 
+#[cfg(any(feature="use_sse", feature="use_avx"))]
 mod approximations;
 
 pub mod fallback;
@@ -325,22 +333,22 @@ impl<Reg> RegType<Reg> {
 /// The macro tries to mimic the Rust syntax of a method call.
 macro_rules! sel_reg(
     ($self_:ident.$method: ident::<$type: ident>($($args: expr),*)) => {
-        /*if cfg_feature_enabled!("avx2") && cfg!(feature="use_avx2") {
+        if cfg_feature_enabled!("avx2") && cfg!(feature="use_avx2") {
             $self_.$method(RegType::<<$type as ToSimd>::RegAvx>::new(), $($args),*)
         } else if cfg_feature_enabled!("avx") && cfg!(feature="use_avx") {
             $self_.$method(RegType::<<$type as ToSimd>::RegAvx>::new(), $($args),*)
-        } else */if cfg_feature_enabled!("sse2") && cfg!(feature="use_sse") {
+        } else if cfg_feature_enabled!("sse2") && cfg!(feature="use_sse") {
             $self_.$method(RegType::<<$type as ToSimd>::RegSse>::new(), $($args),*)
         } else {
             $self_.$method(RegType::<<$type as ToSimd>::RegFallback>::new(), $($args),*)
         }
     };
     ($method: ident::<$type: ident>($($args: expr),*)) => {
-        /*if cfg_feature_enabled!("avx2") && cfg!(feature="use_avx2") {
+        if cfg_feature_enabled!("avx2") && cfg!(feature="use_avx2") {
             $method(RegType::<<$type as ToSimd>::RegAvx>::new(), $($args),*)
         } else if cfg_feature_enabled!("avx") && cfg!(feature="use_avx") {
             $method(RegType::<<$type as ToSimd>::RegAvx>::new(), $($args),*)
-        } else */if cfg_feature_enabled!("sse2") && cfg!(feature="use_sse") {
+        } else if cfg_feature_enabled!("sse2") && cfg!(feature="use_sse") {
             $method(RegType::<<$type as ToSimd>::RegSse>::new(), $($args),*)
         } else {
             $method(RegType::<<$type as ToSimd>::RegFallback>::new(), $($args),*)
