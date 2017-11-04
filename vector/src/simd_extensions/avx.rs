@@ -16,12 +16,12 @@ pub type UIntReg32 = u32x8;
 pub type UIntReg64 = u64x4;
 
 /// This value must be read in groups of 3 bits.
-const SHUFFLE_PS: i32 = 0b110111100101010011000001;
+const SWAP_IQ_PS: i32 = 0b10110001;
 
 /// This value must be read in groups of 2 bits:
 /// 10 means that the third position (since it's the third bit pair)
 /// will be replaced with the value of the second position (10b = 2d)
-const SHUFFLE_PD: i32 = 0b10110001;
+const SWAP_IQ_PD: i32 = 0b10110001;
 
 impl Simd<f32> for f32x8 {
     type Array = [f32; 8];
@@ -84,7 +84,7 @@ impl Simd<f32> for f32x8 {
         let scaling_real = f32x8::splat(value.re);
         let scaling_imag = f32x8::splat(value.im);
         let parallel = scaling_real * self;
-        let shuffled = unsafe { _mm256_permute_ps(self, SHUFFLE_PS) };
+        let shuffled = unsafe { _mm256_permute_ps(self, SWAP_IQ_PS) };
         let cross = scaling_imag * shuffled;
         unsafe { _mm256_addsub_ps(parallel, cross) }
     }
@@ -108,7 +108,7 @@ impl Simd<f32> for f32x8 {
                                       value.extract(7),
                                       value.extract(7));
         let parallel = scaling_real * self;
-        let shuffled = unsafe { _mm256_permute_ps(self, SHUFFLE_PS) };
+        let shuffled = unsafe { _mm256_permute_ps(self, SWAP_IQ_PS) };
         let cross = scaling_imag * shuffled;
         unsafe { _mm256_addsub_ps(parallel, cross) }
     }
@@ -132,14 +132,14 @@ impl Simd<f32> for f32x8 {
                                       self.extract(7),
                                       self.extract(7));
         let parallel = scaling_real * value;
-        let shuffled = unsafe { _mm256_permute_ps(value, SHUFFLE_PS) };
+        let shuffled = unsafe { _mm256_permute_ps(value, SWAP_IQ_PS) };
         let cross = scaling_imag * shuffled;
         let mul = unsafe { _mm256_addsub_ps(parallel, cross) };
         let square = shuffled * shuffled;
-        let square_shuffled = unsafe { _mm256_permute_ps(square, SHUFFLE_PS) };
+        let square_shuffled = unsafe { _mm256_permute_ps(square, SWAP_IQ_PS) };
         let sum = square + square_shuffled;
         let div = mul / sum;
-        unsafe { _mm256_permute_ps(div, SHUFFLE_PS) }
+        unsafe { _mm256_permute_ps(div, SWAP_IQ_PS) }
     }
 
     #[inline]
@@ -256,7 +256,7 @@ impl Simd<f64> for f64x4 {
         let scaling_real = f64x4::splat(value.re);
         let scaling_imag = f64x4::splat(value.im);
         let parallel = scaling_real * self;
-        let shuffled = unsafe { _mm256_permute_pd(self, SHUFFLE_PD) };
+        let shuffled = unsafe { _mm256_permute_pd(self, SWAP_IQ_PD) };
         let cross = scaling_imag * shuffled;
         unsafe { _mm256_addsub_pd(parallel, cross) }
     }
@@ -272,7 +272,7 @@ impl Simd<f64> for f64x4 {
                                       value.extract(3),
                                       value.extract(3));
         let parallel = scaling_real * self;
-        let shuffled = unsafe { _mm256_permute_pd(self, SHUFFLE_PD) };
+        let shuffled = unsafe { _mm256_permute_pd(self, SWAP_IQ_PD) };
         let cross = scaling_imag * shuffled;
         unsafe { _mm256_addsub_pd(parallel, cross) }
     }
@@ -288,14 +288,14 @@ impl Simd<f64> for f64x4 {
                                       self.extract(3),
                                       self.extract(3));
         let parallel = scaling_real * value;
-        let shuffled = unsafe { _mm256_permute_pd(value, SHUFFLE_PD) };
+        let shuffled = unsafe { _mm256_permute_pd(value, SWAP_IQ_PD) };
         let cross = scaling_imag * shuffled;
         let mul = unsafe { _mm256_addsub_pd(parallel, cross) };
         let square = shuffled * shuffled;
-        let square_shuffled = unsafe { _mm256_permute_pd(square, SHUFFLE_PD) };
+        let square_shuffled = unsafe { _mm256_permute_pd(square, SWAP_IQ_PD) };
         let sum = square + square_shuffled;
         let div = mul / sum;
-        unsafe { _mm256_permute_pd(div, SHUFFLE_PD) }
+        unsafe { _mm256_permute_pd(div, SWAP_IQ_PD) }
     }
 
     #[inline]
@@ -388,7 +388,7 @@ mod tests {
     #[test]
     fn shuffle_test() {
         let vec = f32x8::new(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
-        let result = unsafe { _mm256_permute_ps(vec, SHUFFLE_PS) };
+        let result = unsafe { _mm256_permute_ps(vec, SWAP_IQ_PS) };
         let expected = 
             f32x8::new(vec.extract(1),
                  vec.extract(0),
