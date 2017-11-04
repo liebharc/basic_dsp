@@ -22,7 +22,8 @@
 // (this is the zlib license)
 //
 
-use super::{Simd, SimdApproximations, Reg32, IntReg32, UIntReg32, Reg64, IntReg64, UIntReg64, SimdFrom};
+use super::{Simd, SimdApproximations, SimdFrom};
+use stdsimd::simd::*;
 use std::mem;
 use std::ops::*;
 use numbers::*;
@@ -343,8 +344,10 @@ macro_rules! simd_approx_impl {
     }
 }
 
-simd_approx_impl!(f32, 32, Reg32, IntReg32, UIntReg32);
-simd_approx_impl!(f64, 64, Reg64, IntReg64, UIntReg64);
+simd_approx_impl!(f32, 32, f32x4, i32x4, u32x4);
+simd_approx_impl!(f64, 64, f64x2, i64x2, u64x2);
+simd_approx_impl!(f32, 32, f32x8, i32x8, u32x8);
+simd_approx_impl!(f64, 64, f64x4, i64x4, u64x4);
 
 #[cfg(test)]
 mod tests {

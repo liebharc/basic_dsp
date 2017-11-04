@@ -158,10 +158,6 @@ impl Div for f64x2 {
     }
 }
 
-pub type Reg32 = f32x4;
-
-pub type Reg64 = f64x2;
-
 impl Simd<f32> for f32x4 {
     type Array = [f32; 4];
 

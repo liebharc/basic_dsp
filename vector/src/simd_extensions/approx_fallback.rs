@@ -7,14 +7,15 @@
 //! The Rust compiler does a good job to remove the otherhead of this implementation.
 //! So in benchmarks this implementation has the same speed as the the standard functions.
 
-use super::{SimdApproximations, SimdGeneric, Reg32, Reg64};
+use super::{SimdApproximations, SimdGeneric};
+use super::fallback;
 
 macro_rules! simd_approx_impl {
     ($data_type:ident,
 	 $regf:ident)
     =>
     {
-		impl SimdApproximations<$data_type> for $regf {
+		impl SimdApproximations<$data_type> for fallback::$regf {
 		    fn ln_approx(self) -> Self {
 				self.iter_over_vector(|x: $data_type| x.ln())
 			}
@@ -43,5 +44,5 @@ macro_rules! simd_approx_impl {
 	}
 }
 
-simd_approx_impl!(f32, Reg32);
-simd_approx_impl!(f64, Reg64);
+simd_approx_impl!(f32, f32x4);
+simd_approx_impl!(f64, f64x2);

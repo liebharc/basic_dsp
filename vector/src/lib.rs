@@ -91,9 +91,10 @@ pub mod numbers {
     use std::fmt::Debug;
     use rustfft;
     use num_traits;
+    use simd_extensions;
     use simd_extensions::*;
     use gpu_support::{Gpu32, Gpu64, GpuRegTrait, GpuFloat};
-    use std::ops::*;
+    use stdsimd;
 
     /// A trait for a numeric value which at least supports a subset of the operations defined in this crate.
     /// Can be an integer or a floating point number. In order to have support for all operations in this crate
@@ -110,19 +111,25 @@ pub mod numbers {
     /// Associates a number type with a SIMD register type.
     pub trait ToSimd: Sized + Sync + Send {
         /// Type for the SIMD register on the CPU.
-        type Reg: Simd<Self> + SimdGeneric<Self> + SimdApproximations<Self> + Copy + Sync + Send + Add<Output = Self::Reg> + Sub<Output = Self::Reg> + Mul<Output = Self::Reg> + Div<Output = Self::Reg> + Zero;
+        type RegFallback: SimdGeneric<Self>;
+        type RegSse : SimdGeneric<Self>;
+        type RegAvx : SimdGeneric<Self>;
         /// Type for the SIMD register on the GPU. Defaults to an arbitrary type if GPU support is not
         /// compiled in.
         type GpuReg: GpuRegTrait;
     }
 
     impl ToSimd for f32 {
-        type Reg = Reg32;
+        type RegFallback = simd_extensions::fallback::f32x4;
+        type RegSse = stdsimd::simd::f32x4;
+        type RegAvx = stdsimd::simd::f32x8;
         type GpuReg = Gpu32;
     }
 
     impl ToSimd for f64 {
-        type Reg = Reg64;
+        type RegFallback = simd_extensions::fallback::f64x2;
+        type RegSse = stdsimd::simd::f64x2;
+        type RegAvx = stdsimd::simd::f64x4;
         type GpuReg = Gpu64;
     }
 

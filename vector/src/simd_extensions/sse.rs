@@ -3,18 +3,6 @@ use stdsimd::vendor::*;
 use numbers::*;
 use super::{Simd, SimdFrom};
 
-pub type Reg32 = f32x4;
-
-pub type Reg64 = f64x2;
-
-pub type IntReg32 = i32x4;
-
-pub type IntReg64 = i64x2;
-
-pub type UIntReg32 = u32x4;
-
-pub type UIntReg64 = u64x2;
-
 /// This value must be read in groups of 2 bits:
 /// 10 means that the third position (since it's the third bit pair)
 /// will be replaced with the value of the second position (10b = 2d)

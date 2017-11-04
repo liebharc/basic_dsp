@@ -280,10 +280,15 @@ impl<S, T, N, D> fmt::Debug for DspVec<S, T, N, D>
     }
 }
 
-/// Rounds a length so that it always devides by the length of a SIMD
+/// Rounds a length so that it always divides by the length of a SIMD
 /// register. This function assumes that `Reg32::len() > Reg64::len()`.
 fn round_len(len: usize) -> usize {
-    ((len + Reg32::len() - 1) / Reg32::len()) * Reg32::len()
+    fn get_reg_len<T: RealNumber, Reg: SimdGeneric<T>>(_: RegType<Reg>) -> usize {
+        Reg::len()
+    }
+    
+    let reg_len = get_reg_len(get_reg!(f32));
+    ((len + reg_len - 1) / reg_len) * reg_len
 }
 
 /// Swaps the halves of two arrays. The `forward` paremeter

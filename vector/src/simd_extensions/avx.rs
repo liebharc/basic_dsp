@@ -3,18 +3,6 @@ use super::{Simd, SimdFrom};
 use stdsimd::simd::*;
 use stdsimd::vendor::*;
 
-pub type Reg32 = f32x8;
-
-pub type Reg64 = f64x4;
-
-pub type IntReg32 = i32x8;
-
-pub type IntReg64 = i64x4;
-
-pub type UIntReg32 = u32x8;
-
-pub type UIntReg64 = u64x4;
-
 /// This value must be read in groups of 3 bits.
 const SHUFFLE_PS: i32 = 0b110111100101010011000001;
 

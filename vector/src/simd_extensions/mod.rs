@@ -2,6 +2,7 @@ use numbers::*;
 use std::mem;
 use std::ops::*;
 use std;
+use stdsimd::simd;
 
 /// SIMD methods which have `f32` or `f64` specific implementation.
 pub trait Simd<T>: Sized
@@ -85,7 +86,7 @@ pub trait SimdFrom<T> {
 }
 
 /// SIMD methods which share their implementation independent if it's a `f32` or `f64` register.
-pub trait SimdGeneric<T>: Simd<T> 
+pub trait SimdGeneric<T>: Simd<T> + SimdApproximations<T>
     + Add<Self, Output=Self> + Sub<Self, Output=Self> + Mul<Self, Output=Self> + Div<Self, Output=Self> 
     + Copy + Clone + Sync + Send + Sized + Zero
     where T: Sized + Sync + Send
@@ -141,8 +142,7 @@ pub trait SimdGeneric<T>: Simd<T>
 /// The approximations are implemented based on SIMD registers.
 /// Refer to the documentation of the `ApproximatedOps` trait (which is part of 
 /// the public API of this lib) for some information about accuracy and speed.
-pub trait SimdApproximations<T>: Simd<T>
-    where T: Sized + Sync + Send
+pub trait SimdApproximations<T>
 {
     /// Returns the natural logarithm of the number.
     fn ln_approx(self) -> Self;
@@ -173,22 +173,22 @@ pub trait SimdApproximations<T>: Simd<T>
 struct Unalign<T>(T);
 
 macro_rules! simd_generic_impl {
-    ($data_type:ident, $reg:ident)
+    ($data_type:ident, $mod: ident::$reg:ident)
     =>
     {
-        impl Zero for $reg {
-            fn zero() -> $reg {
-                $reg::splat(0.0)
+        impl Zero for $mod::$reg {
+            fn zero() -> Self {
+                Self::splat(0.0)
             }
         }
 
-        impl SimdGeneric<$data_type> for $reg {
+        impl SimdGeneric<$data_type> for $mod::$reg {
             #[inline]
             fn calc_data_alignment_reqs(array: &[$data_type]) -> (usize, usize, usize) {
                 let data_length = array.len();
                 let addr = array.as_ptr();
                 let scalar_left = (addr as usize % mem::size_of::<Self>()) / mem::size_of::<f32>();
-                if scalar_left + $reg::len() > data_length {
+                if scalar_left + Self::len() > data_length {
                     // Result order: scalar_left, scalar_right, vectorization_length
                     (data_length, data_length, 0)
                 } else {
@@ -277,39 +277,37 @@ macro_rules! simd_generic_impl {
 
             #[inline]
             fn extract(self, idx: u32) -> $data_type {
-                $reg::extract(self, idx)
+                Self::extract(self, idx)
             }
 
             #[inline]
             fn splat(value: $data_type) -> Self {
-                $reg::splat(value)
+                Self::splat(value)
             }
 
             #[inline]
             fn store(self, array: &mut [$data_type], index: usize) {
-                $reg::store(self, array, index);
+                Self::store(self, array, index);
             }
         }
     }
 }
 
-#[cfg(any(feature = "doc", feature="use_avx"))]
 mod avx;
+simd_generic_impl!(f32, simd::f32x8);
+simd_generic_impl!(f64, simd::f64x4);
 
-#[cfg(any(feature = "doc", feature= "use_sse"))]
 mod sse;
+simd_generic_impl!(f32, simd::f32x4);
+simd_generic_impl!(f64, simd::f64x2);
 
-//mod approximations;
+mod approximations;
 
 pub mod fallback;
-
-pub use self::fallback::{Reg32, Reg64};
-
-//#[cfg(any(feature = "doc", not(any(feature = "use_avx", feature="use_sse"))))]
 mod approx_fallback;
 
-simd_generic_impl!(f32, Reg32);
-simd_generic_impl!(f64, Reg64);
+simd_generic_impl!(f32, fallback::f32x4);
+simd_generic_impl!(f64, fallback::f64x2);
 
 pub struct RegType<Reg> {
     _type: std::marker::PhantomData<Reg>
@@ -327,13 +325,13 @@ impl<Reg> RegType<Reg> {
 macro_rules! get_reg(
     ($type: ident) => {
         if cfg_feature_enabled!("avx2") && cfg!(feature="use_avx2") {
-            RegType::<$type::Reg>::new()
+            RegType::<<$type as ToSimd>::RegFallback>::new()
         } else if cfg_feature_enabled!("avx") && cfg!(feature="use_avx") {
-            RegType::<$type::Reg>::new()
+            RegType::<<$type as ToSimd>::RegFallback>::new()
         } else if cfg_feature_enabled!("sse2") && cfg!(feature="use_sse") {
-            RegType::<$type::Reg>::new()
+            RegType::<<$type as ToSimd>::RegFallback>::new()
         } else {
-            RegType::<$type::Reg>::new()
+            RegType::<<$type as ToSimd>::RegFallback>::new()
         }
     }
 );
