@@ -69,7 +69,7 @@ pub trait ModuloOps<T>
 /// Recommended to be only used with the CPU feature flags `sse` or `avx`.
 ///
 /// This trait provides alternative implementations for some standard functions which
-/// are less accurate but perform faster. Those approximations are written for SSE2 or AVX processors.
+/// are less accurate but perform faster. Those approximations are written for SSE2 or AVX2 processors.
 /// If a processor supports neither of those instruction sets, then the standard functions will be used.
 ///
 /// Information on the error of the approximation and their performance are rough numbers.

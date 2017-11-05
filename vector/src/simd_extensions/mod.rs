@@ -333,9 +333,7 @@ impl<Reg> RegType<Reg> {
 /// The macro tries to mimic the Rust syntax of a method call.
 macro_rules! sel_reg(
     ($self_:ident.$method: ident::<$type: ident>($($args: expr),*)) => {
-        if cfg_feature_enabled!("avx2") && cfg!(feature="use_avx2") {
-            $self_.$method(RegType::<<$type as ToSimd>::RegAvx>::new(), $($args),*)
-        } else if cfg_feature_enabled!("avx") && cfg!(feature="use_avx") {
+        if cfg_feature_enabled!("avx2") && cfg!(feature="use_avx") {
             $self_.$method(RegType::<<$type as ToSimd>::RegAvx>::new(), $($args),*)
         } else if cfg_feature_enabled!("sse2") && cfg!(feature="use_sse") {
             $self_.$method(RegType::<<$type as ToSimd>::RegSse>::new(), $($args),*)
@@ -344,9 +342,7 @@ macro_rules! sel_reg(
         }
     };
     ($method: ident::<$type: ident>($($args: expr),*)) => {
-        if cfg_feature_enabled!("avx2") && cfg!(feature="use_avx2") {
-            $method(RegType::<<$type as ToSimd>::RegAvx>::new(), $($args),*)
-        } else if cfg_feature_enabled!("avx") && cfg!(feature="use_avx") {
+        if cfg_feature_enabled!("avx2") && cfg!(feature="use_avx") {
             $method(RegType::<<$type as ToSimd>::RegAvx>::new(), $($args),*)
         } else if cfg_feature_enabled!("sse2") && cfg!(feature="use_sse") {
             $method(RegType::<<$type as ToSimd>::RegSse>::new(), $($args),*)
