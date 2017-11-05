@@ -21,6 +21,7 @@ codegen-units = 4
 [features]
 default = ["std"]
 use_avx = []
+use_avx512 = []
 use_sse = []
 use_gpu = ["ocl", "clfft"]
 std = ["crossbeam", "num_cpus"]
