@@ -330,7 +330,7 @@ impl<S, T, N, D> ApproximatedOps<T> for DspVec<S, T, N, D>
         let base_ln = T::Reg::splat(base.ln());
         self.simd_real_operation(|x, b| x.ln_approx() / b,
                                  |x, b| x.ln() / b.extract(0),
-                                 (base_ln),
+                                 base_ln,
                                  APPROX_COMPLEXITY);
     }
 
@@ -341,7 +341,7 @@ impl<S, T, N, D> ApproximatedOps<T> for DspVec<S, T, N, D>
         let base_ln = T::Reg::splat(base.ln());
         self.simd_real_operation(|y, x| (x * y).exp_approx(),
                                  |y, x| (x.extract(0) * y).exp(),
-                                 (base_ln),
+                                 base_ln,
                                  APPROX_COMPLEXITY);
     }
 
@@ -351,7 +351,7 @@ impl<S, T, N, D> ApproximatedOps<T> for DspVec<S, T, N, D>
         let exponent = T::Reg::splat(exponent);
         self.simd_real_operation(|x, y| (x.ln_approx() * y).exp_approx(),
                                  |x, y| (x.ln() * y.extract(0)).exp(),
-                                 (exponent),
+                                 exponent,
                                  APPROX_COMPLEXITY);
 
     }
