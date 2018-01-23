@@ -170,8 +170,15 @@ pub trait SimdApproximations<T>
 /// Private struct copied over from the `simd` crate to implement the `load_unchecked` 
 /// and `store_unchecked` methods for the `SimdGeneric` trait.
 #[repr(packed)]
-#[derive(Debug, Copy, Clone)]
 struct Unalign<T>(T);
+
+impl<T: Copy> Copy for Unalign<T> { }
+
+impl<T: Clone + Copy> Clone for Unalign<T> {
+    fn clone(&self) -> Self {
+        *self
+    }
+} 
 
 macro_rules! simd_generic_impl {
     ($data_type:ident, $mod: ident::$reg:ident)

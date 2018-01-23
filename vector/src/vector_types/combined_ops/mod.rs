@@ -625,17 +625,14 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
                 for operation in operations {
                     PerformOperationSimd::<T>::perform_complex_operation(&mut last_elems,
                                                                          operation,
-                                                                         (vectorization_length /
-                                                                          Reg::len() *
-                                                                          2),
+                                                                         vectorization_length / Reg::len() * 2,
                                                                          first_vec_len);
                 }
             } else {
                 for operation in operations {
                     PerformOperationSimd::<T>::perform_real_operation(&mut last_elems,
                                                                       operation,
-                                                                      (vectorization_length /
-                                                                       Reg::len()),
+                                                                      vectorization_length / Reg::len(),
                                                                       first_vec_len);
                 }
             }
