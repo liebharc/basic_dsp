@@ -336,7 +336,7 @@ impl SimdFrom<i64x2> for f64x2 {
 }
 
 #[cfg(test)]
-#[target_feature = "+sse2"]
+#[target_feature(enable = "+sse2")]
 mod tests {
     use super::*;
 
