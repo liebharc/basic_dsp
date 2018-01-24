@@ -364,7 +364,7 @@ impl SimdFrom<i64x4> for f64x4 {
 }
 
 #[cfg(test)]
-#[target_feature = "+avx"]
+#[target_feature(enable = "+avx")]
 mod tests {
     use super::*;
 
