@@ -377,8 +377,8 @@ macro_rules! impl_binary_vector_operation {
                 if vectorization_length > 0 {
                     Chunk::from_src_to_dest(
                         Complexity::Small, &self.multicore_settings,
-                        &other[scalar_left..vectorization_length], T::Reg::len(),
-                        &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
+                        &other[scalar_left..vectorization_length], T::Reg::LEN,
+                        &mut array[scalar_left..vectorization_length], T::Reg::LEN, (),
                         |original, range, target, _arg| {
                             let original =
                                 T::Reg::array_to_regs(&original[range.start .. range.end]);
@@ -419,8 +419,8 @@ macro_rules! impl_binary_complex_vector_operation {
                 if vectorization_length > 0 {
                     Chunk::from_src_to_dest(
                         Complexity::Small, &self.multicore_settings,
-                        &other[scalar_left..vectorization_length], T::Reg::len(),
-                        &mut array[scalar_left..vectorization_length], T::Reg::len(), (),
+                        &other[scalar_left..vectorization_length], T::Reg::LEN,
+                        &mut array[scalar_left..vectorization_length], T::Reg::LEN, (),
                         |original, range, target, _arg| {
                             let original =
                                 T::Reg::array_to_regs(&original[range.start .. range.end]);
@@ -471,7 +471,7 @@ macro_rules! impl_binary_smaller_vector_operation {
                 let other = &$arg_name[..];
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
-                    &other, T::Reg::len(),
+                    &other, T::Reg::LEN,
                     &mut array[0..data_length], 1, (),
                     |operand, range, target, _arg| {
                         let mut i = range.start;
@@ -501,7 +501,7 @@ macro_rules! impl_binary_smaller_complex_vector_ops {
                 let other = &$arg_name[..];
                 Chunk::from_src_to_dest(
                     Complexity::Small, &self.multicore_settings,
-                    &other, T::Reg::len(),
+                    &other, T::Reg::LEN,
                     &mut array[0..data_length], 2, (),
                     |operand, range, target, _arg| {
                         let target = array_to_complex_mut(&mut target[..]);

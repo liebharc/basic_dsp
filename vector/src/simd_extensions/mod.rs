@@ -13,9 +13,9 @@ pub trait Simd<T>: Sized
     
     /// The type of complex valued array which matches a SIMD register.
     type ComplexArray;
-    
-    /// Number of elements in a SIMD register.
-    fn len() -> usize;
+	
+	/// Number of elements in a SIMD register.
+	const LEN: usize;
     
     /// Loads a SIMD register from an array. If the end of the array is approached
     /// then the load code wraps around to the beginning and starts to load the first 
@@ -191,11 +191,11 @@ macro_rules! simd_generic_impl {
                 let data_length = array.len();
                 let addr = array.as_ptr();
                 let scalar_left = (addr as usize % mem::size_of::<Self>()) / mem::size_of::<f32>();
-                if scalar_left + $reg::len() > data_length {
+                if scalar_left + $reg::LEN > data_length {
                     // Result order: scalar_left, scalar_right, vectorization_length
                     (data_length, data_length, 0)
                 } else {
-                    let right = (data_length - scalar_left) % Self::len();
+                    let right = (data_length - scalar_left) % Self::LEN;
                     (scalar_left, data_length - right, data_length - right)
                 }
             }
@@ -239,7 +239,7 @@ macro_rules! simd_generic_impl {
             fn array_to_regs(array: &[$data_type]) -> &[Self] {
                 unsafe {
                     let len = array.len();
-                    let reg_len = Self::len();
+                    let reg_len = Self::LEN;
                     if len % reg_len != 0 {
                         panic!("Argument must be dividable by {}", reg_len);
                     }
@@ -252,7 +252,7 @@ macro_rules! simd_generic_impl {
             fn array_to_regs_mut(array: &mut [$data_type]) -> &mut [Self] {
                 unsafe {
                     let len = array.len();
-                    let reg_len = Self::len();
+                    let reg_len = Self::LEN;
                     if len % reg_len != 0 {
                         panic!("Argument must be dividable by {}", reg_len);
                     }

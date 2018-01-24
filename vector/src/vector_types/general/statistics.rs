@@ -436,7 +436,7 @@ impl<S, T, N, D> SumOps<T> for DspVec<S, T, N, D>
             let chunks = Chunk::get_chunked_results(Complexity::Small,
                                                     &self.multicore_settings,
                                                     &array[scalar_left..vectorization_length],
-                                                    T::Reg::len(),
+                                                    T::Reg::LEN,
                                                     (),
                                                     move |array, _, _| {
                 let array = T::Reg::array_to_regs(array);
@@ -471,7 +471,7 @@ impl<S, T, N, D> SumOps<T> for DspVec<S, T, N, D>
             let chunks = Chunk::get_chunked_results(Complexity::Small,
                                                     &self.multicore_settings,
                                                     &array[scalar_left..vectorization_length],
-                                                    T::Reg::len(),
+                                                    T::Reg::LEN,
                                                     (),
                                                     move |array, _, _| {
                 let array = T::Reg::array_to_regs(array);
@@ -585,7 +585,7 @@ impl<S, T, N, D> SumOps<Complex<T>> for DspVec<S, T, N, D>
             let chunks = Chunk::get_chunked_results(Complexity::Small,
                                                     &self.multicore_settings,
                                                     &array[scalar_left..vectorization_length],
-                                                    T::Reg::len(),
+                                                    T::Reg::LEN,
                                                     (),
                                                     move |array, _, _| {
                 let array = T::Reg::array_to_regs(array);
@@ -620,7 +620,7 @@ impl<S, T, N, D> SumOps<Complex<T>> for DspVec<S, T, N, D>
             let chunks = Chunk::get_chunked_results(Complexity::Small,
                                                     &self.multicore_settings,
                                                     &array[scalar_left..vectorization_length],
-                                                    T::Reg::len(),
+                                                    T::Reg::LEN,
                                                     (),
                                                     move |array, _, _| {
                 let array = T::Reg::array_to_regs(array);

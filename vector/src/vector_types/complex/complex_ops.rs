@@ -83,7 +83,7 @@ impl<S, T, N, D> ComplexOps<T> for DspVec<S, T, N, D>
         Chunk::execute_with_range(Complexity::Small,
                                   &self.multicore_settings,
                                   &mut array[0..data_length],
-                                  T::Reg::len(),
+                                  T::Reg::LEN,
                                   (a, b),
                                   move |array, range, args| {
             let two = T::one() + T::one();

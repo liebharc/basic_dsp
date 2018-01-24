@@ -83,7 +83,7 @@ fn create_shifted_copies<O, T>(vec: &O) -> InlineVector<InlineVector<T::Reg>>
           T: RealNumber
 {
     let step = if vec.is_complex() { 2 } else { 1 };
-    let number_of_shifts = T::Reg::len() / step;
+    let number_of_shifts = T::Reg::LEN / step;
     let mut shifted_copies = InlineVector::with_capacity(number_of_shifts);
     let mut i = 0;
     let len = vec.len();
@@ -108,12 +108,12 @@ fn create_shifted_copies<O, T>(vec: &O) -> InlineVector<InlineVector<T::Reg>>
             x => (number_of_shifts - x) * step,
         };
         let min_len = vec.len() + shift;
-        let len = (min_len + T::Reg::len() - 1) / T::Reg::len();
+        let len = (min_len + T::Reg::LEN - 1) / T::Reg::LEN;
         let mut copy: InlineVector<T::Reg> = InlineVector::with_capacity(len);
 
-        let mut j = len * T::Reg::len();
+        let mut j = len * T::Reg::LEN;
         let mut k = 0;
-        let mut current = InlineVector::of_size(T::zero(), T::Reg::len());
+        let mut current = InlineVector::of_size(T::zero(), T::Reg::LEN);
         while j > 0 {
             j -= step;
             if j < shift || j >= min_len {
@@ -512,8 +512,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
             let shifts = create_shifted_copies(vector);
 
-            // The next lines uses + $reg::len() due to rounding of odd numbers
-            let scalar_len = conv_len + T::Reg::len();
+            // The next lines uses + $reg::LEN due to rounding of odd numbers
+            let scalar_len = conv_len + T::Reg::LEN;
             let conv_len = conv_len as isize;
             let mut i = 0;
             for num in &mut dest[0..scalar_len] {

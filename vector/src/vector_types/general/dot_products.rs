@@ -77,9 +77,9 @@ impl<S, O, T, N, D, NO, DO> DotProductOps<O, T, T, NO, DO> for DspVec<S, T, N, D
             Chunk::get_a_fold_b(Complexity::Small,
                                 &self.multicore_settings,
                                 &other[0..vectorization_length],
-                                T::Reg::len(),
+                                T::Reg::LEN,
                                 &array[0..vectorization_length],
-                                T::Reg::len(),
+                                T::Reg::LEN,
                                 |original, range, target| {
                 let mut result = T::Reg::splat(T::zero());
                 let original = T::Reg::array_to_regs(&original[range]);
@@ -140,9 +140,9 @@ impl<S, O, T, N, D, NO, DO> DotProductOps<O, Complex<T>, T, NO, DO> for DspVec<S
             Chunk::get_a_fold_b(Complexity::Small,
                                 &self.multicore_settings,
                                 &other[scalar_left..vectorization_length],
-                                T::Reg::len(),
+                                T::Reg::LEN,
                                 &array[scalar_left..vectorization_length],
-                                T::Reg::len(),
+                                T::Reg::LEN,
                                 |original, range, target| {
                 let mut result = T::Reg::splat(T::zero());
                 let original = T::Reg::array_to_regs(&original[range]);
@@ -205,9 +205,9 @@ impl<S, O, T, N, D, NO, DO> PreciseDotProductOps<O, T, T, NO, DO> for DspVec<S, 
             Chunk::get_a_fold_b(Complexity::Small,
                                 &self.multicore_settings,
                                 &other[0..vectorization_length],
-                                T::Reg::len(),
+                                T::Reg::LEN,
                                 &array[0..vectorization_length],
-                                T::Reg::len(),
+                                T::Reg::LEN,
                                 |original, range, target| {
                                     let original = T::Reg::array_to_regs(&original[range]);
                                     let target = T::Reg::array_to_regs(&target[..]);
@@ -264,9 +264,9 @@ impl<S, O, T, N, D, NO, DO> PreciseDotProductOps<O, Complex<T>, T, NO, DO> for D
             Chunk::get_a_fold_b(Complexity::Small,
                                 &self.multicore_settings,
                                 &other[scalar_left..vectorization_length],
-                                T::Reg::len(),
+                                T::Reg::LEN,
                                 &array[scalar_left..vectorization_length],
-                                T::Reg::len(),
+                                T::Reg::LEN,
                                 |original, range, target| {
                 let original = T::Reg::array_to_regs(&original[range]);
                 let target = T::Reg::array_to_regs(&target[..]);
