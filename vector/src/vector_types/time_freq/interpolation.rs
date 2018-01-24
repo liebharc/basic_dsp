@@ -187,7 +187,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         let mut temp = buffer.borrow(new_len);
         {
             let step = if self.is_complex() { 2 } else { 1 };
-            let number_of_shifts = Reg::len() / step;
+            let number_of_shifts = Reg::LEN / step;
             let vectors = function_to_vectors(function,
                                               conv_len,
                                               self.is_complex(),
@@ -224,7 +224,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let simd = Reg::array_to_regs(&data[scalar_left..vectorization_length]);
             // Length of a SIMD reg relative to the length of type T
             // which is 1 for real numbers or 2 for complex numbers
-            let simd_len_in_t = Reg::len() / step;
+            let simd_len_in_t = Reg::LEN / step;
             Chunk::execute_with_range(Complexity::Large,
                                       &self.multicore_settings,
                                       &mut dest[scalar_len..len - scalar_len],

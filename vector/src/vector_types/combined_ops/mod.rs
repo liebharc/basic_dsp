@@ -418,7 +418,7 @@ fn perform_complex_operations_par<T, Reg: SimdGeneric<T>>(
         vectors.push(Reg::splat(T::zero()));
     }
 
-    let reg_len = Reg::len() / 2;
+    let reg_len = Reg::LEN / 2;
     let mut index = range.start / 2;
     let mut i = 0;
     while i < array[0].len() {
@@ -443,7 +443,7 @@ fn perform_complex_operations_par<T, Reg: SimdGeneric<T>>(
         }
 
         index += reg_len;
-        i += Reg::len();
+        i += Reg::LEN;
     }
 }
 
@@ -460,7 +460,7 @@ fn perform_real_operations_par<T: RealNumber, Reg: SimdGeneric<T>>(
         vectors.push(Reg::splat(T::zero()));
     }
 
-    let reg_len = Reg::len();
+    let reg_len = Reg::LEN;
     let mut index = range.start;
     let mut i = 0;
     while i < array[0].len() {
@@ -485,7 +485,7 @@ fn perform_real_operations_par<T: RealNumber, Reg: SimdGeneric<T>>(
         }
 
         index += reg_len;
-        i += Reg::len();
+        i += Reg::LEN;
     }
 }
 
@@ -558,7 +558,7 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
             if rounded_len <= alloc_len {
                 (rounded_len, first.multicore_settings, 0)
             } else {
-                let scalar_length = data_length % Reg::len();
+                let scalar_length = data_length % Reg::LEN;
                 (data_length - scalar_length, first.multicore_settings, scalar_length)
             }
         };
@@ -586,7 +586,7 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
                                                     &multicore_settings,
                                                     &mut array,
                                                     range,
-                                                    Reg::len(),
+                                                    Reg::LEN,
                                                     (operations, first_vec_len),
                                                     |array, range, arg|sel_reg!(perform_complex_operations_par::<T>(array, range, arg)));
                 } else {
@@ -594,7 +594,7 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
                                                     &multicore_settings,
                                                     &mut array,
                                                     range,
-                                                    Reg::len(),
+                                                    Reg::LEN,
                                                     (operations, first_vec_len),
                                                     |array, range, arg|sel_reg!(perform_real_operations_par::<T>(array, range, arg)));
                 }
@@ -625,14 +625,14 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
                 for operation in operations {
                     PerformOperationSimd::<T>::perform_complex_operation(&mut last_elems,
                                                                          operation,
-                                                                         vectorization_length / Reg::len() * 2,
+                                                                         vectorization_length / Reg::LEN * 2,
                                                                          first_vec_len);
                 }
             } else {
                 for operation in operations {
                     PerformOperationSimd::<T>::perform_real_operation(&mut last_elems,
                                                                       operation,
-                                                                      vectorization_length / Reg::len(),
+                                                                      vectorization_length / Reg::LEN,
                                                                       first_vec_len);
                 }
             }

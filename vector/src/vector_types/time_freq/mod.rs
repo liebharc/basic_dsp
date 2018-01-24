@@ -82,7 +82,7 @@ fn create_shifted_copies<O, T: RealNumber, Reg: SimdGeneric<T>>(vec: &O) -> Inli
     where O: Vector<T> + Index<RangeFull, Output = [T]>
 {
     let step = if vec.is_complex() { 2 } else { 1 };
-    let number_of_shifts = Reg::len() / step;
+    let number_of_shifts = Reg::LEN / step;
     let mut shifted_copies = InlineVector::with_capacity(number_of_shifts);
     let mut i = 0;
     let len = vec.len();
@@ -107,12 +107,12 @@ fn create_shifted_copies<O, T: RealNumber, Reg: SimdGeneric<T>>(vec: &O) -> Inli
             x => (number_of_shifts - x) * step,
         };
         let min_len = vec.len() + shift;
-        let len = (min_len + Reg::len() - 1) / Reg::len();
+        let len = (min_len + Reg::LEN - 1) / Reg::LEN;
         let mut copy: InlineVector<Reg> = InlineVector::with_capacity(len);
 
-        let mut j = len * Reg::len();
+        let mut j = len * Reg::LEN;
         let mut k = 0;
-        let mut current = InlineVector::of_size(T::zero(), Reg::len());
+        let mut current = InlineVector::of_size(T::zero(), Reg::LEN);
         while j > 0 {
             j -= step;
             if j < shift || j >= min_len {
@@ -512,8 +512,8 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
             let shifts = create_shifted_copies(vector);
 
-            // The next lines uses + $reg::len() due to rounding of odd numbers
-            let scalar_len = conv_len + Reg::len();
+            // The next lines uses + $reg::LEN due to rounding of odd numbers
+            let scalar_len = conv_len + Reg::LEN;
             let conv_len = conv_len as isize;
             let mut i = 0;
             for num in &mut dest[0..scalar_len] {

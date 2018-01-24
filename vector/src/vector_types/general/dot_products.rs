@@ -76,9 +76,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             Chunk::get_a_fold_b(Complexity::Small,
                                 &self.multicore_settings,
                                 &other[0..vectorization_length],
-                                Reg::len(),
+                                Reg::LEN,
                                 &array[0..vectorization_length],
-                                Reg::len(),
+                                Reg::LEN,
                                 |original, range, target| {
                 let mut result = Reg::splat(T::zero());
                 let original = Reg::array_to_regs(&original[range]);
@@ -132,9 +132,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             Chunk::get_a_fold_b(Complexity::Small,
                                 &self.multicore_settings,
                                 &other[scalar_left..vectorization_length],
-                                Reg::len(),
+                                Reg::LEN,
                                 &array[scalar_left..vectorization_length],
-                                Reg::len(),
+                                Reg::LEN,
                                 |original, range, target| {
                 let mut result = Reg::splat(T::zero());
                 let original = Reg::array_to_regs(&original[range]);
@@ -190,9 +190,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             Chunk::get_a_fold_b(Complexity::Small,
                                 &self.multicore_settings,
                                 &other[0..vectorization_length],
-                                Reg::len(),
+                                Reg::LEN,
                                 &array[0..vectorization_length],
-                                Reg::len(),
+                                Reg::LEN,
                                 |original, range, target| {
                                     let original = Reg::array_to_regs(&original[range]);
                                     let target = Reg::array_to_regs(&target[..]);
@@ -242,9 +242,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             Chunk::get_a_fold_b(Complexity::Small,
                                 &self.multicore_settings,
                                 &other[scalar_left..vectorization_length],
-                                Reg::len(),
+                                Reg::LEN,
                                 &array[scalar_left..vectorization_length],
-                                Reg::len(),
+                                Reg::LEN,
                                 |original, range, target| {
                 let original = Reg::array_to_regs(&original[range]);
                 let target = Reg::array_to_regs(&target[..]);

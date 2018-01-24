@@ -22,11 +22,8 @@ impl Simd<f32> for f32x8 {
     }
 
     type ComplexArray = [Complex<f32>; 4];
-
-    #[inline]
-    fn len() -> usize {
-        8
-    }
+	
+	const LEN: usize = 8;
 
     #[inline]
     fn load_wrap_unchecked(array: &[f32], idx: usize) -> f32x8 {
@@ -201,11 +198,8 @@ impl Simd<f64> for f64x4 {
     }
 
     type ComplexArray = [Complex<f64>; 2];
-
-    #[inline]
-    fn len() -> usize {
-        4
-    }
+	
+	const LEN: usize = 4;
 
     #[inline]
     fn load_wrap_unchecked(array: &[f64], idx: usize) -> f64x4 {

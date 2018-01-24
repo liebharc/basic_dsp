@@ -281,10 +281,10 @@ impl<S, T, N, D> fmt::Debug for DspVec<S, T, N, D>
 }
 
 /// Rounds a length so that it always divides by the length of a SIMD
-/// register. This function assumes that `Reg32::len() > Reg64::len()`.
+/// register. This function assumes that `Reg32::LEN > Reg64::LEN`.
 fn round_len(len: usize) -> usize {
     fn get_reg_len<T: RealNumber, Reg: SimdGeneric<T>>(_: RegType<Reg>) -> usize {
-        Reg::len()
+        Reg::LEN
     }
     
     let reg_len = sel_reg!(get_reg_len::<f32>());
@@ -427,7 +427,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 Chunk::execute_partial(complexity,
                                        &self.multicore_settings,
                                        &mut array[scalar_left..vectorization_length],
-                                       Reg::len(),
+                                       Reg::LEN,
                                        argument,
                                        move |array, argument| {
                                            let array = Reg::array_to_regs_mut(array);
@@ -479,7 +479,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 Chunk::execute_partial(complexity,
                                        &self.multicore_settings,
                                        &mut array[scalar_left..vectorization_length],
-                                       Reg::len(),
+                                       Reg::LEN,
                                        argument,
                                        move |array, argument| {
                                            let array = Reg::array_to_regs_mut(array);
@@ -583,9 +583,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 Chunk::from_src_to_dest(complexity,
                                         &self.multicore_settings,
                                         &array[scalar_left..vectorization_length],
-                                        Reg::len(),
+                                        Reg::LEN,
                                         &mut temp[scalar_left / 2..vectorization_length / 2],
-                                        Reg::len() / 2,
+                                        Reg::LEN / 2,
                                         argument,
                                         move |array, range, target, argument| {
                     let array = Reg::array_to_regs(&array[range.start..range.end]);
@@ -593,7 +593,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                     for reg in array {
                         let result = simd_op(*reg, argument);
                         result.store_half_unchecked(target, j);
-                        j += Reg::len() / 2;
+                        j += Reg::LEN / 2;
                     }
                 });
             }

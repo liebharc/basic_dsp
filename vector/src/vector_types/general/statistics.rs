@@ -435,7 +435,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let chunks = Chunk::get_chunked_results(Complexity::Small,
                                                     &self.multicore_settings,
                                                     &array[scalar_left..vectorization_length],
-                                                    Reg::len(),
+                                                    Reg::LEN,
                                                     (),
                                                     move |array, _, _| {
                 let array = Reg::array_to_regs(array);
@@ -470,7 +470,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let chunks = Chunk::get_chunked_results(Complexity::Small,
                                                     &self.multicore_settings,
                                                     &array[scalar_left..vectorization_length],
-                                                    Reg::len(),
+                                                    Reg::LEN,
                                                     (),
                                                     move |array, _, _| {
                 let array = Reg::array_to_regs(array);
@@ -505,7 +505,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let chunks = Chunk::get_chunked_results(Complexity::Small,
                                                     &self.multicore_settings,
                                                     &array[scalar_left..vectorization_length],
-                                                    Reg::len(),
+                                                    Reg::LEN,
                                                     (),
                                                     move |array, _, _| {
                 let array = Reg::array_to_regs(array);
@@ -540,7 +540,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let chunks = Chunk::get_chunked_results(Complexity::Small,
                                                     &self.multicore_settings,
                                                     &array[scalar_left..vectorization_length],
-                                                    Reg::len(),
+                                                    Reg::LEN,
                                                     (),
                                                     move |array, _, _| {
                 let array = Reg::array_to_regs(array);

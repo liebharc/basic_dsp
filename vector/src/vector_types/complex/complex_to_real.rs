@@ -500,9 +500,9 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             Chunk::from_src_to_dest(complexity,
                                     &self.multicore_settings,
                                     &array[2 * scalar_left..2 * vectorization_length],
-                                    Reg::len(),
+                                    Reg::LEN,
                                     &mut temp[scalar_left..vectorization_length],
-                                    Reg::len() / 2,
+                                    Reg::LEN / 2,
                                     (),
                                     move |array, range, target, _arg| {
                 let mut i = 0;
@@ -510,7 +510,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 for n in array {
                     let result = op_simd(*n);
                     result.store_half_unchecked(target, i);
-                    i += Reg::len() / 2;
+                    i += Reg::LEN / 2;
                 }
             });
         }
