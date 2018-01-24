@@ -364,11 +364,11 @@ impl SimdFrom<i64x4> for f64x4 {
 }
 
 #[cfg(test)]
-#[target_feature(enable = "+avx")]
 mod tests {
     use super::*;
 
     #[test]
+	#[target_feature(enable = "+avx")]
     fn shuffle_test() {
         let vec = f32x8::new(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
         let result = unsafe { _mm256_permute_ps(vec, SWAP_IQ_PS) };

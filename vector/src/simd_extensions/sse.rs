@@ -330,11 +330,11 @@ impl SimdFrom<i64x2> for f64x2 {
 }
 
 #[cfg(test)]
-#[target_feature(enable = "+sse2")]
 mod tests {
     use super::*;
 
     #[test]
+	#[target_feature(enable = "+sse2")]
     fn shuffle_test() {
         let vec = f32x4::new(1.0, 2.0, 3.0, 4.0);
         let result = unsafe { _mm_permute_ps(vec, SWAP_IQ_PS) };
