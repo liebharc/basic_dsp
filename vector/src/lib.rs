@@ -95,7 +95,7 @@ pub mod numbers {
     use simd_extensions;
     use simd_extensions::*;
     use gpu_support::{Gpu32, Gpu64, GpuRegTrait, GpuFloat};
-    #[cfg(any(feature="use_sse", feature="use_avx"))]
+    #[cfg(any(feature="use_sse", feature="use_avx", feature="use_avx512"))]
     use stdsimd;
 
     /// A trait for a numeric value which at least supports a subset of the operations defined in this crate.
@@ -116,6 +116,7 @@ pub mod numbers {
         type RegFallback: SimdGeneric<Self>;
         type RegSse : SimdGeneric<Self>;
         type RegAvx : SimdGeneric<Self>;
+        type RegAvx512 : SimdGeneric<Self>;
         /// Type for the SIMD register on the GPU. Defaults to an arbitrary type if GPU support is not
         /// compiled in.
         type GpuReg: GpuRegTrait;
@@ -134,6 +135,11 @@ pub mod numbers {
         #[cfg(not(feature="use_avx"))]
         type RegAvx = simd_extensions::fallback::f32x4;
         
+        #[cfg(feature="use_avx512")]
+        type RegAvx512 = stdsimd::simd::f32x16;
+        #[cfg(not(feature="use_avx512"))]
+        type RegAvx512 = simd_extensions::fallback::f32x4;
+        
         type GpuReg = Gpu32;
     }
 
@@ -149,6 +155,11 @@ pub mod numbers {
         type RegAvx = stdsimd::simd::f64x4;
         #[cfg(not(feature="use_avx"))]
         type RegAvx = simd_extensions::fallback::f64x2;
+        
+        #[cfg(feature="use_avx512")]
+        type RegAvx512 = stdsimd::simd::f64x8;
+        #[cfg(not(feature="use_avx512"))]
+        type RegAvx512 = simd_extensions::fallback::f64x2;
         
         type GpuReg = Gpu64;
     }
