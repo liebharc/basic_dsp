@@ -362,25 +362,3 @@ impl SimdFrom<i64x4> for f64x4 {
         value.as_f64x4()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-	#[target_feature(enable = "+avx")]
-    fn shuffle_test() {
-        let vec = f32x8::new(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
-        let result = unsafe { _mm256_permute_ps(vec, SWAP_IQ_PS) };
-        let expected = 
-            f32x8::new(vec.extract(1),
-                 vec.extract(0),
-                 vec.extract(3),
-                 vec.extract(2),
-                 vec.extract(5),
-                 vec.extract(4),
-                 vec.extract(7),
-                 vec.extract(6));
-        assert_eq!(result, expected);
-    }
-}
