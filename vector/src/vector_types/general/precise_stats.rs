@@ -52,7 +52,7 @@ pub trait PreciseStatisticsSplitOps<T> {
     ///
     /// # Example
     ///
-    /// ```no_run
+    /// ```
     /// # extern crate num_complex;
     /// # extern crate basic_dsp_vector;
     /// # use num_complex::Complex64;
