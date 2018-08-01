@@ -37,7 +37,7 @@ impl<T> GpuFloat for T where T: ClFftPrm {}
 fn has_f64_support(device: Device) -> bool {
     const F64_SUPPORT: &'static str = "cl_khr_fp64";
     match device.info(DeviceInfo::Extensions) {
-        DeviceInfoResult::Extensions(ext) => ext.contains(F64_SUPPORT),
+        Ok(DeviceInfoResult::Extensions(ext)) => ext.contains(F64_SUPPORT),
         _ => false,
     }
 }
@@ -47,7 +47,7 @@ fn has_f64_support(device: Device) -> bool {
 fn is_integrated_gpu(device: Device) -> bool {
     const INTEL_VENDOR_ID: &'static str = "8086";
     match device.info(DeviceInfo::VendorId) {
-        DeviceInfoResult::Extensions(vid) => vid == INTEL_VENDOR_ID,
+        Ok(DeviceInfoResult::Extensions(vid)) => vid == INTEL_VENDOR_ID,
         _ => false,
     }
 }
@@ -71,7 +71,7 @@ fn determine_processing_power(device: Device, data_length: usize) -> u32 {
     }
 
     match device.info(DeviceInfo::MaxComputeUnits) {
-        DeviceInfoResult::MaxComputeUnits(units) => units,
+        Ok(DeviceInfoResult::MaxComputeUnits(units)) => units,
         _ => 0,
     }
 }
@@ -181,11 +181,12 @@ impl<T> GpuSupport<T> for T
             .expect("No GPU device available which supports this data type");
 
         let kernel_src = if is_f64 { o64::CONV_KERNEL } else { o32::CONV_KERNEL };
-        // Create an all-in-one context, program, and command queue:
-        let prog_bldr = ProgramBuilder::new()
-            .cmplr_def("FILTER_LENGTH", num_conv_vectors as i32)
-            .cmplr_opt("-cl-fast-relaxed-math -DMAC")
-            .src(kernel_src);
+	
+		let mut prog_bldr = Program::builder();
+		prog_bldr
+			.src_file(kernel_src)
+			.cmplr_def("FILTER_LENGTH", num_conv_vectors as i32)
+			.cmplr_opt("-cl-fast-relaxed-math -DMAC");
         let source = array_to_gpu_simd::<T, T::GpuReg>(&source[phase..data_set_size - vec_len +
                                                                       phase]);
         let ocl_pq = ProQue::builder()
@@ -207,25 +208,25 @@ impl<T> GpuSupport<T> for T
         }
 
         // Create buffers
-        let in_buffer = Buffer::builder()
+        let in_buffer = unsafe { Buffer::builder()
                 .queue(ocl_pq.queue().clone())
                 .flags(MemFlags::new().read_only().copy_host_ptr())
-                .dims(ocl_pq.dims().clone())
-                .host_data(source)
-                .build().expect("Failed to create GPU input buffer");
+                .len(ocl_pq.dims().clone())
+                .use_host_slice(source)
+                .build().expect("Failed to create GPU input buffer") };
 
         let imp_vec_padded = array_to_gpu_simd::<T, T::GpuReg>(&imp_vec_padded);
-        let imp_buffer = Buffer::builder()
+        let imp_buffer = unsafe { Buffer::builder()
                 .queue(ocl_pq.queue().clone())
                 .flags(MemFlags::new().read_only().copy_host_ptr())
-                .dims([imp_vec_padded.len()])
-                .host_data(&imp_vec_padded)
-                .build().expect("Failed to create GPU impulse response buffer");
+                .len([imp_vec_padded.len()])
+                .use_host_slice(&imp_vec_padded)
+                .build().expect("Failed to create GPU impulse response buffer") };
 
         let res_buffer = Buffer::builder()
                 .queue(ocl_pq.queue().clone())
                 .flags(MemFlags::new().write_only())
-                .dims(ocl_pq.dims().clone())
+                .len(ocl_pq.dims().clone())
                 .build().expect("Failed to create GPU result buffer");
 
         let kenel_name = if is_complex {
@@ -235,11 +236,12 @@ impl<T> GpuSupport<T> for T
         };
 
         // Compile the kernel
-        let kernel = ocl_pq.create_kernel(kenel_name)
-            .expect("ocl program build")
-            .arg_buf_named("src", Some(&in_buffer))
-            .arg_buf_named("conv", Some(&imp_buffer))
-            .arg_buf(&res_buffer);
+        let kernel = ocl_pq.kernel_builder(kenel_name)
+            .arg_named("src", Some(&in_buffer))
+            .arg_named("conv", Some(&imp_buffer))
+            .arg(&res_buffer)
+			.build()
+			.expect("ocl program build");
 
         // Execute kernel, do this in chunks so that the GPU watchdog isn't
         // terminating our kernel
@@ -248,13 +250,14 @@ impl<T> GpuSupport<T> for T
         let mut chunk = conv_size_padded / vec_len;
         while chunk < gws_total {
             let current_size = cmp::min(chunk_size, gws_total - chunk);
-            kernel
-            .cmd()
-            .gwo([chunk]) // Offset
-            .gws([current_size])
-            .enq()
-            .expect(&format!("Running kernel (Params: {}, {}) failed:",
-                                chunk, gws_total));
+			unsafe {
+				kernel
+					.cmd()
+					.global_work_offset([chunk]) // Offset
+					.global_work_size([current_size])
+					.enq()
+					.expect(&format!("Running kernel (Params: {}, {}) failed:",
+										chunk, gws_total)) };
             chunk += chunk_size;
         }
 
@@ -316,17 +319,17 @@ impl<T> GpuSupport<T> for T
             .expect("Building ProQue");
 
         // Create buffers
-        let mut in_buffer = Buffer::builder()
+        let mut in_buffer = unsafe { Buffer::builder()
                 .queue(ocl_pq.queue().clone())
                 .flags(MemFlags::new().read_only().copy_host_ptr())
-                .dims(ocl_pq.dims().clone())
-                .host_data(&source)
-                .build().expect("Failed to create GPU input buffer");
+                .len(ocl_pq.dims().clone())
+                .use_host_slice(&source)
+                .build().expect("Failed to create GPU input buffer") };
 
         let mut res_buffer = Buffer::builder()
                 .queue(ocl_pq.queue().clone())
                 .flags(MemFlags::new().write_only())
-                .dims(ocl_pq.dims().clone())
+                .len(ocl_pq.dims().clone())
                 .build().expect("Failed to create GPU result buffer");
 
         // Make a plan
@@ -409,12 +412,12 @@ impl<T> GpuSupport<T> for T
 
         reverse_fft = reverse_fft.ewait(&start_ifft_event);
 
-        let coef_buffer = Buffer::builder()
+        let coef_buffer = unsafe { Buffer::builder()
                 .queue(ocl_pq.queue().clone())
                 .flags(MemFlags::new().read_only().copy_host_ptr())
-                .dims([fft_len])
-                .host_data(&h_freq)
-                .build().expect("Failed to create GPU input buffer");
+                .len([fft_len])
+                .use_host_slice(&h_freq)
+                .build().expect("Failed to create GPU input buffer") };
 
         // Execute plan
         let mut position = 0;
@@ -423,26 +426,28 @@ impl<T> GpuSupport<T> for T
         let mut prev_buffer = {
             let range = position..fft_len + position;
             // Create buffers
-            let mut in_buffer = Buffer::builder()
+            let mut in_buffer = unsafe { Buffer::builder()
                 .queue(ocl_pq.queue().clone())
                 .flags(MemFlags::new().read_write().copy_host_ptr())
-                .dims([fft_len])
-                .host_data(&x_time[range])
-                .build().expect("Failed to create GPU input buffer");
+                .len([fft_len])
+                .use_host_slice(&x_time[range])
+                .build().expect("Failed to create GPU input buffer") };
 
             forward_fft.enq(Direction::Forward, &mut in_buffer)
                 .expect("Enq FFT");
 
-            let mul = ocl_pq.create_kernel("multiply_vector")
-                .unwrap()
-                .arg_buf_named("coef", Some(&coef_buffer))
-                .arg_buf_named("srcres", Some(&in_buffer));
-            mul.cmd()
-                .ewait(&start_mul_event)
-                .enew(&mut mul_finish_event)
-                .gws([fft_len / 2])
-                .enq()
-                .expect("Enq Mul");
+            let mul = ocl_pq.kernel_builder("multiply_vector")
+                .arg_named("coef", Some(&coef_buffer))
+                .arg_named("srcres", Some(&in_buffer))
+				.build()
+				.unwrap();
+            unsafe {
+				mul.cmd()
+					.ewait(&start_mul_event)
+					.enew(&mut mul_finish_event)
+					.global_work_size([fft_len / 2])
+					.enq()
+					.expect("Enq Mul") };
 
             reverse_fft.enq(Direction::Backward, &mut in_buffer)
                 .expect("Enq IFFT");
@@ -454,26 +459,28 @@ impl<T> GpuSupport<T> for T
         while position + fft_len < x_len {
             let range = position..fft_len + position;
             // Create buffers
-            let mut in_buffer = Buffer::builder()
+            let mut in_buffer = unsafe { Buffer::builder()
                 .queue(ocl_pq.queue().clone())
                 .flags(MemFlags::new().read_write().copy_host_ptr())
-                .dims([fft_len])
-                .host_data(&x_time[range])
-                .build().expect("Failed to create GPU input buffer");
+                .len([fft_len])
+                .use_host_slice(&x_time[range])
+                .build().expect("Failed to create GPU input buffer") };
 
             forward_fft.enq(Direction::Forward, &mut in_buffer)
                 .expect("Enq FFT");
 
-            let mul = ocl_pq.create_kernel("multiply_vector")
-                .unwrap()
-                .arg_buf_named("coef", Some(&coef_buffer))
-                .arg_buf_named("srcres", Some(&in_buffer));
-            mul.cmd()
-                .ewait(&start_mul_event)
-                .enew(&mut mul_finish_event)
-                .gws([fft_len / 2])
-                .enq()
-                .expect("Enq Mul");
+            let mul = ocl_pq.kernel_builder("multiply_vector")
+                .arg_named("coef", Some(&coef_buffer))
+                .arg_named("srcres", Some(&in_buffer))
+				.build()
+				.unwrap();
+			unsafe {
+				mul.cmd()
+					.ewait(&start_mul_event)
+					.enew(&mut mul_finish_event)
+					.global_work_size([fft_len / 2])
+					.enq()
+					.expect("Enq Mul") };
 
             reverse_fft.enq(Direction::Backward, &mut in_buffer)
                 .expect("Enq IFFT");

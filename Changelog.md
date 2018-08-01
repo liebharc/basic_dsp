@@ -5,7 +5,8 @@ Changes:
 It's now decided at runtime which SIMD optimization should be used.
 
 ## Version 0.5.3
-Switched from `simd` to `stdsimd` crate.
+- Switched from `simd` to `stdsimd` crate. 
+- Updated `crossbeam`, `ocl` and `clFFT` dependencies.
 
 ## Version 0.5.2
 Updated to `crossbeam`, `arrayvec`, `ocl` and `clFFT` dependencies.
