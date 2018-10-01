@@ -1,6 +1,6 @@
 [package]
 name = "basic_dsp"
-version = "0.5.4"
+version = "0.5.5"
 authors = ["Christian Liebhardt"]
 license = "MIT/Apache-2.0"
 homepage = "https://github.com/liebharc/basic_dsp"

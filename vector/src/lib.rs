@@ -53,10 +53,8 @@
 //! complex vectors in time domain, but not with real valued vectors or frequency domain vectors. 
 //! And the type `GenDspVec` serves as wild card at compile time since it defers all checks to run time.
 
-#![feature(target_feature)]
-#![feature(cfg_target_feature)]
-#[macro_use]
-extern crate stdsimd;
+#[cfg(any(feature = "doc", feature="use_sse", feature="use_avx"))]
+extern crate simd;
 #[cfg(any(feature = "doc", feature="use_gpu"))]
 extern crate ocl;
 #[cfg(feature="std")]
@@ -96,7 +94,7 @@ pub mod numbers {
     use simd_extensions::*;
     use gpu_support::{Gpu32, Gpu64, GpuRegTrait, GpuFloat};
     #[cfg(any(feature="use_sse", feature="use_avx", feature="use_avx512"))]
-    use stdsimd;
+    use simd;
 
     /// A trait for a numeric value which at least supports a subset of the operations defined in this crate.
     /// Can be an integer or a floating point number. In order to have support for all operations in this crate
@@ -126,17 +124,17 @@ pub mod numbers {
         type RegFallback = simd_extensions::fallback::f32x4;
         
         #[cfg(feature="use_sse")]
-        type RegSse = stdsimd::simd::f32x4;
+        type RegSse = simd::f32x4;
         #[cfg(not(feature="use_sse"))]
         type RegSse = simd_extensions::fallback::f32x4;
         
         #[cfg(feature="use_avx")]
-        type RegAvx = stdsimd::simd::f32x8;
+        type RegAvx = simd::x86::avx::f32x8;
         #[cfg(not(feature="use_avx"))]
-        type RegAvx = simd_extensions::fallback::f32x4;
+        type RegAvx = simd::f32x4;
         
         #[cfg(feature="use_avx512")]
-        type RegAvx512 = stdsimd::simd::f32x16;
+        type RegAvx512 = stdsimd::simd::f32x16; // Type is missing in SIMD
         #[cfg(not(feature="use_avx512"))]
         type RegAvx512 = simd_extensions::fallback::f32x4;
         
@@ -147,17 +145,17 @@ pub mod numbers {
         type RegFallback = simd_extensions::fallback::f64x2;
         
         #[cfg(feature="use_sse")]
-        type RegSse = stdsimd::simd::f64x2;
+        type RegSse = simd::x86::sse2::f64x2;
         #[cfg(not(feature="use_sse"))]
         type RegSse = simd_extensions::fallback::f64x2;
         
         #[cfg(feature="use_avx")]
-        type RegAvx = stdsimd::simd::f64x4;
+        type RegAvx = simd::x86::avx::f64x4;
         #[cfg(not(feature="use_avx"))]
         type RegAvx = simd_extensions::fallback::f64x2;
         
         #[cfg(feature="use_avx512")]
-        type RegAvx512 = stdsimd::simd::f64x8;
+        type RegAvx512 = stdsimd::simd::f64x8; // Type is missing in SIMD
         #[cfg(not(feature="use_avx512"))]
         type RegAvx512 = simd_extensions::fallback::f64x2;
         

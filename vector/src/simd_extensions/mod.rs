@@ -3,7 +3,11 @@ use std::mem;
 use std::ops::*;
 use std;
 #[cfg(any(feature="use_sse", feature="use_avx", feature="use_avx512"))]
-use stdsimd::simd;
+use simd;
+#[cfg(feature="use_sse")]
+use simd::x86::sse2;
+#[cfg(feature="use_avx")]
+use simd::x86::avx;
 
 /// SIMD methods which have `f32` or `f64` specific implementation.
 pub trait Simd<T>: Sized
@@ -79,6 +83,9 @@ pub trait Simd<T>: Sized
     fn max(self, other: Self) -> Self;
     
     fn min(self, other: Self) -> Self;
+	
+	// Swaps I and Q (or Real and Imag) of a complex vector
+	fn swap_iq(self) -> Self;
 }
 
 /// Dirty workaround since the stdsimd doesn't implement conversion traits (yet?).
@@ -304,23 +311,23 @@ macro_rules! simd_generic_impl {
 #[cfg(feature="use_avx512")]
 mod avx512;
 #[cfg(feature="use_avx512")]
-simd_generic_impl!(f32, simd::f32x16);
+simd_generic_impl!(f32, simd::f32x16); // Type isn't implemented in simd
 #[cfg(feature="use_avx512")]
-simd_generic_impl!(f64, simd::f64x8);
+simd_generic_impl!(f64, simd::f64x8);  // Type isn't implemented in simd
 
 #[cfg(feature="use_avx")]
 mod avx;
 #[cfg(feature="use_avx")]
 simd_generic_impl!(f32, simd::f32x8);
 #[cfg(feature="use_avx")]
-simd_generic_impl!(f64, simd::f64x4);
+simd_generic_impl!(f64, avx::f64x4);
 
 #[cfg(feature="use_sse")]
 mod sse;
 #[cfg(feature="use_sse")]
 simd_generic_impl!(f32, simd::f32x4);
 #[cfg(feature="use_sse")]
-simd_generic_impl!(f64, simd::f64x2);
+simd_generic_impl!(f64, sse2::f64x2);
 
 #[cfg(any(feature="use_sse", feature="use_avx", feature="use_avx512"))]
 mod approximations;
@@ -347,22 +354,22 @@ impl<Reg> RegType<Reg> {
 /// The macro tries to mimic the Rust syntax of a method call.
 macro_rules! sel_reg(
     ($self_:ident.$method: ident::<$type: ident>($($args: expr),*)) => {
-        if cfg_feature_enabled!("avx512vl") && cfg!(feature="use_avx512") {
+        if cfg!(target_feature="avx512vl") && cfg!(feature="use_avx512") {
             $self_.$method(RegType::<<$type as ToSimd>::RegAvx512>::new(), $($args),*)
-        } else if cfg_feature_enabled!("avx2") && cfg!(feature="use_avx") {
+        } else if cfg!(target_feature="avx2") && cfg!(feature="use_avx") {
             $self_.$method(RegType::<<$type as ToSimd>::RegAvx>::new(), $($args),*)
-        } else if cfg_feature_enabled!("sse2") && cfg!(feature="use_sse") {
+        } else if cfg!(target_feature="sse2") && cfg!(feature="use_sse") {
             $self_.$method(RegType::<<$type as ToSimd>::RegSse>::new(), $($args),*)
         } else {
             $self_.$method(RegType::<<$type as ToSimd>::RegFallback>::new(), $($args),*)
         }
     };
     ($method: ident::<$type: ident>($($args: expr),*)) => {
-        if cfg_feature_enabled!("avx512vl") && cfg!(feature="use_avx512") {
+        if cfg!(target_feature="avx512vl") && cfg!(feature="use_avx512") {
             $method(RegType::<<$type as ToSimd>::RegAvx512>::new(), $($args),*)
-        } else if cfg_feature_enabled!("avx2") && cfg!(feature="use_avx") {
+        } else if cfg!(target_feature="avx2") && cfg!(feature="use_avx") {
             $method(RegType::<<$type as ToSimd>::RegAvx>::new(), $($args),*)
-        } else if cfg_feature_enabled!("sse2") && cfg!(feature="use_sse") {
+        } else if cfg!(target_feature="sse2") && cfg!(feature="use_sse") {
             $method(RegType::<<$type as ToSimd>::RegSse>::new(), $($args),*)
         } else {
             $method(RegType::<<$type as ToSimd>::RegFallback>::new(), $($args),*)

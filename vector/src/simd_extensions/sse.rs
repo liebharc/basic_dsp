@@ -1,6 +1,8 @@
-use stdsimd::simd::*;
-use stdsimd::vendor::*;
+use simd::*;
+use simd::x86::sse2::*;
+use std::arch::x86_64::*;
 use numbers::*;
+use std::mem;
 use super::{Simd, SimdFrom};
 
 /// This value must be read in groups of 2 bits:
@@ -59,9 +61,9 @@ impl Simd<f32> for f32x4 {
         let scaling_real = f32x4::splat(value.re);
         let scaling_imag = f32x4::splat(value.im);
         let parallel = scaling_real * self;
-        let shuffled = unsafe { _mm_permute_ps(self, SWAP_IQ_PS) };
+        let shuffled = self.swap_iq();
         let cross = scaling_imag * shuffled;
-        unsafe { _mm_addsub_ps(parallel, cross) }
+		unsafe { mem::transmute(_mm_addsub_ps(mem::transmute(parallel), mem::transmute(cross))) }
     }
 
     #[inline]
@@ -77,9 +79,9 @@ impl Simd<f32> for f32x4 {
                                       value.extract(3));
 
         let parallel = scaling_real * self;
-        let shuffled = unsafe { _mm_permute_ps(self, SWAP_IQ_PS) };
+        let shuffled = self.swap_iq();
         let cross = scaling_imag * shuffled;
-        unsafe { _mm_addsub_ps(parallel, cross) }
+		unsafe { mem::transmute(_mm_addsub_ps(mem::transmute(parallel), mem::transmute(cross))) }
     }
 
     #[inline]
@@ -95,29 +97,26 @@ impl Simd<f32> for f32x4 {
                                       self.extract(3));
                                                       
         let parallel = scaling_real * value;
-        let shuffled = unsafe { _mm_permute_ps(value, SWAP_IQ_PS) };
+        let shuffled = value.swap_iq();
         let cross = scaling_imag * shuffled;
-        let mul = unsafe { _mm_addsub_ps(parallel, cross) };
+		let mul: f32x4 = unsafe { mem::transmute(_mm_addsub_ps(mem::transmute(parallel), mem::transmute(cross))) };
         let square = shuffled * shuffled;
-        let square_shuffled = unsafe { _mm_permute_ps(square, SWAP_IQ_PS) };
+        let square_shuffled = square.swap_iq();
         let sum = square + square_shuffled;
         let div = mul / sum;
-        unsafe { _mm_permute_ps(div, SWAP_IQ_PS) }
+        div.swap_iq()
     }
 
     #[inline]
     fn complex_abs_squared(self) -> f32x4 {
         let squared = self * self;
-
-        unsafe { _mm_hadd_ps(squared, squared) }
+        unsafe { mem::transmute(_mm_hadd_ps(mem::transmute(squared), mem::transmute(squared))) }
     }
 
     #[inline]
     fn complex_abs(self) -> f32x4 {
-        let squared = self * self;
-
-        let squared_sum = unsafe { _mm_hadd_ps(squared, squared) };
-        unsafe { _mm_sqrt_ps(squared_sum) }
+        let squared_sum = self.complex_abs_squared();
+        squared_sum.sqrt()
     }
 
     #[inline]
@@ -142,7 +141,7 @@ impl Simd<f32> for f32x4 {
 
     #[inline]
     fn sqrt(self) -> f32x4 {
-        unsafe { _mm_sqrt_ps(self) }
+		self.sqrt()
     }
 
     #[inline]
@@ -167,12 +166,17 @@ impl Simd<f32> for f32x4 {
     
     #[inline]
     fn max(self, other: Self) -> Self {
-        unsafe { _mm_max_ps(self, other) }
+		self.max(other)
     }
     
     #[inline]
     fn min(self, other: Self) -> Self {
-        unsafe { _mm_min_ps(self, other) }
+		self.min(other)
+    }
+	
+	#[inline]
+    fn swap_iq(self) -> Self {
+        unsafe { mem::transmute(_mm_permute_ps(mem::transmute(self), SWAP_IQ_PS)) }
     }
 }
 
@@ -274,7 +278,7 @@ impl Simd<f64> for f64x2 {
 
     #[inline]
     fn sqrt(self) -> f64x2 {
-        unsafe { _mm_sqrt_pd(self) }
+		simd::x86::sse2::Sse2F64x2::sqrt(self)
     }
 
     #[inline]
@@ -296,35 +300,55 @@ impl Simd<f64> for f64x2 {
     
     #[inline]
     fn max(self, other: Self) -> Self {
-        unsafe { _mm_max_pd(self, other) }
+		simd::x86::sse2::Sse2F64x2::max(self, other)
     }
     
     #[inline]
     fn min(self, other: Self) -> Self {
-        unsafe { _mm_min_pd(self, other) }
+		simd::x86::sse2::Sse2F64x2::min(self, other)
+    }
+    
+    #[inline]
+    fn swap_iq(self) -> Self {
+        f64x2::new(self.extract(1), self.extract(0))
     }
 }
 
 impl SimdFrom<f32x4> for i32x4 {
     fn regfrom(value: f32x4) -> Self {
-        value.as_i32x4()
+        value.to_i32()
     }
 }
 
 impl SimdFrom<i32x4> for f32x4 {
     fn regfrom(value: i32x4) -> Self {
-        value.as_f32x4()
+        value.to_f32()
     }
 }
 
 impl SimdFrom<f64x2> for i64x2 {
     fn regfrom(value: f64x2) -> Self {
-        value.as_i64x2()
+        value.to_i64()
     }
 }
 
 impl SimdFrom<i64x2> for f64x2 {
     fn regfrom(value: i64x2) -> Self {
-        value.as_f64x2()
+        value.to_f64()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn shuffle_test() {
+        let vec = f32x4::new(1.0, 2.0, 3.0, 4.0);
+        let result = vec.swap_iq();
+        assert_eq!(result.extract(0), vec.extract(1));
+		assert_eq!(result.extract(1), vec.extract(0));
+		assert_eq!(result.extract(2), vec.extract(3));
+		assert_eq!(result.extract(3), vec.extract(2));
     }
 }

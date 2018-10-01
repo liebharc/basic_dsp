@@ -1,7 +1,8 @@
 use numbers::*;
 use super::{Simd, SimdFrom};
-use stdsimd::simd::*;
-use stdsimd::vendor::*;
+use simd::x86::avx::*;
+use std::arch::x86_64::*;
+use std::mem;
 
 /// This value must be read in groups of 2 bits.
 const SWAP_IQ_PS: i32 = 0b10110001;
@@ -22,8 +23,8 @@ impl Simd<f32> for f32x8 {
     }
 
     type ComplexArray = [Complex<f32>; 4];
-	
-	const LEN: usize = 8;
+    
+    const LEN: usize = 8;
 
     #[inline]
     fn load_wrap_unchecked(array: &[f32], idx: usize) -> f32x8 {
@@ -69,9 +70,9 @@ impl Simd<f32> for f32x8 {
         let scaling_real = f32x8::splat(value.re);
         let scaling_imag = f32x8::splat(value.im);
         let parallel = scaling_real * self;
-        let shuffled = unsafe { _mm256_permute_ps(self, SWAP_IQ_PS) };
+        let shuffled = self.swap_iq();
         let cross = scaling_imag * shuffled;
-        unsafe { _mm256_addsub_ps(parallel, cross) }
+        unsafe { mem::transmute(_mm256_addsub_ps(mem::transmute(parallel), mem::transmute(cross))) }
     }
 
     #[inline]
@@ -93,9 +94,9 @@ impl Simd<f32> for f32x8 {
                                       value.extract(7),
                                       value.extract(7));
         let parallel = scaling_real * self;
-        let shuffled = unsafe { _mm256_permute_ps(self, SWAP_IQ_PS) };
+        let shuffled = self.swap_iq();
         let cross = scaling_imag * shuffled;
-        unsafe { _mm256_addsub_ps(parallel, cross) }
+        unsafe { mem::transmute(_mm256_addsub_ps(mem::transmute(parallel), mem::transmute(cross))) }
     }
 
     #[inline]
@@ -117,26 +118,26 @@ impl Simd<f32> for f32x8 {
                                       self.extract(7),
                                       self.extract(7));
         let parallel = scaling_real * value;
-        let shuffled = unsafe { _mm256_permute_ps(value, SWAP_IQ_PS) };
+        let shuffled = value.swap_iq();
         let cross = scaling_imag * shuffled;
-        let mul = unsafe { _mm256_addsub_ps(parallel, cross) };
+        let mul: f32x8 = unsafe { mem::transmute(_mm256_addsub_ps(mem::transmute(parallel), mem::transmute(cross))) };
         let square = shuffled * shuffled;
-        let square_shuffled = unsafe { _mm256_permute_ps(square, SWAP_IQ_PS) };
+        let square_shuffled = square.swap_iq();
         let sum = square + square_shuffled;
         let div = mul / sum;
-        unsafe { _mm256_permute_ps(div, SWAP_IQ_PS) }
+        div.swap_iq()
     }
 
     #[inline]
     fn complex_abs_squared(self) -> f32x8 {
         let squared = self * self;
-        unsafe { _mm256_hadd_ps(squared, squared) }
+        unsafe { mem::transmute(_mm256_hadd_ps(mem::transmute(squared), mem::transmute(squared))) }
     }
 
     #[inline]
     fn complex_abs(self) -> f32x8 {
         let squared_sum = self.complex_abs_squared();
-        unsafe { _mm256_sqrt_ps(squared_sum) }
+        simd::x86::avx::AvxF32x8::sqrt(squared_sum)
     }
 
     #[inline]
@@ -151,7 +152,7 @@ impl Simd<f32> for f32x8 {
 
     #[inline]
     fn sqrt(self) -> f32x8 {
-        unsafe { _mm256_sqrt_ps(self) }
+        simd::x86::avx::AvxF32x8::sqrt(self)
     }
 
     #[inline]
@@ -178,12 +179,17 @@ impl Simd<f32> for f32x8 {
     
     #[inline]
     fn max(self, other: Self) -> Self {
-        unsafe { _mm256_max_ps(self, other) }
+        simd::x86::avx::AvxF32x8::max(self, other)
     }
     
     #[inline]
     fn min(self, other: Self) -> Self {
-        unsafe { _mm256_min_ps(self, other) }
+        simd::x86::avx::AvxF32x8::min(self, other)
+    }
+    
+    #[inline]
+    fn swap_iq(self) -> Self {
+        unsafe { mem::transmute(_mm256_permute_ps(mem::transmute(self), SWAP_IQ_PS)) }
     }
 }
 
@@ -198,8 +204,8 @@ impl Simd<f64> for f64x4 {
     }
 
     type ComplexArray = [Complex<f64>; 2];
-	
-	const LEN: usize = 4;
+    
+    const LEN: usize = 4;
 
     #[inline]
     fn load_wrap_unchecked(array: &[f64], idx: usize) -> f64x4 {
@@ -238,9 +244,9 @@ impl Simd<f64> for f64x4 {
         let scaling_real = f64x4::splat(value.re);
         let scaling_imag = f64x4::splat(value.im);
         let parallel = scaling_real * self;
-        let shuffled = unsafe { _mm256_permute_pd(self, SWAP_IQ_PD) };
+        let shuffled = self.swap_iq();
         let cross = scaling_imag * shuffled;
-        unsafe { _mm256_addsub_pd(parallel, cross) }
+        unsafe { mem::transmute(_mm256_addsub_pd(mem::transmute(parallel), mem::transmute(cross))) }
     }
 
     #[inline]
@@ -254,9 +260,9 @@ impl Simd<f64> for f64x4 {
                                       value.extract(3),
                                       value.extract(3));
         let parallel = scaling_real * self;
-        let shuffled = unsafe { _mm256_permute_pd(self, SWAP_IQ_PD) };
+        let shuffled = self.swap_iq();
         let cross = scaling_imag * shuffled;
-        unsafe { _mm256_addsub_pd(parallel, cross) }
+        unsafe { mem::transmute(_mm256_addsub_pd(mem::transmute(parallel), mem::transmute(cross))) }
     }
 
     #[inline]
@@ -270,26 +276,26 @@ impl Simd<f64> for f64x4 {
                                       self.extract(3),
                                       self.extract(3));
         let parallel = scaling_real * value;
-        let shuffled = unsafe { _mm256_permute_pd(value, SWAP_IQ_PD) };
+        let shuffled = value.swap_iq();
         let cross = scaling_imag * shuffled;
-        let mul = unsafe { _mm256_addsub_pd(parallel, cross) };
+        let mul: f64x4 = unsafe { mem::transmute(_mm256_addsub_pd(mem::transmute(parallel), mem::transmute(cross))) };
         let square = shuffled * shuffled;
-        let square_shuffled = unsafe { _mm256_permute_pd(square, SWAP_IQ_PD) };
+        let square_shuffled = square.swap_iq();
         let sum = square + square_shuffled;
         let div = mul / sum;
-        unsafe { _mm256_permute_pd(div, SWAP_IQ_PD) }
+        div.swap_iq()
     }
 
     #[inline]
     fn complex_abs_squared(self) -> f64x4 {
         let squared = self * self;
-        unsafe { _mm256_hadd_pd(squared, squared) }
+        unsafe { mem::transmute(_mm256_hadd_pd(mem::transmute(squared), mem::transmute(squared))) }
     }
 
     #[inline]
     fn complex_abs(self) -> f64x4 {
         let squared_sum = self.complex_abs_squared();
-        unsafe { _mm256_sqrt_pd(squared_sum) }
+        simd::x86::avx::AvxF64x4::sqrt(squared_sum)
     }
 
     #[inline]
@@ -304,7 +310,7 @@ impl Simd<f64> for f64x4 {
 
     #[inline]
     fn sqrt(self) -> f64x4 {
-        unsafe { _mm256_sqrt_pd(self) }
+        simd::x86::avx::AvxF64x4::sqrt(self)
     }
 
     #[inline]
@@ -330,35 +336,59 @@ impl Simd<f64> for f64x4 {
     
     #[inline]
     fn max(self, other: Self) -> Self {
-        unsafe { _mm256_max_pd(self, other) }
+        simd::x86::avx::AvxF64x4::max(self, other)
     }
     
     #[inline]
     fn min(self, other: Self) -> Self {
-        unsafe { _mm256_min_pd(self, other) }
+        simd::x86::avx::AvxF64x4::min(self, other)
+    }
+    
+    #[inline]
+    fn swap_iq(self) -> Self {
+        unsafe { mem::transmute(_mm256_permute_pd(mem::transmute(self), SWAP_IQ_PD)) }
     }
 }
 
 impl SimdFrom<f32x8> for i32x8 {
     fn regfrom(value: f32x8) -> Self {
-        value.as_i32x8()
+        value.to_i32()
     }
 }
 
 impl SimdFrom<i32x8> for f32x8 {
     fn regfrom(value: i32x8) -> Self {
-        value.as_f32x8()
+        value.to_f32()
     }
 }
 
 impl SimdFrom<f64x4> for i64x4 {
     fn regfrom(value: f64x4) -> Self {
-        value.as_i64x4()
+        value.to_i64()
     }
 }
 
 impl SimdFrom<i64x4> for f64x4 {
     fn regfrom(value: i64x4) -> Self {
-        value.as_f64x4()
+        value.to_f64()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn shuffle_test() {
+        let vec = f32x8::new(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
+        let result = vec.swap_iq();
+        assert_eq!(result.extract(0), vec.extract(1));
+        assert_eq!(result.extract(1), vec.extract(0));
+        assert_eq!(result.extract(2), vec.extract(3));
+        assert_eq!(result.extract(3), vec.extract(2));
+        assert_eq!(result.extract(4), vec.extract(5));
+        assert_eq!(result.extract(5), vec.extract(4));
+        assert_eq!(result.extract(6), vec.extract(7));
+        assert_eq!(result.extract(7), vec.extract(6));
     }
 }

@@ -23,16 +23,17 @@
 //
 
 use super::{Simd, SimdApproximations, SimdFrom};
-use stdsimd::simd::*;
+use simd::*;
+use simd::x86::sse2::*;
 use std::mem;
 use std::ops::*;
 use numbers::*;
 use Zero;
 
 macro_rules! simd_approx_impl {
-    ($data_type:ident,
-     $bit_len:expr,
-     $regf:ident,
+    ($data_type: ident,
+     $bit_len: expr,
+     $regf: ident,
      $regi: ident,
      $regu: ident)
     =>
@@ -73,7 +74,7 @@ macro_rules! simd_approx_impl {
                 let log_q2 = $regf::splat(0.693359375);
 
                 let invalid_mask = x.le($regf::zero());
-                let x = unsafe { x.max(mem::transmute(min_norm_pos)) }; // cut off denormalized stuff
+                let x = unsafe { Simd::<$data_type>::max(x, mem::transmute(min_norm_pos)) }; // cut off denormalized stuff
                 let x: $regi = unsafe { mem::transmute(x) };
                 let emm0 = x.shr(mant_len);
 
@@ -163,9 +164,8 @@ macro_rules! simd_approx_impl {
                 let exp_p4 = $regf::splat(1.6666665459E-1);
                 let exp_p5 = $regf::splat(5.0000001201E-1);
 
-
-                let x = x.min(exp_hi);
-                let x = x.max(exp_lo);
+				let x = unsafe { Simd::<$data_type>::min(x, mem::transmute(exp_hi)) }; 
+                let x = unsafe { Simd::<$data_type>::max(x, mem::transmute(exp_lo)) }; 
 
                 // express exp(x) as exp(g + n*log(2))
                 let fx = x * log2ef + half;
@@ -357,7 +357,8 @@ simd_approx_impl!(f64, 64, f64x4, i64x4, u64x4);
 #[cfg(feature="use_sse")]
 mod tests {
     use super::super::*;
-    use stdsimd::simd::{f32x4, f64x2};
+    use simd::f32x4;
+	use simd::x86::sse2::f64x2;
     use RealNumber;
 
     fn assert_eq_tol<T>(left: T, right: T, tol: T)

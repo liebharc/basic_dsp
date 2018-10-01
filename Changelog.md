@@ -1,8 +1,11 @@
 # `basic_dsp`
 Changes:
 
-## Version 0.5.4
+## Version 0.5.5
 It's now decided at runtime which SIMD optimization should be used.
+
+## Version 0.5.4
+- Went back from `stdsimd` to `simd` crate. 
 
 ## Version 0.5.3
 - Switched from `simd` to `stdsimd` crate. 

@@ -1,6 +1,6 @@
 [package]
 name = "basic_dsp_vector"
-version = "0.5.4"
+version = "0.5.5"
 authors = ["Christian Liebhardt"]
 license = "MIT/Apache-2.0"
 homepage = "https://github.com/liebharc/basic_dsp"
@@ -20,15 +20,14 @@ codegen-units = 4
 
 [features]
 default = ["std"]
-use_avx = []
-use_avx512 = []
-use_sse = []
+use_avx = ["use_simd"]
+use_sse = ["use_simd"]
+use_simd = ["simd"]
 use_gpu = ["ocl", "clfft"]
 std = ["crossbeam", "num_cpus"]
 
 [dependencies]
-
-stdsimd = "0.0.4"
+simd = { version = "0.2.2", optional = true }
 ocl = { version = "^0.18.0", optional = true }
 clfft = { version = "^0.3.2", optional = true }
 num_cpus = { version="^1.8.0", optional = true }

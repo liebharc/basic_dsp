@@ -305,6 +305,11 @@ impl Simd<f32> for f32x4 {
             f32::min(self.2, other.2),
             f32::min(self.3, other.3))
     }
+    
+    #[inline]
+    fn swap_iq(self) -> Self {
+        f32x4::new(self.extract(1), self.extract(0), self.extract(3), self.extract(2))
+    }
 }
 
 impl Simd<f64> for f64x2 {
@@ -443,5 +448,10 @@ impl Simd<f64> for f64x2 {
         f64x2::new(
             f64::min(self.0, other.0),
             f64::min(self.1, other.1))
+    }
+    
+    #[inline]
+    fn swap_iq(self) -> Self {
+        f64x2::new(self.extract(1), self.extract(0))
     }
 }
