@@ -122,7 +122,6 @@ impl Simd<f32> for f32x4 {
     #[inline]
     fn complex_abs_squared(self) -> f32x4 {
         let squared = self * self;
-
         unsafe { mem::transmute(_mm_hadd_ps(mem::transmute(squared), mem::transmute(squared))) }
     }
 
