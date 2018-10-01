@@ -8,9 +8,6 @@ rust:
   - stable
   - beta
   - nightly
-matrix:
-  allow_failures:
-    - rust: nightly
 
 # Run the makefile to test all tests and doc tests for every sub module
 # and then test and bench the the top level crate.
