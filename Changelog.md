@@ -1,6 +1,10 @@
 # `basic_dsp`
 Changes:
 
+## Version 0.5.4
+- Went back from `stdsimd` to `simd` crate. 
+- Updated `crossbeam`, `ocl` and `clFFT` dependencies.
+
 ## Version 0.5.3
 - Switched from `simd` to `stdsimd` crate. 
 - Updated `crossbeam`, `ocl` and `clFFT` dependencies.
