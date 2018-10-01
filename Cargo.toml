@@ -25,7 +25,7 @@ crate-type = ["dylib", "rlib"]
 [dependencies.basic_dsp_vector]
 optional = false
 path = "vector"
-version = "0.5.4"
+version = "0.5.5"
 
 [dependencies.basic_dsp_matrix]
 optional = true
