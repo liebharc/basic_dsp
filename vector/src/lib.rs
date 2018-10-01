@@ -54,7 +54,7 @@
 //! And the type `GenDspVec` serves as wild card at compile time since it defers all checks to run time.
 
 #[cfg(any(feature = "doc", feature="use_sse", feature="use_avx"))]
-extern crate stdsimd;
+extern crate simd;
 #[cfg(any(feature = "doc", feature="use_gpu"))]
 extern crate ocl;
 #[cfg(feature="std")]

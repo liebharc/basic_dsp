@@ -1,7 +1,7 @@
 use numbers::*;
 use super::{Simd, SimdFrom};
-use stdsimd::simd::*;
-use stdsimd::vendor::*;
+use simd::simd::*;
+use simd::vendor::*;
 
 pub type Reg32 = f32x8;
 

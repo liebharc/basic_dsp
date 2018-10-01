@@ -75,6 +75,9 @@ pub trait Simd<T>: Sized
     fn max(self, other: Self) -> Self;
     
     fn min(self, other: Self) -> Self;
+	
+	// Swaps I and Q (or Real and Imag) of a complex vector
+	fn swap_iq(self) -> Self;
 }
 
 /// Dirty workaround since the stdsimd doesn't implement conversion traits (yet?).
