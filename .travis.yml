@@ -5,6 +5,8 @@ sudo: false
 # however we of course hope that we will be able to use stable at some point
 # `cfg_target_feature` and `simd` are the main reasons why Rust nightly is required.
 rust:
+  - stable
+  - beta
   - nightly
 
 # Run the makefile to test all tests and doc tests for every sub module
