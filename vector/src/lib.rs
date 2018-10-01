@@ -131,7 +131,7 @@ pub mod numbers {
         #[cfg(feature="use_avx")]
         type RegAvx = simd::x86::avx::f32x8;
         #[cfg(not(feature="use_avx"))]
-        type RegAvx = simd::f32x4;
+        type RegAvx = simd_extensions::fallback::f32x4;
         
         #[cfg(feature="use_avx512")]
         type RegAvx512 = stdsimd::simd::f32x16; // Type is missing in SIMD
