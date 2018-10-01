@@ -18,6 +18,8 @@ This enables explicit [SSE2](https://en.wikipedia.org/wiki/Streaming_SIMD_Extens
 
 If the lib is compiled with `use_sse` or `use_avx` then it will fail to run on a CPU without those instructions.
 
+Simd support is shakky right now. As soon as https://github.com/rust-lang/rfcs/pull/2366 will be completed the crate should be able to become more stable again.
+
 # GPU support: `use_gpu`
 Activate with: `--features use_gpu`.
 
