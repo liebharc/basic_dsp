@@ -5,9 +5,9 @@ use std;
 #[cfg(any(feature="use_sse", feature="use_avx", feature="use_avx512"))]
 use simd;
 #[cfg(feature="use_sse")]
-use simd::x86::sse2;
+use simd::x86::sse2 as simdsse;
 #[cfg(feature="use_avx")]
-use simd::x86::avx;
+use simd::x86::avx as simdavx;
 
 /// SIMD methods which have `f32` or `f64` specific implementation.
 pub trait Simd<T>: Sized
@@ -318,16 +318,16 @@ simd_generic_impl!(f64, simd::f64x8);  // Type isn't implemented in simd
 #[cfg(feature="use_avx")]
 mod avx;
 #[cfg(feature="use_avx")]
-simd_generic_impl!(f32, simd::f32x8);
+simd_generic_impl!(f32, simdavx::f32x8);
 #[cfg(feature="use_avx")]
-simd_generic_impl!(f64, avx::f64x4);
+simd_generic_impl!(f64, simdavx::f64x4);
 
 #[cfg(feature="use_sse")]
 mod sse;
 #[cfg(feature="use_sse")]
 simd_generic_impl!(f32, simd::f32x4);
 #[cfg(feature="use_sse")]
-simd_generic_impl!(f64, sse2::f64x2);
+simd_generic_impl!(f64, simdsse::f64x2);
 
 #[cfg(any(feature="use_sse", feature="use_avx", feature="use_avx512"))]
 mod approximations;

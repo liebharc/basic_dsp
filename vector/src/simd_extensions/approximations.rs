@@ -25,6 +25,7 @@
 use super::{Simd, SimdApproximations, SimdFrom};
 use simd::*;
 use simd::x86::sse2::*;
+use simd::x86::avx::*;
 use std::mem;
 use std::ops::*;
 use numbers::*;
