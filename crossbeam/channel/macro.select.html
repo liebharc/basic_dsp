@@ -1,0 +1,371 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `select` macro in crate `crossbeam`."><meta name="keywords" content="rust, rustlang, rust-lang, select"><title>crossbeam::channel::select - Rust</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script></head><body class="rustdoc macro"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><div class="sidebar-elems"><p class='location'><a href='../index.html'>crossbeam</a>::<wbr><a href='index.html'>channel</a></p><script>window.sidebarCurrent = {name: 'select', ty: 'macro', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../../src/crossbeam_channel/internal/select.rs.html#889-1911' title='goto source code'>[src]</a></span><span class='in-band'>Macro <a href='../index.html'>crossbeam</a>::<wbr><a href='index.html'>channel</a>::<wbr><a class="macro" href=''>select</a></span></h1><div class="docblock type-decl hidden-by-usual-hider"><pre class="rust macro">
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">select</span> {
+    ( @ <span class="ident">parse_list</span> ( $ ( $ <span class="ident">head</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) (  ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list</span> ( $ ( $ <span class="ident">head</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ( <span class="ident">default</span> <span class="op">=&gt;</span> $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list</span> ( $ ( $ <span class="ident">head</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) (
+$ <span class="ident">case</span> : <span class="ident">ident</span> $ <span class="ident">args</span> : <span class="ident">tt</span> <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">expr</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list</span> ( $ ( $ <span class="ident">head</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) (
+$ <span class="ident">case</span> : <span class="ident">ident</span> $ <span class="ident">args</span> : <span class="ident">tt</span> <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">block</span> ; $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list</span> ( $ ( $ <span class="ident">head</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) (
+$ <span class="ident">case</span> : <span class="ident">ident</span> $ <span class="ident">args</span> : <span class="ident">tt</span> <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">block</span> $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list</span> ( $ ( $ <span class="ident">head</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) (
+$ <span class="ident">case</span> : <span class="ident">ident</span> $ <span class="ident">args</span> : <span class="ident">tt</span> <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">expr</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list</span> ( $ ( $ <span class="ident">head</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) (
+$ <span class="ident">case</span> : <span class="ident">ident</span> $ <span class="ident">args</span> : <span class="ident">tt</span> <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">expr</span> , ) ) <span class="op">=&gt;</span> { ... };
+    ( @ <span class="ident">parse_list</span> ( $ ( $ <span class="ident">head</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ( $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error1</span> <span class="ident">recv</span> $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error1</span> <span class="ident">send</span> $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error1</span> <span class="ident">default</span> $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error1</span> $ <span class="ident">t</span> : <span class="ident">tt</span> $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    ( @ <span class="ident">parse_list_error1</span> $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error2</span> $ <span class="ident">case</span> : <span class="ident">ident</span> ) <span class="op">=&gt;</span> { ... };
+    ( @ <span class="ident">parse_list_error2</span> $ <span class="ident">case</span> : <span class="ident">ident</span> <span class="op">=&gt;</span> $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    ( @ <span class="ident">parse_list_error2</span> $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error3</span> $ <span class="ident">case</span> : <span class="ident">ident</span> ( $ ( $ <span class="ident">args</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    ( @ <span class="ident">parse_list_error3</span> $ <span class="ident">case</span> : <span class="ident">ident</span> ( $ ( $ <span class="ident">args</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error3</span> $ <span class="ident">case</span> : <span class="ident">ident</span> ( $ ( $ <span class="ident">args</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">expr</span> ;
+$ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error3</span> $ <span class="ident">case</span> : <span class="ident">ident</span> ( $ ( $ <span class="ident">args</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> <span class="ident">recv</span> (
+$ ( $ <span class="ident">a</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error3</span> $ <span class="ident">case</span> : <span class="ident">ident</span> ( $ ( $ <span class="ident">args</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> <span class="ident">send</span> (
+$ ( $ <span class="ident">a</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error3</span> $ <span class="ident">case</span> : <span class="ident">ident</span> ( $ ( $ <span class="ident">args</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> <span class="ident">default</span> (
+$ ( $ <span class="ident">a</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error3</span> $ <span class="ident">case</span> : <span class="ident">ident</span> ( $ ( $ <span class="ident">args</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> $ <span class="ident">f</span> : <span class="ident">ident</span> (
+$ ( $ <span class="ident">a</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error3</span> $ <span class="ident">case</span> : <span class="ident">ident</span> ( $ ( $ <span class="ident">args</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> $ <span class="ident">f</span> : <span class="ident">ident</span> <span class="op">!</span> (
+$ ( $ <span class="ident">a</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error3</span> $ <span class="ident">case</span> : <span class="ident">ident</span> ( $ ( $ <span class="ident">args</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> $ <span class="ident">f</span> : <span class="ident">ident</span> <span class="op">!</span> [
+$ ( $ <span class="ident">a</span> : <span class="ident">tt</span> ) <span class="op">*</span> ] $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error3</span> $ <span class="ident">case</span> : <span class="ident">ident</span> ( $ ( $ <span class="ident">args</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> $ <span class="ident">f</span> : <span class="ident">ident</span> <span class="op">!</span> {
+$ ( $ <span class="ident">a</span> : <span class="ident">tt</span> ) <span class="op">*</span> } $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error3</span> $ <span class="ident">case</span> : <span class="ident">ident</span> ( $ ( $ <span class="ident">args</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> $ (
+$ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error3</span> $ <span class="ident">case</span> : <span class="ident">ident</span> ( $ ( $ <span class="ident">args</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">t</span> : <span class="ident">tt</span> $ (
+$ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error3</span> $ <span class="ident">case</span> : <span class="ident">ident</span> $ <span class="ident">args</span> : <span class="ident">tt</span> $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    ( @ <span class="ident">parse_list_error3</span> $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_list_error4</span> $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> ( $ ( $ <span class="ident">recv</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ( $ ( $ <span class="ident">send</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">default</span> : <span class="ident">tt</span> (
+) $ <span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> $ <span class="ident">recv</span> : <span class="ident">tt</span> $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> $ <span class="ident">cases</span> : <span class="ident">tt</span> (  ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> ( $ ( $ <span class="ident">recv</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> (
+<span class="ident">recv</span> ( $ <span class="ident">r</span> : <span class="ident">expr</span> ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) (
+$ <span class="ident">label</span> : <span class="ident">tt</span> $ ( $ <span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> ( $ ( $ <span class="ident">recv</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> (
+<span class="ident">recv</span> ( $ <span class="ident">r</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">pat</span> ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) (
+$ <span class="ident">label</span> : <span class="ident">tt</span> $ ( $ <span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> ( $ ( $ <span class="ident">recv</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> (
+<span class="ident">recv</span> ( $ <span class="ident">rs</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">pat</span> , $ <span class="ident">r</span> : <span class="ident">pat</span> ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span>
+) <span class="op">*</span> ) ( $ <span class="ident">label</span> : <span class="ident">tt</span> $ ( $ <span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> ( $ ( $ <span class="ident">recv</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> (
+<span class="ident">recv</span> ( $ <span class="ident">r</span> : <span class="ident">expr</span> , ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) (
+$ <span class="ident">label</span> : <span class="ident">tt</span> $ ( $ <span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> ( $ ( $ <span class="ident">recv</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> (
+<span class="ident">recv</span> ( $ <span class="ident">r</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">pat</span> , ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) (
+$ <span class="ident">label</span> : <span class="ident">tt</span> $ ( $ <span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> ( $ ( $ <span class="ident">recv</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> (
+<span class="ident">recv</span> ( $ <span class="ident">rs</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">pat</span> , $ <span class="ident">r</span> : <span class="ident">pat</span> , ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ (
+$ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ( $ <span class="ident">label</span> : <span class="ident">tt</span> $ ( $ <span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> ( $ ( $ <span class="ident">recv</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> (
+<span class="ident">recv</span> ( $ ( $ <span class="ident">args</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">labels</span> :
+<span class="ident">tt</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> ( $ ( $ <span class="ident">recv</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> (
+<span class="ident">recv</span> $ <span class="ident">t</span> : <span class="ident">tt</span> <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> $ <span class="ident">recv</span> : <span class="ident">tt</span> ( $ ( $ <span class="ident">send</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">default</span> : <span class="ident">tt</span> (
+<span class="ident">send</span> ( $ <span class="ident">s</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">expr</span> ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) (
+$ <span class="ident">label</span> : <span class="ident">tt</span> $ ( $ <span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> $ <span class="ident">recv</span> : <span class="ident">tt</span> ( $ ( $ <span class="ident">send</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">default</span> : <span class="ident">tt</span> (
+<span class="ident">send</span> ( $ <span class="ident">ss</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">expr</span> , $ <span class="ident">s</span> : <span class="ident">pat</span> ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span>
+) <span class="op">*</span> ) ( $ <span class="ident">label</span> : <span class="ident">tt</span> $ ( $ <span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> $ <span class="ident">recv</span> : <span class="ident">tt</span> ( $ ( $ <span class="ident">send</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">default</span> : <span class="ident">tt</span> (
+<span class="ident">send</span> ( $ <span class="ident">s</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">expr</span> , ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) (
+$ <span class="ident">label</span> : <span class="ident">tt</span> $ ( $ <span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> $ <span class="ident">recv</span> : <span class="ident">tt</span> ( $ ( $ <span class="ident">send</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">default</span> : <span class="ident">tt</span> (
+<span class="ident">send</span> ( $ <span class="ident">ss</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">expr</span> , $ <span class="ident">s</span> : <span class="ident">pat</span> , ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ (
+$ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ( $ <span class="ident">label</span> : <span class="ident">tt</span> $ ( $ <span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> $ <span class="ident">recv</span> : <span class="ident">tt</span> ( $ ( $ <span class="ident">send</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">default</span> : <span class="ident">tt</span> (
+<span class="ident">send</span> ( $ ( $ <span class="ident">args</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">labels</span> :
+<span class="ident">tt</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> $ <span class="ident">recv</span> : <span class="ident">tt</span> ( $ ( $ <span class="ident">send</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">default</span> : <span class="ident">tt</span> (
+<span class="ident">send</span> $ <span class="ident">args</span> : <span class="ident">tt</span> <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> $ <span class="ident">recv</span> : <span class="ident">tt</span> $ <span class="ident">send</span> : <span class="ident">tt</span> (  ) (
+<span class="ident">default</span> (  ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ( $ ( $ <span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">*</span> )
+) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> $ <span class="ident">recv</span> : <span class="ident">tt</span> $ <span class="ident">send</span> : <span class="ident">tt</span> ( $ ( $ <span class="ident">default</span> : <span class="ident">tt</span> ) <span class="op">+</span> ) (
+<span class="ident">default</span> (  ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> $ <span class="ident">recv</span> : <span class="ident">tt</span> $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> (
+<span class="ident">default</span> ( $ ( $ <span class="ident">args</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $
+<span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> $ <span class="ident">recv</span> : <span class="ident">tt</span> $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> (
+<span class="ident">default</span> $ <span class="ident">t</span> : <span class="ident">tt</span> <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">labels</span> : <span class="ident">tt</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">parse_case</span> $ <span class="ident">recv</span> : <span class="ident">tt</span> $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> (
+$ <span class="ident">case</span> : <span class="ident">ident</span> $ <span class="ident">args</span> : <span class="ident">tt</span> <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">labels</span> :
+<span class="ident">tt</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_declare</span> (
+( $ <span class="ident">i</span> : <span class="ident">tt</span> $ <span class="ident">var</span> : <span class="ident">ident</span> ) <span class="ident">recv</span> ( $ <span class="ident">rs</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">pat</span> , $ <span class="ident">r</span> : <span class="ident">pat</span> ) <span class="op">=&gt;</span> $
+<span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">recv</span> : <span class="ident">tt</span> $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_declare</span> (
+( $ <span class="ident">i</span> : <span class="ident">tt</span> $ <span class="ident">var</span> : <span class="ident">ident</span> ) <span class="ident">send</span> ( $ <span class="ident">ss</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">pat</span> , $ <span class="ident">s</span> : <span class="ident">pat</span> ) <span class="op">=&gt;</span> $
+<span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">recv</span> : <span class="ident">tt</span> $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> ) <span class="op">=&gt;</span> { ... };
+    ( @ <span class="ident">codegen_declare</span> (  ) $ <span class="ident">recv</span> : <span class="ident">tt</span> $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_fast_path</span> (
+( $ <span class="ident">i</span> : <span class="ident">tt</span> $ <span class="ident">var</span> : <span class="ident">ident</span> ) <span class="ident">recv</span> ( $ <span class="ident">rs</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">pat</span> , $ <span class="ident">r</span> : <span class="ident">pat</span> ) <span class="op">=&gt;</span> $
+<span class="ident">body</span> : <span class="ident">tt</span> , ) (  ) (  ) $ <span class="ident">handles</span> : <span class="ident">ident</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_fast_path</span> (
+( $ <span class="ident">recv_i</span> : <span class="ident">tt</span> $ <span class="ident">recv_var</span> : <span class="ident">ident</span> ) <span class="ident">recv</span> (
+$ <span class="ident">rs</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">pat</span> , $ <span class="ident">r</span> : <span class="ident">pat</span> ) <span class="op">=&gt;</span> $ <span class="ident">recv_body</span> : <span class="ident">tt</span> , ) (  ) (
+( $ <span class="ident">default_i</span> : <span class="ident">tt</span> $ <span class="ident">default_var</span> : <span class="ident">ident</span> ) <span class="ident">default</span> (  ) <span class="op">=&gt;</span> $ <span class="ident">default_body</span> : <span class="ident">tt</span>
+, ) $ <span class="ident">handles</span> : <span class="ident">ident</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_fast_path</span> $ <span class="ident">recv</span> : <span class="ident">tt</span> $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> $ <span class="ident">handles</span> : <span class="ident">ident</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_main_loop</span> $ <span class="ident">recv</span> : <span class="ident">tt</span> $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> $ <span class="ident">handles</span> : <span class="ident">ident</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_container</span> (
+( $ <span class="ident">i</span> : <span class="ident">tt</span> $ <span class="ident">var</span> : <span class="ident">ident</span> ) <span class="ident">recv</span> ( $ <span class="ident">rs</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">pat</span> , $ <span class="ident">r</span> : <span class="ident">pat</span> ) <span class="op">=&gt;</span> $
+<span class="ident">body</span> : <span class="ident">tt</span> , ) (  ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_container</span> (  ) (
+( $ <span class="ident">i</span> : <span class="ident">tt</span> $ <span class="ident">var</span> : <span class="ident">ident</span> ) <span class="ident">send</span> ( $ <span class="ident">ss</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">expr</span> , $ <span class="ident">s</span> : <span class="ident">pat</span> ) <span class="op">=&gt;</span> $
+<span class="ident">body</span> : <span class="ident">tt</span> , ) ) <span class="op">=&gt;</span> { ... };
+    ( @ <span class="ident">codegen_container</span> $ <span class="ident">recv</span> : <span class="ident">tt</span> $ <span class="ident">send</span> : <span class="ident">tt</span>
+) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_push</span> $ <span class="ident">handles</span> : <span class="ident">ident</span> (
+( $ <span class="ident">i</span> : <span class="ident">tt</span> $ <span class="ident">var</span> : <span class="ident">ident</span> ) <span class="ident">recv</span> ( $ <span class="ident">rs</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">pat</span> , $ <span class="ident">r</span> : <span class="ident">pat</span> ) <span class="op">=&gt;</span> $
+<span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">send</span> : <span class="ident">tt</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_push</span> $ <span class="ident">handles</span> : <span class="ident">ident</span> (  ) (
+( $ <span class="ident">i</span> : <span class="ident">tt</span> $ <span class="ident">var</span> : <span class="ident">ident</span> ) <span class="ident">send</span> ( $ <span class="ident">ss</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">expr</span> , $ <span class="ident">s</span> : <span class="ident">pat</span> ) <span class="op">=&gt;</span> $
+<span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_push</span> $ <span class="ident">handles</span> : <span class="ident">ident</span> (  ) (  ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_has_default</span> (  ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_has_default</span> (
+( $ <span class="ident">i</span> : <span class="ident">tt</span> $ <span class="ident">var</span> : <span class="ident">ident</span> ) <span class="ident">default</span> (  ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_finalize</span> $ <span class="ident">token</span> : <span class="ident">ident</span> $ <span class="ident">index</span> : <span class="ident">ident</span> $ <span class="ident">selected</span> : <span class="ident">ident</span> $
+<span class="ident">handles</span> : <span class="ident">ident</span> (
+( $ <span class="ident">i</span> : <span class="ident">tt</span> $ <span class="ident">var</span> : <span class="ident">ident</span> ) <span class="ident">recv</span> ( $ <span class="ident">rs</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">pat</span> , $ <span class="ident">r</span> : <span class="ident">pat</span> ) <span class="op">=&gt;</span> $
+<span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">send</span> : <span class="ident">tt</span> $ <span class="ident">default</span> : <span class="ident">tt</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_finalize</span> $ <span class="ident">token</span> : <span class="ident">ident</span> $ <span class="ident">index</span> : <span class="ident">ident</span> $ <span class="ident">selected</span> : <span class="ident">ident</span> $
+<span class="ident">handles</span> : <span class="ident">ident</span> (  ) (
+( $ <span class="ident">i</span> : <span class="ident">tt</span> $ <span class="ident">var</span> : <span class="ident">ident</span> ) <span class="ident">send</span> ( $ <span class="ident">ss</span> : <span class="ident">expr</span> , $ <span class="ident">m</span> : <span class="ident">expr</span> , $ <span class="ident">s</span> : <span class="ident">pat</span> ) <span class="op">=&gt;</span> $
+<span class="ident">body</span> : <span class="ident">tt</span> , $ ( $ <span class="ident">tail</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) $ <span class="ident">default</span> : <span class="ident">tt</span> ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_finalize</span> $ <span class="ident">token</span> : <span class="ident">ident</span> $ <span class="ident">index</span> : <span class="ident">ident</span> $ <span class="ident">selected</span> : <span class="ident">ident</span> $
+<span class="ident">handles</span> : <span class="ident">ident</span> (  ) (  ) (
+( $ <span class="ident">i</span> : <span class="ident">tt</span> $ <span class="ident">var</span> : <span class="ident">ident</span> ) <span class="ident">default</span> (  ) <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">tt</span> , ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ <span class="ident">codegen_finalize</span> $ <span class="ident">token</span> : <span class="ident">ident</span> $ <span class="ident">index</span> : <span class="ident">ident</span> $ <span class="ident">selected</span> : <span class="ident">ident</span> $
+<span class="ident">handles</span> : <span class="ident">ident</span> (  ) (  ) (  ) ) <span class="op">=&gt;</span> { ... };
+    (
+@ $ ( $ <span class="ident">tokens</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    (
+$ ( $ <span class="ident">case</span> : <span class="ident">ident</span> $ ( ( $ ( $ <span class="ident">args</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) ) <span class="op">*</span> <span class="op">=&gt;</span> $ <span class="ident">body</span> : <span class="ident">expr</span> $ ( , ) <span class="op">*</span>
+) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+    ( $ ( $ <span class="ident">tokens</span> : <span class="ident">tt</span> ) <span class="op">*</span> ) <span class="op">=&gt;</span> { ... };
+}</pre>
+</div><div class='docblock'><p>Waits on a set of channel operations.</p>
+<p>This macro allows declaring a set of channel operations and blocking until any one of them
+becomes ready. Finally, one of the operations is executed. If multiple operations are ready at
+the same time, a random one is chosen. It is also possible to declare a <code>default</code> case that
+gets executed if none of the operations are initially ready.</p>
+<p>If you need to dynamically add cases rather than define them statically inside the macro, use
+<a href="struct.Select.html"><code>Select</code></a> instead.</p>
+<h1 id="receiving" class="section-header"><a href="#receiving">Receiving</a></h1>
+<p>Receiving a message from two channels, whichever becomes ready first:</p>
+
+<pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">thread</span>;
+<span class="kw">use</span> <span class="ident">crossbeam_channel</span> <span class="kw">as</span> <span class="ident">channel</span>;
+
+<span class="kw">let</span> (<span class="ident">s1</span>, <span class="ident">r1</span>) <span class="op">=</span> <span class="ident">channel</span>::<span class="ident">unbounded</span>();
+<span class="kw">let</span> (<span class="ident">s2</span>, <span class="ident">r2</span>) <span class="op">=</span> <span class="ident">channel</span>::<span class="ident">unbounded</span>();
+
+<span class="ident">thread</span>::<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">||</span> <span class="ident">s1</span>.<span class="ident">send</span>(<span class="string">&quot;foo&quot;</span>));
+<span class="ident">thread</span>::<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">||</span> <span class="ident">s2</span>.<span class="ident">send</span>(<span class="string">&quot;bar&quot;</span>));
+
+<span class="comment">// Only one of these two receive operations will be executed.</span>
+<span class="macro">select</span><span class="macro">!</span> {
+    <span class="ident">recv</span>(<span class="ident">r1</span>, <span class="ident">msg</span>) <span class="op">=&gt;</span> <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">msg</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;foo&quot;</span>)),
+    <span class="ident">recv</span>(<span class="ident">r2</span>, <span class="ident">msg</span>) <span class="op">=&gt;</span> <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">msg</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;bar&quot;</span>)),
+}</pre>
+<h1 id="sending" class="section-header"><a href="#sending">Sending</a></h1>
+<p>Waiting on a send and a receive operation:</p>
+
+<pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">thread</span>;
+<span class="kw">use</span> <span class="ident">crossbeam_channel</span> <span class="kw">as</span> <span class="ident">channel</span>;
+
+<span class="kw">let</span> (<span class="ident">s1</span>, <span class="ident">r1</span>) <span class="op">=</span> <span class="ident">channel</span>::<span class="ident">unbounded</span>();
+<span class="kw">let</span> (<span class="ident">s2</span>, <span class="ident">r2</span>) <span class="op">=</span> <span class="ident">channel</span>::<span class="ident">unbounded</span>();
+
+<span class="ident">s1</span>.<span class="ident">send</span>(<span class="string">&quot;foo&quot;</span>);
+
+<span class="comment">// Since both operations are initially ready, a random one will be executed.</span>
+<span class="macro">select</span><span class="macro">!</span> {
+    <span class="ident">recv</span>(<span class="ident">r1</span>, <span class="ident">msg</span>) <span class="op">=&gt;</span> <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">msg</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;foo&quot;</span>)),
+    <span class="ident">send</span>(<span class="ident">s2</span>, <span class="string">&quot;bar&quot;</span>) <span class="op">=&gt;</span> <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">r2</span>.<span class="ident">recv</span>(), <span class="prelude-val">Some</span>(<span class="string">&quot;bar&quot;</span>)),
+}</pre>
+<h1 id="default-case" class="section-header"><a href="#default-case">Default case</a></h1>
+<p>A special kind of case is <code>default</code>, which gets executed if none of the operations can be
+executed, i.e. they would block:</p>
+
+<pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">thread</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">time</span>::{<span class="ident">Duration</span>, <span class="ident">Instant</span>};
+<span class="kw">use</span> <span class="ident">crossbeam_channel</span> <span class="kw">as</span> <span class="ident">channel</span>;
+
+<span class="kw">let</span> (<span class="ident">s</span>, <span class="ident">r</span>) <span class="op">=</span> <span class="ident">channel</span>::<span class="ident">unbounded</span>();
+
+<span class="ident">thread</span>::<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">||</span> {
+    <span class="ident">thread</span>::<span class="ident">sleep</span>(<span class="ident">Duration</span>::<span class="ident">from_secs</span>(<span class="number">1</span>));
+    <span class="ident">s</span>.<span class="ident">send</span>(<span class="string">&quot;foo&quot;</span>);
+});
+
+<span class="comment">// Don&#39;t block on the receive operation.</span>
+<span class="macro">select</span><span class="macro">!</span> {
+    <span class="ident">recv</span>(<span class="ident">r</span>) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(),
+    <span class="ident">default</span> <span class="op">=&gt;</span> <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;The message is not yet available.&quot;</span>),
+}</pre>
+<h1 id="iterators" class="section-header"><a href="#iterators">Iterators</a></h1>
+<p>It is possible to have arbitrary iterators of senders or receivers in a single <code>send</code> or <code>recv</code>
+case:</p>
+
+<pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">thread</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">time</span>::{<span class="ident">Duration</span>, <span class="ident">Instant</span>};
+<span class="kw">use</span> <span class="ident">crossbeam_channel</span> <span class="kw">as</span> <span class="ident">channel</span>;
+
+<span class="kw">let</span> (<span class="ident">s1</span>, <span class="ident">r1</span>) <span class="op">=</span> <span class="ident">channel</span>::<span class="ident">unbounded</span>();
+<span class="kw">let</span> (<span class="ident">s2</span>, <span class="ident">r2</span>) <span class="op">=</span> <span class="ident">channel</span>::<span class="ident">unbounded</span>();
+
+<span class="ident">s1</span>.<span class="ident">send</span>(<span class="string">&quot;foo&quot;</span>);
+<span class="ident">s2</span>.<span class="ident">send</span>(<span class="string">&quot;bar&quot;</span>);
+<span class="kw">let</span> <span class="ident">receivers</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">r1</span>, <span class="ident">r2</span>];
+
+<span class="comment">// Both receivers are initially ready so one of the two receive operations</span>
+<span class="comment">// will be chosen randomly.</span>
+<span class="macro">select</span><span class="macro">!</span> {
+    <span class="comment">// The third argument to `recv` is optional and is assigned a</span>
+    <span class="comment">// reference to the receiver the message was received from.</span>
+    <span class="ident">recv</span>(<span class="ident">receivers</span>, <span class="ident">msg</span>, <span class="ident">from</span>) <span class="op">=&gt;</span> {
+        <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">r</span>) <span class="kw">in</span> <span class="ident">receivers</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
+            <span class="kw">if</span> <span class="ident">r</span> <span class="op">==</span> <span class="ident">from</span> {
+                <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Received {:?} from the {}-th receiver.&quot;</span>, <span class="ident">msg</span>, <span class="ident">i</span>);
+            }
+        }
+    }
+}</pre>
+<h1 id="syntax" class="section-header"><a href="#syntax">Syntax</a></h1>
+<p>An invocation of <code>select!</code> consists of a list of cases. Consecutive cases are delimited by a
+comma, but it's not required if the preceding case has a block expression (the syntax is very
+similar to <code>match</code> statements).</p>
+<p>The following invocation illustrates all the possible forms cases can take:</p>
+
+<div class='information'><div class='tooltip ignore'>ⓘ<span class='tooltiptext'>This example is not tested</span></div></div><pre class="rust rust-example-rendered ignore">
+<span class="macro">select</span><span class="macro">!</span> {
+    <span class="ident">recv</span>(<span class="ident">r1</span>) <span class="op">=&gt;</span> <span class="ident">body1</span>,
+    <span class="ident">recv</span>(<span class="ident">r2</span>, <span class="ident">msg2</span>) <span class="op">=&gt;</span> <span class="ident">body2</span>,
+    <span class="ident">recv</span>(<span class="ident">r3</span>, <span class="ident">msg3</span>, <span class="ident">from3</span>) <span class="op">=&gt;</span> <span class="ident">body3</span>,
+
+    <span class="ident">send</span>(<span class="ident">s4</span>, <span class="ident">msg4</span>) <span class="op">=&gt;</span> <span class="ident">body4</span>,
+    <span class="ident">send</span>(<span class="ident">s5</span>, <span class="ident">msg5</span>, <span class="ident">into5</span>) <span class="op">=&gt;</span> <span class="ident">body5</span>,
+
+    <span class="ident">default</span> <span class="op">=&gt;</span> <span class="ident">body6</span>,
+}</pre>
+<p>Input expressions: <code>r1</code>, <code>r2</code>, <code>r3</code>, <code>s4</code>, <code>s5</code>, <code>msg4</code>, <code>msg5</code>, <code>body1</code>, <code>body2</code>, <code>body3</code>,
+<code>body4</code>, <code>body5</code>, <code>body6</code></p>
+<p>Output patterns: <code>msg2</code>, <code>msg3</code>, <code>msg4</code>, <code>msg5</code>, <code>from3</code>, <code>into5</code></p>
+<p>Types of expressions and patterns (generic over types <code>A</code>, <code>B</code>, <code>C</code>, <code>D</code>, <code>E</code>, and <code>F</code>):</p>
+<ul>
+<li><code>r1</code>: one of <code>Receiver&lt;A&gt;</code>, <code>&amp;Receiver&lt;A&gt;</code>, or <code>impl IntoIterator&lt;Item = &amp;Receiver&lt;A&gt;&gt;</code></li>
+<li><code>r2</code>: one of <code>Receiver&lt;B&gt;</code>, <code>&amp;Receiver&lt;B&gt;</code>, or <code>impl IntoIterator&lt;Item = &amp;Receiver&lt;B&gt;&gt;</code></li>
+<li><code>r3</code>: one of <code>Receiver&lt;C&gt;</code>, <code>&amp;Receiver&lt;C&gt;</code>, or <code>impl IntoIterator&lt;Item = &amp;Receiver&lt;C&gt;&gt;</code></li>
+<li><code>s4</code>: one of <code>Sender&lt;D&gt;</code>, <code>&amp;Sender&lt;D&gt;</code>, or <code>impl IntoIterator&lt;Item = &amp;Sender&lt;D&gt;&gt;</code></li>
+<li><code>s5</code>: one of <code>Sender&lt;E&gt;</code>, <code>&amp;Sender&lt;E&gt;</code>, or <code>impl IntoIterator&lt;Item = &amp;Sender&lt;E&gt;&gt;</code></li>
+<li><code>msg2</code>: <code>Option&lt;B&gt;</code></li>
+<li><code>msg3</code>: <code>Option&lt;C&gt;</code></li>
+<li><code>msg4</code>: <code>D</code></li>
+<li><code>msg5</code>: <code>E</code></li>
+<li><code>from3</code>: <code>&amp;Receiver&lt;C&gt;</code></li>
+<li><code>into5</code>: <code>&amp;Sender&lt;E&gt;</code></li>
+<li><code>body1</code>, <code>body2</code>, <code>body3</code>, <code>body4</code>, <code>body5</code>, <code>body6</code>: <code>F</code></li>
+</ul>
+<p>Pattern <code>from3</code> is bound to the receiver in <code>r3</code> from which <code>msg3</code> was received.</p>
+<p>Pattern <code>into5</code> is bound to the sender in <code>s5</code> into which <code>msg5</code> was sent.</p>
+<p>There can be at most one <code>default</code> case.</p>
+<h1 id="execution" class="section-header"><a href="#execution">Execution</a></h1>
+<ol>
+<li>All sender and receiver arguments (<code>r1</code>, <code>r2</code>, <code>r3</code>, <code>s4</code>, and <code>s5</code>) are evaluated.</li>
+<li>If any of the <code>recv</code> or <code>send</code> operations are ready, one of them is executed. If multiple
+operations are ready, a random one is chosen.</li>
+<li>If none of the <code>recv</code> and <code>send</code> operations are ready, the <code>default</code> case is executed. If
+there is no <code>default</code> case, the current thread is blocked until an operation becomes ready.</li>
+<li>If a <code>recv</code> operation gets executed, the message pattern (<code>msg2</code> or <code>msg3</code>) is
+bound to the received message, and the receiver pattern (<code>from3</code>) is bound to the receiver
+from which the message was received.</li>
+<li>If a <code>send</code> operation gets executed, the message (<code>msg4</code> or <code>msg5</code>) is evaluated and sent
+into the channel. Then, the sender pattern (<code>into5</code>) is bound to the sender into which the
+message was sent.</li>
+<li>Finally, the body (<code>body1</code>, <code>body2</code>, <code>body3</code>, <code>body4</code>, <code>body5</code>, or <code>body6</code>) of the executed
+case is evaluated. The whole <code>select!</code> invocation evaluates to that expression.</li>
+</ol>
+<p><strong>Note</strong>: If evaluation of <code>msg4</code> or <code>msg5</code> panics, the process will be aborted because it's
+impossible to recover from such panics. All the other expressions are allowed to panic,
+however.</p>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "crossbeam";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script defer src="../../search-index.js"></script></body></html>

@@ -1,0 +1,593 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `ktmtypes` mod in crate `winapi`."><meta name="keywords" content="rust, rustlang, rust-lang, ktmtypes"><title>winapi::shared::ktmtypes - Rust</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><p class='location'>Module ktmtypes</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#structs">Structs</a></li><li><a href="#constants">Constants</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class='location'><a href='../../index.html'>winapi</a>::<wbr><a href='../index.html'>shared</a></p><script>window.sidebarCurrent = {name: 'ktmtypes', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../../../src/winapi/shared/ktmtypes.rs.html#7-139' title='goto source code'>[src]</a></span><span class='in-band'>Module <a href='../../index.html'>winapi</a>::<wbr><a href='../index.html'>shared</a>::<wbr><a class="mod" href=''>ktmtypes</a></span></h1><div class='docblock'><p>Common types for KTM exposed at both the Nt- and Win32-layer</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.KCRM_MARSHAL_HEADER.html"
+                                  title='struct winapi::shared::ktmtypes::KCRM_MARSHAL_HEADER'>KCRM_MARSHAL_HEADER</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.KCRM_PROTOCOL_BLOB.html"
+                                  title='struct winapi::shared::ktmtypes::KCRM_PROTOCOL_BLOB'>KCRM_PROTOCOL_BLOB</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.KCRM_TRANSACTION_BLOB.html"
+                                  title='struct winapi::shared::ktmtypes::KCRM_TRANSACTION_BLOB'>KCRM_TRANSACTION_BLOB</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.TRANSACTION_NOTIFICATION.html"
+                                  title='struct winapi::shared::ktmtypes::TRANSACTION_NOTIFICATION'>TRANSACTION_NOTIFICATION</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.TRANSACTION_NOTIFICATION_MARSHAL_ARGUMENT.html"
+                                  title='struct winapi::shared::ktmtypes::TRANSACTION_NOTIFICATION_MARSHAL_ARGUMENT'>TRANSACTION_NOTIFICATION_MARSHAL_ARGUMENT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.TRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT.html"
+                                  title='struct winapi::shared::ktmtypes::TRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT'>TRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.TRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT.html"
+                                  title='struct winapi::shared::ktmtypes::TRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT'>TRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.TRANSACTION_NOTIFICATION_SAVEPOINT_ARGUMENT.html"
+                                  title='struct winapi::shared::ktmtypes::TRANSACTION_NOTIFICATION_SAVEPOINT_ARGUMENT'>TRANSACTION_NOTIFICATION_SAVEPOINT_ARGUMENT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.TRANSACTION_NOTIFICATION_TM_ONLINE_ARGUMENT.html"
+                                  title='struct winapi::shared::ktmtypes::TRANSACTION_NOTIFICATION_TM_ONLINE_ARGUMENT'>TRANSACTION_NOTIFICATION_TM_ONLINE_ARGUMENT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.CRM_PROTOCOL_DYNAMIC_MARSHAL_INFO.html"
+                                  title='constant winapi::shared::ktmtypes::CRM_PROTOCOL_DYNAMIC_MARSHAL_INFO'>CRM_PROTOCOL_DYNAMIC_MARSHAL_INFO</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.CRM_PROTOCOL_EXPLICIT_MARSHAL_ONLY.html"
+                                  title='constant winapi::shared::ktmtypes::CRM_PROTOCOL_EXPLICIT_MARSHAL_ONLY'>CRM_PROTOCOL_EXPLICIT_MARSHAL_ONLY</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.CRM_PROTOCOL_MAXIMUM_OPTION.html"
+                                  title='constant winapi::shared::ktmtypes::CRM_PROTOCOL_MAXIMUM_OPTION'>CRM_PROTOCOL_MAXIMUM_OPTION</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.ENLISTMENT_MAXIMUM_OPTION.html"
+                                  title='constant winapi::shared::ktmtypes::ENLISTMENT_MAXIMUM_OPTION'>ENLISTMENT_MAXIMUM_OPTION</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.ENLISTMENT_OBJECT_PATH.html"
+                                  title='constant winapi::shared::ktmtypes::ENLISTMENT_OBJECT_PATH'>ENLISTMENT_OBJECT_PATH</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.ENLISTMENT_SUPERIOR.html"
+                                  title='constant winapi::shared::ktmtypes::ENLISTMENT_SUPERIOR'>ENLISTMENT_SUPERIOR</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.KTM_MARSHAL_BLOB_VERSION_MAJOR.html"
+                                  title='constant winapi::shared::ktmtypes::KTM_MARSHAL_BLOB_VERSION_MAJOR'>KTM_MARSHAL_BLOB_VERSION_MAJOR</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.KTM_MARSHAL_BLOB_VERSION_MINOR.html"
+                                  title='constant winapi::shared::ktmtypes::KTM_MARSHAL_BLOB_VERSION_MINOR'>KTM_MARSHAL_BLOB_VERSION_MINOR</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MAX_RESOURCEMANAGER_DESCRIPTION_LENGTH.html"
+                                  title='constant winapi::shared::ktmtypes::MAX_RESOURCEMANAGER_DESCRIPTION_LENGTH'>MAX_RESOURCEMANAGER_DESCRIPTION_LENGTH</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.MAX_TRANSACTION_DESCRIPTION_LENGTH.html"
+                                  title='constant winapi::shared::ktmtypes::MAX_TRANSACTION_DESCRIPTION_LENGTH'>MAX_TRANSACTION_DESCRIPTION_LENGTH</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.RESOURCE_MANAGER_COMMUNICATION.html"
+                                  title='constant winapi::shared::ktmtypes::RESOURCE_MANAGER_COMMUNICATION'>RESOURCE_MANAGER_COMMUNICATION</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.RESOURCE_MANAGER_MAXIMUM_OPTION.html"
+                                  title='constant winapi::shared::ktmtypes::RESOURCE_MANAGER_MAXIMUM_OPTION'>RESOURCE_MANAGER_MAXIMUM_OPTION</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.RESOURCE_MANAGER_OBJECT_PATH.html"
+                                  title='constant winapi::shared::ktmtypes::RESOURCE_MANAGER_OBJECT_PATH'>RESOURCE_MANAGER_OBJECT_PATH</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.RESOURCE_MANAGER_VOLATILE.html"
+                                  title='constant winapi::shared::ktmtypes::RESOURCE_MANAGER_VOLATILE'>RESOURCE_MANAGER_VOLATILE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTIONMANAGER_OBJECT_PATH.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTIONMANAGER_OBJECT_PATH'>TRANSACTIONMANAGER_OBJECT_PATH</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_DO_NOT_PROMOTE.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_DO_NOT_PROMOTE'>TRANSACTION_DO_NOT_PROMOTE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_MANAGER_COMMIT_DEFAULT.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_MANAGER_COMMIT_DEFAULT'>TRANSACTION_MANAGER_COMMIT_DEFAULT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_MANAGER_COMMIT_LOWEST.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_MANAGER_COMMIT_LOWEST'>TRANSACTION_MANAGER_COMMIT_LOWEST</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_MANAGER_COMMIT_SYSTEM_HIVES.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_MANAGER_COMMIT_SYSTEM_HIVES'>TRANSACTION_MANAGER_COMMIT_SYSTEM_HIVES</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_MANAGER_COMMIT_SYSTEM_VOLUME.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_MANAGER_COMMIT_SYSTEM_VOLUME'>TRANSACTION_MANAGER_COMMIT_SYSTEM_VOLUME</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_MANAGER_CORRUPT_FOR_PROGRESS.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_MANAGER_CORRUPT_FOR_PROGRESS'>TRANSACTION_MANAGER_CORRUPT_FOR_PROGRESS</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_MANAGER_CORRUPT_FOR_RECOVERY.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_MANAGER_CORRUPT_FOR_RECOVERY'>TRANSACTION_MANAGER_CORRUPT_FOR_RECOVERY</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_MANAGER_MAXIMUM_OPTION.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_MANAGER_MAXIMUM_OPTION'>TRANSACTION_MANAGER_MAXIMUM_OPTION</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_MANAGER_VOLATILE.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_MANAGER_VOLATILE'>TRANSACTION_MANAGER_VOLATILE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_MAXIMUM_OPTION.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_MAXIMUM_OPTION'>TRANSACTION_MAXIMUM_OPTION</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFICATION_TM_ONLINE_FLAG_IS_CLUSTERED.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFICATION_TM_ONLINE_FLAG_IS_CLUSTERED'>TRANSACTION_NOTIFICATION_TM_ONLINE_FLAG_IS_CLUSTERED</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_COMMIT.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_COMMIT'>TRANSACTION_NOTIFY_COMMIT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_COMMIT_COMPLETE.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_COMMIT_COMPLETE'>TRANSACTION_NOTIFY_COMMIT_COMPLETE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_COMMIT_FINALIZE.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_COMMIT_FINALIZE'>TRANSACTION_NOTIFY_COMMIT_FINALIZE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_COMMIT_REQUEST.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_COMMIT_REQUEST'>TRANSACTION_NOTIFY_COMMIT_REQUEST</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_DELEGATE_COMMIT.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_DELEGATE_COMMIT'>TRANSACTION_NOTIFY_DELEGATE_COMMIT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_ENLIST_MASK.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_ENLIST_MASK'>TRANSACTION_NOTIFY_ENLIST_MASK</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_ENLIST_PREPREPARE.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_ENLIST_PREPREPARE'>TRANSACTION_NOTIFY_ENLIST_PREPREPARE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_INDOUBT.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_INDOUBT'>TRANSACTION_NOTIFY_INDOUBT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_LAST_RECOVER.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_LAST_RECOVER'>TRANSACTION_NOTIFY_LAST_RECOVER</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_MARSHAL.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_MARSHAL'>TRANSACTION_NOTIFY_MARSHAL</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_MASK.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_MASK'>TRANSACTION_NOTIFY_MASK</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_PREPARE.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_PREPARE'>TRANSACTION_NOTIFY_PREPARE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_PREPARE_COMPLETE.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_PREPARE_COMPLETE'>TRANSACTION_NOTIFY_PREPARE_COMPLETE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_PREPREPARE.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_PREPREPARE'>TRANSACTION_NOTIFY_PREPREPARE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_PREPREPARE_COMPLETE.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_PREPREPARE_COMPLETE'>TRANSACTION_NOTIFY_PREPREPARE_COMPLETE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_PROMOTE.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_PROMOTE'>TRANSACTION_NOTIFY_PROMOTE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_PROMOTE_NEW.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_PROMOTE_NEW'>TRANSACTION_NOTIFY_PROMOTE_NEW</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_PROPAGATE_PULL.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_PROPAGATE_PULL'>TRANSACTION_NOTIFY_PROPAGATE_PULL</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_PROPAGATE_PUSH.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_PROPAGATE_PUSH'>TRANSACTION_NOTIFY_PROPAGATE_PUSH</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_RECOVER.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_RECOVER'>TRANSACTION_NOTIFY_RECOVER</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_RECOVER_QUERY.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_RECOVER_QUERY'>TRANSACTION_NOTIFY_RECOVER_QUERY</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_REQUEST_OUTCOME.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_REQUEST_OUTCOME'>TRANSACTION_NOTIFY_REQUEST_OUTCOME</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_RM_DISCONNECTED.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_RM_DISCONNECTED'>TRANSACTION_NOTIFY_RM_DISCONNECTED</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_ROLLBACK.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_ROLLBACK'>TRANSACTION_NOTIFY_ROLLBACK</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_ROLLBACK_COMPLETE.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_ROLLBACK_COMPLETE'>TRANSACTION_NOTIFY_ROLLBACK_COMPLETE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_SINGLE_PHASE_COMMIT.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_SINGLE_PHASE_COMMIT'>TRANSACTION_NOTIFY_SINGLE_PHASE_COMMIT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_NOTIFY_TM_ONLINE.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_NOTIFY_TM_ONLINE'>TRANSACTION_NOTIFY_TM_ONLINE</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.TRANSACTION_OBJECT_PATH.html"
+                                  title='constant winapi::shared::ktmtypes::TRANSACTION_OBJECT_PATH'>TRANSACTION_OBJECT_PATH</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.CRM_PROTOCOL_ID.html"
+                                  title='type winapi::shared::ktmtypes::CRM_PROTOCOL_ID'>CRM_PROTOCOL_ID</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.NOTIFICATION_MASK.html"
+                                  title='type winapi::shared::ktmtypes::NOTIFICATION_MASK'>NOTIFICATION_MASK</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.PCRM_PROTOCOL_ID.html"
+                                  title='type winapi::shared::ktmtypes::PCRM_PROTOCOL_ID'>PCRM_PROTOCOL_ID</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.PKCRM_MARSHAL_HEADER.html"
+                                  title='type winapi::shared::ktmtypes::PKCRM_MARSHAL_HEADER'>PKCRM_MARSHAL_HEADER</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.PKCRM_PROTOCOL_BLOB.html"
+                                  title='type winapi::shared::ktmtypes::PKCRM_PROTOCOL_BLOB'>PKCRM_PROTOCOL_BLOB</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.PKCRM_TRANSACTION_BLOB.html"
+                                  title='type winapi::shared::ktmtypes::PKCRM_TRANSACTION_BLOB'>PKCRM_TRANSACTION_BLOB</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.PRKCRM_MARSHAL_HEADER.html"
+                                  title='type winapi::shared::ktmtypes::PRKCRM_MARSHAL_HEADER'>PRKCRM_MARSHAL_HEADER</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.PRKCRM_PROTOCOL_BLOB.html"
+                                  title='type winapi::shared::ktmtypes::PRKCRM_PROTOCOL_BLOB'>PRKCRM_PROTOCOL_BLOB</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.PRKCRM_TRANSACTION_BLOB.html"
+                                  title='type winapi::shared::ktmtypes::PRKCRM_TRANSACTION_BLOB'>PRKCRM_TRANSACTION_BLOB</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.PSAVEPOINT_ID.html"
+                                  title='type winapi::shared::ktmtypes::PSAVEPOINT_ID'>PSAVEPOINT_ID</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.PTRANSACTION_NOTIFICATION.html"
+                                  title='type winapi::shared::ktmtypes::PTRANSACTION_NOTIFICATION'>PTRANSACTION_NOTIFICATION</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.PTRANSACTION_NOTIFICATION_MARSHAL_ARGUMENT.html"
+                                  title='type winapi::shared::ktmtypes::PTRANSACTION_NOTIFICATION_MARSHAL_ARGUMENT'>PTRANSACTION_NOTIFICATION_MARSHAL_ARGUMENT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.PTRANSACTION_NOTIFICATION_PROMOTE_ARGUMENT.html"
+                                  title='type winapi::shared::ktmtypes::PTRANSACTION_NOTIFICATION_PROMOTE_ARGUMENT'>PTRANSACTION_NOTIFICATION_PROMOTE_ARGUMENT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.PTRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT.html"
+                                  title='type winapi::shared::ktmtypes::PTRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT'>PTRANSACTION_NOTIFICATION_PROPAGATE_ARGUMENT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.PTRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT.html"
+                                  title='type winapi::shared::ktmtypes::PTRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT'>PTRANSACTION_NOTIFICATION_RECOVERY_ARGUMENT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.PTRANSACTION_NOTIFICATION_SAVEPOINT_ARGUMENT.html"
+                                  title='type winapi::shared::ktmtypes::PTRANSACTION_NOTIFICATION_SAVEPOINT_ARGUMENT'>PTRANSACTION_NOTIFICATION_SAVEPOINT_ARGUMENT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.PTRANSACTION_NOTIFICATION_TM_ONLINE_ARGUMENT.html"
+                                  title='type winapi::shared::ktmtypes::PTRANSACTION_NOTIFICATION_TM_ONLINE_ARGUMENT'>PTRANSACTION_NOTIFICATION_TM_ONLINE_ARGUMENT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.PUOW.html"
+                                  title='type winapi::shared::ktmtypes::PUOW'>PUOW</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.SAVEPOINT_ID.html"
+                                  title='type winapi::shared::ktmtypes::SAVEPOINT_ID'>SAVEPOINT_ID</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.TRANSACTION_NOTIFICATION_PROMOTE_ARGUMENT.html"
+                                  title='type winapi::shared::ktmtypes::TRANSACTION_NOTIFICATION_PROMOTE_ARGUMENT'>TRANSACTION_NOTIFICATION_PROMOTE_ARGUMENT</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="type" href="type.UOW.html"
+                                  title='type winapi::shared::ktmtypes::UOW'>UOW</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "winapi";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script defer src="../../../search-index.js"></script></body></html>

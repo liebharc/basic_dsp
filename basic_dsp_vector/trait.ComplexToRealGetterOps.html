@@ -1,70 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `ComplexToRealGetterOps` trait in crate `basic_dsp_vector`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, ComplexToRealGetterOps">
-
-    <title>basic_dsp_vector::ComplexToRealGetterOps - Rust</title>
-
-    <link rel="stylesheet" type="text/css" href="../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../main.css">
-    
-
-    
-    
-</head>
-<body class="rustdoc trait">
-    <!--[if lte IE 8]>
-    <div class="warning">
-        This old browser is unsupported and will most likely display funky
-        things.
-    </div>
-    <![endif]-->
-
-    
-
-    <nav class="sidebar">
-        
-        <p class='location'><a href='index.html'>basic_dsp_vector</a></p><script>window.sidebarCurrent = {name: 'ComplexToRealGetterOps', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
-    </nav>
-
-    <nav class="sub">
-        <form class="search-form js-only">
-            <div class="search-container">
-                <input class="search-input" name="search"
-                       autocomplete="off"
-                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
-                       type="search">
-            </div>
-        </form>
-    </nav>
-
-    <section id='main' class="content">
-<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class="trait" href=''>ComplexToRealGetterOps</a></span><span class='out-of-band'><span id='render-detail'>
-                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                       [<span class='inner'>&#x2212;</span>]
-                   </a>
-               </span><a class='srclink' href='../src/basic_dsp_vector/vector_types/complex/complex_to_real.rs.html#192-301' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait ComplexToRealGetterOps&lt;A, T, N, D&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/numbers/trait.RealNumber.html" title="trait basic_dsp_vector::numbers::RealNumber">RealNumber</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;N: <a class="trait" href="../basic_dsp_vector/trait.NumberSpace.html" title="trait basic_dsp_vector::NumberSpace">NumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;D: <a class="trait" href="../basic_dsp_vector/trait.Domain.html" title="trait basic_dsp_vector::Domain">Domain</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;A: <a class="trait" href="../basic_dsp_vector/trait.GetMetaData.html" title="trait basic_dsp_vector::GetMetaData">GetMetaData</a>&lt;T, N, D&gt;,&nbsp;</span>{
-    fn <a href='#tymethod.get_real' class='fnname'>get_real</a>(&amp;self, destination: &amp;mut A);
-    fn <a href='#tymethod.get_imag' class='fnname'>get_imag</a>(&amp;self, destination: &amp;mut A);
-    fn <a href='#tymethod.get_magnitude' class='fnname'>get_magnitude</a>(&amp;self, destination: &amp;mut A);
-    fn <a href='#tymethod.get_magnitude_squared' class='fnname'>get_magnitude_squared</a>(&amp;self, destination: &amp;mut A);
-    fn <a href='#tymethod.get_phase' class='fnname'>get_phase</a>(&amp;self, destination: &amp;mut A);
-    fn <a href='#tymethod.get_real_imag' class='fnname'>get_real_imag</a>(&amp;self, real: &amp;mut A, imag: &amp;mut A);
-    fn <a href='#tymethod.get_mag_phase' class='fnname'>get_mag_phase</a>(&amp;self, mag: &amp;mut A, phase: &amp;mut A);
-}</pre><div class='docblock'><p>Defines getters to get real data from complex types.</p>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `ComplexToRealGetterOps` trait in crate `basic_dsp_vector`."><meta name="keywords" content="rust, rustlang, rust-lang, ComplexToRealGetterOps"><title>basic_dsp_vector::ComplexToRealGetterOps - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script></head><body class="rustdoc trait"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><p class='location'>Trait ComplexToRealGetterOps</p><div class="sidebar-elems"><div class="block items"><a class="sidebar-title" href="#required-methods">Required Methods</a><div class="sidebar-links"><a href="#tymethod.get_real">get_real</a><a href="#tymethod.get_imag">get_imag</a><a href="#tymethod.get_magnitude">get_magnitude</a><a href="#tymethod.get_magnitude_squared">get_magnitude_squared</a><a href="#tymethod.get_phase">get_phase</a><a href="#tymethod.get_real_imag">get_real_imag</a><a href="#tymethod.get_mag_phase">get_mag_phase</a></div><a class="sidebar-title" href="#implementors">Implementors</a></div><p class='location'><a href='index.html'>basic_dsp_vector</a></p><script>window.sidebarCurrent = {name: 'ComplexToRealGetterOps', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/basic_dsp_vector/vector_types/complex/complex_to_real.rs.html#192-301' title='goto source code'>[src]</a></span><span class='in-band'>Trait <a href='index.html'>basic_dsp_vector</a>::<wbr><a class="trait" href=''>ComplexToRealGetterOps</a></span></h1><div class="docblock type-decl hidden-by-usual-hider"><pre class='rust trait'>pub trait ComplexToRealGetterOps&lt;A, T, N, D&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/numbers/trait.RealNumber.html" title="trait basic_dsp_vector::numbers::RealNumber">RealNumber</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;N: <a class="trait" href="../basic_dsp_vector/trait.NumberSpace.html" title="trait basic_dsp_vector::NumberSpace">NumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;D: <a class="trait" href="../basic_dsp_vector/trait.Domain.html" title="trait basic_dsp_vector::Domain">Domain</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;A: <a class="trait" href="../basic_dsp_vector/trait.GetMetaData.html" title="trait basic_dsp_vector::GetMetaData">GetMetaData</a>&lt;T, N, D&gt;,&nbsp;</span>{
+    fn <a href='#tymethod.get_real' class='fnname'>get_real</a>(&amp;self, destination: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A);
+<div class='item-spacer'></div>    fn <a href='#tymethod.get_imag' class='fnname'>get_imag</a>(&amp;self, destination: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A);
+<div class='item-spacer'></div>    fn <a href='#tymethod.get_magnitude' class='fnname'>get_magnitude</a>(&amp;self, destination: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A);
+<div class='item-spacer'></div>    fn <a href='#tymethod.get_magnitude_squared' class='fnname'>get_magnitude_squared</a>(&amp;self, destination: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A);
+<div class='item-spacer'></div>    fn <a href='#tymethod.get_phase' class='fnname'>get_phase</a>(&amp;self, destination: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A);
+<div class='item-spacer'></div>    fn <a href='#tymethod.get_real_imag' class='fnname'>get_real_imag</a>(&amp;self, real: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A, imag: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A);
+<div class='item-spacer'></div>    fn <a href='#tymethod.get_mag_phase' class='fnname'>get_mag_phase</a>(&amp;self, mag: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A, phase: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A);
+}</pre></div><div class='docblock'><p>Defines getters to get real data from complex types.</p>
 <h1 id="failures" class="section-header"><a href="#failures">Failures</a></h1>
 <p>All operations in this trait set the arguments <code>len()</code> to <code>0</code> if the type isn't in
 the complex number space.</p>
 </div>
-            <h2 id='required-methods'>Required Methods</h2>
+            <h2 id='required-methods' class='small-section-header'>
+              Required Methods<a href='#required-methods' class='anchor'></a>
+            </h2>
             <div class='methods'>
-        <h3 id='tymethod.get_real' class='method'><span id='get_real.v' class='invisible'><code>fn <a href='#tymethod.get_real' class='fnname'>get_real</a>(&amp;self, destination: &amp;mut A)</code></span></h3><div class='docblock'><p>Copies all real elements into the given vector.</p>
+        <h3 id='tymethod.get_real' class='method'><span id='get_real.v' class='invisible'><code>fn <a href='#tymethod.get_real' class='fnname'>get_real</a>(&amp;self, destination: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A)</code></span></h3><div class='docblock'><p>Copies all real elements into the given vector.</p>
 <h1 id="example" class="section-header"><a href="#example">Example</a></h1>
 <pre class="rust rust-example-rendered">
 <span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="kw-2">*</span>;
@@ -72,7 +23,7 @@ the complex number space.</p>
 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">target</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>().<span class="ident">to_real_time_vec</span>();
 <span class="ident">vector</span>.<span class="ident">get_real</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target</span>);
 <span class="macro">assert_eq</span><span class="macro">!</span>([<span class="number">1.0</span>, <span class="number">3.0</span>], <span class="ident">target</span>[..]);</pre>
-</div><h3 id='tymethod.get_imag' class='method'><span id='get_imag.v' class='invisible'><code>fn <a href='#tymethod.get_imag' class='fnname'>get_imag</a>(&amp;self, destination: &amp;mut A)</code></span></h3><div class='docblock'><p>Copies all imag elements into the given vector.</p>
+</div><h3 id='tymethod.get_imag' class='method'><span id='get_imag.v' class='invisible'><code>fn <a href='#tymethod.get_imag' class='fnname'>get_imag</a>(&amp;self, destination: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A)</code></span></h3><div class='docblock'><p>Copies all imag elements into the given vector.</p>
 <h1 id="example-1" class="section-header"><a href="#example-1">Example</a></h1>
 <pre class="rust rust-example-rendered">
 <span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="kw-2">*</span>;
@@ -80,7 +31,7 @@ the complex number space.</p>
 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">target</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>().<span class="ident">to_real_time_vec</span>();
 <span class="ident">vector</span>.<span class="ident">get_imag</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target</span>);
 <span class="macro">assert_eq</span><span class="macro">!</span>([<span class="number">2.0</span>, <span class="number">4.0</span>], <span class="ident">target</span>[..]);</pre>
-</div><h3 id='tymethod.get_magnitude' class='method'><span id='get_magnitude.v' class='invisible'><code>fn <a href='#tymethod.get_magnitude' class='fnname'>get_magnitude</a>(&amp;self, destination: &amp;mut A)</code></span></h3><div class='docblock'><p>Copies the absolute value or magnitude of all vector elements into the given target vector.</p>
+</div><h3 id='tymethod.get_magnitude' class='method'><span id='get_magnitude.v' class='invisible'><code>fn <a href='#tymethod.get_magnitude' class='fnname'>get_magnitude</a>(&amp;self, destination: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A)</code></span></h3><div class='docblock'><p>Copies the absolute value or magnitude of all vector elements into the given target vector.</p>
 <h1 id="example-2" class="section-header"><a href="#example-2">Example</a></h1>
 <pre class="rust rust-example-rendered">
 <span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="kw-2">*</span>;
@@ -88,7 +39,7 @@ the complex number space.</p>
 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">target</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>().<span class="ident">to_real_time_vec</span>();
 <span class="ident">vector</span>.<span class="ident">get_magnitude</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target</span>);
 <span class="macro">assert_eq</span><span class="macro">!</span>([<span class="number">5.0</span>, <span class="number">5.0</span>], <span class="ident">target</span>[..]);</pre>
-</div><h3 id='tymethod.get_magnitude_squared' class='method'><span id='get_magnitude_squared.v' class='invisible'><code>fn <a href='#tymethod.get_magnitude_squared' class='fnname'>get_magnitude_squared</a>(&amp;self, destination: &amp;mut A)</code></span></h3><div class='docblock'><p>Copies the absolute value squared or magnitude squared of all vector elements
+</div><h3 id='tymethod.get_magnitude_squared' class='method'><span id='get_magnitude_squared.v' class='invisible'><code>fn <a href='#tymethod.get_magnitude_squared' class='fnname'>get_magnitude_squared</a>(&amp;self, destination: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A)</code></span></h3><div class='docblock'><p>Copies the absolute value squared or magnitude squared of all vector elements
 into the given target vector.</p>
 <h1 id="example-3" class="section-header"><a href="#example-3">Example</a></h1>
 <p>Copies the absolute value or magnitude of all vector elements into the
@@ -100,7 +51,7 @@ given target vector.</p>
 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">target</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>().<span class="ident">to_real_time_vec</span>();
 <span class="ident">vector</span>.<span class="ident">get_magnitude_squared</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">target</span>);
 <span class="macro">assert_eq</span><span class="macro">!</span>([<span class="number">25.0</span>, <span class="number">25.0</span>], <span class="ident">target</span>[..]);</pre>
-</div><h3 id='tymethod.get_phase' class='method'><span id='get_phase.v' class='invisible'><code>fn <a href='#tymethod.get_phase' class='fnname'>get_phase</a>(&amp;self, destination: &amp;mut A)</code></span></h3><div class='docblock'><p>Copies the phase of all elements in [rad] into the given vector.</p>
+</div><h3 id='tymethod.get_phase' class='method'><span id='get_phase.v' class='invisible'><code>fn <a href='#tymethod.get_phase' class='fnname'>get_phase</a>(&amp;self, destination: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A)</code></span></h3><div class='docblock'><p>Copies the phase of all elements in [rad] into the given vector.</p>
 <h1 id="example-5" class="section-header"><a href="#example-5">Example</a></h1>
 <pre class="rust rust-example-rendered">
 <span class="kw">use</span> <span class="ident">basic_dsp_vector</span>::<span class="kw-2">*</span>;
@@ -114,79 +65,14 @@ given target vector.</p>
 <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">actual</span>.<span class="ident">len</span>() {
        <span class="macro">assert</span><span class="macro">!</span>(<span class="ident">f64</span>::<span class="ident">abs</span>(<span class="ident">actual</span>[<span class="ident">i</span>] <span class="op">-</span> <span class="ident">expected</span>[<span class="ident">i</span>]) <span class="op">&lt;</span> <span class="number">1e-4</span>);
 }</pre>
-</div><h3 id='tymethod.get_real_imag' class='method'><span id='get_real_imag.v' class='invisible'><code>fn <a href='#tymethod.get_real_imag' class='fnname'>get_real_imag</a>(&amp;self, real: &amp;mut A, imag: &amp;mut A)</code></span></h3><div class='docblock'><p>Gets the real and imaginary parts and stores them in the given vectors.
+</div><h3 id='tymethod.get_real_imag' class='method'><span id='get_real_imag.v' class='invisible'><code>fn <a href='#tymethod.get_real_imag' class='fnname'>get_real_imag</a>(&amp;self, real: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A, imag: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A)</code></span></h3><div class='docblock'><p>Gets the real and imaginary parts and stores them in the given vectors.
 See also  <a href="trait.ComplexVectorOps.html#tymethod.get_phase"><code>get_phase</code></a> and
 <a href="trait.ComplexVectorOps.html#tymethod.get_complex_abs"><code>get_complex_abs</code></a> for further
 information.</p>
-</div><h3 id='tymethod.get_mag_phase' class='method'><span id='get_mag_phase.v' class='invisible'><code>fn <a href='#tymethod.get_mag_phase' class='fnname'>get_mag_phase</a>(&amp;self, mag: &amp;mut A, phase: &amp;mut A)</code></span></h3><div class='docblock'><p>Gets the magnitude and phase and stores them in the given vectors.
+</div><h3 id='tymethod.get_mag_phase' class='method'><span id='get_mag_phase.v' class='invisible'><code>fn <a href='#tymethod.get_mag_phase' class='fnname'>get_mag_phase</a>(&amp;self, mag: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A, phase: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>A)</code></span></h3><div class='docblock'><p>Gets the magnitude and phase and stores them in the given vectors.
 See also <a href="trait.ComplexVectorOps.html#tymethod.get_real"><code>get_real</code></a> and
 <a href="trait.ComplexVectorOps.html#tymethod.get_imag"><code>get_imag</code></a> for further
 information.</p>
-</div></div>
-        <h2 id='implementors'>Implementors</h2>
-        <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;S, T, N, NR, D, O, DO&gt; ComplexToRealGetterOps&lt;O, T, NR, DO&gt; for <a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;<a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt;: <a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">ToRealResult</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;O: <a class="trait" href="../basic_dsp_vector/trait.Vector.html" title="trait basic_dsp_vector::Vector">Vector</a>&lt;T&gt; + <a class="trait" href="../basic_dsp_vector/trait.GetMetaData.html" title="trait basic_dsp_vector::GetMetaData">GetMetaData</a>&lt;T, NR, DO&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/trait.Index.html" title="trait core::ops::Index">Index</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ops/struct.Range.html" title="struct core::ops::Range">Range</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, Output = <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[</a>T<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">]</a>&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/trait.IndexMut.html" title="trait core::ops::IndexMut">IndexMut</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ops/struct.Range.html" title="struct core::ops::Range">Range</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../basic_dsp_vector/trait.ToSlice.html" title="trait basic_dsp_vector::ToSlice">ToSlice</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/numbers/trait.RealNumber.html" title="trait basic_dsp_vector::numbers::RealNumber">RealNumber</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;N: <a class="trait" href="../basic_dsp_vector/trait.ComplexNumberSpace.html" title="trait basic_dsp_vector::ComplexNumberSpace">ComplexNumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;NR: <a class="trait" href="../basic_dsp_vector/trait.RealNumberSpace.html" title="trait basic_dsp_vector::RealNumberSpace">RealNumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;D: <a class="trait" href="../basic_dsp_vector/trait.Domain.html" title="trait basic_dsp_vector::Domain">Domain</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;DO: <a class="trait" href="../basic_dsp_vector/trait.PosEq.html" title="trait basic_dsp_vector::PosEq">PosEq</a>&lt;D&gt; + <a class="trait" href="../basic_dsp_vector/trait.Domain.html" title="trait basic_dsp_vector::Domain">Domain</a>,&nbsp;</span></code></li>
-</ul><script type="text/javascript" async
+</div></div><h2 id='implementors' class='small-section-header'>Implementors<a href='#implementors' class='anchor'></a></h2><div class='item-list' id='implementors-list'><h3 id='impl-ComplexToRealGetterOps%3CO%2C%20T%2C%20NR%2C%20DO%3E' class='impl'><span class='in-band'><table class='table-display'><tbody><tr><td><code>impl&lt;S, T, N, NR, D, O, DO&gt; ComplexToRealGetterOps&lt;O, T, NR, DO&gt; for <a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;<a class="struct" href="../basic_dsp_vector/struct.DspVec.html" title="struct basic_dsp_vector::DspVec">DspVec</a>&lt;S, T, N, D&gt;: <a class="trait" href="../basic_dsp_vector/trait.ToRealResult.html" title="trait basic_dsp_vector::ToRealResult">ToRealResult</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;O: <a class="trait" href="../basic_dsp_vector/trait.Vector.html" title="trait basic_dsp_vector::Vector">Vector</a>&lt;T&gt; + <a class="trait" href="../basic_dsp_vector/trait.GetMetaData.html" title="trait basic_dsp_vector::GetMetaData">GetMetaData</a>&lt;T, NR, DO&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html" title="trait core::ops::index::Index">Index</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ops/range/struct.Range.html" title="struct core::ops::range::Range">Range</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, Output = <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[</a>T<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">]</a>&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/index/trait.IndexMut.html" title="trait core::ops::index::IndexMut">IndexMut</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/core/ops/range/struct.Range.html" title="struct core::ops::range::Range">Range</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;S: <a class="trait" href="../basic_dsp_vector/trait.ToSlice.html" title="trait basic_dsp_vector::ToSlice">ToSlice</a>&lt;T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="../basic_dsp_vector/numbers/trait.RealNumber.html" title="trait basic_dsp_vector::numbers::RealNumber">RealNumber</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;N: <a class="trait" href="../basic_dsp_vector/trait.ComplexNumberSpace.html" title="trait basic_dsp_vector::ComplexNumberSpace">ComplexNumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;NR: <a class="trait" href="../basic_dsp_vector/trait.RealNumberSpace.html" title="trait basic_dsp_vector::RealNumberSpace">RealNumberSpace</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;D: <a class="trait" href="../basic_dsp_vector/trait.Domain.html" title="trait basic_dsp_vector::Domain">Domain</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;DO: <a class="trait" href="../basic_dsp_vector/trait.PosEq.html" title="trait basic_dsp_vector::PosEq">PosEq</a>&lt;D&gt; + <a class="trait" href="../basic_dsp_vector/trait.Domain.html" title="trait basic_dsp_vector::Domain">Domain</a>,&nbsp;</span></code><a href='#impl-ComplexToRealGetterOps%3CO%2C%20T%2C%20NR%2C%20DO%3E' class='anchor'></a></span></td><td><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/basic_dsp_vector/vector_types/complex/complex_to_real.rs.html#553-641' title='goto source code'>[src]</a></span></td></tr></tbody></table></h3><div class='impl-items'><h4 id='method.get_real' class="method"><span id='get_real.v-1' class='invisible'><table class='table-display'><tbody><tr><td><code>fn <a href='#method.get_real' class='fnname'>get_real</a>(&amp;self, destination: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>O)</code></span></td><td><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/basic_dsp_vector/vector_types/complex/complex_to_real.rs.html#565-570' title='goto source code'>[src]</a></td></tr></tbody></table></span></h4><h4 id='method.get_imag' class="method"><span id='get_imag.v-1' class='invisible'><table class='table-display'><tbody><tr><td><code>fn <a href='#method.get_imag' class='fnname'>get_imag</a>(&amp;self, destination: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>O)</code></span></td><td><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/basic_dsp_vector/vector_types/complex/complex_to_real.rs.html#572-577' title='goto source code'>[src]</a></td></tr></tbody></table></span></h4><h4 id='method.get_magnitude' class="method"><span id='get_magnitude.v-1' class='invisible'><table class='table-display'><tbody><tr><td><code>fn <a href='#method.get_magnitude' class='fnname'>get_magnitude</a>(&amp;self, destination: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>O)</code></span></td><td><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/basic_dsp_vector/vector_types/complex/complex_to_real.rs.html#579-584' title='goto source code'>[src]</a></td></tr></tbody></table></span></h4><h4 id='method.get_magnitude_squared' class="method"><span id='get_magnitude_squared.v-1' class='invisible'><table class='table-display'><tbody><tr><td><code>fn <a href='#method.get_magnitude_squared' class='fnname'>get_magnitude_squared</a>(&amp;self, destination: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>O)</code></span></td><td><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/basic_dsp_vector/vector_types/complex/complex_to_real.rs.html#586-594' title='goto source code'>[src]</a></td></tr></tbody></table></span></h4><h4 id='method.get_phase' class="method"><span id='get_phase.v-1' class='invisible'><table class='table-display'><tbody><tr><td><code>fn <a href='#method.get_phase' class='fnname'>get_phase</a>(&amp;self, destination: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>O)</code></span></td><td><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/basic_dsp_vector/vector_types/complex/complex_to_real.rs.html#596-601' title='goto source code'>[src]</a></td></tr></tbody></table></span></h4><h4 id='method.get_real_imag' class="method"><span id='get_real_imag.v-1' class='invisible'><table class='table-display'><tbody><tr><td><code>fn <a href='#method.get_real_imag' class='fnname'>get_real_imag</a>(&amp;self, real: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>O, imag: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>O)</code></span></td><td><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/basic_dsp_vector/vector_types/complex/complex_to_real.rs.html#603-620' title='goto source code'>[src]</a></td></tr></tbody></table></span></h4><h4 id='method.get_mag_phase' class="method"><span id='get_mag_phase.v-1' class='invisible'><table class='table-display'><tbody><tr><td><code>fn <a href='#method.get_mag_phase' class='fnname'>get_mag_phase</a>(&amp;self, mag: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>O, phase: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>O)</code></span></td><td><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/basic_dsp_vector/vector_types/complex/complex_to_real.rs.html#622-640' title='goto source code'>[src]</a></td></tr></tbody></table></span></h4></div></div><script type="text/javascript">window.inlined_types=new Set([]);</script><script type="text/javascript" async
                          src="../implementors/basic_dsp_vector/trait.ComplexToRealGetterOps.js">
-                 </script></section>
-    <section id='search' class="content hidden"></section>
-
-    <section class="footer"></section>
-
-    <aside id="help" class="hidden">
-        <div>
-            <h1 class="hidden">Help</h1>
-
-            <div class="shortcuts">
-                <h2>Keyboard Shortcuts</h2>
-
-                <dl>
-                    <dt>?</dt>
-                    <dd>Show this help dialog</dd>
-                    <dt>S</dt>
-                    <dd>Focus the search field</dd>
-                    <dt>&larrb;</dt>
-                    <dd>Move up in search results</dd>
-                    <dt>&rarrb;</dt>
-                    <dd>Move down in search results</dd>
-                    <dt>&#9166;</dt>
-                    <dd>Go to active search result</dd>
-                    <dt>+</dt>
-                    <dd>Collapse/expand all sections</dd>
-                </dl>
-            </div>
-
-            <div class="infos">
-                <h2>Search Tricks</h2>
-
-                <p>
-                    Prefix searches with a type followed by a colon (e.g.
-                    <code>fn:</code>) to restrict the search to a given type.
-                </p>
-
-                <p>
-                    Accepted types are: <code>fn</code>, <code>mod</code>,
-                    <code>struct</code>, <code>enum</code>,
-                    <code>trait</code>, <code>type</code>, <code>macro</code>,
-                    and <code>const</code>.
-                </p>
-
-                <p>
-                    Search functions by type signature (e.g.
-                    <code>vec -> usize</code> or <code>* -> vec</code>)
-                </p>
-            </div>
-        </div>
-    </aside>
-
-    
-
-    <script>
-        window.rootPath = "../";
-        window.currentCrate = "basic_dsp_vector";
-    </script>
-    <script src="../jquery.js"></script>
-    <script src="../main.js"></script>
-    <script defer src="../search-index.js"></script>
-</body>
-</html>
+                 </script></section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../";window.currentCrate = "basic_dsp_vector";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

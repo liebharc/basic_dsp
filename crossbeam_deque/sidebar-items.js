@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["fifo","Creates a work-stealing deque with the first-in first-out strategy."],["lifo","Creates a work-stealing deque with the last-in first-out strategy."]],"struct":[["Stealer","The stealer side of a deque."],["Worker","The worker side of a deque."]]});

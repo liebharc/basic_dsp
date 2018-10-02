@@ -1,49 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `C:\Users\Chrilieb\.cargo\registry\src\github.com-1ecc6299db9ec823\rustfft-2.0.0\src\algorithm\raders_algorithm.rs`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang">
-
-    <title>raders_algorithm.rs.html -- source</title>
-
-    <link rel="stylesheet" type="text/css" href="../../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../../main.css">
-    
-
-    
-    
-</head>
-<body class="rustdoc source">
-    <!--[if lte IE 8]>
-    <div class="warning">
-        This old browser is unsupported and will most likely display funky
-        things.
-    </div>
-    <![endif]-->
-
-    
-
-    <nav class="sidebar">
-        
-        
-    </nav>
-
-    <nav class="sub">
-        <form class="search-form js-only">
-            <div class="search-container">
-                <input class="search-input" name="search"
-                       autocomplete="off"
-                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
-                       type="search">
-            </div>
-        </form>
-    </nav>
-
-    <section id='main' class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `C:\Users\cliebhardt\.cargo\registry\src\github.com-1ecc6299db9ec823\rustfft-2.1.0\src\algorithm\raders_algorithm.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>raders_algorithm.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script src="../../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -229,6 +184,9 @@
 <span id="184">184</span>
 <span id="185">185</span>
 <span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
@@ -275,8 +233,7 @@
     <span class="ident">inner_fft</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FFT</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>,
     <span class="ident">inner_fft_data</span>: <span class="ident">Box</span><span class="op">&lt;</span>[<span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>]<span class="op">&gt;</span>,
 
-    <span class="ident">input_map</span>: <span class="ident">Box</span><span class="op">&lt;</span>[<span class="ident">usize</span>]<span class="op">&gt;</span>,
-    <span class="ident">output_map</span>: <span class="ident">Box</span><span class="op">&lt;</span>[<span class="ident">usize</span>]<span class="op">&gt;</span>,
+    <span class="ident">input_output_map</span>: <span class="ident">Box</span><span class="op">&lt;</span>[<span class="ident">usize</span>]<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">FFTnum</span><span class="op">&gt;</span> <span class="ident">RadersAlgorithm</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
@@ -309,36 +266,38 @@
         <span class="ident">inner_fft</span>.<span class="ident">process</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">inner_fft_input</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">inner_fft_output</span>);
 
         <span class="comment">//precompute the indexes we&#39;ll used to reorder the input and output</span>
-        <span class="kw">let</span> <span class="ident">input_map</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">len</span><span class="op">-</span><span class="number">1</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">math_utils</span>::<span class="ident">modular_exponent</span>(<span class="ident">primitive_root</span>, (<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">u64</span>, <span class="ident">len</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">usize</span> <span class="op">-</span> <span class="number">1</span>).<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="ident">output_map</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">len</span><span class="op">-</span><span class="number">1</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">math_utils</span>::<span class="ident">modular_exponent</span>(<span class="ident">root_inverse</span>, (<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">u64</span>, <span class="ident">len</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">usize</span> <span class="op">-</span> <span class="number">1</span>).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="ident">len64</span> <span class="op">=</span> <span class="ident">len</span> <span class="kw">as</span> <span class="ident">u64</span>;
+        <span class="kw">let</span> <span class="ident">input_output_map</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">1</span>..<span class="ident">len64</span><span class="op">-</span><span class="number">1</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">math_utils</span>::<span class="ident">modular_exponent</span>(<span class="ident">primitive_root</span>, <span class="ident">i</span>, <span class="ident">len64</span>) <span class="kw">as</span> <span class="ident">usize</span> <span class="op">-</span> <span class="number">1</span>).<span class="ident">collect</span>();
 
         <span class="ident">RadersAlgorithm</span> {
             <span class="ident">inner_fft</span>: <span class="ident">inner_fft</span>,
             <span class="ident">inner_fft_data</span>: <span class="ident">inner_fft_output</span>.<span class="ident">into_boxed_slice</span>(),
 
-            <span class="ident">input_map</span>: <span class="ident">input_map</span>.<span class="ident">into_boxed_slice</span>(),
-            <span class="ident">output_map</span>: <span class="ident">output_map</span>.<span class="ident">into_boxed_slice</span>(),
+            <span class="ident">input_output_map</span>: <span class="ident">input_output_map</span>.<span class="ident">into_boxed_slice</span>(),
         }
     }
 
     <span class="kw">fn</span> <span class="ident">perform_fft</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>], <span class="ident">output</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>]) {
 
-        <span class="comment">//the input and output buffers are one element too large, split off the first and do the processing for the first now</span>
-        <span class="kw">let</span> (<span class="ident">first_input</span>, <span class="ident">input</span>) <span class="op">=</span> <span class="ident">input</span>.<span class="ident">split_first_mut</span>().<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">first_input_val</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">first_input</span>;
-
+        <span class="comment">// The first output element is just the sum of all the input elements</span>
         <span class="kw">let</span> (<span class="ident">first_output</span>, <span class="ident">output</span>) <span class="op">=</span> <span class="ident">output</span>.<span class="ident">split_first_mut</span>().<span class="ident">unwrap</span>();
-        
+        <span class="kw-2">*</span><span class="ident">first_output</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">iter</span>().<span class="ident">fold</span>(<span class="ident">Zero</span>::<span class="ident">zero</span>(), <span class="op">|</span><span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="ident">e</span><span class="op">|</span> <span class="ident">acc</span> <span class="op">+</span> <span class="ident">e</span>);
 
-        <span class="comment">//the first element of the output will be the sum of all the inputs</span>
-        <span class="kw">let</span> <span class="ident">input_sum</span>: <span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">iter</span>().<span class="ident">fold</span>(<span class="ident">Zero</span>::<span class="ident">zero</span>(), <span class="op">|</span><span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="ident">e</span><span class="op">|</span> <span class="ident">acc</span> <span class="op">+</span> <span class="ident">e</span>);
-        <span class="kw-2">*</span><span class="ident">first_output</span> <span class="op">=</span> <span class="ident">first_input_val</span> <span class="op">+</span> <span class="ident">input_sum</span>;
+        <span class="comment">// Also split off the first input elements. After this, both input and output len will be n - 1</span>
+        <span class="kw">let</span> (<span class="ident">first_input</span>, <span class="ident">input</span>) <span class="op">=</span> <span class="ident">input</span>.<span class="ident">split_first_mut</span>().<span class="ident">unwrap</span>();
 
+        {
+            <span class="comment">// prepare the inner FFT by reordering the input buffer into the output buffer</span>
+            <span class="comment">// Split off the last target element, because we&#39;re going to treat it separately</span>
+            <span class="kw">let</span> (<span class="ident">output_last</span>, <span class="ident">output</span>) <span class="op">=</span> <span class="ident">output</span>.<span class="ident">split_last_mut</span>().<span class="ident">unwrap</span>();
 
-        <span class="comment">// prepare the inner FFT by reordering the input buffer into the output buffer</span>
-        <span class="comment">// we could compute the indexes here on the fly, but benchmarking shows it&#39;s faster to precompute and store them</span>
-        <span class="kw">for</span> (<span class="kw-2">&amp;</span><span class="ident">input_index</span>, <span class="ident">output_element</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">input_map</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">output</span>.<span class="ident">iter_mut</span>()) {
-            <span class="kw-2">*</span><span class="ident">output_element</span> <span class="op">=</span> <span class="ident">input</span>[<span class="ident">input_index</span>];
+            <span class="comment">// we could compute the indexes here on the fly, but benchmarking shows it&#39;s faster to precompute and store them</span>
+            <span class="kw">for</span> (<span class="ident">input_index</span>, <span class="ident">output_element</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">input_output_map</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">output</span>.<span class="ident">iter_mut</span>()) {
+                <span class="kw-2">*</span><span class="ident">output_element</span> <span class="op">=</span> <span class="ident">input</span>[<span class="kw-2">*</span><span class="ident">input_index</span>];
+            }
+
+            <span class="comment">// the first element always gets copied to the last element</span>
+            <span class="kw-2">*</span><span class="ident">output_last</span> <span class="op">=</span> <span class="ident">input</span>[<span class="number">0</span>];
         }
 
         <span class="comment">// perform the first of two inner FFTs</span>
@@ -354,16 +313,18 @@
         <span class="comment">// execute the second FFT</span>
         <span class="self">self</span>.<span class="ident">inner_fft</span>.<span class="ident">process</span>(<span class="ident">output</span>, <span class="ident">input</span>);
 
-        <span class="comment">// to finalize the inverse, compute the conjugate of every element</span>
-        <span class="kw">for</span> <span class="ident">element</span> <span class="kw">in</span> <span class="ident">input</span>.<span class="ident">iter_mut</span>() {
-            <span class="kw-2">*</span><span class="ident">element</span> <span class="op">=</span> <span class="ident">element</span>.<span class="ident">conj</span>() <span class="op">+</span> <span class="ident">first_input_val</span>;
+        <span class="comment">// copy the input buffer to the output buffer, reordering the elements as we go.</span>
+        <span class="comment">// Split off the last input element, because we&#39;re going to treat it separately</span>
+        <span class="kw">let</span> (<span class="ident">input_last</span>, <span class="ident">input</span>) <span class="op">=</span> <span class="ident">input</span>.<span class="ident">split_last_mut</span>().<span class="ident">unwrap</span>();
+
+        <span class="comment">// we could compute the indexes here on the fly, but benchmarking shows it&#39;s faster to precompute and store them</span>
+        <span class="kw">let</span> <span class="ident">first_input_val</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">first_input</span>;
+        <span class="kw">for</span> (<span class="kw-2">&amp;</span><span class="ident">output_index</span>, <span class="ident">input_element</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">input_output_map</span>.<span class="ident">iter</span>().<span class="ident">rev</span>().<span class="ident">zip</span>(<span class="ident">input</span>.<span class="ident">iter</span>()) {
+            <span class="ident">output</span>[<span class="ident">output_index</span>] <span class="op">=</span> <span class="ident">input_element</span>.<span class="ident">conj</span>() <span class="op">+</span> <span class="ident">first_input_val</span>;
         }
 
-        <span class="comment">// copy the input buffer to the output buffer, reordering the elements as we go</span>
-        <span class="comment">// we could compute the indexes here on the fly, but benchmarking shows it&#39;s faster to precompute and store them</span>
-        <span class="kw">for</span> (<span class="kw-2">&amp;</span><span class="ident">output_index</span>, <span class="ident">input_element</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">output_map</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">input</span>.<span class="ident">iter</span>()) {
-            <span class="ident">output</span>[<span class="ident">output_index</span>] <span class="op">=</span> <span class="kw-2">*</span><span class="ident">input_element</span>;
-        }
+        <span class="comment">// the last element always gets copied to the first element</span>
+        <span class="ident">output</span>[<span class="number">0</span>] <span class="op">=</span> <span class="ident">input_last</span>.<span class="ident">conj</span>() <span class="op">+</span> <span class="ident">first_input_val</span>;
     }
 }
 
@@ -417,65 +378,4 @@
     }
 }
 </pre>
-</section>
-    <section id='search' class="content hidden"></section>
-
-    <section class="footer"></section>
-
-    <aside id="help" class="hidden">
-        <div>
-            <h1 class="hidden">Help</h1>
-
-            <div class="shortcuts">
-                <h2>Keyboard Shortcuts</h2>
-
-                <dl>
-                    <dt>?</dt>
-                    <dd>Show this help dialog</dd>
-                    <dt>S</dt>
-                    <dd>Focus the search field</dd>
-                    <dt>&larrb;</dt>
-                    <dd>Move up in search results</dd>
-                    <dt>&rarrb;</dt>
-                    <dd>Move down in search results</dd>
-                    <dt>&#9166;</dt>
-                    <dd>Go to active search result</dd>
-                    <dt>+</dt>
-                    <dd>Collapse/expand all sections</dd>
-                </dl>
-            </div>
-
-            <div class="infos">
-                <h2>Search Tricks</h2>
-
-                <p>
-                    Prefix searches with a type followed by a colon (e.g.
-                    <code>fn:</code>) to restrict the search to a given type.
-                </p>
-
-                <p>
-                    Accepted types are: <code>fn</code>, <code>mod</code>,
-                    <code>struct</code>, <code>enum</code>,
-                    <code>trait</code>, <code>type</code>, <code>macro</code>,
-                    and <code>const</code>.
-                </p>
-
-                <p>
-                    Search functions by type signature (e.g.
-                    <code>vec -> usize</code> or <code>* -> vec</code>)
-                </p>
-            </div>
-        </div>
-    </aside>
-
-    
-
-    <script>
-        window.rootPath = "../../../";
-        window.currentCrate = "rustfft";
-    </script>
-    <script src="../../../jquery.js"></script>
-    <script src="../../../main.js"></script>
-    <script defer src="../../../search-index.js"></script>
-</body>
-</html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../";window.currentCrate = "rustfft";</script><script src="../../../aliases.js"></script><script src="../../../main.js"></script><script defer src="../../../search-index.js"></script></body></html>

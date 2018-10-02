@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["INVALID_HANDLE_VALUE",""]],"fn":[["CloseHandle",""],["CompareObjectHandles",""],["DuplicateHandle",""],["GetHandleInformation",""],["SetHandleInformation",""]]});

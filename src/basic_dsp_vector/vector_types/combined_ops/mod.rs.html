@@ -1,49 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `vector\src\vector_types\combined_ops\mod.rs`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang">
-
-    <title>mod.rs.html -- source</title>
-
-    <link rel="stylesheet" type="text/css" href="../../../../normalize.css">
-    <link rel="stylesheet" type="text/css" href="../../../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../../../main.css">
-    
-
-    
-    
-</head>
-<body class="rustdoc source">
-    <!--[if lte IE 8]>
-    <div class="warning">
-        This old browser is unsupported and will most likely display funky
-        things.
-    </div>
-    <![endif]-->
-
-    
-
-    <nav class="sidebar">
-        
-        
-    </nav>
-
-    <nav class="sub">
-        <form class="search-form js-only">
-            <div class="search-container">
-                <input class="search-input" name="search"
-                       autocomplete="off"
-                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
-                       type="search">
-            </div>
-        </form>
-    </nav>
-
-    <section id='main' class="content"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `vector\src\vector_types\combined_ops\mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css"><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script src="../../../../storage.js"></script></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -916,6 +871,8 @@
 <span id="871">871</span>
 <span id="872">872</span>
 <span id="873">873</span>
+<span id="874">874</span>
+<span id="875">875</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! This module allows to combine certain operations into one operation. Since one</span>
 <span class="doccomment">//! many machines the speed of many DSP operations is limited by the memory bus speed</span>
@@ -994,7 +951,6 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">multi_ops</span>::<span class="kw-2">*</span>;
 <span class="kw">mod</span> <span class="ident">identifier_ops</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">identifier_ops</span>::<span class="kw-2">*</span>;
-
 <span class="kw">use</span> <span class="ident">simd_extensions</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">multicore_support</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Range</span>;
@@ -1044,50 +1000,50 @@
 {
     <span class="kw">match</span> <span class="kw-2">*</span><span class="ident">operation</span> {
         <span class="comment">// Real Ops</span>
-        <span class="ident">Operation</span>::<span class="ident">AddReal</span>(_, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">MultiplyReal</span>(_, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Abs</span>(_) <span class="op">=&gt;</span> <span class="ident">require_real</span>(<span class="ident">is_complex</span>),
-        <span class="ident">Operation</span>::<span class="ident">ToComplex</span>(_) <span class="op">=&gt;</span> <span class="ident">real_to_complex</span>(<span class="ident">is_complex</span>),
+        <span class="ident">Operation</span>::<span class="ident">AddReal</span>(<span class="kw">_</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">MultiplyReal</span>(<span class="kw">_</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Abs</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">require_real</span>(<span class="ident">is_complex</span>),
+        <span class="ident">Operation</span>::<span class="ident">ToComplex</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">real_to_complex</span>(<span class="ident">is_complex</span>),
         <span class="comment">// Complex Ops</span>
-        <span class="ident">Operation</span>::<span class="ident">AddComplex</span>(_, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">MultiplyComplex</span>(_, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">ComplexConj</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">MultiplyComplexExponential</span>(_, _, _) <span class="op">=&gt;</span> <span class="ident">require_complex</span>(<span class="ident">is_complex</span>),
-        <span class="ident">Operation</span>::<span class="ident">Magnitude</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">MagnitudeSquared</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">ToReal</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">ToImag</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Phase</span>(_) <span class="op">=&gt;</span> <span class="ident">complex_to_real</span>(<span class="ident">is_complex</span>),
+        <span class="ident">Operation</span>::<span class="ident">AddComplex</span>(<span class="kw">_</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">MultiplyComplex</span>(<span class="kw">_</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">ComplexConj</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">MultiplyComplexExponential</span>(<span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">require_complex</span>(<span class="ident">is_complex</span>),
+        <span class="ident">Operation</span>::<span class="ident">Magnitude</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">MagnitudeSquared</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">ToReal</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">ToImag</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Phase</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> <span class="ident">complex_to_real</span>(<span class="ident">is_complex</span>),
         <span class="comment">// General Ops</span>
-        <span class="ident">Operation</span>::<span class="ident">AddPoints</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">SubPoints</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">MulPoints</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">DivPoints</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">AddVector</span>(_, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">SubVector</span>(_, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">MulVector</span>(_, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">DivVector</span>(_, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Sqrt</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Square</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Root</span>(_, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Powf</span>(_, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Ln</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Exp</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Log</span>(_, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Expf</span>(_, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Sin</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Cos</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Tan</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">ASin</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">ACos</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">ATan</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Sinh</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Cosh</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Tanh</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">ASinh</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">ACosh</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">ATanh</span>(_) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">CloneFrom</span>(_, _) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">is_complex</span>),
+        <span class="ident">Operation</span>::<span class="ident">AddPoints</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">SubPoints</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">MulPoints</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">DivPoints</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">AddVector</span>(<span class="kw">_</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">SubVector</span>(<span class="kw">_</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">MulVector</span>(<span class="kw">_</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">DivVector</span>(<span class="kw">_</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Sqrt</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Square</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Root</span>(<span class="kw">_</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Powf</span>(<span class="kw">_</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Ln</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Exp</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Log</span>(<span class="kw">_</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Expf</span>(<span class="kw">_</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Sin</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Cos</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Tan</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">ASin</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">ACos</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">ATan</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Sinh</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Cosh</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Tanh</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">ASinh</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">ACosh</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">ATanh</span>(<span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">CloneFrom</span>(<span class="kw">_</span>, <span class="kw">_</span>) <span class="op">=&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">is_complex</span>),
     }
 }
 
@@ -1096,37 +1052,37 @@
 {
     <span class="kw">match</span> <span class="kw-2">*</span><span class="ident">operation</span> {
         <span class="comment">// Real Ops</span>
-        <span class="ident">Operation</span>::<span class="ident">AddReal</span>(<span class="ident">arg</span>, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">MultiplyReal</span>(<span class="ident">arg</span>, _) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">AddReal</span>(<span class="ident">arg</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">MultiplyReal</span>(<span class="ident">arg</span>, <span class="kw">_</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">Abs</span>(<span class="ident">arg</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">ToComplex</span>(<span class="ident">arg</span>) <span class="op">|</span>
         <span class="comment">// Complex Ops</span>
-        <span class="ident">Operation</span>::<span class="ident">AddComplex</span>(<span class="ident">arg</span>, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">MultiplyComplex</span>(<span class="ident">arg</span>, _) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">AddComplex</span>(<span class="ident">arg</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">MultiplyComplex</span>(<span class="ident">arg</span>, <span class="kw">_</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">Magnitude</span>(<span class="ident">arg</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">MagnitudeSquared</span>(<span class="ident">arg</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">ComplexConj</span>(<span class="ident">arg</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">ToReal</span>(<span class="ident">arg</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">ToImag</span>(<span class="ident">arg</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">Phase</span>(<span class="ident">arg</span>) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">MultiplyComplexExponential</span>(<span class="ident">arg</span>, _, _) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">MultiplyComplexExponential</span>(<span class="ident">arg</span>, <span class="kw">_</span>, <span class="kw">_</span>) <span class="op">|</span>
         <span class="comment">// General Ops</span>
         <span class="ident">Operation</span>::<span class="ident">AddPoints</span>(<span class="ident">arg</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">SubPoints</span>(<span class="ident">arg</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">MulPoints</span>(<span class="ident">arg</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">DivPoints</span>(<span class="ident">arg</span>) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">AddVector</span>(<span class="ident">arg</span>, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">SubVector</span>(<span class="ident">arg</span>, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">MulVector</span>(<span class="ident">arg</span>, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">DivVector</span>(<span class="ident">arg</span>, _) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">AddVector</span>(<span class="ident">arg</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">SubVector</span>(<span class="ident">arg</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">MulVector</span>(<span class="ident">arg</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">DivVector</span>(<span class="ident">arg</span>, <span class="kw">_</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">Sqrt</span>(<span class="ident">arg</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">Square</span>(<span class="ident">arg</span>) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Root</span>(<span class="ident">arg</span>, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Powf</span>(<span class="ident">arg</span>, _) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Root</span>(<span class="ident">arg</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Powf</span>(<span class="ident">arg</span>, <span class="kw">_</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">Ln</span>(<span class="ident">arg</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">Exp</span>(<span class="ident">arg</span>) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Log</span>(<span class="ident">arg</span>, _) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">Expf</span>(<span class="ident">arg</span>, _) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Log</span>(<span class="ident">arg</span>, <span class="kw">_</span>) <span class="op">|</span>
+        <span class="ident">Operation</span>::<span class="ident">Expf</span>(<span class="ident">arg</span>, <span class="kw">_</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">Sin</span>(<span class="ident">arg</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">Cos</span>(<span class="ident">arg</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">Tan</span>(<span class="ident">arg</span>) <span class="op">|</span>
@@ -1139,7 +1095,7 @@
         <span class="ident">Operation</span>::<span class="ident">ASinh</span>(<span class="ident">arg</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">ACosh</span>(<span class="ident">arg</span>) <span class="op">|</span>
         <span class="ident">Operation</span>::<span class="ident">ATanh</span>(<span class="ident">arg</span>) <span class="op">|</span>
-        <span class="ident">Operation</span>::<span class="ident">CloneFrom</span>(<span class="ident">arg</span>, _)
+        <span class="ident">Operation</span>::<span class="ident">CloneFrom</span>(<span class="ident">arg</span>, <span class="kw">_</span>)
             <span class="op">=&gt;</span> <span class="ident">arg</span>
     }
 }
@@ -1325,25 +1281,27 @@
     <span class="ident">vec</span>
 }
 
-<span class="kw">fn</span> <span class="ident">perform_complex_operations_par</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">array</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">T</span>]<span class="op">&gt;</span>,
+<span class="kw">fn</span> <span class="ident">perform_complex_operations_par</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Reg</span>: <span class="ident">SimdGeneric</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>(
+                                     <span class="kw">_</span>: <span class="ident">RegType</span><span class="op">&lt;</span><span class="ident">Reg</span><span class="op">&gt;</span>,
+                                     <span class="ident">array</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">T</span>]<span class="op">&gt;</span>,
                                      <span class="ident">range</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
                                      <span class="ident">arguments</span>: (<span class="kw-2">&amp;</span>[<span class="ident">Operation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>], <span class="ident">usize</span>))
     <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>
 {
     <span class="kw">let</span> (<span class="ident">operations</span>, <span class="ident">points</span>) <span class="op">=</span> <span class="ident">arguments</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vectors</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">array</span>.<span class="ident">len</span>());
-    <span class="kw">for</span> _ <span class="kw">in</span> <span class="number">0</span>..<span class="ident">array</span>.<span class="ident">len</span>() {
-        <span class="ident">vectors</span>.<span class="ident">push</span>(<span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">splat</span>(<span class="ident">T</span>::<span class="ident">zero</span>()));
+    <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">array</span>.<span class="ident">len</span>() {
+        <span class="ident">vectors</span>.<span class="ident">push</span>(<span class="ident">Reg</span>::<span class="ident">splat</span>(<span class="ident">T</span>::<span class="ident">zero</span>()));
     }
 
-    <span class="kw">let</span> <span class="ident">reg_len</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">len</span>() <span class="op">/</span> <span class="number">2</span>;
+    <span class="kw">let</span> <span class="ident">reg_len</span> <span class="op">=</span> <span class="ident">Reg</span>::<span class="ident">LEN</span> <span class="op">/</span> <span class="number">2</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span> <span class="op">/</span> <span class="number">2</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
     <span class="kw">while</span> <span class="ident">i</span> <span class="op">&lt;</span> <span class="ident">array</span>[<span class="number">0</span>].<span class="ident">len</span>() {
         <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">array</span>.<span class="ident">len</span>() {
             <span class="kw">unsafe</span> {
                 <span class="kw">let</span> <span class="ident">elem</span> <span class="op">=</span> <span class="ident">vectors</span>.<span class="ident">get_unchecked_mut</span>(<span class="ident">j</span>);
-                <span class="kw-2">*</span><span class="ident">elem</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">load_unchecked</span>(<span class="ident">array</span>[<span class="ident">j</span>], <span class="ident">i</span>)
+                <span class="kw-2">*</span><span class="ident">elem</span> <span class="op">=</span> <span class="ident">Reg</span>::<span class="ident">load_unchecked</span>(<span class="ident">array</span>[<span class="ident">j</span>], <span class="ident">i</span>)
             }
         }
 
@@ -1361,29 +1319,31 @@
         }
 
         <span class="ident">index</span> <span class="op">+=</span> <span class="ident">reg_len</span>;
-        <span class="ident">i</span> <span class="op">+=</span> <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">len</span>();
+        <span class="ident">i</span> <span class="op">+=</span> <span class="ident">Reg</span>::<span class="ident">LEN</span>;
     }
 }
 
-<span class="kw">fn</span> <span class="ident">perform_real_operations_par</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">array</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">T</span>]<span class="op">&gt;</span>,
+<span class="kw">fn</span> <span class="ident">perform_real_operations_par</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">RealNumber</span>, <span class="ident">Reg</span>: <span class="ident">SimdGeneric</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;&gt;</span>(
+                                  <span class="kw">_</span>: <span class="ident">RegType</span><span class="op">&lt;</span><span class="ident">Reg</span><span class="op">&gt;</span>,
+                                  <span class="ident">array</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">InlineVector</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">T</span>]<span class="op">&gt;</span>,
                                   <span class="ident">range</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
                                   <span class="ident">arguments</span>: (<span class="kw-2">&amp;</span>[<span class="ident">Operation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>], <span class="ident">usize</span>))
     <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">RealNumber</span>
 {
     <span class="kw">let</span> (<span class="ident">operations</span>, <span class="ident">points</span>) <span class="op">=</span> <span class="ident">arguments</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vectors</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">array</span>.<span class="ident">len</span>());
-    <span class="kw">for</span> _ <span class="kw">in</span> <span class="number">0</span>..<span class="ident">array</span>.<span class="ident">len</span>() {
-        <span class="ident">vectors</span>.<span class="ident">push</span>(<span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">splat</span>(<span class="ident">T</span>::<span class="ident">zero</span>()));
+    <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">array</span>.<span class="ident">len</span>() {
+        <span class="ident">vectors</span>.<span class="ident">push</span>(<span class="ident">Reg</span>::<span class="ident">splat</span>(<span class="ident">T</span>::<span class="ident">zero</span>()));
     }
 
-    <span class="kw">let</span> <span class="ident">reg_len</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">len</span>();
+    <span class="kw">let</span> <span class="ident">reg_len</span> <span class="op">=</span> <span class="ident">Reg</span>::<span class="ident">LEN</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">range</span>.<span class="ident">start</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
     <span class="kw">while</span> <span class="ident">i</span> <span class="op">&lt;</span> <span class="ident">array</span>[<span class="number">0</span>].<span class="ident">len</span>() {
         <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">array</span>.<span class="ident">len</span>() {
             <span class="kw">unsafe</span> {
                 <span class="kw">let</span> <span class="ident">elem</span> <span class="op">=</span> <span class="ident">vectors</span>.<span class="ident">get_unchecked_mut</span>(<span class="ident">j</span>);
-                <span class="kw-2">*</span><span class="ident">elem</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">load_unchecked</span>(<span class="ident">array</span>[<span class="ident">j</span>], <span class="ident">i</span>)
+                <span class="kw-2">*</span><span class="ident">elem</span> <span class="op">=</span> <span class="ident">Reg</span>::<span class="ident">load_unchecked</span>(<span class="ident">array</span>[<span class="ident">j</span>], <span class="ident">i</span>)
             }
         }
 
@@ -1401,7 +1361,7 @@
         }
 
         <span class="ident">index</span> <span class="op">+=</span> <span class="ident">reg_len</span>;
-        <span class="ident">i</span> <span class="op">+=</span> <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">len</span>();
+        <span class="ident">i</span> <span class="op">+=</span> <span class="ident">Reg</span>::<span class="ident">LEN</span>;
     }
 }
 
@@ -1409,7 +1369,9 @@
     <span class="kw">where</span> <span class="ident">S</span>: <span class="ident">ToSliceMut</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
           <span class="ident">T</span>: <span class="ident">RealNumber</span>
 {
-    <span class="kw">fn</span> <span class="ident">perform_operations</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>,
+    <span class="kw">fn</span> <span class="ident">perform_operations</span><span class="op">&lt;</span><span class="ident">Reg</span>: <span class="ident">SimdGeneric</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">B</span><span class="op">&gt;</span>(
+                             <span class="kw">_</span>: <span class="ident">RegType</span><span class="op">&lt;</span><span class="ident">Reg</span><span class="op">&gt;</span>,
+                             <span class="ident">buffer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>,
                              <span class="kw-2">mut</span> <span class="ident">vectors</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
                              <span class="ident">operations</span>: <span class="kw-2">&amp;</span>[<span class="ident">Operation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>])
                              <span class="op">-&gt;</span> <span class="ident">TransRes</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;&gt;</span>
@@ -1450,7 +1412,7 @@
         <span class="comment">// later in the process so we better keep it simple for now.</span>
         <span class="kw">if</span> <span class="ident">any_complex_ops</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">complex_vectors</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">vectors</span>.<span class="ident">len</span>());
-            <span class="kw">for</span> _ <span class="kw">in</span> <span class="number">0</span>..<span class="ident">vectors</span>.<span class="ident">len</span>() {
+            <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">vectors</span>.<span class="ident">len</span>() {
                 <span class="kw">let</span> <span class="ident">vector</span> <span class="op">=</span> <span class="ident">vectors</span>.<span class="ident">pop</span>().<span class="ident">unwrap</span>();
                 <span class="kw">let</span> <span class="ident">as_complex</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">vector</span>.<span class="ident">is_complex</span>() {
                     <span class="ident">vector</span>
@@ -1472,7 +1434,7 @@
             <span class="kw">if</span> <span class="ident">rounded_len</span> <span class="op">&lt;=</span> <span class="ident">alloc_len</span> {
                 (<span class="ident">rounded_len</span>, <span class="ident">first</span>.<span class="ident">multicore_settings</span>, <span class="number">0</span>)
             } <span class="kw">else</span> {
-                <span class="kw">let</span> <span class="ident">scalar_length</span> <span class="op">=</span> <span class="ident">data_length</span> <span class="op">%</span> <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">len</span>();
+                <span class="kw">let</span> <span class="ident">scalar_length</span> <span class="op">=</span> <span class="ident">data_length</span> <span class="op">%</span> <span class="ident">Reg</span>::<span class="ident">LEN</span>;
                 (<span class="ident">data_length</span> <span class="op">-</span> <span class="ident">scalar_length</span>, <span class="ident">first</span>.<span class="ident">multicore_settings</span>, <span class="ident">scalar_length</span>)
             }
         };
@@ -1500,17 +1462,17 @@
                                                     <span class="kw-2">&amp;</span><span class="ident">multicore_settings</span>,
                                                     <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">array</span>,
                                                     <span class="ident">range</span>,
-                                                    <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">len</span>(),
+                                                    <span class="ident">Reg</span>::<span class="ident">LEN</span>,
                                                     (<span class="ident">operations</span>, <span class="ident">first_vec_len</span>),
-                                                    <span class="ident">perform_complex_operations_par</span>);
+                                                    <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">arg</span><span class="op">|</span><span class="macro">sel_reg</span><span class="macro">!</span>(<span class="ident">perform_complex_operations_par</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">arg</span>)));
                 } <span class="kw">else</span> {
                     <span class="ident">Chunk</span>::<span class="ident">execute_partial_multidim</span>(<span class="ident">complexity</span>,
                                                     <span class="kw-2">&amp;</span><span class="ident">multicore_settings</span>,
                                                     <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">array</span>,
                                                     <span class="ident">range</span>,
-                                                    <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">len</span>(),
+                                                    <span class="ident">Reg</span>::<span class="ident">LEN</span>,
                                                     (<span class="ident">operations</span>, <span class="ident">first_vec_len</span>),
-                                                    <span class="ident">perform_real_operations_par</span>);
+                                                    <span class="op">|</span><span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">arg</span><span class="op">|</span><span class="macro">sel_reg</span><span class="macro">!</span>(<span class="ident">perform_real_operations_par</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">array</span>, <span class="ident">range</span>, <span class="ident">arg</span>)));
                 }
             }
         }
@@ -1518,9 +1480,9 @@
         <span class="kw">if</span> <span class="ident">scalar_length</span> <span class="op">&gt;</span> <span class="number">0</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_elems</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">vectors</span>.<span class="ident">len</span>());
             <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">vectors</span> {
-                <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">splat</span>(<span class="ident">T</span>::<span class="ident">zero</span>());
+                <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="ident">Reg</span>::<span class="ident">splat</span>(<span class="ident">T</span>::<span class="ident">zero</span>());
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
-                <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="ident">reg</span>.<span class="ident">iter_over_vector</span>(<span class="op">|</span>_<span class="op">|</span> {
+                <span class="kw">let</span> <span class="ident">reg</span> <span class="op">=</span> <span class="ident">reg</span>.<span class="ident">iter_over_vector</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
                     <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">i</span> <span class="op">&lt;</span> <span class="ident">scalar_length</span> {
                         <span class="ident">v</span>[<span class="ident">vectorization_length</span> <span class="op">+</span> <span class="ident">i</span>]
                     } <span class="kw">else</span> {
@@ -1539,17 +1501,14 @@
                 <span class="kw">for</span> <span class="ident">operation</span> <span class="kw">in</span> <span class="ident">operations</span> {
                     <span class="ident">PerformOperationSimd</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>::<span class="ident">perform_complex_operation</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">last_elems</span>,
                                                                          <span class="ident">operation</span>,
-                                                                         (<span class="ident">vectorization_length</span> <span class="op">/</span>
-                                                                          <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">len</span>() <span class="op">*</span>
-                                                                          <span class="number">2</span>),
+                                                                         <span class="ident">vectorization_length</span> <span class="op">/</span> <span class="ident">Reg</span>::<span class="ident">LEN</span> <span class="op">*</span> <span class="number">2</span>,
                                                                          <span class="ident">first_vec_len</span>);
                 }
             } <span class="kw">else</span> {
                 <span class="kw">for</span> <span class="ident">operation</span> <span class="kw">in</span> <span class="ident">operations</span> {
                     <span class="ident">PerformOperationSimd</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>::<span class="ident">perform_real_operation</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">last_elems</span>,
                                                                       <span class="ident">operation</span>,
-                                                                      (<span class="ident">vectorization_length</span> <span class="op">/</span>
-                                                                       <span class="ident">T</span>::<span class="ident">Reg</span>::<span class="ident">len</span>()),
+                                                                      <span class="ident">vectorization_length</span> <span class="op">/</span> <span class="ident">Reg</span>::<span class="ident">LEN</span>,
                                                                       <span class="ident">first_vec_len</span>);
                 }
             }
@@ -1638,7 +1597,7 @@
 
         <span class="kw">let</span> <span class="ident">ops</span> <span class="op">=</span> <span class="ident">multi_ops2</span>(<span class="ident">a</span>, <span class="ident">b</span>);
         <span class="kw">let</span> <span class="ident">ops</span> <span class="op">=</span> <span class="ident">ops</span>.<span class="ident">add_ops</span>(<span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> (<span class="ident">a</span>, <span class="ident">b</span>));
-        <span class="kw">let</span> (<span class="ident">a</span>, _) <span class="op">=</span> <span class="ident">ops</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> (<span class="ident">a</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">ops</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>).<span class="ident">unwrap</span>();
 
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>[..], [<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>, <span class="number">5.0</span>, <span class="number">6.0</span>, <span class="number">7.0</span>, <span class="number">8.0</span>]);
     }
@@ -1653,7 +1612,7 @@
 
         <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>, <span class="number">5.0</span>, <span class="number">6.0</span>, <span class="number">7.0</span>, <span class="number">8.0</span>].<span class="ident">to_real_time_vec</span>();
         <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>, <span class="number">5.0</span>, <span class="number">6.0</span>, <span class="number">7.0</span>, <span class="number">8.0</span>].<span class="ident">to_real_time_vec</span>();
-        <span class="kw">let</span> (<span class="ident">a</span>, _) <span class="op">=</span> <span class="ident">ops</span>.<span class="ident">exec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>, <span class="ident">a</span>, <span class="ident">b</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> (<span class="ident">a</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">ops</span>.<span class="ident">exec</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span>, <span class="ident">a</span>, <span class="ident">b</span>).<span class="ident">unwrap</span>();
 
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>[..], [<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>, <span class="number">5.0</span>, <span class="number">6.0</span>, <span class="number">7.0</span>, <span class="number">8.0</span>]);
     }
@@ -1791,65 +1750,4 @@
     }
 }
 </pre>
-</section>
-    <section id='search' class="content hidden"></section>
-
-    <section class="footer"></section>
-
-    <aside id="help" class="hidden">
-        <div>
-            <h1 class="hidden">Help</h1>
-
-            <div class="shortcuts">
-                <h2>Keyboard Shortcuts</h2>
-
-                <dl>
-                    <dt>?</dt>
-                    <dd>Show this help dialog</dd>
-                    <dt>S</dt>
-                    <dd>Focus the search field</dd>
-                    <dt>&larrb;</dt>
-                    <dd>Move up in search results</dd>
-                    <dt>&rarrb;</dt>
-                    <dd>Move down in search results</dd>
-                    <dt>&#9166;</dt>
-                    <dd>Go to active search result</dd>
-                    <dt>+</dt>
-                    <dd>Collapse/expand all sections</dd>
-                </dl>
-            </div>
-
-            <div class="infos">
-                <h2>Search Tricks</h2>
-
-                <p>
-                    Prefix searches with a type followed by a colon (e.g.
-                    <code>fn:</code>) to restrict the search to a given type.
-                </p>
-
-                <p>
-                    Accepted types are: <code>fn</code>, <code>mod</code>,
-                    <code>struct</code>, <code>enum</code>,
-                    <code>trait</code>, <code>type</code>, <code>macro</code>,
-                    and <code>const</code>.
-                </p>
-
-                <p>
-                    Search functions by type signature (e.g.
-                    <code>vec -> usize</code> or <code>* -> vec</code>)
-                </p>
-            </div>
-        </div>
-    </aside>
-
-    
-
-    <script>
-        window.rootPath = "../../../../";
-        window.currentCrate = "basic_dsp_vector";
-    </script>
-    <script src="../../../../jquery.js"></script>
-    <script src="../../../../main.js"></script>
-    <script defer src="../../../../search-index.js"></script>
-</body>
-</html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../../../";window.currentCrate = "basic_dsp_vector";</script><script src="../../../../aliases.js"></script><script src="../../../../main.js"></script><script defer src="../../../../search-index.js"></script></body></html>

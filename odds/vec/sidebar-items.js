@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["vec","Create a new vec from the iterable"]],"trait":[["VecExt","Extra methods for `Vec<T>`"],["VecFindRemove",""]]});
