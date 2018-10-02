@@ -2,8 +2,6 @@ use numbers::*;
 use std::mem;
 use std::ops::*;
 use std;
-#[cfg(any(feature="use_sse", feature="use_avx", feature="use_avx512"))]
-use simd;
 #[cfg(feature="use_sse")]
 use simd::x86::sse2 as simdsse;
 #[cfg(feature="use_avx")]

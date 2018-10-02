@@ -23,8 +23,11 @@
 //
 
 use super::{Simd, SimdApproximations, SimdFrom};
+#[cfg(feature="use_sse")]
 use simd::*;
+#[cfg(feature="use_sse")]
 use simd::x86::sse2::*;
+#[cfg(feature="use_avx")]
 use simd::x86::avx::*;
 use std::mem;
 use std::ops::*;
