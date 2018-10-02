@@ -55,9 +55,9 @@ pub type ScalarResult<T> = result::Result<T, ErrorReason>;
 #[derive(PartialEq)]
 #[derive(Debug)]
 pub enum DataDomain {
-    /// Time domain, the x-axis is in [s].
+    /// Time domain, the x-axis is in \[s\].
     Time,
-    /// Frequency domain, the x-axis is in [Hz].
+    /// Frequency domain, the x-axis is in \[Hz\].
     Frequency,
 }
 

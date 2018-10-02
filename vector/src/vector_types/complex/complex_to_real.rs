@@ -74,7 +74,7 @@ pub trait ComplexToRealTransformsOps<T>: ToRealResult
     /// ```
     fn to_imag(self) -> Self::RealResult;
 
-    /// Gets the phase of all elements in [rad].
+    /// Gets the phase of all elements in \[rad\].
     /// # Example
     ///
     /// ```
@@ -165,7 +165,7 @@ pub trait ComplexToRealTransformsOpsBuffered<S, T>: ToRealResult
     /// ```
     fn to_imag_b<B>(self, buffer: &mut B) -> Self::RealResult where B: for<'a> Buffer<'a, S, T>;
 
-    /// Gets the phase of all elements in [rad].
+    /// Gets the phase of all elements in \[rad\].
     /// # Example
     ///
     /// ```
@@ -264,7 +264,7 @@ pub trait ComplexToRealGetterOps<A, T, N, D>
     /// ```
     fn get_magnitude_squared(&self, destination: &mut A);
 
-    /// Copies the phase of all elements in [rad] into the given vector.
+    /// Copies the phase of all elements in \[rad\] into the given vector.
     /// # Example
     ///
     /// ```
