@@ -4,13 +4,12 @@
 
 The next table marks the allowed combinations for feature flags with an `X`.
 
-|            | use_sse | use_avx | use_avx512 | use_gpu | no_std |
-|:----------:|:-------:|:-------:|:----------:|:------:|:------:|
-| use_sse    |    X    |    X    |      X     |    X   |    X   |
-| use_avx    |    X    |    X    |      X     |    X   |    X   |
-| use_avx512 |    X    |    X    |      X     |    X   |    X   |
-| use_gpu    |    X    |    X    |      X     |    X   |        |
-| no_std     |    X    |    X    |      X     |        |    X   |
+|            | use_sse | use_avx | use_gpu | no_std |
+|:----------:|:-------:|:-------:|:------:|:------:|
+| use_sse    |    X    |    X    |    X   |    X   |
+| use_avx    |    X    |    X    |    X   |    X   |
+| use_gpu    |    X    |    X    |    X   |        |
+| no_std     |    X    |    X    |        |    X   |
 
 # SIMD support: `use_sse` and `use_avx`
 Activate with: `--features use_sse` or `--features use_avx`.

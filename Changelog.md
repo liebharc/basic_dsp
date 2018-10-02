@@ -3,6 +3,7 @@ Changes:
 
 ## Version 0.5.5
 It's now decided at runtime which SIMD optimization should be used.
+Also updated `clFFT` dependency.
 
 ## Version 0.5.4
 - Went back from `stdsimd` to `simd` crate. 
