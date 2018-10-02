@@ -21,6 +21,7 @@ codegen-units = 4
 [features]
 default = ["std"]
 use_avx = ["use_simd"]
+use_avx512 = ["use_simd"]
 use_sse = ["use_simd"]
 use_simd = ["simd"]
 use_gpu = ["ocl", "clfft"]
