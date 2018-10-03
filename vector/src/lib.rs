@@ -61,6 +61,10 @@ extern crate crossbeam;
 #[cfg(feature = "std")]
 #[macro_use]
 extern crate lazy_static;
+#[cfg(feature = "std")]
+extern crate num_cpus;
+#[cfg(feature = "std")]
+extern crate time;
 extern crate num_complex;
 extern crate num_traits;
 #[cfg(any(feature = "doc", feature = "use_gpu"))]

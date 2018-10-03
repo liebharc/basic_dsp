@@ -12,7 +12,9 @@ e.g. due to the overhead of multi threading and [downclocking](https://lemire.me
 Changes:
 
 - Fixed performance issue for small vectors
-- Removed `num_cpus` dependency
+- If `core_limit > 1` then at first call to a vector function which utilizes multi threading a small internal performance
+test will be executed to determine reasonable values for how work will be spread among the available threads. Running
+this benchmark will of course slow down this call. The assumption is that this is okay as it only happens once. 
 
 ## Version 0.5.5
 It's now decided at runtime which SIMD optimization should be used.

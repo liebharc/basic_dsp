@@ -288,9 +288,9 @@ where
     }
 }
 
-/// Complexity of all approximation functions. Medium, because even if the approximations are faster
-/// than the standard version, it seems to be benificial to spawn threads early.
-const APPROX_COMPLEXITY: Complexity = Complexity::Medium;
+/// Complexity of all approximation functions. Small, because with the SIMD optimizations
+/// threading becomes less beneficial.
+const APPROX_COMPLEXITY: Complexity = Complexity::Small;
 
 impl<S, T, N, D> ApproximatedOps<T> for DspVec<S, T, N, D>
 where

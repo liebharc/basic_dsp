@@ -34,24 +34,106 @@ impl MultiCoreSettings {
 }
 
 /// Calibration information which determines when multi threaded code will be used.
+#[derive(Debug, PartialEq)]
 struct Calibration {
     med_dual_core_threshold: usize,
     med_multi_core_threshold: usize,
+    large_dual_core_threshold: usize,
     large_multi_core_threshold: usize,
+}
+
+/// Limits a value between min and max
+fn limit(value: usize, min: usize, max: usize) -> usize {
+    if value < min {
+        min
+    }
+    else if value > max {
+        max
+    }
+    else {
+        value
+    }
+}
+
+fn average(values: Vec<usize>) -> usize {
+    let mut sum = 0;
+    for v in values.iter() {
+        sum += v
+    }
+
+    sum / values.len()
 }
 
 /// Runs a couple of benchmarks to obtain the multi core thresholds.
 /// Right now only code constants are returned.
-fn calibrate() -> Calibration {
+fn calibrate(number_of_cores: usize) -> Calibration {
+    let iterations = 5;
+    let mut small: Vec<f64> = vec!(1.0; 100);
+    let mut result = Vec::with_capacity(iterations);
+    for _ in 0..iterations {
+        let start = time::precise_time_ns();
+        Chunk::execute_on_chunks(
+            &mut small[..],
+            1,
+            (),
+            number_of_cores,
+            move |array, _arg| {
+                for num in array {
+                    *num = 1.0;
+                }
+            });
+        result.push((time::precise_time_ns() - start) as usize);
+    }
+    let multithreading_overhead = average(result);
+    let vec_size = 50000;
+    let mut large: Vec<f64> = vec!(1.0; vec_size);
+
+    let mut result = Vec::with_capacity(iterations);
+    for _ in 0..iterations {
+        let start = time::precise_time_ns();
+        for v in &mut large[..] {
+            *v = v.sin();
+        }
+        result.push((time::precise_time_ns() - start) as usize);
+    }
+
+    let medium_operation = average(result);
+
+    let mut result = Vec::with_capacity(iterations);
+    for _ in 0..iterations {
+        let start = time::precise_time_ns();
+        for v in &mut large[..] {
+            *v = v.ln();
+        }
+        result.push((time::precise_time_ns() - start) as usize);
+    }
+    let large_operation = average(result);
+
+    // assume linear relation
+    let medium_time_per_10000_iterations = 10000 * medium_operation / vec_size;
+    let large_time_per_10000_iterations = 10000 * large_operation / vec_size;
+
+    // Solve the following inequality (which is still just a guess):
+    //  number_of_elements * time_per_element / number_of_cores >  multithreading_overhead
+    // Or in words: The expected amount of work for each core must be at least twice as large
+    // as the time it takes to start the threads in order to be beneficial.
+    // That should give a rough guess at which point the multi threading becomes beneficial.
+
+    let dual_core = 2;
+    let med_dual_core_threshold = limit(20000 * multithreading_overhead * dual_core / medium_time_per_10000_iterations, 5000, 30000);
+    let med_multi_core_threshold = limit(20000 * multithreading_overhead * number_of_cores / medium_time_per_10000_iterations, med_dual_core_threshold + 1, 200000);
+    let large_dual_core_threshold = limit(20000 * multithreading_overhead * dual_core / large_time_per_10000_iterations, 5000, 30000);
+    let large_multi_core_threshold = limit(20000 * multithreading_overhead * number_of_cores / large_time_per_10000_iterations, large_dual_core_threshold + 1, 200000);
     Calibration {
-        med_dual_core_threshold: 50000,
-        med_multi_core_threshold: 100000,
-        large_multi_core_threshold: 30000,
+        med_dual_core_threshold: med_dual_core_threshold,
+        med_multi_core_threshold: med_multi_core_threshold,
+        large_dual_core_threshold: large_dual_core_threshold,
+        large_multi_core_threshold: large_multi_core_threshold,
     }
 }
 
 lazy_static! {
-    static ref CALIBRATION: Calibration = calibrate();
+    static ref CALIBRATION: Calibration = calibrate(num_cpus::get());
 }
 
 /// Contains logic which helps to perform an operation
@@ -102,8 +184,10 @@ impl Chunk {
             }
         } else { // Complexity::Large
             let calibration = &CALIBRATION;
-            if array_length < calibration.large_multi_core_threshold {
+            if array_length < calibration.large_dual_core_threshold {
                 1
+            } else if array_length < calibration.large_multi_core_threshold {
+                2
             } else {
                 settings.core_limit
             }
@@ -191,17 +275,25 @@ impl Chunk {
         let number_of_chunks =
             Chunk::determine_number_of_chunks(array_length, complexity, settings);
         if number_of_chunks > 1 {
-            let chunks = Chunk::partition_mut(array, step_size, number_of_chunks);
-            crossbeam::scope(|scope| {
-                for chunk in chunks {
-                    scope.spawn(move || {
-                        function(chunk, arguments);
-                    });
-                }
-            });
+            Chunk::execute_on_chunks(array, step_size, arguments, number_of_chunks, function);
         } else {
             function(array, arguments);
         }
+    }
+
+    fn execute_on_chunks<'a, T, S, F>(array: &mut [T], step_size: usize, arguments: S, number_of_chunks: usize, ref function: F)
+        where
+            F: Fn(&mut [T], S) + 'a + Sync,
+            T: RealNumber,
+            S: Sync + Copy + Send {
+        let chunks = Chunk::partition_mut(array, step_size, number_of_chunks);
+        crossbeam::scope(|scope| {
+            for chunk in chunks {
+                scope.spawn(move || {
+                    function(chunk, arguments);
+                });
+            }
+        });
     }
 
     /// Executes the given function on the first `array_length` elements of the given list of
@@ -627,5 +719,19 @@ mod tests {
                 end: 1023,
             }
         );
+    }
+
+    #[test]
+    fn calibration_test() {
+        let cal = calibrate(4);
+        assert_eq!(cal, Calibration {
+            large_multi_core_threshold: 0,
+            med_multi_core_threshold: 0,
+            med_dual_core_threshold: 0,
+            large_dual_core_threshold: 0,
+        });
+        assert!(cal.med_dual_core_threshold > 0);
+        assert!(cal.med_multi_core_threshold > cal.med_dual_core_threshold);
+        assert!(cal.large_multi_core_threshold > 0);
     }
 }
