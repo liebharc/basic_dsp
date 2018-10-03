@@ -1,7 +1,6 @@
 use super::Complexity;
 use crossbeam;
 use inline_vector::InlineVector;
-use num_cpus;
 use numbers::*;
 use std::iter::Iterator;
 use std::mem;
@@ -64,13 +63,8 @@ impl Chunk {
         complexity: Complexity,
         settings: &MultiCoreSettings,
     ) -> usize {
-        let mut cores = num_cpus::get();
-        if cores > settings.core_limit {
-            cores = settings.core_limit;
-        }
-
-        if cores == 1 {
-            cores
+        if settings.core_limit == 1 {
+            settings.core_limit
         } else if complexity == Complexity::Small {
             // Recent tests seem to indicate that even for large arrays it never makes
             // sense to spawn threads for trivial instructions. A single CPU core with SIMD
@@ -80,19 +74,15 @@ impl Chunk {
             if array_length < 50000 {
                 1
             } else if array_length < 100000 {
-                if cores >= 2 {
-                    2
-                } else {
-                    1
-                }
+                2
             } else {
-                cores
+                settings.core_limit
             }
         } else if array_length < 30000 {
             // complexity == Complexity::Large
             1
         } else {
-            cores
+            settings.core_limit
         }
     }
 
