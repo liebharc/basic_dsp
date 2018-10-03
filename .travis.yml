@@ -15,7 +15,7 @@ script:
 - |
   make test &&
   make bench &&
-  cargo doc -p basic_dsp -p basic_dsp_vector -p basic_dsp_interop -p basic_dsp_matrix --no-deps
+  cargo doc -p basic_dsp -p basic_dsp_vector -p basic_dsp_matrix --no-deps
 
 env:
   global:

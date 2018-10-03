@@ -34,7 +34,7 @@ $age_difference_days = ($last_master_update - $last_doc_update).TotalDays
 
 if ($age_difference_days -gt 3.0) {
     $Host.UI.WriteErrorLine("Documentation hasn't been updated $age_difference_days days since the last master commit.")
-	$Host.UI.WriteErrorLine("# cargo doc -p basic_dsp -p basic_dsp_vector  -p basic_dsp_matrix --no-deps")
+	$Host.UI.WriteErrorLine("# cargo doc -p basic_dsp -p basic_dsp_vector -p basic_dsp_matrix --no-deps")
     $all_okay = $false
 }
 
