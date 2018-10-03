@@ -7,6 +7,7 @@ use std::mem;
 use std::ops::Range;
 use std::slice::{Chunks, ChunksMut};
 use std::sync::{Arc, Mutex};
+use time;
 
 /// Holds parameters which specify how multiple cores are used
 /// to execute an operation.
@@ -724,12 +725,6 @@ mod tests {
     #[test]
     fn calibration_test() {
         let cal = calibrate(4);
-        assert_eq!(cal, Calibration {
-            large_multi_core_threshold: 0,
-            med_multi_core_threshold: 0,
-            med_dual_core_threshold: 0,
-            large_dual_core_threshold: 0,
-        });
         assert!(cal.med_dual_core_threshold > 0);
         assert!(cal.med_multi_core_threshold > cal.med_dual_core_threshold);
         assert!(cal.large_multi_core_threshold > 0);
