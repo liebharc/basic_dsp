@@ -9,3 +9,4 @@ basic_dsp.sln
 *.so
 *.lib
 /*.txt
+/.idea
