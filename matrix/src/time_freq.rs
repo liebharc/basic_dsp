@@ -1,30 +1,29 @@
-use basic_dsp_vector::*;
+use super::*;
+use basic_dsp_vector::conv_types::*;
 use basic_dsp_vector::numbers::*;
 use basic_dsp_vector::window_functions::*;
-use basic_dsp_vector::conv_types::*;
-use super::*;
-use TransformContent;
+use basic_dsp_vector::*;
 use std::marker;
+use TransformContent;
 
 macro_rules! try_transform {
-    ($op: expr, $matrix: ident) => {
-        {
-			match $op {
-				Ok(rows) => Ok($matrix {
-					rows: rows,
-					storage_type: marker::PhantomData,
-					number_type: marker::PhantomData
-				}),
-				Err((r, rows)) => Err((
-					r,
-					$matrix {
-						rows: rows,
-						storage_type: marker::PhantomData,
-						number_type: marker::PhantomData
-				})),
-			}
+    ($op: expr, $matrix: ident) => {{
+        match $op {
+            Ok(rows) => Ok($matrix {
+                rows: rows,
+                storage_type: marker::PhantomData,
+                number_type: marker::PhantomData,
+            }),
+            Err((r, rows)) => Err((
+                r,
+                $matrix {
+                    rows: rows,
+                    storage_type: marker::PhantomData,
+                    number_type: marker::PhantomData,
+                },
+            )),
         }
-    }
+    }};
 }
 
 macro_rules! add_mat_impl {
@@ -440,76 +439,94 @@ macro_rules! add_mat_impl {
 add_mat_impl!(MatrixMxN; Matrix2xN; Matrix3xN; Matrix4xN);
 
 macro_rules! convolve_signal {
-    ($self_: expr, $buffer: ident, $impulse_response: ident) => {
+    ($self_: expr, $buffer: ident, $impulse_response: ident) => {{
+        let col_len = $self_.col_len();
+        let row_len = $self_.row_len();
+        let mut target = $buffer.borrow(row_len * col_len);
         {
-            let col_len = $self_.col_len();
-            let row_len = $self_.row_len();
-            let mut target = $buffer.borrow(row_len * col_len);
-            {
-                let rows: Vec<&DspVec<S, T, N, D>> = $self_.rows().iter().collect();
-                for (i, n) in $impulse_response.iter().zip(0..col_len) {
-                    let res = DspVec::<S, T, N, D>::convolve_mat(&rows, i, &mut target[n*row_len..(n+1)*row_len]);
-                    match res {
-                        Ok(()) => (),
-                        Err(reason) => return Err(reason)
-                    };
+            let rows: Vec<&DspVec<S, T, N, D>> = $self_.rows().iter().collect();
+            for (i, n) in $impulse_response.iter().zip(0..col_len) {
+                let res = DspVec::<S, T, N, D>::convolve_mat(
+                    &rows,
+                    i,
+                    &mut target[n * row_len..(n + 1) * row_len],
+                );
+                match res {
+                    Ok(()) => (),
+                    Err(reason) => return Err(reason),
                 };
             }
-
-            for n in 0..col_len {
-                let row = &mut $self_.rows_mut()[n];
-                (&mut row[..]).clone_from_slice(&target[n*row_len..(n+1)*row_len]);
-            }
-
-            Ok(())
         }
-    }
+
+        for n in 0..col_len {
+            let row = &mut $self_.rows_mut()[n];
+            (&mut row[..]).clone_from_slice(&target[n * row_len..(n + 1) * row_len]);
+        }
+
+        Ok(())
+    }};
 }
 
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
-        ConvolutionOps<Vec<&'a Vec<&'a DspVec<S, T, N, D>>>, S, T, N, D>
-        for MatrixMxN<DspVec<S, T, N, D>, S, T> {
+    ConvolutionOps<Vec<&'a Vec<&'a DspVec<S, T, N, D>>>, S, T, N, D>
+    for MatrixMxN<DspVec<S, T, N, D>, S, T>
+{
     fn convolve_signal<B>(
-            &mut self,
-            buffer: &mut B,
-            impulse_response: &Vec<&Vec<&DspVec<S, T, N, D>>>) -> VoidResult
-                where B: for<'b> Buffer<'b, S, T> {
+        &mut self,
+        buffer: &mut B,
+        impulse_response: &Vec<&Vec<&DspVec<S, T, N, D>>>,
+    ) -> VoidResult
+    where
+        B: for<'b> Buffer<'b, S, T>,
+    {
         convolve_signal!(self, buffer, impulse_response)
     }
 }
 
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
-        ConvolutionOps<[[&'a DspVec<S, T, N, D>; 2]; 2], S, T, N, D>
-        for Matrix2xN<DspVec<S, T, N, D>, S, T> {
+    ConvolutionOps<[[&'a DspVec<S, T, N, D>; 2]; 2], S, T, N, D>
+    for Matrix2xN<DspVec<S, T, N, D>, S, T>
+{
     fn convolve_signal<B>(
-            &mut self,
-            buffer: &mut B,
-            impulse_response: &[[&'a DspVec<S, T, N, D>; 2]; 2]) -> VoidResult
-                where B: for<'b> Buffer<'b, S, T> {
+        &mut self,
+        buffer: &mut B,
+        impulse_response: &[[&'a DspVec<S, T, N, D>; 2]; 2],
+    ) -> VoidResult
+    where
+        B: for<'b> Buffer<'b, S, T>,
+    {
         convolve_signal!(self, buffer, impulse_response)
     }
 }
 
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
-        ConvolutionOps<[[&'a DspVec<S, T, N, D>; 3]; 3], S, T, N, D>
-        for Matrix3xN<DspVec<S, T, N, D>, S, T> {
+    ConvolutionOps<[[&'a DspVec<S, T, N, D>; 3]; 3], S, T, N, D>
+    for Matrix3xN<DspVec<S, T, N, D>, S, T>
+{
     fn convolve_signal<B>(
-            &mut self,
-            buffer: &mut B,
-            impulse_response: &[[&'a DspVec<S, T, N, D>; 3]; 3]) -> VoidResult
-                where B: for<'b> Buffer<'b, S, T> {
+        &mut self,
+        buffer: &mut B,
+        impulse_response: &[[&'a DspVec<S, T, N, D>; 3]; 3],
+    ) -> VoidResult
+    where
+        B: for<'b> Buffer<'b, S, T>,
+    {
         convolve_signal!(self, buffer, impulse_response)
     }
 }
 
 impl<'a, S: ToSliceMut<T>, T: RealNumber, N: NumberSpace, D: Domain>
-        ConvolutionOps<[[&'a DspVec<S, T, N, D>; 4]; 4], S, T, N, D>
-        for Matrix4xN<DspVec<S, T, N, D>, S, T> {
+    ConvolutionOps<[[&'a DspVec<S, T, N, D>; 4]; 4], S, T, N, D>
+    for Matrix4xN<DspVec<S, T, N, D>, S, T>
+{
     fn convolve_signal<B>(
-            &mut self,
-            buffer: &mut B,
-            impulse_response: &[[&'a DspVec<S, T, N, D>; 4]; 4]) -> VoidResult
-                where B: for<'b> Buffer<'b, S, T> {
+        &mut self,
+        buffer: &mut B,
+        impulse_response: &[[&'a DspVec<S, T, N, D>; 4]; 4],
+    ) -> VoidResult
+    where
+        B: for<'b> Buffer<'b, S, T>,
+    {
         convolve_signal!(self, buffer, impulse_response)
     }
 }
@@ -521,7 +538,8 @@ mod tests {
     use std::fmt::Debug;
 
     fn assert_eq_tol<T>(left: &[T], right: &[T], tol: T)
-        where T: RealNumber + Debug
+    where
+        T: RealNumber + Debug,
     {
         assert_eq!(left.len(), right.len());
         for i in 0..left.len() {
@@ -535,30 +553,34 @@ mod tests {
     fn convolve_complex_time_and_time32() {
         let res = {
             let len = 11;
-            let mut time = vec!(0.0; 2 * len).to_complex_time_vec();
+            let mut time = vec![0.0; 2 * len].to_complex_time_vec();
             time[len] = 1.0;
             let time2 = time.clone();
             let mut mat = [time, time2].to_mat();
             let sinc: SincFunction<f32> = SincFunction::new();
             let mut buffer = SingleBuffer::new();
-            mat.convolve(&mut buffer,
-                         &sinc as &RealImpulseResponse<f32>,
-                         0.5,
-                         len / 2);
+            mat.convolve(
+                &mut buffer,
+                &sinc as &RealImpulseResponse<f32>,
+                0.5,
+                len / 2,
+            );
             mat.magnitude()
         };
 
-        let expected = [0.12732396,
-                        0.000000027827534,
-                        0.21220659,
-                        0.000000027827534,
-                        0.63661975,
-                        1.0,
-                        0.63661975,
-                        0.000000027827534,
-                        0.21220659,
-                        0.000000027827534,
-                        0.12732396];
+        let expected = [
+            0.12732396,
+            0.000000027827534,
+            0.21220659,
+            0.000000027827534,
+            0.63661975,
+            1.0,
+            0.63661975,
+            0.000000027827534,
+            0.21220659,
+            0.000000027827534,
+            0.12732396,
+        ];
         let (res, _) = res.get();
         assert_eq_tol(&res[0][..], &expected, 1e-4);
         assert_eq_tol(&res[1][..], &expected, 1e-4);
@@ -568,15 +590,15 @@ mod tests {
     fn delay_convolve() {
         let mut mat = {
             let len = 11;
-            let mut time = vec!(0.0; len).to_real_time_vec();
+            let mut time = vec![0.0; len].to_real_time_vec();
             time[len / 2] = 1.0;
             let time2 = time.clone();
             vec![time, time2].to_mat()
         };
 
         let len = 3;
-        let empty = vec!(0.0; len).to_real_time_vec();
-        let mut delay = vec!(0.0; len).to_real_time_vec();
+        let empty = vec![0.0; len].to_real_time_vec();
+        let mut delay = vec![0.0; len].to_real_time_vec();
         delay[0] = 1.0;
         let conv1 = vec![&delay, &empty];
         let conv2 = vec![&empty, &delay];
@@ -587,7 +609,7 @@ mod tests {
 
         let expected = {
             let len = 11;
-            let mut time = vec!(0.0; len).to_real_time_vec();
+            let mut time = vec![0.0; len].to_real_time_vec();
             time[len / 2 - 1] = 1.0;
             let time2 = time.clone();
             vec![time, time2]
@@ -602,16 +624,16 @@ mod tests {
     fn delay_swap_convolve() {
         let mut mat = {
             let len = 11;
-            let mut time = vec!(0.0; len).to_real_time_vec();
+            let mut time = vec![0.0; len].to_real_time_vec();
             time[len / 2] = 0.5;
-            let mut time2 = vec!(0.0; len).to_real_time_vec();
+            let mut time2 = vec![0.0; len].to_real_time_vec();
             time2[len / 2] = 2.0;
             [time, time2].to_mat()
         };
 
         let len = 3;
-        let empty = vec!(0.0; len).to_real_time_vec();
-        let mut delay = vec!(0.0; len).to_real_time_vec();
+        let empty = vec![0.0; len].to_real_time_vec();
+        let mut delay = vec![0.0; len].to_real_time_vec();
         delay[0] = 1.0;
 
         // This impulse response will swap both channels
@@ -623,9 +645,9 @@ mod tests {
 
         let expected = {
             let len = 11;
-            let mut time = vec!(0.0; len).to_real_time_vec();
+            let mut time = vec![0.0; len].to_real_time_vec();
             time[len / 2 - 1] = 2.0;
-            let mut time2 = vec!(0.0; len).to_real_time_vec();
+            let mut time2 = vec![0.0; len].to_real_time_vec();
             time2[len / 2 - 1] = 0.5;
             vec![time, time2]
         };

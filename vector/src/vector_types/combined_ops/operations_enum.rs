@@ -1,9 +1,7 @@
 use numbers::*;
 
 /// An alternative way to define operations on a vector.
-#[derive(Clone)]
-#[derive(Debug)]
-#[derive(PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Operation<T> {
     // Real Ops
     AddReal(usize, T),

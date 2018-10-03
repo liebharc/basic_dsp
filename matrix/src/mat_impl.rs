@@ -1,6 +1,6 @@
-use basic_dsp_vector::*;
-use basic_dsp_vector::numbers::*;
 use super::*;
+use basic_dsp_vector::numbers::*;
+use basic_dsp_vector::*;
 
 /// A trait for matrix types. In this lib a matrix is simply a collection of
 /// vectors. The idea is that the matrix types can be used to reduce the size
@@ -8,8 +8,9 @@ use super::*;
 /// so that other specialized matrix libs can do the rest of the work, e.g.
 /// inverting the resulting matrix.
 pub trait Matrix<V, T>: MetaData + ResizeOps
-    where V: Vector<T>,
-          T: RealNumber
+where
+    V: Vector<T>,
+    T: RealNumber,
 {
     /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`,
     /// in frequency domain `delta` is in `[Hz]`.
@@ -121,7 +122,7 @@ macro_rules! add_mat_impl {
                     &mut self.rows[..]
                 }
             }
-            
+
             impl<V, S, T, N, D> GetMetaData<T, N, D> for $matrix<V, S, T>
                 where T: RealNumber,
 					  S: ToSlice<T>,

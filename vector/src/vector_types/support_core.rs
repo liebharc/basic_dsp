@@ -1,15 +1,17 @@
+use super::{
+    complex_to_array, complex_to_array_mut, Buffer, BufferBorrow, ComplexData, DataDomain, Domain,
+    DspVec, ErrorReason, FrequencyData, MetaData, NumberSpace, RealData, RealOrComplexData,
+    TimeData, TimeOrFrequencyData, ToComplexVector, ToDspVector, ToRealVector, ToSlice, ToSliceMut,
+    TypeMetaData, VoidResult,
+};
+use arrayvec;
+use arrayvec::{Array, ArrayVec};
+use inline_vector::InlineVector;
+use multicore_support::MultiCoreSettings;
 /// ! Support for types in the Rust core
 use numbers::*;
 use std;
 use std::ops::*;
-use super::{TimeData, FrequencyData, RealData, ComplexData, RealOrComplexData,
-            TimeOrFrequencyData, NumberSpace, Domain, DspVec, TypeMetaData, DataDomain, ToSlice,
-            MetaData, ErrorReason, ToComplexVector, ToRealVector, ToDspVector, ToSliceMut,
-            VoidResult, complex_to_array_mut, complex_to_array, BufferBorrow, Buffer};
-use multicore_support::MultiCoreSettings;
-use inline_vector::InlineVector;
-use arrayvec;
-use arrayvec::{Array, ArrayVec};
 
 /// Buffer borrow type for `SingleBuffer`.
 pub struct FixedLenBufferBurrow<'a, T: RealNumber + 'a> {
@@ -34,22 +36,26 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber> BufferBorrow<S, T> for FixedLenBufferB
     fn trade(self, storage: &mut S) {
         let len = std::cmp::min(storage.len(), self.data.len());
         let storage = storage.to_slice_mut();
-        &mut storage[0..len].to_slice_mut().copy_from_slice(&mut self.data[0..len]);
+        &mut storage[0..len]
+            .to_slice_mut()
+            .copy_from_slice(&mut self.data[0..len]);
     }
 }
 
 /// A buffer which gets initalized with a data storage type and then always keeps that.
 pub struct FixedLenBuffer<S, T>
-    where S: ToSliceMut<T>,
-          T: RealNumber
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
 {
     data: S,
     data_type: std::marker::PhantomData<T>,
 }
 
 impl<S, T> FixedLenBuffer<S, T>
-    where S: ToSliceMut<T>,
-          T: RealNumber
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
 {
     /// Creates a new buffer from a storage type. The buffer will internally hold
     /// its storage for it's complete life time.
@@ -62,8 +68,9 @@ impl<S, T> FixedLenBuffer<S, T>
 }
 
 impl<'a, S, T> Buffer<'a, S, T> for FixedLenBuffer<S, T>
-    where S: ToSliceMut<T>,
-          T: RealNumber + 'a
+where
+    S: ToSliceMut<T>,
+    T: RealNumber + 'a,
 {
     type Borrow = FixedLenBufferBurrow<'a, T>;
 
@@ -72,7 +79,9 @@ impl<'a, S, T> Buffer<'a, S, T> for FixedLenBuffer<S, T>
             panic!("FixedLenBuffer: Out of memory");
         }
 
-        FixedLenBufferBurrow { data: &mut self.data.to_slice_mut()[0..len] }
+        FixedLenBufferBurrow {
+            data: &mut self.data.to_slice_mut()[0..len],
+        }
     }
 
     fn alloc_len(&self) -> usize {
@@ -204,7 +213,8 @@ impl<'a, T> ToSliceMut<T> for &'a mut [T] {
 }
 
 impl<A: arrayvec::Array> ToSlice<A::Item> for arrayvec::ArrayVec<A>
-    where A::Item: RealNumber
+where
+    A::Item: RealNumber,
 {
     fn to_slice(&self) -> &[A::Item] {
         self.as_slice()
@@ -241,7 +251,8 @@ impl<A: arrayvec::Array> ToSlice<A::Item> for arrayvec::ArrayVec<A>
 }
 
 impl<A: arrayvec::Array> ToSliceMut<A::Item> for arrayvec::ArrayVec<A>
-    where A::Item: RealNumber
+where
+    A::Item: RealNumber,
 {
     fn to_slice_mut(&mut self) -> &mut [A::Item] {
         self.as_mut_slice()
@@ -249,7 +260,8 @@ impl<A: arrayvec::Array> ToSliceMut<A::Item> for arrayvec::ArrayVec<A>
 }
 
 impl<T> ToSlice<T> for InlineVector<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_slice(&self) -> &[T] {
         &self[..]
@@ -273,7 +285,8 @@ impl<T> ToSlice<T> for InlineVector<T>
 }
 
 impl<T> ToSliceMut<T> for InlineVector<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_slice_mut(&mut self) -> &mut [T] {
         &mut self[..]
@@ -281,7 +294,8 @@ impl<T> ToSliceMut<T> for InlineVector<T>
 }
 
 impl<A: Array> ToDspVector<A::Item> for ArrayVec<A>
-    where A::Item: RealNumber
+where
+    A::Item: RealNumber,
 {
     fn to_gen_dsp_vec(self, is_complex: bool, domain: DataDomain) -> GenDspVec<Self, A::Item> {
         let mut len = self.len();
@@ -291,18 +305,24 @@ impl<A: Array> ToDspVector<A::Item> for ArrayVec<A>
         GenDspVec {
             data: self,
             delta: A::Item::one(),
-            domain: TimeOrFrequencyData { domain_current: domain },
-            number_space: RealOrComplexData { is_complex_current: is_complex },
+            domain: TimeOrFrequencyData {
+                domain_current: domain,
+            },
+            number_space: RealOrComplexData {
+                is_complex_current: is_complex,
+            },
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
     }
 
-    fn to_dsp_vec<N, D>(self,
-                        meta_data: &TypeMetaData<A::Item, N, D>)
-                        -> DspVec<Self, A::Item, N, D>
-        where N: NumberSpace,
-              D: Domain
+    fn to_dsp_vec<N, D>(
+        self,
+        meta_data: &TypeMetaData<A::Item, N, D>,
+    ) -> DspVec<Self, A::Item, N, D>
+    where
+        N: NumberSpace,
+        D: Domain,
     {
         let mut len = self.len();
         if len % 2 != 0 && meta_data.is_complex() {
@@ -320,7 +340,8 @@ impl<A: Array> ToDspVector<A::Item> for ArrayVec<A>
 }
 
 impl<A: Array> ToRealVector<A::Item> for ArrayVec<A>
-    where A::Item: RealNumber
+where
+    A::Item: RealNumber,
 {
     fn to_real_time_vec(self) -> RealTimeVec<Self, A::Item> {
         let len = self.len();
@@ -348,7 +369,8 @@ impl<A: Array> ToRealVector<A::Item> for ArrayVec<A>
 }
 
 impl<A: Array> ToComplexVector<ArrayVec<A>, A::Item> for ArrayVec<A>
-    where A::Item: RealNumber
+where
+    A::Item: RealNumber,
 {
     fn to_complex_time_vec(self) -> ComplexTimeVec<Self, A::Item> {
         let len = self.len();
@@ -376,7 +398,8 @@ impl<A: Array> ToComplexVector<ArrayVec<A>, A::Item> for ArrayVec<A>
 }
 
 impl<T> ToDspVector<T> for InlineVector<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_gen_dsp_vec(self, is_complex: bool, domain: DataDomain) -> GenDspVec<Self, T> {
         let mut len = self.len();
@@ -386,16 +409,21 @@ impl<T> ToDspVector<T> for InlineVector<T>
         GenDspVec {
             data: self,
             delta: T::one(),
-            domain: TimeOrFrequencyData { domain_current: domain },
-            number_space: RealOrComplexData { is_complex_current: is_complex },
+            domain: TimeOrFrequencyData {
+                domain_current: domain,
+            },
+            number_space: RealOrComplexData {
+                is_complex_current: is_complex,
+            },
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
     }
 
     fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
-        where N: NumberSpace,
-              D: Domain
+    where
+        N: NumberSpace,
+        D: Domain,
     {
         let mut len = self.len();
         if len % 2 != 0 && meta_data.is_complex() {
@@ -413,7 +441,8 @@ impl<T> ToDspVector<T> for InlineVector<T>
 }
 
 impl<T> ToRealVector<T> for InlineVector<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_real_time_vec(self) -> RealTimeVec<Self, T> {
         let len = self.len();
@@ -441,7 +470,8 @@ impl<T> ToRealVector<T> for InlineVector<T>
 }
 
 impl<T> ToComplexVector<InlineVector<T>, T> for InlineVector<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_complex_time_vec(self) -> ComplexTimeVec<Self, T> {
         let len = self.len();
@@ -469,23 +499,29 @@ impl<T> ToComplexVector<InlineVector<T>, T> for InlineVector<T>
 }
 
 impl<'a, T> ToDspVector<T> for &'a [T]
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_gen_dsp_vec(self, is_complex: bool, domain: DataDomain) -> GenDspVec<Self, T> {
         let len = self.len();
         GenDspVec {
             data: self,
             delta: T::one(),
-            domain: TimeOrFrequencyData { domain_current: domain },
-            number_space: RealOrComplexData { is_complex_current: is_complex },
+            domain: TimeOrFrequencyData {
+                domain_current: domain,
+            },
+            number_space: RealOrComplexData {
+                is_complex_current: is_complex,
+            },
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
     }
 
     fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
-        where N: NumberSpace,
-              D: Domain
+    where
+        N: NumberSpace,
+        D: Domain,
     {
         let mut len = self.len();
         if len % 2 != 0 && meta_data.is_complex() {
@@ -503,7 +539,8 @@ impl<'a, T> ToDspVector<T> for &'a [T]
 }
 
 impl<'a, T> ToRealVector<T> for &'a [T]
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_real_time_vec(self) -> RealTimeVec<Self, T> {
         let len = self.len();
@@ -531,7 +568,8 @@ impl<'a, T> ToRealVector<T> for &'a [T]
 }
 
 impl<'a, T> ToComplexVector<&'a [T], T> for &'a [T]
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_complex_time_vec(self) -> ComplexTimeVec<Self, T> {
         let len = self.len();
@@ -559,7 +597,8 @@ impl<'a, T> ToComplexVector<&'a [T], T> for &'a [T]
 }
 
 impl<'a, T> ToComplexVector<&'a [T], T> for &'a [Complex<T>]
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_complex_time_vec(self) -> ComplexTimeVec<&'a [T], T> {
         let array = complex_to_array(self);
@@ -589,7 +628,8 @@ impl<'a, T> ToComplexVector<&'a [T], T> for &'a [Complex<T>]
 }
 
 impl<'a, T> ToDspVector<T> for &'a mut [T]
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_gen_dsp_vec(self, is_complex: bool, domain: DataDomain) -> GenDspVec<Self, T> {
         let mut len = self.len();
@@ -599,16 +639,21 @@ impl<'a, T> ToDspVector<T> for &'a mut [T]
         GenDspVec {
             data: self,
             delta: T::one(),
-            domain: TimeOrFrequencyData { domain_current: domain },
-            number_space: RealOrComplexData { is_complex_current: is_complex },
+            domain: TimeOrFrequencyData {
+                domain_current: domain,
+            },
+            number_space: RealOrComplexData {
+                is_complex_current: is_complex,
+            },
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
     }
 
     fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
-        where N: NumberSpace,
-              D: Domain
+    where
+        N: NumberSpace,
+        D: Domain,
     {
         let mut len = self.len();
         if len % 2 != 0 && meta_data.is_complex() {
@@ -626,7 +671,8 @@ impl<'a, T> ToDspVector<T> for &'a mut [T]
 }
 
 impl<'a, T> ToRealVector<T> for &'a mut [T]
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_real_time_vec(self) -> RealTimeVec<Self, T> {
         let len = self.len();
@@ -654,7 +700,8 @@ impl<'a, T> ToRealVector<T> for &'a mut [T]
 }
 
 impl<'a, T> ToComplexVector<&'a mut [T], T> for &'a mut [T]
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_complex_time_vec(self) -> ComplexTimeVec<Self, T> {
         let len = self.len();
@@ -682,7 +729,8 @@ impl<'a, T> ToComplexVector<&'a mut [T], T> for &'a mut [T]
 }
 
 impl<'a, T> ToComplexVector<&'a mut [T], T> for &'a mut [Complex<T>]
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_complex_time_vec(self) -> ComplexTimeVec<&'a mut [T], T> {
         let array = complex_to_array_mut(self);

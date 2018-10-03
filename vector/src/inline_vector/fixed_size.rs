@@ -1,9 +1,9 @@
-use std::ops::*;
 use arrayvec::*;
-use {VoidResult, ErrorReason};
 use numbers::*;
 use std::iter::FromIterator;
+use std::ops::*;
 use std::slice::Iter;
+use {ErrorReason, VoidResult};
 
 const MAX_CAPACITY: usize = 64;
 
@@ -17,7 +17,8 @@ pub enum InlineVector<T> {
 }
 
 impl<T> InlineVector<T>
-    where T: Copy
+where
+    T: Copy,
 {
     /// Create a new vector of a given size filled with a given default value.
     pub fn of_size(default: T, n: usize) -> InlineVector<T> {
@@ -43,8 +44,8 @@ impl<T> InlineVector<T> {
     }
 
     /// Returns a vector with a default capacity. The default
-    /// capacity will be relativly small and should only be used 
-    /// to store small lookup tables or results. 
+    /// capacity will be relativly small and should only be used
+    /// to store small lookup tables or results.
     ///
     /// As of today the default capacity is `64`.
     pub fn with_default_capcacity() -> InlineVector<T> {

@@ -1,11 +1,15 @@
-use numbers::*;
-use std::result;
-use simd_extensions::*;
+use super::super::{
+    Buffer, Domain, DspVec, ErrorReason, NumberSpace, RealOrComplexData, RededicateForceOps,
+    TimeOrFrequencyData, ToSliceMut, TransRes,
+};
+use super::{
+    generic_vector_back_to_vector, generic_vector_from_any_vector, Identifier, Operation, OpsVec,
+    PreparedOperation1, PreparedOperation2,
+};
 use inline_vector::InlineVector;
-use super::{generic_vector_from_any_vector, generic_vector_back_to_vector, Identifier,
-            PreparedOperation1, PreparedOperation2, Operation, OpsVec};
-use super::super::{Domain, NumberSpace, ToSliceMut, DspVec, ErrorReason, RededicateForceOps,
-                   Buffer, TimeOrFrequencyData, RealOrComplexData, TransRes};
+use numbers::*;
+use simd_extensions::*;
+use std::result;
 
 const ARGUMENT1: usize = 0;
 const ARGUMENT2: usize = 1;
@@ -14,13 +18,15 @@ const ARGUMENT2: usize = 1;
 pub trait PreparedOperation1Exec<S: ToSliceMut<T>, T: RealNumber, A, D> {
     /// Executes the prepared operations to convert `A`to `D`.
     fn exec<B>(&self, buffer: &mut B, source: A) -> result::Result<D, (ErrorReason, D)>
-        where B: for<'a> Buffer<'a, S, T>;
+    where
+        B: for<'a> Buffer<'a, S, T>;
 }
 
 /// Prepares an operation with one input and one output.
 pub fn prepare32_1<N, D>(number_space: N, domain: D) -> PreparedOperation1<f32, N, D, N, D>
-    where N: NumberSpace,
-          D: Domain
+where
+    N: NumberSpace,
+    D: Domain,
 {
     PreparedOperation1 {
         number_space_in: number_space.clone(),
@@ -33,8 +39,9 @@ pub fn prepare32_1<N, D>(number_space: N, domain: D) -> PreparedOperation1<f32, 
 
 /// Prepares an operation with one input and one output.
 pub fn prepare64_1<N, D>(number_space: N, domain: D) -> PreparedOperation1<f64, N, D, N, D>
-    where N: NumberSpace,
-          D: Domain
+where
+    N: NumberSpace,
+    D: Domain,
 {
     PreparedOperation1 {
         number_space_in: number_space.clone(),
@@ -46,27 +53,30 @@ pub fn prepare64_1<N, D>(number_space: N, domain: D) -> PreparedOperation1<f64, 
 }
 
 /// Executes the prepared operations to convert `A1` and `A2` to `D1` and `D2`.
-pub trait PreparedOperation2Exec<S: ToSliceMut<T>, T: RealNumber, A1, A2, D1, D2>
-     {
+pub trait PreparedOperation2Exec<S: ToSliceMut<T>, T: RealNumber, A1, A2, D1, D2> {
     /// Executes the prepared operations to convert `A1` and `A2` to `D1` and `D2`.
-    fn exec<B>(&self,
-               buffer: &mut B,
-               source1: A1,
-               source2: A2)
-               -> result::Result<(D1, D2), (ErrorReason, D1, D2)>
-        where B: for<'a> Buffer<'a, S, T>;
+    fn exec<B>(
+        &self,
+        buffer: &mut B,
+        source1: A1,
+        source2: A2,
+    ) -> result::Result<(D1, D2), (ErrorReason, D1, D2)>
+    where
+        B: for<'a> Buffer<'a, S, T>;
 }
 
 /// Prepares an operation with one input and one output.
-pub fn prepare32_2<N1, D1, N2, D2>(number_space1: N1,
-                                   domain1: D1,
-                                   number_space2: N2,
-                                   domain2: D2)
-                                   -> PreparedOperation2<f32, N1, D1, N2, D2, N1, D1, N2, D2>
-    where N1: NumberSpace,
-          D1: Domain,
-          N2: NumberSpace,
-          D2: Domain
+pub fn prepare32_2<N1, D1, N2, D2>(
+    number_space1: N1,
+    domain1: D1,
+    number_space2: N2,
+    domain2: D2,
+) -> PreparedOperation2<f32, N1, D1, N2, D2, N1, D1, N2, D2>
+where
+    N1: NumberSpace,
+    D1: Domain,
+    N2: NumberSpace,
+    D2: Domain,
 {
     PreparedOperation2 {
         number_space_in1: number_space1.clone(),
@@ -83,15 +93,17 @@ pub fn prepare32_2<N1, D1, N2, D2>(number_space1: N1,
 }
 
 /// Prepares an operation with one input and one output.
-pub fn prepare64_2<N1, D1, N2, D2>(number_space1: N1,
-                                   domain1: D1,
-                                   number_space2: N2,
-                                   domain2: D2)
-                                   -> PreparedOperation2<f64, N1, D1, N2, D2, N1, D1, N2, D2>
-    where N1: NumberSpace,
-          D1: Domain,
-          N2: NumberSpace,
-          D2: Domain
+pub fn prepare64_2<N1, D1, N2, D2>(
+    number_space1: N1,
+    domain1: D1,
+    number_space2: N2,
+    domain2: D2,
+) -> PreparedOperation2<f64, N1, D1, N2, D2, N1, D1, N2, D2>
+where
+    N1: NumberSpace,
+    D1: Domain,
+    N2: NumberSpace,
+    D2: Domain,
 {
     PreparedOperation2 {
         number_space_in1: number_space1.clone(),
@@ -110,19 +122,22 @@ pub fn prepare64_2<N1, D1, N2, D2>(number_space1: N1,
 /// An operation which can be prepared in advance and operates on one
 /// input and produces one output
 impl<T, NI, DI, NO, DO> PreparedOperation1<T, NI, DI, NO, DO>
-    where T: RealNumber,
-          NI: NumberSpace,
-          DI: Domain,
-          NO: NumberSpace,
-          DO: Domain
+where
+    T: RealNumber,
+    NI: NumberSpace,
+    DI: Domain,
+    NO: NumberSpace,
+    DO: Domain,
 {
     /// Extends the operation to operate on one more vector.
-    pub fn extend<NI2, DI2>(self,
-                            number_space: NI2,
-                            domain: DI2)
-                            -> PreparedOperation2<T, NI, DI, NI2, DI2, NO, DO, NI2, DI2>
-        where NI2: NumberSpace,
-              DI2: Domain
+    pub fn extend<NI2, DI2>(
+        self,
+        number_space: NI2,
+        domain: DI2,
+    ) -> PreparedOperation2<T, NI, DI, NI2, DI2, NO, DO, NI2, DI2>
+    where
+        NI2: NumberSpace,
+        DI2: Domain,
     {
         PreparedOperation2 {
             number_space_in1: self.number_space_in,
@@ -145,9 +160,10 @@ impl<T, NI, DI, NO, DO> PreparedOperation1<T, NI, DI, NO, DO>
     /// placeholder for vectors. Every operation done to an `Identifier`
     /// is recorded and will be executed on vectors if `exec` is called.
     pub fn add_ops<F, NT, DT>(self, operation: F) -> PreparedOperation1<T, NI, DI, NT, DT>
-        where F: Fn(Identifier<T, NO, DO>) -> Identifier<T, NT, DT>,
-              DT: Domain,
-              NT: NumberSpace
+    where
+        F: Fn(Identifier<T, NO, DO>) -> Identifier<T, NT, DT>,
+        DT: Domain,
+        NT: NumberSpace,
     {
         let mut ops = self.ops;
         let (new_ops, domain_new, number_space_new) = {
@@ -184,55 +200,71 @@ impl<T, NI, DI, NO, DO> PreparedOperation1<T, NI, DI, NO, DO>
 
 impl<T, S, NI, DI, NO, DO> PreparedOperation1Exec<S, T, DspVec<S, T, NI, DI>, DspVec<S, T, NO, DO>>
     for PreparedOperation1<T, NI, DI, NO, DO>
-	where T: RealNumber,
-        S: ToSliceMut<T>,
-        DspVec<S, T, NO, DO>: RededicateForceOps<DspVec<S, T, NI, DI>>,
-		NI: NumberSpace, DI: Domain,
-		NO: NumberSpace, DO: Domain {
-	/// Executes all recorded operations on the input vectors.
-	fn exec<B>(&self, buffer: &mut B, a: DspVec<S, T, NI, DI>)
-        -> result::Result<DspVec<S, T, NO, DO>, (ErrorReason, DspVec<S, T, NO, DO>)>
-        where B: for<'a> Buffer<'a, S, T> {
+where
+    T: RealNumber,
+    S: ToSliceMut<T>,
+    DspVec<S, T, NO, DO>: RededicateForceOps<DspVec<S, T, NI, DI>>,
+    NI: NumberSpace,
+    DI: Domain,
+    NO: NumberSpace,
+    DO: Domain,
+{
+    /// Executes all recorded operations on the input vectors.
+    fn exec<B>(
+        &self,
+        buffer: &mut B,
+        a: DspVec<S, T, NI, DI>,
+    ) -> result::Result<DspVec<S, T, NO, DO>, (ErrorReason, DspVec<S, T, NO, DO>)>
+    where
+        B: for<'a> Buffer<'a, S, T>,
+    {
+        let mut vec = Vec::new();
+        let (number_space, domain, gen) = generic_vector_from_any_vector(a);
+        vec.push(gen);
 
-		let mut vec = Vec::new();
-		let (number_space, domain, gen) = generic_vector_from_any_vector(a);
-		vec.push(gen);
-        
-		// at this point we would execute all ops and cast the result to the right types
-		let result = sel_reg!(self.call_perform_operations::<T>(buffer, vec));
+        // at this point we would execute all ops and cast the result to the right types
+        let result = sel_reg!(self.call_perform_operations::<T>(buffer, vec));
 
-		match result {
-			Err((reason, mut vec)) => {
-				let a = vec.pop().unwrap();
-				let a = generic_vector_back_to_vector(number_space, domain, a);
-				Err((
-					reason,
-					DspVec::<S, T, NO, DO>::rededicate_from_force(a)))
-			},
-			Ok(mut vec) => {
-				let a = vec.pop().unwrap();
-				let a = generic_vector_back_to_vector(number_space, domain, a);
-				// Convert back
-				Ok(DspVec::<S, T, NO, DO>::rededicate_from_force(a))
-			}
-		}
-	}
+        match result {
+            Err((reason, mut vec)) => {
+                let a = vec.pop().unwrap();
+                let a = generic_vector_back_to_vector(number_space, domain, a);
+                Err((reason, DspVec::<S, T, NO, DO>::rededicate_from_force(a)))
+            }
+            Ok(mut vec) => {
+                let a = vec.pop().unwrap();
+                let a = generic_vector_back_to_vector(number_space, domain, a);
+                // Convert back
+                Ok(DspVec::<S, T, NO, DO>::rededicate_from_force(a))
+            }
+        }
+    }
 }
 
 impl<T, NI, DI, NO, DO> PreparedOperation1<T, NI, DI, NO, DO>
-	where T: RealNumber,
-		NI: NumberSpace, DI: Domain,
-		NO: NumberSpace, DO: Domain {
-        fn call_perform_operations<Reg: SimdGeneric<T>, B, S: ToSliceMut<T>>(
-                             &self,
-                             reg: RegType<Reg>,
-                             buffer: &mut B,
-                             vectors: Vec<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>)
-                             -> TransRes<Vec<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>>
-                where B: for<'a> Buffer<'a, S, T> {
-            DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(
-                reg, buffer, vectors, &self.ops[..])                 
-        }
+where
+    T: RealNumber,
+    NI: NumberSpace,
+    DI: Domain,
+    NO: NumberSpace,
+    DO: Domain,
+{
+    fn call_perform_operations<Reg: SimdGeneric<T>, B, S: ToSliceMut<T>>(
+        &self,
+        reg: RegType<Reg>,
+        buffer: &mut B,
+        vectors: Vec<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>,
+    ) -> TransRes<Vec<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>>
+    where
+        B: for<'a> Buffer<'a, S, T>,
+    {
+        DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(
+            reg,
+            buffer,
+            vectors,
+            &self.ops[..],
+        )
+    }
 }
 
 /// Lists all operations which must be executed on on argument.
@@ -290,11 +322,12 @@ fn find_first_binary_op_pos<T>(ops: &ArgVec<T>, start: usize) -> Option<usize> {
 }
 
 /// Returns the indices which must be processed first and then the binary op which must be handled next.
-fn first_op<T>(ops1: &ArgVec<T>,
-               pos1: Option<usize>,
-               ops2: &ArgVec<T>,
-               pos2: Option<usize>)
-               -> (usize, usize, u32) {
+fn first_op<T>(
+    ops1: &ArgVec<T>,
+    pos1: Option<usize>,
+    ops2: &ArgVec<T>,
+    pos2: Option<usize>,
+) -> (usize, usize, u32) {
     assert!(pos1.is_some() || pos2.is_some());
     if pos1.is_some() && pos2.is_some() {
         let op1 = &ops1[pos1.unwrap()];
@@ -365,24 +398,18 @@ fn merge_operations<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> InlineVecto
 
 /// An operation which can be prepared in advance and operates on one
 /// input and produces one output
-impl<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2<T,
-                                                                   NI1,
-                                                                   DI1,
-                                                                   NI2,
-                                                                   DI2,
-                                                                   NO1,
-                                                                   DO1,
-                                                                   NO2,
-                                                                   DO2>
-    where T: RealNumber,
-          NI1: NumberSpace,
-          DI1: Domain,
-          NI2: NumberSpace,
-          DI2: Domain,
-          NO1: NumberSpace,
-          DO1: Domain,
-          NO2: NumberSpace,
-          DO2: Domain
+impl<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2>
+    PreparedOperation2<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2>
+where
+    T: RealNumber,
+    NI1: NumberSpace,
+    DI1: Domain,
+    NI2: NumberSpace,
+    DI2: Domain,
+    NO1: NumberSpace,
+    DO1: Domain,
+    NO2: NumberSpace,
+    DO2: Domain,
 {
     /// Adds new operations which will be executed with the next call to `exec`
     ///
@@ -390,16 +417,17 @@ impl<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2<T,
     /// It only operated on `Identifier` types and these serve as
     /// placeholder for vectors. Every operation done to an `Identifier`
     /// is recorded and will be executed on vectors if `exec` is called.
-    pub fn add_ops<F, NT1, DT1, NT2, DT2>
-        (self,
-         operation: F)
-         -> PreparedOperation2<T, NI1, DI1, NI2, DI2, NT1, DT1, NT2, DT2>
-        where F: Fn(Identifier<T, NO1, DO1>, Identifier<T, NO2, DO2>)
-                    -> (Identifier<T, NT1, DT1>, Identifier<T, NT2, DT2>),
-              DT1: Domain,
-              NT1: NumberSpace,
-              DT2: Domain,
-              NT2: NumberSpace
+    pub fn add_ops<F, NT1, DT1, NT2, DT2>(
+        self,
+        operation: F,
+    ) -> PreparedOperation2<T, NI1, DI1, NI2, DI2, NT1, DT1, NT2, DT2>
+    where
+        F: Fn(Identifier<T, NO1, DO1>, Identifier<T, NO2, DO2>)
+            -> (Identifier<T, NT1, DT1>, Identifier<T, NT2, DT2>),
+        DT1: Domain,
+        NT1: NumberSpace,
+        DT2: Domain,
+        NT2: NumberSpace,
     {
         let mut ops = self.ops;
         let (swap, domain_new1, number_space_new1, domain_new2, number_space_new2) = {
@@ -423,7 +451,13 @@ impl<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2<T,
             let r1arg = r1.arg;
             let mut new_ops = merge_operations(&r1.ops, &r2.ops);
             ops.append(&mut new_ops);
-            (r1arg == ARGUMENT2, r1.domain, r1.number_space, r2.domain, r2.number_space)
+            (
+                r1arg == ARGUMENT2,
+                r1.domain,
+                r1.number_space,
+                r2.domain,
+                r2.number_space,
+            )
         };
 
         PreparedOperation2 {
@@ -447,75 +481,105 @@ impl<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2<T,
     }
 }
 
-impl<T, S, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2Exec<
-        S, T, DspVec<S, T, NI1, DI1>, DspVec<S, T, NI2, DI2>,
-        DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>>
-    for PreparedOperation2<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2>
-	where T: RealNumber,
-        S: ToSliceMut<T>,
-        DspVec<S, T, NO1, DO1>: RededicateForceOps<DspVec<S, T, NI1, DI1>>,
-        DspVec<S, T, NO2, DO2>: RededicateForceOps<DspVec<S, T, NI2, DI2>>,
-		NI1: NumberSpace, DI1: Domain,
-        NI2: NumberSpace, DI2: Domain,
-		NO1: NumberSpace, DO1: Domain,
-        NO2: NumberSpace, DO2: Domain {
-
+impl<T, S, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2>
+    PreparedOperation2Exec<
+        S,
+        T,
+        DspVec<S, T, NI1, DI1>,
+        DspVec<S, T, NI2, DI2>,
+        DspVec<S, T, NO1, DO1>,
+        DspVec<S, T, NO2, DO2>,
+    > for PreparedOperation2<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2>
+where
+    T: RealNumber,
+    S: ToSliceMut<T>,
+    DspVec<S, T, NO1, DO1>: RededicateForceOps<DspVec<S, T, NI1, DI1>>,
+    DspVec<S, T, NO2, DO2>: RededicateForceOps<DspVec<S, T, NI2, DI2>>,
+    NI1: NumberSpace,
+    DI1: Domain,
+    NI2: NumberSpace,
+    DI2: Domain,
+    NO1: NumberSpace,
+    DO1: Domain,
+    NO2: NumberSpace,
+    DO2: Domain,
+{
     /// Executes all recorded operations on the input vectors.
-    fn exec<B>(&self, buffer: &mut B, a: DspVec<S, T, NI1, DI1>, b: DspVec<S, T, NI2, DI2>)
-        -> result::Result<
-            (DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>),
-            (ErrorReason, DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>)>
-            where B: for<'a> Buffer<'a, S, T> {
+    fn exec<B>(
+        &self,
+        buffer: &mut B,
+        a: DspVec<S, T, NI1, DI1>,
+        b: DspVec<S, T, NI2, DI2>,
+    ) -> result::Result<
+        (DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>),
+        (ErrorReason, DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>),
+    >
+    where
+        B: for<'a> Buffer<'a, S, T>,
+    {
         // First "cast" the vectors to generic vectors. This is done with the
         // the rededicate trait since in contrast to the to_gen method it
         // can be used in a generic context.
 
         let mut vec = Vec::new();
         let (number_space1, domain1, gen1) = generic_vector_from_any_vector(a);
-		vec.push(gen1);
+        vec.push(gen1);
         let (number_space2, domain2, gen2) = generic_vector_from_any_vector(b);
-		vec.push(gen2);
+        vec.push(gen2);
 
         // at this point we would execute all ops and cast the result to the right types
-		let result = sel_reg!(self.call_perform_operations::<T>(buffer, vec));
+        let result = sel_reg!(self.call_perform_operations::<T>(buffer, vec));
 
         match result {
-			Err((reason, mut vec)) => {
+            Err((reason, mut vec)) => {
                 let b = vec.pop().unwrap();
-				let b = generic_vector_back_to_vector(number_space2, domain2, b);
-                let b = DspVec::<S, T, NO2, DO2>::rededicate_from_force(b);
-				let a = vec.pop().unwrap();
-				let a = generic_vector_back_to_vector(number_space1, domain1, a);
-                let a = DspVec::<S, T, NO1, DO1>::rededicate_from_force(a);
-				Err((reason, a, b))
-			},
-			Ok(mut vec) => {
-                let b = vec.pop().unwrap();
-				let b = generic_vector_back_to_vector(number_space2, domain2, b);
+                let b = generic_vector_back_to_vector(number_space2, domain2, b);
                 let b = DspVec::<S, T, NO2, DO2>::rededicate_from_force(b);
                 let a = vec.pop().unwrap();
-				let a = generic_vector_back_to_vector(number_space1, domain1, a);
+                let a = generic_vector_back_to_vector(number_space1, domain1, a);
                 let a = DspVec::<S, T, NO1, DO1>::rededicate_from_force(a);
-				Ok((a, b))
-			}
-		}
+                Err((reason, a, b))
+            }
+            Ok(mut vec) => {
+                let b = vec.pop().unwrap();
+                let b = generic_vector_back_to_vector(number_space2, domain2, b);
+                let b = DspVec::<S, T, NO2, DO2>::rededicate_from_force(b);
+                let a = vec.pop().unwrap();
+                let a = generic_vector_back_to_vector(number_space1, domain1, a);
+                let a = DspVec::<S, T, NO1, DO1>::rededicate_from_force(a);
+                Ok((a, b))
+            }
+        }
     }
 }
 
-impl<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2> PreparedOperation2<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2>
-	where T: RealNumber,
-		NI1: NumberSpace, DI1: Domain,
-        NI2: NumberSpace, DI2: Domain,
-		NO1: NumberSpace, DO1: Domain,
-        NO2: NumberSpace, DO2: Domain {
-        fn call_perform_operations<Reg: SimdGeneric<T>, B, S: ToSliceMut<T>>(
-                             &self,
-                             reg: RegType<Reg>,
-                             buffer: &mut B,
-                             vectors: Vec<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>)
-                             -> TransRes<Vec<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>>
-                where B: for<'a> Buffer<'a, S, T> {
-            DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(
-                reg, buffer, vectors, &self.ops[..])                 
-        }
+impl<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2>
+    PreparedOperation2<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2>
+where
+    T: RealNumber,
+    NI1: NumberSpace,
+    DI1: Domain,
+    NI2: NumberSpace,
+    DI2: Domain,
+    NO1: NumberSpace,
+    DO1: Domain,
+    NO2: NumberSpace,
+    DO2: Domain,
+{
+    fn call_perform_operations<Reg: SimdGeneric<T>, B, S: ToSliceMut<T>>(
+        &self,
+        reg: RegType<Reg>,
+        buffer: &mut B,
+        vectors: Vec<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>,
+    ) -> TransRes<Vec<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>>
+    where
+        B: for<'a> Buffer<'a, S, T>,
+    {
+        DspVec::<S, T, RealOrComplexData, TimeOrFrequencyData>::perform_operations(
+            reg,
+            buffer,
+            vectors,
+            &self.ops[..],
+        )
+    }
 }

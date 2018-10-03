@@ -1,17 +1,19 @@
-use numbers::*;
-use super::super::{ToFreqResult, TransRes, TimeDomain, Buffer, Vector, DataDomain, MetaData,
-                   ResizeOps, DspVec, ToSliceMut, RealNumberSpace, NumberSpace,
-                   RededicateForceOps, ErrorReason, InsertZerosOpsBuffered,
-                   FrequencyDomainOperations, TimeDomainOperations};
+use super::super::{
+    Buffer, DataDomain, DspVec, ErrorReason, FrequencyDomainOperations, InsertZerosOpsBuffered,
+    MetaData, NumberSpace, RealNumberSpace, RededicateForceOps, ResizeOps, TimeDomain,
+    TimeDomainOperations, ToFreqResult, ToSliceMut, TransRes, Vector,
+};
 use super::fft;
+use numbers::*;
 use window_functions::*;
 
 /// Defines all operations which are valid on `DataVecs` containing time domain data.
 /// # Failures
 /// All operations in this trait set `self.len()` to `0` if the vector isn't in time domain.
 pub trait TimeToFrequencyDomainOperations<S, T>: ToFreqResult
-    where S: ToSliceMut<T>,
-          T: RealNumber
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
 {
     /// Performs a Fast Fourier Transformation transforming a time domain vector
     /// into a frequency domain vector.
@@ -33,7 +35,9 @@ pub trait TimeToFrequencyDomainOperations<S, T>: ToFreqResult
     ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
     /// }
     /// ```
-    fn plain_fft<B>(self, buffer: &mut B) -> Self::FreqResult where B: for<'a> Buffer<'a, S, T>;
+    fn plain_fft<B>(self, buffer: &mut B) -> Self::FreqResult
+    where
+        B: for<'a> Buffer<'a, S, T>;
 
     /// Performs a Fast Fourier Transformation transforming a time domain vector
     /// into a frequency domain vector.
@@ -54,12 +58,15 @@ pub trait TimeToFrequencyDomainOperations<S, T>: ToFreqResult
     ///        assert!(f32::abs(actual[i] - expected[i]) < 1e-4);
     /// }
     /// ```
-    fn fft<B>(self, buffer: &mut B) -> Self::FreqResult where B: for<'a> Buffer<'a, S, T>;
+    fn fft<B>(self, buffer: &mut B) -> Self::FreqResult
+    where
+        B: for<'a> Buffer<'a, S, T>;
 
     /// Applies a FFT window and performs a Fast Fourier Transformation transforming a time
     /// domain vector into a frequency domain vector.
     fn windowed_fft<B>(self, buffer: &mut B, window: &WindowFunction<T>) -> Self::FreqResult
-        where B: for<'a> Buffer<'a, S, T>;
+    where
+        B: for<'a> Buffer<'a, S, T>;
 }
 
 /// Defines all operations which are valid on `DataVecs` containing real time domain data.
@@ -67,8 +74,9 @@ pub trait TimeToFrequencyDomainOperations<S, T>: ToFreqResult
 /// All operations in this trait set `self.len()` to `0` if the vector isn't in time domain or
 /// with `VectorMustHaveAnOddLength` if `self.points()` isn't and odd number.
 pub trait SymmetricTimeToFrequencyDomainOperations<S, T>: ToFreqResult
-    where S: ToSliceMut<T>,
-          T: RealNumber
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
 {
     /// Performs a Symmetric Fast Fourier Transformation under the assumption that `self`
     /// is symmetric around the center. This assumption
@@ -85,7 +93,8 @@ pub trait SymmetricTimeToFrequencyDomainOperations<S, T>: ToFreqResult
     /// # Unstable
     /// Symmetric IFFTs are unstable and may only work under certain conditions.
     fn plain_sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult>
-        where B: for<'a> Buffer<'a, S, T>;
+    where
+        B: for<'a> Buffer<'a, S, T>;
 
     /// Performs a Symmetric Fast Fourier Transformation under the assumption that `self`
     /// is symmetric around the center. This assumption
@@ -98,7 +107,9 @@ pub trait SymmetricTimeToFrequencyDomainOperations<S, T>: ToFreqResult
     ///
     /// # Unstable
     /// Symmetric IFFTs are unstable and may only work under certain conditions.
-    fn sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult> where B: for<'a> Buffer<'a, S, T>;
+    fn sfft<B>(self, buffer: &mut B) -> TransRes<Self::FreqResult>
+    where
+        B: for<'a> Buffer<'a, S, T>;
 
     /// Performs a Symmetric Fast Fourier Transformation under the assumption that `self`
     /// is symmetric around the center. This assumption
@@ -111,30 +122,34 @@ pub trait SymmetricTimeToFrequencyDomainOperations<S, T>: ToFreqResult
     ///
     /// # Unstable
     /// Symmetric IFFTs are unstable and may only work under certain conditions.
-    fn windowed_sfft<B>(self,
-                        buffer: &mut B,
-                        window: &WindowFunction<T>)
-                        -> TransRes<Self::FreqResult>
-        where B: for<'a> Buffer<'a, S, T>;
+    fn windowed_sfft<B>(
+        self,
+        buffer: &mut B,
+        window: &WindowFunction<T>,
+    ) -> TransRes<Self::FreqResult>
+    where
+        B: for<'a> Buffer<'a, S, T>;
 }
 
-
 impl<S, T, N, D> TimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
-    where DspVec<S, T, N, D>: ToFreqResult,
-          <DspVec<S, T, N, D> as ToFreqResult>::FreqResult:
-            RededicateForceOps<DspVec<S, T, N, D>>
-            + FrequencyDomainOperations<S, T>,
-          S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: TimeDomain {
+where
+    DspVec<S, T, N, D>: ToFreqResult,
+    <DspVec<S, T, N, D> as ToFreqResult>::FreqResult:
+        RededicateForceOps<DspVec<S, T, N, D>> + FrequencyDomainOperations<S, T>,
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: TimeDomain,
+{
     fn plain_fft<B>(mut self, buffer: &mut B) -> Self::FreqResult
-        where B: for<'a> Buffer<'a, S, T> {
+    where
+        B: for<'a> Buffer<'a, S, T>,
+    {
         if self.domain() != DataDomain::Time {
             self.valid_len = 0;
             self.number_space.to_complex();
             self.domain.to_freq();
-            return Self::FreqResult::rededicate_from_force(self)
+            return Self::FreqResult::rededicate_from_force(self);
         }
 
         if !self.is_complex() {
@@ -149,14 +164,18 @@ impl<S, T, N, D> TimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
     }
 
     fn fft<B>(self, buffer: &mut B) -> Self::FreqResult
-        where B: for<'a> Buffer<'a, S, T> {
+    where
+        B: for<'a> Buffer<'a, S, T>,
+    {
         let mut result = self.plain_fft(buffer);
         result.fft_shift();
         result
     }
 
     fn windowed_fft<B>(mut self, buffer: &mut B, window: &WindowFunction<T>) -> Self::FreqResult
-        where B: for<'a> Buffer<'a, S, T> {
+    where
+        B: for<'a> Buffer<'a, S, T>,
+    {
         self.apply_window(window);
         let mut result = self.plain_fft(buffer);
         result.fft_shift();
@@ -168,98 +187,120 @@ macro_rules! unmirror {
     ($self_: ident, $points: ident) => {
         let len = $points;
         let len = len / 2 + 1;
-        $self_.resize(len).expect("Shrinking a vector should always succeed");
-    }
+        $self_
+            .resize(len)
+            .expect("Shrinking a vector should always succeed");
+    };
 }
 
 impl<S, T, N, D> SymmetricTimeToFrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
-    where DspVec<S, T, N, D>: ToFreqResult,
-          <DspVec<S, T, N, D> as ToFreqResult>::FreqResult: RededicateForceOps<DspVec<S, T, N, D>>
-            + FrequencyDomainOperations<S, T> + ResizeOps,
-          S: ToSliceMut<T>,
-          T: RealNumber,
-          N: RealNumberSpace,
-          D: TimeDomain {
+where
+    DspVec<S, T, N, D>: ToFreqResult,
+    <DspVec<S, T, N, D> as ToFreqResult>::FreqResult:
+        RededicateForceOps<DspVec<S, T, N, D>> + FrequencyDomainOperations<S, T> + ResizeOps,
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: RealNumberSpace,
+    D: TimeDomain,
+{
     fn plain_sfft<B>(mut self, buffer: &mut B) -> TransRes<Self::FreqResult>
-      where B: for<'a> Buffer<'a, S, T> {
-      if self.domain() != DataDomain::Time ||
-         self.is_complex() {
-          self.valid_len = 0;
-          self.number_space.to_complex();
-          self.domain.to_freq();
-          return Err((ErrorReason::InputMustBeInTimeDomain,
-                      Self::FreqResult::rededicate_from_force(self)));
-      }
+    where
+        B: for<'a> Buffer<'a, S, T>,
+    {
+        if self.domain() != DataDomain::Time || self.is_complex() {
+            self.valid_len = 0;
+            self.number_space.to_complex();
+            self.domain.to_freq();
+            return Err((
+                ErrorReason::InputMustBeInTimeDomain,
+                Self::FreqResult::rededicate_from_force(self),
+            ));
+        }
 
-      if self.points() % 2 == 0 {
-          self.valid_len = 0;
-          self.number_space.to_complex();
-          self.domain.to_freq();
-          return Err((ErrorReason::InputMustHaveAnOddLength,
-                      Self::FreqResult::rededicate_from_force(self)));
-      }
+        if self.points() % 2 == 0 {
+            self.valid_len = 0;
+            self.number_space.to_complex();
+            self.domain.to_freq();
+            return Err((
+                ErrorReason::InputMustHaveAnOddLength,
+                Self::FreqResult::rededicate_from_force(self),
+            ));
+        }
 
-      self.zero_interleave_b(buffer, 2);
-      self.number_space.to_complex();
-      let points = self.points();
-      let mut result = self.plain_fft(buffer);
-      unmirror!(result, points);
-      Ok(result)
+        self.zero_interleave_b(buffer, 2);
+        self.number_space.to_complex();
+        let points = self.points();
+        let mut result = self.plain_fft(buffer);
+        unmirror!(result, points);
+        Ok(result)
     }
 
     fn sfft<B>(mut self, buffer: &mut B) -> TransRes<Self::FreqResult>
-      where B: for<'a> Buffer<'a, S, T> {
-      if self.domain() != DataDomain::Time ||
-         self.is_complex() {
-          self.valid_len = 0;
-          self.number_space.to_complex();
-          self.domain.to_freq();
-          return Err((ErrorReason::InputMustBeInTimeDomain,
-                      Self::FreqResult::rededicate_from_force(self)));
-      }
+    where
+        B: for<'a> Buffer<'a, S, T>,
+    {
+        if self.domain() != DataDomain::Time || self.is_complex() {
+            self.valid_len = 0;
+            self.number_space.to_complex();
+            self.domain.to_freq();
+            return Err((
+                ErrorReason::InputMustBeInTimeDomain,
+                Self::FreqResult::rededicate_from_force(self),
+            ));
+        }
 
-      if self.points() % 2 == 0 {
-          self.valid_len = 0;
-          self.number_space.to_complex();
-          self.domain.to_freq();
-          return Err((ErrorReason::InputMustHaveAnOddLength,
-                      Self::FreqResult::rededicate_from_force(self)));
-      }
+        if self.points() % 2 == 0 {
+            self.valid_len = 0;
+            self.number_space.to_complex();
+            self.domain.to_freq();
+            return Err((
+                ErrorReason::InputMustHaveAnOddLength,
+                Self::FreqResult::rededicate_from_force(self),
+            ));
+        }
 
-      self.zero_interleave_b(buffer, 2);
-      self.number_space.to_complex();
-      let points = self.points();
-      let mut result = self.fft(buffer);
-      unmirror!(result, points);
-      Ok(result)
+        self.zero_interleave_b(buffer, 2);
+        self.number_space.to_complex();
+        let points = self.points();
+        let mut result = self.fft(buffer);
+        unmirror!(result, points);
+        Ok(result)
     }
 
-    fn windowed_sfft<B>(mut self, buffer: &mut B, window: &WindowFunction<T>)
-        -> TransRes<Self::FreqResult>
-      where B: for<'a> Buffer<'a, S, T> {
-      if self.domain() != DataDomain::Time ||
-         self.is_complex() {
-          self.valid_len = 0;
-          self.number_space.to_complex();
-          self.domain.to_freq();
-          return Err((ErrorReason::InputMustBeInTimeDomain,
-                      Self::FreqResult::rededicate_from_force(self)));
-      }
+    fn windowed_sfft<B>(
+        mut self,
+        buffer: &mut B,
+        window: &WindowFunction<T>,
+    ) -> TransRes<Self::FreqResult>
+    where
+        B: for<'a> Buffer<'a, S, T>,
+    {
+        if self.domain() != DataDomain::Time || self.is_complex() {
+            self.valid_len = 0;
+            self.number_space.to_complex();
+            self.domain.to_freq();
+            return Err((
+                ErrorReason::InputMustBeInTimeDomain,
+                Self::FreqResult::rededicate_from_force(self),
+            ));
+        }
 
-      if self.points() % 2 == 0 {
-          self.valid_len = 0;
-          self.number_space.to_complex();
-          self.domain.to_freq();
-          return Err((ErrorReason::InputMustHaveAnOddLength,
-                      Self::FreqResult::rededicate_from_force(self)));
-      }
+        if self.points() % 2 == 0 {
+            self.valid_len = 0;
+            self.number_space.to_complex();
+            self.domain.to_freq();
+            return Err((
+                ErrorReason::InputMustHaveAnOddLength,
+                Self::FreqResult::rededicate_from_force(self),
+            ));
+        }
 
-      self.zero_interleave_b(buffer, 2);
-      self.number_space.to_complex();
-      self.apply_window(window);
-      let points = self.points();
-      let mut result = self.fft(buffer);
-      unmirror!(result, points);
-      Ok(result)
+        self.zero_interleave_b(buffer, 2);
+        self.number_space.to_complex();
+        self.apply_window(window);
+        let points = self.points();
+        let mut result = self.fft(buffer);
+        unmirror!(result, points);
+        Ok(result)
     }
 }

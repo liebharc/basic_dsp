@@ -1,9 +1,10 @@
 //! Conversions to and from vectors which serve as constructors.
-use numbers::*;
-use super::{DataDomain, NumberSpace, Domain, DspVec, GenDspVec, RealTimeVec, RealFreqVec,
-            ComplexTimeVec, ComplexFreqVec, RealData, ComplexData, TimeData, FrequencyData,
-            ToSlice, TypeMetaData};
+use super::{
+    ComplexData, ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec, FrequencyData,
+    GenDspVec, NumberSpace, RealData, RealFreqVec, RealTimeVec, TimeData, ToSlice, TypeMetaData,
+};
 use multicore_support::MultiCoreSettings;
+use numbers::*;
 use std::convert::From;
 
 /// Conversion from a generic data type into a dsp vector which tracks
@@ -12,7 +13,8 @@ use std::convert::From;
 /// `ToComplexVector` for alternatives which track most of the meta data
 /// with the type system and therefore avoid runtime errors.
 pub trait ToDspVector<T>: Sized + ToSlice<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     /// Create a new generic vector.
     /// `delta` can be changed after construction with a call of `set_delta`.
@@ -24,13 +26,15 @@ pub trait ToDspVector<T>: Sized + ToSlice<T>
     /// retrieved from an existing vector. If no existing vector is available
     /// then one of the other constructor methods should be used.
     fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
-        where N: NumberSpace,
-              D: Domain;
+    where
+        N: NumberSpace,
+        D: Domain;
 }
 
 /// Conversion from a generic data type into a dsp vector with real data.
 pub trait ToRealVector<T>: Sized + ToSlice<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     /// Create a new vector in real number space and time domain.
     /// `delta` can be changed after construction with a call of `set_delta`.
@@ -43,8 +47,9 @@ pub trait ToRealVector<T>: Sized + ToSlice<T>
 
 /// Conversion from a generic data type into a dsp vector with complex data.
 pub trait ToComplexVector<S, T>
-    where S: Sized + ToSlice<T>,
-          T: RealNumber
+where
+    S: Sized + ToSlice<T>,
+    T: RealNumber,
 {
     /// Create a new vector in complex number space and time domain.
     /// `delta` can be changed after construction with a call of `set_delta`.
@@ -61,7 +66,8 @@ pub trait ToComplexVector<S, T>
 
 /// Retrieves the underlying storage from a vector.
 pub trait FromVector<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     /// Type of the underlying storage of a vector.
     type Output;
@@ -75,10 +81,11 @@ pub trait FromVector<T>
 }
 
 impl<S, T, N, D> FromVector<T> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     type Output = S;
 
@@ -95,13 +102,15 @@ impl<S, T, N, D> FromVector<T> for DspVec<S, T, N, D>
 }
 
 impl<S, T> From<S> for RealTimeVec<S, T>
-    where S: ToSlice<T>,
-          T: RealNumber
+where
+    S: ToSlice<T>,
+    T: RealNumber,
 {
     fn from(mut data: S) -> Self {
         let len = data.len();
         let alloc = data.alloc_len();
-        data.try_resize(alloc).expect("Expanding to alloc_len should always work");
+        data.try_resize(alloc)
+            .expect("Expanding to alloc_len should always work");
         RealTimeVec {
             data: data,
             delta: T::one(),
@@ -114,13 +123,15 @@ impl<S, T> From<S> for RealTimeVec<S, T>
 }
 
 impl<S, T> From<S> for ComplexTimeVec<S, T>
-    where S: ToSlice<T>,
-          T: RealNumber
+where
+    S: ToSlice<T>,
+    T: RealNumber,
 {
     fn from(mut data: S) -> Self {
         let len = data.len();
         let alloc = data.alloc_len();
-        data.try_resize(alloc).expect("Expanding to alloc_len should always work");
+        data.try_resize(alloc)
+            .expect("Expanding to alloc_len should always work");
         ComplexTimeVec {
             data: data,
             delta: T::one(),
@@ -132,13 +143,15 @@ impl<S, T> From<S> for ComplexTimeVec<S, T>
     }
 }
 impl<S, T> From<S> for RealFreqVec<S, T>
-    where S: ToSlice<T>,
-          T: RealNumber
+where
+    S: ToSlice<T>,
+    T: RealNumber,
 {
     fn from(mut data: S) -> Self {
         let len = data.len();
         let alloc = data.alloc_len();
-        data.try_resize(alloc).expect("Expanding to alloc_len should always work");
+        data.try_resize(alloc)
+            .expect("Expanding to alloc_len should always work");
         RealFreqVec {
             data: data,
             delta: T::one(),
@@ -151,13 +164,15 @@ impl<S, T> From<S> for RealFreqVec<S, T>
 }
 
 impl<S, T> From<S> for ComplexFreqVec<S, T>
-    where S: ToSlice<T>,
-          T: RealNumber
+where
+    S: ToSlice<T>,
+    T: RealNumber,
 {
     fn from(mut data: S) -> Self {
         let len = data.len();
         let alloc = data.alloc_len();
-        data.try_resize(alloc).expect("Expanding to alloc_len should always work");
+        data.try_resize(alloc)
+            .expect("Expanding to alloc_len should always work");
         ComplexFreqVec {
             data: data,
             delta: T::one(),
@@ -170,10 +185,11 @@ impl<S, T> From<S> for ComplexFreqVec<S, T>
 }
 
 impl<S, T, N, D> Clone for DspVec<S, T, N, D>
-    where S: ToSlice<T> + Clone,
-          T: RealNumber,
-          N: NumberSpace + Clone,
-          D: Domain + Clone
+where
+    S: ToSlice<T> + Clone,
+    T: RealNumber,
+    N: NumberSpace + Clone,
+    D: Domain + Clone,
 {
     fn clone(&self) -> Self {
         DspVec {

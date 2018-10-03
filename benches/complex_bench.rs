@@ -1,18 +1,18 @@
 #![feature(test)]
 #![feature(box_syntax)]
-extern crate test;
 extern crate basic_dsp;
 extern crate num;
+extern crate test;
 
 pub mod tools;
 
 #[cfg(test)]
 mod complex {
-    use test::Bencher;
-    use basic_dsp::*;
-    use tools::*;
-    use num::complex::Complex32;
     use basic_dsp::conv_types::*;
+    use basic_dsp::*;
+    use num::complex::Complex32;
+    use test::Bencher;
+    use tools::*;
 
     #[bench]
     fn complex_offset_32s_benchmark(b: &mut Bencher) {
@@ -64,7 +64,7 @@ mod complex {
         b.iter(|| {
             vector.execute(|mut v, _| {
                 let len = v.len();
-                let operand = vec!(0.0; len).to_complex_time_vec();
+                let operand = vec![0.0; len].to_complex_time_vec();
                 v.mul(&operand).unwrap();
                 v
             })
@@ -77,9 +77,11 @@ mod complex {
         b.iter(|| {
             vector.execute(|mut v, buffer| {
                 let sinc: SincFunction<f32> = SincFunction::new();
-                let table =
-                        RealTimeLinearTableLookup::<f32>::from_conv_function(
-                            &sinc as &RealImpulseResponse<f32>, 0.2, 5);
+                let table = RealTimeLinearTableLookup::<f32>::from_conv_function(
+                    &sinc as &RealImpulseResponse<f32>,
+                    0.2,
+                    5,
+                );
                 v.convolve(buffer, &table as &RealImpulseResponse<f32>, 0.5, 10);
                 v
             })
@@ -92,7 +94,7 @@ mod complex {
         b.iter(|| {
             vector.execute(|mut v, buffer| {
                 let len = v.len();
-                let operand = vec!(0.0; len).to_complex_time_vec();
+                let operand = vec![0.0; len].to_complex_time_vec();
                 v.convolve_signal(buffer, &operand).unwrap();
                 v
             })
@@ -104,7 +106,7 @@ mod complex {
         let mut vector = ComplexTime32Box::new(Size::Small);
         b.iter(|| {
             vector.execute(|mut v, buffer| {
-                let operand = vec!(0.0; 100).to_complex_time_vec();
+                let operand = vec![0.0; 100].to_complex_time_vec();
                 v.convolve_signal(buffer, &operand).unwrap();
                 v
             })
@@ -117,7 +119,8 @@ mod complex {
         b.iter(|| {
             vector.execute(|mut v, buffer| {
                 let len = v.len();
-                v.interpolatei(buffer, &RaisedCosineFunction::new(0.35), 10).unwrap();
+                v.interpolatei(buffer, &RaisedCosineFunction::new(0.35), 10)
+                    .unwrap();
                 v.resize(len).unwrap();
                 v
             })

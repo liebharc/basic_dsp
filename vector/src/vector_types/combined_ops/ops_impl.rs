@@ -1,17 +1,19 @@
-use simd_extensions::*;
 use super::{Operation, PerformOperationSimd};
 use numbers::*;
+use simd_extensions::*;
 
 impl<T, Reg> PerformOperationSimd<T> for Reg
-    where T: RealNumber,
-          Reg: SimdGeneric<T>
-        
+where
+    T: RealNumber,
+    Reg: SimdGeneric<T>,
 {
     #[inline]
-    fn perform_complex_operation(vectors: &mut [Self],
-                                 operation: &Operation<T>,
-                                 index: usize,
-                                 points: usize) {
+    fn perform_complex_operation(
+        vectors: &mut [Self],
+        operation: &Operation<T>,
+        index: usize,
+        points: usize,
+    ) {
         match *operation {
             // Real Ops
             Operation::AddReal(idx, value) => {
@@ -72,9 +74,8 @@ impl<T, Reg> PerformOperationSimd<T> for Reg
             }
             Operation::MultiplyComplexExponential(idx, a, b) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
-                let mut exponential = Complex::<T>::from_polar(&T::one(), &b) *
-                                      Complex::<T>::from_polar(&T::one(),
-                                                               &(a * T::from(index).unwrap()));
+                let mut exponential = Complex::<T>::from_polar(&T::one(), &b)
+                    * Complex::<T>::from_polar(&T::one(), &(a * T::from(index).unwrap()));
                 let increment = Complex::<T>::from_polar(&T::one(), &a);
                 *v = v.iter_over_complex_vector(|x| {
                     let res = x * exponential;
@@ -97,8 +98,10 @@ impl<T, Reg> PerformOperationSimd<T> for Reg
             }
             Operation::DivPoints(idx) => {
                 let v = unsafe { vectors.get_unchecked_mut(idx) };
-                *v = v.scale_complex(Complex::<T>::new(T::one() / (T::from(points).unwrap()),
-                                                       T::zero()));
+                *v = v.scale_complex(Complex::<T>::new(
+                    T::one() / (T::from(points).unwrap()),
+                    T::zero(),
+                ));
             }
             Operation::AddVector(idx1, idx2) => {
                 let v2 = unsafe { *vectors.get_unchecked(idx2) };
@@ -209,10 +212,12 @@ impl<T, Reg> PerformOperationSimd<T> for Reg
     }
 
     #[inline]
-    fn perform_real_operation(vectors: &mut [Self],
-                              operation: &Operation<T>,
-                              _index: usize,
-                              points: usize) {
+    fn perform_real_operation(
+        vectors: &mut [Self],
+        operation: &Operation<T>,
+        _index: usize,
+        points: usize,
+    ) {
         match *operation {
             // Real Ops
             Operation::AddReal(idx, value) => {

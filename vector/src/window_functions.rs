@@ -12,12 +12,13 @@ use numbers::*;
 ///    for the first argument ranges from `0..vector.points()`.
 /// 2. All real return values are allowed
 pub trait WindowFunction<T>: Sync
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     /// Indicates whether this function is symmetric around the y axis or not.
     /// Symmetry is defined as `self.window(x) == self.window(-x)`.
     fn is_symmetric(&self) -> bool;
-    
+
     /// Calculates a point of the window function. Callers will ensure that `n <= length`.
     fn window(&self, n: usize, length: usize) -> T;
 }
@@ -25,7 +26,8 @@ pub trait WindowFunction<T>: Sync
 /// A triangular window: `https://en.wikipedia.org/wiki/Window_function#Triangular_window`
 pub struct TriangularWindow;
 impl<T> WindowFunction<T> for TriangularWindow
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn is_symmetric(&self) -> bool {
         true
@@ -42,14 +44,16 @@ impl<T> WindowFunction<T> for TriangularWindow
 
 /// A generalized Hamming window: `https://en.wikipedia.org/wiki/Window_function#Hamming_window`
 pub struct HammingWindow<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     alpha: T,
     beta: T,
 }
 
 impl<T> HammingWindow<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     /// Creates a new Hamming window
     pub fn new(alpha: T) -> Self {
@@ -66,7 +70,8 @@ impl<T> HammingWindow<T>
 }
 
 impl<T> WindowFunction<T> for HammingWindow<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn is_symmetric(&self) -> bool {
         true
@@ -88,8 +93,9 @@ mod tests {
     use std::fmt::Debug;
 
     fn window_test<T, W>(window: W, expected: &[T])
-        where T: RealNumber + Debug,
-              W: WindowFunction<T>
+    where
+        T: RealNumber + Debug,
+        W: WindowFunction<T>,
     {
         let mut result = vec![T::zero(); expected.len()];
         for i in 0..result.len() {

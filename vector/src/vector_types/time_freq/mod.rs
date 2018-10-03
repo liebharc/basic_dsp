@@ -15,24 +15,27 @@ pub use self::interpolation::*;
 mod real_interpolation;
 pub use self::real_interpolation::*;
 
-use rustfft::FFTplanner;
-use {array_to_complex, array_to_complex_mut};
-use std::ops::*;
-use simd_extensions::*;
-use multicore_support::*;
-use super::{Buffer, BufferBorrow, Vector, MetaData, DspVec, ToSliceMut, NumberSpace, Domain,
-            ErrorReason, VoidResult, GetMetaData};
-use numbers::*;
-use std::fmt::Debug;
+use super::{
+    Buffer, BufferBorrow, Domain, DspVec, ErrorReason, GetMetaData, MetaData, NumberSpace,
+    ToSliceMut, Vector, VoidResult,
+};
 use gpu_support::GpuSupport;
 use inline_vector::InlineVector;
+use multicore_support::*;
+use numbers::*;
+use rustfft::FFTplanner;
+use simd_extensions::*;
+use std::fmt::Debug;
+use std::ops::*;
+use {array_to_complex, array_to_complex_mut};
 
 fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: bool)
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain,
-          B: for<'a> Buffer<'a, S, T>
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
+    B: for<'a> Buffer<'a, S, T>,
 {
     let len = vec.len();
     let mut temp = buffer.borrow(len);
@@ -43,7 +46,7 @@ fn fft<S, T, N, D, B>(vec: &mut DspVec<S, T, N, D>, buffer: &mut B, reverse: boo
             let points = len / 2; // By two since vector is always complex
             let rbw = (T::from(points).unwrap()) * vec.delta;
             vec.delta = rbw;
-            
+
             let fft = {
                 let mut planner = FFTplanner::new(reverse);
                 planner.plan_fft(points)
@@ -74,12 +77,13 @@ fn fft_swap_x<T: RealNumber>(is_fft_shifted: bool, x_value: T, x_max: T) -> T {
     }
 }
 
-
-
 /// Creates shifted and reversed copies of the given data vector.
 /// This function is especially designed for convolutions.
-fn create_shifted_copies<O, T: RealNumber, Reg: SimdGeneric<T>>(vec: &O) -> InlineVector<InlineVector<Reg>>
-    where O: Vector<T> + Index<RangeFull, Output = [T]>
+fn create_shifted_copies<O, T: RealNumber, Reg: SimdGeneric<T>>(
+    vec: &O,
+) -> InlineVector<InlineVector<Reg>>
+where
+    O: Vector<T> + Index<RangeFull, Output = [T]>,
 {
     let step = if vec.is_complex() { 2 } else { 1 };
     let number_of_shifts = Reg::LEN / step;
@@ -167,23 +171,26 @@ fn create_shifted_copies<O, T: RealNumber, Reg: SimdGeneric<T>>(vec: &O) -> Inli
 }
 
 impl<S, T, N, D> DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
-    fn convolve_function_priv<B, TT, C, CMut, F>(&mut self,
-                                                 buffer: &mut B,
-                                                 ratio: T,
-                                                 conv_len: usize,
-                                                 convert: C,
-                                                 convert_mut: CMut,
-                                                 fun: F)
-        where B: for<'a> Buffer<'a, S, T>,
-              C: Fn(&[T]) -> &[TT],
-              CMut: Fn(&mut [T]) -> &mut [TT],
-              F: Fn(T) -> TT,
-              TT: Zero + Mul<Output = TT> + Copy + Add<Output = TT>
+    fn convolve_function_priv<B, TT, C, CMut, F>(
+        &mut self,
+        buffer: &mut B,
+        ratio: T,
+        conv_len: usize,
+        convert: C,
+        convert_mut: CMut,
+        fun: F,
+    ) where
+        B: for<'a> Buffer<'a, S, T>,
+        C: Fn(&[T]) -> &[TT],
+        CMut: Fn(&mut [T]) -> &mut [TT],
+        F: Fn(T) -> TT,
+        TT: Zero + Mul<Output = TT> + Copy + Add<Output = TT>,
     {
         let len = self.len();
         let mut temp = buffer.borrow(len);
@@ -215,10 +222,15 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     /// Only calculate the convolution in the inverse range from the given range.
     /// This is intended to be used together with convolution implementations which
     /// are faster but don't handle the beginning and end of a vector correctly.
-    fn convolve_vector_range<O, NO, DO>(&mut self, target: &mut [T], vector: &O, range: Range<usize>)
-        where O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
-              NO: NumberSpace,
-              DO: Domain
+    fn convolve_vector_range<O, NO, DO>(
+        &mut self,
+        target: &mut [T],
+        vector: &O,
+        range: Range<usize>,
+    ) where
+        O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
+        NO: NumberSpace,
+        DO: Domain,
     {
         let points = self.points();
         let other_points = vector.points();
@@ -227,7 +239,12 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let conv_len = points / 2;
             (center - conv_len, center + conv_len, points, conv_len)
         } else {
-            (0, other_points, other_points, other_points - other_points / 2)
+            (
+                0,
+                other_points,
+                other_points,
+                other_points - other_points / 2,
+            )
         };
         let len = self.len();
         if self.is_complex() {
@@ -239,11 +256,13 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let other_iter = &other[other_start..other_end];
             let conv_len = conv_len as isize;
             for i in 0..range.start / 2 {
-                dest[i] = Self::convolve_iteration(complex,
-                                                   other_iter,
-                                                   i as isize,
-                                                   conv_len,
-                                                   full_conv_len);
+                dest[i] = Self::convolve_iteration(
+                    complex,
+                    other_iter,
+                    i as isize,
+                    conv_len,
+                    full_conv_len,
+                );
             }
         } else {
             let other = &vector[..];
@@ -261,10 +280,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     }
 
     fn convolve_signal_scalar<B, O, NO, DO>(&mut self, buffer: &mut B, vector: &O)
-        where B: for<'a> Buffer<'a, S, T>,
-              O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
-              NO: NumberSpace,
-              DO: Domain
+    where
+        B: for<'a> Buffer<'a, S, T>,
+        O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
+        NO: NumberSpace,
+        DO: Domain,
     {
         let points = self.points();
         let other_points = vector.points();
@@ -273,7 +293,12 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let conv_len = points / 2;
             (center - conv_len, center + conv_len, points, conv_len)
         } else {
-            (0, other_points, other_points, other_points - other_points / 2)
+            (
+                0,
+                other_points,
+                other_points,
+                other_points - other_points / 2,
+            )
         };
         if self.is_complex() {
             let len = self.len();
@@ -287,20 +312,24 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 let dest = array_to_complex_mut(&mut temp[0..len]);
                 let other_iter = &other[other_start..other_end];
                 let conv_len = conv_len as isize;
-                Chunk::execute_with_range(Complexity::Large,
-                                          &self.multicore_settings,
-                                          dest,
-                                          1,
-                                          (complex, other_iter),
-                                          move |dest, range, (complex, other_iter)| {
-                    for (num, i) in dest.iter_mut().zip(range) {
-                        *num = Self::convolve_iteration(complex,
-                                                        other_iter,
-                                                        i as isize,
-                                                        conv_len,
-                                                        full_conv_len);
-                    }
-                });
+                Chunk::execute_with_range(
+                    Complexity::Large,
+                    &self.multicore_settings,
+                    dest,
+                    1,
+                    (complex, other_iter),
+                    move |dest, range, (complex, other_iter)| {
+                        for (num, i) in dest.iter_mut().zip(range) {
+                            *num = Self::convolve_iteration(
+                                complex,
+                                other_iter,
+                                i as isize,
+                                conv_len,
+                                full_conv_len,
+                            );
+                        }
+                    },
+                );
             }
             temp.trade(&mut self.data);
         } else {
@@ -315,20 +344,24 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 let dest = &mut temp[0..len];
                 let other_iter = &other[other_start..other_end];
                 let conv_len = conv_len as isize;
-                Chunk::execute_with_range(Complexity::Large,
-                                          &self.multicore_settings,
-                                          dest,
-                                          1,
-                                          (data, other_iter),
-                                          move |dest, range, (data, other_iter)| {
-                    for (num, i) in dest.iter_mut().zip(range) {
-                        *num = Self::convolve_iteration(data,
-                                                        other_iter,
-                                                        i as isize,
-                                                        conv_len,
-                                                        full_conv_len);
-                    }
-                });
+                Chunk::execute_with_range(
+                    Complexity::Large,
+                    &self.multicore_settings,
+                    dest,
+                    1,
+                    (data, other_iter),
+                    move |dest, range, (data, other_iter)| {
+                        for (num, i) in dest.iter_mut().zip(range) {
+                            *num = Self::convolve_iteration(
+                                data,
+                                other_iter,
+                                i as isize,
+                                conv_len,
+                                full_conv_len,
+                            );
+                        }
+                    },
+                );
             }
             temp.trade(&mut self.data);
         }
@@ -336,10 +369,11 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 
     /// Convolves a vector of vectors (in this lib also considered a matrix) with a vector
     /// of impulse responses and stores the result in `target`.
-    pub fn convolve_mat(matrix: &[&Self],
-                        impulse_response: &[&Self],
-                        target: &mut [T])
-                        -> VoidResult {
+    pub fn convolve_mat(
+        matrix: &[&Self],
+        impulse_response: &[&Self],
+        target: &mut [T],
+    ) -> VoidResult {
         // Since this function mainly exists to be used by the matrix lib
         // we just decide to ignore invalid calls.
         if impulse_response.len() != matrix.len() || impulse_response.len() == 0 {
@@ -367,50 +401,58 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let conv_len = points / 2;
             (center - conv_len, center + conv_len, points, conv_len)
         } else {
-            (0, other_points, other_points, other_points - other_points / 2)
+            (
+                0,
+                other_points,
+                other_points,
+                other_points - other_points / 2,
+            )
         };
         if matrix[0].is_complex() {
             let len = matrix[0].len();
             let others: InlineVector<&[T]> =
                 impulse_response.iter().map(|v| v.data.to_slice()).collect();
             let data_vecs: InlineVector<&[T]> = matrix.iter().map(|v| v.data.to_slice()).collect();
-            let others: InlineVector<&[Complex<T>]> = others.iter()
+            let others: InlineVector<&[Complex<T>]> = others
+                .iter()
                 .map(|o| {
                     let c = array_to_complex(&o[0..impulse_response[0].len()]);
                     &c[other_start..other_end]
                 })
                 .collect();
-            let data_vecs: InlineVector<&[Complex<T>]> = data_vecs.iter()
+            let data_vecs: InlineVector<&[Complex<T>]> = data_vecs
+                .iter()
                 .map(|o| array_to_complex(&o[0..impulse_response[0].len()]))
                 .collect();
             let dest = array_to_complex_mut(&mut target[0..len]);
             let conv_len = conv_len as isize;
             for (num, i) in dest.iter_mut().zip(0..) {
-                *num = Self::convolve_mat_iteration(&data_vecs[..],
-                                                    &others[..],
-                                                    i,
-                                                    conv_len,
-                                                    full_conv_len);
+                *num = Self::convolve_mat_iteration(
+                    &data_vecs[..],
+                    &others[..],
+                    i,
+                    conv_len,
+                    full_conv_len,
+                );
             }
         } else {
             let len = matrix[0].len();
             let others: InlineVector<&[T]> =
                 impulse_response.iter().map(|v| v.data.to_slice()).collect();
             let data_vecs: InlineVector<&[T]> = matrix.iter().map(|v| v.data.to_slice()).collect();
-            let others: InlineVector<&[T]> = others.iter()
-                .map(|o| &o[other_start..other_end])
-                .collect();
-            let data_vecs: InlineVector<&[T]> = data_vecs.iter()
-                .map(|o| &o[0..len])
-                .collect();
+            let others: InlineVector<&[T]> =
+                others.iter().map(|o| &o[other_start..other_end]).collect();
+            let data_vecs: InlineVector<&[T]> = data_vecs.iter().map(|o| &o[0..len]).collect();
             let dest = &mut target[0..len];
             let conv_len = conv_len as isize;
             for (num, i) in dest.iter_mut().zip(0..) {
-                *num = Self::convolve_mat_iteration(&data_vecs[..],
-                                                    &others[..],
-                                                    i,
-                                                    conv_len,
-                                                    full_conv_len);
+                *num = Self::convolve_mat_iteration(
+                    &data_vecs[..],
+                    &others[..],
+                    i,
+                    conv_len,
+                    full_conv_len,
+                );
             }
         }
 
@@ -418,13 +460,15 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     }
 
     #[inline]
-    fn convolve_iteration<TT>(data: &[TT],
-                              other_iter: &[TT],
-                              i: isize,
-                              conv_len: isize,
-                              full_conv_len: usize)
-                              -> TT
-        where TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT>
+    fn convolve_iteration<TT>(
+        data: &[TT],
+        other_iter: &[TT],
+        i: isize,
+        conv_len: isize,
+        full_conv_len: usize,
+    ) -> TT
+    where
+        TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT>,
     {
         let data_iter = ReverseWrappingIterator::new(data, i + conv_len, full_conv_len);
         let mut sum = TT::zero();
@@ -436,13 +480,15 @@ impl<S, T, N, D> DspVec<S, T, N, D>
     }
 
     #[inline]
-    fn convolve_mat_iteration<TT>(matrix: &[&[TT]],
-                                  imp_resp: &[&[TT]],
-                                  i: isize,
-                                  conv_len: isize,
-                                  full_conv_len: usize)
-                                  -> TT
-        where TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT> + Debug
+    fn convolve_mat_iteration<TT>(
+        matrix: &[&[TT]],
+        imp_resp: &[&[TT]],
+        i: isize,
+        conv_len: isize,
+        full_conv_len: usize,
+    ) -> TT
+    where
+        TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT> + Debug,
     {
         let mut sum = TT::zero();
         for (data, other_iter) in matrix.iter().zip(imp_resp.iter()) {
@@ -456,48 +502,63 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         sum
     }
 
-    fn convolve_signal_simd<Reg: SimdGeneric<T>, B, O>(&mut self, _: RegType<Reg>, buffer: &mut B, vector: &O)
-        where B: for<'a> Buffer<'a, S, T>,
-              O: Vector<T> + Index<RangeFull, Output = [T]>
+    fn convolve_signal_simd<Reg: SimdGeneric<T>, B, O>(
+        &mut self,
+        _: RegType<Reg>,
+        buffer: &mut B,
+        vector: &O,
+    ) where
+        B: for<'a> Buffer<'a, S, T>,
+        O: Vector<T> + Index<RangeFull, Output = [T]>,
     {
         if self.is_complex() {
-            self.convolve_signal_simd_impl::<Reg, _, _, _, _ ,_ ,_, _>(buffer,
-                                           vector,
-                                           |x| array_to_complex(x),
-                                           |x| array_to_complex_mut(x),
-                                           |x, y| x.mul_complex(y),
-                                           |x| x.sum_complex())
+            self.convolve_signal_simd_impl::<Reg, _, _, _, _, _, _, _>(
+                buffer,
+                vector,
+                |x| array_to_complex(x),
+                |x| array_to_complex_mut(x),
+                |x, y| x.mul_complex(y),
+                |x| x.sum_complex(),
+            )
         } else {
-            self.convolve_signal_simd_impl::<Reg, _, _, _, _ ,_ ,_,_>(buffer,
-                                           vector,
-                                           |x| x,
-                                           |x| x,
-                                           |x, y| x * y,
-                                           |x| x.sum_real())
+            self.convolve_signal_simd_impl::<Reg, _, _, _, _, _, _, _>(
+                buffer,
+                vector,
+                |x| x,
+                |x| x,
+                |x, y| x * y,
+                |x| x.sum_real(),
+            )
         }
     }
 
-    fn convolve_signal_simd_impl<Reg, B, TT, O, C, CMut, RMul, RSum>(&mut self,
-                                                                buffer: &mut B,
-                                                                vector: &O,
-                                                                convert: C,
-                                                                convert_mut: CMut,
-                                                                simd_mul: RMul,
-                                                                simd_sum: RSum)
-        where B: for<'a> Buffer<'a, S, T>,
-              O: Vector<T> + Index<RangeFull, Output = [T]>,
-              TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT> + Send + Sync,
-              C: Fn(&[T]) -> &[TT],
-              CMut: Fn(&mut [T]) -> &mut [TT],
-              RMul: Fn(Reg, Reg) -> Reg + Sync,
-              RSum: Fn(Reg) -> TT + Sync,
-              Reg: SimdGeneric<T>
+    fn convolve_signal_simd_impl<Reg, B, TT, O, C, CMut, RMul, RSum>(
+        &mut self,
+        buffer: &mut B,
+        vector: &O,
+        convert: C,
+        convert_mut: CMut,
+        simd_mul: RMul,
+        simd_sum: RSum,
+    ) where
+        B: for<'a> Buffer<'a, S, T>,
+        O: Vector<T> + Index<RangeFull, Output = [T]>,
+        TT: Zero + Clone + Copy + Add<Output = TT> + Mul<Output = TT> + Send + Sync,
+        C: Fn(&[T]) -> &[TT],
+        CMut: Fn(&mut [T]) -> &mut [TT],
+        RMul: Fn(Reg, Reg) -> Reg + Sync,
+        RSum: Fn(Reg) -> TT + Sync,
+        Reg: SimdGeneric<T>,
     {
         let points = self.points();
         let other_points = vector.points();
         assert!(other_points < points);
-        let (other_start, other_end, full_conv_len, conv_len) =
-            (0, other_points, other_points, other_points - other_points / 2);
+        let (other_start, other_end, full_conv_len, conv_len) = (
+            0,
+            other_points,
+            other_points,
+            other_points - other_points / 2,
+        );
         let len = self.len();
         let mut temp = buffer.borrow(len);
         {
@@ -524,28 +585,30 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let (scalar_left, _, vectorization_length) =
                 Reg::calc_data_alignment_reqs(&data[0..len]);
             let simd = Reg::array_to_regs(&data[scalar_left..vectorization_length]);
-            Chunk::execute_with_range(Complexity::Large,
-                                      &self.multicore_settings,
-                                      &mut dest[scalar_len..points - scalar_len],
-                                      1,
-                                      simd,
-                                      move |dest_range, range, simd| {
-                let mut i = (scalar_len + range.start) as isize;
-                for num in dest_range {
-                    let end = (i + conv_len) as usize;
-                    let shift = end % shifts.len();
-                    let end = (end + shifts.len() - 1) / shifts.len();
-                    let mut sum = Reg::splat(T::zero());
-                    let shifted = &shifts[shift];
-                    let simd_iter = simd[end - shifted.len()..end].iter();
-                    let iteration = simd_iter.zip(shifted.iter());
-                    for (this, other) in iteration {
-                        sum = sum + simd_mul(*this, *other);
+            Chunk::execute_with_range(
+                Complexity::Large,
+                &self.multicore_settings,
+                &mut dest[scalar_len..points - scalar_len],
+                1,
+                simd,
+                move |dest_range, range, simd| {
+                    let mut i = (scalar_len + range.start) as isize;
+                    for num in dest_range {
+                        let end = (i + conv_len) as usize;
+                        let shift = end % shifts.len();
+                        let end = (end + shifts.len() - 1) / shifts.len();
+                        let mut sum = Reg::splat(T::zero());
+                        let shifted = &shifts[shift];
+                        let simd_iter = simd[end - shifted.len()..end].iter();
+                        let iteration = simd_iter.zip(shifted.iter());
+                        for (this, other) in iteration {
+                            sum = sum + simd_mul(*this, *other);
+                        }
+                        (*num) = simd_sum(sum);
+                        i += 1;
                     }
-                    (*num) = simd_sum(sum);
-                    i += 1;
-                }
-            });
+                },
+            );
 
             let mut i = (points - scalar_len) as isize;
             for num in &mut dest[points - scalar_len..points] {
@@ -556,17 +619,19 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         temp.trade(&mut self.data);
     }
 
-    fn multiply_function_priv<TT, CMut, FA, F>(&mut self,
-                                               is_symmetric: bool,
-                                               is_fft_shifted: bool,
-                                               ratio: T,
-                                               convert_mut: CMut,
-                                               function_arg: FA,
-                                               fun: F)
-        where CMut: Fn(&mut [T]) -> &mut [TT],
-              FA: Copy + Sync + Send,
-              F: Fn(FA, T) -> TT + 'static + Sync,
-              TT: Zero + Mul<Output = TT> + Copy + Send + Sync + From<T>
+    fn multiply_function_priv<TT, CMut, FA, F>(
+        &mut self,
+        is_symmetric: bool,
+        is_fft_shifted: bool,
+        ratio: T,
+        convert_mut: CMut,
+        function_arg: FA,
+        fun: F,
+    ) where
+        CMut: Fn(&mut [T]) -> &mut [TT],
+        FA: Copy + Sync + Send,
+        F: Fn(FA, T) -> TT + 'static + Sync,
+        TT: Zero + Mul<Output = TT> + Copy + Send + Sync + From<T>,
     {
         let two = T::one() + T::one();
         if !is_symmetric {
@@ -574,97 +639,103 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let points = self.points();
             let data = self.data.to_slice_mut();
             let converted = convert_mut(&mut data[0..len]);
-            Chunk::execute_with_range(Complexity::Medium,
-                                      &self.multicore_settings,
-                                      converted,
-                                      1,
-                                      (ratio, function_arg),
-                                      move |array, range, (ratio, arg)| {
-                let scale = TT::from(ratio);
-                let offset = if points % 2 != 0 { 1 } else { 0 };
-                let max = T::from(points - offset).unwrap() / two;
-                let mut j = -(T::from(points - offset).unwrap()) / two +
-                            T::from(range.start).unwrap();
-                for num in array {
-                    *num = (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j, max) * ratio);
-                    j = j + T::one();
-                }
-            });
+            Chunk::execute_with_range(
+                Complexity::Medium,
+                &self.multicore_settings,
+                converted,
+                1,
+                (ratio, function_arg),
+                move |array, range, (ratio, arg)| {
+                    let scale = TT::from(ratio);
+                    let offset = if points % 2 != 0 { 1 } else { 0 };
+                    let max = T::from(points - offset).unwrap() / two;
+                    let mut j =
+                        -(T::from(points - offset).unwrap()) / two + T::from(range.start).unwrap();
+                    for num in array {
+                        *num =
+                            (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j, max) * ratio);
+                        j = j + T::one();
+                    }
+                },
+            );
         } else {
             let len = self.len();
             let data = self.data.to_slice_mut();
             let converted = convert_mut(&mut data[0..len]);
             let points = converted.len();
-            Chunk::execute_sym_pairs_with_range(Complexity::Medium,
-                                                &self.multicore_settings,
-                                                converted,
-                                                1,
-                                                (ratio, function_arg),
-                                                move |array1,
-                                                      range1,
-                                                      array2,
-                                                      range2,
-                                                      (ratio, arg)| {
-                let two = T::from(2.0).unwrap();
-                assert!(array1.len() >= array2.len());
-                assert!(range1.end <= range2.start);
-                let scale = TT::from(ratio);
-                let len1 = array1.len();
-                let len2 = array2.len();
-                let offset = if points % 2 != 0 { 1 } else { 0 };
-                let max = T::from(points - offset).unwrap() / two;
-                let center = T::from(points - offset).unwrap() / two;
-                let mut j1 = -center + T::from(range1.start).unwrap();
-                let mut j2 = center - T::from(range2.end - 1).unwrap();
-                let mut i1 = 0;
-                let mut i2 = 0;
-                {
-                    let mut iter1 = array1.iter_mut();
-                    let mut iter2 = array2.iter_mut().rev();
-                    while j1 < j2 {
-                        let num = iter1.next().unwrap();
-                        (*num) = (*num) * scale *
-                                 fun(arg, fft_swap_x(is_fft_shifted, j1, max) * ratio);
-                        j1 = j1 + T::one();
-                        i1 += 1;
+            Chunk::execute_sym_pairs_with_range(
+                Complexity::Medium,
+                &self.multicore_settings,
+                converted,
+                1,
+                (ratio, function_arg),
+                move |array1, range1, array2, range2, (ratio, arg)| {
+                    let two = T::from(2.0).unwrap();
+                    assert!(array1.len() >= array2.len());
+                    assert!(range1.end <= range2.start);
+                    let scale = TT::from(ratio);
+                    let len1 = array1.len();
+                    let len2 = array2.len();
+                    let offset = if points % 2 != 0 { 1 } else { 0 };
+                    let max = T::from(points - offset).unwrap() / two;
+                    let center = T::from(points - offset).unwrap() / two;
+                    let mut j1 = -center + T::from(range1.start).unwrap();
+                    let mut j2 = center - T::from(range2.end - 1).unwrap();
+                    let mut i1 = 0;
+                    let mut i2 = 0;
+                    {
+                        let mut iter1 = array1.iter_mut();
+                        let mut iter2 = array2.iter_mut().rev();
+                        while j1 < j2 {
+                            let num = iter1.next().unwrap();
+                            (*num) = (*num)
+                                * scale
+                                * fun(arg, fft_swap_x(is_fft_shifted, j1, max) * ratio);
+                            j1 = j1 + T::one();
+                            i1 += 1;
+                        }
+                        while j2 < j1 {
+                            let num = iter2.next().unwrap();
+                            (*num) = (*num)
+                                * scale
+                                * fun(arg, fft_swap_x(is_fft_shifted, j2, max) * ratio);
+                            j2 = j2 + T::one();
+                            i2 += 1;
+                        }
+                        // At this point we can be sure that `j1 == j2`
+                        for (num1, num2) in iter1.zip(iter2) {
+                            let arg = scale * fun(arg, fft_swap_x(is_fft_shifted, j1, max) * ratio);
+                            *num1 = (*num1) * arg;
+                            *num2 = (*num2) * arg;
+                            j1 = j1 + T::one();
+                        }
+                        j2 = j1;
                     }
-                    while j2 < j1 {
-                        let num = iter2.next().unwrap();
-                        (*num) = (*num) * scale *
-                                 fun(arg, fft_swap_x(is_fft_shifted, j2, max) * ratio);
+                    // Now we have to deal with differences in length
+                    // `common_length` is the number of iterations we spent
+                    // in the previous loop.
+                    let pos1 = len1 - i1;
+                    let pos2 = len2 - i2;
+                    let common_length = if pos1 < pos2 { pos1 } else { pos2 };
+                    for num in &mut array1[i1 + common_length..len1] {
+                        (*num) =
+                            (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j1, max) * ratio);
+                        j1 = j1 + T::one();
+                    }
+                    for num in &mut array2[0..len2 - common_length - i2] {
+                        (*num) =
+                            (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j2, max) * ratio);
                         j2 = j2 + T::one();
-                        i2 += 1;
                     }
-                    // At this point we can be sure that `j1 == j2`
-                    for (num1, num2) in iter1.zip(iter2) {
-                        let arg = scale * fun(arg, fft_swap_x(is_fft_shifted, j1, max) * ratio);
-                        *num1 = (*num1) * arg;
-                        *num2 = (*num2) * arg;
-                        j1 = j1 + T::one();
-                    }
-                    j2 = j1;
-                }
-                // Now we have to deal with differences in length
-                // `common_length` is the number of iterations we spent
-                // in the previous loop.
-                let pos1 = len1 - i1;
-                let pos2 = len2 - i2;
-                let common_length = if pos1 < pos2 { pos1 } else { pos2 };
-                for num in &mut array1[i1 + common_length..len1] {
-                    (*num) = (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j1, max) * ratio);
-                    j1 = j1 + T::one();
-                }
-                for num in &mut array2[0..len2 - common_length - i2] {
-                    (*num) = (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j2, max) * ratio);
-                    j2 = j2 + T::one();
-                }
-            });
+                },
+            );
         }
     }
 }
 
 struct WrappingIterator<T>
-    where T: Clone
+where
+    T: Clone,
 {
     start: *const T,
     end: *const T,
@@ -673,7 +744,8 @@ struct WrappingIterator<T>
 }
 
 impl<T> Iterator for WrappingIterator<T>
-    where T: Clone
+where
+    T: Clone,
 {
     type Item = T;
 
@@ -698,7 +770,8 @@ impl<T> Iterator for WrappingIterator<T>
 }
 
 impl<T> WrappingIterator<T>
-    where T: Clone
+where
+    T: Clone,
 {
     pub fn new(slice: &[T], pos: isize, iter_len: usize) -> Self {
         use std::isize;
@@ -723,7 +796,8 @@ impl<T> WrappingIterator<T>
 }
 
 struct ReverseWrappingIterator<T>
-    where T: Clone
+where
+    T: Clone,
 {
     start: *const T,
     end: *const T,
@@ -732,7 +806,8 @@ struct ReverseWrappingIterator<T>
 }
 
 impl<T> Iterator for ReverseWrappingIterator<T>
-    where T: Clone
+where
+    T: Clone,
 {
     type Item = T;
 
@@ -757,7 +832,8 @@ impl<T> Iterator for ReverseWrappingIterator<T>
 }
 
 impl<T> ReverseWrappingIterator<T>
-    where T: Clone
+where
+    T: Clone,
 {
     pub fn new(slice: &[T], pos: isize, iter_len: usize) -> Self {
         use std::isize;

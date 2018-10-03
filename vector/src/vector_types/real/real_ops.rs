@@ -1,7 +1,7 @@
-use numbers::*;
+use super::super::{Domain, DspVec, MetaData, RealNumberSpace, ToSliceMut, Vector};
 use multicore_support::*;
+use numbers::*;
 use simd_extensions::*;
-use super::super::{Vector, MetaData, DspVec, ToSliceMut, Domain, RealNumberSpace};
 
 /// Operations on real types.
 ///
@@ -35,7 +35,8 @@ pub trait RealOps {
 /// the resulting types will already check at compile time (using the type system)
 /// that the data is real.
 pub trait ModuloOps<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     /// Each value in the vector is dividable by the divisor and the remainder
     /// is stored in the resulting
@@ -83,7 +84,8 @@ pub trait ModuloOps<T>
 /// the resulting types will already check at compile time (using the type system)
 /// that the data is real.
 pub trait ApproximatedOps<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     /// Computes the principal value approximation of natural logarithm of every element in the vector.
     ///
@@ -228,30 +230,33 @@ macro_rules! assert_real {
             $self_.valid_len = 0;
             return;
         }
-    }
+    };
 }
 
 impl<S, T, N, D> RealOps for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: RealNumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: RealNumberSpace,
+    D: Domain,
 {
     fn abs(&mut self) {
         assert_real!(self);
         sel_reg!(self.simd_real_operation::<T>(
-                                 |x, _arg| (x * x).sqrt(),
-                                 |x, _arg| x.abs(),
-                                 (),
-                                 Complexity::Small));
+            |x, _arg| (x * x).sqrt(),
+            |x, _arg| x.abs(),
+            (),
+            Complexity::Small
+        ));
     }
 }
 
 impl<S, T, N, D> ModuloOps<T> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: RealNumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: RealNumberSpace,
+    D: Domain,
 {
     fn wrap(&mut self, divisor: T) {
         assert_real!(self);
@@ -288,67 +293,82 @@ impl<S, T, N, D> ModuloOps<T> for DspVec<S, T, N, D>
 const APPROX_COMPLEXITY: Complexity = Complexity::Medium;
 
 impl<S, T, N, D> ApproximatedOps<T> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: RealNumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: RealNumberSpace,
+    D: Domain,
 {
     fn ln_approx(&mut self) {
         assert_real!(self);
-        sel_reg!(self.simd_real_operation::<T>(|x, _arg| x.ln_approx(),
-                                 |x, _arg| x.ln(),
-                                 (),
-                                 APPROX_COMPLEXITY));
+        sel_reg!(self.simd_real_operation::<T>(
+            |x, _arg| x.ln_approx(),
+            |x, _arg| x.ln(),
+            (),
+            APPROX_COMPLEXITY
+        ));
     }
 
     fn exp_approx(&mut self) {
         assert_real!(self);
-        sel_reg!(self.simd_real_operation::<T>(|x, _arg| x.exp_approx(),
-                                 |x, _arg| x.exp(),
-                                 (),
-                                 APPROX_COMPLEXITY));
+        sel_reg!(self.simd_real_operation::<T>(
+            |x, _arg| x.exp_approx(),
+            |x, _arg| x.exp(),
+            (),
+            APPROX_COMPLEXITY
+        ));
     }
 
     fn sin_approx(&mut self) {
         assert_real!(self);
-        sel_reg!(self.simd_real_operation::<T>(|x, _arg| x.sin_approx(),
-                                 |x, _arg| x.sin(),
-                                 (),
-                                 APPROX_COMPLEXITY));
+        sel_reg!(self.simd_real_operation::<T>(
+            |x, _arg| x.sin_approx(),
+            |x, _arg| x.sin(),
+            (),
+            APPROX_COMPLEXITY
+        ));
     }
 
     fn cos_approx(&mut self) {
         assert_real!(self);
-        sel_reg!(self.simd_real_operation::<T>(|x, _arg| x.cos_approx(),
-                                 |x, _arg| x.cos(),
-                                 (),
-                                 APPROX_COMPLEXITY));
+        sel_reg!(self.simd_real_operation::<T>(
+            |x, _arg| x.cos_approx(),
+            |x, _arg| x.cos(),
+            (),
+            APPROX_COMPLEXITY
+        ));
     }
 
     fn log_approx(&mut self, base: T) {
         assert_real!(self);
-        sel_reg!(self.simd_real_operationf::<T>(|x, b| x.ln_approx() / b,
-                                 |x, b| x.ln() / b.extract(0),
-                                 base.ln(),
-                                 APPROX_COMPLEXITY));
+        sel_reg!(self.simd_real_operationf::<T>(
+            |x, b| x.ln_approx() / b,
+            |x, b| x.ln() / b.extract(0),
+            base.ln(),
+            APPROX_COMPLEXITY
+        ));
     }
 
     fn expf_approx(&mut self, base: T) {
         assert_real!(self);
         // Transform base with:
         // x^y = e^(ln(x)*y)
-        sel_reg!(self.simd_real_operationf::<T>(|y, x| (x * y).exp_approx(),
-                                |y, x| (x.extract(0) * y).exp(),
-                                base.ln(),
-                                APPROX_COMPLEXITY));
+        sel_reg!(self.simd_real_operationf::<T>(
+            |y, x| (x * y).exp_approx(),
+            |y, x| (x.extract(0) * y).exp(),
+            base.ln(),
+            APPROX_COMPLEXITY
+        ));
     }
 
     fn powf_approx(&mut self, exponent: T) {
         assert_real!(self);
         // Transform base with the same equation as for `expf_approx`
-        sel_reg!(self.simd_real_operationf::<T>(|x, y| (x.ln_approx() * y).exp_approx(),
-                                 |x, y| (x.ln() * y.extract(0)).exp(),
-                                 exponent,
-                                 APPROX_COMPLEXITY));
+        sel_reg!(self.simd_real_operationf::<T>(
+            |x, y| (x.ln_approx() * y).exp_approx(),
+            |x, y| (x.ln() * y.extract(0)).exp(),
+            exponent,
+            APPROX_COMPLEXITY
+        ));
     }
 }

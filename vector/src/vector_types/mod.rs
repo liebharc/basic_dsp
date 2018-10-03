@@ -1,13 +1,13 @@
-use {array_to_complex, array_to_complex_mut};
-use multicore_support::{Chunk, MultiCoreSettings, Complexity};
+use multicore_support::{Chunk, Complexity, MultiCoreSettings};
 use numbers::*;
-use std::ops::*;
-use std::mem;
-use std::cmp;
-use std::result;
 use simd_extensions::*;
-use std::fmt;
 use std;
+use std::cmp;
+use std::fmt;
+use std::mem;
+use std::ops::*;
+use std::result;
+use {array_to_complex, array_to_complex_mut};
 
 mod requirements;
 pub use self::requirements::*;
@@ -15,9 +15,9 @@ mod to_from_vec_conversions;
 pub use self::to_from_vec_conversions::*;
 mod support_core;
 pub use self::support_core::*;
-#[cfg(any(feature="std", test))]
+#[cfg(any(feature = "std", test))]
 mod support_std;
-#[cfg(any(feature="std", test))]
+#[cfg(any(feature = "std", test))]
 pub use self::support_std::*;
 mod vec_impl_and_indexers;
 pub use self::vec_impl_and_indexers::*;
@@ -50,10 +50,7 @@ pub type VoidResult = result::Result<(), ErrorReason>;
 pub type ScalarResult<T> = result::Result<T, ErrorReason>;
 
 /// The domain of a data vector
-#[derive(Copy)]
-#[derive(Clone)]
-#[derive(PartialEq)]
-#[derive(Debug)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum DataDomain {
     /// Time domain, the x-axis is in \[s\].
     Time,
@@ -99,9 +96,7 @@ pub trait TimeDomain: Domain {}
 pub trait FrequencyDomain: Domain {}
 
 /// Marker for types containing real data.
-#[derive(Debug)]
-#[derive(Clone)]
-#[derive(PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct RealData;
 impl NumberSpace for RealData {
     fn is_complex(&self) -> bool {
@@ -113,9 +108,7 @@ impl NumberSpace for RealData {
 impl RealNumberSpace for RealData {}
 
 /// Marker for types containing complex data.
-#[derive(Debug)]
-#[derive(Clone)]
-#[derive(PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ComplexData;
 impl NumberSpace for ComplexData {
     fn is_complex(&self) -> bool {
@@ -127,9 +120,7 @@ impl NumberSpace for ComplexData {
 impl ComplexNumberSpace for ComplexData {}
 
 /// Marker for types containing real or complex data.
-#[derive(Debug)]
-#[derive(Clone)]
-#[derive(PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct RealOrComplexData {
     pub is_complex_current: bool,
 }
@@ -150,9 +141,7 @@ impl RealNumberSpace for RealOrComplexData {}
 impl ComplexNumberSpace for RealOrComplexData {}
 
 /// Marker for types containing time data.
-#[derive(Debug)]
-#[derive(Clone)]
-#[derive(PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct TimeData;
 impl Domain for TimeData {
     fn domain(&self) -> DataDomain {
@@ -164,9 +153,7 @@ impl Domain for TimeData {
 impl TimeDomain for TimeData {}
 
 /// Marker for types containing frequency data.
-#[derive(Debug)]
-#[derive(Clone)]
-#[derive(PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct FrequencyData;
 impl Domain for FrequencyData {
     fn domain(&self) -> DataDomain {
@@ -178,9 +165,7 @@ impl Domain for FrequencyData {
 impl FrequencyDomain for FrequencyData {}
 
 /// Marker for types containing time or frequency data.
-#[derive(Debug)]
-#[derive(Clone)]
-#[derive(PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct TimeOrFrequencyData {
     pub domain_current: DataDomain,
 }
@@ -201,24 +186,24 @@ impl Domain for TimeOrFrequencyData {
 impl TimeDomain for TimeOrFrequencyData {}
 impl FrequencyDomain for TimeOrFrequencyData {}
 
-/// Expresses at compile time that two classes could potentially represent the same number space or domain. 
-pub trait PosEq<O> { }
-impl PosEq<RealData> for RealData { }
-impl PosEq<RealOrComplexData> for RealData { }
-impl PosEq<RealData> for RealOrComplexData { }
-impl PosEq<ComplexData> for RealOrComplexData { }
-impl PosEq<RealOrComplexData> for RealOrComplexData { }
-impl PosEq<ComplexData> for ComplexData { }
-impl PosEq<RealOrComplexData> for ComplexData { }
+/// Expresses at compile time that two classes could potentially represent the same number space or domain.
+pub trait PosEq<O> {}
+impl PosEq<RealData> for RealData {}
+impl PosEq<RealOrComplexData> for RealData {}
+impl PosEq<RealData> for RealOrComplexData {}
+impl PosEq<ComplexData> for RealOrComplexData {}
+impl PosEq<RealOrComplexData> for RealOrComplexData {}
+impl PosEq<ComplexData> for ComplexData {}
+impl PosEq<RealOrComplexData> for ComplexData {}
 
-impl PosEq<TimeData> for TimeData { }
-impl PosEq<TimeOrFrequencyData> for TimeData { }
-impl PosEq<TimeData> for TimeOrFrequencyData { }
-impl PosEq<FrequencyData> for TimeOrFrequencyData { }
-impl PosEq<TimeOrFrequencyData> for TimeOrFrequencyData { }
-impl PosEq<FrequencyData> for FrequencyData { }
-impl PosEq<TimeOrFrequencyData> for FrequencyData { }
-    
+impl PosEq<TimeData> for TimeData {}
+impl PosEq<TimeOrFrequencyData> for TimeData {}
+impl PosEq<TimeData> for TimeOrFrequencyData {}
+impl PosEq<FrequencyData> for TimeOrFrequencyData {}
+impl PosEq<TimeOrFrequencyData> for TimeOrFrequencyData {}
+impl PosEq<FrequencyData> for FrequencyData {}
+impl PosEq<TimeOrFrequencyData> for FrequencyData {}
+
 /// A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing
 /// (DSP) operations.
 ///
@@ -240,10 +225,11 @@ impl PosEq<TimeOrFrequencyData> for FrequencyData { }
 /// But remember that you should benchmark first before you give away accuracy for performance
 /// unless however you are sure that 32bit accuracy is certainly good enough.
 pub struct DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     /// The underlying storage. `self.len()` should be called to find out how many
     /// elements in `data` contain valid data.
@@ -256,8 +242,7 @@ pub struct DspVec<S, T, N, D>
 }
 
 /// Holds meta data about a type.
-#[derive(Clone)]
-#[derive(Copy)]
+#[derive(Clone, Copy)]
 pub struct TypeMetaData<T, N, D> {
     delta: T,
     domain: D,
@@ -266,17 +251,18 @@ pub struct TypeMetaData<T, N, D> {
 }
 
 impl<S, T, N, D> fmt::Debug for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          D: Domain,
-          N: NumberSpace
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    D: Domain,
+    N: NumberSpace,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f,
-               "DspVec {{ points: {}, domain: {:?}, number_space: {:?} }}",
-               self.valid_len,
-               self.domain,
-               self.number_space)
+        write!(
+            f,
+            "DspVec {{ points: {}, domain: {:?}, number_space: {:?} }}",
+            self.valid_len, self.domain, self.number_space
+        )
     }
 }
 
@@ -286,7 +272,7 @@ fn round_len(len: usize) -> usize {
     fn get_reg_len<T: RealNumber, Reg: SimdGeneric<T>>(_: RegType<Reg>) -> usize {
         Reg::LEN
     }
-    
+
     let reg_len = sel_reg!(get_reg_len::<f32>());
     ((len + reg_len - 1) / reg_len) * reg_len
 }
@@ -296,7 +282,8 @@ fn round_len(len: usize) -> usize {
 /// The function should always produce the same results as `fft_shift`
 /// and `ifft_shift` in GNU Octave.
 fn swap_array_halves<T>(data: &mut [T], forward: bool)
-    where T: Copy
+where
+    T: Copy,
 {
     let len = data.len();
     if len % 2 == 0 {
@@ -318,10 +305,11 @@ fn swap_array_halves<T>(data: &mut [T], forward: bool)
 
 /// Creates an interleaved array slice from a complex array.
 fn complex_to_array<T>(complex: &[Complex<T>]) -> &[T]
-    where T: RealNumber
+where
+    T: RealNumber,
 {
-    use std::slice;
     use std::mem;
+    use std::slice;
     unsafe {
         let len = complex.len();
         let trans: &[T] = mem::transmute(complex);
@@ -331,10 +319,11 @@ fn complex_to_array<T>(complex: &[Complex<T>]) -> &[T]
 
 /// Creates an interleaved array slice from a complex array.
 fn complex_to_array_mut<T>(complex: &mut [Complex<T>]) -> &mut [T]
-    where T: RealNumber
+where
+    T: RealNumber,
 {
-    use std::slice;
     use std::mem;
+    use std::slice;
     unsafe {
         let len = complex.len();
         let trans: &mut [T] = mem::transmute(complex);
@@ -343,80 +332,91 @@ fn complex_to_array_mut<T>(complex: &mut [Complex<T>]) -> &mut [T]
 }
 
 impl<S, T, N, D> DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
-	/// Executes a real function.
+    /// Executes a real function.
     #[inline]
     fn pure_real_operation<A, F>(&mut self, op: F, argument: A, complexity: Complexity)
-        where A: Sync + Copy + Send,
-              F: Fn(T, A) -> T + 'static + Sync
+    where
+        A: Sync + Copy + Send,
+        F: Fn(T, A) -> T + 'static + Sync,
     {
         {
             let len = self.valid_len;
             let array = self.data.to_slice_mut();
-            Chunk::execute_partial(complexity,
-                                   &self.multicore_settings,
-                                   &mut array[0..len],
-                                   1,
-                                   argument,
-                                   move |array, argument| {
-                                       for num in array {
-                                           *num = op(*num, argument);
-                                       }
-                                   });
+            Chunk::execute_partial(
+                complexity,
+                &self.multicore_settings,
+                &mut array[0..len],
+                1,
+                argument,
+                move |array, argument| {
+                    for num in array {
+                        *num = op(*num, argument);
+                    }
+                },
+            );
         }
     }
 
-	/// Executes a complex function.
+    /// Executes a complex function.
     #[inline]
     fn pure_complex_operation<A, F>(&mut self, op: F, argument: A, complexity: Complexity)
-        where A: Sync + Copy + Send,
-              F: Fn(Complex<T>, A) -> Complex<T> + 'static + Sync
+    where
+        A: Sync + Copy + Send,
+        F: Fn(Complex<T>, A) -> Complex<T> + 'static + Sync,
     {
         {
             let len = self.valid_len;
             let array = self.data.to_slice_mut();
-            Chunk::execute_partial(complexity,
-                                   &self.multicore_settings,
-                                   &mut array[0..len],
-                                   2,
-                                   argument,
-                                   move |array, argument| {
-                                       let array = array_to_complex_mut(array);
-                                       for num in array {
-                                           *num = op(*num, argument);
-                                       }
-                                   });
+            Chunk::execute_partial(
+                complexity,
+                &self.multicore_settings,
+                &mut array[0..len],
+                2,
+                argument,
+                move |array, argument| {
+                    let array = array_to_complex_mut(array);
+                    for num in array {
+                        *num = op(*num, argument);
+                    }
+                },
+            );
         }
     }
-    
+
     #[inline]
-    fn simd_real_operationf<Reg: SimdGeneric<T>, F, G>(&mut self,
-                                    reg: RegType<Reg>,
-                                    simd_op: F,
-                                    scalar_op: G,
-                                    argument: T,
-                                    complexity: Complexity)
-        where F: Fn(Reg, Reg) -> Reg + 'static + Sync,
-              G: Fn(T, Reg) -> T + 'static + Sync
+    fn simd_real_operationf<Reg: SimdGeneric<T>, F, G>(
+        &mut self,
+        reg: RegType<Reg>,
+        simd_op: F,
+        scalar_op: G,
+        argument: T,
+        complexity: Complexity,
+    ) where
+        F: Fn(Reg, Reg) -> Reg + 'static + Sync,
+        G: Fn(T, Reg) -> T + 'static + Sync,
     {
         self.simd_real_operation(reg, simd_op, scalar_op, Reg::splat(argument), complexity);
     }
 
-	/// Executes a real function with SIMD optimization.
+    /// Executes a real function with SIMD optimization.
     #[inline]
-    fn simd_real_operation<Reg: SimdGeneric<T>, A, F, G>(&mut self,
-                                    _: RegType<Reg>,
-                                    simd_op: F,
-                                    scalar_op: G,
-                                    argument: A,
-                                    complexity: Complexity)
-        where A: Sync + Copy + Send,
-              F: Fn(Reg, A) -> Reg + 'static + Sync,
-              G: Fn(T, A) -> T + 'static + Sync
+    fn simd_real_operation<Reg: SimdGeneric<T>, A, F, G>(
+        &mut self,
+        _: RegType<Reg>,
+        simd_op: F,
+        scalar_op: G,
+        argument: A,
+        complexity: Complexity,
+    ) where
+        A: Sync + Copy + Send,
+        F: Fn(Reg, A) -> Reg + 'static + Sync,
+        G: Fn(T, A) -> T + 'static + Sync,
     {
         {
             let data_length = self.valid_len;
@@ -424,17 +424,19 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let (scalar_left, scalar_right, vectorization_length) =
                 Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if vectorization_length > 0 {
-                Chunk::execute_partial(complexity,
-                                       &self.multicore_settings,
-                                       &mut array[scalar_left..vectorization_length],
-                                       Reg::LEN,
-                                       argument,
-                                       move |array, argument| {
-                                           let array = Reg::array_to_regs_mut(array);
-                                           for reg in array {
-                                               *reg = simd_op(*reg, argument);
-                                           }
-                                       });
+                Chunk::execute_partial(
+                    complexity,
+                    &self.multicore_settings,
+                    &mut array[scalar_left..vectorization_length],
+                    Reg::LEN,
+                    argument,
+                    move |array, argument| {
+                        let array = Reg::array_to_regs_mut(array);
+                        for reg in array {
+                            *reg = simd_op(*reg, argument);
+                        }
+                    },
+                );
             }
             for num in &mut array[0..scalar_left] {
                 *num = scalar_op(*num, argument);
@@ -444,31 +446,41 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             }
         }
     }
-    
+
     #[inline]
-    fn simd_complex_operationf<Reg: SimdGeneric<T>, F, G>(&mut self,
-                                       reg: RegType<Reg>,
-                                       simd_op: F,
-                                       scalar_op: G,
-                                       argument: Complex<T>,
-                                       complexity: Complexity)
-        where F: Fn(Reg, Reg) -> Reg + 'static + Sync,
-              G: Fn(Complex<T>, Reg) -> Complex<T> + 'static + Sync
+    fn simd_complex_operationf<Reg: SimdGeneric<T>, F, G>(
+        &mut self,
+        reg: RegType<Reg>,
+        simd_op: F,
+        scalar_op: G,
+        argument: Complex<T>,
+        complexity: Complexity,
+    ) where
+        F: Fn(Reg, Reg) -> Reg + 'static + Sync,
+        G: Fn(Complex<T>, Reg) -> Complex<T> + 'static + Sync,
     {
-        self.simd_complex_operation(reg, simd_op, scalar_op, Reg::from_complex(argument), complexity)
+        self.simd_complex_operation(
+            reg,
+            simd_op,
+            scalar_op,
+            Reg::from_complex(argument),
+            complexity,
+        )
     }
 
-	/// Executes a complex function with SIMD optimization.
+    /// Executes a complex function with SIMD optimization.
     #[inline]
-    fn simd_complex_operation<Reg: SimdGeneric<T>, A, F, G>(&mut self,
-                                       _: RegType<Reg>,
-                                       simd_op: F,
-                                       scalar_op: G,
-                                       argument: A,
-                                       complexity: Complexity)
-        where A: Sync + Copy + Send,
-              F: Fn(Reg, A) -> Reg + 'static + Sync,
-              G: Fn(Complex<T>, A) -> Complex<T> + 'static + Sync
+    fn simd_complex_operation<Reg: SimdGeneric<T>, A, F, G>(
+        &mut self,
+        _: RegType<Reg>,
+        simd_op: F,
+        scalar_op: G,
+        argument: A,
+        complexity: Complexity,
+    ) where
+        A: Sync + Copy + Send,
+        F: Fn(Reg, A) -> Reg + 'static + Sync,
+        G: Fn(Complex<T>, A) -> Complex<T> + 'static + Sync,
     {
         {
             let data_length = self.valid_len;
@@ -476,17 +488,19 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let (scalar_left, scalar_right, vectorization_length) =
                 Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if vectorization_length > 0 {
-                Chunk::execute_partial(complexity,
-                                       &self.multicore_settings,
-                                       &mut array[scalar_left..vectorization_length],
-                                       Reg::LEN,
-                                       argument,
-                                       move |array, argument| {
-                                           let array = Reg::array_to_regs_mut(array);
-                                           for reg in array {
-                                               *reg = simd_op(*reg, argument);
-                                           }
-                                       });
+                Chunk::execute_partial(
+                    complexity,
+                    &self.multicore_settings,
+                    &mut array[scalar_left..vectorization_length],
+                    Reg::LEN,
+                    argument,
+                    move |array, argument| {
+                        let array = Reg::array_to_regs_mut(array);
+                        for reg in array {
+                            *reg = simd_op(*reg, argument);
+                        }
+                    },
+                );
             }
             {
                 let array = array_to_complex_mut(&mut array[0..scalar_left]);
@@ -503,16 +517,18 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
-	/// Executes a function which converts a complex array into a real array.
+    /// Executes a function which converts a complex array into a real array.
     #[inline]
-    fn pure_complex_to_real_operation<A, F, B>(&mut self,
-                                               buffer: &mut B,
-                                               op: F,
-                                               argument: A,
-                                               complexity: Complexity)
-        where A: Sync + Copy + Send,
-              F: Fn(Complex<T>, A) -> T + 'static + Sync,
-              B: for<'a> Buffer<'a, S, T>
+    fn pure_complex_to_real_operation<A, F, B>(
+        &mut self,
+        buffer: &mut B,
+        op: F,
+        argument: A,
+        complexity: Complexity,
+    ) where
+        A: Sync + Copy + Send,
+        F: Fn(Complex<T>, A) -> T + 'static + Sync,
+        B: for<'a> Buffer<'a, S, T>,
     {
         {
             let data_length = self.len();
@@ -520,31 +536,34 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             {
                 let array = self.data.to_slice_mut();
                 let temp = result.to_slice_mut();
-                Chunk::from_src_to_dest(complexity,
-                                        &self.multicore_settings,
-                                        &array[0..data_length],
-                                        2,
-                                        &mut temp[0..data_length / 2],
-                                        1,
-                                        argument,
-                                        move |array, range, target, argument| {
-                    let array = array_to_complex(&array[range.start..range.end]);
-                    for pair in array.iter().zip(target) {
-                        let (src, dest) = pair;
-                        *dest = op(*src, argument);
-                    }
-                });
+                Chunk::from_src_to_dest(
+                    complexity,
+                    &self.multicore_settings,
+                    &array[0..data_length],
+                    2,
+                    &mut temp[0..data_length / 2],
+                    1,
+                    argument,
+                    move |array, range, target, argument| {
+                        let array = array_to_complex(&array[range.start..range.end]);
+                        for pair in array.iter().zip(target) {
+                            let (src, dest) = pair;
+                            *dest = op(*src, argument);
+                        }
+                    },
+                );
                 self.valid_len = data_length / 2;
             }
             result.trade(&mut self.data);
         }
     }
 
-	/// Executes a function which converts a complex array into a real array. Conversion is applied in-place.
+    /// Executes a function which converts a complex array into a real array. Conversion is applied in-place.
     #[inline]
     fn pure_complex_to_real_operation_inplace<A, F>(&mut self, op: F, argument: A)
-        where A: Sync + Copy + Send,
-              F: Fn(Complex<T>, A) -> T + 'static + Sync
+    where
+        A: Sync + Copy + Send,
+        F: Fn(Complex<T>, A) -> T + 'static + Sync,
     {
         {
             let data_length = self.len();
@@ -558,19 +577,21 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
-	/// Executes a function which converts a complex array into a real array.
+    /// Executes a function which converts a complex array into a real array.
     #[inline]
-    fn simd_complex_to_real_operation<Reg: SimdGeneric<T>, A, F, G, B>(&mut self,
-                                                  _: RegType<Reg>,
-                                                  buffer: &mut B,
-                                                  simd_op: F,
-                                                  scalar_op: G,
-                                                  argument: A,
-                                                  complexity: Complexity)
-        where A: Sync + Copy + Send,
-              F: Fn(Reg, A) -> Reg + 'static + Sync,
-              G: Fn(Complex<T>, A) -> T + 'static + Sync,
-              B: for<'a> Buffer<'a, S, T>
+    fn simd_complex_to_real_operation<Reg: SimdGeneric<T>, A, F, G, B>(
+        &mut self,
+        _: RegType<Reg>,
+        buffer: &mut B,
+        simd_op: F,
+        scalar_op: G,
+        argument: A,
+        complexity: Complexity,
+    ) where
+        A: Sync + Copy + Send,
+        F: Fn(Reg, A) -> Reg + 'static + Sync,
+        G: Fn(Complex<T>, A) -> T + 'static + Sync,
+        B: for<'a> Buffer<'a, S, T>,
     {
         let data_length = self.len();
         let mut result = buffer.borrow(data_length / 2);
@@ -580,22 +601,24 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             let (scalar_left, scalar_right, vectorization_length) =
                 Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if vectorization_length > 0 {
-                Chunk::from_src_to_dest(complexity,
-                                        &self.multicore_settings,
-                                        &array[scalar_left..vectorization_length],
-                                        Reg::LEN,
-                                        &mut temp[scalar_left / 2..vectorization_length / 2],
-                                        Reg::LEN / 2,
-                                        argument,
-                                        move |array, range, target, argument| {
-                    let array = Reg::array_to_regs(&array[range.start..range.end]);
-                    let mut j = 0;
-                    for reg in array {
-                        let result = simd_op(*reg, argument);
-                        result.store_half_unchecked(target, j);
-                        j += Reg::LEN / 2;
-                    }
-                });
+                Chunk::from_src_to_dest(
+                    complexity,
+                    &self.multicore_settings,
+                    &array[scalar_left..vectorization_length],
+                    Reg::LEN,
+                    &mut temp[scalar_left / 2..vectorization_length / 2],
+                    Reg::LEN / 2,
+                    argument,
+                    move |array, range, target, argument| {
+                        let array = Reg::array_to_regs(&array[range.start..range.end]);
+                        let mut j = 0;
+                        for reg in array {
+                            let result = simd_op(*reg, argument);
+                            result.store_half_unchecked(target, j);
+                            j += Reg::LEN / 2;
+                        }
+                    },
+                );
             }
             {
                 let array = array_to_complex(&array[0..scalar_left]);
@@ -606,7 +629,10 @@ impl<S, T, N, D> DspVec<S, T, N, D>
             }
             {
                 let array = array_to_complex(&array[scalar_right..data_length]);
-                for pair in array.iter().zip(&mut temp[scalar_right / 2..data_length / 2]) {
+                for pair in array
+                    .iter()
+                    .zip(&mut temp[scalar_right / 2..data_length / 2])
+                {
                     let (src, dest) = pair;
                     *dest = scalar_op(*src, argument);
                 }
@@ -617,7 +643,7 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         result.trade(&mut self.data);
     }
 
-	/// Forwards calls to `swap_array_halves`.
+    /// Forwards calls to `swap_array_halves`.
     #[inline]
     fn swap_halves_priv(&mut self, forward: bool) {
         let len = self.len();
@@ -635,17 +661,19 @@ impl<S, T, N, D> DspVec<S, T, N, D>
         }
     }
 
-	/// Multiplies the vector with a window function.
+    /// Multiplies the vector with a window function.
     #[inline]
-    fn multiply_window_priv<TT, CMut, FA, F>(&mut self,
-                                             is_symmetric: bool,
-                                             convert_mut: CMut,
-                                             function_arg: FA,
-                                             fun: F)
-        where CMut: Fn(&mut [T]) -> &mut [TT],
-              FA: Copy + Sync + Send,
-              F: Fn(FA, usize, usize) -> TT + 'static + Sync,
-              TT: Zero + Mul<Output = TT> + Copy + Send + Sync + From<T>
+    fn multiply_window_priv<TT, CMut, FA, F>(
+        &mut self,
+        is_symmetric: bool,
+        convert_mut: CMut,
+        function_arg: FA,
+        fun: F,
+    ) where
+        CMut: Fn(&mut [T]) -> &mut [TT],
+        FA: Copy + Sync + Send,
+        F: Fn(FA, usize, usize) -> TT + 'static + Sync,
+        TT: Zero + Mul<Output = TT> + Copy + Send + Sync + From<T>,
     {
         if !is_symmetric {
             {
@@ -653,18 +681,20 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 let points = self.points();
                 let data = self.data.to_slice_mut();
                 let converted = convert_mut(&mut data[0..len]);
-                Chunk::execute_with_range(Complexity::Medium,
-                                          &self.multicore_settings,
-                                          converted,
-                                          1,
-                                          function_arg,
-                                          move |array, range, arg| {
-                    let mut j = range.start;
-                    for num in array {
-                        *num = (*num) * fun(arg, j, points);
-                        j += 1;
-                    }
-                });
+                Chunk::execute_with_range(
+                    Complexity::Medium,
+                    &self.multicore_settings,
+                    converted,
+                    1,
+                    function_arg,
+                    move |array, range, arg| {
+                        let mut j = range.start;
+                        for num in array {
+                            *num = (*num) * fun(arg, j, points);
+                            j += 1;
+                        }
+                    },
+                );
             }
         } else {
             {
@@ -672,32 +702,34 @@ impl<S, T, N, D> DspVec<S, T, N, D>
                 let points = self.points();
                 let data = self.data.to_slice_mut();
                 let converted = convert_mut(&mut data[0..len]);
-                Chunk::execute_sym_pairs_with_range(Complexity::Medium,
-                                                    &self.multicore_settings,
-                                                    converted,
-                                                    1,
-                                                    function_arg,
-                                                    move |array1, range, array2, _, arg| {
-                    assert!(array1.len() >= array2.len());
-                    let mut j = range.start;
-                    let len1 = array1.len();
-                    let len_diff = len1 - array2.len();
-                    {
-                        let iter1 = array1.iter_mut();
-                        let iter2 = array2.iter_mut().rev();
-                        for (num1, num2) in iter1.zip(iter2) {
+                Chunk::execute_sym_pairs_with_range(
+                    Complexity::Medium,
+                    &self.multicore_settings,
+                    converted,
+                    1,
+                    function_arg,
+                    move |array1, range, array2, _, arg| {
+                        assert!(array1.len() >= array2.len());
+                        let mut j = range.start;
+                        let len1 = array1.len();
+                        let len_diff = len1 - array2.len();
+                        {
+                            let iter1 = array1.iter_mut();
+                            let iter2 = array2.iter_mut().rev();
+                            for (num1, num2) in iter1.zip(iter2) {
+                                let arg = fun(arg, j, points);
+                                *num1 = (*num1) * arg;
+                                *num2 = (*num2) * arg;
+                                j += 1;
+                            }
+                        }
+                        for num1 in &mut array1[len1 - len_diff..len1] {
                             let arg = fun(arg, j, points);
                             *num1 = (*num1) * arg;
-                            *num2 = (*num2) * arg;
                             j += 1;
                         }
-                    }
-                    for num1 in &mut array1[len1 - len_diff..len1] {
-                        let arg = fun(arg, j, points);
-                        *num1 = (*num1) * arg;
-                        j += 1;
-                    }
-                });
+                    },
+                );
             }
         }
     }
@@ -731,16 +763,18 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber> BufferBorrow<S, T> for NoTradeBufferBu
 /// For internal use only. A buffer which doesn't implement the `swap` routine. Swapping is a no-op in this
 /// implementation. This can be useful in cases where an implementation will do the swap step on its own.
 struct NoTradeBuffer<S, T>
-    where S: ToSliceMut<T>,
-          T: RealNumber
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
 {
     data: S,
     data_type: std::marker::PhantomData<T>,
 }
 
 impl<S, T> NoTradeBuffer<S, T>
-    where S: ToSliceMut<T>,
-          T: RealNumber
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
 {
     /// Creates a new buffer from a storage type. The buffer will internally hold
     /// its storage for it's complete life time.
@@ -753,8 +787,9 @@ impl<S, T> NoTradeBuffer<S, T>
 }
 
 impl<'a, S, T> Buffer<'a, S, T> for NoTradeBuffer<S, T>
-    where S: ToSliceMut<T>,
-          T: RealNumber + 'a
+where
+    S: ToSliceMut<T>,
+    T: RealNumber + 'a,
 {
     type Borrow = NoTradeBufferBurrow<'a, T>;
 
@@ -763,7 +798,9 @@ impl<'a, S, T> Buffer<'a, S, T> for NoTradeBuffer<S, T>
             panic!("NoTradeBuffer: Out of memory");
         }
 
-        NoTradeBufferBurrow { data: &mut self.data.to_slice_mut()[0..len] }
+        NoTradeBufferBurrow {
+            data: &mut self.data.to_slice_mut()[0..len],
+        }
     }
 
     fn alloc_len(&self) -> usize {

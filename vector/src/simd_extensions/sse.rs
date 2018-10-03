@@ -1,9 +1,9 @@
-use simd::*;
-use simd::x86::sse2::*;
-use std::arch::x86_64::*;
-use numbers::*;
-use std::mem;
 use super::{Simd, SimdFrom};
+use numbers::*;
+use simd::x86::sse2::*;
+use simd::*;
+use std::arch::x86_64::*;
+use std::mem;
 
 /// This value must be read in groups of 2 bits:
 /// 10 means that the third position (since it's the third bit pair)
@@ -21,8 +21,8 @@ impl Simd<f32> for f32x4 {
     }
 
     type ComplexArray = [Complex<f32>; 2];
-	
-	const LEN: usize = 4;
+
+    const LEN: usize = 4;
 
     #[inline]
     fn load_wrap_unchecked(array: &[f32], idx: usize) -> f32x4 {
@@ -63,43 +63,66 @@ impl Simd<f32> for f32x4 {
         let parallel = scaling_real * self;
         let shuffled = self.swap_iq();
         let cross = scaling_imag * shuffled;
-		unsafe { mem::transmute(_mm_addsub_ps(mem::transmute(parallel), mem::transmute(cross))) }
+        unsafe {
+            mem::transmute(_mm_addsub_ps(
+                mem::transmute(parallel),
+                mem::transmute(cross),
+            ))
+        }
     }
 
     #[inline]
     fn mul_complex(self, value: f32x4) -> f32x4 {
-        let scaling_real = f32x4::new(value.extract(0),
-                                      value.extract(0),
-                                      value.extract(2),
-                                      value.extract(2));
+        let scaling_real = f32x4::new(
+            value.extract(0),
+            value.extract(0),
+            value.extract(2),
+            value.extract(2),
+        );
 
-        let scaling_imag = f32x4::new(value.extract(1),
-                                      value.extract(1),
-                                      value.extract(3),
-                                      value.extract(3));
+        let scaling_imag = f32x4::new(
+            value.extract(1),
+            value.extract(1),
+            value.extract(3),
+            value.extract(3),
+        );
 
         let parallel = scaling_real * self;
         let shuffled = self.swap_iq();
         let cross = scaling_imag * shuffled;
-		unsafe { mem::transmute(_mm_addsub_ps(mem::transmute(parallel), mem::transmute(cross))) }
+        unsafe {
+            mem::transmute(_mm_addsub_ps(
+                mem::transmute(parallel),
+                mem::transmute(cross),
+            ))
+        }
     }
 
     #[inline]
     fn div_complex(self, value: f32x4) -> f32x4 {
-        let scaling_imag = f32x4::new(self.extract(0),
-                                      self.extract(0),
-                                      self.extract(2),
-                                      self.extract(2));
+        let scaling_imag = f32x4::new(
+            self.extract(0),
+            self.extract(0),
+            self.extract(2),
+            self.extract(2),
+        );
 
-        let scaling_real = f32x4::new(self.extract(1),
-                                      self.extract(1),
-                                      self.extract(3),
-                                      self.extract(3));
-                                                      
+        let scaling_real = f32x4::new(
+            self.extract(1),
+            self.extract(1),
+            self.extract(3),
+            self.extract(3),
+        );
+
         let parallel = scaling_real * value;
         let shuffled = value.swap_iq();
         let cross = scaling_imag * shuffled;
-		let mul: f32x4 = unsafe { mem::transmute(_mm_addsub_ps(mem::transmute(parallel), mem::transmute(cross))) };
+        let mul: f32x4 = unsafe {
+            mem::transmute(_mm_addsub_ps(
+                mem::transmute(parallel),
+                mem::transmute(cross),
+            ))
+        };
         let square = shuffled * shuffled;
         let square_shuffled = square.swap_iq();
         let sum = square + square_shuffled;
@@ -110,7 +133,12 @@ impl Simd<f32> for f32x4 {
     #[inline]
     fn complex_abs_squared(self) -> f32x4 {
         let squared = self * self;
-        unsafe { mem::transmute(_mm_hadd_ps(mem::transmute(squared), mem::transmute(squared))) }
+        unsafe {
+            mem::transmute(_mm_hadd_ps(
+                mem::transmute(squared),
+                mem::transmute(squared),
+            ))
+        }
     }
 
     #[inline]
@@ -121,60 +149,63 @@ impl Simd<f32> for f32x4 {
 
     #[inline]
     fn complex_abs_squared2(self) -> f32x4 {
-
         let abs = self.complex_abs_squared();
-        f32x4::new(abs.extract(0),
-                   abs.extract(2),
-                   abs.extract(1),
-                   abs.extract(3))
+        f32x4::new(
+            abs.extract(0),
+            abs.extract(2),
+            abs.extract(1),
+            abs.extract(3),
+        )
     }
 
     #[inline]
     fn complex_abs2(self) -> f32x4 {
-
         let abs = self.complex_abs();
-        f32x4::new(abs.extract(0),
-                   abs.extract(2),
-                   abs.extract(1),
-                   abs.extract(3))
+        f32x4::new(
+            abs.extract(0),
+            abs.extract(2),
+            abs.extract(1),
+            abs.extract(3),
+        )
     }
 
     #[inline]
     fn sqrt(self) -> f32x4 {
-		self.sqrt()
+        self.sqrt()
     }
 
     #[inline]
     fn store_half_unchecked(self, target: &mut [f32], index: usize) {
         unsafe {
             *target.get_unchecked_mut(index) = self.extract(0);
-            *target.get_unchecked_mut(index + 1) = self.extract(1);                             
+            *target.get_unchecked_mut(index + 1) = self.extract(1);
         }
     }
 
     #[inline]
     fn sum_real(&self) -> f32 {
         self.extract(0) + self.extract(1) + self.extract(2) + self.extract(3)
-                                                                             
     }
 
     #[inline]
     fn sum_complex(&self) -> Complex<f32> {
-        Complex::<f32>::new(self.extract(0) + self.extract(2),
-                            self.extract(1) + self.extract(3))
+        Complex::<f32>::new(
+            self.extract(0) + self.extract(2),
+            self.extract(1) + self.extract(3),
+        )
     }
-    
+
     #[inline]
     fn max(self, other: Self) -> Self {
-		self.max(other)
+        self.max(other)
     }
-    
+
     #[inline]
     fn min(self, other: Self) -> Self {
-		self.min(other)
+        self.min(other)
     }
-	
-	#[inline]
+
+    #[inline]
     fn swap_iq(self) -> Self {
         unsafe { mem::transmute(_mm_permute_ps(mem::transmute(self), SWAP_IQ_PS)) }
     }
@@ -191,8 +222,8 @@ impl Simd<f64> for f64x2 {
     }
 
     type ComplexArray = [Complex<f64>; 1];
-	
-	const LEN: usize = 2;
+
+    const LEN: usize = 2;
 
     #[inline]
     fn load_wrap_unchecked(array: &[f64], idx: usize) -> f64x2 {
@@ -239,12 +270,12 @@ impl Simd<f64> for f64x2 {
         let complex = Complex::new(self.extract(0), self.extract(1));
         let value = Complex::new(value.extract(0), value.extract(1));
         let result = complex * value;
-        f64x2::new(result.re, result.im)            
+        f64x2::new(result.re, result.im)
     }
 
     #[inline]
     fn div_complex(self, value: f64x2) -> f64x2 {
-        let complex = Complex::new(self.extract(0), self.extract(1));       
+        let complex = Complex::new(self.extract(0), self.extract(1));
         let value = Complex::new(value.extract(0), value.extract(1));
         let result = complex / value;
         f64x2::new(result.re, result.im)
@@ -265,7 +296,7 @@ impl Simd<f64> for f64x2 {
         let result = (a * a + b * b).sqrt();
         f64x2::new(result, 0.0)
     }
-    
+
     #[inline]
     fn complex_abs_squared2(self) -> f64x2 {
         self.complex_abs_squared()
@@ -278,7 +309,7 @@ impl Simd<f64> for f64x2 {
 
     #[inline]
     fn sqrt(self) -> f64x2 {
-		simd::x86::sse2::Sse2F64x2::sqrt(self)
+        simd::x86::sse2::Sse2F64x2::sqrt(self)
     }
 
     #[inline]
@@ -297,17 +328,17 @@ impl Simd<f64> for f64x2 {
     fn sum_complex(&self) -> Complex<f64> {
         Complex::<f64>::new(self.extract(0), self.extract(1))
     }
-    
+
     #[inline]
     fn max(self, other: Self) -> Self {
-		simd::x86::sse2::Sse2F64x2::max(self, other)
+        simd::x86::sse2::Sse2F64x2::max(self, other)
     }
-    
+
     #[inline]
     fn min(self, other: Self) -> Self {
-		simd::x86::sse2::Sse2F64x2::min(self, other)
+        simd::x86::sse2::Sse2F64x2::min(self, other)
     }
-    
+
     #[inline]
     fn swap_iq(self) -> Self {
         f64x2::new(self.extract(1), self.extract(0))
@@ -347,8 +378,8 @@ mod tests {
         let vec = f32x4::new(1.0, 2.0, 3.0, 4.0);
         let result = vec.swap_iq();
         assert_eq!(result.extract(0), vec.extract(1));
-		assert_eq!(result.extract(1), vec.extract(0));
-		assert_eq!(result.extract(2), vec.extract(3));
-		assert_eq!(result.extract(3), vec.extract(2));
+        assert_eq!(result.extract(1), vec.extract(0));
+        assert_eq!(result.extract(2), vec.extract(3));
+        assert_eq!(result.extract(3), vec.extract(2));
     }
 }

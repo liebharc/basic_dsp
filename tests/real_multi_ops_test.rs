@@ -1,11 +1,11 @@
 extern crate basic_dsp;
-extern crate rand;
 extern crate num;
+extern crate rand;
 pub mod tools;
 
 mod real_test {
-    use basic_dsp::*;
     use basic_dsp::combined_ops::*;
+    use basic_dsp::*;
     use tools::*;
 
     #[test]

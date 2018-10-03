@@ -1,5 +1,5 @@
-use basic_dsp::*;
 use basic_dsp::numbers::*;
+use basic_dsp::*;
 use std::boxed::Box;
 
 pub const DEFAULT_DATA_SIZE: usize = 10000;
@@ -12,17 +12,15 @@ pub type ComplexTime32Box = VectorBox<ComplexTimeVec<Vec<f32>, f32>, f32>;
 pub type Gen32Box = VectorBox<GenDspVec<Vec<f32>, f32>, f32>;
 
 pub struct VectorBox<B, T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     pub vector: *mut B,
     pub size: usize,
     pub buffer: SingleBuffer<T>,
 }
 
-#[derive(Copy)]
-#[derive(Clone)]
-#[derive(PartialEq)]
-#[derive(Debug)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum Size {
     Tiny,
     Small,
@@ -117,14 +115,16 @@ impl VectorBox<RealTimeVec<Vec<f64>, f64>, f64> {
 
 #[allow(dead_code)]
 impl<B, T> VectorBox<B, T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     pub fn len(&self) -> usize {
         self.size
     }
 
     pub fn execute<F>(&mut self, function: F) -> bool
-        where F: Fn(B, &mut SingleBuffer<T>) -> B + 'static + Sync
+    where
+        F: Fn(B, &mut SingleBuffer<T>) -> B + 'static + Sync,
     {
         unsafe {
             let vector = Box::from_raw(self.vector);
@@ -137,7 +137,8 @@ impl<B, T> VectorBox<B, T>
 }
 
 impl<B, T> Drop for VectorBox<B, T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn drop(&mut self) {
         unsafe {

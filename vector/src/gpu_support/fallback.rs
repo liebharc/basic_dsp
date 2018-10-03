@@ -9,12 +9,12 @@ pub type Gpu32 = f32;
 pub type Gpu64 = f64;
 
 /// This trait is required to interface between `basic_dsp` and `opencl`.
-/// Without the feature flag `use_gpu` is will default to a `num` trait so 
+/// Without the feature flag `use_gpu` is will default to a `num` trait so
 /// that other code can always rely that this type is defined.
 pub trait GpuFloat: Float {}
 
 /// This trait is required to interface between `basic_dsp` and `opencl`.
-/// Without the feature flag `use_gpu` is will default to a `num` trait so 
+/// Without the feature flag `use_gpu` is will default to a `num` trait so
 /// that other code can always rely that this type is defined.
 pub trait GpuRegTrait: Float {}
 
@@ -39,13 +39,14 @@ impl<T: RealNumber> GpuSupport<T> for T {
         panic!("GPU support not available, call `has_gpu_support` first.")
     }
 
-    fn overlap_discard(_: &mut [T],
-                       _: &mut [T],
-                       _: &mut [T],
-                       _: &[T],
-                       _: usize,
-                       _: usize)
-                       -> usize {
+    fn overlap_discard(
+        _: &mut [T],
+        _: &mut [T],
+        _: &mut [T],
+        _: &[T],
+        _: usize,
+        _: usize,
+    ) -> usize {
         panic!("GPU support not available, call `has_gpu_support` first.")
     }
 }

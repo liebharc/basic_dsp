@@ -1,15 +1,18 @@
 //! Fundamental math operations
-use {array_to_complex, array_to_complex_mut};
+use super::super::{
+    ComplexNumberSpace, Domain, DspVec, ErrorReason, GetMetaData, MetaData, NumberSpace, PosEq,
+    ToSliceMut, Vector, VoidResult,
+};
 use multicore_support::*;
-use simd_extensions::*;
 use numbers::*;
+use simd_extensions::*;
 use std::ops::*;
-use super::super::{ErrorReason, VoidResult, Vector, GetMetaData, DspVec, ToSliceMut, MetaData,
-                   Domain, NumberSpace, ComplexNumberSpace, PosEq};
+use {array_to_complex, array_to_complex_mut};
 
 /// An operation which multiplies each vector element with a constant
 pub trait ScaleOps<T>: Sized
-    where T: Sized
+where
+    T: Sized,
 {
     /// Multiplies the vector element with a scalar.
     ///
@@ -35,7 +38,8 @@ pub trait ScaleOps<T>: Sized
 
 /// An operation which adds a constant to each vector element
 pub trait OffsetOps<T>: Sized
-    where T: Sized
+where
+    T: Sized,
 {
     /// Adds a scalar to each vector element.
     ///
@@ -60,8 +64,10 @@ pub trait OffsetOps<T>: Sized
 }
 
 /// Elementary algebra on types: addition, subtraction, multiplication and division
-pub trait ElementaryOps<A, T: RealNumber, N: NumberSpace, D: Domain> 
-    where A: GetMetaData<T, N, D> {
+pub trait ElementaryOps<A, T: RealNumber, N: NumberSpace, D: Domain>
+where
+    A: GetMetaData<T, N, D>,
+{
     /// Calculates the sum of `self + summand`. It consumes self and returns the result.
     /// # Failures
     /// TransRes may report the following `ErrorReason` members:
@@ -156,8 +162,10 @@ pub trait ElementaryOps<A, T: RealNumber, N: NumberSpace, D: Domain>
 }
 
 /// Elementary algebra on types where the argument might contain less data points than `self`.
-pub trait ElementaryWrapAroundOps<A, T: RealNumber, N: NumberSpace, D: Domain> 
-    where A: GetMetaData<T, N, D> {
+pub trait ElementaryWrapAroundOps<A, T: RealNumber, N: NumberSpace, D: Domain>
+where
+    A: GetMetaData<T, N, D>,
+{
     /// Calculates the sum of `self + summand`. `summand` may be smaller than `self` as long
     /// as `self.len() % summand.len() == 0`. THe result is the same as it would be if
     /// you would repeat `summand` until it has the same length as `self`.
@@ -269,71 +277,85 @@ macro_rules! assert_complex {
             $self_.valid_len = 0;
             return;
         }
-    }
+    };
 }
 
 impl<S, T, N, D> OffsetOps<T> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn offset(&mut self, offset: T) {
         if self.is_complex() {
-            sel_reg!(self.simd_complex_operationf::<T>(|x, y| x + y,
-                                        |x, y| x + Complex::<T>::new(y.extract(0), y.extract(1)),
-                                        Complex::new(offset, T::zero()),
-                                        Complexity::Small));
+            sel_reg!(self.simd_complex_operationf::<T>(
+                |x, y| x + y,
+                |x, y| x + Complex::<T>::new(y.extract(0), y.extract(1)),
+                Complex::new(offset, T::zero()),
+                Complexity::Small
+            ));
         } else {
-            sel_reg!(self.simd_real_operation::<T>(|x, y| x.add_real(y),
-                                     |x, y| x + y,
-                                     offset,
-                                     Complexity::Small));
+            sel_reg!(self.simd_real_operation::<T>(
+                |x, y| x.add_real(y),
+                |x, y| x + y,
+                offset,
+                Complexity::Small
+            ));
         }
     }
 }
 
 impl<S, T, N, D> OffsetOps<Complex<T>> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     fn offset(&mut self, offset: Complex<T>) {
         assert_complex!(self);
-        sel_reg!(self.simd_complex_operationf::<T>(|x, y| x + y,
-                                    |x, y| x + Complex::<T>::new(y.extract(0), y.extract(1)),
-                                    offset,
-                                    Complexity::Small));
+        sel_reg!(self.simd_complex_operationf::<T>(
+            |x, y| x + y,
+            |x, y| x + Complex::<T>::new(y.extract(0), y.extract(1)),
+            offset,
+            Complexity::Small
+        ));
     }
 }
 
 impl<S, T, D, N> ScaleOps<T> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn scale(&mut self, factor: T) {
-        sel_reg!(self.simd_real_operation::<T>(|x, y| x.scale_real(y),
-                                 |x, y| x * y,
-                                 factor,
-                                 Complexity::Small));
+        sel_reg!(self.simd_real_operation::<T>(
+            |x, y| x.scale_real(y),
+            |x, y| x * y,
+            factor,
+            Complexity::Small
+        ));
     }
 }
 
 impl<S, T, D, N> ScaleOps<Complex<T>> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     fn scale(&mut self, factor: Complex<T>) {
         assert_complex!(self);
-        sel_reg!(self.simd_complex_operation::<T>(|x, y| x.scale_complex(y),
-                                    |x, y| x * y,
-                                    factor,
-                                    Complexity::Small));
+        sel_reg!(self.simd_complex_operation::<T>(
+            |x, y| x.scale_complex(y),
+            |x, y| x * y,
+            factor,
+            Complexity::Small
+        ));
     }
 }
 
@@ -342,20 +364,20 @@ macro_rules! reject_if {
         if $condition {
             return Err($message);
         }
-    }
+    };
 }
 
 macro_rules! assert_meta_data {
-    ($self_: ident, $other: ident) => {
-         {
-            let delta_ratio = $self_.delta() / $other.delta();
-            if $self_.is_complex() != $other.is_complex() ||
-                $self_.domain() != $other.domain() ||
-                delta_ratio > T::from(1.1).unwrap() || delta_ratio < T::from(0.9).unwrap() {
-                return Err(ErrorReason::InputMetaDataMustAgree);
-            }
-         }
-    }
+    ($self_: ident, $other: ident) => {{
+        let delta_ratio = $self_.delta() / $other.delta();
+        if $self_.is_complex() != $other.is_complex()
+            || $self_.domain() != $other.domain()
+            || delta_ratio > T::from(1.1).unwrap()
+            || delta_ratio < T::from(0.9).unwrap()
+        {
+            return Err(ErrorReason::InputMetaDataMustAgree);
+        }
+    }};
 }
 
 macro_rules! impl_binary_vector_operation {
@@ -518,10 +540,11 @@ macro_rules! impl_binary_smaller_complex_vector_ops {
 }
 
 impl<S, T, N, D> DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     impl_binary_smaller_vector_operation!(fn add_smaller_inter, summand, add, add);
     impl_binary_smaller_vector_operation!(fn sub_smaller_inter, subtrahend, sub, sub);
@@ -538,13 +561,14 @@ impl<S, T, N, D> DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D, O, NO, DO> ElementaryOps<O, T, NO, DO> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain,
-          O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
-          NO: PosEq<N> + NumberSpace,
-          DO: PosEq<D> + Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
+    O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
+    NO: PosEq<N> + NumberSpace,
+    DO: PosEq<D> + Domain,
 {
     fn add(&mut self, summand: &O) -> VoidResult {
         sel_reg!(self.add_inter::<T>(summand))
@@ -556,7 +580,11 @@ impl<S, T, N, D, O, NO, DO> ElementaryOps<O, T, NO, DO> for DspVec<S, T, N, D>
 
     fn mul(&mut self, factor: &O) -> VoidResult {
         let len = self.len();
-        reject_if!(self, len != factor.len(), ErrorReason::InputMustHaveTheSameSize);
+        reject_if!(
+            self,
+            len != factor.len(),
+            ErrorReason::InputMustHaveTheSameSize
+        );
         assert_meta_data!(self, factor);
 
         if self.is_complex() {
@@ -568,7 +596,11 @@ impl<S, T, N, D, O, NO, DO> ElementaryOps<O, T, NO, DO> for DspVec<S, T, N, D>
 
     fn div(&mut self, divisor: &O) -> VoidResult {
         let len = self.len();
-        reject_if!(self, len != divisor.len(), ErrorReason::InputMustHaveTheSameSize);
+        reject_if!(
+            self,
+            len != divisor.len(),
+            ErrorReason::InputMustHaveTheSameSize
+        );
         assert_meta_data!(self, divisor);
 
         if self.is_complex() {
@@ -580,13 +612,15 @@ impl<S, T, N, D, O, NO, DO> ElementaryOps<O, T, NO, DO> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D, O, NO, DO> ElementaryWrapAroundOps<O, T, NO, DO> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain,
-          O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
-          NO: PosEq<N> + NumberSpace,
-          DO: PosEq<D> + Domain {
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
+    O: Vector<T> + Index<RangeFull, Output = [T]> + GetMetaData<T, NO, DO>,
+    NO: PosEq<N> + NumberSpace,
+    DO: PosEq<D> + Domain,
+{
     fn add_smaller(&mut self, summand: &O) -> VoidResult {
         sel_reg!(self.add_smaller_inter::<T>(summand))
     }
@@ -597,7 +631,11 @@ impl<S, T, N, D, O, NO, DO> ElementaryWrapAroundOps<O, T, NO, DO> for DspVec<S, 
 
     fn mul_smaller(&mut self, factor: &O) -> VoidResult {
         let len = self.len();
-        reject_if!(self, len % factor.len() != 0, ErrorReason::InvalidArgumentLength);
+        reject_if!(
+            self,
+            len % factor.len() != 0,
+            ErrorReason::InvalidArgumentLength
+        );
         assert_meta_data!(self, factor);
 
         if self.is_complex() {
@@ -609,7 +647,11 @@ impl<S, T, N, D, O, NO, DO> ElementaryWrapAroundOps<O, T, NO, DO> for DspVec<S, 
 
     fn div_smaller(&mut self, divisor: &O) -> VoidResult {
         let len = self.len();
-        reject_if!(self, len % divisor.len() != 0, ErrorReason::InvalidArgumentLength);
+        reject_if!(
+            self,
+            len % divisor.len() != 0,
+            ErrorReason::InvalidArgumentLength
+        );
         assert_meta_data!(self, divisor);
 
         if self.is_complex() {

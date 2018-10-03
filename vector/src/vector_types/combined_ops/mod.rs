@@ -66,8 +66,8 @@
 //! ```
 //!
 
-mod ops_impl;
 mod operations_enum;
+mod ops_impl;
 pub use self::operations_enum::*;
 mod prepared_ops;
 pub use self::prepared_ops::*;
@@ -75,15 +75,17 @@ mod multi_ops;
 pub use self::multi_ops::*;
 mod identifier_ops;
 pub use self::identifier_ops::*;
-use simd_extensions::*;
-use multicore_support::*;
-use std::ops::Range;
-use super::{round_len, ToSliceMut, DspVec, ErrorReason, MetaData, TransRes, Vector,
-            RealToComplexTransformsOpsBuffered, ComplexToRealTransformsOps, Buffer,
-            RealOrComplexData, TimeOrFrequencyData, Domain, NumberSpace, DataDomain};
-use std::fmt;
-use numbers::*;
+use super::{
+    round_len, Buffer, ComplexToRealTransformsOps, DataDomain, Domain, DspVec, ErrorReason,
+    MetaData, NumberSpace, RealOrComplexData, RealToComplexTransformsOpsBuffered,
+    TimeOrFrequencyData, ToSliceMut, TransRes, Vector,
+};
 use inline_vector::InlineVector;
+use multicore_support::*;
+use numbers::*;
+use simd_extensions::*;
+use std::fmt;
+use std::ops::Range;
 
 fn require_complex(is_complex: bool) -> Result<bool, ErrorReason> {
     if is_complex {
@@ -117,62 +119,65 @@ fn require_real(is_complex: bool) -> Result<bool, ErrorReason> {
     }
 }
 
-fn evaluate_number_space_transition<T>(is_complex: bool,
-                                       operation: &Operation<T>)
-                                       -> Result<bool, ErrorReason>
-    where T: RealNumber
+fn evaluate_number_space_transition<T>(
+    is_complex: bool,
+    operation: &Operation<T>,
+) -> Result<bool, ErrorReason>
+where
+    T: RealNumber,
 {
     match *operation {
         // Real Ops
-        Operation::AddReal(_, _) |
-        Operation::MultiplyReal(_, _) |
-        Operation::Abs(_) => require_real(is_complex),
+        Operation::AddReal(_, _) | Operation::MultiplyReal(_, _) | Operation::Abs(_) => {
+            require_real(is_complex)
+        }
         Operation::ToComplex(_) => real_to_complex(is_complex),
         // Complex Ops
-        Operation::AddComplex(_, _) |
-        Operation::MultiplyComplex(_, _) |
-        Operation::ComplexConj(_) |
-        Operation::MultiplyComplexExponential(_, _, _) => require_complex(is_complex),
-        Operation::Magnitude(_) |
-        Operation::MagnitudeSquared(_) |
-        Operation::ToReal(_) |
-        Operation::ToImag(_) |
-        Operation::Phase(_) => complex_to_real(is_complex),
+        Operation::AddComplex(_, _)
+        | Operation::MultiplyComplex(_, _)
+        | Operation::ComplexConj(_)
+        | Operation::MultiplyComplexExponential(_, _, _) => require_complex(is_complex),
+        Operation::Magnitude(_)
+        | Operation::MagnitudeSquared(_)
+        | Operation::ToReal(_)
+        | Operation::ToImag(_)
+        | Operation::Phase(_) => complex_to_real(is_complex),
         // General Ops
-        Operation::AddPoints(_) |
-        Operation::SubPoints(_) |
-        Operation::MulPoints(_) |
-        Operation::DivPoints(_) |
-        Operation::AddVector(_, _) |
-        Operation::SubVector(_, _) |
-        Operation::MulVector(_, _) |
-        Operation::DivVector(_, _) |
-        Operation::Sqrt(_) |
-        Operation::Square(_) |
-        Operation::Root(_, _) |
-        Operation::Powf(_, _) |
-        Operation::Ln(_) |
-        Operation::Exp(_) |
-        Operation::Log(_, _) |
-        Operation::Expf(_, _) |
-        Operation::Sin(_) |
-        Operation::Cos(_) |
-        Operation::Tan(_) |
-        Operation::ASin(_) |
-        Operation::ACos(_) |
-        Operation::ATan(_) |
-        Operation::Sinh(_) |
-        Operation::Cosh(_) |
-        Operation::Tanh(_) |
-        Operation::ASinh(_) |
-        Operation::ACosh(_) |
-        Operation::ATanh(_) |
-        Operation::CloneFrom(_, _) => Ok(is_complex),
+        Operation::AddPoints(_)
+        | Operation::SubPoints(_)
+        | Operation::MulPoints(_)
+        | Operation::DivPoints(_)
+        | Operation::AddVector(_, _)
+        | Operation::SubVector(_, _)
+        | Operation::MulVector(_, _)
+        | Operation::DivVector(_, _)
+        | Operation::Sqrt(_)
+        | Operation::Square(_)
+        | Operation::Root(_, _)
+        | Operation::Powf(_, _)
+        | Operation::Ln(_)
+        | Operation::Exp(_)
+        | Operation::Log(_, _)
+        | Operation::Expf(_, _)
+        | Operation::Sin(_)
+        | Operation::Cos(_)
+        | Operation::Tan(_)
+        | Operation::ASin(_)
+        | Operation::ACos(_)
+        | Operation::ATan(_)
+        | Operation::Sinh(_)
+        | Operation::Cosh(_)
+        | Operation::Tanh(_)
+        | Operation::ASinh(_)
+        | Operation::ACosh(_)
+        | Operation::ATanh(_)
+        | Operation::CloneFrom(_, _) => Ok(is_complex),
     }
 }
 
 fn get_argument<T>(operation: &Operation<T>) -> usize
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     match *operation {
         // Real Ops
@@ -225,19 +230,24 @@ fn get_argument<T>(operation: &Operation<T>) -> usize
 }
 
 trait PerformOperationSimd<T>
-    where T: RealNumber,
-          Self: Sized
+where
+    T: RealNumber,
+    Self: Sized,
 {
     #[inline]
-    fn perform_real_operation(vectors: &mut [Self],
-                              operation: &Operation<T>,
-                              index: usize,
-                              points: usize);
+    fn perform_real_operation(
+        vectors: &mut [Self],
+        operation: &Operation<T>,
+        index: usize,
+        points: usize,
+    );
     #[inline]
-    fn perform_complex_operation(vectors: &mut [Self],
-                                 operation: &Operation<T>,
-                                 index: usize,
-                                 points: usize);
+    fn perform_complex_operation(
+        vectors: &mut [Self],
+        operation: &Operation<T>,
+        index: usize,
+        points: usize,
+    );
 }
 
 /// An `Identifier` args values plus its counters value at a certain point in time.
@@ -250,9 +260,10 @@ type OpsVec<T> = Vec<(IdAndVersion, Operation<T>, Option<IdAndVersion>)>;
 /// An identifier is just a placeholder for a data type
 /// used to ensure already at compile time that operations are valid.
 pub struct Identifier<T, N, D>
-    where T: RealNumber,
-          D: Domain,
-          N: NumberSpace
+where
+    T: RealNumber,
+    D: Domain,
+    N: NumberSpace,
 {
     arg: usize,
     ops: OpsVec<T>,
@@ -262,22 +273,25 @@ pub struct Identifier<T, N, D>
 }
 
 impl<T, N, D> fmt::Debug for Identifier<T, N, D>
-    where T: RealNumber,
-          D: Domain,
-          N: NumberSpace
+where
+    T: RealNumber,
+    D: Domain,
+    N: NumberSpace,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f,
-               "Identifier {{ domain: {:?}, number_space: {:?} }}",
-               self.domain,
-               self.number_space)
+        write!(
+            f,
+            "Identifier {{ domain: {:?}, number_space: {:?} }}",
+            self.domain, self.number_space
+        )
     }
 }
 
 impl<T, N, D> Identifier<T, N, D>
-    where T: RealNumber,
-          D: Domain,
-          N: NumberSpace
+where
+    T: RealNumber,
+    D: Domain,
+    N: NumberSpace,
 {
     /// Pushes an operation to the queue.
     fn add_op(&mut self, op: Operation<T>) {
@@ -295,7 +309,8 @@ impl<T, N, D> Identifier<T, N, D>
             self.counter += 1;
             self.counter
         };
-        self.ops.push(((self.arg, seq), op, Some((other.arg, other.counter))));
+        self.ops
+            .push(((self.arg, seq), op, Some((other.arg, other.counter))));
     }
 }
 
@@ -305,11 +320,12 @@ impl<T, N, D> Identifier<T, N, D>
 /// The type arguments can be read like a function definition: TI1 -> TO1
 #[derive(Clone)]
 pub struct PreparedOperation1<T, NI, DI, NO, DO>
-    where T: RealNumber,
-          NI: NumberSpace,
-          DI: Domain,
-          NO: NumberSpace,
-          DO: Domain
+where
+    T: RealNumber,
+    NI: NumberSpace,
+    DI: Domain,
+    NO: NumberSpace,
+    DO: Domain,
 {
     number_space_in: NI,
     domain_in: DI,
@@ -324,15 +340,16 @@ pub struct PreparedOperation1<T, NI, DI, NO, DO>
 /// The type arguments can be read like a function definition: (TI1, TI2) -> (TO1, TO2)
 #[derive(Clone)]
 pub struct PreparedOperation2<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2>
-    where T: RealNumber,
-          NI1: NumberSpace,
-          DI1: Domain,
-          NI2: NumberSpace,
-          DI2: Domain,
-          NO1: NumberSpace,
-          DO1: Domain,
-          NO2: NumberSpace,
-          DO2: Domain
+where
+    T: RealNumber,
+    NI1: NumberSpace,
+    DI1: Domain,
+    NI2: NumberSpace,
+    DI2: Domain,
+    NO1: NumberSpace,
+    DO1: Domain,
+    NO2: NumberSpace,
+    DO2: Domain,
 {
     number_space_in1: NI1,
     domain_in1: DI1,
@@ -346,20 +363,25 @@ pub struct PreparedOperation2<T, NI1, DI1, NI2, DI2, NO1, DO1, NO2, DO2>
     swap: bool,
 }
 
-fn generic_vector_from_any_vector<S, T, N, D>
-    (vec: DspVec<S, T, N, D>)
-     -> (N, D, DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>)
-    where T: RealNumber,
-          S: ToSliceMut<T>,
-          N: NumberSpace,
-          D: Domain
+fn generic_vector_from_any_vector<S, T, N, D>(
+    vec: DspVec<S, T, N, D>,
+) -> (N, D, DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>)
+where
+    T: RealNumber,
+    S: ToSliceMut<T>,
+    N: NumberSpace,
+    D: Domain,
 {
     let domain = vec.domain.clone();
     let number_space = vec.number_space.clone();
     let gen = DspVec {
         delta: vec.delta,
-        domain: TimeOrFrequencyData { domain_current: vec.domain() },
-        number_space: RealOrComplexData { is_complex_current: vec.is_complex() },
+        domain: TimeOrFrequencyData {
+            domain_current: vec.domain(),
+        },
+        number_space: RealOrComplexData {
+            is_complex_current: vec.is_complex(),
+        },
         valid_len: vec.valid_len,
         multicore_settings: vec.multicore_settings,
         data: vec.data,
@@ -367,17 +389,16 @@ fn generic_vector_from_any_vector<S, T, N, D>
     (number_space, domain, gen)
 }
 
-fn generic_vector_back_to_vector<S, T, N, D>(number_space: N,
-                                             domain: D,
-                                             vec: DspVec<S,
-                                                         T,
-                                                         RealOrComplexData,
-                                                         TimeOrFrequencyData>)
-                                             -> DspVec<S, T, N, D>
-    where T: RealNumber,
-          S: ToSliceMut<T>,
-          N: NumberSpace,
-          D: Domain
+fn generic_vector_back_to_vector<S, T, N, D>(
+    number_space: N,
+    domain: D,
+    vec: DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>,
+) -> DspVec<S, T, N, D>
+where
+    T: RealNumber,
+    S: ToSliceMut<T>,
+    N: NumberSpace,
+    D: Domain,
 {
     let is_complex = vec.is_complex();
     let result_domain = vec.domain();
@@ -406,11 +427,12 @@ fn generic_vector_back_to_vector<S, T, N, D>(number_space: N,
 }
 
 fn perform_complex_operations_par<T, Reg: SimdGeneric<T>>(
-                                     _: RegType<Reg>,
-                                     array: &mut InlineVector<&mut [T]>,
-                                     range: Range<usize>,
-                                     arguments: (&[Operation<T>], usize))
-    where T: RealNumber
+    _: RegType<Reg>,
+    array: &mut InlineVector<&mut [T]>,
+    range: Range<usize>,
+    arguments: (&[Operation<T>], usize),
+) where
+    T: RealNumber,
 {
     let (operations, points) = arguments;
     let mut vectors = Vec::with_capacity(array.len());
@@ -430,10 +452,12 @@ fn perform_complex_operations_par<T, Reg: SimdGeneric<T>>(
         }
 
         for operation in operations {
-            PerformOperationSimd::<T>::perform_complex_operation(&mut vectors,
-                                                                 operation,
-                                                                 index,
-                                                                 points);
+            PerformOperationSimd::<T>::perform_complex_operation(
+                &mut vectors,
+                operation,
+                index,
+                points,
+            );
         }
 
         for j in 0..array.len() {
@@ -448,11 +472,12 @@ fn perform_complex_operations_par<T, Reg: SimdGeneric<T>>(
 }
 
 fn perform_real_operations_par<T: RealNumber, Reg: SimdGeneric<T>>(
-                                  _: RegType<Reg>,
-                                  array: &mut InlineVector<&mut [T]>,
-                                  range: Range<usize>,
-                                  arguments: (&[Operation<T>], usize))
-    where T: RealNumber
+    _: RegType<Reg>,
+    array: &mut InlineVector<&mut [T]>,
+    range: Range<usize>,
+    arguments: (&[Operation<T>], usize),
+) where
+    T: RealNumber,
 {
     let (operations, points) = arguments;
     let mut vectors = Vec::with_capacity(array.len());
@@ -472,10 +497,12 @@ fn perform_real_operations_par<T: RealNumber, Reg: SimdGeneric<T>>(
         }
 
         for operation in operations {
-            PerformOperationSimd::<T>::perform_real_operation(&mut vectors,
-                                                              operation,
-                                                              index,
-                                                              points);
+            PerformOperationSimd::<T>::perform_real_operation(
+                &mut vectors,
+                operation,
+                index,
+                points,
+            );
         }
 
         for j in 0..array.len() {
@@ -490,16 +517,18 @@ fn perform_real_operations_par<T: RealNumber, Reg: SimdGeneric<T>>(
 }
 
 impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
-    where S: ToSliceMut<T>,
-          T: RealNumber
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
 {
     fn perform_operations<Reg: SimdGeneric<T>, B>(
-                             _: RegType<Reg>,
-                             buffer: &mut B,
-                             mut vectors: Vec<Self>,
-                             operations: &[Operation<T>])
-                             -> TransRes<Vec<Self>>
-        where B: for<'a> Buffer<'a, S, T>
+        _: RegType<Reg>,
+        buffer: &mut B,
+        mut vectors: Vec<Self>,
+        operations: &[Operation<T>],
+    ) -> TransRes<Vec<Self>>
+    where
+        B: for<'a> Buffer<'a, S, T>,
     {
         if vectors.is_empty() {
             return Err((ErrorReason::InvalidNumberOfArgumentsForCombinedOp, vectors));
@@ -559,7 +588,11 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
                 (rounded_len, first.multicore_settings, 0)
             } else {
                 let scalar_length = data_length % Reg::LEN;
-                (data_length - scalar_length, first.multicore_settings, scalar_length)
+                (
+                    data_length - scalar_length,
+                    first.multicore_settings,
+                    scalar_length,
+                )
             }
         };
 
@@ -570,7 +603,8 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
                 Complexity::Medium
             };
             {
-                let mut array: Vec<&mut [T]> = vectors.iter_mut()
+                let mut array: Vec<&mut [T]> = vectors
+                    .iter_mut()
                     .map(|v| {
                         let len = v.len();
                         let data = v.data.to_slice_mut();
@@ -582,21 +616,29 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
                     end: vectorization_length,
                 };
                 if any_complex_ops {
-                    Chunk::execute_partial_multidim(complexity,
-                                                    &multicore_settings,
-                                                    &mut array,
-                                                    range,
-                                                    Reg::LEN,
-                                                    (operations, first_vec_len),
-                                                    |array, range, arg|sel_reg!(perform_complex_operations_par::<T>(array, range, arg)));
+                    Chunk::execute_partial_multidim(
+                        complexity,
+                        &multicore_settings,
+                        &mut array,
+                        range,
+                        Reg::LEN,
+                        (operations, first_vec_len),
+                        |array, range, arg| {
+                            sel_reg!(perform_complex_operations_par::<T>(array, range, arg))
+                        },
+                    );
                 } else {
-                    Chunk::execute_partial_multidim(complexity,
-                                                    &multicore_settings,
-                                                    &mut array,
-                                                    range,
-                                                    Reg::LEN,
-                                                    (operations, first_vec_len),
-                                                    |array, range, arg|sel_reg!(perform_real_operations_par::<T>(array, range, arg)));
+                    Chunk::execute_partial_multidim(
+                        complexity,
+                        &multicore_settings,
+                        &mut array,
+                        range,
+                        Reg::LEN,
+                        (operations, first_vec_len),
+                        |array, range, arg| {
+                            sel_reg!(perform_real_operations_par::<T>(array, range, arg))
+                        },
+                    );
                 }
             }
         }
@@ -623,17 +665,21 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
 
             if any_complex_ops {
                 for operation in operations {
-                    PerformOperationSimd::<T>::perform_complex_operation(&mut last_elems,
-                                                                         operation,
-                                                                         vectorization_length / Reg::LEN * 2,
-                                                                         first_vec_len);
+                    PerformOperationSimd::<T>::perform_complex_operation(
+                        &mut last_elems,
+                        operation,
+                        vectorization_length / Reg::LEN * 2,
+                        first_vec_len,
+                    );
                 }
             } else {
                 for operation in operations {
-                    PerformOperationSimd::<T>::perform_real_operation(&mut last_elems,
-                                                                      operation,
-                                                                      vectorization_length / Reg::LEN,
-                                                                      first_vec_len);
+                    PerformOperationSimd::<T>::perform_real_operation(
+                        &mut last_elems,
+                        operation,
+                        vectorization_length / Reg::LEN,
+                        first_vec_len,
+                    );
                 }
             }
 
@@ -663,9 +709,10 @@ impl<S, T> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>
         Ok(vectors)
     }
 
-    fn verify_ops(vectors: &[Self],
-                  operations: &[Operation<T>])
-                  -> Result<(bool, Vec<bool>), ErrorReason> {
+    fn verify_ops(
+        vectors: &[Self],
+        operations: &[Operation<T>],
+    ) -> Result<(bool, Vec<bool>), ErrorReason> {
         let mut complex: Vec<bool> = vectors.iter().map(|v| v.is_complex()).collect();
         let max_arg_num = vectors.len();
         let mut complex_at_any_moment = complex.clone();
@@ -705,7 +752,7 @@ mod tests {
             x
         });
 
-        let vec = vec!(0.0; 5).to_real_time_vec();
+        let vec = vec![0.0; 5].to_real_time_vec();
         let mut buffer = SingleBuffer::new();
         let vec = ops.exec(&mut buffer, vec).unwrap();
         assert_eq!(&vec[..], [5.0, 5.0, 5.0, 5.0, 5.0]);
@@ -783,10 +830,10 @@ mod tests {
 
     #[test]
     fn complex_operation_on_real_vector() {
-        let a = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]
-            .to_gen_dsp_vec(false, DataDomain::Time);
-        let b = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]
-            .to_gen_dsp_vec(false, DataDomain::Time);
+        let a =
+            vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0].to_gen_dsp_vec(false, DataDomain::Time);
+        let b =
+            vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0].to_gen_dsp_vec(false, DataDomain::Time);
         let mut buffer = SingleBuffer::new();
 
         let ops = multi_ops2(a, b);
@@ -803,9 +850,10 @@ mod tests {
             (b, a)
         });
 
-        let a = vec![1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0, 1.0, -2.0, 3.0, 4.0, 5.0, -6.0,
-                     -7.0, 8.0]
-            .to_complex_time_vec();
+        let a = vec![
+            1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0, 1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0,
+        ]
+        .to_complex_time_vec();
         let b = vec![-11.0, 12.0, -13.0, 14.0, -15.0, 16.0, -17.0, 18.0].to_real_time_vec();
         let mut buffer = SingleBuffer::new();
 
@@ -813,8 +861,9 @@ mod tests {
         let (b, a) = ops.exec(&mut buffer, a, b).unwrap();
         assert_eq!(a.is_complex(), true);
         assert_eq!(b.is_complex(), false);
-        let expected = [1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0, 1.0, -2.0, 3.0, 4.0, 5.0, -6.0,
-                        -7.0, 8.0];
+        let expected = [
+            1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0, 1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0,
+        ];
         assert_eq!(&b[..], &expected);
         let expected = [11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0];
         assert_eq!(&a[..], &expected);
@@ -829,9 +878,10 @@ mod tests {
             (b, a)
         });
 
-        let a = vec![1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0, 1.0, -2.0, 3.0, 4.0, 5.0, -6.0,
-                     -7.0, 8.0]
-            .to_complex_time_vec();
+        let a = vec![
+            1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0, 1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0,
+        ]
+        .to_complex_time_vec();
         let b = vec![-11.0, 12.0, -13.0, 14.0, -15.0, 16.0, -17.0, 18.0].to_real_time_vec();
         let mut buffer = SingleBuffer::new();
 
@@ -839,8 +889,9 @@ mod tests {
         let (a, b) = ops.exec(&mut buffer, b, a).unwrap();
         assert_eq!(a.is_complex(), true);
         assert_eq!(b.is_complex(), false);
-        let expected = [1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0, 1.0, -2.0, 3.0, 4.0, 5.0, -6.0,
-                        -7.0, 8.0];
+        let expected = [
+            1.0, 2.0, -3.0, 4.0, -5.0, 6.0, -7.0, 8.0, 1.0, -2.0, 3.0, 4.0, 5.0, -6.0, -7.0, 8.0,
+        ];
         assert_eq!(&b[..], &expected);
         let expected = [11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0];
         assert_eq!(&a[..], &expected);
@@ -861,12 +912,14 @@ mod tests {
             (a, b)
         });
         let ops = ops.ops;
-        let expected = [Operation::Sin(0),
-                        Operation::Cos(1),
-                        Operation::Sin(1),
-                        Operation::AddVector(0, 1),
-                        Operation::Tan(0),
-                        Operation::SubPoints(1)];
+        let expected = [
+            Operation::Sin(0),
+            Operation::Cos(1),
+            Operation::Sin(1),
+            Operation::AddVector(0, 1),
+            Operation::Tan(0),
+            Operation::SubPoints(1),
+        ];
 
         for i in 0..ops.len() {
             assert_eq!(ops[i], expected[i]);

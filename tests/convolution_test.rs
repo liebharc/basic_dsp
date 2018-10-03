@@ -1,13 +1,13 @@
 extern crate basic_dsp;
-extern crate rand;
 extern crate num;
+extern crate rand;
 pub mod tools;
 
 mod conv_test {
-    use basic_dsp::*;
     use basic_dsp::conv_types::*;
+    use basic_dsp::*;
     use tools::*;
-    
+
     #[test]
     fn compare_conv_freq_multiplication_for_rc() {
         for iteration in 0..3 {
@@ -21,17 +21,21 @@ mod conv_test {
             let points = time.points();
             // Should get us a range [0.0 .. 1.0] and hopefully we are not that unlucky to get 0.0
             let ratio = create_delta(20160229, iteration).abs() / 10.0;
-            time.convolve(&mut buffer,
-                          &fun as &RealImpulseResponse<f32>,
-                          ratio,
-                          points);
+            time.convolve(
+                &mut buffer,
+                &fun as &RealImpulseResponse<f32>,
+                ratio,
+                points,
+            );
             freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio);
             let ifreq_res = freq.ifft(&mut buffer);
-            assert_vector_eq_with_reason_and_tolerance(&ifreq_res[..],
-                                                       &time[..],
-                                                       0.2,
-                                                       "Results should match independent if done \
-                                                        in time or frequency domain");
+            assert_vector_eq_with_reason_and_tolerance(
+                &ifreq_res[..],
+                &time[..],
+                0.2,
+                "Results should match independent if done \
+                 in time or frequency domain",
+            );
         }
     }
 
@@ -48,17 +52,21 @@ mod conv_test {
             let points = time.points();
             // Should get us a range [0.5 .. 1.0]
             let ratio = create_delta(201602216, iteration).abs() / 20.0 + 0.5;
-            time.convolve(&mut buffer,
-                          &fun as &RealImpulseResponse<f32>,
-                          ratio,
-                          points);
+            time.convolve(
+                &mut buffer,
+                &fun as &RealImpulseResponse<f32>,
+                ratio,
+                points,
+            );
             freq.multiply_frequency_response(&fun as &RealFrequencyResponse<f32>, 1.0 / ratio);
             let ifreq_res = freq.ifft(&mut buffer);
-            assert_vector_eq_with_reason_and_tolerance(&ifreq_res[..],
-                                                       &time[..],
-                                                       0.3,
-                                                       "Results should match independent if done \
-                                                        in time or frequency domain");
+            assert_vector_eq_with_reason_and_tolerance(
+                &ifreq_res[..],
+                &time[..],
+                0.3,
+                "Results should match independent if done \
+                 in time or frequency domain",
+            );
         }
     }
 
@@ -80,19 +88,25 @@ mod conv_test {
             let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
             let ratio = iteration as f32 + 1.0;
             let mut left = time.clone();
-            left.convolve(&mut buffer,
-                          &fun as &RealImpulseResponse<f32>,
-                          ratio,
-                          b.len());
-            time.convolve(&mut buffer,
-                          &fun as &RealImpulseResponse<f32>,
-                          ratio + offset,
-                          b.len());
-            assert_vector_eq_with_reason_and_tolerance(&left[..],
-                                                       &time[..],
-                                                       0.1,
-                                                       "Results should match independent if done \
-                                                        in optimized or non optimized code branch");
+            left.convolve(
+                &mut buffer,
+                &fun as &RealImpulseResponse<f32>,
+                ratio,
+                b.len(),
+            );
+            time.convolve(
+                &mut buffer,
+                &fun as &RealImpulseResponse<f32>,
+                ratio + offset,
+                b.len(),
+            );
+            assert_vector_eq_with_reason_and_tolerance(
+                &left[..],
+                &time[..],
+                0.1,
+                "Results should match independent if done \
+                 in optimized or non optimized code branch",
+            );
         }
     }
 
@@ -113,11 +127,13 @@ mod conv_test {
             let freq2 = time2.fft(&mut buffer);
             freq1.mul(&freq2).unwrap();
             let right = freq1.ifft(&mut buffer);
-            assert_vector_eq_with_reason_and_tolerance(&left[..],
-                                                       &conv_swap(&right[..])[0..left.len()],
-                                                       0.2,
-                                                       "Results should match independent if done \
-                                                        in time or frequency domain");
+            assert_vector_eq_with_reason_and_tolerance(
+                &left[..],
+                &conv_swap(&right[..])[0..left.len()],
+                0.2,
+                "Results should match independent if done \
+                 in time or frequency domain",
+            );
         }
     }
 
@@ -137,11 +153,13 @@ mod conv_test {
         let freq2 = time2.fft(&mut buffer);
         freq1.mul(&freq2).unwrap();
         let right = freq1.ifft(&mut buffer);
-        assert_vector_eq_with_reason_and_tolerance(&left[..],
-                                                   &conv_swap(&right[..])[0..left.len()],
-                                                   0.2,
-                                                   "Results should match independent if done \
-                                                    in time or frequency domain");
+        assert_vector_eq_with_reason_and_tolerance(
+            &left[..],
+            &conv_swap(&right[..])[0..left.len()],
+            0.2,
+            "Results should match independent if done \
+             in time or frequency domain",
+        );
     }
 
     #[test]
@@ -160,12 +178,14 @@ mod conv_test {
             let mut time2 = conv_zero_pad(&b, time1.len(), true).to_complex_time_vec();
             time2.set_delta(delta);
             time1.convolve_signal(&mut buffer, &time2).unwrap();
-            assert_vector_eq_with_reason_and_tolerance(&left[..],
-                                                       &time1[..],
-                                                       0.2,
-                                                       "Results should match independent if done \
-                                                        with a smaller vector or with a zero \
-                                                        padded vector of the same size");
+            assert_vector_eq_with_reason_and_tolerance(
+                &left[..],
+                &time1[..],
+                0.2,
+                "Results should match independent if done \
+                 with a smaller vector or with a zero \
+                 padded vector of the same size",
+            );
         }
     }
 
@@ -185,12 +205,14 @@ mod conv_test {
             let mut time2 = conv_zero_pad(&b, time1.len(), false).to_real_time_vec();
             time2.set_delta(delta);
             time1.convolve_signal(&mut buffer, &time2).unwrap();
-            assert_vector_eq_with_reason_and_tolerance(&left[..],
-                                                       &time1[..],
-                                                       0.2,
-                                                       "Results should match independent if done \
-                                                        with a smaller vector or with a zero \
-                                                        padded vector of the same size");
+            assert_vector_eq_with_reason_and_tolerance(
+                &left[..],
+                &time1[..],
+                0.2,
+                "Results should match independent if done \
+                 with a smaller vector or with a zero \
+                 padded vector of the same size",
+            );
         }
     }
 

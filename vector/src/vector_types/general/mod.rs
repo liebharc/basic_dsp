@@ -15,14 +15,15 @@ pub use self::statistics::*;
 mod precise_stats;
 pub use self::precise_stats::*;
 
-use std::ops::{Add, Sub};
 use numbers::*;
+use std::ops::{Add, Sub};
 
 /// Sums up the given values using a more precise
 /// summation algorithm: `https://en.wikipedia.org/wiki/Kahan_summation_algorithm`
 fn kahan_sum<I, T>(values: I) -> T
-    where I: Iterator<Item = T>,
-          T: Add<Output = T> + Sub<Output = T> + Zero + Copy
+where
+    I: Iterator<Item = T>,
+    T: Add<Output = T> + Sub<Output = T> + Zero + Copy,
 {
     let mut sum = T::zero();
     let mut c = T::zero();
@@ -38,8 +39,9 @@ fn kahan_sum<I, T>(values: I) -> T
 /// Sums up the given values using a more precise
 /// summation algorithm: `https://en.wikipedia.org/wiki/Kahan_summation_algorithm`
 fn kahan_sumb<'a, I, T>(values: I) -> T
-    where I: Iterator<Item = &'a T>,
-          T: 'a + Add<Output = T> + Sub<Output = T> + Zero + Copy
+where
+    I: Iterator<Item = &'a T>,
+    T: 'a + Add<Output = T> + Sub<Output = T> + Zero + Copy,
 {
     let mut sum = T::zero();
     let mut c = T::zero();

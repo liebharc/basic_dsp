@@ -1,28 +1,28 @@
 mod ocl_kernels32;
 mod ocl_kernels64;
 
-use ocl::*;
-use ocl::builders::ProgramBuilder;
-use ocl::prm::{Float4, Double2};
-use ocl::flags::DeviceType;
-use ocl::traits::{OclVec, OclPrm};
-use ocl::enums::*;
-use std::mem;
-use std::cmp;
-use std::ops::Range;
-use super::GpuSupport;
-use {RealNumber, array_to_complex, array_to_complex_mut, Zero};
-use clfft::{ClFftPrm, builder, Precision, Layout, Direction};
 use self::ocl_kernels32 as o32;
 use self::ocl_kernels64 as o64;
+use super::GpuSupport;
+use clfft::{builder, ClFftPrm, Direction, Layout, Precision};
+use ocl::builders::ProgramBuilder;
+use ocl::enums::*;
+use ocl::flags::DeviceType;
+use ocl::prm::{Double2, Float4};
+use ocl::traits::{OclPrm, OclVec};
+use ocl::*;
+use std::cmp;
+use std::mem;
+use std::ops::Range;
+use {array_to_complex, array_to_complex_mut, RealNumber, Zero};
 
 /// This trait is required to interface between `basic_dsp` and `opencl`.
-/// Without the feature flag `use_gpu` is will default to a `num` trait so 
+/// Without the feature flag `use_gpu` is will default to a `num` trait so
 /// that other code can always rely that this type is defined.
 pub type Gpu32 = Float4;
 
 /// This trait is required to interface between `basic_dsp` and `opencl`.
-/// Without the feature flag `use_gpu` is will default to a `num` trait so 
+/// Without the feature flag `use_gpu` is will default to a `num` trait so
 /// that other code can always rely that this type is defined.
 pub type Gpu64 = Double2;
 
@@ -85,8 +85,10 @@ fn find_gpu_device(require_f64_support: bool, data_length: usize) -> Option<(Pla
                 for d in devices {
                     if !require_f64_support || has_f64_support(d) {
                         result = match result {
-                            Some((cp, cd)) if determine_processing_power(d, data_length) <
-                                              determine_processing_power(cd, data_length) => {
+                            Some((cp, cd))
+                                if determine_processing_power(d, data_length)
+                                    < determine_processing_power(cd, data_length) =>
+                            {
                                 Some((cp, cd))
                             }
                             _ => Some((p, d)),
@@ -133,9 +135,11 @@ fn array_to_gpu_simd_mut<T, R>(array: &mut [T]) -> &mut [R] {
 /// coefficients.
 ///
 /// An example for the data layout can be found in the unit test section.
-fn prepare_impulse_response<T: Clone + Copy + Zero>(imp_resp: &[T],
-                                                    destination: &mut [T],
-                                                    vec_len: usize) {
+fn prepare_impulse_response<T: Clone + Copy + Zero>(
+    imp_resp: &[T],
+    destination: &mut [T],
+    vec_len: usize,
+) {
     for (n, j) in imp_resp.iter().rev().zip(0..) {
         for i in 0..vec_len {
             let p = j + i;
@@ -147,17 +151,19 @@ fn prepare_impulse_response<T: Clone + Copy + Zero>(imp_resp: &[T],
 }
 
 impl<T> GpuSupport<T> for T
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn has_gpu_support() -> bool {
         find_gpu_device(mem::size_of::<T>() == 8, 0).is_some()
     }
 
-    fn gpu_convolve_vector(is_complex: bool,
-                           source: &[T],
-                           target: &mut [T],
-                           imp_resp: &[T])
-                           -> Option<Range<usize>> {
+    fn gpu_convolve_vector(
+        is_complex: bool,
+        source: &[T],
+        target: &mut [T],
+        imp_resp: &[T],
+    ) -> Option<Range<usize>> {
         assert!(target.len() >= source.len());
         let is_f64 = mem::size_of::<T>() == 8;
         let vec_len = if is_f64 { 2 } else { 4 };
@@ -180,15 +186,19 @@ impl<T> GpuSupport<T> for T
         let (platform, device) = find_gpu_device(is_f64, data_set_size)
             .expect("No GPU device available which supports this data type");
 
-        let kernel_src = if is_f64 { o64::CONV_KERNEL } else { o32::CONV_KERNEL };
-	
-		let mut prog_bldr = Program::builder();
-		prog_bldr
-			.src_file(kernel_src)
-			.cmplr_def("FILTER_LENGTH", num_conv_vectors as i32)
-			.cmplr_opt("-cl-fast-relaxed-math -DMAC");
-        let source = array_to_gpu_simd::<T, T::GpuReg>(&source[phase..data_set_size - vec_len +
-                                                                      phase]);
+        let kernel_src = if is_f64 {
+            o64::CONV_KERNEL
+        } else {
+            o32::CONV_KERNEL
+        };
+
+        let mut prog_bldr = Program::builder();
+        prog_bldr
+            .src_file(kernel_src)
+            .cmplr_def("FILTER_LENGTH", num_conv_vectors as i32)
+            .cmplr_opt("-cl-fast-relaxed-math -DMAC");
+        let source =
+            array_to_gpu_simd::<T, T::GpuReg>(&source[phase..data_set_size - vec_len + phase]);
         let ocl_pq = ProQue::builder()
             .prog_bldr(prog_bldr)
             .platform(platform)
@@ -198,7 +208,7 @@ impl<T> GpuSupport<T> for T
             .expect("Building ProQue");
 
         let step_size = if is_complex { 2 } else { 1 };
-        let mut imp_vec_padded = vec!(T::zero(); vec_len * conv_size_padded / step_size);
+        let mut imp_vec_padded = vec![T::zero(); vec_len * conv_size_padded / step_size];
         if is_complex {
             let complex = array_to_complex(&imp_resp);
             let complex_dest = array_to_complex_mut(&mut imp_vec_padded);
@@ -208,26 +218,33 @@ impl<T> GpuSupport<T> for T
         }
 
         // Create buffers
-        let in_buffer = unsafe { Buffer::builder()
+        let in_buffer = unsafe {
+            Buffer::builder()
                 .queue(ocl_pq.queue().clone())
                 .flags(MemFlags::new().read_only().copy_host_ptr())
                 .len(ocl_pq.dims().clone())
                 .use_host_slice(source)
-                .build().expect("Failed to create GPU input buffer") };
+                .build()
+                .expect("Failed to create GPU input buffer")
+        };
 
         let imp_vec_padded = array_to_gpu_simd::<T, T::GpuReg>(&imp_vec_padded);
-        let imp_buffer = unsafe { Buffer::builder()
+        let imp_buffer = unsafe {
+            Buffer::builder()
                 .queue(ocl_pq.queue().clone())
                 .flags(MemFlags::new().read_only().copy_host_ptr())
                 .len([imp_vec_padded.len()])
                 .use_host_slice(&imp_vec_padded)
-                .build().expect("Failed to create GPU impulse response buffer") };
+                .build()
+                .expect("Failed to create GPU impulse response buffer")
+        };
 
         let res_buffer = Buffer::builder()
-                .queue(ocl_pq.queue().clone())
-                .flags(MemFlags::new().write_only())
-                .len(ocl_pq.dims().clone())
-                .build().expect("Failed to create GPU result buffer");
+            .queue(ocl_pq.queue().clone())
+            .flags(MemFlags::new().write_only())
+            .len(ocl_pq.dims().clone())
+            .build()
+            .expect("Failed to create GPU result buffer");
 
         let kenel_name = if is_complex {
             "conv_vecs_c"
@@ -236,12 +253,13 @@ impl<T> GpuSupport<T> for T
         };
 
         // Compile the kernel
-        let kernel = ocl_pq.kernel_builder(kenel_name)
+        let kernel = ocl_pq
+            .kernel_builder(kenel_name)
             .arg_named("src", Some(&in_buffer))
             .arg_named("conv", Some(&imp_buffer))
             .arg(&res_buffer)
-			.build()
-			.expect("ocl program build");
+            .build()
+            .expect("ocl program build");
 
         // Execute kernel, do this in chunks so that the GPU watchdog isn't
         // terminating our kernel
@@ -250,20 +268,26 @@ impl<T> GpuSupport<T> for T
         let mut chunk = conv_size_padded / vec_len;
         while chunk < gws_total {
             let current_size = cmp::min(chunk_size, gws_total - chunk);
-			unsafe {
-				kernel
-					.cmd()
-					.global_work_offset([chunk]) // Offset
-					.global_work_size([current_size])
-					.enq()
-					.expect(&format!("Running kernel (Params: {}, {}) failed:",
-										chunk, gws_total)) };
+            unsafe {
+                kernel
+                    .cmd()
+                    .global_work_offset([chunk]) // Offset
+                    .global_work_size([current_size])
+                    .enq()
+                    .expect(&format!(
+                        "Running kernel (Params: {}, {}) failed:",
+                        chunk, gws_total
+                    ))
+            };
             chunk += chunk_size;
         }
 
         // Wait for all kernels to finish
-        res_buffer.cmd()
-            .read(array_to_gpu_simd_mut::<T, T::GpuReg>(&mut target[0..data_set_size - vec_len]))
+        res_buffer
+            .cmd()
+            .read(array_to_gpu_simd_mut::<T, T::GpuReg>(
+                &mut target[0..data_set_size - vec_len],
+            ))
             .enq()
             .expect("Transferring result vector from the GPU back to memory failed");
 
@@ -305,7 +329,6 @@ impl<T> GpuSupport<T> for T
     fn fft(is_complex: bool, source: &[T], target: &mut [T], reverse: bool) {
         if !is_complex {
             panic!("Real fft isn't supported, call `has_gpu_support` first.")
-
         }
         let len = source.len();
         // Build ocl ProQue
@@ -319,18 +342,22 @@ impl<T> GpuSupport<T> for T
             .expect("Building ProQue");
 
         // Create buffers
-        let mut in_buffer = unsafe { Buffer::builder()
+        let mut in_buffer = unsafe {
+            Buffer::builder()
                 .queue(ocl_pq.queue().clone())
                 .flags(MemFlags::new().read_only().copy_host_ptr())
                 .len(ocl_pq.dims().clone())
                 .use_host_slice(&source)
-                .build().expect("Failed to create GPU input buffer") };
+                .build()
+                .expect("Failed to create GPU input buffer")
+        };
 
         let mut res_buffer = Buffer::builder()
-                .queue(ocl_pq.queue().clone())
-                .flags(MemFlags::new().write_only())
-                .len(ocl_pq.dims().clone())
-                .build().expect("Failed to create GPU result buffer");
+            .queue(ocl_pq.queue().clone())
+            .flags(MemFlags::new().write_only())
+            .len(ocl_pq.dims().clone())
+            .build()
+            .expect("Failed to create GPU result buffer");
 
         // Make a plan
         let mut plan = builder::<T>()
@@ -347,23 +374,25 @@ impl<T> GpuSupport<T> for T
             Direction::Forward
         };
         // Execute plan
-        plan.enq(direction, &mut in_buffer, &mut res_buffer).unwrap();
+        plan.enq(direction, &mut in_buffer, &mut res_buffer)
+            .unwrap();
 
         // Wait for calculation to finish and read results
-        res_buffer.cmd()
+        res_buffer
+            .cmd()
             .read(target)
             .enq()
             .expect("Transferring result vector from the GPU back to memory failed");
-
     }
 
-    fn overlap_discard(x_time: &mut [T],
-                       tmp: &mut [T],
-                       _: &mut [T],
-                       h_freq: &[T],
-                       imp_len: usize,
-                       step_size: usize)
-                       -> usize {
+    fn overlap_discard(
+        x_time: &mut [T],
+        tmp: &mut [T],
+        _: &mut [T],
+        h_freq: &[T],
+        imp_len: usize,
+        step_size: usize,
+    ) -> usize {
         let is_f64 = mem::size_of::<T>() == 8;
         let kernel = if is_f64 {
             o64::MUL_KERNEL
@@ -412,12 +441,15 @@ impl<T> GpuSupport<T> for T
 
         reverse_fft = reverse_fft.ewait(&start_ifft_event);
 
-        let coef_buffer = unsafe { Buffer::builder()
+        let coef_buffer = unsafe {
+            Buffer::builder()
                 .queue(ocl_pq.queue().clone())
                 .flags(MemFlags::new().read_only().copy_host_ptr())
                 .len([fft_len])
                 .use_host_slice(&h_freq)
-                .build().expect("Failed to create GPU input buffer") };
+                .build()
+                .expect("Failed to create GPU input buffer")
+        };
 
         // Execute plan
         let mut position = 0;
@@ -426,30 +458,37 @@ impl<T> GpuSupport<T> for T
         let mut prev_buffer = {
             let range = position..fft_len + position;
             // Create buffers
-            let mut in_buffer = unsafe { Buffer::builder()
-                .queue(ocl_pq.queue().clone())
-                .flags(MemFlags::new().read_write().copy_host_ptr())
-                .len([fft_len])
-                .use_host_slice(&x_time[range])
-                .build().expect("Failed to create GPU input buffer") };
+            let mut in_buffer = unsafe {
+                Buffer::builder()
+                    .queue(ocl_pq.queue().clone())
+                    .flags(MemFlags::new().read_write().copy_host_ptr())
+                    .len([fft_len])
+                    .use_host_slice(&x_time[range])
+                    .build()
+                    .expect("Failed to create GPU input buffer")
+            };
 
-            forward_fft.enq(Direction::Forward, &mut in_buffer)
+            forward_fft
+                .enq(Direction::Forward, &mut in_buffer)
                 .expect("Enq FFT");
 
-            let mul = ocl_pq.kernel_builder("multiply_vector")
+            let mul = ocl_pq
+                .kernel_builder("multiply_vector")
                 .arg_named("coef", Some(&coef_buffer))
                 .arg_named("srcres", Some(&in_buffer))
-				.build()
-				.unwrap();
+                .build()
+                .unwrap();
             unsafe {
-				mul.cmd()
-					.ewait(&start_mul_event)
-					.enew(&mut mul_finish_event)
-					.global_work_size([fft_len / 2])
-					.enq()
-					.expect("Enq Mul") };
+                mul.cmd()
+                    .ewait(&start_mul_event)
+                    .enew(&mut mul_finish_event)
+                    .global_work_size([fft_len / 2])
+                    .enq()
+                    .expect("Enq Mul")
+            };
 
-            reverse_fft.enq(Direction::Backward, &mut in_buffer)
+            reverse_fft
+                .enq(Direction::Backward, &mut in_buffer)
                 .expect("Enq IFFT");
             (&mut x_time[0..imp_len / 2]).copy_from_slice(&tmp[0..imp_len / 2]);
             position += step_size;
@@ -459,33 +498,41 @@ impl<T> GpuSupport<T> for T
         while position + fft_len < x_len {
             let range = position..fft_len + position;
             // Create buffers
-            let mut in_buffer = unsafe { Buffer::builder()
-                .queue(ocl_pq.queue().clone())
-                .flags(MemFlags::new().read_write().copy_host_ptr())
-                .len([fft_len])
-                .use_host_slice(&x_time[range])
-                .build().expect("Failed to create GPU input buffer") };
+            let mut in_buffer = unsafe {
+                Buffer::builder()
+                    .queue(ocl_pq.queue().clone())
+                    .flags(MemFlags::new().read_write().copy_host_ptr())
+                    .len([fft_len])
+                    .use_host_slice(&x_time[range])
+                    .build()
+                    .expect("Failed to create GPU input buffer")
+            };
 
-            forward_fft.enq(Direction::Forward, &mut in_buffer)
+            forward_fft
+                .enq(Direction::Forward, &mut in_buffer)
                 .expect("Enq FFT");
 
-            let mul = ocl_pq.kernel_builder("multiply_vector")
+            let mul = ocl_pq
+                .kernel_builder("multiply_vector")
                 .arg_named("coef", Some(&coef_buffer))
                 .arg_named("srcres", Some(&in_buffer))
-				.build()
-				.unwrap();
-			unsafe {
-				mul.cmd()
-					.ewait(&start_mul_event)
-					.enew(&mut mul_finish_event)
-					.global_work_size([fft_len / 2])
-					.enq()
-					.expect("Enq Mul") };
+                .build()
+                .unwrap();
+            unsafe {
+                mul.cmd()
+                    .ewait(&start_mul_event)
+                    .enew(&mut mul_finish_event)
+                    .global_work_size([fft_len / 2])
+                    .enq()
+                    .expect("Enq Mul")
+            };
 
-            reverse_fft.enq(Direction::Backward, &mut in_buffer)
+            reverse_fft
+                .enq(Direction::Backward, &mut in_buffer)
                 .expect("Enq IFFT");
 
-            prev_buffer.cmd()
+            prev_buffer
+                .cmd()
                 .read(&mut tmp[..])
                 .enq()
                 .expect("Transferring result vector from the GPU back to memory failed");
@@ -494,7 +541,8 @@ impl<T> GpuSupport<T> for T
             prev_buffer = in_buffer;
             position += step_size;
         }
-        prev_buffer.cmd()
+        prev_buffer
+            .cmd()
             .read(&mut tmp[..])
             .enq()
             .expect("Transferring result vector from the GPU back to memory failed");
@@ -508,14 +556,15 @@ impl<T> GpuSupport<T> for T
 /// even if the machine doesn't have a suitable GPU.
 #[cfg(test)]
 mod tests {
-    use super::super::GpuSupport;
     use super::super::super::*;
+    use super::super::GpuSupport;
     use super::prepare_impulse_response;
-    use {array_to_complex, array_to_complex_mut};
     use std::fmt::Debug;
+    use {array_to_complex, array_to_complex_mut};
 
     fn assert_eq_tol<T>(left: &[T], right: &[T], tol: T)
-        where T: RealNumber + Debug
+    where
+        T: RealNumber + Debug,
     {
         assert_eq!(left.len(), right.len());
         for i in 0..left.len() {
@@ -535,9 +584,11 @@ mod tests {
         let mut source_vec = source.clone().to_real_time_vec();
         let imp_resp_vec = imp_resp.clone().to_real_time_vec();
         let mut buffer = SingleBuffer::new();
-        source_vec.convolve_signal(&mut buffer, &imp_resp_vec).unwrap();
-        let range = f32::gpu_convolve_vector(false, &source[..], &mut target[..], &imp_resp[..])
+        source_vec
+            .convolve_signal(&mut buffer, &imp_resp_vec)
             .unwrap();
+        let range =
+            f32::gpu_convolve_vector(false, &source[..], &mut target[..], &imp_resp[..]).unwrap();
         assert_eq_tol(&target[range.clone()], &source_vec[range.clone()], 1e-6);
     }
 
@@ -554,9 +605,11 @@ mod tests {
         let mut source_vec = source.clone().to_real_time_vec();
         let imp_resp_vec = imp_resp.clone().to_real_time_vec();
         let mut buffer = SingleBuffer::new();
-        source_vec.convolve_signal(&mut buffer, &imp_resp_vec).unwrap();
-        let range = f64::gpu_convolve_vector(false, &source[..], &mut target[..], &imp_resp[..])
+        source_vec
+            .convolve_signal(&mut buffer, &imp_resp_vec)
             .unwrap();
+        let range =
+            f64::gpu_convolve_vector(false, &source[..], &mut target[..], &imp_resp[..]).unwrap();
         assert_eq_tol(&target[range.clone()], &source_vec[range.clone()], 1e-6);
     }
 
@@ -570,9 +623,11 @@ mod tests {
         let mut source_vec = source.clone().to_complex_time_vec();
         let imp_resp_vec = imp_resp.clone().to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
-        source_vec.convolve_signal(&mut buffer, &imp_resp_vec).unwrap();
-        let range = f32::gpu_convolve_vector(true, &source[..], &mut target[..], &imp_resp[..])
+        source_vec
+            .convolve_signal(&mut buffer, &imp_resp_vec)
             .unwrap();
+        let range =
+            f32::gpu_convolve_vector(true, &source[..], &mut target[..], &imp_resp[..]).unwrap();
         assert_eq_tol(&target[range.clone()], &source_vec[range.clone()], 1e-6);
     }
 
@@ -589,16 +644,18 @@ mod tests {
         let mut source_vec = source.clone().to_complex_time_vec();
         let imp_resp_vec = imp_resp.clone().to_complex_time_vec();
         let mut buffer = SingleBuffer::new();
-        source_vec.convolve_signal(&mut buffer, &imp_resp_vec).unwrap();
-        let range = f64::gpu_convolve_vector(true, &source[..], &mut target[..], &imp_resp[..])
+        source_vec
+            .convolve_signal(&mut buffer, &imp_resp_vec)
             .unwrap();
+        let range =
+            f64::gpu_convolve_vector(true, &source[..], &mut target[..], &imp_resp[..]).unwrap();
         assert_eq_tol(&target[range.clone()], &source_vec[range.clone()], 1e-6);
     }
 
     #[test]
     fn gpu_prepare_real_impulse_response() {
         let imp_resp = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0];
-        let mut padded = vec!(0.0; 8 * 2);
+        let mut padded = vec![0.0; 8 * 2];
         prepare_impulse_response(&imp_resp, &mut padded, 2);
         // Explanation of the result:
         // The data is chunked in pairs since `vec_len` is 2. So that means the data is
@@ -613,20 +670,24 @@ mod tests {
         // Finally every second pair is shifted by one byte. That's because the previous steps
         // mean that we can only access the `vec_len` samples at once, but to calculate
         // the convolution we need to access every sample. The shifted version give us that
-        let expected = [7.0, 6.0, 0.0, 7.0, 5.0, 4.0, 6.0, 5.0, 3.0, 2.0, 4.0, 3.0, 1.0, 0.0, 2.0,
-                        1.0];
+        let expected = [
+            7.0, 6.0, 0.0, 7.0, 5.0, 4.0, 6.0, 5.0, 3.0, 2.0, 4.0, 3.0, 1.0, 0.0, 2.0, 1.0,
+        ];
         assert_eq_tol(&padded, &expected, 1e-6);
     }
 
     #[test]
     fn gpu_prepare_complex_impulse_response() {
         let imp_resp = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
-        let mut padded = vec!(0.0; 8 * 2);
-        prepare_impulse_response(array_to_complex(&imp_resp),
-                                 array_to_complex_mut(&mut padded),
-                                 2);
-        let expected = [5.0, 6.0, 3.0, 4.0, 0.0, 0.0, 5.0, 6.0, 1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 1.0,
-                        2.0];
+        let mut padded = vec![0.0; 8 * 2];
+        prepare_impulse_response(
+            array_to_complex(&imp_resp),
+            array_to_complex_mut(&mut padded),
+            2,
+        );
+        let expected = [
+            5.0, 6.0, 3.0, 4.0, 0.0, 0.0, 5.0, 6.0, 1.0, 2.0, 0.0, 0.0, 3.0, 4.0, 1.0, 2.0,
+        ];
         assert_eq_tol(&padded, &expected, 1e-6);
     }
 }

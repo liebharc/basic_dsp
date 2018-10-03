@@ -1,28 +1,27 @@
-use basic_dsp_vector::*;
-use basic_dsp_vector::numbers::*;
 use super::*;
-use TransformContent;
+use basic_dsp_vector::numbers::*;
+use basic_dsp_vector::*;
 use std::marker;
+use TransformContent;
 
 macro_rules! try_transform {
-    ($op: expr, $matrix: ident) => {
-        {
-			match $op {
-				Ok(rows) => Ok($matrix {
-					rows: rows,
-					storage_type: marker::PhantomData,
-					number_type: marker::PhantomData
-				}),
-				Err((r, rows)) => Err((
-					r,
-					$matrix {
-						rows: rows,
-						storage_type: marker::PhantomData,
-						number_type: marker::PhantomData
-				})),
-			}
+    ($op: expr, $matrix: ident) => {{
+        match $op {
+            Ok(rows) => Ok($matrix {
+                rows: rows,
+                storage_type: marker::PhantomData,
+                number_type: marker::PhantomData,
+            }),
+            Err((r, rows)) => Err((
+                r,
+                $matrix {
+                    rows: rows,
+                    storage_type: marker::PhantomData,
+                    number_type: marker::PhantomData,
+                },
+            )),
         }
-    }
+    }};
 }
 
 macro_rules! add_mat_impl {

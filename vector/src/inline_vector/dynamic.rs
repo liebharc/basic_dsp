@@ -1,10 +1,10 @@
-use std::ops::*;
-use std::usize;
 use arrayvec::*;
-use {VoidResult, ErrorReason};
 use numbers::*;
 use std::iter::FromIterator;
+use std::ops::*;
 use std::slice::Iter;
+use std::usize;
+use {ErrorReason, VoidResult};
 
 /// A type which internally switches between stack and heap allocation.
 /// This is supposed to perform faster but the main reason is that this
@@ -17,7 +17,8 @@ pub enum InlineVector<T> {
 }
 
 impl<T> InlineVector<T>
-    where T: Copy
+where
+    T: Copy,
 {
     /// Create a new vector of a given size filled with a given default value.
     pub fn of_size(default: T, n: usize) -> InlineVector<T> {
@@ -47,8 +48,8 @@ impl<T> InlineVector<T> {
     }
 
     /// Returns a vector with a default capacity. The default
-    /// capacity will be relativly small and should only be used 
-    /// to store small lookup tables or results. 
+    /// capacity will be relativly small and should only be used
+    /// to store small lookup tables or results.
     ///
     /// As of today the default capacity is `64`.
     pub fn with_default_capcacity() -> InlineVector<T> {
@@ -61,7 +62,7 @@ impl<T> InlineVector<T> {
         vector.push(elem);
         vector
     }
-    
+
     /// Returns an empty vector.
     pub fn empty() -> InlineVector<T> {
         Self::with_capacity(0)

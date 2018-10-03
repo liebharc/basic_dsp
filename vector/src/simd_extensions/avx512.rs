@@ -1,5 +1,5 @@
-use numbers::*;
 use super::{Simd, SimdFrom};
+use numbers::*;
 use stdsimd::simd::*;
 use stdsimd::vendor::*;
 
@@ -22,8 +22,8 @@ impl Simd<f32> for f32x16 {
     }
 
     type ComplexArray = [Complex<f32>; 8];
-	
-	const LEN: usize = 16;
+
+    const LEN: usize = 16;
 
     #[inline]
     fn load_wrap_unchecked(array: &[f32], idx: usize) -> f32x16 {
@@ -36,22 +36,10 @@ impl Simd<f32> for f32x16 {
 
     #[inline]
     fn from_complex(value: Complex<f32>) -> f32x16 {
-        f32x16::new(value.re,
-                   value.im,
-                   value.re,
-                   value.im,
-                   value.re,
-                   value.im,
-                   value.re,
-                   value.im,
-				   value.re,
-                   value.im,
-                   value.re,
-                   value.im,
-                   value.re,
-                   value.im,
-                   value.re,
-                   value.im)
+        f32x16::new(
+            value.re, value.im, value.re, value.im, value.re, value.im, value.re, value.im,
+            value.re, value.im, value.re, value.im, value.re, value.im, value.re, value.im,
+        )
     }
 
     #[inline]
@@ -84,38 +72,42 @@ impl Simd<f32> for f32x16 {
 
     #[inline]
     fn mul_complex(self, value: f32x16) -> f32x16 {
-        let scaling_real = f32x16::new(value.extract(0),
-                                      value.extract(0),
-                                      value.extract(2),
-                                      value.extract(2),
-                                      value.extract(4),
-                                      value.extract(4),
-                                      value.extract(6),
-                                      value.extract(6),
-									  value.extract(8),
-                                      value.extract(8),
-                                      value.extract(10),
-                                      value.extract(10),
-                                      value.extract(12),
-                                      value.extract(12),
-                                      value.extract(14),
-                                      value.extract(14));
-        let scaling_imag = f32x16::new(value.extract(1),
-                                      value.extract(1),
-                                      value.extract(3),
-                                      value.extract(3),
-                                      value.extract(5),
-                                      value.extract(5),
-                                      value.extract(7),
-                                      value.extract(7),
-									  value.extract(9),
-                                      value.extract(9),
-                                      value.extract(11),
-                                      value.extract(11),
-                                      value.extract(13),
-                                      value.extract(13),
-                                      value.extract(15),
-                                      value.extract(15));
+        let scaling_real = f32x16::new(
+            value.extract(0),
+            value.extract(0),
+            value.extract(2),
+            value.extract(2),
+            value.extract(4),
+            value.extract(4),
+            value.extract(6),
+            value.extract(6),
+            value.extract(8),
+            value.extract(8),
+            value.extract(10),
+            value.extract(10),
+            value.extract(12),
+            value.extract(12),
+            value.extract(14),
+            value.extract(14),
+        );
+        let scaling_imag = f32x16::new(
+            value.extract(1),
+            value.extract(1),
+            value.extract(3),
+            value.extract(3),
+            value.extract(5),
+            value.extract(5),
+            value.extract(7),
+            value.extract(7),
+            value.extract(9),
+            value.extract(9),
+            value.extract(11),
+            value.extract(11),
+            value.extract(13),
+            value.extract(13),
+            value.extract(15),
+            value.extract(15),
+        );
         let parallel = scaling_real * self;
         let shuffled = unsafe { _mm512_permute_ps(self, SWAP_IQ_PS) };
         let cross = scaling_imag * shuffled;
@@ -124,38 +116,42 @@ impl Simd<f32> for f32x16 {
 
     #[inline]
     fn div_complex(self, value: f32x16) -> f32x16 {
-        let scaling_real = f32x16::new(value.extract(0),
-                                      value.extract(0),
-                                      value.extract(2),
-                                      value.extract(2),
-                                      value.extract(4),
-                                      value.extract(4),
-                                      value.extract(6),
-                                      value.extract(6),
-									  value.extract(8),
-                                      value.extract(8),
-                                      value.extract(10),
-                                      value.extract(10),
-                                      value.extract(12),
-                                      value.extract(12),
-                                      value.extract(14),
-                                      value.extract(14));
-        let scaling_imag = f32x16::new(value.extract(1),
-                                      value.extract(1),
-                                      value.extract(3),
-                                      value.extract(3),
-                                      value.extract(5),
-                                      value.extract(5),
-                                      value.extract(7),
-                                      value.extract(7),
-									  value.extract(9),
-                                      value.extract(9),
-                                      value.extract(11),
-                                      value.extract(11),
-                                      value.extract(13),
-                                      value.extract(13),
-                                      value.extract(15),
-                                      value.extract(15));
+        let scaling_real = f32x16::new(
+            value.extract(0),
+            value.extract(0),
+            value.extract(2),
+            value.extract(2),
+            value.extract(4),
+            value.extract(4),
+            value.extract(6),
+            value.extract(6),
+            value.extract(8),
+            value.extract(8),
+            value.extract(10),
+            value.extract(10),
+            value.extract(12),
+            value.extract(12),
+            value.extract(14),
+            value.extract(14),
+        );
+        let scaling_imag = f32x16::new(
+            value.extract(1),
+            value.extract(1),
+            value.extract(3),
+            value.extract(3),
+            value.extract(5),
+            value.extract(5),
+            value.extract(7),
+            value.extract(7),
+            value.extract(9),
+            value.extract(9),
+            value.extract(11),
+            value.extract(11),
+            value.extract(13),
+            value.extract(13),
+            value.extract(15),
+            value.extract(15),
+        );
         let parallel = scaling_real * value;
         let shuffled = unsafe { _mm512_permute_ps(value, SWAP_IQ_PS) };
         let cross = scaling_imag * shuffled;
@@ -201,7 +197,7 @@ impl Simd<f32> for f32x16 {
             *target.get_unchecked_mut(index + 1) = self.extract(1);
             *target.get_unchecked_mut(index + 2) = self.extract(2);
             *target.get_unchecked_mut(index + 3) = self.extract(3);
-			*target.get_unchecked_mut(index + 4) = self.extract(4);
+            *target.get_unchecked_mut(index + 4) = self.extract(4);
             *target.get_unchecked_mut(index + 5) = self.extract(5);
             *target.get_unchecked_mut(index + 6) = self.extract(6);
             *target.get_unchecked_mut(index + 7) = self.extract(7);
@@ -210,25 +206,51 @@ impl Simd<f32> for f32x16 {
 
     #[inline]
     fn sum_real(&self) -> f32 {
-        self.extract(0) + self.extract(1) + self.extract(2) + self.extract(3) +
-        self.extract(4) + self.extract(5) + self.extract(6) + self.extract(7) +
-        self.extract(8) + self.extract(9) + self.extract(10) + self.extract(11) +
-        self.extract(12) + self.extract(13) + self.extract(14) + self.extract(15)
+        self.extract(0)
+            + self.extract(1)
+            + self.extract(2)
+            + self.extract(3)
+            + self.extract(4)
+            + self.extract(5)
+            + self.extract(6)
+            + self.extract(7)
+            + self.extract(8)
+            + self.extract(9)
+            + self.extract(10)
+            + self.extract(11)
+            + self.extract(12)
+            + self.extract(13)
+            + self.extract(14)
+            + self.extract(15)
     }
 
     #[inline]
     fn sum_complex(&self) -> Complex<f32> {
-        Complex::<f32>::new(self.extract(0) + self.extract(2) + self.extract(4) + self.extract(6) 
-							+ self.extract(8) + self.extract(10) + self.extract(12) + self.extract(14),
-                            self.extract(1) + self.extract(3) + self.extract(5) + self.extract(7) 
-							+ self.extract(9) + self.extract(11) + self.extract(13) + self.extract(15) )
+        Complex::<f32>::new(
+            self.extract(0)
+                + self.extract(2)
+                + self.extract(4)
+                + self.extract(6)
+                + self.extract(8)
+                + self.extract(10)
+                + self.extract(12)
+                + self.extract(14),
+            self.extract(1)
+                + self.extract(3)
+                + self.extract(5)
+                + self.extract(7)
+                + self.extract(9)
+                + self.extract(11)
+                + self.extract(13)
+                + self.extract(15),
+        )
     }
-    
+
     #[inline]
     fn max(self, other: Self) -> Self {
         unsafe { _mm512_max_ps(self, other) }
     }
-    
+
     #[inline]
     fn min(self, other: Self) -> Self {
         unsafe { _mm512_min_ps(self, other) }
@@ -246,8 +268,8 @@ impl Simd<f64> for f64x8 {
     }
 
     type ComplexArray = [Complex<f64>; 4];
-	
-	const LEN: usize = 8;
+
+    const LEN: usize = 8;
 
     #[inline]
     fn load_wrap_unchecked(array: &[f64], idx: usize) -> f64x8 {
@@ -271,7 +293,9 @@ impl Simd<f64> for f64x8 {
 
     #[inline]
     fn add_complex(self, value: Complex<f64>) -> f64x8 {
-        let increment = f64x8::new(value.re, value.im, value.re, value.im, value.re, value.im, value.re, value.im);
+        let increment = f64x8::new(
+            value.re, value.im, value.re, value.im, value.re, value.im, value.re, value.im,
+        );
         self + increment
     }
 
@@ -293,22 +317,26 @@ impl Simd<f64> for f64x8 {
 
     #[inline]
     fn mul_complex(self, value: f64x8) -> f64x8 {
-        let scaling_real = f64x8::new(value.extract(0),
-                                      value.extract(0),
-                                      value.extract(2),
-                                      value.extract(2),
-									  value.extract(4),
-                                      value.extract(4),
-                                      value.extract(6),
-                                      value.extract(6));
-        let scaling_imag = f64x8::new(value.extract(1),
-                                      value.extract(1),
-                                      value.extract(3),
-                                      value.extract(3),
-									  value.extract(5),
-                                      value.extract(5),
-                                      value.extract(7),
-                                      value.extract(7));
+        let scaling_real = f64x8::new(
+            value.extract(0),
+            value.extract(0),
+            value.extract(2),
+            value.extract(2),
+            value.extract(4),
+            value.extract(4),
+            value.extract(6),
+            value.extract(6),
+        );
+        let scaling_imag = f64x8::new(
+            value.extract(1),
+            value.extract(1),
+            value.extract(3),
+            value.extract(3),
+            value.extract(5),
+            value.extract(5),
+            value.extract(7),
+            value.extract(7),
+        );
         let parallel = scaling_real * self;
         let shuffled = unsafe { _mm512_permute_pd(self, SWAP_IQ_PD) };
         let cross = scaling_imag * shuffled;
@@ -317,22 +345,26 @@ impl Simd<f64> for f64x8 {
 
     #[inline]
     fn div_complex(self, value: f64x8) -> f64x8 {
-        let scaling_imag = f64x8::new(self.extract(0),
-                                      self.extract(0),
-                                      self.extract(2),
-                                      self.extract(2),
-									  self.extract(4),
-                                      self.extract(4),
-                                      self.extract(6),
-                                      self.extract(6),);
-        let scaling_real = f64x8::new(self.extract(1),
-                                      self.extract(1),
-                                      self.extract(3),
-                                      self.extract(3),
-									  self.extract(5),
-                                      self.extract(5),
-                                      self.extract(7),
-                                      self.extract(7));
+        let scaling_imag = f64x8::new(
+            self.extract(0),
+            self.extract(0),
+            self.extract(2),
+            self.extract(2),
+            self.extract(4),
+            self.extract(4),
+            self.extract(6),
+            self.extract(6),
+        );
+        let scaling_real = f64x8::new(
+            self.extract(1),
+            self.extract(1),
+            self.extract(3),
+            self.extract(3),
+            self.extract(5),
+            self.extract(5),
+            self.extract(7),
+            self.extract(7),
+        );
         let parallel = scaling_real * value;
         let shuffled = unsafe { _mm512_permute_pd(value, SWAP_IQ_PD) };
         let cross = scaling_imag * shuffled;
@@ -385,21 +417,29 @@ impl Simd<f64> for f64x8 {
 
     #[inline]
     fn sum_real(&self) -> f64 {
-        self.extract(0) + self.extract(1) + self.extract(2) + self.extract(3) 
-		+ self.extract(4) + self.extract(5) + self.extract(6) + self.extract(7)
+        self.extract(0)
+            + self.extract(1)
+            + self.extract(2)
+            + self.extract(3)
+            + self.extract(4)
+            + self.extract(5)
+            + self.extract(6)
+            + self.extract(7)
     }
 
     #[inline]
     fn sum_complex(&self) -> Complex<f64> {
-        Complex::<f64>::new(self.extract(0) + self.extract(2) + self.extract(4) + self.extract(6),
-                            self.extract(1) + self.extract(3) + self.extract(5) + self.extract(7))
+        Complex::<f64>::new(
+            self.extract(0) + self.extract(2) + self.extract(4) + self.extract(6),
+            self.extract(1) + self.extract(3) + self.extract(5) + self.extract(7),
+        )
     }
-    
+
     #[inline]
     fn max(self, other: Self) -> Self {
         unsafe { _mm512_max_pd(self, other) }
     }
-    
+
     #[inline]
     fn min(self, other: Self) -> Self {
         unsafe { _mm512_min_pd(self, other) }

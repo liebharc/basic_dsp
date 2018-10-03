@@ -1,13 +1,14 @@
-use basic_dsp_vector::*;
-use basic_dsp_vector::numbers::*;
 use super::*;
-use TransformContent;
+use basic_dsp_vector::numbers::*;
+use basic_dsp_vector::*;
 use std::marker;
+use TransformContent;
 
 /// Conversion from a collection of vectors to a matrix.
 pub trait ToMatrix<V, T>
-    where V: Vector<T>,
-          T: RealNumber
+where
+    V: Vector<T>,
+    T: RealNumber,
 {
     type Output: Matrix<V, T>;
 
@@ -21,8 +22,9 @@ pub trait ToMatrix<V, T>
 /// `ToComplexMatrix` for alternatives which track most of the meta data
 /// with the type system and therefore avoid runtime errors.
 pub trait ToDspMatrix<V, T>
-    where V: Vector<T>,
-          T: RealNumber
+where
+    V: Vector<T>,
+    T: RealNumber,
 {
     type Output: Matrix<V, T>;
 
@@ -35,8 +37,9 @@ pub trait ToDspMatrix<V, T>
 
 /// Conversion from a generic data type into a dsp matrix with real data.
 pub trait ToRealTimeMatrix<V, T>
-    where V: Vector<T>,
-          T: RealNumber
+where
+    V: Vector<T>,
+    T: RealNumber,
 {
     type Output: Matrix<V, T>;
 
@@ -47,8 +50,9 @@ pub trait ToRealTimeMatrix<V, T>
 
 /// Conversion from a generic data type into a dsp matrix with real data.
 pub trait ToRealFreqMatrix<V, T>
-    where V: Vector<T>,
-          T: RealNumber
+where
+    V: Vector<T>,
+    T: RealNumber,
 {
     type Output: Matrix<V, T>;
 
@@ -59,8 +63,9 @@ pub trait ToRealFreqMatrix<V, T>
 
 /// Conversion from a generic data type into a dsp vector with complex data.
 pub trait ToComplexTimeMatrix<V, T>
-    where V: Vector<T>,
-          T: RealNumber
+where
+    V: Vector<T>,
+    T: RealNumber,
 {
     type Output: Matrix<V, T>;
 
@@ -73,8 +78,9 @@ pub trait ToComplexTimeMatrix<V, T>
 
 /// Conversion from a generic data type into a dsp vector with complex data.
 pub trait ToComplexFreqMatrix<V, T>
-    where V: Vector<T>,
-          T: RealNumber
+where
+    V: Vector<T>,
+    T: RealNumber,
 {
     type Output: Matrix<V, T>;
 
@@ -87,7 +93,8 @@ pub trait ToComplexFreqMatrix<V, T>
 
 /// Retrieves the underlying storage from a matrix.
 pub trait FromMatrix<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     /// Type of the underlying storage of a matrix.
     type Output;
@@ -98,10 +105,11 @@ pub trait FromMatrix<T>
 }
 
 fn to_mat_mxn<S, F, V, T>(source: Vec<S>, conversion: F) -> MatrixMxN<V, S, T>
-    where S: ToSlice<T>,
-          V: Vector<T>,
-          T: RealNumber,
-          F: Fn(S) -> V
+where
+    S: ToSlice<T>,
+    V: Vector<T>,
+    T: RealNumber,
+    F: Fn(S) -> V,
 {
     let rows = source.transform(conversion);
     MatrixMxN {
@@ -112,10 +120,11 @@ fn to_mat_mxn<S, F, V, T>(source: Vec<S>, conversion: F) -> MatrixMxN<V, S, T>
 }
 
 fn to_mat_2xn<S, F, V, T>(source: [S; 2], conversion: F) -> Matrix2xN<V, S, T>
-    where S: ToSlice<T>,
-          V: Vector<T>,
-          T: RealNumber,
-          F: Fn(S) -> V
+where
+    S: ToSlice<T>,
+    V: Vector<T>,
+    T: RealNumber,
+    F: Fn(S) -> V,
 {
     let rows = source.transform(conversion);
     Matrix2xN {
@@ -126,10 +135,11 @@ fn to_mat_2xn<S, F, V, T>(source: [S; 2], conversion: F) -> Matrix2xN<V, S, T>
 }
 
 fn to_mat_3xn<S, F, V, T>(source: [S; 3], conversion: F) -> Matrix3xN<V, S, T>
-    where S: ToSlice<T>,
-          V: Vector<T>,
-          T: RealNumber,
-          F: Fn(S) -> V
+where
+    S: ToSlice<T>,
+    V: Vector<T>,
+    T: RealNumber,
+    F: Fn(S) -> V,
 {
     let rows = source.transform(conversion);
     Matrix3xN {
@@ -140,10 +150,11 @@ fn to_mat_3xn<S, F, V, T>(source: [S; 3], conversion: F) -> Matrix3xN<V, S, T>
 }
 
 fn to_mat_4xn<S, F, V, T>(source: [S; 4], conversion: F) -> Matrix4xN<V, S, T>
-    where S: ToSlice<T>,
-          V: Vector<T>,
-          T: RealNumber,
-          F: Fn(S) -> V
+where
+    S: ToSlice<T>,
+    V: Vector<T>,
+    T: RealNumber,
+    F: Fn(S) -> V,
 {
     let rows = source.transform(conversion);
     Matrix4xN {
@@ -154,10 +165,11 @@ fn to_mat_4xn<S, F, V, T>(source: [S; 4], conversion: F) -> Matrix4xN<V, S, T>
 }
 
 impl<S, T, N, D> ToMatrix<DspVec<S, T, N, D>, T> for Vec<DspVec<S, T, N, D>>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     type Output = MatrixMxN<DspVec<S, T, N, D>, S, T>;
 
@@ -171,10 +183,11 @@ impl<S, T, N, D> ToMatrix<DspVec<S, T, N, D>, T> for Vec<DspVec<S, T, N, D>>
 }
 
 impl<S, T, N, D> ToMatrix<DspVec<S, T, N, D>, T> for [DspVec<S, T, N, D>; 2]
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     type Output = Matrix2xN<DspVec<S, T, N, D>, S, T>;
 
@@ -188,10 +201,11 @@ impl<S, T, N, D> ToMatrix<DspVec<S, T, N, D>, T> for [DspVec<S, T, N, D>; 2]
 }
 
 impl<S, T, N, D> ToMatrix<DspVec<S, T, N, D>, T> for [DspVec<S, T, N, D>; 3]
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     type Output = Matrix3xN<DspVec<S, T, N, D>, S, T>;
 
@@ -205,10 +219,11 @@ impl<S, T, N, D> ToMatrix<DspVec<S, T, N, D>, T> for [DspVec<S, T, N, D>; 3]
 }
 
 impl<S, T, N, D> ToMatrix<DspVec<S, T, N, D>, T> for [DspVec<S, T, N, D>; 4]
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     type Output = Matrix4xN<DspVec<S, T, N, D>, S, T>;
 
@@ -222,8 +237,9 @@ impl<S, T, N, D> ToMatrix<DspVec<S, T, N, D>, T> for [DspVec<S, T, N, D>; 4]
 }
 
 impl<T, S> ToDspMatrix<GenDspVec<S, T>, T> for Vec<S>
-    where T: RealNumber,
-          S: ToDspVector<T> + ToSlice<T>
+where
+    T: RealNumber,
+    S: ToDspVector<T> + ToSlice<T>,
 {
     type Output = MatrixMxN<GenDspVec<S, T>, S, T>;
 
@@ -233,8 +249,9 @@ impl<T, S> ToDspMatrix<GenDspVec<S, T>, T> for Vec<S>
 }
 
 impl<T, S> ToDspMatrix<GenDspVec<S, T>, T> for [S; 2]
-    where T: RealNumber,
-          S: ToDspVector<T> + ToSlice<T>
+where
+    T: RealNumber,
+    S: ToDspVector<T> + ToSlice<T>,
 {
     type Output = Matrix2xN<GenDspVec<S, T>, S, T>;
 
@@ -244,8 +261,9 @@ impl<T, S> ToDspMatrix<GenDspVec<S, T>, T> for [S; 2]
 }
 
 impl<T, S> ToDspMatrix<GenDspVec<S, T>, T> for [S; 3]
-    where T: RealNumber,
-          S: ToDspVector<T> + ToSlice<T>
+where
+    T: RealNumber,
+    S: ToDspVector<T> + ToSlice<T>,
 {
     type Output = Matrix3xN<GenDspVec<S, T>, S, T>;
 
@@ -254,10 +272,10 @@ impl<T, S> ToDspMatrix<GenDspVec<S, T>, T> for [S; 3]
     }
 }
 
-
 impl<T, S> ToDspMatrix<GenDspVec<S, T>, T> for [S; 4]
-    where T: RealNumber,
-          S: ToDspVector<T> + ToSlice<T>
+where
+    T: RealNumber,
+    S: ToDspVector<T> + ToSlice<T>,
 {
     type Output = Matrix4xN<GenDspVec<S, T>, S, T>;
 
@@ -267,8 +285,9 @@ impl<T, S> ToDspMatrix<GenDspVec<S, T>, T> for [S; 4]
 }
 
 impl<T, S> ToRealTimeMatrix<RealTimeVec<S, T>, T> for Vec<S>
-    where T: RealNumber,
-          S: ToRealVector<T> + ToSlice<T>
+where
+    T: RealNumber,
+    S: ToRealVector<T> + ToSlice<T>,
 {
     type Output = MatrixMxN<RealTimeVec<S, T>, S, T>;
 
@@ -278,8 +297,9 @@ impl<T, S> ToRealTimeMatrix<RealTimeVec<S, T>, T> for Vec<S>
 }
 
 impl<T, S> ToRealTimeMatrix<RealTimeVec<S, T>, T> for [S; 2]
-    where T: RealNumber,
-          S: ToRealVector<T> + ToSlice<T>
+where
+    T: RealNumber,
+    S: ToRealVector<T> + ToSlice<T>,
 {
     type Output = Matrix2xN<RealTimeVec<S, T>, S, T>;
 
@@ -289,8 +309,9 @@ impl<T, S> ToRealTimeMatrix<RealTimeVec<S, T>, T> for [S; 2]
 }
 
 impl<T, S> ToRealTimeMatrix<RealTimeVec<S, T>, T> for [S; 3]
-    where T: RealNumber,
-          S: ToRealVector<T> + ToSlice<T>
+where
+    T: RealNumber,
+    S: ToRealVector<T> + ToSlice<T>,
 {
     type Output = Matrix3xN<RealTimeVec<S, T>, S, T>;
 
@@ -300,8 +321,9 @@ impl<T, S> ToRealTimeMatrix<RealTimeVec<S, T>, T> for [S; 3]
 }
 
 impl<T, S> ToRealTimeMatrix<RealTimeVec<S, T>, T> for [S; 4]
-    where T: RealNumber,
-          S: ToRealVector<T> + ToSlice<T>
+where
+    T: RealNumber,
+    S: ToRealVector<T> + ToSlice<T>,
 {
     type Output = Matrix4xN<RealTimeVec<S, T>, S, T>;
 
@@ -311,8 +333,9 @@ impl<T, S> ToRealTimeMatrix<RealTimeVec<S, T>, T> for [S; 4]
 }
 
 impl<T, S> ToRealFreqMatrix<RealFreqVec<S, T>, T> for Vec<S>
-    where T: RealNumber,
-          S: ToRealVector<T> + ToSlice<T>
+where
+    T: RealNumber,
+    S: ToRealVector<T> + ToSlice<T>,
 {
     type Output = MatrixMxN<RealFreqVec<S, T>, S, T>;
 
@@ -322,8 +345,9 @@ impl<T, S> ToRealFreqMatrix<RealFreqVec<S, T>, T> for Vec<S>
 }
 
 impl<T, S> ToRealFreqMatrix<RealFreqVec<S, T>, T> for [S; 2]
-    where T: RealNumber,
-          S: ToRealVector<T> + ToSlice<T>
+where
+    T: RealNumber,
+    S: ToRealVector<T> + ToSlice<T>,
 {
     type Output = Matrix2xN<RealFreqVec<S, T>, S, T>;
 
@@ -333,8 +357,9 @@ impl<T, S> ToRealFreqMatrix<RealFreqVec<S, T>, T> for [S; 2]
 }
 
 impl<T, S> ToRealFreqMatrix<RealFreqVec<S, T>, T> for [S; 3]
-    where T: RealNumber,
-          S: ToRealVector<T> + ToSlice<T>
+where
+    T: RealNumber,
+    S: ToRealVector<T> + ToSlice<T>,
 {
     type Output = Matrix3xN<RealFreqVec<S, T>, S, T>;
 
@@ -344,8 +369,9 @@ impl<T, S> ToRealFreqMatrix<RealFreqVec<S, T>, T> for [S; 3]
 }
 
 impl<T, S> ToRealFreqMatrix<RealFreqVec<S, T>, T> for [S; 4]
-    where T: RealNumber,
-          S: ToRealVector<T> + ToSlice<T>
+where
+    T: RealNumber,
+    S: ToRealVector<T> + ToSlice<T>,
 {
     type Output = Matrix4xN<RealFreqVec<S, T>, S, T>;
 
@@ -355,8 +381,9 @@ impl<T, S> ToRealFreqMatrix<RealFreqVec<S, T>, T> for [S; 4]
 }
 
 impl<T, S> ToComplexTimeMatrix<ComplexTimeVec<S, T>, T> for Vec<S>
-    where T: RealNumber,
-          S: ToComplexVector<S, T> + ToSlice<T>
+where
+    T: RealNumber,
+    S: ToComplexVector<S, T> + ToSlice<T>,
 {
     type Output = MatrixMxN<ComplexTimeVec<S, T>, S, T>;
 
@@ -366,8 +393,9 @@ impl<T, S> ToComplexTimeMatrix<ComplexTimeVec<S, T>, T> for Vec<S>
 }
 
 impl<T, S> ToComplexTimeMatrix<ComplexTimeVec<S, T>, T> for [S; 2]
-    where T: RealNumber,
-          S: ToComplexVector<S, T> + ToSlice<T>
+where
+    T: RealNumber,
+    S: ToComplexVector<S, T> + ToSlice<T>,
 {
     type Output = Matrix2xN<ComplexTimeVec<S, T>, S, T>;
 
@@ -377,8 +405,9 @@ impl<T, S> ToComplexTimeMatrix<ComplexTimeVec<S, T>, T> for [S; 2]
 }
 
 impl<T, S> ToComplexTimeMatrix<ComplexTimeVec<S, T>, T> for [S; 3]
-    where T: RealNumber,
-          S: ToComplexVector<S, T> + ToSlice<T>
+where
+    T: RealNumber,
+    S: ToComplexVector<S, T> + ToSlice<T>,
 {
     type Output = Matrix3xN<ComplexTimeVec<S, T>, S, T>;
 
@@ -388,8 +417,9 @@ impl<T, S> ToComplexTimeMatrix<ComplexTimeVec<S, T>, T> for [S; 3]
 }
 
 impl<T, S> ToComplexTimeMatrix<ComplexTimeVec<S, T>, T> for [S; 4]
-    where T: RealNumber,
-          S: ToComplexVector<S, T> + ToSlice<T>
+where
+    T: RealNumber,
+    S: ToComplexVector<S, T> + ToSlice<T>,
 {
     type Output = Matrix4xN<ComplexTimeVec<S, T>, S, T>;
 
@@ -399,9 +429,10 @@ impl<T, S> ToComplexTimeMatrix<ComplexTimeVec<S, T>, T> for [S; 4]
 }
 
 impl<V, S, T> FromMatrix<T> for MatrixMxN<V, S, T>
-    where T: RealNumber,
-          V: Vector<T>,
-          S: ToSlice<T>
+where
+    T: RealNumber,
+    V: Vector<T>,
+    S: ToSlice<T>,
 {
     type Output = Vec<V>;
 
@@ -412,9 +443,10 @@ impl<V, S, T> FromMatrix<T> for MatrixMxN<V, S, T>
 }
 
 impl<V, S, T> FromMatrix<T> for Matrix2xN<V, S, T>
-    where T: RealNumber,
-          V: Vector<T>,
-          S: ToSlice<T>
+where
+    T: RealNumber,
+    V: Vector<T>,
+    S: ToSlice<T>,
 {
     type Output = [V; 2];
 
@@ -425,9 +457,10 @@ impl<V, S, T> FromMatrix<T> for Matrix2xN<V, S, T>
 }
 
 impl<V, S, T> FromMatrix<T> for Matrix3xN<V, S, T>
-    where T: RealNumber,
-          V: Vector<T>,
-          S: ToSlice<T>
+where
+    T: RealNumber,
+    V: Vector<T>,
+    S: ToSlice<T>,
 {
     type Output = [V; 3];
 
@@ -438,9 +471,10 @@ impl<V, S, T> FromMatrix<T> for Matrix3xN<V, S, T>
 }
 
 impl<V, S, T> FromMatrix<T> for Matrix4xN<V, S, T>
-    where T: RealNumber,
-          V: Vector<T>,
-          S: ToSlice<T>
+where
+    T: RealNumber,
+    V: Vector<T>,
+    S: ToSlice<T>,
 {
     type Output = [V; 4];
 
@@ -456,13 +490,13 @@ mod tests {
 
     #[test]
     fn to_gen_dsp_mat_test() {
-        let mat: MatrixMxN<_, _, _> = vec![vec![0.0, 1.0], vec![2.0, 3.0]]
-            .to_gen_dsp_mat(false, DataDomain::Time);
+        let mat: MatrixMxN<_, _, _> =
+            vec![vec![0.0, 1.0], vec![2.0, 3.0]].to_gen_dsp_mat(false, DataDomain::Time);
         assert_eq!(&mat.rows[0][..], &[0.0, 1.0]);
         assert_eq!(&mat.rows[1][..], &[2.0, 3.0]);
 
-        let mat: Matrix2xN<_, _, _> = [vec![0.0, 1.0], vec![2.0, 3.0]]
-            .to_gen_dsp_mat(false, DataDomain::Time);
+        let mat: Matrix2xN<_, _, _> =
+            [vec![0.0, 1.0], vec![2.0, 3.0]].to_gen_dsp_mat(false, DataDomain::Time);
         assert_eq!(&mat.rows[0][..], &[0.0, 1.0]);
         assert_eq!(&mat.rows[1][..], &[2.0, 3.0]);
     }

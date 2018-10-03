@@ -1,8 +1,8 @@
-use basic_dsp_vector::*;
-use basic_dsp_vector::numbers::*;
 use super::*;
-use TransformContent;
+use basic_dsp_vector::numbers::*;
+use basic_dsp_vector::*;
 use std::marker;
+use TransformContent;
 
 macro_rules! add_mat_impl {
     ($($matrix:ident);*) => {

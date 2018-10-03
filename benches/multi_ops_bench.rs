@@ -1,15 +1,15 @@
 #![feature(test)]
 #![feature(box_syntax)]
-extern crate test;
 extern crate basic_dsp;
+extern crate test;
 
 pub mod tools;
 
 #[cfg(test)]
 mod real {
-    use test::Bencher;
-    use basic_dsp::*;
     use basic_dsp::combined_ops::*;
+    use basic_dsp::*;
+    use test::Bencher;
     use tools::*;
 
     #[bench]
@@ -76,7 +76,7 @@ mod real {
         b.iter(|| {
             vector.execute(|v, buffer| {
                 let len = v.len();
-                let operand = vec!(6.0; len).to_complex_time_vec();
+                let operand = vec![6.0; len].to_complex_time_vec();
                 let ops = multi_ops2(v, operand);
                 let ops = ops.add_ops(|mut v, o| {
                     v.log(10.0);
@@ -116,7 +116,7 @@ mod real {
         b.iter(|| {
             vector.execute(|v, buffer| {
                 let len = v.len();
-                let operand = vec!(6.0; len).to_complex_time_vec();
+                let operand = vec![6.0; len].to_complex_time_vec();
                 let ops = multi_ops2(v, operand);
                 let ops = ops.add_ops(|mut v, o| {
                     v.square();

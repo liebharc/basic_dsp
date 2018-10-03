@@ -3,87 +3,86 @@
 extern crate basic_dsp_vector;
 extern crate num_complex;
 
-pub mod facade32;
 pub mod combined_ops32;
-pub mod facade64;
 pub mod combined_ops64;
-use basic_dsp_vector::{VoidResult, SingleBuffer, TransRes, PaddingOption, GenDspVec, ScalarResult,
-                       ErrorReason};
-use basic_dsp_vector::window_functions::*;
+pub mod facade32;
+pub mod facade64;
 use basic_dsp_vector::conv_types::*;
 use basic_dsp_vector::numbers::RealNumber;
+use basic_dsp_vector::window_functions::*;
+use basic_dsp_vector::{
+    ErrorReason, GenDspVec, PaddingOption, ScalarResult, SingleBuffer, TransRes, VoidResult,
+};
 use num_complex::Complex;
 
 pub struct InteropVec<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     buffer: SingleBuffer<T>,
     vec: GenDspVec<Vec<T>, T>,
 }
 
 impl<T> InteropVec<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     pub fn convert_vec<F>(mut self, op: F) -> VectorInteropResult<InteropVec<T>>
-        where F: Fn(&mut GenDspVec<Vec<T>, T>, &mut SingleBuffer<T>) -> VoidResult
+    where
+        F: Fn(&mut GenDspVec<Vec<T>, T>, &mut SingleBuffer<T>) -> VoidResult,
     {
         let result = op(&mut self.vec, &mut self.buffer);
         match result {
-            Ok(()) => VectorInteropResult{vector: Box::new(self), result_code: 0},
-            Err(res) => {
-                VectorInteropResult {
-                    vector: Box::new(self),
-                    result_code: translate_error(res),
-                }
-            }
+            Ok(()) => VectorInteropResult {
+                vector: Box::new(self),
+                result_code: 0,
+            },
+            Err(res) => VectorInteropResult {
+                vector: Box::new(self),
+                result_code: translate_error(res),
+            },
         }
     }
 
     pub fn trans_vec<F>(self, op: F) -> VectorInteropResult<InteropVec<T>>
-        where F: Fn(GenDspVec<Vec<T>, T>, &mut SingleBuffer<T>) -> TransRes<GenDspVec<Vec<T>, T>>
+    where
+        F: Fn(GenDspVec<Vec<T>, T>, &mut SingleBuffer<T>) -> TransRes<GenDspVec<Vec<T>, T>>,
     {
         let mut buffer = self.buffer;
         let vec = self.vec;
         let result = op(vec, &mut buffer);
         match result {
-            Ok(vec) => {
-                VectorInteropResult {
-                    vector: Box::new(InteropVec {
-                        vec: vec,
-                        buffer: buffer,
-                    }),
-                    result_code: 0,
-                }
-            }
-            Err((err, vec)) => {
-                VectorInteropResult {
-                    vector: Box::new(InteropVec {
-                        vec: vec,
-                        buffer: buffer,
-                    }),
-                    result_code: translate_error(err),
-                }
-            }
+            Ok(vec) => VectorInteropResult {
+                vector: Box::new(InteropVec {
+                    vec: vec,
+                    buffer: buffer,
+                }),
+                result_code: 0,
+            },
+            Err((err, vec)) => VectorInteropResult {
+                vector: Box::new(InteropVec {
+                    vec: vec,
+                    buffer: buffer,
+                }),
+                result_code: translate_error(err),
+            },
         }
     }
 
     pub fn convert_scalar<F, TT>(&self, op: F, default: TT) -> ScalarInteropResult<TT>
-        where F: Fn(&GenDspVec<Vec<T>, T>) -> ScalarResult<TT>
+    where
+        F: Fn(&GenDspVec<Vec<T>, T>) -> ScalarResult<TT>,
     {
         let result = op(&self.vec);
         match result {
-            Ok(res) => {
-                ScalarInteropResult {
-                    result: res,
-                    result_code: 0,
-                }
-            }
-            Err(res) => {
-                ScalarInteropResult {
-                    result: default,
-                    result_code: translate_error(res),
-                }
-            }
+            Ok(res) => ScalarInteropResult {
+                result: res,
+                result_code: 0,
+            },
+            Err(res) => ScalarInteropResult {
+                result: default,
+                result_code: translate_error(res),
+            },
         }
     }
 
@@ -136,7 +135,8 @@ pub fn translate_error(reason: ErrorReason) -> i32 {
 }
 
 pub fn translate_to_window_function<T>(value: i32) -> Box<WindowFunction<T>>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     if value == 0 {
         Box::new(TriangularWindow)
@@ -145,10 +145,12 @@ pub fn translate_to_window_function<T>(value: i32) -> Box<WindowFunction<T>>
     }
 }
 
-pub fn translate_to_real_convolution_function<T>(value: i32,
-                                                 rolloff: T)
-                                                 -> Box<RealImpulseResponse<T>>
-    where T: RealNumber
+pub fn translate_to_real_convolution_function<T>(
+    value: i32,
+    rolloff: T,
+) -> Box<RealImpulseResponse<T>>
+where
+    T: RealNumber,
 {
     if value == 0 {
         Box::new(SincFunction::new())
@@ -157,10 +159,12 @@ pub fn translate_to_real_convolution_function<T>(value: i32,
     }
 }
 
-pub fn translate_to_real_frequency_response<T>(value: i32,
-                                               rolloff: T)
-                                               -> Box<RealFrequencyResponse<T>>
-    where T: RealNumber
+pub fn translate_to_real_frequency_response<T>(
+    value: i32,
+    rolloff: T,
+) -> Box<RealFrequencyResponse<T>>
+where
+    T: RealNumber,
 {
     if value == 0 {
         Box::new(SincFunction::new())
@@ -207,7 +211,8 @@ pub struct BinaryVectorInteropResult<T> {
 /// Result of a vector operation. Check the ```result_code```.
 #[repr(C)]
 pub struct ScalarInteropResult<T>
-    where T: Sized
+where
+    T: Sized,
 {
     /// This value is zero in case of error. All other values mean that an error
     /// occurred and the data in the vector might be unchanged or invalid.
@@ -220,7 +225,8 @@ pub struct ScalarInteropResult<T>
 
 /// A window function which can be constructed outside this crate.
 struct ForeignWindowFunction<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     /// The window function
     pub window_function: extern "C" fn(*const std::os::raw::c_void, usize, usize) -> T,
@@ -239,7 +245,8 @@ struct ForeignWindowFunction<T>
 }
 
 impl<T> WindowFunction<T> for ForeignWindowFunction<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn is_symmetric(&self) -> bool {
         self.is_symmetric
@@ -253,7 +260,8 @@ impl<T> WindowFunction<T> for ForeignWindowFunction<T>
 
 /// A real function which can be constructed outside this crate.
 struct ForeignRealConvolutionFunction<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     /// The function
     pub conv_function: extern "C" fn(*const std::os::raw::c_void, T) -> T,
@@ -272,7 +280,8 @@ struct ForeignRealConvolutionFunction<T>
 }
 
 impl<T> RealImpulseResponse<T> for ForeignRealConvolutionFunction<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn is_symmetric(&self) -> bool {
         self.is_symmetric
@@ -285,7 +294,8 @@ impl<T> RealImpulseResponse<T> for ForeignRealConvolutionFunction<T>
 }
 
 impl<T> RealFrequencyResponse<T> for ForeignRealConvolutionFunction<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn is_symmetric(&self) -> bool {
         self.is_symmetric
@@ -299,7 +309,8 @@ impl<T> RealFrequencyResponse<T> for ForeignRealConvolutionFunction<T>
 
 /// A complex function which can be constructed outside this crate.
 struct ForeignComplexConvolutionFunction<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     /// The function
     pub conv_function: extern "C" fn(*const std::os::raw::c_void, T) -> Complex<T>,
@@ -318,7 +329,8 @@ struct ForeignComplexConvolutionFunction<T>
 }
 
 impl<T> ComplexImpulseResponse<T> for ForeignComplexConvolutionFunction<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn is_symmetric(&self) -> bool {
         self.is_symmetric
@@ -331,7 +343,8 @@ impl<T> ComplexImpulseResponse<T> for ForeignComplexConvolutionFunction<T>
 }
 
 impl<T> ComplexFrequencyResponse<T> for ForeignComplexConvolutionFunction<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn is_symmetric(&self) -> bool {
         self.is_symmetric

@@ -1,7 +1,8 @@
+use super::super::{
+    Buffer, Domain, DspVec, ErrorReason, InsertZerosOps, InsertZerosOpsBuffered, MetaData,
+    RealNumberSpace, RededicateForceOps, ToComplexResult, ToSliceMut, TransRes,
+};
 use numbers::*;
-use super::super::{ToComplexResult, TransRes, Buffer, InsertZerosOps, InsertZerosOpsBuffered,
-                   DspVec, ToSliceMut, MetaData, Domain, RealNumberSpace, RededicateForceOps,
-                   ErrorReason};
 
 /// Defines transformations from real to complex number space.
 ///
@@ -9,7 +10,8 @@ use super::super::{ToComplexResult, TransRes, Buffer, InsertZerosOps, InsertZero
 /// All operations in this trait set `self.len()` to `0` if the type isn't in
 /// the real number space.
 pub trait RealToComplexTransformsOps<T>: ToComplexResult
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     /// Converts the real vector into a complex vector.
     ///
@@ -30,8 +32,9 @@ pub trait RealToComplexTransformsOps<T>: ToComplexResult
 /// All operations in this trait set `self.len()` to `0` if the type isn't
 /// in the real number space.
 pub trait RealToComplexTransformsOpsBuffered<S, T>: ToComplexResult
-    where S: ToSliceMut<T>,
-          T: RealNumber
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
 {
     /// Converts the real vector into a complex vector. The buffer allows
     /// this operation to succeed even if the storage type doesn't allow resizing.
@@ -46,53 +49,62 @@ pub trait RealToComplexTransformsOpsBuffered<S, T>: ToComplexResult
     /// assert_eq!([1.0, 0.0, 2.0, 0.0], result[..]);
     /// ```
     fn to_complex_b<B>(self, buffer: &mut B) -> Self::ComplexResult
-        where B: for<'a> Buffer<'a, S, T>;
+    where
+        B: for<'a> Buffer<'a, S, T>;
 }
 
 impl<S, T, N, D> RealToComplexTransformsOps<T> for DspVec<S, T, N, D>
-    where DspVec<S, T, N, D>: ToComplexResult + InsertZerosOps<T>,
-          <DspVec<S, T, N, D> as ToComplexResult>::ComplexResult:
-            RededicateForceOps<DspVec<S, T, N, D>>,
-          S: ToSliceMut<T>,
-          T: RealNumber,
-          N: RealNumberSpace,
-          D: Domain {
-      fn to_complex(mut self) -> TransRes<Self::ComplexResult> {
-          if self.is_complex() {
-              self.number_space.to_complex();
-              return Err((ErrorReason::InputMustBeReal,
-                          Self::ComplexResult::rededicate_from_force(self)));
-          }
+where
+    DspVec<S, T, N, D>: ToComplexResult + InsertZerosOps<T>,
+    <DspVec<S, T, N, D> as ToComplexResult>::ComplexResult: RededicateForceOps<DspVec<S, T, N, D>>,
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: RealNumberSpace,
+    D: Domain,
+{
+    fn to_complex(mut self) -> TransRes<Self::ComplexResult> {
+        if self.is_complex() {
+            self.number_space.to_complex();
+            return Err((
+                ErrorReason::InputMustBeReal,
+                Self::ComplexResult::rededicate_from_force(self),
+            ));
+        }
 
-          let result = self.zero_interleave(2);
-          let domain = self.domain();
-          match result {
-              Err(reason) =>
-                Err((reason,
-                    Self::ComplexResult::rededicate_with_runtime_data(self, true, domain))),
-              Ok(()) =>
-                Ok(Self::ComplexResult::rededicate_with_runtime_data(self, true, domain))
-          }
-      }
+        let result = self.zero_interleave(2);
+        let domain = self.domain();
+        match result {
+            Err(reason) => Err((
+                reason,
+                Self::ComplexResult::rededicate_with_runtime_data(self, true, domain),
+            )),
+            Ok(()) => Ok(Self::ComplexResult::rededicate_with_runtime_data(
+                self, true, domain,
+            )),
+        }
+    }
 }
 
 impl<S, T, N, D> RealToComplexTransformsOpsBuffered<S, T> for DspVec<S, T, N, D>
-    where DspVec<S, T, N, D>: ToComplexResult + InsertZerosOpsBuffered<S, T>,
-          <DspVec<S, T, N, D> as ToComplexResult>::ComplexResult:
-            RededicateForceOps<DspVec<S, T, N, D>>,
-          S: ToSliceMut<T>,
-          T: RealNumber,
-          N: RealNumberSpace,
-          D: Domain {
-      fn to_complex_b<B>(mut self, buffer: &mut B) -> Self::ComplexResult
-          where B: for<'a> Buffer<'a, S, T> {
-          if self.is_complex() {
-              self.number_space.to_complex();
-              self.valid_len = 0;
-              return Self::ComplexResult::rededicate_from_force(self);
-          }
-          self.zero_interleave_b(buffer, 2);
-          self.number_space.to_complex();
-          Self::ComplexResult::rededicate_from_force(self)
-      }
+where
+    DspVec<S, T, N, D>: ToComplexResult + InsertZerosOpsBuffered<S, T>,
+    <DspVec<S, T, N, D> as ToComplexResult>::ComplexResult: RededicateForceOps<DspVec<S, T, N, D>>,
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: RealNumberSpace,
+    D: Domain,
+{
+    fn to_complex_b<B>(mut self, buffer: &mut B) -> Self::ComplexResult
+    where
+        B: for<'a> Buffer<'a, S, T>,
+    {
+        if self.is_complex() {
+            self.number_space.to_complex();
+            self.valid_len = 0;
+            return Self::ComplexResult::rededicate_from_force(self);
+        }
+        self.zero_interleave_b(buffer, 2);
+        self.number_space.to_complex();
+        Self::ComplexResult::rededicate_from_force(self)
+    }
 }

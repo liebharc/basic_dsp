@@ -1,7 +1,7 @@
-use numbers::*;
+use super::super::{Domain, DspVec, MetaData, NumberSpace, ToSliceMut};
 use multicore_support::*;
+use numbers::*;
 use simd_extensions::*;
-use super::super::{DspVec, MetaData, ToSliceMut, NumberSpace, Domain};
 /// Trigonometry methods.
 pub trait TrigOps {
     /// Calculates the sine of each element in radians.
@@ -64,7 +64,8 @@ pub trait TrigOps {
 
 /// Roots, powers, exponentials and logarithms.
 pub trait PowerOps<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     /// Gets the square root of all vector elements.
     ///
@@ -194,10 +195,11 @@ const TRIG_COMPLEXITY: Complexity = Complexity::Medium;
 const DEF_POW_COMPLEXITY: Complexity = Complexity::Large;
 
 impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn sin(&mut self) {
         if self.is_complex() {
@@ -297,19 +299,22 @@ impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> PowerOps<T> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn sqrt(&mut self) {
         if self.is_complex() {
             self.pure_complex_operation(|x, _arg| x.sqrt(), (), Complexity::Small);
         } else {
-            sel_reg!(self.simd_real_operation::<T>(|x, _arg| x.sqrt(),
-                                     |x, _arg| x.sqrt(),
-                                     (),
-                                     Complexity::Small));
+            sel_reg!(self.simd_real_operation::<T>(
+                |x, _arg| x.sqrt(),
+                |x, _arg| x.sqrt(),
+                (),
+                Complexity::Small
+            ));
         }
     }
 
@@ -317,7 +322,12 @@ impl<S, T, N, D> PowerOps<T> for DspVec<S, T, N, D>
         if self.is_complex() {
             self.pure_complex_operation(|x, _arg| x * x, (), Complexity::Small);
         } else {
-            sel_reg!(self.simd_real_operation::<T>(|x, _arg| x * x, |x, _arg| x * x, (), Complexity::Small));
+            sel_reg!(self.simd_real_operation::<T>(
+                |x, _arg| x * x,
+                |x, _arg| x * x,
+                (),
+                Complexity::Small
+            ));
         }
     }
 

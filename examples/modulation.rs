@@ -1,28 +1,29 @@
 extern crate basic_dsp;
-use basic_dsp::*;
 use basic_dsp::conv_types::*;
+use basic_dsp::*;
 
-use std::fs::File;
-use std::io::prelude::*;
-use std::io;
 use std::f64::consts::PI;
+use std::fs::File;
+use std::io;
+use std::io::prelude::*;
 
-// In this example start with creating some data using a PRBS15 which is a standard way to create 
-// pseudo random data. Afterwards we interpolate the data to get a waveform which fits in a small 
-// frequency block and finally we shift this frequency block to a desired target frequency. 
-// Modern communication technologies like UMTS and LTE use similar approaches in order to 
-// transmit data, however needless to say that those technologies are far more complicated. 
+// In this example start with creating some data using a PRBS15 which is a standard way to create
+// pseudo random data. Afterwards we interpolate the data to get a waveform which fits in a small
+// frequency block and finally we shift this frequency block to a desired target frequency.
+// Modern communication technologies like UMTS and LTE use similar approaches in order to
+// transmit data, however needless to say that those technologies are far more complicated.
 fn main() {
     let number_of_symbols = 10000;
     let mut prbs = Prbs15::new();
-    let mut channel1 = vec!(0.0; number_of_symbols).to_real_time_vec();
-    let mut channel2 = vec!(0.0; number_of_symbols).to_real_time_vec();
-    let mut complex = vec!(0.0; 0).to_complex_time_vec();
+    let mut channel1 = vec![0.0; number_of_symbols].to_real_time_vec();
+    let mut channel2 = vec![0.0; number_of_symbols].to_real_time_vec();
+    let mut complex = vec![0.0; 0].to_complex_time_vec();
     let mut buffer = SingleBuffer::new();
 
     for i in 0..3 {
         fill_vectors_with_prbs(&mut channel1, &mut channel2, &mut prbs);
-        complex.set_real_imag(&channel1, &channel2)
+        complex
+            .set_real_imag(&channel1, &channel2)
             .expect("Channel 1 and channel 2 should always have the same size");
         complex.interpolatef(&mut buffer, &RaisedCosineFunction::new(0.35), 10.0, 0.0, 10);
         let mut file = File::create(format!("baseband_time{}.csv", i))
@@ -57,9 +58,11 @@ impl Prbs15 {
     }
 }
 
-fn fill_vectors_with_prbs(channel1: &mut RealTimeVec64,
-                          channel2: &mut RealTimeVec64,
-                          prbs: &mut Prbs15) {
+fn fill_vectors_with_prbs(
+    channel1: &mut RealTimeVec64,
+    channel2: &mut RealTimeVec64,
+    prbs: &mut Prbs15,
+) {
     assert!(channel1.points() == channel2.points());
     for i in 0..channel1.points() {
         channel2[i] = prbs.next();

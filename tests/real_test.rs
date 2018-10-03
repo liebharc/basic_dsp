@@ -1,6 +1,6 @@
 extern crate basic_dsp;
-extern crate rand;
 extern crate num;
+extern crate rand;
 pub mod tools;
 
 mod real_test {
@@ -293,7 +293,10 @@ mod real_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data(201511171, iteration, range.start, range.end);
             let b = create_data_with_len(201511172, iteration, a.len());
-            let expected = real_vector_mul(&a, &b).iter().map(|v|*v as f64).fold(0.0, |a, b| a + b);
+            let expected = real_vector_mul(&a, &b)
+                .iter()
+                .map(|v| *v as f64)
+                .fold(0.0, |a, b| a + b);
             let delta = create_delta(3561159, iteration);
             let mut vector1 = a.to_real_time_vec();
             vector1.set_delta(delta);
@@ -496,8 +499,12 @@ mod real_test {
             let delta = create_delta(3561159, iteration);
             let mut vector = a.clone().to_real_time_vec();
             vector.set_delta(delta);
-            let sum: f64 = a.iter().map(|v|*v as f64).fold(0.0, |a, b| a + b);
-            let sum_sq: f64 = a.iter().map(|v|*v as f64).map(|v| v * v).fold(0.0, |a, b| a + b);
+            let sum: f64 = a.iter().map(|v| *v as f64).fold(0.0, |a, b| a + b);
+            let sum_sq: f64 = a
+                .iter()
+                .map(|v| *v as f64)
+                .map(|v| v * v)
+                .fold(0.0, |a, b| a + b);
             let rms = (sum_sq / a.len() as f64).sqrt();
             let result = vector.statistics_prec();
             assert_eq!(result.sum as f32, sum as f32);
@@ -554,11 +561,13 @@ mod real_test {
         let a = create_data(201511210, 0, 1000, 1000);
         let vector = a.clone().to_real_time_vec();
         let empty: Vec<f32> = Vec::new();
-        let mut split = [Box::new(empty.clone().to_real_time_vec()),
-                         Box::new(empty.clone().to_real_time_vec()),
-                         Box::new(empty.clone().to_real_time_vec()),
-                         Box::new(empty.clone().to_real_time_vec()),
-                         Box::new(empty.clone().to_real_time_vec())];
+        let mut split = [
+            Box::new(empty.clone().to_real_time_vec()),
+            Box::new(empty.clone().to_real_time_vec()),
+            Box::new(empty.clone().to_real_time_vec()),
+            Box::new(empty.clone().to_real_time_vec()),
+            Box::new(empty.clone().to_real_time_vec()),
+        ];
         {
             let mut dest: Vec<_> = split.iter_mut().map(|x| x.as_mut()).collect();
             vector.split_into(&mut dest[..]).unwrap();
@@ -579,15 +588,19 @@ mod real_test {
         let complex_freq: ComplexFreqVec32 = complex_time.plain_fft(&mut buffer);
         let mut real_mirror = sym_fft.clone();
         real_mirror.mirror(&mut buffer);
-        assert_vector_eq_with_reason_and_tolerance(&complex_freq[..],
-                                                   &real_mirror[..],
-                                                   1e-3,
-                                                   "Different FFT paths must equal");
+        assert_vector_eq_with_reason_and_tolerance(
+            &complex_freq[..],
+            &real_mirror[..],
+            1e-3,
+            "Different FFT paths must equal",
+        );
         let mut real_ifft: RealTimeVec32 = sym_fft.plain_sifft(&mut buffer).unwrap();
         real_ifft.scale(1.0 / 1001.0);
-        assert_vector_eq_with_reason_and_tolerance(&time[..],
-                                                   &real_ifft[..],
-                                                   1e-3,
-                                                   "Ifft must give back the original result");
+        assert_vector_eq_with_reason_and_tolerance(
+            &time[..],
+            &real_ifft[..],
+            1e-3,
+            "Ifft must give back the original result",
+        );
     }
 }

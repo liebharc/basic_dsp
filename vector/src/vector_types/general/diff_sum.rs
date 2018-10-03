@@ -1,6 +1,6 @@
+use super::super::{Domain, DspVec, MetaData, NumberSpace, ToSliceMut, Vector};
 use array_to_complex_mut;
 use numbers::*;
-use super::super::{Vector, DspVec, ToSliceMut, Domain, NumberSpace, MetaData};
 
 /// A trait to calculate the diff (1st derivative in a discrete number space) or cumulative sum
 /// (integral  in a discrete number space).
@@ -54,10 +54,11 @@ pub trait DiffSumOps {
 }
 
 impl<S, T, N, D> DiffSumOps for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn diff(&mut self) {
         let is_complex = self.is_complex();

@@ -1,10 +1,12 @@
-use array_to_complex;
-use numbers::*;
-use num_complex::Complex64;
-use multicore_support::*;
-use super::super::{Vector, DspVec, ToSlice, Domain, RealNumberSpace, ComplexNumberSpace,
-                   Statistics, Stats, StatsVec, STATS_VEC_CAPACTIY, ScalarResult, ErrorReason};
+use super::super::{
+    ComplexNumberSpace, Domain, DspVec, ErrorReason, RealNumberSpace, ScalarResult, Statistics,
+    Stats, StatsVec, ToSlice, Vector, STATS_VEC_CAPACTIY,
+};
 use super::{kahan_sum, kahan_sumb};
+use array_to_complex;
+use multicore_support::*;
+use num_complex::Complex64;
+use numbers::*;
 
 /// Offers the same functionality as the `StatisticsOps` trait but
 /// the statistics are calculated in a more precise (and slower) way.
@@ -71,7 +73,8 @@ pub trait PreciseStatisticsSplitOps<T> {
 /// Offers the same functionality as the `SumOps` trait but
 /// the sums are calculated in a more precise (and slower) way.
 pub trait PreciseSumOps<T>: Sized
-    where T: Sized
+where
+    T: Sized,
 {
     /// Calculates the sum of the data contained in the vector
     /// using a more precise but slower algorithm.
@@ -117,38 +120,42 @@ pub trait PreciseStats<T>: Sized {
 }
 
 impl<S, N, D> PreciseStatisticsOps<f64> for DspVec<S, f32, N, D>
-    where S: ToSlice<f32>,
-          N: RealNumberSpace,
-          D: Domain
+where
+    S: ToSlice<f32>,
+    N: RealNumberSpace,
+    D: Domain,
 {
     type Result = Statistics<f64>;
 
     fn statistics_prec(&self) -> Statistics<f64> {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let chunks = Chunk::get_chunked_results(Complexity::Small,
-                                                &self.multicore_settings,
-                                                &array[0..data_length],
-                                                1,
-                                                (),
-                                                |array, range, _arg| {
-            let mut stats = Statistics::empty();
-            let mut j = range.start;
-            for num in array {
-                stats.add(*num as f64, j);
-                j += 1;
-            }
-            stats
-        });
+        let chunks = Chunk::get_chunked_results(
+            Complexity::Small,
+            &self.multicore_settings,
+            &array[0..data_length],
+            1,
+            (),
+            |array, range, _arg| {
+                let mut stats = Statistics::empty();
+                let mut j = range.start;
+                for num in array {
+                    stats.add(*num as f64, j);
+                    j += 1;
+                }
+                stats
+            },
+        );
 
         Statistics::merge(&chunks[..])
     }
 }
 
 impl<S, N, D> PreciseStatisticsSplitOps<f64> for DspVec<S, f32, N, D>
-    where S: ToSlice<f32>,
-          N: RealNumberSpace,
-          D: Domain
+where
+    S: ToSlice<f32>,
+    N: RealNumberSpace,
+    D: Domain,
 {
     type Result = StatsVec<Statistics<f64>>;
 
@@ -163,62 +170,68 @@ impl<S, N, D> PreciseStatisticsSplitOps<f64> for DspVec<S, f32, N, D>
 
         let data_length = self.len();
         let array = self.data.to_slice();
-        let chunks = Chunk::get_chunked_results(Complexity::Small,
-                                                &self.multicore_settings,
-                                                &array[0..data_length],
-                                                1,
-                                                len,
-                                                |array, range, len| {
-            let mut results = Statistics::empty_vec(len);
-            let mut j = range.start;
-            for num in array {
-                let stats = &mut results[j % len];
-                stats.add(*num as f64, j / len);
-                j += 1;
-            }
+        let chunks = Chunk::get_chunked_results(
+            Complexity::Small,
+            &self.multicore_settings,
+            &array[0..data_length],
+            1,
+            len,
+            |array, range, len| {
+                let mut results = Statistics::empty_vec(len);
+                let mut j = range.start;
+                for num in array {
+                    let stats = &mut results[j % len];
+                    stats.add(*num as f64, j / len);
+                    j += 1;
+                }
 
-            results
-        });
+                results
+            },
+        );
 
         Ok(Statistics::merge_cols(&chunks[..]))
     }
 }
 
 impl<S, N, D> PreciseStatisticsOps<f64> for DspVec<S, f64, N, D>
-    where S: ToSlice<f64>,
-          N: RealNumberSpace,
-          D: Domain
+where
+    S: ToSlice<f64>,
+    N: RealNumberSpace,
+    D: Domain,
 {
     type Result = Statistics<f64>;
 
     fn statistics_prec(&self) -> Statistics<f64> {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let chunks = Chunk::get_chunked_results(Complexity::Small,
-                                                &self.multicore_settings,
-                                                &array[0..data_length],
-                                                1,
-                                                (),
-                                                |array, range, _arg| {
-            let mut stats = Statistics::empty();
-            let mut j = range.start;
-            let mut sumc = 0.0;
-            let mut rmsc = 0.0;
-            for num in array {
-                stats.add_prec(*num, j, &mut sumc, &mut rmsc);
-                j += 1;
-            }
-            stats
-        });
+        let chunks = Chunk::get_chunked_results(
+            Complexity::Small,
+            &self.multicore_settings,
+            &array[0..data_length],
+            1,
+            (),
+            |array, range, _arg| {
+                let mut stats = Statistics::empty();
+                let mut j = range.start;
+                let mut sumc = 0.0;
+                let mut rmsc = 0.0;
+                for num in array {
+                    stats.add_prec(*num, j, &mut sumc, &mut rmsc);
+                    j += 1;
+                }
+                stats
+            },
+        );
 
         Statistics::merge(&chunks[..])
     }
 }
 
 impl<S, N, D> PreciseStatisticsSplitOps<f64> for DspVec<S, f64, N, D>
-    where S: ToSlice<f64>,
-          N: RealNumberSpace,
-          D: Domain
+where
+    S: ToSlice<f64>,
+    N: RealNumberSpace,
+    D: Domain,
 {
     type Result = StatsVec<Statistics<f64>>;
 
@@ -233,152 +246,159 @@ impl<S, N, D> PreciseStatisticsSplitOps<f64> for DspVec<S, f64, N, D>
 
         let data_length = self.len();
         let array = self.data.to_slice();
-        let chunks = Chunk::get_chunked_results(Complexity::Small,
-                                                &self.multicore_settings,
-                                                &array[0..data_length],
-                                                1,
-                                                len,
-                                                |array, range, len| {
-            let mut results = Statistics::empty_vec(len);
-            let mut j = range.start;
-            let mut sumc = 0.0;
-            let mut rmsc = 0.0;
-            for num in array {
-                let stats = &mut results[j % len];
-                stats.add_prec(*num, j / len, &mut sumc, &mut rmsc);
-                j += 1;
-            }
+        let chunks = Chunk::get_chunked_results(
+            Complexity::Small,
+            &self.multicore_settings,
+            &array[0..data_length],
+            1,
+            len,
+            |array, range, len| {
+                let mut results = Statistics::empty_vec(len);
+                let mut j = range.start;
+                let mut sumc = 0.0;
+                let mut rmsc = 0.0;
+                for num in array {
+                    let stats = &mut results[j % len];
+                    stats.add_prec(*num, j / len, &mut sumc, &mut rmsc);
+                    j += 1;
+                }
 
-            results
-        });
+                results
+            },
+        );
 
         Ok(Statistics::merge_cols(&chunks[..]))
     }
 }
 
 impl<S, N, D> PreciseSumOps<f64> for DspVec<S, f32, N, D>
-    where S: ToSlice<f32>,
-          N: RealNumberSpace,
-          D: Domain
+where
+    S: ToSlice<f32>,
+    N: RealNumberSpace,
+    D: Domain,
 {
     fn sum_prec(&self) -> f64 {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let chunks = Chunk::get_chunked_results(Complexity::Small,
-                                                &self.multicore_settings,
-                                                &array[0..data_length],
-                                                1,
-                                                (),
-                                                move |array, _, _| {
-            let mut sum = 0.0;
-            for n in array {
-                sum += *n as f64;
-            }
-            sum
-        });
-        (&chunks[..])
-            .iter()
-            .fold(0.0, |a, b| a + b)
+        let chunks = Chunk::get_chunked_results(
+            Complexity::Small,
+            &self.multicore_settings,
+            &array[0..data_length],
+            1,
+            (),
+            move |array, _, _| {
+                let mut sum = 0.0;
+                for n in array {
+                    sum += *n as f64;
+                }
+                sum
+            },
+        );
+        (&chunks[..]).iter().fold(0.0, |a, b| a + b)
     }
 
     fn sum_sq_prec(&self) -> f64 {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let chunks = Chunk::get_chunked_results(Complexity::Small,
-                                                &self.multicore_settings,
-                                                &array[0..data_length],
-                                                1,
-                                                (),
-                                                move |array, _, _| {
-            let mut sum = 0.0;
-            for n in array {
-                let t = *n as f64;
-                sum += t * t;
-            }
-            sum
-        });
-        (&chunks[..])
-            .iter()
-            .fold(0.0, |a, b| a + b)
+        let chunks = Chunk::get_chunked_results(
+            Complexity::Small,
+            &self.multicore_settings,
+            &array[0..data_length],
+            1,
+            (),
+            move |array, _, _| {
+                let mut sum = 0.0;
+                for n in array {
+                    let t = *n as f64;
+                    sum += t * t;
+                }
+                sum
+            },
+        );
+        (&chunks[..]).iter().fold(0.0, |a, b| a + b)
     }
 }
 
 impl<S, N, D> PreciseSumOps<f64> for DspVec<S, f64, N, D>
-    where S: ToSlice<f64>,
-          N: RealNumberSpace,
-          D: Domain
+where
+    S: ToSlice<f64>,
+    N: RealNumberSpace,
+    D: Domain,
 {
     fn sum_prec(&self) -> f64 {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let chunks = Chunk::get_chunked_results(Complexity::Small,
-                                                &self.multicore_settings,
-                                                &array[0..data_length],
-                                                1,
-                                                (),
-                                                move |array, _, _| kahan_sumb(array.iter()));
-        (&chunks[..])
-            .iter()
-            .fold(0.0, |a, b| a + b)
+        let chunks = Chunk::get_chunked_results(
+            Complexity::Small,
+            &self.multicore_settings,
+            &array[0..data_length],
+            1,
+            (),
+            move |array, _, _| kahan_sumb(array.iter()),
+        );
+        (&chunks[..]).iter().fold(0.0, |a, b| a + b)
     }
 
     fn sum_sq_prec(&self) -> f64 {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let chunks = Chunk::get_chunked_results(Complexity::Small,
-                                                &self.multicore_settings,
-                                                &array[0..data_length],
-                                                1,
-                                                (),
-                                                move |array, _, _| {
-                                                    kahan_sum(array.iter().map(|x| x * x))
-                                                });
-        (&chunks[..])
-            .iter()
-            .fold(0.0, |a, b| a + b)
+        let chunks = Chunk::get_chunked_results(
+            Complexity::Small,
+            &self.multicore_settings,
+            &array[0..data_length],
+            1,
+            (),
+            move |array, _, _| kahan_sum(array.iter().map(|x| x * x)),
+        );
+        (&chunks[..]).iter().fold(0.0, |a, b| a + b)
     }
 }
 
 impl<S, N, D> PreciseStatisticsOps<Complex<f64>> for DspVec<S, f32, N, D>
-    where S: ToSlice<f32>,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSlice<f32>,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     type Result = Statistics<Complex<f64>>;
 
     fn statistics_prec(&self) -> Statistics<Complex<f64>> {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let chunks = Chunk::get_chunked_results(Complexity::Small,
-                                                &self.multicore_settings,
-                                                &array[0..data_length],
-                                                2,
-                                                (),
-                                                |array, range, _arg| {
-            let mut stat = Statistics::<Complex64>::empty();
-            let mut j = range.start / 2;
-            let array = array_to_complex(array);
-            for num in array {
-                stat.add(Complex64::new(num.re as f64, num.im as f64), j);
-                j += 1;
-            }
-            stat
-        });
+        let chunks = Chunk::get_chunked_results(
+            Complexity::Small,
+            &self.multicore_settings,
+            &array[0..data_length],
+            2,
+            (),
+            |array, range, _arg| {
+                let mut stat = Statistics::<Complex64>::empty();
+                let mut j = range.start / 2;
+                let array = array_to_complex(array);
+                for num in array {
+                    stat.add(Complex64::new(num.re as f64, num.im as f64), j);
+                    j += 1;
+                }
+                stat
+            },
+        );
 
         Statistics::merge(&chunks[..])
     }
 }
 
 impl<S, N, D> PreciseStatisticsSplitOps<Complex<f64>> for DspVec<S, f32, N, D>
-    where S: ToSlice<f32>,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSlice<f32>,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     type Result = StatsVec<Statistics<Complex<f64>>>;
 
-    fn statistics_split_prec(&self,
-                             len: usize)
-                             -> ScalarResult<StatsVec<Statistics<Complex<f64>>>> {
+    fn statistics_split_prec(
+        &self,
+        len: usize,
+    ) -> ScalarResult<StatsVec<Statistics<Complex<f64>>>> {
         if len == 0 {
             return Ok(StatsVec::new());
         }
@@ -389,70 +409,77 @@ impl<S, N, D> PreciseStatisticsSplitOps<Complex<f64>> for DspVec<S, f32, N, D>
 
         let data_length = self.len();
         let array = self.data.to_slice();
-        let chunks = Chunk::get_chunked_results(Complexity::Small,
-                                                &self.multicore_settings,
-                                                &array[0..data_length],
-                                                2,
-                                                len,
-                                                |array, range, len| {
-            let mut results = Statistics::<Complex<f64>>::empty_vec(len);
-            let mut j = range.start / 2;
-            let array = array_to_complex(array);
-            for num in array {
-                let stat = &mut results[j % len];
-                stat.add(Complex64::new(num.re as f64, num.im as f64), j / len);
-                j += 1;
-            }
+        let chunks = Chunk::get_chunked_results(
+            Complexity::Small,
+            &self.multicore_settings,
+            &array[0..data_length],
+            2,
+            len,
+            |array, range, len| {
+                let mut results = Statistics::<Complex<f64>>::empty_vec(len);
+                let mut j = range.start / 2;
+                let array = array_to_complex(array);
+                for num in array {
+                    let stat = &mut results[j % len];
+                    stat.add(Complex64::new(num.re as f64, num.im as f64), j / len);
+                    j += 1;
+                }
 
-            results
-        });
+                results
+            },
+        );
 
         Ok(Statistics::merge_cols(&chunks[..]))
     }
 }
 
 impl<S, N, D> PreciseStatisticsOps<Complex<f64>> for DspVec<S, f64, N, D>
-    where S: ToSlice<f64>,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSlice<f64>,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     type Result = Statistics<Complex<f64>>;
 
     fn statistics_prec(&self) -> Statistics<Complex<f64>> {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let chunks = Chunk::get_chunked_results(Complexity::Small,
-                                                &self.multicore_settings,
-                                                &array[0..data_length],
-                                                2,
-                                                (),
-                                                |array, range, _arg| {
-            let mut stat = Statistics::<Complex64>::empty();
-            let mut j = range.start / 2;
-            let array = array_to_complex(array);
-            let mut sumc = Complex64::zero();
-            let mut rmsc = Complex64::zero();
-            for num in array {
-                stat.add_prec(*num, j, &mut sumc, &mut rmsc);
-                j += 1;
-            }
-            stat
-        });
+        let chunks = Chunk::get_chunked_results(
+            Complexity::Small,
+            &self.multicore_settings,
+            &array[0..data_length],
+            2,
+            (),
+            |array, range, _arg| {
+                let mut stat = Statistics::<Complex64>::empty();
+                let mut j = range.start / 2;
+                let array = array_to_complex(array);
+                let mut sumc = Complex64::zero();
+                let mut rmsc = Complex64::zero();
+                for num in array {
+                    stat.add_prec(*num, j, &mut sumc, &mut rmsc);
+                    j += 1;
+                }
+                stat
+            },
+        );
 
         Statistics::merge(&chunks[..])
     }
 }
 
 impl<S, N, D> PreciseStatisticsSplitOps<Complex<f64>> for DspVec<S, f64, N, D>
-    where S: ToSlice<f64>,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSlice<f64>,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     type Result = StatsVec<Statistics<Complex<f64>>>;
 
-    fn statistics_split_prec(&self,
-                             len: usize)
-                             -> ScalarResult<StatsVec<Statistics<Complex<f64>>>> {
+    fn statistics_split_prec(
+        &self,
+        len: usize,
+    ) -> ScalarResult<StatsVec<Statistics<Complex<f64>>>> {
         if len == 0 {
             return Ok(StatsVec::new());
         }
@@ -463,123 +490,126 @@ impl<S, N, D> PreciseStatisticsSplitOps<Complex<f64>> for DspVec<S, f64, N, D>
 
         let data_length = self.len();
         let array = self.data.to_slice();
-        let chunks = Chunk::get_chunked_results(Complexity::Small,
-                                                &self.multicore_settings,
-                                                &array[0..data_length],
-                                                2,
-                                                len,
-                                                |array, range, len| {
-            let mut results = Statistics::<Complex<f64>>::empty_vec(len);
-            let mut j = range.start / 2;
-            let array = array_to_complex(array);
-            let mut sumc = Complex64::zero();
-            let mut rmsc = Complex64::zero();
-            for num in array {
-                let stat = &mut results[j % len];
-                stat.add_prec(*num, j / len, &mut sumc, &mut rmsc);
-                j += 1;
-            }
+        let chunks = Chunk::get_chunked_results(
+            Complexity::Small,
+            &self.multicore_settings,
+            &array[0..data_length],
+            2,
+            len,
+            |array, range, len| {
+                let mut results = Statistics::<Complex<f64>>::empty_vec(len);
+                let mut j = range.start / 2;
+                let array = array_to_complex(array);
+                let mut sumc = Complex64::zero();
+                let mut rmsc = Complex64::zero();
+                for num in array {
+                    let stat = &mut results[j % len];
+                    stat.add_prec(*num, j / len, &mut sumc, &mut rmsc);
+                    j += 1;
+                }
 
-            results
-        });
+                results
+            },
+        );
 
         Ok(Statistics::merge_cols(&chunks[..]))
     }
 }
 
 impl<S, N, D> PreciseSumOps<Complex<f64>> for DspVec<S, f32, N, D>
-    where S: ToSlice<f32>,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSlice<f32>,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     fn sum_prec(&self) -> Complex<f64> {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let chunks = Chunk::get_chunked_results(Complexity::Small,
-                                                &self.multicore_settings,
-                                                &array[0..data_length],
-                                                2,
-                                                (),
-                                                move |array, _, _| {
-            let mut sum = Complex64::zero();
-            let array = array_to_complex(&array[0..array.len()]);
-            for n in array {
-                sum = sum + Complex64::new(n.re as f64, n.im as f64);
-            }
-            sum
-        });
-        (&chunks[..])
-            .iter()
-            .fold(Complex64::zero(), |a, b| a + b)
+        let chunks = Chunk::get_chunked_results(
+            Complexity::Small,
+            &self.multicore_settings,
+            &array[0..data_length],
+            2,
+            (),
+            move |array, _, _| {
+                let mut sum = Complex64::zero();
+                let array = array_to_complex(&array[0..array.len()]);
+                for n in array {
+                    sum = sum + Complex64::new(n.re as f64, n.im as f64);
+                }
+                sum
+            },
+        );
+        (&chunks[..]).iter().fold(Complex64::zero(), |a, b| a + b)
     }
 
     fn sum_sq_prec(&self) -> Complex<f64> {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let chunks = Chunk::get_chunked_results(Complexity::Small,
-                                                &self.multicore_settings,
-                                                &array[0..data_length],
-                                                2,
-                                                (),
-                                                move |array, _, _| {
-            let mut sum = Complex::<f64>::zero();
-            let array = array_to_complex(&array[0..array.len()]);
-            for n in array {
-                let t = Complex64::new(n.re as f64, n.im as f64);
-                sum = sum + t * t;
-            }
-            sum
-        });
-        (&chunks[..])
-            .iter()
-            .fold(Complex64::zero(), |a, b| a + b)
+        let chunks = Chunk::get_chunked_results(
+            Complexity::Small,
+            &self.multicore_settings,
+            &array[0..data_length],
+            2,
+            (),
+            move |array, _, _| {
+                let mut sum = Complex::<f64>::zero();
+                let array = array_to_complex(&array[0..array.len()]);
+                for n in array {
+                    let t = Complex64::new(n.re as f64, n.im as f64);
+                    sum = sum + t * t;
+                }
+                sum
+            },
+        );
+        (&chunks[..]).iter().fold(Complex64::zero(), |a, b| a + b)
     }
 }
 
 impl<S, N, D> PreciseSumOps<Complex<f64>> for DspVec<S, f64, N, D>
-    where S: ToSlice<f64>,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSlice<f64>,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     fn sum_prec(&self) -> Complex<f64> {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let chunks = Chunk::get_chunked_results(Complexity::Small,
-                                                &self.multicore_settings,
-                                                &array[0..data_length],
-                                                2,
-                                                (),
-                                                move |array, _, _| {
-                                                    let array =
-                                                        array_to_complex(&array[0..array.len()]);
-                                                    kahan_sumb(array.iter())
-                                                });
-        (&chunks[..])
-            .iter()
-            .fold(Complex64::zero(), |a, b| a + b)
+        let chunks = Chunk::get_chunked_results(
+            Complexity::Small,
+            &self.multicore_settings,
+            &array[0..data_length],
+            2,
+            (),
+            move |array, _, _| {
+                let array = array_to_complex(&array[0..array.len()]);
+                kahan_sumb(array.iter())
+            },
+        );
+        (&chunks[..]).iter().fold(Complex64::zero(), |a, b| a + b)
     }
 
     fn sum_sq_prec(&self) -> Complex<f64> {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let chunks = Chunk::get_chunked_results(Complexity::Small,
-                                                &self.multicore_settings,
-                                                &array[0..data_length],
-                                                2,
-                                                (),
-                                                move |array, _, _| {
-                                                    let array =
-                                                        array_to_complex(&array[0..array.len()]);
-                                                    kahan_sum(array.iter().map(|x| x * x))
-                                                });
-        (&chunks[..])
-            .iter()
-            .fold(Complex64::zero(), |a, b| a + b)
+        let chunks = Chunk::get_chunked_results(
+            Complexity::Small,
+            &self.multicore_settings,
+            &array[0..data_length],
+            2,
+            (),
+            move |array, _, _| {
+                let array = array_to_complex(&array[0..array.len()]);
+                kahan_sum(array.iter().map(|x| x * x))
+            },
+        );
+        (&chunks[..]).iter().fold(Complex64::zero(), |a, b| a + b)
     }
 }
 
 impl<T> PreciseStats<T> for Statistics<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     #[inline]
     fn add_prec(&mut self, elem: T, index: usize, sumc: &mut T, rmsc: &mut T) {
@@ -607,14 +637,17 @@ impl<T> PreciseStats<T> for Statistics<T>
 }
 
 impl<T> PreciseStats<Complex<T>> for Statistics<Complex<T>>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     #[inline]
-    fn add_prec(&mut self,
-                elem: Complex<T>,
-                index: usize,
-                sumc: &mut Complex<T>,
-                rmsc: &mut Complex<T>) {
+    fn add_prec(
+        &mut self,
+        elem: Complex<T>,
+        index: usize,
+        sumc: &mut Complex<T>,
+        rmsc: &mut Complex<T>,
+    ) {
         let y = elem - *sumc;
         let t = self.sum + y;
         *sumc = (t - self.sum) - y;

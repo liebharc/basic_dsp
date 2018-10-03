@@ -1,20 +1,25 @@
+use super::super::{
+    Buffer, Domain, DspVec, ErrorReason, NumberSpace, RealOrComplexData, RededicateForceOps,
+    TimeOrFrequencyData, ToSlice, ToSliceMut,
+};
+use inline_vector::InlineVector;
 use numbers::*;
 use std::result;
-use inline_vector::InlineVector;
-use super::super::{ToSlice, ToSliceMut, NumberSpace, Domain, RealOrComplexData,
-                   TimeOrFrequencyData, DspVec, ErrorReason, RededicateForceOps, Buffer};
 
-use super::{generic_vector_from_any_vector, Identifier, PreparedOperation1, PreparedOperation2,
-            PreparedOperation1Exec, PreparedOperation2Exec, Operation};
+use super::{
+    generic_vector_from_any_vector, Identifier, Operation, PreparedOperation1,
+    PreparedOperation1Exec, PreparedOperation2, PreparedOperation2Exec,
+};
 
 /// A multi operation which holds a vector and records all changes
 /// which need to be done to the vectors. By calling `get` on the struct
 /// all operations will be executed in one run.
 pub struct MultiOperation1<S, T, NO, DO>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          NO: NumberSpace,
-          DO: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    NO: NumberSpace,
+    DO: Domain,
 {
     a: DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>,
     prepared_ops: PreparedOperation1<T, RealOrComplexData, TimeOrFrequencyData, NO, DO>,
@@ -24,41 +29,45 @@ pub struct MultiOperation1<S, T, NO, DO>
 /// which need to be done to the vectors. By calling `get` on the struct
 /// all operations will be executed in one run.
 pub struct MultiOperation2<S, T, NO1, DO1, NO2, DO2>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          NO1: NumberSpace,
-          DO1: Domain,
-          NO2: NumberSpace,
-          DO2: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    NO1: NumberSpace,
+    DO1: Domain,
+    NO2: NumberSpace,
+    DO2: Domain,
 {
     a: DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>,
     b: DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>,
-    prepared_ops: PreparedOperation2<T,
-                                     RealOrComplexData,
-                                     TimeOrFrequencyData,
-                                     RealOrComplexData,
-                                     TimeOrFrequencyData,
-                                     NO1,
-                                     DO1,
-                                     NO2,
-                                     DO2>,
+    prepared_ops: PreparedOperation2<
+        T,
+        RealOrComplexData,
+        TimeOrFrequencyData,
+        RealOrComplexData,
+        TimeOrFrequencyData,
+        NO1,
+        DO1,
+        NO2,
+        DO2,
+    >,
 }
-
 
 /// Creates a new multi operation for one vectors.
 pub fn multi_ops1<S, T, NI, DI>(vector: DspVec<S, T, NI, DI>) -> MultiOperation1<S, T, NI, DI>
-    where S: ToSliceMut<T>,
-          DspVec<S, T, NI, DI>: RededicateForceOps<DspVec<S,
-                                                          T,
-                                                          RealOrComplexData,
-                                                          TimeOrFrequencyData>>,
-          T: RealNumber,
-          NI: NumberSpace,
-          DI: Domain
+where
+    S: ToSliceMut<T>,
+    DspVec<S, T, NI, DI>: RededicateForceOps<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>,
+    T: RealNumber,
+    NI: NumberSpace,
+    DI: Domain,
 {
     let (number_space, domain, a) = generic_vector_from_any_vector(vector);
-    let gen_number_space = RealOrComplexData { is_complex_current: number_space.is_complex() };
-    let gen_domain = TimeOrFrequencyData { domain_current: domain.domain() };
+    let gen_number_space = RealOrComplexData {
+        is_complex_current: number_space.is_complex(),
+    };
+    let gen_domain = TimeOrFrequencyData {
+        domain_current: domain.domain(),
+    };
     let ops: PreparedOperation1<T, RealOrComplexData, TimeOrFrequencyData, NI, DI> =
         PreparedOperation1 {
             number_space_in: gen_number_space,
@@ -73,41 +82,48 @@ pub fn multi_ops1<S, T, NI, DI>(vector: DspVec<S, T, NI, DI>) -> MultiOperation1
     }
 }
 
-
 /// Creates a new multi operation for two vectors.
-pub fn multi_ops2<S, T, NI1, DI1, NI2, DI2>(a: DspVec<S, T, NI1, DI1>,
-                                            b: DspVec<S, T, NI2, DI2>)
-                                            -> MultiOperation2<S, T, NI1, DI1, NI2, DI2>
-    where S: ToSliceMut<T>,
-          DspVec<S, T, NI1, DI1>: RededicateForceOps<DspVec<S,
-                                                            T,
-                                                            RealOrComplexData,
-                                                            TimeOrFrequencyData>>,
-          DspVec<S, T, NI2, DI2>: RededicateForceOps<DspVec<S,
-                                                            T,
-                                                            RealOrComplexData,
-                                                            TimeOrFrequencyData>>,
-          T: RealNumber,
-          NI1: NumberSpace,
-          DI1: Domain,
-          NI2: NumberSpace,
-          DI2: Domain
+pub fn multi_ops2<S, T, NI1, DI1, NI2, DI2>(
+    a: DspVec<S, T, NI1, DI1>,
+    b: DspVec<S, T, NI2, DI2>,
+) -> MultiOperation2<S, T, NI1, DI1, NI2, DI2>
+where
+    S: ToSliceMut<T>,
+    DspVec<S, T, NI1, DI1>:
+        RededicateForceOps<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>,
+    DspVec<S, T, NI2, DI2>:
+        RededicateForceOps<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>,
+    T: RealNumber,
+    NI1: NumberSpace,
+    DI1: Domain,
+    NI2: NumberSpace,
+    DI2: Domain,
 {
     let (number_space1, domain1, a) = generic_vector_from_any_vector(a);
-    let gen_number_space1 = RealOrComplexData { is_complex_current: number_space1.is_complex() };
-    let gen_domain1 = TimeOrFrequencyData { domain_current: domain1.domain() };
+    let gen_number_space1 = RealOrComplexData {
+        is_complex_current: number_space1.is_complex(),
+    };
+    let gen_domain1 = TimeOrFrequencyData {
+        domain_current: domain1.domain(),
+    };
     let (number_space2, domain2, b) = generic_vector_from_any_vector(b);
-    let gen_number_space2 = RealOrComplexData { is_complex_current: number_space2.is_complex() };
-    let gen_domain2 = TimeOrFrequencyData { domain_current: domain2.domain() };
-    let ops: PreparedOperation2<T,
-                                RealOrComplexData,
-                                TimeOrFrequencyData,
-                                RealOrComplexData,
-                                TimeOrFrequencyData,
-                                NI1,
-                                DI1,
-                                NI2,
-                                DI2> = PreparedOperation2 {
+    let gen_number_space2 = RealOrComplexData {
+        is_complex_current: number_space2.is_complex(),
+    };
+    let gen_domain2 = TimeOrFrequencyData {
+        domain_current: domain2.domain(),
+    };
+    let ops: PreparedOperation2<
+        T,
+        RealOrComplexData,
+        TimeOrFrequencyData,
+        RealOrComplexData,
+        TimeOrFrequencyData,
+        NI1,
+        DI1,
+        NI2,
+        DI2,
+    > = PreparedOperation2 {
         number_space_in1: gen_number_space1,
         domain_in1: gen_domain1,
         number_space_in2: gen_number_space2,
@@ -130,25 +146,29 @@ pub fn multi_ops2<S, T, NI1, DI1, NI2, DI2>(a: DspVec<S, T, NI1, DI1>,
 /// vectors. A call to `get` then runs all recorded operations on the vectors
 /// and returns them. See the modules description for why this can be beneficial.
 impl<S, T, NO, DO> MultiOperation1<S, T, NO, DO>
-    where S: ToSliceMut<T>,
-          DspVec<S, T, NO, DO>: RededicateForceOps<DspVec<S,
-                                                          T,
-                                                          RealOrComplexData,
-                                                          TimeOrFrequencyData>>,
-          T: RealNumber,
-          NO: NumberSpace,
-          DO: Domain
+where
+    S: ToSliceMut<T>,
+    DspVec<S, T, NO, DO>: RededicateForceOps<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>,
+    T: RealNumber,
+    NO: NumberSpace,
+    DO: Domain,
 {
     /// Extends the operation to operate on one more vector.
-    pub fn extend<NI2, DI2>(self,
-                            vector: DspVec<S, T, NI2, DI2>)
-                            -> MultiOperation2<S, T, NO, DO, NI2, DI2>
-        where NI2: NumberSpace,
-              DI2: Domain
+    pub fn extend<NI2, DI2>(
+        self,
+        vector: DspVec<S, T, NI2, DI2>,
+    ) -> MultiOperation2<S, T, NO, DO, NI2, DI2>
+    where
+        NI2: NumberSpace,
+        DI2: Domain,
     {
         let (number_space, domain, b) = generic_vector_from_any_vector(vector);
-        let number_space_gen = RealOrComplexData { is_complex_current: number_space.is_complex() };
-        let domain_gen = TimeOrFrequencyData { domain_current: domain.domain() };
+        let number_space_gen = RealOrComplexData {
+            is_complex_current: number_space.is_complex(),
+        };
+        let domain_gen = TimeOrFrequencyData {
+            domain_current: domain.domain(),
+        };
 
         let a = self.a;
         let ops = self.prepared_ops;
@@ -173,10 +193,12 @@ impl<S, T, NO, DO> MultiOperation1<S, T, NO, DO>
     }
 
     /// Executes all recorded operations on the stored vector.
-    pub fn get<B>(self,
-                  buffer: &mut B)
-                  -> result::Result<DspVec<S, T, NO, DO>, (ErrorReason, DspVec<S, T, NO, DO>)>
-        where B: for<'a> Buffer<'a, S, T>
+    pub fn get<B>(
+        self,
+        buffer: &mut B,
+    ) -> result::Result<DspVec<S, T, NO, DO>, (ErrorReason, DspVec<S, T, NO, DO>)>
+    where
+        B: for<'a> Buffer<'a, S, T>,
     {
         self.prepared_ops.exec(buffer, self.a)
     }
@@ -188,9 +210,10 @@ impl<S, T, NO, DO> MultiOperation1<S, T, NO, DO>
     /// placeholder for vectors. Every operation done to an `Identifier`
     /// is recorded and will be executed on vectors if `get` is called.
     pub fn add_ops<F, NT, DT>(self, operation: F) -> MultiOperation1<S, T, NT, DT>
-        where F: Fn(Identifier<T, NO, DO>) -> Identifier<T, NT, DT>,
-              DT: Domain,
-              NT: NumberSpace
+    where
+        F: Fn(Identifier<T, NO, DO>) -> Identifier<T, NT, DT>,
+        DT: Domain,
+        NT: NumberSpace,
     {
         let ops = self.prepared_ops.add_ops(operation);
         MultiOperation1 {
@@ -210,27 +233,28 @@ impl<S, T, NO, DO> MultiOperation1<S, T, NO, DO>
 /// vectors. A call to `get` then runs all recorded operations on the vectors
 /// and returns them. See the modules description for why this can be beneficial.
 impl<S, T, NO1, DO1, NO2, DO2> MultiOperation2<S, T, NO1, DO1, NO2, DO2>
-    where S: ToSliceMut<T>,
-          DspVec<S, T, NO1, DO1>: RededicateForceOps<DspVec<S,
-                                                            T,
-                                                            RealOrComplexData,
-                                                            TimeOrFrequencyData>>,
-          DspVec<S, T, NO2, DO2>: RededicateForceOps<DspVec<S,
-                                                            T,
-                                                            RealOrComplexData,
-                                                            TimeOrFrequencyData>>,
-          T: RealNumber,
-          NO1: NumberSpace,
-          DO1: Domain,
-          NO2: NumberSpace,
-          DO2: Domain
+where
+    S: ToSliceMut<T>,
+    DspVec<S, T, NO1, DO1>:
+        RededicateForceOps<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>,
+    DspVec<S, T, NO2, DO2>:
+        RededicateForceOps<DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>>,
+    T: RealNumber,
+    NO1: NumberSpace,
+    DO1: Domain,
+    NO2: NumberSpace,
+    DO2: Domain,
 {
     /// Executes all recorded operations on the stored vector.
-    pub fn get<B>(self,
-                  buffer: &mut B)
-                  -> result::Result<(DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>),
-                                    (ErrorReason, DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>)>
-        where B: for<'a> Buffer<'a, S, T>
+    pub fn get<B>(
+        self,
+        buffer: &mut B,
+    ) -> result::Result<
+        (DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>),
+        (ErrorReason, DspVec<S, T, NO1, DO1>, DspVec<S, T, NO2, DO2>),
+    >
+    where
+        B: for<'a> Buffer<'a, S, T>,
     {
         self.prepared_ops.exec(buffer, self.a, self.b)
     }
@@ -241,15 +265,17 @@ impl<S, T, NO1, DO1, NO2, DO2> MultiOperation2<S, T, NO1, DO1, NO2, DO2>
     /// It only operated on `Identifier` types and these serve as
     /// placeholder for vectors. Every operation done to an `Identifier`
     /// is recorded and will be executed on vectors if `get` is called.
-    pub fn add_ops<F, NT1, DT1, NT2, DT2>(self,
-                                          operation: F)
-                                          -> MultiOperation2<S, T, NT1, DT1, NT2, DT2>
-        where F: Fn(Identifier<T, NO1, DO1>, Identifier<T, NO2, DO2>)
-                    -> (Identifier<T, NT1, DT1>, Identifier<T, NT2, DT2>),
-              DT1: Domain,
-              NT1: NumberSpace,
-              DT2: Domain,
-              NT2: NumberSpace
+    pub fn add_ops<F, NT1, DT1, NT2, DT2>(
+        self,
+        operation: F,
+    ) -> MultiOperation2<S, T, NT1, DT1, NT2, DT2>
+    where
+        F: Fn(Identifier<T, NO1, DO1>, Identifier<T, NO2, DO2>)
+            -> (Identifier<T, NT1, DT1>, Identifier<T, NT2, DT2>),
+        DT1: Domain,
+        NT1: NumberSpace,
+        DT2: Domain,
+        NT2: NumberSpace,
     {
         let ops = self.prepared_ops.add_ops(operation);
         MultiOperation2 {

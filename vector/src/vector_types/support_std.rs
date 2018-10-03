@@ -1,30 +1,35 @@
+use super::{
+    round_len, Buffer, BufferBorrow, ComplexData, ComplexFreqVec, ComplexTimeVec, DataDomain,
+    Domain, DspVec, ErrorReason, FrequencyData, GenDspVec, MetaData, NumberSpace, RealData,
+    RealFreqVec, RealOrComplexData, RealTimeVec, TimeData, TimeOrFrequencyData, ToSlice,
+    TypeMetaData,
+};
+use super::{Resize, ToComplexVector, ToDspVector, ToRealVector, ToSliceMut, VoidResult};
+use multicore_support::MultiCoreSettings;
 /// ! Support for types in Rust std
 use numbers::*;
 use std::mem;
 use std::ops::*;
 use std::result;
-use super::{round_len, DataDomain, NumberSpace, Domain, ErrorReason, DspVec, GenDspVec,
-            RealTimeVec, RealFreqVec, ComplexTimeVec, ComplexFreqVec, RealData, ComplexData,
-            RealOrComplexData, TimeData, FrequencyData, TimeOrFrequencyData, ToSlice,
-            TypeMetaData, MetaData, BufferBorrow, Buffer};
-use super::{ToComplexVector, ToRealVector, ToDspVector, ToSliceMut, VoidResult, Resize};
-use multicore_support::MultiCoreSettings;
 
 /// Conversion from two instances of a generic data type into a dsp vector with complex data.
 pub trait InterleaveToVector<T>: ToSlice<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     /// Create a new vector in real number space and time domain.
     /// `delta` can be changed after construction with a call of `set_delta`.
-    fn interleave_to_complex_time_vec(&self,
-                                      other: &Self)
-                                      -> result::Result<ComplexTimeVec<Vec<T>, T>, ErrorReason>;
+    fn interleave_to_complex_time_vec(
+        &self,
+        other: &Self,
+    ) -> result::Result<ComplexTimeVec<Vec<T>, T>, ErrorReason>;
 
     /// Create a new vector in real number space and frequency domain.
     /// `delta` can be changed after construction with a call of `set_delta`.
-    fn interleave_to_complex_freq_vec(&self,
-                                      other: &Self)
-                                      -> result::Result<ComplexFreqVec<Vec<T>, T>, ErrorReason>;
+    fn interleave_to_complex_freq_vec(
+        &self,
+        other: &Self,
+    ) -> result::Result<ComplexFreqVec<Vec<T>, T>, ErrorReason>;
 }
 
 /// Buffer borrow type for `SingleBuffer`.
@@ -55,13 +60,15 @@ impl<'a, T: RealNumber> BufferBorrow<Vec<T>, T> for SingleBufferBurrow<'a, T> {
 
 /// A buffer which stores a single vector and never shrinks.
 pub struct SingleBuffer<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     temp: Vec<T>,
 }
 
 impl<T> SingleBuffer<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     /// Creates a new buffer which is ready to be passed around.
     pub fn new() -> SingleBuffer<T> {
@@ -70,12 +77,15 @@ impl<T> SingleBuffer<T>
 
     /// Creates a new buffer which is ready to be passed around.
     pub fn with_capacity(len: usize) -> SingleBuffer<T> {
-        SingleBuffer { temp: vec![T::zero(); len] }
+        SingleBuffer {
+            temp: vec![T::zero(); len],
+        }
     }
 }
 
 impl<'a, T> Buffer<'a, Vec<T>, T> for SingleBuffer<T>
-    where T: RealNumber + 'a
+where
+    T: RealNumber + 'a,
 {
     type Borrow = SingleBufferBurrow<'a, T>;
 
@@ -124,12 +134,15 @@ impl<'a, T: RealNumber> BufferBorrow<Vec<T>, T> for NoBufferBurrow<T> {
 }
 
 impl<'a, T> Buffer<'a, Vec<T>, T> for NoBuffer
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     type Borrow = NoBufferBurrow<T>;
 
     fn borrow(&mut self, len: usize) -> Self::Borrow {
-        NoBufferBurrow { data: vec![T::zero(); len] }
+        NoBufferBurrow {
+            data: vec![T::zero(); len],
+        }
     }
 
     fn alloc_len(&self) -> usize {
@@ -160,7 +173,8 @@ pub type ComplexFreqVec64 = DspVec<Vec<f64>, f64, ComplexData, FrequencyData>;
 pub type GenDspVec64 = DspVec<Vec<f64>, f64, RealOrComplexData, TimeOrFrequencyData>;
 
 impl<T> ToSlice<T> for Vec<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_slice(&self) -> &[T] {
         self
@@ -185,7 +199,8 @@ impl<T> ToSlice<T> for Vec<T>
 }
 
 impl<T> ToSliceMut<T> for Vec<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_slice_mut(&mut self) -> &mut [T] {
         &mut self[..]
@@ -193,7 +208,8 @@ impl<T> ToSliceMut<T> for Vec<T>
 }
 
 impl<T> Resize for Vec<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn resize(&mut self, len: usize) {
         self.resize(len, T::zero());
@@ -233,7 +249,8 @@ impl<T> ToSliceMut<T> for Box<[T]> {
 }
 
 impl<T> ToDspVector<T> for Vec<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_gen_dsp_vec(self, is_complex: bool, domain: DataDomain) -> GenDspVec<Self, T> {
         let mut len = self.len();
@@ -243,16 +260,21 @@ impl<T> ToDspVector<T> for Vec<T>
         GenDspVec {
             data: self,
             delta: T::one(),
-            domain: TimeOrFrequencyData { domain_current: domain },
-            number_space: RealOrComplexData { is_complex_current: is_complex },
+            domain: TimeOrFrequencyData {
+                domain_current: domain,
+            },
+            number_space: RealOrComplexData {
+                is_complex_current: is_complex,
+            },
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
     }
 
     fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
-        where N: NumberSpace,
-              D: Domain
+    where
+        N: NumberSpace,
+        D: Domain,
     {
         let mut len = self.len();
         if len % 2 != 0 && meta_data.is_complex() {
@@ -270,7 +292,8 @@ impl<T> ToDspVector<T> for Vec<T>
 }
 
 impl<T> ToRealVector<T> for Vec<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_real_time_vec(mut self) -> RealTimeVec<Self, T> {
         let len = self.len();
@@ -300,7 +323,8 @@ impl<T> ToRealVector<T> for Vec<T>
 }
 
 impl<T> ToComplexVector<Vec<T>, T> for Vec<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_complex_time_vec(mut self) -> ComplexTimeVec<Self, T> {
         let len = self.len();
@@ -330,7 +354,8 @@ impl<T> ToComplexVector<Vec<T>, T> for Vec<T>
 }
 
 impl<T> ToComplexVector<Vec<T>, T> for Vec<Complex<T>>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_complex_time_vec(self) -> ComplexTimeVec<Vec<T>, T> {
         let len = self.len();
@@ -360,7 +385,8 @@ impl<T> ToComplexVector<Vec<T>, T> for Vec<Complex<T>>
 }
 
 impl<T> ToDspVector<T> for Box<[T]>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_gen_dsp_vec(self, is_complex: bool, domain: DataDomain) -> GenDspVec<Self, T> {
         let mut len = self.len();
@@ -370,16 +396,21 @@ impl<T> ToDspVector<T> for Box<[T]>
         GenDspVec {
             data: self,
             delta: T::one(),
-            domain: TimeOrFrequencyData { domain_current: domain },
-            number_space: RealOrComplexData { is_complex_current: is_complex },
+            domain: TimeOrFrequencyData {
+                domain_current: domain,
+            },
+            number_space: RealOrComplexData {
+                is_complex_current: is_complex,
+            },
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
     }
 
     fn to_dsp_vec<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
-        where N: NumberSpace,
-              D: Domain
+    where
+        N: NumberSpace,
+        D: Domain,
     {
         let mut len = self.len();
         if len % 2 != 0 && meta_data.is_complex() {
@@ -397,7 +428,8 @@ impl<T> ToDspVector<T> for Box<[T]>
 }
 
 impl<T> ToRealVector<T> for Box<[T]>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_real_time_vec(self) -> RealTimeVec<Self, T> {
         let len = self.len();
@@ -425,7 +457,8 @@ impl<T> ToRealVector<T> for Box<[T]>
 }
 
 impl<T> ToComplexVector<Box<[T]>, T> for Box<[T]>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     fn to_complex_time_vec(self) -> ComplexTimeVec<Self, T> {
         let mut len = self.len();
@@ -459,12 +492,14 @@ impl<T> ToComplexVector<Box<[T]>, T> for Box<[T]>
 }
 
 impl<Type, T> InterleaveToVector<T> for Type
-    where Type: ToSlice<T>,
-          T: RealNumber
+where
+    Type: ToSlice<T>,
+    T: RealNumber,
 {
-    fn interleave_to_complex_time_vec(&self,
-                                      other: &Self)
-                                      -> result::Result<ComplexTimeVec<Vec<T>, T>, ErrorReason> {
+    fn interleave_to_complex_time_vec(
+        &self,
+        other: &Self,
+    ) -> result::Result<ComplexTimeVec<Vec<T>, T>, ErrorReason> {
         if self.len() != other.len() {
             return Err(ErrorReason::InputMustHaveTheSameSize);
         }
@@ -492,9 +527,10 @@ impl<Type, T> InterleaveToVector<T> for Type
         })
     }
 
-    fn interleave_to_complex_freq_vec(&self,
-                                      other: &Self)
-                                      -> result::Result<ComplexFreqVec<Vec<T>, T>, ErrorReason> {
+    fn interleave_to_complex_freq_vec(
+        &self,
+        other: &Self,
+    ) -> result::Result<ComplexFreqVec<Vec<T>, T>, ErrorReason> {
         if self.len() != other.len() {
             return Err(ErrorReason::InputMustHaveTheSameSize);
         }
@@ -524,7 +560,8 @@ impl<Type, T> InterleaveToVector<T> for Type
 }
 
 fn expand_to_full_capacity<T>(vec: &mut Vec<T>)
-    where T: Zero
+where
+    T: Zero,
 {
     while vec.len() < vec.capacity() {
         vec.push(T::zero());
@@ -532,7 +569,8 @@ fn expand_to_full_capacity<T>(vec: &mut Vec<T>)
 }
 
 fn complex_vec_to_interleaved_vec<T>(mut vec: Vec<Complex<T>>) -> Vec<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     use std::mem;
 
@@ -549,16 +587,18 @@ fn complex_vec_to_interleaved_vec<T>(mut vec: Vec<Complex<T>>) -> Vec<T>
 
 #[cfg(test)]
 mod tests {
-    use num_complex::Complex32;
     use super::complex_vec_to_interleaved_vec;
+    use num_complex::Complex32;
 
     #[test]
     fn complex_vec_to_interleaved_vec_test() {
-        let complex = vec!(Complex32::new(0.0, 0.0); 5);
+        let complex = vec![Complex32::new(0.0, 0.0); 5];
         let real = complex_vec_to_interleaved_vec(complex);
         assert_eq!(real.len(), 10);
-        assert_eq!(&real[..],
-                   &[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
+        assert_eq!(
+            &real[..],
+            &[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        );
     }
 
 }

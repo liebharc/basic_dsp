@@ -1,16 +1,16 @@
 #![feature(test)]
 #![feature(box_syntax)]
-extern crate test;
 extern crate basic_dsp;
+extern crate test;
 
 pub mod tools;
 
 #[cfg(test)]
 mod time_freq {
-    use test::Bencher;
-    use basic_dsp::*;
-    use tools::*;
     use basic_dsp::window_functions::TriangularWindow;
+    use basic_dsp::*;
+    use test::Bencher;
+    use tools::*;
 
     #[bench]
     fn plain_fft_ifft_32t_benchmark(b: &mut Bencher) {

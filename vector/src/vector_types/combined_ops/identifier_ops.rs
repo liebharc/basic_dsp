@@ -1,11 +1,12 @@
+use super::super::{
+    ComplexData, ComplexNumberSpace, ComplexOps, ComplexToRealTransformsOps, DataDomain, Domain,
+    ElementaryOps, FrequencyData, GetMetaData, MultiCoreSettings, NumberSpace, OffsetOps, PowerOps,
+    RealData, RealNumberSpace, RealOps, RealOrComplexData, RealToComplexTransformsOps,
+    RededicateForceOps, ScaleOps, TimeData, TimeOrFrequencyData, ToComplexResult, ToRealResult,
+    TransRes, TrigOps, TypeMetaData, VoidResult,
+};
 use super::{Identifier, Operation};
 use numbers::*;
-use super::super::{RealNumberSpace, ComplexNumberSpace, NumberSpace, TransRes, VoidResult,
-                   DataDomain, TimeData, FrequencyData, RealData, ComplexData, RealOrComplexData,
-                   TimeOrFrequencyData, Domain, ToRealResult, ToComplexResult, ScaleOps,
-                   OffsetOps, PowerOps, TrigOps, RealOps, RealToComplexTransformsOps, ComplexOps,
-                   ElementaryOps, ComplexToRealTransformsOps, RededicateForceOps, GetMetaData,
-                   TypeMetaData, MultiCoreSettings};
 
 /// Operations for all kind of vectors which can be used in combination
 /// with multi ops or prepared ops.
@@ -110,45 +111,52 @@ pub type ComplexFreqIdent<T> = Identifier<T, ComplexData, FrequencyData>;
 pub type GenDspIdent<T> = Identifier<T, RealOrComplexData, TimeOrFrequencyData>;
 
 impl<T> ToRealResult for ComplexTimeIdent<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     type RealResult = RealTimeIdent<T>;
 }
 
 impl<T> ToRealResult for ComplexFreqIdent<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     type RealResult = RealFreqIdent<T>;
 }
 
 impl<T> ToRealResult for GenDspIdent<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     type RealResult = GenDspIdent<T>;
 }
 
 impl<T> ToComplexResult for RealTimeIdent<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     type ComplexResult = ComplexTimeIdent<T>;
 }
 
 impl<T> ToComplexResult for RealFreqIdent<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     type ComplexResult = ComplexFreqIdent<T>;
 }
 
 impl<T> ToComplexResult for GenDspIdent<T>
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     type ComplexResult = GenDspIdent<T>;
 }
 
 impl<T, N, D> GetMetaData<T, N, D> for Identifier<T, N, D>
-    where T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn get_meta_data(&self) -> TypeMetaData<T, N, D> {
         TypeMetaData {
@@ -161,9 +169,10 @@ impl<T, N, D> GetMetaData<T, N, D> for Identifier<T, N, D>
 }
 
 impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for RealTimeIdent<T>
-    where T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn rededicate_from_force(origin: Identifier<T, N, D>) -> Self {
         RealTimeIdent {
@@ -181,9 +190,10 @@ impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for RealTimeIdent<T>
 }
 
 impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for RealFreqIdent<T>
-    where T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn rededicate_from_force(origin: Identifier<T, N, D>) -> Self {
         RealFreqIdent {
@@ -201,9 +211,10 @@ impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for RealFreqIdent<T>
 }
 
 impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for ComplexTimeIdent<T>
-    where T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn rededicate_from_force(origin: Identifier<T, N, D>) -> Self {
         ComplexTimeIdent {
@@ -221,9 +232,10 @@ impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for ComplexTimeIdent<T>
 }
 
 impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for ComplexFreqIdent<T>
-    where T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn rededicate_from_force(origin: Identifier<T, N, D>) -> Self {
         ComplexFreqIdent {
@@ -241,9 +253,10 @@ impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for ComplexFreqIdent<T>
 }
 
 impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for GenDspIdent<T>
-    where T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn rededicate_from_force(origin: Identifier<T, N, D>) -> Self {
         let is_complex = origin.is_complex();
@@ -252,15 +265,20 @@ impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for GenDspIdent<T>
             arg: origin.arg,
             ops: origin.ops,
             counter: origin.counter,
-            domain: TimeOrFrequencyData { domain_current: domain },
-            number_space: RealOrComplexData { is_complex_current: is_complex },
+            domain: TimeOrFrequencyData {
+                domain_current: domain,
+            },
+            number_space: RealOrComplexData {
+                is_complex_current: is_complex,
+            },
         }
     }
 
-    fn rededicate_with_runtime_data(origin: Identifier<T, N, D>,
-                                    is_complex: bool,
-                                    domain: DataDomain)
-                                    -> Self {
+    fn rededicate_with_runtime_data(
+        origin: Identifier<T, N, D>,
+        is_complex: bool,
+        domain: DataDomain,
+    ) -> Self {
         let mut result = Self::rededicate_from_force(origin);
         result.number_space.is_complex_current = is_complex;
         result.domain.domain_current = domain;
@@ -269,14 +287,18 @@ impl<T, N, D> RededicateForceOps<Identifier<T, N, D>> for GenDspIdent<T>
 }
 
 impl<T, N, D> OffsetOps<T> for Identifier<T, N, D>
-    where T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn offset(&mut self, offset: T) {
         let arg = self.arg;
         if self.is_complex() {
-            self.add_op(Operation::AddComplex(arg, Complex::<T>::new(offset, T::zero())));
+            self.add_op(Operation::AddComplex(
+                arg,
+                Complex::<T>::new(offset, T::zero()),
+            ));
         } else {
             self.add_op(Operation::AddReal(arg, offset));
         }
@@ -284,14 +306,18 @@ impl<T, N, D> OffsetOps<T> for Identifier<T, N, D>
 }
 
 impl<T, N, D> ScaleOps<T> for Identifier<T, N, D>
-    where T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn scale(&mut self, offset: T) {
         let arg = self.arg;
         if self.is_complex() {
-            self.add_op(Operation::MultiplyComplex(arg, Complex::<T>::new(offset, T::zero())));
+            self.add_op(Operation::MultiplyComplex(
+                arg,
+                Complex::<T>::new(offset, T::zero()),
+            ));
         } else {
             self.add_op(Operation::MultiplyReal(arg, offset));
         }
@@ -299,9 +325,10 @@ impl<T, N, D> ScaleOps<T> for Identifier<T, N, D>
 }
 
 impl<T, N, D> OffsetOps<Complex<T>> for Identifier<T, N, D>
-    where T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     fn offset(&mut self, offset: Complex<T>) {
         let arg = self.arg;
@@ -310,9 +337,10 @@ impl<T, N, D> OffsetOps<Complex<T>> for Identifier<T, N, D>
 }
 
 impl<T, N, D> ScaleOps<Complex<T>> for Identifier<T, N, D>
-    where T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     fn scale(&mut self, offset: Complex<T>) {
         let arg = self.arg;
@@ -321,9 +349,10 @@ impl<T, N, D> ScaleOps<Complex<T>> for Identifier<T, N, D>
 }
 
 impl<T, N, D> TrigOps for Identifier<T, N, D>
-    where T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn sin(&mut self) {
         let arg = self.arg;
@@ -387,9 +416,10 @@ impl<T, N, D> TrigOps for Identifier<T, N, D>
 }
 
 impl<T, N, D> PowerOps<T> for Identifier<T, N, D>
-    where T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn sqrt(&mut self) {
         let arg = self.arg;
@@ -433,9 +463,10 @@ impl<T, N, D> PowerOps<T> for Identifier<T, N, D>
 }
 
 impl<T, N, D> RealOps for Identifier<T, N, D>
-    where T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn abs(&mut self) {
         let arg = self.arg;
@@ -444,9 +475,10 @@ impl<T, N, D> RealOps for Identifier<T, N, D>
 }
 
 impl<T, N, D> ComplexOps<T> for Identifier<T, N, D>
-    where T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     fn multiply_complex_exponential(&mut self, a: T, b: T) {
         let arg = self.arg;
@@ -460,9 +492,10 @@ impl<T, N, D> ComplexOps<T> for Identifier<T, N, D>
 }
 
 impl<T, N, D> ElementaryOps<Identifier<T, N, D>, T, N, D> for Identifier<T, N, D>
-    where T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn add(&mut self, summand: &Self) -> VoidResult {
         let arg = self.arg;
@@ -494,9 +527,10 @@ impl<T, N, D> ElementaryOps<Identifier<T, N, D>, T, N, D> for Identifier<T, N, D
 }
 
 impl<T, N, D> IdentifierOps for Identifier<T, N, D>
-    where T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn domain(&self) -> DataDomain {
         self.domain.domain()
@@ -533,28 +567,30 @@ impl<T, N, D> IdentifierOps for Identifier<T, N, D>
     }
 }
 
-
 impl<T, N, D> RealToComplexTransformsOps<T> for Identifier<T, N, D>
-	where Identifier<T, N, D>: ToComplexResult,
-	 	  <Identifier<T, N, D> as ToComplexResult>::ComplexResult:
-            RededicateForceOps<Identifier<T, N, D>>,
-		  T: RealNumber,
-		  N: RealNumberSpace,
-		  D: Domain {
-      fn to_complex(mut self) -> TransRes<Self::ComplexResult> {
-		  let arg = self.arg;
-		  self.add_op(Operation::ToComplex(arg));
-		  self.number_space.to_complex();
-		  Ok(Self::ComplexResult::rededicate_from_force(self))
-	  }
+where
+    Identifier<T, N, D>: ToComplexResult,
+    <Identifier<T, N, D> as ToComplexResult>::ComplexResult:
+        RededicateForceOps<Identifier<T, N, D>>,
+    T: RealNumber,
+    N: RealNumberSpace,
+    D: Domain,
+{
+    fn to_complex(mut self) -> TransRes<Self::ComplexResult> {
+        let arg = self.arg;
+        self.add_op(Operation::ToComplex(arg));
+        self.number_space.to_complex();
+        Ok(Self::ComplexResult::rededicate_from_force(self))
+    }
 }
 
 impl<T, N, D> ComplexToRealTransformsOps<T> for Identifier<T, N, D>
-    where Identifier<T, N, D>: ToRealResult,
-          <Identifier<T, N, D> as ToRealResult>::RealResult: RededicateForceOps<Identifier<T, N, D>>,
-          T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    Identifier<T, N, D>: ToRealResult,
+    <Identifier<T, N, D> as ToRealResult>::RealResult: RededicateForceOps<Identifier<T, N, D>>,
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     fn magnitude(mut self) -> Self::RealResult {
         let arg = self.arg;

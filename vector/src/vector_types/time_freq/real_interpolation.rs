@@ -1,14 +1,16 @@
+use super::super::{
+    Buffer, BufferBorrow, Domain, DspVec, MetaData, RealNumberSpace, ToSliceMut, Vector,
+};
 use numbers::*;
-use super::super::{DspVec, Domain, ToSliceMut, Buffer, BufferBorrow, Vector, RealNumberSpace,
-                   MetaData};
 
 /// Provides interpolation operations which are only applicable for real data vectors.
 /// # Failures
 /// All operations in this trait fail with `VectorMustBeReal` if the vector isn't in the
 /// real number space.
 pub trait RealInterpolationOps<S, T>
-    where S: ToSliceMut<T>,
-          T: RealNumber
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
 {
     /// Piecewise cubic hermite interpolation between samples.
     /// # Unstable
@@ -16,30 +18,35 @@ pub trait RealInterpolationOps<S, T>
     /// This operation and `interpolate_lin` might be merged into one function with an
     /// additional argument in future.
     fn interpolate_hermite<B>(&mut self, buffer: &mut B, interpolation_factor: T, delay: T)
-        where B: for<'a> Buffer<'a, S, T>;
+    where
+        B: for<'a> Buffer<'a, S, T>;
 
     /// Linear interpolation between samples.
     /// # Unstable
     /// This operation and `interpolate_hermite` might be merged into one function with an
     /// additional argument in future.
     fn interpolate_lin<B>(&mut self, buffer: &mut B, interpolation_factor: T, delay: T)
-        where B: for<'a> Buffer<'a, S, T>;
+    where
+        B: for<'a> Buffer<'a, S, T>;
 }
 
 impl<S, T, N, D> RealInterpolationOps<S, T> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: RealNumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: RealNumberSpace,
+    D: Domain,
 {
     fn interpolate_lin<B>(&mut self, buffer: &mut B, interpolation_factor: T, delay: T)
-        where B: for<'a> Buffer<'a, S, T>
+    where
+        B: for<'a> Buffer<'a, S, T>,
     {
         let data_len = self.len();
         let dest_len = (T::from(data_len - 1).unwrap() * interpolation_factor)
             .round()
             .to_usize()
-            .unwrap() + 1;
+            .unwrap()
+            + 1;
         let mut temp = buffer.borrow(dest_len);
         {
             if self.is_complex() {
@@ -71,13 +78,15 @@ impl<S, T, N, D> RealInterpolationOps<S, T> for DspVec<S, T, N, D>
     }
 
     fn interpolate_hermite<B>(&mut self, buffer: &mut B, interpolation_factor: T, delay: T)
-        where B: for<'a> Buffer<'a, S, T>
+    where
+        B: for<'a> Buffer<'a, S, T>,
     {
         let data_len = self.len();
         let dest_len = (T::from(data_len - 1).unwrap() * interpolation_factor)
             .round()
             .to_usize()
-            .unwrap() + 1;
+            .unwrap()
+            + 1;
         let mut temp = buffer.borrow(dest_len);
         {
             if self.is_complex() {
@@ -90,7 +99,10 @@ impl<S, T, N, D> RealInterpolationOps<S, T> for DspVec<S, T, N, D>
             let data = &data[0..data_len];
             let dest = &mut temp[0..dest_len];
             let mut i = T::zero();
-            let start = ((T::one() - delay) * interpolation_factor).ceil().to_usize().unwrap();
+            let start = ((T::one() - delay) * interpolation_factor)
+                .ceil()
+                .to_usize()
+                .unwrap();
             let end = start + 1;
             let half = T::from(0.5).unwrap();
             let one_point_five = T::from(1.5).unwrap();
@@ -178,7 +190,8 @@ mod tests {
     use super::super::super::*;
 
     fn assert_eq_tol<T>(left: &[T], right: &[T], tol: T)
-        where T: RealNumber
+    where
+        T: RealNumber,
     {
         assert_eq!(left.len(), right.len());
         for i in 0..left.len() {
@@ -193,12 +206,16 @@ mod tests {
         let mut time = vec![-1.0, -2.0, -1.0, 0.0, 1.0, 3.0, 4.0].to_real_freq_vec();
         let mut buffer = SingleBuffer::new();
         time.interpolate_hermite(&mut buffer, 4.0, 0.0);
-        let expected = [-1.0000, -1.4375, -1.7500, -1.9375, -2.0000, -1.8906, -1.6250, -1.2969,
-                        -1.0000, -0.7500, -0.5000, -0.2500, 0.0, 0.2344, 0.4583, 0.7031, 1.0000,
-                        1.4375, 2.0000, 2.5625, 3.0000, 3.3203, 3.6042, 3.8359, 4.0];
-        assert_eq_tol(&time[4..expected.len() - 4],
-                      &expected[4..expected.len() - 4],
-                      6e-2);
+        let expected = [
+            -1.0000, -1.4375, -1.7500, -1.9375, -2.0000, -1.8906, -1.6250, -1.2969, -1.0000,
+            -0.7500, -0.5000, -0.2500, 0.0, 0.2344, 0.4583, 0.7031, 1.0000, 1.4375, 2.0000, 2.5625,
+            3.0000, 3.3203, 3.6042, 3.8359, 4.0,
+        ];
+        assert_eq_tol(
+            &time[4..expected.len() - 4],
+            &expected[4..expected.len() - 4],
+            6e-2,
+        );
     }
 
     #[test]
@@ -206,8 +223,10 @@ mod tests {
         let mut time = vec![-3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0].to_real_freq_vec();
         let mut buffer = SingleBuffer::new();
         time.interpolate_hermite(&mut buffer, 3.0, 0.0);
-        let expected = [-3.0, -2.666, -2.333, -2.0, -1.666, -1.333, -1.0, -0.666, -0.333, 0.0,
-                        0.333, 0.666, 1.0, 1.333, 1.666, 2.0, 2.333, 2.666, 3.0];
+        let expected = [
+            -3.0, -2.666, -2.333, -2.0, -1.666, -1.333, -1.0, -0.666, -0.333, 0.0, 0.333, 0.666,
+            1.0, 1.333, 1.666, 2.0, 2.333, 2.666, 3.0,
+        ];
         assert_eq_tol(&time[..], &expected, 5e-3);
     }
 
@@ -216,9 +235,11 @@ mod tests {
         let mut time = vec![-1.0, -2.0, -1.0, 0.0, 1.0, 3.0, 4.0].to_real_freq_vec();
         let mut buffer = SingleBuffer::new();
         time.interpolate_lin(&mut buffer, 4.0, 0.0);
-        let expected = [-1.0000, -1.2500, -1.5000, -1.7500, -2.0000, -1.7500, -1.5000, -1.2500,
-                        -1.0000, -0.7500, -0.5000, -0.2500, 0.0, 0.2500, 0.5000, 0.7500, 1.0000,
-                        1.5000, 2.0000, 2.5000, 3.0000, 3.2500, 3.5000, 3.7500, 4.0];
+        let expected = [
+            -1.0000, -1.2500, -1.5000, -1.7500, -2.0000, -1.7500, -1.5000, -1.2500, -1.0000,
+            -0.7500, -0.5000, -0.2500, 0.0, 0.2500, 0.5000, 0.7500, 1.0000, 1.5000, 2.0000, 2.5000,
+            3.0000, 3.2500, 3.5000, 3.7500, 4.0,
+        ];
         assert_eq_tol(&time[..], &expected, 0.1);
     }
 }

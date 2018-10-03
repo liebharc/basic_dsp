@@ -1,14 +1,17 @@
+use super::super::{
+    Buffer, BufferBorrow, ComplexNumberSpace, DataDomain, DspVec, FrequencyDomain, MetaData,
+    RededicateForceOps, ToSliceMut, ToTimeResult, Vector,
+};
 use numbers::*;
-use super::super::{ToTimeResult, DspVec, Vector, Buffer, BufferBorrow, ToSliceMut,
-                   RededicateForceOps, MetaData, ComplexNumberSpace, FrequencyDomain, DataDomain};
 
 /// Defines all operations which are valid on `DataVecs` containing frequency domain data.
 /// # Failures
 /// All operations in this trait set `self.len()` to `0`
 /// if the vector isn't in frequency domain and complex number space.
 pub trait FrequencyDomainOperations<S, T>
-    where S: ToSliceMut<T>,
-          T: RealNumber
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
 {
     /// This function mirrors the spectrum vector to transform a symmetric spectrum
     /// into a full spectrum with the DC element at index 0 (no FFT shift/swap halves).
@@ -25,7 +28,9 @@ pub trait FrequencyDomainOperations<S, T>
     /// vector.mirror(&mut buffer);
     /// assert_eq!([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, -6.0, 3.0, -4.0], &vector[..]);
     /// ```
-    fn mirror<B>(&mut self, buffer: &mut B) where B: for<'a> Buffer<'a, S, T>;
+    fn mirror<B>(&mut self, buffer: &mut B)
+    where
+        B: for<'a> Buffer<'a, S, T>;
 
     /// Swaps vector halves after a Fourier Transformation.
     fn fft_shift(&mut self);
@@ -35,15 +40,17 @@ pub trait FrequencyDomainOperations<S, T>
 }
 
 impl<S, T, N, D> FrequencyDomainOperations<S, T> for DspVec<S, T, N, D>
-    where DspVec<S, T, N, D>: ToTimeResult,
-          <DspVec<S, T, N, D> as ToTimeResult>::TimeResult: RededicateForceOps<DspVec<S, T, N, D>>,
-          S: ToSliceMut<T>,
-          T: RealNumber,
-          N: ComplexNumberSpace,
-          D: FrequencyDomain
+where
+    DspVec<S, T, N, D>: ToTimeResult,
+    <DspVec<S, T, N, D> as ToTimeResult>::TimeResult: RededicateForceOps<DspVec<S, T, N, D>>,
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: FrequencyDomain,
 {
     fn mirror<B>(&mut self, buffer: &mut B)
-        where B: for<'a> Buffer<'a, S, T>
+    where
+        B: for<'a> Buffer<'a, S, T>,
     {
         if self.domain() != DataDomain::Frequency && !self.is_complex() {
             self.valid_len = 0;

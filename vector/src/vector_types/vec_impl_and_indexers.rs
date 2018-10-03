@@ -1,10 +1,12 @@
 //! This module defines the basic vector trait and indexers.
-use {array_to_complex, array_to_complex_mut};
-use super::{DspVec, NumberSpace, ComplexNumberSpace, Buffer, BufferBorrow, Domain, DataDomain,
-            ToSlice, ToSliceMut, ErrorReason, VoidResult, TypeMetaData};
+use super::{
+    Buffer, BufferBorrow, ComplexNumberSpace, DataDomain, Domain, DspVec, ErrorReason, NumberSpace,
+    ToSlice, ToSliceMut, TypeMetaData, VoidResult,
+};
 use multicore_support::MultiCoreSettings;
-use std::ops::*;
 use numbers::*;
+use std::ops::*;
+use {array_to_complex, array_to_complex_mut};
 
 /// Like [`std::ops::Index`](https://doc.rust-lang.org/std/ops/trait.Index.html)
 /// but with a different method name so that it can be used to implement an additional range
@@ -12,7 +14,8 @@ use numbers::*;
 ///
 /// Note if indexers will return an empty array in case the vector isn't complex.
 pub trait ComplexIndex<Idx>
-    where Idx: Sized
+where
+    Idx: Sized,
 {
     type Output: ?Sized;
     /// The method for complex indexing
@@ -25,7 +28,8 @@ pub trait ComplexIndex<Idx>
 ///
 /// Note if indexers will return an empty array in case the vector isn't complex.
 pub trait ComplexIndexMut<Idx>: ComplexIndex<Idx>
-    where Idx: Sized
+where
+    Idx: Sized,
 {
     /// The method for complex indexing
     fn complex_mut(&mut self, index: Idx) -> &mut Self::Output;
@@ -61,12 +65,14 @@ pub trait ResizeBufferedOps<S: ToSliceMut<T>, T: RealNumber> {
     /// `len > self.alloc_len()` is only possible if the underlying storage or the buffer
     /// supports resizing.
     fn resize_b<B>(&mut self, buffer: &mut B, len: usize) -> VoidResult
-        where B: for<'a> Buffer<'a, S, T>;
+    where
+        B: for<'a> Buffer<'a, S, T>;
 }
 
 /// A trait for vector types.
 pub trait Vector<T>: MetaData + ResizeOps
-    where T: RealNumber
+where
+    T: RealNumber,
 {
     /// The x-axis delta. If `domain` is time domain then `delta` is in `[s]`,
     /// in frequency domain `delta` is in `[Hz]`.
@@ -117,9 +123,10 @@ pub trait Vector<T>: MetaData + ResizeOps
 /// assert_eq!(false, slice.is_complex());
 /// ```
 pub trait GetMetaData<T, N, D>
-    where T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     /// Gets a copy of the vector meta data. This can be used to create
     /// new types with the same meta data.
@@ -127,10 +134,11 @@ pub trait GetMetaData<T, N, D>
 }
 
 impl<S, T, N, D> MetaData for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn domain(&self) -> DataDomain {
         self.domain.domain()
@@ -142,9 +150,10 @@ impl<S, T, N, D> MetaData for DspVec<S, T, N, D>
 }
 
 impl<T, N, D> MetaData for TypeMetaData<T, N, D>
-    where T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn domain(&self) -> DataDomain {
         self.domain.domain()
@@ -156,10 +165,11 @@ impl<T, N, D> MetaData for TypeMetaData<T, N, D>
 }
 
 impl<S, T, N, D> ResizeOps for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn resize(&mut self, len: usize) -> VoidResult {
         if self.is_complex() && len % 2 != 0 {
@@ -177,13 +187,15 @@ impl<S, T, N, D> ResizeOps for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> ResizeBufferedOps<S, T> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn resize_b<B>(&mut self, buffer: &mut B, len: usize) -> VoidResult
-        where B: for<'a> Buffer<'a, S, T>
+    where
+        B: for<'a> Buffer<'a, S, T>,
     {
         if self.is_complex() && len % 2 != 0 {
             return Err(ErrorReason::InputMustHaveAnEvenLength);
@@ -206,10 +218,11 @@ impl<S, T, N, D> ResizeBufferedOps<S, T> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> Vector<T> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn delta(&self) -> T {
         self.delta
@@ -245,10 +258,11 @@ impl<S, T, N, D> Vector<T> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> GetMetaData<T, N, D> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn get_meta_data(&self) -> TypeMetaData<T, N, D> {
         TypeMetaData {
@@ -261,10 +275,11 @@ impl<S, T, N, D> GetMetaData<T, N, D> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> Index<usize> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     type Output = T;
 
@@ -277,10 +292,11 @@ impl<S, T, N, D> Index<usize> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> IndexMut<usize> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn index_mut(&mut self, index: usize) -> &mut T {
         let len = self.valid_len;
@@ -291,10 +307,11 @@ impl<S, T, N, D> IndexMut<usize> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> Index<RangeFull> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     type Output = [T];
 
@@ -306,10 +323,11 @@ impl<S, T, N, D> Index<RangeFull> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> IndexMut<RangeFull> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn index_mut(&mut self, _index: RangeFull) -> &mut [T] {
         let len = self.valid_len;
@@ -319,10 +337,11 @@ impl<S, T, N, D> IndexMut<RangeFull> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> Index<RangeFrom<usize>> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     type Output = [T];
 
@@ -335,10 +354,11 @@ impl<S, T, N, D> Index<RangeFrom<usize>> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> IndexMut<RangeFrom<usize>> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn index_mut(&mut self, index: RangeFrom<usize>) -> &mut [T] {
         let len = self.valid_len;
@@ -349,10 +369,11 @@ impl<S, T, N, D> IndexMut<RangeFrom<usize>> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> Index<RangeTo<usize>> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     type Output = [T];
 
@@ -365,10 +386,11 @@ impl<S, T, N, D> Index<RangeTo<usize>> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> IndexMut<RangeTo<usize>> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn index_mut(&mut self, index: RangeTo<usize>) -> &mut [T] {
         let len = self.valid_len;
@@ -379,10 +401,11 @@ impl<S, T, N, D> IndexMut<RangeTo<usize>> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> Index<Range<usize>> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     type Output = [T];
 
@@ -395,10 +418,11 @@ impl<S, T, N, D> Index<Range<usize>> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> IndexMut<Range<usize>> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: NumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: NumberSpace,
+    D: Domain,
 {
     fn index_mut(&mut self, index: Range<usize>) -> &mut [T] {
         let len = self.valid_len;
@@ -409,10 +433,11 @@ impl<S, T, N, D> IndexMut<Range<usize>> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> ComplexIndex<usize> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     type Output = Complex<T>;
 
@@ -425,10 +450,11 @@ impl<S, T, N, D> ComplexIndex<usize> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> ComplexIndexMut<usize> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     fn complex_mut(&mut self, index: usize) -> &mut Complex<T> {
         let len = self.valid_len;
@@ -439,10 +465,11 @@ impl<S, T, N, D> ComplexIndexMut<usize> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> ComplexIndex<RangeFull> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     type Output = [Complex<T>];
 
@@ -454,10 +481,11 @@ impl<S, T, N, D> ComplexIndex<RangeFull> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> ComplexIndexMut<RangeFull> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     fn complex_mut(&mut self, _index: RangeFull) -> &mut [Complex<T>] {
         let len = self.valid_len;
@@ -467,10 +495,11 @@ impl<S, T, N, D> ComplexIndexMut<RangeFull> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> ComplexIndex<RangeFrom<usize>> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     type Output = [Complex<T>];
 
@@ -483,10 +512,11 @@ impl<S, T, N, D> ComplexIndex<RangeFrom<usize>> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> ComplexIndexMut<RangeFrom<usize>> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     fn complex_mut(&mut self, index: RangeFrom<usize>) -> &mut [Complex<T>] {
         let len = self.valid_len;
@@ -497,10 +527,11 @@ impl<S, T, N, D> ComplexIndexMut<RangeFrom<usize>> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> ComplexIndex<RangeTo<usize>> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     type Output = [Complex<T>];
 
@@ -513,10 +544,11 @@ impl<S, T, N, D> ComplexIndex<RangeTo<usize>> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> ComplexIndexMut<RangeTo<usize>> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     fn complex_mut(&mut self, index: RangeTo<usize>) -> &mut [Complex<T>] {
         let len = self.valid_len;
@@ -527,10 +559,11 @@ impl<S, T, N, D> ComplexIndexMut<RangeTo<usize>> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> ComplexIndex<Range<usize>> for DspVec<S, T, N, D>
-    where S: ToSlice<T>,
-          T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSlice<T>,
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     type Output = [Complex<T>];
 
@@ -543,10 +576,11 @@ impl<S, T, N, D> ComplexIndex<Range<usize>> for DspVec<S, T, N, D>
 }
 
 impl<S, T, N, D> ComplexIndexMut<Range<usize>> for DspVec<S, T, N, D>
-    where S: ToSliceMut<T>,
-          T: RealNumber,
-          N: ComplexNumberSpace,
-          D: Domain
+where
+    S: ToSliceMut<T>,
+    T: RealNumber,
+    N: ComplexNumberSpace,
+    D: Domain,
 {
     fn complex_mut(&mut self, index: Range<usize>) -> &mut [Complex<T>] {
         let len = self.valid_len;

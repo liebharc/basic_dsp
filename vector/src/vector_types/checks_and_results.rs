@@ -1,8 +1,5 @@
 /// Enumeration of all error reasons
-#[derive(Copy)]
-#[derive(Clone)]
-#[derive(PartialEq)]
-#[derive(Debug)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum ErrorReason {
     /// The operations requires all inputs to have the same size,
     /// in most cases this means that the following must be true:

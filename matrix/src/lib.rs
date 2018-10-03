@@ -6,8 +6,8 @@
 
 extern crate basic_dsp_vector;
 
-use basic_dsp_vector::*;
 use basic_dsp_vector::numbers::*;
+use basic_dsp_vector::*;
 use std::mem;
 
 mod mat_impl;
@@ -27,9 +27,10 @@ pub use self::time_freq::*;
 
 /// A matrix which can hold 1 to N vectors.
 pub struct MatrixMxN<V, S, T>
-    where T: RealNumber,
-          S: ToSlice<T>,
-          V: Vector<T>
+where
+    T: RealNumber,
+    S: ToSlice<T>,
+    V: Vector<T>,
 {
     rows: Vec<V>,
     storage_type: std::marker::PhantomData<S>,
@@ -38,8 +39,9 @@ pub struct MatrixMxN<V, S, T>
 
 /// A matrix which can hold exactly 2 vectors.
 pub struct Matrix2xN<V, S, T>
-    where T: RealNumber,
-          V: Vector<T>
+where
+    T: RealNumber,
+    V: Vector<T>,
 {
     rows: [V; 2],
     storage_type: std::marker::PhantomData<S>,
@@ -48,8 +50,9 @@ pub struct Matrix2xN<V, S, T>
 
 /// A matrix which can hold exactly 3 vectors.
 pub struct Matrix3xN<V, S, T>
-    where T: RealNumber,
-          V: Vector<T>
+where
+    T: RealNumber,
+    V: Vector<T>,
 {
     rows: [V; 3],
     storage_type: std::marker::PhantomData<S>,
@@ -58,8 +61,9 @@ pub struct Matrix3xN<V, S, T>
 
 /// A matrix which can hold exactly 4 vectors.
 pub struct Matrix4xN<V, S, T>
-    where T: RealNumber,
-          V: Vector<T>
+where
+    T: RealNumber,
+    V: Vector<T>,
 {
     rows: [V; 4],
     storage_type: std::marker::PhantomData<S>,
@@ -153,9 +157,12 @@ pub type ComplexFreqMatrix64x4 = Matrix4xN<ComplexFreqVec64, Vec<f64>, f64>;
 /// Internal trait to transform a row storage type to another
 trait TransformContent<S, D> {
     type Output;
-    fn transform<F>(self, conversion: F) -> Self::Output where F: FnMut(S) -> D;
+    fn transform<F>(self, conversion: F) -> Self::Output
+    where
+        F: FnMut(S) -> D;
     fn transform_res<F>(self, conversion: F) -> TransRes<Self::Output>
-        where F: FnMut(S) -> TransRes<D>;
+    where
+        F: FnMut(S) -> TransRes<D>;
 }
 
 trait IntoFixedLength<T, O> {
@@ -169,25 +176,24 @@ impl<T> IntoFixedLength<T, Vec<T>> for Vec<T> {
 }
 
 macro_rules! try_conv {
-    ($op: expr, $err: ident) => {
-        {
-            let res = $op;
-            match res {
-                Ok(v) => v,
-                Err((r, v)) => {
-                    $err = Some(r);
-                    v
-                }
+    ($op: expr, $err: ident) => {{
+        let res = $op;
+        match res {
+            Ok(v) => v,
+            Err((r, v)) => {
+                $err = Some(r);
+                v
             }
         }
-    }
+    }};
 }
 
 impl<S, D> TransformContent<S, D> for Vec<S> {
     type Output = Vec<D>;
 
     fn transform<F>(mut self, mut conversion: F) -> Self::Output
-        where F: FnMut(S) -> D
+    where
+        F: FnMut(S) -> D,
     {
         let mut rows: Vec<D> = Vec::with_capacity(self.len());
         for _ in 0..self.len() {
@@ -199,7 +205,8 @@ impl<S, D> TransformContent<S, D> for Vec<S> {
     }
 
     fn transform_res<F>(mut self, mut conversion: F) -> TransRes<Self::Output>
-        where F: FnMut(S) -> TransRes<D>
+    where
+        F: FnMut(S) -> TransRes<D>,
     {
         let mut rows: Vec<D> = Vec::with_capacity(self.len());
         let mut error = None;
@@ -220,7 +227,8 @@ impl<S, D> TransformContent<S, D> for [S; 2] {
     type Output = [D; 2];
 
     fn transform<F>(mut self, mut conversion: F) -> Self::Output
-        where F: FnMut(S) -> D
+    where
+        F: FnMut(S) -> D,
     {
         unsafe {
             let first = mem::replace(&mut self[0], mem::uninitialized());
@@ -233,7 +241,8 @@ impl<S, D> TransformContent<S, D> for [S; 2] {
     }
 
     fn transform_res<F>(mut self, mut conversion: F) -> TransRes<Self::Output>
-        where F: FnMut(S) -> TransRes<D>
+    where
+        F: FnMut(S) -> TransRes<D>,
     {
         unsafe {
             let mut error = None;
@@ -255,7 +264,8 @@ impl<S, D> TransformContent<S, D> for [S; 3] {
     type Output = [D; 3];
 
     fn transform<F>(mut self, mut conversion: F) -> Self::Output
-        where F: FnMut(S) -> D
+    where
+        F: FnMut(S) -> D,
     {
         unsafe {
             let first = mem::replace(&mut self[0], mem::uninitialized());
@@ -270,7 +280,8 @@ impl<S, D> TransformContent<S, D> for [S; 3] {
     }
 
     fn transform_res<F>(mut self, mut conversion: F) -> TransRes<Self::Output>
-        where F: FnMut(S) -> TransRes<D>
+    where
+        F: FnMut(S) -> TransRes<D>,
     {
         unsafe {
             let mut error = None;
@@ -294,7 +305,8 @@ impl<S, D> TransformContent<S, D> for [S; 4] {
     type Output = [D; 4];
 
     fn transform<F>(mut self, mut conversion: F) -> Self::Output
-        where F: FnMut(S) -> D
+    where
+        F: FnMut(S) -> D,
     {
         unsafe {
             let first = mem::replace(&mut self[0], mem::uninitialized());
@@ -311,7 +323,8 @@ impl<S, D> TransformContent<S, D> for [S; 4] {
     }
 
     fn transform_res<F>(mut self, mut conversion: F) -> TransRes<Self::Output>
-        where F: FnMut(S) -> TransRes<D>
+    where
+        F: FnMut(S) -> TransRes<D>,
     {
         unsafe {
             let mut error = None;

@@ -1,6 +1,6 @@
 extern crate basic_dsp;
-extern crate rand;
 extern crate num;
+extern crate rand;
 pub mod tools;
 
 mod complex_test {
@@ -238,13 +238,14 @@ mod complex_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data_even(201511171, iteration, range.start, range.end);
             let b = create_data_with_len(201511172, iteration, a.len());
-            let expected = to_complex(&complex_vector_mul(&a, &b))
-                .iter()
-                .fold(Complex64::new(0.0, 0.0), |a, b| {
+            let expected = to_complex(&complex_vector_mul(&a, &b)).iter().fold(
+                Complex64::new(0.0, 0.0),
+                |a, b| {
                     let a = Complex64::new(a.re as f64, a.im as f64);
                     let b = Complex64::new(b.re as f64, b.im as f64);
-                    a + b}
-                );
+                    a + b
+                },
+            );
             let delta = create_delta(3561159, iteration);
             let mut vector1 = a.to_complex_time_vec();
             vector1.set_delta(delta);
@@ -293,7 +294,7 @@ mod complex_test {
             let realvec = real.clone().to_real_time_vec();
             let imagvec = imag.clone().to_real_time_vec();
             let delta = create_delta(3561159, iteration);
-            let mut complex = vec!(0.0; 0).to_complex_time_vec();
+            let mut complex = vec![0.0; 0].to_complex_time_vec();
             complex.set_delta(delta);
             complex.set_real_imag(&realvec, &imagvec).unwrap();
             assert_eq!(complex.len(), real.len() + imag.len());
@@ -327,7 +328,7 @@ mod complex_test {
             let absvec = abs.clone().to_real_time_vec();
             let phasevec = phase.clone().to_real_time_vec();
             let delta = create_delta(3561159, iteration);
-            let mut complex = vec!(0.0; 0).to_complex_time_vec();
+            let mut complex = vec![0.0; 0].to_complex_time_vec();
             complex.set_delta(delta);
             complex.set_mag_phase(&absvec, &phasevec).unwrap();
             assert_eq!(complex.len(), abs.len() + phase.len());
@@ -445,7 +446,10 @@ mod complex_test {
             let mut vector = a.clone().to_complex_time_vec();
             vector.set_delta(delta);
             let sum = c.iter().fold(Complex32::new(0.0, 0.0), |a, b| a + b);
-            let sum_sq = c.iter().map(|v| v * v).fold(Complex32::new(0.0, 0.0), |a, b| a + b);
+            let sum_sq = c
+                .iter()
+                .map(|v| v * v)
+                .fold(Complex32::new(0.0, 0.0), |a, b| a + b);
             let rms = (sum_sq / a.len() as f32).sqrt();
             let result = vector.statistics();
             assert_complex_in_tolerance(result.sum, sum, 0.5);
@@ -482,21 +486,26 @@ mod complex_test {
                 let b = Complex64::new(b.re as f64, b.im as f64);
                 a + b
             });
-            let sum_sq = c.iter().map(|v| v * v).fold(Complex64::new(0.0, 0.0), |a, b| {
-                let a = Complex64::new(a.re as f64, a.im as f64);
-                let b = Complex64::new(b.re as f64, b.im as f64);
-                a + b
-            });
+            let sum_sq = c
+                .iter()
+                .map(|v| v * v)
+                .fold(Complex64::new(0.0, 0.0), |a, b| {
+                    let a = Complex64::new(a.re as f64, a.im as f64);
+                    let b = Complex64::new(b.re as f64, b.im as f64);
+                    a + b
+                });
             let rms = (sum_sq / a.len() as f64).sqrt();
             let result = vector.statistics_prec();
             assert_complex_in_tolerance(
-                Complex32::new(result.sum.re as f32, result.sum.im as f32), 
-                Complex32::new(sum.re as f32, sum.im as f32), 
-                1e-2);
+                Complex32::new(result.sum.re as f32, result.sum.im as f32),
+                Complex32::new(sum.re as f32, sum.im as f32),
+                1e-2,
+            );
             assert_complex_in_tolerance(
-                Complex32::new(result.rms.re as f32, result.rms.im as f32), 
-                Complex32::new(rms.re as f32, rms.im as f32), 
-                0.3);
+                Complex32::new(result.rms.re as f32, result.rms.im as f32),
+                Complex32::new(rms.re as f32, rms.im as f32),
+                0.3,
+            );
         });
     }
 
@@ -512,13 +521,15 @@ mod complex_test {
             let rms = (sum_sq / a.len() as f64).sqrt();
             let result = vector.statistics_prec();
             assert_complex_in_tolerance(
-                Complex32::new(result.sum.re as f32, result.sum.im as f32), 
-                Complex32::new(sum.re as f32, sum.im as f32), 
-                1e-2);
+                Complex32::new(result.sum.re as f32, result.sum.im as f32),
+                Complex32::new(sum.re as f32, sum.im as f32),
+                1e-2,
+            );
             assert_complex_in_tolerance(
-                Complex32::new(result.rms.re as f32, result.rms.im as f32), 
-                Complex32::new(rms.re as f32, rms.im as f32), 
-                0.3);
+                Complex32::new(result.rms.re as f32, result.rms.im as f32),
+                Complex32::new(rms.re as f32, rms.im as f32),
+                0.3,
+            );
         });
     }
 
@@ -527,11 +538,13 @@ mod complex_test {
         let a = create_data(201511210, 0, 1000, 1000);
         let vector = a.clone().to_complex_time_vec();
         let empty: Vec<f32> = Vec::new();
-        let mut split = [Box::new(empty.clone().to_complex_time_vec()),
-                         Box::new(empty.clone().to_complex_time_vec()),
-                         Box::new(empty.clone().to_complex_time_vec()),
-                         Box::new(empty.clone().to_complex_time_vec()),
-                         Box::new(empty.clone().to_complex_time_vec())];
+        let mut split = [
+            Box::new(empty.clone().to_complex_time_vec()),
+            Box::new(empty.clone().to_complex_time_vec()),
+            Box::new(empty.clone().to_complex_time_vec()),
+            Box::new(empty.clone().to_complex_time_vec()),
+            Box::new(empty.clone().to_complex_time_vec()),
+        ];
         {
             let mut dest: Vec<_> = split.iter_mut().map(|x| x.as_mut()).collect();
             vector.split_into(&mut dest[..]).unwrap();
@@ -547,8 +560,10 @@ mod complex_test {
         let a = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
         let vector = a.to_complex_time_vec();
         let empty: Vec<f32> = Vec::new();
-        let mut split = [&mut empty.clone().to_complex_time_vec(),
-                         &mut empty.clone().to_complex_time_vec()];
+        let mut split = [
+            &mut empty.clone().to_complex_time_vec(),
+            &mut empty.clone().to_complex_time_vec(),
+        ];
         vector.split_into(&mut split).unwrap();
         assert_vector_eq(&[1.0, 2.0, 5.0, 6.0], &split[0][..]);
         assert_vector_eq(&[3.0, 4.0, 7.0, 8.0], &split[1][..]);
@@ -564,7 +579,7 @@ mod complex_test {
             let mut real = Vec::new().to_real_time_vec();
             let mut imag = Vec::new().to_real_time_vec();
             vector.get_real_imag(&mut real, &mut imag);
-            let mut vector2 = vec!(0.0; 0).to_complex_time_vec();
+            let mut vector2 = vec![0.0; 0].to_complex_time_vec();
             vector2.set_real_imag(&real, &imag).unwrap();
             assert_vector_eq(&a, &vector2[..]);
         });
@@ -588,7 +603,7 @@ mod complex_test {
             assert_vector_eq_with_reason(&mag[..], &mag2[..], "Magnitude differs");
             assert_vector_eq_with_reason(&phase[..], &phase2[..], "Phase differs");
 
-            let mut vector2 = vec!(0.0; 0).to_complex_time_vec();
+            let mut vector2 = vec![0.0; 0].to_complex_time_vec();
             vector2.set_mag_phase(&mag, &phase).unwrap();
             assert_vector_eq_with_reason_and_tolerance(&a, &vector2[..], 1e-4, "Merge differs");
         });

@@ -1,5 +1,5 @@
-use numbers::*;
 use super::Simd;
+use numbers::*;
 use std::ops::*;
 
 #[allow(non_camel_case_types)]
@@ -28,10 +28,12 @@ impl f32x4 {
     pub fn load(array: &[f32], index: usize) -> Self {
         let array = &array[index..index + 4];
         unsafe {
-            f32x4(*array.get_unchecked(0),
-                  *array.get_unchecked(1),
-                  *array.get_unchecked(2),
-                  *array.get_unchecked(3))
+            f32x4(
+                *array.get_unchecked(0),
+                *array.get_unchecked(1),
+                *array.get_unchecked(2),
+                *array.get_unchecked(3),
+            )
         }
     }
 
@@ -169,8 +171,8 @@ impl Simd<f32> for f32x4 {
     }
 
     type ComplexArray = [Complex<f32>; 2];
-	
-	const LEN: usize = 4;
+
+    const LEN: usize = 4;
 
     #[inline]
     fn load_wrap_unchecked(array: &[f32], idx: usize) -> f32x4 {
@@ -244,10 +246,12 @@ impl Simd<f32> for f32x4 {
     #[inline]
     fn complex_abs(self) -> f32x4 {
         let squared = self * self;
-        f32x4::new((squared.0 + squared.1).sqrt(),
-                   (squared.2 + squared.3).sqrt(),
-                   0.0,
-                   0.0)
+        f32x4::new(
+            (squared.0 + squared.1).sqrt(),
+            (squared.2 + squared.3).sqrt(),
+            0.0,
+            0.0,
+        )
     }
     #[inline]
 
@@ -259,10 +263,12 @@ impl Simd<f32> for f32x4 {
     #[inline]
     fn complex_abs2(self) -> f32x4 {
         let squared = self * self;
-        f32x4::new((squared.0 + squared.1).sqrt(),
-                   0.0,
-                   (squared.2 + squared.3).sqrt(),
-                   0.0)
+        f32x4::new(
+            (squared.0 + squared.1).sqrt(),
+            0.0,
+            (squared.2 + squared.3).sqrt(),
+            0.0,
+        )
     }
 
     #[inline]
@@ -287,28 +293,35 @@ impl Simd<f32> for f32x4 {
     fn sum_complex(&self) -> Complex<f32> {
         Complex::<f32>::new(self.0 + self.2, self.1 + self.3)
     }
-    
+
     #[inline]
     fn max(self, other: Self) -> Self {
         f32x4::new(
             f32::max(self.0, other.0),
             f32::max(self.1, other.1),
             f32::max(self.2, other.2),
-            f32::max(self.3, other.3))
+            f32::max(self.3, other.3),
+        )
     }
-    
+
     #[inline]
     fn min(self, other: Self) -> Self {
         f32x4::new(
             f32::min(self.0, other.0),
             f32::min(self.1, other.1),
             f32::min(self.2, other.2),
-            f32::min(self.3, other.3))
+            f32::min(self.3, other.3),
+        )
     }
-    
+
     #[inline]
     fn swap_iq(self) -> Self {
-        f32x4::new(self.extract(1), self.extract(0), self.extract(3), self.extract(2))
+        f32x4::new(
+            self.extract(1),
+            self.extract(0),
+            self.extract(3),
+            self.extract(2),
+        )
     }
 }
 
@@ -323,8 +336,8 @@ impl Simd<f64> for f64x2 {
     }
 
     type ComplexArray = [Complex<f64>; 1];
-	
-	const LEN: usize = 2;
+
+    const LEN: usize = 2;
 
     #[inline]
     fn load_wrap_unchecked(array: &[f64], idx: usize) -> f64x2 {
@@ -435,21 +448,17 @@ impl Simd<f64> for f64x2 {
     fn sum_complex(&self) -> Complex<f64> {
         Complex::<f64>::new(self.0, self.1)
     }
-    
+
     #[inline]
     fn max(self, other: Self) -> Self {
-        f64x2::new(
-            f64::max(self.0, other.0),
-            f64::max(self.1, other.1))
+        f64x2::new(f64::max(self.0, other.0), f64::max(self.1, other.1))
     }
-    
+
     #[inline]
     fn min(self, other: Self) -> Self {
-        f64x2::new(
-            f64::min(self.0, other.0),
-            f64::min(self.1, other.1))
+        f64x2::new(f64::min(self.0, other.0), f64::min(self.1, other.1))
     }
-    
+
     #[inline]
     fn swap_iq(self) -> Self {
         f64x2::new(self.extract(1), self.extract(0))

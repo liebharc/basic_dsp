@@ -1,14 +1,14 @@
 #![feature(test)]
 #![feature(box_syntax)]
-extern crate test;
 extern crate basic_dsp;
+extern crate test;
 
 pub mod tools;
 
 #[cfg(test)]
 mod real {
-    use test::Bencher;
     use basic_dsp::*;
+    use test::Bencher;
     use tools::*;
 
     #[inline(never)]
@@ -296,7 +296,7 @@ mod real {
         b.iter(|| {
             vector.execute(|mut v, _| {
                 let len = v.len();
-                let operand = vec!(0.0; len).to_real_time_vec();
+                let operand = vec![0.0; len].to_real_time_vec();
                 v.mul(&operand).unwrap();
                 v
             })

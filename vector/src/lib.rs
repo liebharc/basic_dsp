@@ -39,7 +39,7 @@
 //!
 //! The vector types don't distinguish between the shapes 1xN or Nx1. This is a difference to other
 //! conventions such as in MATLAB or GNU Octave.
-//! The reason for this decision is that most operations are only defined if the shape of the 
+//! The reason for this decision is that most operations are only defined if the shape of the
 //! vector matches. So it appears to be more practical and clearer to implement the few operations
 //! where the arguments can be of different shapes as seperate methods. The methods `mul` and `dot_product`
 //! are one example for this.
@@ -48,33 +48,33 @@
 //! There is a wide range of DSP vectors, e.g. a slice can be DSP vector, a boxed array can be a DSP vector,
 //! a standard vector can be a DSP vector and so on. This lib tries to work with all of that and tries
 //! to allow all those different DSP vector types to work together. The price for this flexibility is a more complex
-//! trait definition. As a mental model, this is what the traits are specifiying: 
+//! trait definition. As a mental model, this is what the traits are specifiying:
 //! Whenever you have a complex vector in time domain, it's binary operations will work with all other
-//! complex vectors in time domain, but not with real valued vectors or frequency domain vectors. 
+//! complex vectors in time domain, but not with real valued vectors or frequency domain vectors.
 //! And the type `GenDspVec` serves as wild card at compile time since it defers all checks to run time.
 
-#[cfg(any(feature = "doc", feature="use_sse", feature="use_avx"))]
-extern crate simd;
-#[cfg(any(feature = "doc", feature="use_gpu"))]
-extern crate ocl;
-#[cfg(feature="std")]
-extern crate num_cpus;
-#[cfg(feature="std")]
-extern crate crossbeam;
-extern crate num_traits;
-extern crate num_complex;
-extern crate rustfft;
-#[cfg(any(feature = "doc", feature="use_gpu"))]
-extern crate clfft;
 extern crate arrayvec;
+#[cfg(any(feature = "doc", feature = "use_gpu"))]
+extern crate clfft;
+#[cfg(feature = "std")]
+extern crate crossbeam;
+extern crate num_complex;
+#[cfg(feature = "std")]
+extern crate num_cpus;
+extern crate num_traits;
+#[cfg(any(feature = "doc", feature = "use_gpu"))]
+extern crate ocl;
+extern crate rustfft;
+#[cfg(any(feature = "doc", feature = "use_sse", feature = "use_avx"))]
+extern crate simd;
 #[macro_use]
 mod simd_extensions;
-mod vector_types;
-mod multicore_support;
-pub mod window_functions;
 pub mod conv_types;
-pub use vector_types::*;
+mod multicore_support;
+mod vector_types;
+pub mod window_functions;
 pub use multicore_support::MultiCoreSettings;
+pub use vector_types::*;
 mod gpu_support;
 use std::mem;
 mod inline_vector;
@@ -83,38 +83,61 @@ use std::ops::Range;
 
 pub mod numbers {
     //! Traits from the `num` crate which are used inside `basic_dsp` and extensions to those traits.
-    pub use num_traits::Float;
-    pub use num_traits::One;
+    use gpu_support::{Gpu32, Gpu64, GpuFloat, GpuRegTrait};
     pub use num_complex::Complex;
-    pub use num_traits::Num;
-    use std::fmt::Debug;
-    use rustfft;
     use num_traits;
+    pub use num_traits::Float;
+    pub use num_traits::Num;
+    pub use num_traits::One;
+    use rustfft;
+    #[cfg(any(
+        feature = "use_sse",
+        feature = "use_avx",
+        feature = "use_avx512"
+    ))]
+    use simd;
     use simd_extensions;
     use simd_extensions::*;
-    use gpu_support::{Gpu32, Gpu64, GpuRegTrait, GpuFloat};
-    #[cfg(any(feature="use_sse", feature="use_avx", feature="use_avx512"))]
-    use simd;
+    use std::fmt::Debug;
 
     /// A trait for a numeric value which at least supports a subset of the operations defined in this crate.
     /// Can be an integer or a floating point number. In order to have support for all operations in this crate
     /// a must implement the `RealNumber`.
-    pub trait DspNumber
-        : Num + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive + rustfft::FFTnum + 'static
+    pub trait DspNumber:
+        Num
+        + Copy
+        + Clone
+        + Send
+        + Sync
+        + ToSimd
+        + Debug
+        + num_traits::Signed
+        + num_traits::FromPrimitive
+        + rustfft::FFTnum
+        + 'static
     {
-    }
-    impl<T> DspNumber for T
-        where T: Num + Copy + Clone + Send + Sync + ToSimd + Debug + num_traits::Signed + num_traits::FromPrimitive + rustfft::FFTnum + 'static
-    {
-    }
+}
+    impl<T> DspNumber for T where
+        T: Num
+            + Copy
+            + Clone
+            + Send
+            + Sync
+            + ToSimd
+            + Debug
+            + num_traits::Signed
+            + num_traits::FromPrimitive
+            + rustfft::FFTnum
+            + 'static
+    {}
 
     /// Associates a number type with a SIMD register type.
     pub trait ToSimd: Sized + Sync + Send {
         /// Type for the SIMD register on the CPU.
         type RegFallback: SimdGeneric<Self>;
-        type RegSse : SimdGeneric<Self>;
-        type RegAvx : SimdGeneric<Self>;
-        type RegAvx512 : SimdGeneric<Self>;
+        type RegSse: SimdGeneric<Self>;
+        type RegAvx: SimdGeneric<Self>;
+        type RegAvx512: SimdGeneric<Self>;
         /// Type for the SIMD register on the GPU. Defaults to an arbitrary type if GPU support is not
         /// compiled in.
         type GpuReg: GpuRegTrait;
@@ -122,43 +145,43 @@ pub mod numbers {
 
     impl ToSimd for f32 {
         type RegFallback = simd_extensions::fallback::f32x4;
-        
-        #[cfg(feature="use_sse")]
+
+        #[cfg(feature = "use_sse")]
         type RegSse = simd::f32x4;
-        #[cfg(not(feature="use_sse"))]
+        #[cfg(not(feature = "use_sse"))]
         type RegSse = simd_extensions::fallback::f32x4;
-        
-        #[cfg(feature="use_avx")]
+
+        #[cfg(feature = "use_avx")]
         type RegAvx = simd::x86::avx::f32x8;
-        #[cfg(not(feature="use_avx"))]
+        #[cfg(not(feature = "use_avx"))]
         type RegAvx = simd_extensions::fallback::f32x4;
-        
-        #[cfg(feature="use_avx512")]
+
+        #[cfg(feature = "use_avx512")]
         type RegAvx512 = stdsimd::simd::f32x16; // Type is missing in SIMD
-        #[cfg(not(feature="use_avx512"))]
+        #[cfg(not(feature = "use_avx512"))]
         type RegAvx512 = simd_extensions::fallback::f32x4;
-        
+
         type GpuReg = Gpu32;
     }
 
     impl ToSimd for f64 {
         type RegFallback = simd_extensions::fallback::f64x2;
-        
-        #[cfg(feature="use_sse")]
+
+        #[cfg(feature = "use_sse")]
         type RegSse = simd::x86::sse2::f64x2;
-        #[cfg(not(feature="use_sse"))]
+        #[cfg(not(feature = "use_sse"))]
         type RegSse = simd_extensions::fallback::f64x2;
-        
-        #[cfg(feature="use_avx")]
+
+        #[cfg(feature = "use_avx")]
         type RegAvx = simd::x86::avx::f64x4;
-        #[cfg(not(feature="use_avx"))]
+        #[cfg(not(feature = "use_avx"))]
         type RegAvx = simd_extensions::fallback::f64x2;
-        
-        #[cfg(feature="use_avx512")]
+
+        #[cfg(feature = "use_avx512")]
         type RegAvx512 = stdsimd::simd::f64x8; // Type is missing in SIMD
-        #[cfg(not(feature="use_avx512"))]
+        #[cfg(not(feature = "use_avx512"))]
         type RegAvx512 = simd_extensions::fallback::f64x2;
-        
+
         type GpuReg = Gpu64;
     }
 
@@ -173,7 +196,8 @@ pub mod numbers {
     }
 
     impl<T> Zero for T
-        where T: DspNumber
+    where
+        T: DspNumber,
     {
         fn zero() -> Self {
             <Self as num_traits::Zero>::zero()
@@ -181,7 +205,8 @@ pub mod numbers {
     }
 
     impl<T> Zero for Complex<T>
-        where T: DspNumber
+    where
+        T: DspNumber,
     {
         fn zero() -> Self {
             <Self as num_traits::Zero>::zero()
@@ -221,9 +246,11 @@ fn memcpy<T: Copy>(data: &mut [T], from: Range<usize>, to: usize) {
     assert!(to <= data.len() - (from.end - from.start));
     unsafe {
         let ptr = data.as_mut_ptr();
-        copy(ptr.offset(from.start as isize),
-             ptr.offset(to as isize),
-             from.end - from.start)
+        copy(
+            ptr.offset(from.start as isize),
+            ptr.offset(to as isize),
+            from.end - from.start,
+        )
     }
 }
 
