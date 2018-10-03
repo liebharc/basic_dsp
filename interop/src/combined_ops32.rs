@@ -1,47 +1,37 @@
 //! Functions for 32bit floating point number based vectors.
 //! Please refer to the other chapters of the help for documentation of the functions.
 use super::*;
-use basic_dsp_vector::combined_ops::*;
 use basic_dsp_vector::*;
+use basic_dsp_vector::combined_ops::*;
 use num_complex::Complex32;
 
 pub type VecBuf = InteropVec<f32>;
 
 pub type VecBox = Box<InteropVec<f32>>;
 
-pub type PreparedOp1F32 = PreparedOperation1<
-    f32,
-    RealOrComplexData,
-    TimeOrFrequencyData,
-    RealOrComplexData,
-    TimeOrFrequencyData,
->;
+pub type PreparedOp1F32 = PreparedOperation1<f32,
+                                             RealOrComplexData,
+                                             TimeOrFrequencyData,
+                                             RealOrComplexData,
+                                             TimeOrFrequencyData>;
 
-pub type PreparedOp2F32 = PreparedOperation2<
-    f32,
-    RealOrComplexData,
-    TimeOrFrequencyData,
-    RealOrComplexData,
-    TimeOrFrequencyData,
-    RealOrComplexData,
-    TimeOrFrequencyData,
-    RealOrComplexData,
-    TimeOrFrequencyData,
->;
+pub type PreparedOp2F32 = PreparedOperation2<f32,
+                                             RealOrComplexData,
+                                             TimeOrFrequencyData,
+                                             RealOrComplexData,
+                                             TimeOrFrequencyData,
+                                             RealOrComplexData,
+                                             TimeOrFrequencyData,
+                                             RealOrComplexData,
+                                             TimeOrFrequencyData>;
 
 /// Prepares an operation.
 /// multi_ops1 will not be made available in for interop since the same functionality
 /// can be created with prepared ops, and internally this is what this lib does too.
 #[no_mangle]
 pub extern "C" fn prepared_ops1_f32() -> Box<PreparedOp1F32> {
-    Box::new(prepare32_1(
-        RealOrComplexData {
-            is_complex_current: false,
-        },
-        TimeOrFrequencyData {
-            domain_current: DataDomain::Time,
-        },
-    ))
+    Box::new(prepare32_1(RealOrComplexData { is_complex_current: false },
+                         TimeOrFrequencyData { domain_current: DataDomain::Time }))
 }
 
 /// Prepares an operation.
@@ -49,20 +39,10 @@ pub extern "C" fn prepared_ops1_f32() -> Box<PreparedOp1F32> {
 /// can be created with prepared ops, and internally this is what this lib does too.
 #[no_mangle]
 pub extern "C" fn prepared_ops2_f32() -> Box<PreparedOp2F32> {
-    Box::new(prepare32_2(
-        RealOrComplexData {
-            is_complex_current: false,
-        },
-        TimeOrFrequencyData {
-            domain_current: DataDomain::Time,
-        },
-        RealOrComplexData {
-            is_complex_current: false,
-        },
-        TimeOrFrequencyData {
-            domain_current: DataDomain::Time,
-        },
-    ))
+    Box::new(prepare32_2(RealOrComplexData { is_complex_current: false },
+                         TimeOrFrequencyData { domain_current: DataDomain::Time },
+                         RealOrComplexData { is_complex_current: false },
+                         TimeOrFrequencyData { domain_current: DataDomain::Time }))
 }
 
 /// Prepares an operation.
@@ -70,30 +50,22 @@ pub extern "C" fn prepared_ops2_f32() -> Box<PreparedOp2F32> {
 /// can be created with prepared ops, and internally this is what this lib does too.
 #[no_mangle]
 pub extern "C" fn extend_prepared_ops1_f32(ops: Box<PreparedOp1F32>) -> Box<PreparedOp2F32> {
-    Box::new(ops.extend(
-        RealOrComplexData {
-            is_complex_current: false,
-        },
-        TimeOrFrequencyData {
-            domain_current: DataDomain::Time,
-        },
-    ))
+    Box::new(ops.extend(RealOrComplexData { is_complex_current: false },
+                        TimeOrFrequencyData { domain_current: DataDomain::Time }))
 }
 
 #[no_mangle]
-pub extern "C" fn exec_prepared_ops1_f32(
-    ops: &PreparedOp1F32,
-    v: Box<VecBuf>,
-) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn exec_prepared_ops1_f32(ops: &PreparedOp1F32,
+                                         v: Box<VecBuf>)
+                                         -> VectorInteropResult<VecBuf> {
     v.trans_vec(|v, b| ops.exec(b, v))
 }
 
 #[no_mangle]
-pub extern "C" fn exec_prepared_ops2_f32(
-    ops: &PreparedOp2F32,
-    v1: Box<VecBuf>,
-    v2: Box<VecBuf>,
-) -> BinaryVectorInteropResult<VecBuf> {
+pub extern "C" fn exec_prepared_ops2_f32(ops: &PreparedOp2F32,
+                                         v1: Box<VecBuf>,
+                                         v2: Box<VecBuf>)
+                                         -> BinaryVectorInteropResult<VecBuf> {
     let (v1, mut b1) = v1.decompose();
     let (v2, b2) = v2.decompose();
     let result = ops.exec(&mut b1, v1, v2);
@@ -160,12 +132,10 @@ pub extern "C" fn add_complex_ops1_f32(ops: &mut PreparedOp1F32, arg: usize, re:
 }
 
 #[no_mangle]
-pub extern "C" fn multiply_complex_ops1_f32(
-    ops: &mut PreparedOp1F32,
-    arg: usize,
-    re: f32,
-    im: f32,
-) {
+pub extern "C" fn multiply_complex_ops1_f32(ops: &mut PreparedOp1F32,
+                                            arg: usize,
+                                            re: f32,
+                                            im: f32) {
     ops.add_enum_op(Operation::MultiplyComplex(arg, Complex32::new(re, im)))
 }
 
@@ -200,12 +170,10 @@ pub extern "C" fn phase_ops1_f32(ops: &mut PreparedOp1F32, arg: usize) {
 }
 
 #[no_mangle]
-pub extern "C" fn multiply_complex_exponential_ops1_f32(
-    ops: &mut PreparedOp1F32,
-    arg: usize,
-    a: f32,
-    b: f32,
-) {
+pub extern "C" fn multiply_complex_exponential_ops1_f32(ops: &mut PreparedOp1F32,
+                                                        arg: usize,
+                                                        a: f32,
+                                                        b: f32) {
     ops.add_enum_op(Operation::MultiplyComplexExponential(arg, a, b))
 }
 
@@ -388,12 +356,10 @@ pub extern "C" fn add_complex_ops2_f32(ops: &mut PreparedOp2F32, arg: usize, re:
 }
 
 #[no_mangle]
-pub extern "C" fn multiply_complex_ops2_f32(
-    ops: &mut PreparedOp2F32,
-    arg: usize,
-    re: f32,
-    im: f32,
-) {
+pub extern "C" fn multiply_complex_ops2_f32(ops: &mut PreparedOp2F32,
+                                            arg: usize,
+                                            re: f32,
+                                            im: f32) {
     ops.add_enum_op(Operation::MultiplyComplex(arg, Complex32::new(re, im)))
 }
 
@@ -428,12 +394,10 @@ pub extern "C" fn phase_ops2_f32(ops: &mut PreparedOp2F32, arg: usize) {
 }
 
 #[no_mangle]
-pub extern "C" fn multiply_complex_exponential_ops2_f32(
-    ops: &mut PreparedOp2F32,
-    arg: usize,
-    a: f32,
-    b: f32,
-) {
+pub extern "C" fn multiply_complex_exponential_ops2_f32(ops: &mut PreparedOp2F32,
+                                                        arg: usize,
+                                                        a: f32,
+                                                        b: f32) {
     ops.add_enum_op(Operation::MultiplyComplexExponential(arg, a, b))
 }
 

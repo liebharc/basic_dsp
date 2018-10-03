@@ -2,47 +2,37 @@
 //! Functions for 64bit floating point number based vectors.
 //! Please refer to the other chapters of the help for documentation of the functions.
 use super::*;
-use basic_dsp_vector::combined_ops::*;
 use basic_dsp_vector::*;
+use basic_dsp_vector::combined_ops::*;
 use num_complex::Complex64;
 
 pub type VecBuf = InteropVec<f64>;
 
 pub type VecBox = Box<InteropVec<f64>>;
 
-pub type PreparedOp1F64 = PreparedOperation1<
-    f64,
-    RealOrComplexData,
-    TimeOrFrequencyData,
-    RealOrComplexData,
-    TimeOrFrequencyData,
->;
+pub type PreparedOp1F64 = PreparedOperation1<f64,
+                                             RealOrComplexData,
+                                             TimeOrFrequencyData,
+                                             RealOrComplexData,
+                                             TimeOrFrequencyData>;
 
-pub type PreparedOp2F64 = PreparedOperation2<
-    f64,
-    RealOrComplexData,
-    TimeOrFrequencyData,
-    RealOrComplexData,
-    TimeOrFrequencyData,
-    RealOrComplexData,
-    TimeOrFrequencyData,
-    RealOrComplexData,
-    TimeOrFrequencyData,
->;
+pub type PreparedOp2F64 = PreparedOperation2<f64,
+                                             RealOrComplexData,
+                                             TimeOrFrequencyData,
+                                             RealOrComplexData,
+                                             TimeOrFrequencyData,
+                                             RealOrComplexData,
+                                             TimeOrFrequencyData,
+                                             RealOrComplexData,
+                                             TimeOrFrequencyData>;
 
 /// Prepares an operation.
 /// multi_ops1 will not be made available in for interop since the same functionality
 /// can be created with prepared ops, and internally this is what this lib does too.
 #[no_mangle]
 pub extern "C" fn prepared_ops1_f64() -> Box<PreparedOp1F64> {
-    Box::new(prepare64_1(
-        RealOrComplexData {
-            is_complex_current: false,
-        },
-        TimeOrFrequencyData {
-            domain_current: DataDomain::Time,
-        },
-    ))
+    Box::new(prepare64_1(RealOrComplexData { is_complex_current: false },
+                         TimeOrFrequencyData { domain_current: DataDomain::Time }))
 }
 
 /// Prepares an operation.
@@ -50,20 +40,10 @@ pub extern "C" fn prepared_ops1_f64() -> Box<PreparedOp1F64> {
 /// can be created with prepared ops, and internally this is what this lib does too.
 #[no_mangle]
 pub extern "C" fn prepared_ops2_f64() -> Box<PreparedOp2F64> {
-    Box::new(prepare64_2(
-        RealOrComplexData {
-            is_complex_current: false,
-        },
-        TimeOrFrequencyData {
-            domain_current: DataDomain::Time,
-        },
-        RealOrComplexData {
-            is_complex_current: false,
-        },
-        TimeOrFrequencyData {
-            domain_current: DataDomain::Time,
-        },
-    ))
+    Box::new(prepare64_2(RealOrComplexData { is_complex_current: false },
+                         TimeOrFrequencyData { domain_current: DataDomain::Time },
+                         RealOrComplexData { is_complex_current: false },
+                         TimeOrFrequencyData { domain_current: DataDomain::Time }))
 }
 
 /// Prepares an operation.
@@ -71,30 +51,22 @@ pub extern "C" fn prepared_ops2_f64() -> Box<PreparedOp2F64> {
 /// can be created with prepared ops, and internally this is what this lib does too.
 #[no_mangle]
 pub extern "C" fn extend_prepared_ops1_f64(ops: Box<PreparedOp1F64>) -> Box<PreparedOp2F64> {
-    Box::new(ops.extend(
-        RealOrComplexData {
-            is_complex_current: false,
-        },
-        TimeOrFrequencyData {
-            domain_current: DataDomain::Time,
-        },
-    ))
+    Box::new(ops.extend(RealOrComplexData { is_complex_current: false },
+                        TimeOrFrequencyData { domain_current: DataDomain::Time }))
 }
 
 #[no_mangle]
-pub extern "C" fn exec_prepared_ops1_f64(
-    ops: &PreparedOp1F64,
-    v: Box<VecBuf>,
-) -> VectorInteropResult<VecBuf> {
+pub extern "C" fn exec_prepared_ops1_f64(ops: &PreparedOp1F64,
+                                         v: Box<VecBuf>)
+                                         -> VectorInteropResult<VecBuf> {
     v.trans_vec(|v, b| ops.exec(b, v))
 }
 
 #[no_mangle]
-pub extern "C" fn exec_prepared_ops2_f64(
-    ops: &PreparedOp2F64,
-    v1: Box<VecBuf>,
-    v2: Box<VecBuf>,
-) -> BinaryVectorInteropResult<VecBuf> {
+pub extern "C" fn exec_prepared_ops2_f64(ops: &PreparedOp2F64,
+                                         v1: Box<VecBuf>,
+                                         v2: Box<VecBuf>)
+                                         -> BinaryVectorInteropResult<VecBuf> {
     let (v1, mut b1) = v1.decompose();
     let (v2, b2) = v2.decompose();
     let result = ops.exec(&mut b1, v1, v2);
@@ -161,12 +133,10 @@ pub extern "C" fn add_complex_ops1_f64(ops: &mut PreparedOp1F64, arg: usize, re:
 }
 
 #[no_mangle]
-pub extern "C" fn multiply_complex_ops1_f64(
-    ops: &mut PreparedOp1F64,
-    arg: usize,
-    re: f64,
-    im: f64,
-) {
+pub extern "C" fn multiply_complex_ops1_f64(ops: &mut PreparedOp1F64,
+                                            arg: usize,
+                                            re: f64,
+                                            im: f64) {
     ops.add_enum_op(Operation::MultiplyComplex(arg, Complex64::new(re, im)))
 }
 
@@ -201,12 +171,10 @@ pub extern "C" fn phase_ops1_f64(ops: &mut PreparedOp1F64, arg: usize) {
 }
 
 #[no_mangle]
-pub extern "C" fn multiply_complex_exponential_ops1_f64(
-    ops: &mut PreparedOp1F64,
-    arg: usize,
-    a: f64,
-    b: f64,
-) {
+pub extern "C" fn multiply_complex_exponential_ops1_f64(ops: &mut PreparedOp1F64,
+                                                        arg: usize,
+                                                        a: f64,
+                                                        b: f64) {
     ops.add_enum_op(Operation::MultiplyComplexExponential(arg, a, b))
 }
 
@@ -389,12 +357,10 @@ pub extern "C" fn add_complex_ops2_f64(ops: &mut PreparedOp2F64, arg: usize, re:
 }
 
 #[no_mangle]
-pub extern "C" fn multiply_complex_ops2_f64(
-    ops: &mut PreparedOp2F64,
-    arg: usize,
-    re: f64,
-    im: f64,
-) {
+pub extern "C" fn multiply_complex_ops2_f64(ops: &mut PreparedOp2F64,
+                                            arg: usize,
+                                            re: f64,
+                                            im: f64) {
     ops.add_enum_op(Operation::MultiplyComplex(arg, Complex64::new(re, im)))
 }
 
@@ -429,12 +395,10 @@ pub extern "C" fn phase_ops2_f64(ops: &mut PreparedOp2F64, arg: usize) {
 }
 
 #[no_mangle]
-pub extern "C" fn multiply_complex_exponential_ops2_f64(
-    ops: &mut PreparedOp2F64,
-    arg: usize,
-    a: f64,
-    b: f64,
-) {
+pub extern "C" fn multiply_complex_exponential_ops2_f64(ops: &mut PreparedOp2F64,
+                                                        arg: usize,
+                                                        a: f64,
+                                                        b: f64) {
     ops.add_enum_op(Operation::MultiplyComplexExponential(arg, a, b))
 }
 
