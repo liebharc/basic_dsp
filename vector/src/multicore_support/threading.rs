@@ -33,6 +33,27 @@ impl MultiCoreSettings {
     }
 }
 
+/// Calibration information which determines when multi threaded code will be used.
+struct Calibration {
+    med_dual_core_threshold: usize,
+    med_multi_core_threshold: usize,
+    large_multi_core_threshold: usize,
+}
+
+/// Runs a couple of benchmarks to obtain the multi core thresholds.
+/// Right now only code constants are returned.
+fn calibrate() -> Calibration {
+    Calibration {
+        med_dual_core_threshold: 50000,
+        med_multi_core_threshold: 100000,
+        large_multi_core_threshold: 30000,
+    }
+}
+
+lazy_static! {
+    static ref CALIBRATION: Calibration = calibrate();
+}
+
 /// Contains logic which helps to perform an operation
 /// in parallel by dividing an array into chunks.
 pub struct Chunk;
@@ -71,18 +92,21 @@ impl Chunk {
             // is already fast enough to occupy the max memory bandwidth
             1
         } else if complexity == Complexity::Medium {
-            if array_length < 50000 {
+            let calibration = &CALIBRATION;
+            if array_length < calibration.med_dual_core_threshold {
                 1
-            } else if array_length < 100000 {
+            } else if array_length < calibration.med_multi_core_threshold {
                 2
             } else {
                 settings.core_limit
             }
-        } else if array_length < 30000 {
-            // complexity == Complexity::Large
-            1
-        } else {
-            settings.core_limit
+        } else { // Complexity::Large
+            let calibration = &CALIBRATION;
+            if array_length < calibration.large_multi_core_threshold {
+                1
+            } else {
+                settings.core_limit
+            }
         }
     }
 
