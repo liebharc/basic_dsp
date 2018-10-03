@@ -8,6 +8,7 @@ use std::ops::Range;
 use std::slice::{Chunks, ChunksMut};
 use std::sync::{Arc, Mutex};
 use time;
+use num_cpus;
 
 /// Holds parameters which specify how multiple cores are used
 /// to execute an operation.
