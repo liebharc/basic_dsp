@@ -1,6 +1,4 @@
 use super::*;
-use basic_dsp_vector::numbers::*;
-use basic_dsp_vector::*;
 
 macro_rules! add_mat_impl {
     ($($matrix:ident);*) => {

@@ -1,6 +1,4 @@
 use super::*;
-use basic_dsp_vector::numbers::*;
-use basic_dsp_vector::*;
 use IntoFixedLength;
 
 impl<S: ToSlice<T>, V: Vector<T>, T: RealNumber> StatisticsOps<T> for MatrixMxN<V, S, T>

@@ -1,6 +1,4 @@
 use super::*;
-use basic_dsp_vector::numbers::*;
-use basic_dsp_vector::*;
 
 /// A trait for matrix types. In this lib a matrix is simply a collection of
 /// vectors. The idea is that the matrix types can be used to reduce the size
