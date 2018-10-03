@@ -1,6 +1,19 @@
 # `basic_dsp`
 Changes:
 
+## Version 0.5.6
+
+**Behaviour changes**:
+
+The default [MultiCoreSettings](https://liebharc.github.io/basic_dsp/basic_dsp_vector/struct.MultiCoreSettings.html) 
+now have a `core_limit` of 1. That's because enabling multi threading should be a conscious decision, 
+e.g. due to the overhead of multi threading and [downclocking](https://lemire.me/blog/2018/09/07/avx-512-when-and-how-to-use-these-new-instructions/). 
+
+Changes:
+
+- Fixed performance issue for small vectors
+- Removed `num_cpus` dependency
+
 ## Version 0.5.5
 It's now decided at runtime which SIMD optimization should be used.
 Also updated `clFFT` dependency.

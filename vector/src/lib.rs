@@ -59,8 +59,6 @@ extern crate clfft;
 #[cfg(feature = "std")]
 extern crate crossbeam;
 extern crate num_complex;
-#[cfg(feature = "std")]
-extern crate num_cpus;
 extern crate num_traits;
 #[cfg(any(feature = "doc", feature = "use_gpu"))]
 extern crate ocl;
