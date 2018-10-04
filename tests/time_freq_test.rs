@@ -17,7 +17,7 @@ mod time_freq_test {
             let points = (a.len() / 2) as f32;
             let delta = create_delta(3561159, iteration);
             let mut buffer = SingleBuffer::new();
-            let mut vector = a.clone().to_complex_time_vec();
+            let mut vector = a.clone().to_complex_time_vec_par();
             vector.set_delta(delta);
             let mut freq = vector.plain_fft(&mut buffer);
             freq.scale(Complex32::new(1.0 / points, 0.0));
@@ -223,7 +223,7 @@ mod time_freq_test {
         let f = 0.1;
         let phi = 0.25;
         let range: Vec<_> = (0..n).map(|v| (v as f64) * f).collect();
-        let mut vector = range.to_real_time_vec();
+        let mut vector = range.to_real_time_vec_par();
         vector.scale(2.0 * PI);
         vector.offset(phi);
         vector.cos();
@@ -235,7 +235,7 @@ mod time_freq_test {
         for iteration in 0..3 {
             let a = create_data_even(201511212, iteration, 10001, 20000);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_complex_time_vec();
+            let mut vector = a.clone().to_complex_time_vec_par();
             vector.set_delta(delta);
             let mut buffer = SingleBuffer::new();
             let freq = vector.fft(&mut buffer);

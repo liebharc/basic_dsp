@@ -19,6 +19,10 @@ pub use self::support_core::*;
 mod support_std;
 #[cfg(any(feature = "std", test))]
 pub use self::support_std::*;
+#[cfg(feature = "std")]
+mod support_std_par;
+#[cfg(feature = "std")]
+pub use self::support_std_par::*;
 mod vec_impl_and_indexers;
 pub use self::vec_impl_and_indexers::*;
 mod complex;

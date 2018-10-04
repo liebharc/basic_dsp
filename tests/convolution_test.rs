@@ -13,7 +13,7 @@ mod conv_test {
         for iteration in 0..3 {
             let a = create_data_even(201602211, iteration, 1001, 2000);
             let delta = create_delta(201602212, iteration);
-            let mut time = a.to_complex_time_vec();
+            let mut time = a.to_complex_time_vec_par();
             time.set_delta(delta);
             let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
             let mut buffer = SingleBuffer::new();
@@ -44,7 +44,7 @@ mod conv_test {
         for iteration in 0..3 {
             let a = create_data_even(201602214, iteration, 2001, 4000);
             let delta = create_delta(201602215, iteration);
-            let mut time = a.to_complex_time_vec();
+            let mut time = a.to_complex_time_vec_par();
             time.set_delta(delta);
             let fun: SincFunction<f32> = SincFunction::new();
             let mut buffer = SingleBuffer::new();
@@ -82,7 +82,7 @@ mod conv_test {
             let a = create_data_even(201602217, iteration, 2002, 4000);
             let b = create_data_even(201602218, iteration, 50, 202);
             let delta = create_delta(201602219, iteration);
-            let mut time = a.to_complex_time_vec();
+            let mut time = a.to_complex_time_vec_par();
             time.set_delta(delta);
             let mut buffer = SingleBuffer::new();
             let fun: RaisedCosineFunction<f32> = RaisedCosineFunction::new(0.35);
@@ -116,9 +116,9 @@ mod conv_test {
             let a = create_data_even(201601171, iteration, 502, 2000);
             let b = create_data_with_len(201601172, iteration, a.len());
             let delta = create_delta(201601173, iteration);
-            let mut time1 = a.to_complex_time_vec();
+            let mut time1 = a.to_complex_time_vec_par();
             time1.set_delta(delta);
-            let mut time2 = b.to_complex_time_vec();
+            let mut time2 = b.to_complex_time_vec_par();
             time2.set_delta(delta);
             let mut buffer = SingleBuffer::new();
             let mut left = time1.clone();
@@ -142,9 +142,9 @@ mod conv_test {
         let a = create_data_even(201601171, 1, 18000, 20000);
         let b = create_data_with_len(201601172, 1, a.len());
         let delta = create_delta(201601173, 1);
-        let mut time1 = a.to_complex_time_vec();
+        let mut time1 = a.to_complex_time_vec_par();
         time1.set_delta(delta);
-        let mut time2 = b.to_complex_time_vec();
+        let mut time2 = b.to_complex_time_vec_par();
         time2.set_delta(delta);
         let mut buffer = SingleBuffer::new();
         let mut left = time1.clone();
@@ -168,14 +168,14 @@ mod conv_test {
             let a = create_data_even(201601174, iteration, 1002, 2000);
             let b = create_data_even(201601175, iteration, 50, 202);
             let delta = create_delta(201601176, iteration);
-            let mut time1 = a.to_complex_time_vec();
+            let mut time1 = a.to_complex_time_vec_par();
             time1.set_delta(delta);
-            let mut time2 = b.clone().to_complex_time_vec();
+            let mut time2 = b.clone().to_complex_time_vec_par();
             time2.set_delta(delta);
             let mut buffer = SingleBuffer::new();
             let mut left = time1.clone();
             left.convolve_signal(&mut buffer, &time2).unwrap();
-            let mut time2 = conv_zero_pad(&b, time1.len(), true).to_complex_time_vec();
+            let mut time2 = conv_zero_pad(&b, time1.len(), true).to_complex_time_vec_par();
             time2.set_delta(delta);
             time1.convolve_signal(&mut buffer, &time2).unwrap();
             assert_vector_eq_with_reason_and_tolerance(
@@ -195,14 +195,14 @@ mod conv_test {
             let a = create_data_even(201601177, iteration, 1002, 2000);
             let b = create_data_even(201601178, iteration, 50, 202);
             let delta = create_delta(201601179, iteration);
-            let mut time1 = a.to_real_time_vec();
+            let mut time1 = a.to_real_time_vec_par();
             time1.set_delta(delta);
-            let mut time2 = b.clone().to_real_time_vec();
+            let mut time2 = b.clone().to_real_time_vec_par();
             time2.set_delta(delta);
             let mut buffer = SingleBuffer::new();
             let mut left = time1.clone();
             left.convolve_signal(&mut buffer, &time2).unwrap();
-            let mut time2 = conv_zero_pad(&b, time1.len(), false).to_real_time_vec();
+            let mut time2 = conv_zero_pad(&b, time1.len(), false).to_real_time_vec_par();
             time2.set_delta(delta);
             time1.convolve_signal(&mut buffer, &time2).unwrap();
             assert_vector_eq_with_reason_and_tolerance(

@@ -21,12 +21,26 @@ pub struct MultiCoreSettings {
     pub core_limit: usize,
 }
 
+lazy_static! {
+    static ref NUMBER_OF_CORES: usize = num_cpus::get();
+}
+
 impl MultiCoreSettings {
     /// Creates multi core settings with default values
     pub fn default() -> MultiCoreSettings {
+        Self::single_threaded()
+    }
+
+    /// Creates multi core settings so that no thread will be spawned.
+    pub fn single_threaded() -> MultiCoreSettings {
+        Self::new(1)
+    }
+
+    /// Creates multi core so that threads will be spawned if this appears to be beneficial.
+    pub fn parallel() -> MultiCoreSettings {
         // Half because we assume hyper threading and that we will keep a core so busy
         // that hyper threading isn't of any use
-        Self::new(1)
+        Self::new(*NUMBER_OF_CORES / 2)
     }
 
     /// Creates multi core settings with the given values.
@@ -145,7 +159,7 @@ fn attempt_calibrate(number_of_cores: usize) -> Result<Calibration, u32> {
     let dual_core_min = 5000;
     let dual_core_max = 100000;
     let multi_core_max = 200000;
-    
+
     // The multiplication factor is the less well reasoned part in this equiation. It should only help
     // to avoid that threads are spawned too aggressively.
     let med_dual_core_threshold = limit(2 * med_dual_core_threshold_res.unwrap(), dual_core_min, dual_core_max);
@@ -181,7 +195,7 @@ fn calibrate(number_of_cores: usize) -> Calibration {
 }
 
 lazy_static! {
-    static ref CALIBRATION: Calibration = calibrate(num_cpus::get());
+    static ref CALIBRATION: Calibration = calibrate(*NUMBER_OF_CORES);
 }
 
 /// Prints debug information about the calibration. The calibration determines when the library

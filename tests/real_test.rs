@@ -33,7 +33,7 @@ mod real_test {
             let scalar = create_data_with_len(201511142, iteration, 1);
             let expected = real_add_scalar(&a, scalar[0]);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.to_real_time_vec();
+            let mut vector = a.to_real_time_vec_par();
             vector.set_delta(delta);
             vector.offset(scalar[0]);
             assert_vector_eq(&expected, &vector[..]);
@@ -58,7 +58,7 @@ mod real_test {
             let scalar = create_data_with_len(201511142, iteration, 1);
             let expected = real_mulitply_scalar(&a, scalar[0]);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.to_real_time_vec();
+            let mut vector = a.to_real_time_vec_par();
             vector.set_delta(delta);
             vector.scale(scalar[0]);
             assert_vector_eq(&expected, &vector[..]);
@@ -82,7 +82,7 @@ mod real_test {
             let a = create_data(201511146, iteration, range.start, range.end);
             let expected = real_abs(&a);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.to_real_time_vec();
+            let mut vector = a.to_real_time_vec_par();
             vector.set_delta(delta);
             vector.abs();
             assert_vector_eq(&expected, &vector[..]);
@@ -107,9 +107,9 @@ mod real_test {
             let b = create_data_with_len(201511172, iteration, a.len());
             let expected = real_add_vector(&a, &b);
             let delta = create_delta(3561159, iteration);
-            let mut vector1 = a.to_real_time_vec();
+            let mut vector1 = a.to_real_time_vec_par();
             vector1.set_delta(delta);
-            let mut vector2 = b.to_real_time_vec();
+            let mut vector2 = b.to_real_time_vec_par();
             vector2.set_delta(delta);
             vector1.add(&vector2).unwrap();
             assert_vector_eq(&expected, &vector1[..]);
@@ -133,9 +133,9 @@ mod real_test {
         let b = create_data_with_len(201511172, 1, 9);
         let expected = real_add_vector_mod(&a, &b);
         let delta = create_delta(3561159, 1);
-        let mut vector1 = a.to_real_time_vec();
+        let mut vector1 = a.to_real_time_vec_par();
         vector1.set_delta(delta);
-        let mut vector2 = b.to_real_time_vec();
+        let mut vector2 = b.to_real_time_vec_par();
         vector2.set_delta(delta);
         vector1.add_smaller(&vector2).unwrap();
         assert_vector_eq(&expected, &vector1[..]);
@@ -159,9 +159,9 @@ mod real_test {
             let b = create_data_with_len(201511172, iteration, a.len());
             let expected = real_sub_vector(&a, &b);
             let delta = create_delta(3561159, iteration);
-            let mut vector1 = a.to_real_time_vec();
+            let mut vector1 = a.to_real_time_vec_par();
             vector1.set_delta(delta);
-            let mut vector2 = b.to_real_time_vec();
+            let mut vector2 = b.to_real_time_vec_par();
             vector2.set_delta(delta);
             vector1.sub(&vector2).unwrap();
             assert_vector_eq(&expected, &vector1[..]);
@@ -185,9 +185,9 @@ mod real_test {
         let b = create_data_with_len(201511172, 1, 9);
         let expected = real_sub_vector_mod(&a, &b);
         let delta = create_delta(3561159, 1);
-        let mut vector1 = a.to_real_time_vec();
+        let mut vector1 = a.to_real_time_vec_par();
         vector1.set_delta(delta);
-        let mut vector2 = b.to_real_time_vec();
+        let mut vector2 = b.to_real_time_vec_par();
         vector2.set_delta(delta);
         vector1.sub_smaller(&vector2).unwrap();
         assert_vector_eq(&expected, &vector1[..]);
@@ -211,9 +211,9 @@ mod real_test {
             let b = create_data_with_len(201511172, iteration, a.len());
             let expected = real_vector_mul(&a, &b);
             let delta = create_delta(3561159, iteration);
-            let mut vector1 = a.to_real_time_vec();
+            let mut vector1 = a.to_real_time_vec_par();
             vector1.set_delta(delta);
-            let mut vector2 = b.to_real_time_vec();
+            let mut vector2 = b.to_real_time_vec_par();
             vector2.set_delta(delta);
             vector1.mul(&vector2).unwrap();
             assert_vector_eq(&expected, &vector1[..]);
@@ -237,9 +237,9 @@ mod real_test {
         let b = create_data_with_len(201511172, 1, 9);
         let expected = real_mul_vector_mod(&a, &b);
         let delta = create_delta(3561159, 1);
-        let mut vector1 = a.to_real_time_vec();
+        let mut vector1 = a.to_real_time_vec_par();
         vector1.set_delta(delta);
-        let mut vector2 = b.to_real_time_vec();
+        let mut vector2 = b.to_real_time_vec_par();
         vector2.set_delta(delta);
         vector1.mul_smaller(&vector2).unwrap();
         assert_vector_eq(&expected, &vector1[..]);
@@ -262,9 +262,9 @@ mod real_test {
         let b = create_data_with_len(201511172, 1, 9);
         let expected = real_div_vector_mod(&a, &b);
         let delta = create_delta(3561159, 1);
-        let mut vector1 = a.to_real_time_vec();
+        let mut vector1 = a.to_real_time_vec_par();
         vector1.set_delta(delta);
-        let mut vector2 = b.to_real_time_vec();
+        let mut vector2 = b.to_real_time_vec_par();
         vector2.set_delta(delta);
         vector1.div_smaller(&vector2).unwrap();
         assert_vector_eq(&expected, &vector1[..]);
@@ -279,9 +279,9 @@ mod real_test {
             let b = create_data_with_len(201511172, iteration, a.len());
             let expected = real_vector_mul(&a, &b).iter().fold(0.0, |a, b| a + b);
             let delta = create_delta(3561159, iteration);
-            let mut vector1 = a.to_real_time_vec();
+            let mut vector1 = a.to_real_time_vec_par();
             vector1.set_delta(delta);
-            let mut vector2 = b.to_real_time_vec();
+            let mut vector2 = b.to_real_time_vec_par();
             vector2.set_delta(delta);
             let result = vector1.dot_product(&vector2).unwrap();
             assert_in_tolerance(expected, result, 0.5);
@@ -298,9 +298,9 @@ mod real_test {
                 .map(|v| *v as f64)
                 .fold(0.0, |a, b| a + b);
             let delta = create_delta(3561159, iteration);
-            let mut vector1 = a.to_real_time_vec();
+            let mut vector1 = a.to_real_time_vec_par();
             vector1.set_delta(delta);
-            let mut vector2 = b.to_real_time_vec();
+            let mut vector2 = b.to_real_time_vec_par();
             vector2.set_delta(delta);
             let result = vector1.dot_product_prec(&vector2).unwrap();
             assert_in_tolerance(expected as f32, result, 1e-2);
@@ -323,9 +323,9 @@ mod real_test {
             let b = create_data_with_len(201511172, iteration, a.len());
             let expected = real_vector_div(&a, &b);
             let delta = create_delta(3561159, iteration);
-            let mut vector1 = a.to_real_time_vec();
+            let mut vector1 = a.to_real_time_vec_par();
             vector1.set_delta(delta);
-            let mut vector2 = b.to_real_time_vec();
+            let mut vector2 = b.to_real_time_vec_par();
             vector2.set_delta(delta);
             vector1.div(&vector2).unwrap();
             assert_vector_eq(&expected, &vector1[..]);
@@ -340,7 +340,7 @@ mod real_test {
             let a =
                 create_data_even_in_range(201511210, iteration, range.start, range.end, 0.0, 10.0);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_real_time_vec();
+            let mut vector = a.clone().to_real_time_vec_par();
             vector.set_delta(delta);
             vector.square();
             vector.sqrt();
@@ -355,7 +355,7 @@ mod real_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_real_time_vec();
+            let mut vector = a.clone().to_real_time_vec_par();
             vector.set_delta(delta);
             vector.exp();
             vector.ln();
@@ -372,7 +372,7 @@ mod real_test {
             let base = create_data_even_in_range(201511213, iteration, 1, 2, 0.1, 20.0);
             let base = base[0];
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_real_time_vec();
+            let mut vector = a.clone().to_real_time_vec_par();
             vector.set_delta(delta);
             vector.expf(base);
             vector.log(base);
@@ -397,7 +397,7 @@ mod real_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_real_time_vec();
+            let mut vector = a.clone().to_real_time_vec_par();
             let expected = real_vector_diff(&a);
             vector.set_delta(delta);
             vector.diff_with_start();
@@ -422,7 +422,7 @@ mod real_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_real_time_vec();
+            let mut vector = a.clone().to_real_time_vec_par();
             let expected = real_vector_cum_sum(&a);
             vector.set_delta(delta);
             vector.cum_sum();
@@ -437,7 +437,7 @@ mod real_test {
         let a = vec![1.0; RANGE_MULTI_CORE.end];
         let linear_seq = real_vector_cum_sum(&a);
         let delta = 0.1;
-        let mut vector = linear_seq.clone().to_real_time_vec();
+        let mut vector = linear_seq.clone().to_real_time_vec_par();
         vector.set_delta(delta);
         vector.wrap(8.0);
         vector.unwrap(8.0);
@@ -451,7 +451,7 @@ mod real_test {
         let a = vec![-1.0; RANGE_MULTI_CORE.end];
         let linear_seq = real_vector_cum_sum(&a);
         let delta = 0.1;
-        let mut vector = linear_seq.clone().to_real_time_vec();
+        let mut vector = linear_seq.clone().to_real_time_vec_par();
         vector.set_delta(delta);
         vector.wrap(8.0);
         vector.unwrap(8.0);
@@ -465,7 +465,7 @@ mod real_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_real_time_vec();
+            let mut vector = a.clone().to_real_time_vec_par();
             vector.set_delta(delta);
             let sum: f32 = a.iter().fold(0.0, |a, b| a + b);
             let sum_sq: f32 = a.iter().map(|v| v * v).fold(0.0, |a, b| a + b);
@@ -481,7 +481,7 @@ mod real_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_real_time_vec();
+            let mut vector = a.clone().to_real_time_vec_par();
             vector.set_delta(delta);
             let sum: f32 = vector.sum();
             let sum_sq: f32 = vector.sum_sq();
@@ -497,7 +497,7 @@ mod real_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_real_time_vec();
+            let mut vector = a.clone().to_real_time_vec_par();
             vector.set_delta(delta);
             let sum: f64 = a.iter().map(|v| *v as f64).fold(0.0, |a, b| a + b);
             let sum_sq: f64 = a
@@ -517,7 +517,7 @@ mod real_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_real_time_vec();
+            let mut vector = a.clone().to_real_time_vec_par();
             vector.set_delta(delta);
             let sum: f64 = vector.sum_prec();
             let sum_sq: f64 = vector.sum_sq_prec();
@@ -532,7 +532,7 @@ mod real_test {
     fn statistics_prec_test64() {
         parameterized_vector_test(|iteration, range| {
             let a = create_data64(201511210, iteration, range.start, range.end);
-            let vector = a.clone().to_real_time_vec();
+            let vector = a.clone().to_real_time_vec_par();
             let sum: f64 = a.iter().fold(0.0, |a, b| a + b);
             let sum_sq: f64 = a.iter().map(|v| v * v).fold(0.0, |a, b| a + b);
             let rms = (sum_sq / a.len() as f64).sqrt();
@@ -546,7 +546,7 @@ mod real_test {
     fn statistics_prec_vs_sum_prec_test64() {
         parameterized_vector_test(|iteration, range| {
             let a = create_data64(201511210, iteration, range.start, range.end);
-            let vector = a.clone().to_real_time_vec();
+            let vector = a.clone().to_real_time_vec_par();
             let sum: f64 = vector.sum_prec();
             let sum_sq: f64 = vector.sum_sq_prec();
             let rms = (sum_sq / a.len() as f64).sqrt();
@@ -559,20 +559,20 @@ mod real_test {
     #[test]
     fn split_merge_test32() {
         let a = create_data(201511210, 0, 1000, 1000);
-        let vector = a.clone().to_real_time_vec();
+        let vector = a.clone().to_real_time_vec_par();
         let empty: Vec<f32> = Vec::new();
         let mut split = [
-            Box::new(empty.clone().to_real_time_vec()),
-            Box::new(empty.clone().to_real_time_vec()),
-            Box::new(empty.clone().to_real_time_vec()),
-            Box::new(empty.clone().to_real_time_vec()),
-            Box::new(empty.clone().to_real_time_vec()),
+            Box::new(empty.clone().to_real_time_vec_par()),
+            Box::new(empty.clone().to_real_time_vec_par()),
+            Box::new(empty.clone().to_real_time_vec_par()),
+            Box::new(empty.clone().to_real_time_vec_par()),
+            Box::new(empty.clone().to_real_time_vec_par()),
         ];
         {
             let mut dest: Vec<_> = split.iter_mut().map(|x| x.as_mut()).collect();
             vector.split_into(&mut dest[..]).unwrap();
         }
-        let mut merge = empty.to_real_time_vec();
+        let mut merge = empty.to_real_time_vec_par();
         let src: Vec<_> = split.iter().map(|x| x.as_ref()).collect();
         merge.merge(&src[..]).unwrap();
         assert_vector_eq(&a, &merge[..]);
@@ -582,7 +582,7 @@ mod real_test {
     fn real_fft_test32() {
         let data = create_data(201511210, 0, 1001, 1001);
         let mut buffer = SingleBuffer::new();
-        let time = data.to_real_time_vec();
+        let time = data.to_real_time_vec_par();
         let sym_fft: ComplexFreqVec32 = time.clone().plain_sfft(&mut buffer).unwrap();
         let complex_time = time.clone().to_complex_b(&mut buffer);
         let complex_freq: ComplexFreqVec32 = complex_time.plain_fft(&mut buffer);

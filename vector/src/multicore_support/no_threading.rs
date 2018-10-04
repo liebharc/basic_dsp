@@ -16,6 +16,11 @@ impl MultiCoreSettings {
         MultiCoreSettings
     }
 
+    /// Creates multi core settings so that no thread will be spawned.
+    pub fn single_threaded() -> MultiCoreSettings {
+        MultiCoreSettings
+    }
+
     /// Creates multi core settings. The argument will be ignored
     /// since multi threading is disabled. The method only exists
     /// to stay compatible with the multi-threaded version of this lib.

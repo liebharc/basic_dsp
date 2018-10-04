@@ -7,14 +7,16 @@ Changes:
 
 The default [MultiCoreSettings](https://liebharc.github.io/basic_dsp/basic_dsp_vector/struct.MultiCoreSettings.html) 
 now have a `core_limit` of 1. That's because enabling multi threading should be a conscious decision, 
-e.g. due to the overhead of multi threading. 
+e.g. due to the overhead of multi threading. The conversion functions with the `_par` suffix (e.g. `to_real_time_vec_par`)
+can be used to get the old behaviour. 
 
 Changes:
 
 - Fixed performance issue for small vectors
 - If `core_limit > 1` then at first call to a vector function which utilizes multi threading a small internal performance
 test will be executed to determine reasonable values for how work will be spread among the available threads. Running
-this benchmark will of course slow down this call. The assumption is that this is okay as it only happens once. 
+this benchmark will of course slow down this call (around 200 to 500ms). 
+The assumption is that this is okay as it only happens once. 
 
 ## Version 0.5.5
 It's now decided at runtime which SIMD optimization should be used.

@@ -45,7 +45,7 @@ mod complex_test {
             let scalar = Complex32::new(scalar[0], scalar[1]);
             let expected = complex_add_scalar(&a, scalar);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.to_complex_time_vec();
+            let mut vector = a.to_complex_time_vec_par();
             vector.set_delta(delta);
             vector.offset(scalar);
             assert_vector_eq(&expected, &vector[..]);
@@ -72,7 +72,7 @@ mod complex_test {
             let scalar = Complex32::new(scalar[0], scalar[1]);
             let expected = complex_multiply_scalar(&a, scalar);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.to_complex_time_vec();
+            let mut vector = a.to_complex_time_vec_par();
             vector.set_delta(delta);
             vector.scale(scalar);
             assert_vector_eq(&expected, &vector[..]);
@@ -97,7 +97,7 @@ mod complex_test {
             let a = create_data_even(2015111410, iteration, range.start, range.end);
             let expected = complex_abs(&a);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.to_complex_time_vec();
+            let mut vector = a.to_complex_time_vec_par();
             vector.set_delta(delta);
             let vector = vector.magnitude();
             assert_vector_eq(&expected, &vector[..]);
@@ -122,7 +122,7 @@ mod complex_test {
             let a = create_data_even(2015111410, iteration, range.start, range.end);
             let expected = complex_abs_sq(&a);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.to_complex_time_vec();
+            let mut vector = a.to_complex_time_vec_par();
             vector.set_delta(delta);
             let vector = vector.magnitude_squared();
             assert_vector_eq(&expected, &vector[..]);
@@ -149,9 +149,9 @@ mod complex_test {
             let b = create_data_with_len(201511172, iteration, a.len());
             let expected = complex_vector_mul(&a, &b);
             let delta = create_delta(3561159, iteration);
-            let mut vector1 = a.to_complex_time_vec();
+            let mut vector1 = a.to_complex_time_vec_par();
             vector1.set_delta(delta);
-            let mut vector2 = b.to_complex_time_vec();
+            let mut vector2 = b.to_complex_time_vec_par();
             vector2.set_delta(delta);
             vector1.mul(&vector2).unwrap();
             assert_vector_eq(&expected, &vector1[..]);
@@ -177,9 +177,9 @@ mod complex_test {
         let b = create_data_with_len(201511172, 1, 10);
         let expected = complex_vector_mul_mod(&a, &b);
         let delta = create_delta(3561159, 1);
-        let mut vector1 = a.to_complex_time_vec();
+        let mut vector1 = a.to_complex_time_vec_par();
         vector1.set_delta(delta);
-        let mut vector2 = b.to_complex_time_vec();
+        let mut vector2 = b.to_complex_time_vec_par();
         vector2.set_delta(delta);
         vector1.mul_smaller(&vector2).unwrap();
         assert_vector_eq(&expected, &vector1[..]);
@@ -204,9 +204,9 @@ mod complex_test {
         let b = create_data_with_len(201511172, 1, 10);
         let expected = complex_vector_div_mod(&a, &b);
         let delta = create_delta(3561159, 1);
-        let mut vector1 = a.to_complex_time_vec();
+        let mut vector1 = a.to_complex_time_vec_par();
         vector1.set_delta(delta);
-        let mut vector2 = b.to_complex_time_vec();
+        let mut vector2 = b.to_complex_time_vec_par();
         vector2.set_delta(delta);
         vector1.div_smaller(&vector2).unwrap();
         assert_vector_eq(&expected, &vector1[..]);
@@ -223,9 +223,9 @@ mod complex_test {
                 .iter()
                 .fold(Complex32::new(0.0, 0.0), |a, b| a + b);
             let delta = create_delta(3561159, iteration);
-            let mut vector1 = a.to_complex_time_vec();
+            let mut vector1 = a.to_complex_time_vec_par();
             vector1.set_delta(delta);
-            let mut vector2 = b.to_complex_time_vec();
+            let mut vector2 = b.to_complex_time_vec_par();
             vector2.set_delta(delta);
             let result = vector1.dot_product(&vector2).unwrap();
             assert_in_tolerance(expected.re, result.re, 0.5);
@@ -247,9 +247,9 @@ mod complex_test {
                 },
             );
             let delta = create_delta(3561159, iteration);
-            let mut vector1 = a.to_complex_time_vec();
+            let mut vector1 = a.to_complex_time_vec_par();
             vector1.set_delta(delta);
-            let mut vector2 = b.to_complex_time_vec();
+            let mut vector2 = b.to_complex_time_vec_par();
             vector2.set_delta(delta);
             let result = vector1.dot_product_prec(&vector2).unwrap();
             assert_in_tolerance(expected.re as f32, result.re, 1e-2);
@@ -275,9 +275,9 @@ mod complex_test {
             let b = create_data_with_len(201511172, iteration, a.len());
             let expected = complex_vector_div(&a, &b);
             let delta = create_delta(3561159, iteration);
-            let mut vector1 = a.to_complex_time_vec();
+            let mut vector1 = a.to_complex_time_vec_par();
             vector1.set_delta(delta);
-            let mut vector2 = b.to_complex_time_vec();
+            let mut vector2 = b.to_complex_time_vec_par();
             vector2.set_delta(delta);
             vector1.div(&vector2).unwrap();
             assert_vector_eq(&expected, &vector1[..]);
@@ -291,16 +291,16 @@ mod complex_test {
         parameterized_vector_test(|iteration, range| {
             let real = create_data(201511191, iteration, range.start, range.end);
             let imag = create_data_with_len(201511192, iteration, real.len());
-            let realvec = real.clone().to_real_time_vec();
-            let imagvec = imag.clone().to_real_time_vec();
+            let realvec = real.clone().to_real_time_vec_par();
+            let imagvec = imag.clone().to_real_time_vec_par();
             let delta = create_delta(3561159, iteration);
-            let mut complex = vec![0.0; 0].to_complex_time_vec();
+            let mut complex = vec![0.0; 0].to_complex_time_vec_par();
             complex.set_delta(delta);
             complex.set_real_imag(&realvec, &imagvec).unwrap();
             assert_eq!(complex.len(), real.len() + imag.len());
             assert_eq!(complex.is_complex(), true);
-            let mut real_vector = Vec::new().to_real_time_vec();
-            let mut imag_vector = Vec::new().to_real_time_vec();
+            let mut real_vector = Vec::new().to_real_time_vec_par();
+            let mut imag_vector = Vec::new().to_real_time_vec_par();
             assert_eq!(real_vector.is_complex(), false);
             complex.get_real(&mut real_vector);
             assert_eq!(real_vector.len(), real.len());
@@ -325,16 +325,16 @@ mod complex_test {
                 create_data_even_in_range(201511191, iteration, range.start, range.end, 0.1, 10.0);
             let phase = create_data_in_range_with_len(201511204, iteration, abs.len(), -1.57, 1.57);
 
-            let absvec = abs.clone().to_real_time_vec();
-            let phasevec = phase.clone().to_real_time_vec();
+            let absvec = abs.clone().to_real_time_vec_par();
+            let phasevec = phase.clone().to_real_time_vec_par();
             let delta = create_delta(3561159, iteration);
-            let mut complex = vec![0.0; 0].to_complex_time_vec();
+            let mut complex = vec![0.0; 0].to_complex_time_vec_par();
             complex.set_delta(delta);
             complex.set_mag_phase(&absvec, &phasevec).unwrap();
             assert_eq!(complex.len(), abs.len() + phase.len());
             assert_eq!(complex.is_complex(), true);
-            let mut abs_vector = Vec::new().to_real_time_vec();
-            let mut phase_vector = Vec::new().to_real_time_vec();
+            let mut abs_vector = Vec::new().to_real_time_vec_par();
+            let mut phase_vector = Vec::new().to_real_time_vec_par();
             assert_eq!(abs_vector.is_complex(), false);
             complex.get_magnitude(&mut abs_vector);
             assert_eq!(abs_vector.len(), abs.len());
@@ -368,7 +368,7 @@ mod complex_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data_even(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_complex_time_vec();
+            let mut vector = a.clone().to_complex_time_vec_par();
             vector.set_delta(delta);
             let expected = complex_vector_diff(&a);
             vector.diff_with_start();
@@ -394,7 +394,7 @@ mod complex_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data_even(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_complex_time_vec();
+            let mut vector = a.clone().to_complex_time_vec_par();
             vector.set_delta(delta);
             let expected = complex_vector_cum_sum(&a);
             vector.cum_sum();
@@ -427,7 +427,7 @@ mod complex_test {
             let a = create_data_with_len(201511210, iteration, 10000);
             let args = create_data_with_len(201511210, iteration, 2);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_complex_time_vec();
+            let mut vector = a.clone().to_complex_time_vec_par();
             vector.set_delta(delta);
             let expected = complex_exponential(&a, args[0], args[1], delta);
             vector.multiply_complex_exponential(args[0], args[1]);
@@ -443,7 +443,7 @@ mod complex_test {
             let a = create_data_even(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
             let c = to_complex(&a);
-            let mut vector = a.clone().to_complex_time_vec();
+            let mut vector = a.clone().to_complex_time_vec_par();
             vector.set_delta(delta);
             let sum = c.iter().fold(Complex32::new(0.0, 0.0), |a, b| a + b);
             let sum_sq = c
@@ -462,7 +462,7 @@ mod complex_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data_even(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_complex_time_vec();
+            let mut vector = a.clone().to_complex_time_vec_par();
             vector.set_delta(delta);
             let sum = vector.sum();
             let sum_sq = vector.sum_sq();
@@ -479,7 +479,7 @@ mod complex_test {
             let a = create_data_even(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
             let c = to_complex(&a);
-            let mut vector = a.clone().to_complex_time_vec();
+            let mut vector = a.clone().to_complex_time_vec_par();
             vector.set_delta(delta);
             let sum = c.iter().fold(Complex64::new(0.0, 0.0), |a, b| {
                 let a = Complex64::new(a.re as f64, a.im as f64);
@@ -514,7 +514,7 @@ mod complex_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data_even(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_complex_time_vec();
+            let mut vector = a.clone().to_complex_time_vec_par();
             vector.set_delta(delta);
             let sum = vector.sum_prec();
             let sum_sq = vector.sum_sq_prec();
@@ -536,20 +536,20 @@ mod complex_test {
     #[test]
     fn split_merge_test32() {
         let a = create_data(201511210, 0, 1000, 1000);
-        let vector = a.clone().to_complex_time_vec();
+        let vector = a.clone().to_complex_time_vec_par();
         let empty: Vec<f32> = Vec::new();
         let mut split = [
-            Box::new(empty.clone().to_complex_time_vec()),
-            Box::new(empty.clone().to_complex_time_vec()),
-            Box::new(empty.clone().to_complex_time_vec()),
-            Box::new(empty.clone().to_complex_time_vec()),
-            Box::new(empty.clone().to_complex_time_vec()),
+            Box::new(empty.clone().to_complex_time_vec_par()),
+            Box::new(empty.clone().to_complex_time_vec_par()),
+            Box::new(empty.clone().to_complex_time_vec_par()),
+            Box::new(empty.clone().to_complex_time_vec_par()),
+            Box::new(empty.clone().to_complex_time_vec_par()),
         ];
         {
             let mut dest: Vec<_> = split.iter_mut().map(|x| x.as_mut()).collect();
             vector.split_into(&mut dest[..]).unwrap();
         }
-        let mut merge = empty.to_complex_time_vec();
+        let mut merge = empty.to_complex_time_vec_par();
         let src: Vec<_> = split.iter().map(|x| x.as_ref()).collect();
         merge.merge(&src[..]).unwrap();
         assert_vector_eq(&a, &merge[..]);
@@ -558,11 +558,11 @@ mod complex_test {
     #[test]
     fn split_test32() {
         let a = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-        let vector = a.to_complex_time_vec();
+        let vector = a.to_complex_time_vec_par();
         let empty: Vec<f32> = Vec::new();
         let mut split = [
-            &mut empty.clone().to_complex_time_vec(),
-            &mut empty.clone().to_complex_time_vec(),
+            &mut empty.clone().to_complex_time_vec_par(),
+            &mut empty.clone().to_complex_time_vec_par(),
         ];
         vector.split_into(&mut split).unwrap();
         assert_vector_eq(&[1.0, 2.0, 5.0, 6.0], &split[0][..]);
@@ -574,12 +574,12 @@ mod complex_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data_even(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_complex_time_vec();
+            let mut vector = a.clone().to_complex_time_vec_par();
             vector.set_delta(delta);
-            let mut real = Vec::new().to_real_time_vec();
-            let mut imag = Vec::new().to_real_time_vec();
+            let mut real = Vec::new().to_real_time_vec_par();
+            let mut imag = Vec::new().to_real_time_vec_par();
             vector.get_real_imag(&mut real, &mut imag);
-            let mut vector2 = vec![0.0; 0].to_complex_time_vec();
+            let mut vector2 = vec![0.0; 0].to_complex_time_vec_par();
             vector2.set_real_imag(&real, &imag).unwrap();
             assert_vector_eq(&a, &vector2[..]);
         });
@@ -590,12 +590,12 @@ mod complex_test {
         parameterized_vector_test(|iteration, range| {
             let a = create_data_even(201511210, iteration, range.start, range.end);
             let delta = create_delta(3561159, iteration);
-            let mut vector = a.clone().to_complex_time_vec();
+            let mut vector = a.clone().to_complex_time_vec_par();
             vector.set_delta(delta);
-            let mut mag = Vec::new().to_real_time_vec();
-            let mut phase = Vec::new().to_real_time_vec();
-            let mut mag2 = Vec::new().to_real_time_vec();
-            let mut phase2 = Vec::new().to_real_time_vec();
+            let mut mag = Vec::new().to_real_time_vec_par();
+            let mut phase = Vec::new().to_real_time_vec_par();
+            let mut mag2 = Vec::new().to_real_time_vec_par();
+            let mut phase2 = Vec::new().to_real_time_vec_par();
             vector.get_mag_phase(&mut mag, &mut phase);
             vector.get_magnitude(&mut mag2);
             vector.get_phase(&mut phase2);
@@ -603,7 +603,7 @@ mod complex_test {
             assert_vector_eq_with_reason(&mag[..], &mag2[..], "Magnitude differs");
             assert_vector_eq_with_reason(&phase[..], &phase2[..], "Phase differs");
 
-            let mut vector2 = vec![0.0; 0].to_complex_time_vec();
+            let mut vector2 = vec![0.0; 0].to_complex_time_vec_par();
             vector2.set_mag_phase(&mag, &phase).unwrap();
             assert_vector_eq_with_reason_and_tolerance(&a, &vector2[..], 1e-4, "Merge differs");
         });

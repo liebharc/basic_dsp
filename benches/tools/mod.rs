@@ -42,11 +42,7 @@ impl VectorBox<RealTimeVec<Vec<f32>, f32>, f32> {
         let size = translate_size(size);
         let data = vec![10.0; size];
         VectorBox {
-            vector: {
-                let mut vec = data.to_real_time_vec();
-                vec.set_multicore_settings(MultiCoreSettings::new(4));
-                Box::into_raw(Box::new(vec))
-            },
+            vector:  Box::into_raw(Box::new(data.to_real_time_vec_par())),
             buffer: SingleBuffer::with_capacity(size),
             size: size,
         }
@@ -86,11 +82,7 @@ impl VectorBox<GenDspVec<Vec<f32>, f32>, f32> {
     pub fn with_size(size: usize) -> VectorBox<GenDspVec<Vec<f32>, f32>, f32> {
         let data = vec![10.0; size];
         VectorBox {
-            vector: {
-                let mut vec = data.to_gen_dsp_vec(true, DataDomain::Time);
-                vec.set_multicore_settings(MultiCoreSettings::new(4));
-                Box::into_raw(Box::new(vec))
-            },
+            vector: Box::into_raw(Box::new(data.to_gen_dsp_vec_par(true, DataDomain::Time))),
             buffer: SingleBuffer::with_capacity(size),
             size: size,
         }
@@ -102,11 +94,7 @@ impl VectorBox<ComplexTimeVec<Vec<f32>, f32>, f32> {
         let size = translate_size(size);
         let data = vec![10.0; size];
         VectorBox {
-            vector: {
-                let mut vec = data.to_complex_time_vec();
-                vec.set_multicore_settings(MultiCoreSettings::new(4));
-                Box::into_raw(Box::new(vec))
-            },
+            vector: Box::into_raw(Box::new(data.to_complex_time_vec_par())),
             buffer: SingleBuffer::with_capacity(size),
             size: size,
         }
@@ -118,11 +106,7 @@ impl VectorBox<RealTimeVec<Vec<f64>, f64>, f64> {
         let size = translate_size(size);
         let data = vec![10.0; size];
         VectorBox {
-            vector: {
-                let mut vec = data.to_real_time_vec();
-                vec.set_multicore_settings(MultiCoreSettings::new(4));
-                Box::into_raw(Box::new(vec))
-            },
+            vector: Box::into_raw(Box::new(data.to_real_time_vec_par())),
             buffer: SingleBuffer::with_capacity(size),
             size: size,
         }
