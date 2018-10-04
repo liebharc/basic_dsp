@@ -65,6 +65,8 @@ extern crate lazy_static;
 extern crate num_cpus;
 #[cfg(feature = "std")]
 extern crate time;
+#[cfg(feature = "std")]
+extern crate linreg;
 extern crate num_complex;
 extern crate num_traits;
 #[cfg(any(feature = "doc", feature = "use_gpu"))]

@@ -8,7 +8,9 @@ use std::ops::Range;
 use std::slice::{Chunks, ChunksMut};
 use std::sync::{Arc, Mutex};
 use time;
+use linreg::linear_regression;
 use num_cpus;
+use num_traits::FromPrimitive;
 
 /// Holds parameters which specify how multiple cores are used
 /// to execute an operation.
@@ -42,6 +44,8 @@ struct Calibration {
     med_multi_core_threshold: usize,
     large_dual_core_threshold: usize,
     large_multi_core_threshold: usize,
+    duration_cal_routine: f64,
+    cal_routine_result_code: u32
 }
 
 /// Limits a value between min and max
@@ -57,80 +61,122 @@ fn limit(value: usize, min: usize, max: usize) -> usize {
     }
 }
 
-fn average(values: Vec<usize>) -> usize {
-    let mut sum = 0;
-    for v in values.iter() {
-        sum += v
+fn measure(number_of_cores: usize, data: &mut Vec<f64>) -> Result<f64, u32> {
+    let start = time::precise_time_ns();
+    Chunk::execute_on_chunks(
+        &mut data[..],
+        1,
+        (),
+        number_of_cores,
+        move |array, _arg| {
+            for v in array {
+                *v = v.sin();
+            }
+        });
+    let result = (time::precise_time_ns() - start) as f64;
+    if result < 1000.0 {
+        Err(1) // Likely the compiler optimized our benchmark code away so we have to work with defaults
+    } else {
+        Ok(result)
     }
+}
 
-    sum / values.len()
+fn intersection(m1: f64, b1: f64, m2: f64, b2: f64) -> Option<usize> {
+    usize::from_f64(((b2 - b1) / (m1 - m2)).round().abs())
 }
 
 /// Runs a couple of benchmarks to obtain the multi core thresholds.
-/// Right now only code constants are returned.
-fn calibrate(number_of_cores: usize) -> Calibration {
-    let iterations = 5;
-    let mut small: Vec<f64> = vec!(1.0; 100);
-    let mut result = Vec::with_capacity(iterations);
-    for _ in 0..iterations {
-        let start = time::precise_time_ns();
-        Chunk::execute_on_chunks(
-            &mut small[..],
-            1,
-            (),
-            number_of_cores,
-            move |array, _arg| {
-                for num in array {
-                    *num = 1.0;
-                }
-            });
-        result.push((time::precise_time_ns() - start) as usize);
+///
+/// The algorithm assumes that there is a linear relation between the number of elements
+/// in a vector and the execution speed of the loops (which make most the basic_dsp code).
+/// It then estimates the linear relation using linear regression for different number of cores
+/// and finally calculations the intersections between those lines.
+///
+/// It also adds some less reasonable values to the calculation so that if in doubt no threads
+/// are spawned.
+fn attempt_calibrate(number_of_cores: usize) -> Result<Calibration, u32> {
+    if number_of_cores == 1 {
+        return Err(2); // In this case the calibration results don't matter
     }
-    let multithreading_overhead = average(result);
-    let vec_size = 50000;
-    let mut large: Vec<f64> = vec!(1.0; vec_size);
 
-    let mut result = Vec::with_capacity(iterations);
+    let mut size = 10000;
+    let step = 5000;
+    let iterations = 10;
+
+    let mut sizes = Vec::with_capacity(iterations);
+    let mut ono_thread = Vec::with_capacity(iterations);
+    let mut two_threads = Vec::with_capacity(iterations);
+    let mut max_threads = Vec::with_capacity(iterations);
+
     for _ in 0..iterations {
-        let start = time::precise_time_ns();
-        for v in &mut large[..] {
-            *v = v.sin();
+        sizes.push(size as f64);
+        let mut data = vec!(1.0; size);
+        ono_thread.push(try!(measure(1, &mut data)));
+        let two_threads_result = try!(measure(2, &mut data));
+        two_threads.push(two_threads_result);
+        if number_of_cores > 2 {
+            max_threads.push(try!(measure(number_of_cores, &mut data)));
         }
-        result.push((time::precise_time_ns() - start) as usize);
-    }
-
-    let medium_operation = average(result);
-
-    let mut result = Vec::with_capacity(iterations);
-    for _ in 0..iterations {
-        let start = time::precise_time_ns();
-        for v in &mut large[..] {
-            *v = v.ln();
+        else {
+            max_threads.push(two_threads_result);
         }
-        result.push((time::precise_time_ns() - start) as usize);
+
+        size += step;
     }
-    let large_operation = average(result);
 
-    // assume linear relation
-    let medium_time_per_10000_iterations = 10000 * medium_operation / vec_size;
-    let large_time_per_10000_iterations = 10000 * large_operation / vec_size;
+    let ono_thread = linear_regression::<f64, f64, f64>(&sizes, &ono_thread);
+    let two_threads = linear_regression::<f64, f64, f64>(&sizes, &two_threads);
+    let max_threads = linear_regression::<f64, f64, f64>(&sizes, &max_threads);
+    if ono_thread.is_none() || two_threads.is_none() || max_threads.is_none() {
+        return Err(3) // If curve fitting fails then work with defaults
+    }
 
-    // Solve the following inequality (which is still just a guess):
-    //  number_of_elements * time_per_element / number_of_cores >  multithreading_overhead
-    // Or in words: The expected amount of work for each core must be at least twice as large
-    // as the time it takes to start the threads in order to be beneficial.
-    // That should give a rough guess at which point the multi threading becomes beneficial.
+    let (t1_m, _) = ono_thread.unwrap();
+    let (t2_m, t2_b) = two_threads.unwrap();
+    let (tmax_m, tmax_b) = max_threads.unwrap();
+    let t1_b= 0.0; // assume linear relation
 
-    let dual_core = 2;
-    let med_dual_core_threshold = limit(20000 * multithreading_overhead * dual_core / medium_time_per_10000_iterations, 5000, 30000);
-    let med_multi_core_threshold = limit(20000 * multithreading_overhead * number_of_cores / medium_time_per_10000_iterations, med_dual_core_threshold + 1, 200000);
-    let large_dual_core_threshold = limit(20000 * multithreading_overhead * dual_core / large_time_per_10000_iterations, 5000, 30000);
-    let large_multi_core_threshold = limit(20000 * multithreading_overhead * number_of_cores / large_time_per_10000_iterations, large_dual_core_threshold + 1, 200000);
-    Calibration {
+    let med_dual_core_threshold_res = intersection(t1_m, t1_b, t2_m, t2_b);
+    let med_multi_core_threshold_res = intersection(t1_m, t1_b, tmax_m, tmax_b);
+    if med_dual_core_threshold_res.is_none() || med_multi_core_threshold_res.is_none() {
+        return Err(4)
+    }
+
+    let dual_core_min = 5000;
+    let dual_core_max = 100000;
+    let multi_core_max = 200000;
+    
+    // The multiplication factor is the less well reasoned part in this equiation. It should only help
+    // to avoid that threads are spawned too aggressively.
+    let med_dual_core_threshold = limit(2 * med_dual_core_threshold_res.unwrap(), dual_core_min, dual_core_max);
+    let med_multi_core_threshold = limit(2 * med_multi_core_threshold_res.unwrap(), med_dual_core_threshold + 1, multi_core_max);
+    let large_dual_core_threshold = limit( med_dual_core_threshold_res.unwrap(), dual_core_min, dual_core_max);
+    let large_multi_core_threshold = limit(med_multi_core_threshold_res.unwrap(), large_dual_core_threshold + 1, multi_core_max);
+    Ok(Calibration {
         med_dual_core_threshold: med_dual_core_threshold,
         med_multi_core_threshold: med_multi_core_threshold,
         large_dual_core_threshold: large_dual_core_threshold,
         large_multi_core_threshold: large_multi_core_threshold,
+        duration_cal_routine: 0.0, // Will be set by the calling function
+        cal_routine_result_code: 0 // Success
+    })
+}
+
+fn calibrate(number_of_cores: usize) -> Calibration {
+    let start = time::precise_time_s();
+    match attempt_calibrate(number_of_cores) {
+        Ok(mut calibration) => {
+            calibration.duration_cal_routine = time::precise_time_s() - start;
+            calibration
+        },
+        Err(err_code) => Calibration {
+            med_dual_core_threshold: 50000,
+            med_multi_core_threshold: 100000,
+            large_dual_core_threshold: 20000,
+            large_multi_core_threshold: 30000,
+            duration_cal_routine: time::precise_time_s() - start,
+            cal_routine_result_code: err_code
+        }
     }
 }
 
