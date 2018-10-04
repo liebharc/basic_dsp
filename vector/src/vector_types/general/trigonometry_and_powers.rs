@@ -192,7 +192,7 @@ where
 }
 
 const TRIG_COMPLEXITY: Complexity = Complexity::Medium;
-const DEF_POW_COMPLEXITY: Complexity = Complexity::Large;
+const DEF_POW_COMPLEXITY: Complexity = Complexity::Medium;
 
 impl<S, T, N, D> TrigOps for DspVec<S, T, N, D>
 where
