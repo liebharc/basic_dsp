@@ -7,7 +7,7 @@ Changes:
 
 The default [MultiCoreSettings](https://liebharc.github.io/basic_dsp/basic_dsp_vector/struct.MultiCoreSettings.html) 
 now have a `core_limit` of 1. That's because enabling multi threading should be a conscious decision, 
-e.g. due to the overhead of multi threading and [downclocking](https://lemire.me/blog/2018/09/07/avx-512-when-and-how-to-use-these-new-instructions/). 
+e.g. due to the overhead of multi threading. 
 
 Changes:
 
