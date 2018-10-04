@@ -272,3 +272,8 @@ impl Chunk {
         chunk_size
     }
 }
+
+/// Prints debug information about the calibration. Returns a constant as threading is deactivated.
+pub fn print_calibration() -> String {
+    "No threading".to_string()
+}

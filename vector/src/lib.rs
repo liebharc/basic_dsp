@@ -79,6 +79,7 @@ mod multicore_support;
 mod vector_types;
 pub mod window_functions;
 pub use multicore_support::MultiCoreSettings;
+pub use multicore_support::print_calibration;
 pub use vector_types::*;
 mod gpu_support;
 use std::mem;

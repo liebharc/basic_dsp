@@ -138,6 +138,15 @@ lazy_static! {
     static ref CALIBRATION: Calibration = calibrate(num_cpus::get());
 }
 
+/// Prints debug information about the calibration. The calibration determines when the library
+/// will start to spawn threads. If a calibration hasn't been performed yet
+/// than calling this function will trigger the calibration.
+///
+/// The returned value might change in format and content at any time.
+pub fn print_calibration() -> String {
+    format!("{:?}", *CALIBRATION)
+}
+
 /// Contains logic which helps to perform an operation
 /// in parallel by dividing an array into chunks.
 pub struct Chunk;
