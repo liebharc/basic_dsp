@@ -38,9 +38,18 @@ impl MultiCoreSettings {
 
     /// Creates multi core so that threads will be spawned if this appears to be beneficial.
     pub fn parallel() -> MultiCoreSettings {
-        // Half because we assume hyper threading and that we will keep a core so busy
-        // that hyper threading isn't of any use
-        Self::new(*NUMBER_OF_CORES / 2)
+        if *NUMBER_OF_CORES == 1 {
+            Self::new(1)
+        }
+        else if *NUMBER_OF_CORES == 2 {
+            // If two cores are available then use both of them if multi-threading is requested
+            Self::new(2)
+        }
+        else {
+            // Half because we assume hyper threading and that we will keep a core so busy
+            // that hyper threading isn't of any use
+            Self::new(*NUMBER_OF_CORES / 2)
+        }
     }
 
     /// Creates multi core settings with the given values.
