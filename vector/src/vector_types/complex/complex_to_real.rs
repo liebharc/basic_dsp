@@ -527,16 +527,16 @@ where
             .expect("Target should be real and thus all values for len / 2 should be valid");;
         destination.set_delta(self.delta);
         let temp = &mut destination[0..data_length / 2];
-        let (scalar_left, scalar_right, vectorization_length) = Reg::calc_data_alignment_reqs(temp);
         let array = &self.data.to_slice();
+        let (scalar_left, scalar_right, vectorization_length) = Reg::calc_data_alignment_reqs(array);
         if vectorization_length.is_some() {
             let vectorization_length = vectorization_length.unwrap();
             Chunk::from_src_to_dest(
                 complexity,
                 &self.multicore_settings,
-                &array[2 * scalar_left..2 * vectorization_length],
+                &array[scalar_left..vectorization_length],
                 Reg::LEN,
-                &mut temp[scalar_left..vectorization_length],
+                &mut temp[scalar_left / 2..vectorization_length / 2],
                 Reg::LEN / 2,
                 (),
                 move |array, range, target, _arg| {
@@ -552,13 +552,13 @@ where
         }
 
         let mut i = 0;
-        while i < 2 * scalar_left {
+        while i <  scalar_left {
             let c = Complex::new(array[i], array[i + 1]);
             temp[i / 2] = op(c);
             i += 2;
         }
 
-        let mut i = 2 * scalar_right;
+        let mut i = scalar_right;
         while i < data_length {
             let c = Complex::new(array[i], array[i + 1]);
             temp[i / 2] = op(c);

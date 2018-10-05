@@ -139,9 +139,15 @@ where
         F: FnMut(Complex<T>) -> Complex<T>;
 
     /// Converts an array slice into a slice of SIMD registers.
+    ///
+    /// WARNING: `calc_data_alignment_reqs` must have been used before to ensure that
+    /// data is loaded with the proper memory alignment. Code will panic otherwise.
     fn array_to_regs(array: &[T]) -> &[Self];
 
     /// Converts a mutable array slice into a slice of mutable SIMD registers.
+    ///
+    /// WARNING: `calc_data_alignment_reqs` must have been used before to ensure that
+    /// data is loaded with the proper memory alignment. Code will panic otherwise.
     fn array_to_regs_mut(array: &mut [T]) -> &mut [Self];
 
     /// Loads a SIMD register from an array without any bound checks.
@@ -262,7 +268,7 @@ macro_rules! simd_generic_impl {
                 F: FnMut(Complex<$data_type>) -> Complex<$data_type>,
             {
                 let mut array = self.to_complex_array();
-                for n in &mut array {
+                for n in &mut array[0..Self::LEN / 2] {
                     *n = op(*n);
                 }
                 Self::from_complex_array(array)
@@ -270,6 +276,7 @@ macro_rules! simd_generic_impl {
         
             #[inline]
             fn array_to_regs(array: &[$data_type]) -> &[Self] {
+                assert_eq!(get_alignment_offset(array.as_ptr() as usize, mem::size_of::<Self>()), 0);
                 unsafe {
                     let len = array.len();
                     let reg_len = Self::LEN;
@@ -283,6 +290,7 @@ macro_rules! simd_generic_impl {
         
             #[inline]
             fn array_to_regs_mut(array: &mut [$data_type]) -> &mut [Self] {
+                assert_eq!(get_alignment_offset(array.as_ptr() as usize, mem::size_of::<Self>()), 0);
                 unsafe {
                     let len = array.len();
                     let reg_len = Self::LEN;

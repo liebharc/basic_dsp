@@ -95,10 +95,11 @@ where
                 Reg::LEN,
                 |original, range, target| {
                     let mut result = Reg::splat(T::zero());
-                    let original = Reg::array_to_regs(&original[range]);
+                    let mut i = range.start;
                     let target = Reg::array_to_regs(&target[..]);
-                    for (a, b) in original.iter().zip(target) {
-                        result = result + (*a * *b);
+                    for a in target {
+                        result = result + *a * Reg::load_unchecked(original, i);
+                        i += Reg::LEN;
                     }
 
                     result.sum_real()
@@ -159,12 +160,12 @@ where
                 Reg::LEN,
                 |original, range, target| {
                     let mut result = Reg::splat(T::zero());
-                    let original = Reg::array_to_regs(&original[range]);
+                    let mut i = range.start;
                     let target = Reg::array_to_regs(&target[..]);
-                    for (a, b) in original.iter().zip(target) {
-                        result = result + (a.mul_complex(*b));
+                    for a in target {
+                        result = result + a.mul_complex(Reg::load_unchecked(original, i));
+                        i += Reg::LEN;
                     }
-
                     result.sum_complex()
                 },
             )
@@ -224,9 +225,14 @@ where
                 &array[scalar_left..vectorization_length],
                 Reg::LEN,
                 |original, range, target| {
-                    let original = Reg::array_to_regs(&original[range]);
+                    let mut i = range.start;
                     let target = Reg::array_to_regs(&target[..]);
-                    kahan_sum(original.iter().zip(target).map(|a| *a.0 * *a.1)).sum_real()
+                    kahan_sum(target.iter().map(|a| {
+                        let res = *a *Reg::load_unchecked(original, i);
+                        i += Reg::LEN;
+                        res
+                    }))
+                    .sum_real()
                 },
             )
         } else {
@@ -283,10 +289,14 @@ where
                 &array[scalar_left..vectorization_length],
                 Reg::LEN,
                 |original, range, target| {
-                    let original = Reg::array_to_regs(&original[range]);
+                    let mut i = range.start;
                     let target = Reg::array_to_regs(&target[..]);
-                    kahan_sum(original.iter().zip(target).map(|a| a.0.mul_complex(*a.1)))
-                        .sum_complex()
+                    kahan_sum(target.iter().map(|a| {
+                        let res = a.mul_complex(Reg::load_unchecked(original, i));
+                        i += Reg::LEN;
+                        res
+                    }))
+                    .sum_complex()
                 },
             )
         } else {

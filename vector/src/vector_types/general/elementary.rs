@@ -401,12 +401,12 @@ macro_rules! impl_binary_vector_operation {
                         &other[scalar_left..vectorization_length], Reg::LEN,
                         &mut array[scalar_left..vectorization_length], Reg::LEN, (),
                         |original, range, target, _arg| {
-                            let original =
-                                Reg::array_to_regs(&original[range.start .. range.end]);
+                            let mut i = range.start;
                             let target =
                                 Reg::array_to_regs_mut(&mut target[..]);
-                            for (dst, src) in &mut target.iter_mut().zip(original) {
-                                *dst = dst.$simd_op(*src);
+                            for dst in &mut target[..] {
+                                 *dst = dst.$simd_op(Reg::load_unchecked(original, i));
+                                i += Reg::LEN;
                             }
                     });
                 }
@@ -444,12 +444,12 @@ macro_rules! impl_binary_complex_vector_operation {
                         &other[scalar_left..vectorization_length], Reg::LEN,
                         &mut array[scalar_left..vectorization_length], Reg::LEN, (),
                         |original, range, target, _arg| {
-                            let original =
-                                Reg::array_to_regs(&original[range.start .. range.end]);
+                            let mut i = range.start;
                             let target =
-                                Reg::array_to_regs_mut(&mut target[range.start .. range.end]);
-                            for (dst, src) in target.iter_mut().zip(original) {
-                                *dst = dst.$simd_op(*src);
+                                Reg::array_to_regs_mut(&mut target[..]);
+                            for dst in &mut target[..] {
+                                 *dst = dst.$simd_op(Reg::load_unchecked(original, i));
+                                i += Reg::LEN;
                             }
                     });
                 }

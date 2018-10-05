@@ -89,12 +89,11 @@ where
             2,
             (a, b),
             move |array, range, args| {
-                let two = T::one() + T::one();
                 let (a, b) = args;
                 let mut exponential = Complex::<T>::from_polar(&T::one(), &b)
                     * Complex::<T>::from_polar(
                         &T::one(),
-                        &(a * T::from(range.start).unwrap() / two),
+                        &(a * T::from(range.start / 2).unwrap()),
                     );
                 let increment = Complex::<T>::from_polar(&T::one(), &a);
                 let array = array_to_complex_mut(array);
