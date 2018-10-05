@@ -104,6 +104,24 @@ fn measure(number_of_cores: usize, data: &mut Vec<f64>) -> Result<f64, u32> {
     }
 }
 
+/// Fits data to the equation `y = m * x`
+fn proportional_regression(x: &[f64], y: &[f64]) -> Option<f64> {
+    assert!(x.len() == y.len());
+    let mut sum = 0.0;
+    for (x, y) in x.iter().zip(y) {
+        sum += *y / *x;
+    }
+
+    let result = sum / x.len() as f64;
+    if result.is_nan() || result.is_infinite() {
+        None
+    }
+    else {
+        Some(result)
+    }
+}
+
+/// Calculates the intersection of two lines `m1 * x + b1 = m2 * x + b2`
 fn intersection(m1: f64, b1: f64, m2: f64, b2: f64) -> Option<usize> {
     usize::from_f64(((b2 - b1) / (m1 - m2)).round().abs())
 }
@@ -147,17 +165,17 @@ fn attempt_calibrate(number_of_cores: usize) -> Result<Calibration, u32> {
         size += step;
     }
 
-    let ono_thread = linear_regression::<f64, f64, f64>(&sizes, &ono_thread);
+    let ono_thread = proportional_regression(&sizes, &ono_thread);
     let two_threads = linear_regression::<f64, f64, f64>(&sizes, &two_threads);
     let max_threads = linear_regression::<f64, f64, f64>(&sizes, &max_threads);
-    if ono_thread.is_none() || two_threads.is_none() || max_threads.is_none() {
+    if two_threads.is_none() || max_threads.is_none() {
         return Err(3) // If curve fitting fails then work with defaults
     }
 
-    let (t1_m, _) = ono_thread.unwrap();
+    let t1_m = ono_thread.unwrap();
+    let t1_b= 0.0; // due to asssumed proportional relation
     let (t2_m, t2_b) = two_threads.unwrap();
     let (tmax_m, tmax_b) = max_threads.unwrap();
-    let t1_b= 0.0; // assume linear relation
 
     let med_dual_core_threshold_res = intersection(t1_m, t1_b, t2_m, t2_b);
     let med_multi_core_threshold_res = intersection(t1_m, t1_b, tmax_m, tmax_b);
