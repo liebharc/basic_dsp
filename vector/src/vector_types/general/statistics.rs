@@ -440,7 +440,8 @@ where
         let array = self.data.to_slice();
         let (scalar_left, scalar_right, vectorization_length) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let mut sum = if vectorization_length > 0 {
+        let mut sum = if vectorization_length.is_some() {
+            let vectorization_length = vectorization_length.unwrap();
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
                 &self.multicore_settings,
@@ -477,7 +478,8 @@ where
         let array = self.data.to_slice();
         let (scalar_left, scalar_right, vectorization_length) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let mut sum = if vectorization_length > 0 {
+        let mut sum = if vectorization_length.is_some() {
+            let vectorization_length = vectorization_length.unwrap();
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
                 &self.multicore_settings,
@@ -514,7 +516,8 @@ where
         let array = self.data.to_slice();
         let (scalar_left, scalar_right, vectorization_length) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let mut sum = if vectorization_length > 0 {
+        let mut sum = if vectorization_length.is_some() {
+            let vectorization_length = vectorization_length.unwrap();
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
                 &self.multicore_settings,
@@ -551,7 +554,8 @@ where
         let array = self.data.to_slice();
         let (scalar_left, scalar_right, vectorization_length) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let mut sum = if vectorization_length > 0 {
+        let mut sum = if vectorization_length.is_some() {
+            let vectorization_length = vectorization_length.unwrap();
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
                 &self.multicore_settings,

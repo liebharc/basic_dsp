@@ -17,6 +17,8 @@ Changes:
 test will be executed to determine reasonable values for how work will be spread among the available threads. Running
 this benchmark will of course slow down this call (around 200 to 500ms). 
 The assumption is that this is okay as it only happens once. 
+- Only if `use_sse` or `use_avx` is used: Fixed index out of bounds exceptions in if the input vector is smaller than 
+the SIMD register length.
 
 ## Version 0.5.5
 It's now decided at runtime which SIMD optimization should be used.

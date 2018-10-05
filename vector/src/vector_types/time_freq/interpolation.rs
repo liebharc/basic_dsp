@@ -253,44 +253,47 @@ where
 
             let (scalar_left, _, vectorization_length) =
                 Reg::calc_data_alignment_reqs(&data[0..data_len]);
-            let simd = Reg::array_to_regs(&data[scalar_left..vectorization_length]);
-            // Length of a SIMD reg relative to the length of type T
-            // which is 1 for real numbers or 2 for complex numbers
-            let simd_len_in_t = Reg::LEN / step;
-            Chunk::execute_with_range(
-                Complexity::Large,
-                &self.multicore_settings,
-                &mut dest[scalar_len..len - scalar_len],
-                1,
-                simd,
-                move |dest_range, range, simd| {
-                    let mut i = range.start + scalar_len;
-                    for num in dest_range {
-                        let rounded = (i + interpolation_factor - 1) / interpolation_factor;
-                        let end = rounded + conv_len;
-                        let simd_end = (end + simd_len_in_t - 1) / simd_len_in_t;
-                        let simd_shift = end % simd_len_in_t;
-                        let factor_shift = i % interpolation_factor;
-                        // The reasoning for the next match is analog to the explanation in the
-                        // create_shifted_copies function.
-                        // We need the inverse of the mod unless we start with zero
-                        let factor_shift = match factor_shift {
-                            0 => 0,
-                            x => interpolation_factor - x,
-                        };
-                        let selection = factor_shift * simd_len_in_t + simd_shift;
-                        let shifted = &shifts[selection];
-                        let mut sum = Reg::splat(T::zero());
-                        let simd_iter = simd[simd_end - shifted.len()..simd_end].iter();
-                        let iteration = simd_iter.zip(shifted.iter());
-                        for (this, other) in iteration {
-                            sum = sum + simd_mul(*this, *other);
+            if vectorization_length.is_some() {
+                let vectorization_length = vectorization_length.unwrap();
+                let simd = Reg::array_to_regs(&data[scalar_left..vectorization_length]);
+                // Length of a SIMD reg relative to the length of type T
+                // which is 1 for real numbers or 2 for complex numbers
+                let simd_len_in_t = Reg::LEN / step;
+                Chunk::execute_with_range(
+                    Complexity::Large,
+                    &self.multicore_settings,
+                    &mut dest[scalar_len..len - scalar_len],
+                    1,
+                    simd,
+                    move |dest_range, range, simd| {
+                        let mut i = range.start + scalar_len;
+                        for num in dest_range {
+                            let rounded = (i + interpolation_factor - 1) / interpolation_factor;
+                            let end = rounded + conv_len;
+                            let simd_end = (end + simd_len_in_t - 1) / simd_len_in_t;
+                            let simd_shift = end % simd_len_in_t;
+                            let factor_shift = i % interpolation_factor;
+                            // The reasoning for the next match is analog to the explanation in the
+                            // create_shifted_copies function.
+                            // We need the inverse of the mod unless we start with zero
+                            let factor_shift = match factor_shift {
+                                0 => 0,
+                                x => interpolation_factor - x,
+                            };
+                            let selection = factor_shift * simd_len_in_t + simd_shift;
+                            let shifted = &shifts[selection];
+                            let mut sum = Reg::splat(T::zero());
+                            let simd_iter = simd[simd_end - shifted.len()..simd_end].iter();
+                            let iteration = simd_iter.zip(shifted.iter());
+                            for (this, other) in iteration {
+                                sum = sum + simd_mul(*this, *other);
+                            }
+                            (*num) = simd_sum(sum);
+                            i += 1;
                         }
-                        (*num) = simd_sum(sum);
-                        i += 1;
-                    }
-                },
-            );
+                    },
+                );
+            }
 
             i = len - scalar_len;
             {

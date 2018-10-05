@@ -84,7 +84,8 @@ where
         let (scalar_left, scalar_right, vectorization_length) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
-        let chunks = if vectorization_length > 0 {
+        let chunks = if vectorization_length.is_some() {
+            let vectorization_length = vectorization_length.unwrap();
             Chunk::get_a_fold_b(
                 Complexity::Small,
                 &self.multicore_settings,
@@ -147,7 +148,8 @@ where
         let (scalar_left, scalar_right, vectorization_length) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
-        let chunks = if vectorization_length > 0 {
+        let chunks = if vectorization_length.is_some() {
+            let vectorization_length = vectorization_length.unwrap();
             Chunk::get_a_fold_b(
                 Complexity::Small,
                 &self.multicore_settings,
@@ -212,7 +214,8 @@ where
         let (scalar_left, scalar_right, vectorization_length) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
-        let chunks = if vectorization_length > 0 {
+        let chunks = if vectorization_length.is_some() {
+            let vectorization_length = vectorization_length.unwrap();
             Chunk::get_a_fold_b(
                 Complexity::Small,
                 &self.multicore_settings,
@@ -270,7 +273,8 @@ where
         let (scalar_left, scalar_right, vectorization_length) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
-        let chunks = if vectorization_length > 0 {
+        let chunks = if vectorization_length.is_some() {
+            let vectorization_length = vectorization_length.unwrap();
             Chunk::get_a_fold_b(
                 Complexity::Small,
                 &self.multicore_settings,

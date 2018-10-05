@@ -113,7 +113,7 @@ where
     /// the process will crash. This method takes a vector an divides it in three ranges:
     /// beginning, center, end. Beginning and end may not be loaded directly as SIMD registers.
     /// Center will contain most of the data.
-    fn calc_data_alignment_reqs(array: &[T]) -> (usize, usize, usize);
+    fn calc_data_alignment_reqs(array: &[T]) -> (usize, usize, Option<usize>);
 
     /// Converts a real valued array which has exactly the size of a SIMD register
     /// into a SIMD register.
@@ -200,6 +200,10 @@ impl<T: Clone + Copy> Clone for Unalign<T> {
     }
 }
 
+fn get_alignment_offset(addr: usize, reg_len: usize) -> usize {
+    addr % reg_len
+}
+
 macro_rules! simd_generic_impl {
     ($data_type:ident, $mod: ident::$reg:ident) => {
         impl Zero for $mod::$reg {
@@ -210,16 +214,18 @@ macro_rules! simd_generic_impl {
         
         impl SimdGeneric<$data_type> for $mod::$reg {
             #[inline]
-            fn calc_data_alignment_reqs(array: &[$data_type]) -> (usize, usize, usize) {
+            fn calc_data_alignment_reqs(array: &[$data_type]) -> (usize, usize, Option<usize>) {
                 let data_length = array.len();
                 let addr = array.as_ptr();
-                let scalar_left = (addr as usize % mem::size_of::<Self>()) / mem::size_of::<f32>();
+                let scalar_left = get_alignment_offset(addr as usize, mem::size_of::<Self>());
+                assert!(scalar_left % mem::size_of::<$data_type>() == 0);
+                let scalar_left = scalar_left / mem::size_of::<$data_type>();
                 if scalar_left + Self::LEN > data_length {
                     // Result order: scalar_left, scalar_right, vectorization_length
-                    (data_length, data_length, 0)
+                    (data_length, data_length, None)
                 } else {
                     let right = (data_length - scalar_left) % Self::LEN;
-                    (scalar_left, data_length - right, data_length - right)
+                    (scalar_left, data_length - right, Some(data_length - right))
                 }
             }
         
@@ -395,3 +401,34 @@ macro_rules! sel_reg(
         }
     };
 );
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn get_alignment_offset_test() {
+        let reg_len = mem::size_of::<fallback::f64x2>();
+        assert_eq!(reg_len, 16);
+        assert_eq!(get_alignment_offset(0, reg_len), 0);
+        assert_eq!(get_alignment_offset(8, reg_len), 8);
+        assert_eq!(get_alignment_offset(16, reg_len), 0);
+        assert_eq!(get_alignment_offset(24, reg_len), 8);
+    }
+
+    #[cfg(feature = "use_avx")]
+    mod avx {
+        use super::super::*;
+        #[test]
+        fn get_alignment_offset_test() {
+            let reg_len = mem::size_of::<simdavx::f64x4>();
+            assert_eq!(reg_len, 32);
+            assert_eq!(get_alignment_offset(0, reg_len), 0);
+            assert_eq!(get_alignment_offset(8, reg_len), 8);
+            assert_eq!(get_alignment_offset(16, reg_len), 16);
+            assert_eq!(get_alignment_offset(24, reg_len), 24);
+            assert_eq!(get_alignment_offset(32, reg_len), 0);
+            assert_eq!(get_alignment_offset(40, reg_len), 8);
+        }
+    }
+}

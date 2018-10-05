@@ -427,7 +427,8 @@ where
             let array = self.data.to_slice_mut();
             let (scalar_left, scalar_right, vectorization_length) =
                 Reg::calc_data_alignment_reqs(&array[0..data_length]);
-            if vectorization_length > 0 {
+            if vectorization_length.is_some() {
+                let vectorization_length = vectorization_length.unwrap();
                 Chunk::execute_partial(
                     complexity,
                     &self.multicore_settings,
@@ -491,7 +492,8 @@ where
             let array = self.data.to_slice_mut();
             let (scalar_left, scalar_right, vectorization_length) =
                 Reg::calc_data_alignment_reqs(&array[0..data_length]);
-            if vectorization_length > 0 {
+            if vectorization_length.is_some() {
+                let vectorization_length = vectorization_length.unwrap();
                 Chunk::execute_partial(
                     complexity,
                     &self.multicore_settings,
@@ -604,7 +606,8 @@ where
             let temp = result.to_slice_mut();
             let (scalar_left, scalar_right, vectorization_length) =
                 Reg::calc_data_alignment_reqs(&array[0..data_length]);
-            if vectorization_length > 0 {
+            if vectorization_length.is_some() {
+                let vectorization_length = vectorization_length.unwrap();
                 Chunk::from_src_to_dest(
                     complexity,
                     &self.multicore_settings,

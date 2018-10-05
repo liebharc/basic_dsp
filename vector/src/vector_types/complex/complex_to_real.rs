@@ -529,7 +529,8 @@ where
         let temp = &mut destination[0..data_length / 2];
         let (scalar_left, scalar_right, vectorization_length) = Reg::calc_data_alignment_reqs(temp);
         let array = &self.data.to_slice();
-        if vectorization_length > 0 {
+        if vectorization_length.is_some() {
+            let vectorization_length = vectorization_length.unwrap();
             Chunk::from_src_to_dest(
                 complexity,
                 &self.multicore_settings,

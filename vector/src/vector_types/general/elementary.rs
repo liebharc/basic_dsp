@@ -394,7 +394,8 @@ macro_rules! impl_binary_vector_operation {
                 let (scalar_left, scalar_right, vectorization_length) =
                     Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name[..];
-                if vectorization_length > 0 {
+                if vectorization_length.is_some() {
+                    let vectorization_length = vectorization_length.unwrap();
                     Chunk::from_src_to_dest(
                         Complexity::Small, &self.multicore_settings,
                         &other[scalar_left..vectorization_length], Reg::LEN,
@@ -436,7 +437,8 @@ macro_rules! impl_binary_complex_vector_operation {
                 let (scalar_left, scalar_right, vectorization_length) =
                     Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name[..];
-                if vectorization_length > 0 {
+                if vectorization_length.is_some() {
+                    let vectorization_length = vectorization_length.unwrap();
                     Chunk::from_src_to_dest(
                         Complexity::Small, &self.multicore_settings,
                         &other[scalar_left..vectorization_length], Reg::LEN,
