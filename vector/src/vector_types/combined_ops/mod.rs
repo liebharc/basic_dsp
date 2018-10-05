@@ -668,7 +668,7 @@ where
                     PerformOperationSimd::<T>::perform_complex_operation(
                         &mut last_elems,
                         operation,
-                        vectorization_length / Reg::LEN * 2,
+                        vectorization_length / 2,
                         first_vec_len,
                     );
                 }
@@ -677,7 +677,7 @@ where
                     PerformOperationSimd::<T>::perform_real_operation(
                         &mut last_elems,
                         operation,
-                        vectorization_length / Reg::LEN,
+                        vectorization_length,
                         first_vec_len,
                     );
                 }

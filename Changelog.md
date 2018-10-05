@@ -20,8 +20,9 @@ The assumption is that this is okay as it only happens once.
 - Only features `use_sse` or `use_avx`: Fixed index out of bounds exceptions in if the input vector is smaller than 
 the SIMD register length.
 - Fixed calculation error in `dot_product` and `dot_product_prec` for vector in real number space.
-- AVX fixes (only feature `use_avx`): Fixed calculations which convert a complex vector into a real vector, e.g. `magnitude`,
-recently introduced issues with complex calculations, e.g. `mul`. 
+- AVX fixes (only feature `use_avx`): Fixed various calculations for the AVX optimizations. The AVX feature now 
+passes the same tests as SSE and without optimizations. There is only one error in the doc tests left which seems to 
+be related to https://github.com/rust-lang-nursery/stdsimd/issues/253 although that should be closed.
 
 ## Version 0.5.5
 It's now decided at runtime which SIMD optimization should be used.
