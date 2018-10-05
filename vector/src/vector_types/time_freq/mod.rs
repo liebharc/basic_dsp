@@ -106,10 +106,7 @@ where
         // Now mod: 0 is a special case. This is because if we round up to the next SIMD
         // register then
         // we still don't need to add any offset and so for the case 0, 0 is the right shift.
-        let shift = match i {
-            0 => 0,
-            x => (number_of_shifts - x) * step,
-        };
+        let shift = ((number_of_shifts - i) % number_of_shifts) * step;
         let min_len = vec.len() + shift;
         let len = (min_len + Reg::LEN - 1) / Reg::LEN;
         let mut copy: InlineVector<Reg> = InlineVector::with_capacity(len);

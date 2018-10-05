@@ -277,10 +277,7 @@ where
                             // The reasoning for the next match is analog to the explanation in the
                             // create_shifted_copies function.
                             // We need the inverse of the mod unless we start with zero
-                            let factor_shift = match factor_shift {
-                                0 => 0,
-                                x => interpolation_factor - x,
-                            };
+                            let factor_shift = (interpolation_factor - factor_shift) % interpolation_factor;
                             let selection = factor_shift * simd_len_in_t + simd_shift;
                             let shifted = &shifts[selection];
                             let mut sum = Reg::splat(T::zero());
