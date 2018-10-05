@@ -20,7 +20,7 @@ endif
 	
 bench:
 ifeq ($(RUST_NIGHTLY), nightly)
-			$(CARGO_CMD) bench --verbose --features use_sse
+			$(CARGO_CMD) bench --verbose --features use_avx
 else
 			@echo "Bench requires Rust nigthly, skipping bench for $(RUST_VERSION)"
 endif
