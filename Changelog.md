@@ -20,7 +20,8 @@ The assumption is that this is okay as it only happens once.
 - Only features `use_sse` or `use_avx`: Fixed index out of bounds exceptions in if the input vector is smaller than 
 the SIMD register length.
 - Fixed calculation error in `dot_product` and `dot_product_prec` for vector in real number space.
-- AVX fixes (only feature `use_avx`): Fixed calculations which convert a complex vector into a real vector, e.g. `magnitude`. 
+- AVX fixes (only feature `use_avx`): Fixed calculations which convert a complex vector into a real vector, e.g. `magnitude`,
+recently introduced issues with complex calculations, e.g. `mul`. 
 
 ## Version 0.5.5
 It's now decided at runtime which SIMD optimization should be used.

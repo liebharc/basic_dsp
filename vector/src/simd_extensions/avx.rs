@@ -7,10 +7,7 @@ use std::mem;
 /// This value must be read in groups of 2 bits.
 const SWAP_IQ_PS: i32 = 0b10110001;
 
-/// This value must be read in groups of 2 bits:
-/// 10 means that the third position (since it's the third bit pair)
-/// will be replaced with the value of the second position (10b = 2d)
-const SWAP_IQ_PD: i32 = 0b10110001;
+const SWAP_IQ_PD: i32 = 0b0101;
 
 impl Simd<f32> for f32x8 {
     type Array = [f32; 8];
@@ -438,7 +435,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn shuffle_test() {
+    fn shuffle_test_f32() {
         let vec = f32x8::new(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
         let result = vec.swap_iq();
         assert_eq!(result.extract(0), vec.extract(1));
@@ -449,5 +446,15 @@ mod tests {
         assert_eq!(result.extract(5), vec.extract(4));
         assert_eq!(result.extract(6), vec.extract(7));
         assert_eq!(result.extract(7), vec.extract(6));
+    }
+
+    #[test]
+    fn shuffle_test_f64() {
+        let vec = f64x4::new(1.0, 2.0, 3.0, 4.0);
+        let result = vec.swap_iq();
+        assert_eq!(result.extract(0), vec.extract(1));
+        assert_eq!(result.extract(1), vec.extract(0));
+        assert_eq!(result.extract(2), vec.extract(3));
+        assert_eq!(result.extract(3), vec.extract(2));
     }
 }
