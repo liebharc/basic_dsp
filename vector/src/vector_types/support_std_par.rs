@@ -129,6 +129,7 @@ impl<Type: ToComplexVector<S, T> + Sized + ToSlice<T>, S: Sized + ToSlice<T>, T:
 #[cfg(test)]
 mod tests {
     use vector_types::*;
+    use num_cpus;
 
     #[test]
     fn single_threaded_vector() {
@@ -141,6 +142,6 @@ mod tests {
     fn parallel_vector() {
         let data = vec![0.0; 6];
         let vector = data.to_complex_time_vec_par();
-        assert!(vector.get_multicore_settings().core_limit > 1);
+        assert!(vector.get_multicore_settings().core_limit > 1 || num_cpus::get() == 1);
     }
 }
