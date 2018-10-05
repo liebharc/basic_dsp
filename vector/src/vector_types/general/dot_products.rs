@@ -89,9 +89,9 @@ where
             Chunk::get_a_fold_b(
                 Complexity::Small,
                 &self.multicore_settings,
-                &other[0..vectorization_length],
+                &other[scalar_left..vectorization_length],
                 Reg::LEN,
-                &array[0..vectorization_length],
+                &array[scalar_left..vectorization_length],
                 Reg::LEN,
                 |original, range, target| {
                     let mut result = Reg::splat(T::zero());
@@ -219,9 +219,9 @@ where
             Chunk::get_a_fold_b(
                 Complexity::Small,
                 &self.multicore_settings,
-                &other[0..vectorization_length],
+                &other[scalar_left..vectorization_length],
                 Reg::LEN,
-                &array[0..vectorization_length],
+                &array[scalar_left..vectorization_length],
                 Reg::LEN,
                 |original, range, target| {
                     let original = Reg::array_to_regs(&original[range]);
