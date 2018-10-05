@@ -253,6 +253,7 @@ where
 
             let (scalar_left, _, vectorization_length) =
                 Reg::calc_data_alignment_reqs(&data[0..data_len]);
+            let scalar_left_points =  scalar_left / step;
             if vectorization_length.is_some() {
                 let vectorization_length = vectorization_length.unwrap();
                 let simd = Reg::array_to_regs(&data[scalar_left..vectorization_length]);
@@ -269,7 +270,7 @@ where
                         let mut i = range.start + scalar_len;
                         for num in dest_range {
                             let rounded = (i + interpolation_factor - 1) / interpolation_factor;
-                            let end = rounded + conv_len;
+                            let end = rounded + conv_len - scalar_left_points;
                             let simd_end = (end + simd_len_in_t - 1) / simd_len_in_t;
                             let simd_shift = end % simd_len_in_t;
                             let factor_shift = i % interpolation_factor;

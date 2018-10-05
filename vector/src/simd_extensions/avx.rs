@@ -162,12 +162,32 @@ impl Simd<f32> for f32x8 {
 
     #[inline]
     fn complex_abs_squared2(self) -> f32x8 {
-        self.complex_abs_squared()
+        let abs = self.complex_abs_squared();
+        f32x8::new(
+            abs.extract(0),
+            abs.extract(2),
+            abs.extract(1),
+            abs.extract(3),
+            abs.extract(4),
+            abs.extract(6),
+            abs.extract(5),
+            abs.extract(7),
+        )
     }
 
     #[inline]
     fn complex_abs2(self) -> f32x8 {
-        self.complex_abs()
+        let abs = self.complex_abs();
+        f32x8::new(
+            abs.extract(0),
+            abs.extract(2),
+            abs.extract(1),
+            abs.extract(3),
+            abs.extract(4),
+            abs.extract(6),
+            abs.extract(5),
+            abs.extract(7),
+        )
     }
 
     #[inline]
@@ -180,8 +200,8 @@ impl Simd<f32> for f32x8 {
         unsafe {
             *target.get_unchecked_mut(index) = self.extract(0);
             *target.get_unchecked_mut(index + 1) = self.extract(1);
-            *target.get_unchecked_mut(index + 2) = self.extract(2);
-            *target.get_unchecked_mut(index + 3) = self.extract(3);
+            *target.get_unchecked_mut(index + 2) = self.extract(4);
+            *target.get_unchecked_mut(index + 3) = self.extract(5);
         }
     }
 
@@ -356,12 +376,24 @@ impl Simd<f64> for f64x4 {
 
     #[inline]
     fn complex_abs_squared2(self) -> f64x4 {
-        self.complex_abs_squared()
+        let abs = self.complex_abs_squared();
+        f64x4::new(
+            abs.extract(0),
+            abs.extract(2),
+            abs.extract(1),
+            abs.extract(3),
+        )
     }
 
     #[inline]
     fn complex_abs2(self) -> f64x4 {
-        self.complex_abs()
+        let abs = self.complex_abs();
+        f64x4::new(
+            abs.extract(0),
+            abs.extract(2),
+            abs.extract(1),
+            abs.extract(3),
+        )
     }
 
     #[inline]
