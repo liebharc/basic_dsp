@@ -542,8 +542,8 @@ where
             return Err(ErrorReason::InvalidArgumentLength);
         }
 
-        // The values in this condition are nothing more than a
-        // ... guess. The reasoning is basically this:
+        // The values in this condition are nothing more than a guess.
+        // The reasoning is basically this:
         // For the SIMD operation we need to clone `vector` several
         // times and this only is worthwhile if `vector.len() << self.len()`
         // where `<<` means "significant smaller".
