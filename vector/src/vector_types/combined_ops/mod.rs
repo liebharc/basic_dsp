@@ -442,7 +442,7 @@ fn perform_complex_operations_par<T, Reg: SimdGeneric<T>>(
     let mut index = range.start / 2;
     let mut i = 0;
     while i < array[0].len() {
-        for j in 0..array.len() {
+        for (j, _) in array.iter().enumerate() {
             unsafe {
                 let elem = vectors.get_unchecked_mut(j);
                 *elem = Reg::load_unchecked(array[j], i)
@@ -458,9 +458,9 @@ fn perform_complex_operations_par<T, Reg: SimdGeneric<T>>(
             );
         }
 
-        for j in 0..array.len() {
+        for (j, elem) in array.iter_mut().enumerate() {
             unsafe {
-                vectors.get_unchecked(j).store_unchecked(&mut array[j], i);
+                vectors.get_unchecked(j).store_unchecked(elem, i);
             }
         }
 
@@ -487,7 +487,7 @@ fn perform_real_operations_par<T: RealNumber, Reg: SimdGeneric<T>>(
     let mut index = range.start;
     let mut i = 0;
     while i < array[0].len() {
-        for j in 0..array.len() {
+        for (j, _) in array.iter().enumerate() {
             unsafe {
                 let elem = vectors.get_unchecked_mut(j);
                 *elem = Reg::load_unchecked(array[j], i)
@@ -503,9 +503,9 @@ fn perform_real_operations_par<T: RealNumber, Reg: SimdGeneric<T>>(
             );
         }
 
-        for j in 0..array.len() {
+        for (j, elem) in array.iter_mut().enumerate() {
             unsafe {
-                vectors.get_unchecked(j).store(&mut array[j], i);
+                vectors.get_unchecked(j).store(elem, i);
             }
         }
 
@@ -539,7 +539,7 @@ where
 
         let (any_complex_ops, final_number_space) = verifcation.unwrap();
 
-        if operations.len() == 0 {
+        if operations.is_empty() {
             return Ok(vectors);
         }
 
@@ -681,12 +681,10 @@ where
                 }
             }
 
-            let mut j = 0;
-            for reg in last_elems {
+            for (j, reg) in last_elems.iter().enumerate() {
                 for i in 0..scalar_length {
                     vectors[j][vectorization_length + i] = reg.extract(i as u32);
                 }
-                j += 1;
             }
         }
 

@@ -419,7 +419,7 @@ where
             match option {
                 PaddingOption::End => {
                     // Zero target
-                    &mut target[0..len_before].copy_from_slice(&data[0..len_before]);
+                    target[0..len_before].copy_from_slice(&data[0..len_before]);
                     memzero(target, len_before..len);
                 }
                 PaddingOption::Surround => {
@@ -431,7 +431,7 @@ where
                         left *= 2;
                     }
 
-                    &mut target[left..left + len_before].copy_from_slice(&data[0..len_before]);
+                    target[left..left + len_before].copy_from_slice(&data[0..len_before]);
                     if right > 0 {
                         memzero(target, len - right..len);
                     }
@@ -447,9 +447,8 @@ where
                         left *= 2;
                     }
 
-                    &mut target[len - right..len]
-                        .copy_from_slice(&data[len_before - right..len_before]);
-                    &mut target[0..left].copy_from_slice(&data[0..left]);
+                    target[len - right..len] .copy_from_slice(&data[len_before - right..len_before]);
+                    target[0..left].copy_from_slice(&data[0..left]);
                     memzero(target, left..len - len_before);
                 }
             }

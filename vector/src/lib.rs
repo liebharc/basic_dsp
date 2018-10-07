@@ -53,6 +53,8 @@
 //! complex vectors in time domain, but not with real valued vectors or frequency domain vectors.
 //! And the type `GenDspVec` serves as wild card at compile time since it defers all checks to run time.
 
+#![cfg_attr(feature = "cargo-clippy", feature(tool_lints))]
+
 extern crate arrayvec;
 #[cfg(any(feature = "doc", feature = "use_gpu"))]
 extern crate clfft;

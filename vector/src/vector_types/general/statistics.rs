@@ -208,7 +208,7 @@ where
     }
 
     fn merge(stats: &[Statistics<T>]) -> Statistics<T> {
-        if stats.len() == 0 {
+        if stats.is_empty() {
             return Statistics::<T>::invalid();
         }
 
@@ -294,7 +294,7 @@ where
     }
 
     fn merge(stats: &[Statistics<Complex<T>>]) -> Statistics<Complex<T>> {
-        if stats.len() == 0 {
+        if stats.is_empty() {
             return Statistics::<Complex<T>>::invalid();
         }
 

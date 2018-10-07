@@ -210,6 +210,7 @@ where
     DO: Domain,
 {
     /// Executes all recorded operations on the input vectors.
+    #[cfg_attr(feature = "cargo-clippy", allow(clippy::type_complexity))]
     fn exec<B>(
         &self,
         buffer: &mut B,
@@ -270,6 +271,7 @@ where
 /// Lists all operations which must be executed on on argument.
 type ArgVec<T> = InlineVector<(Operation<T>, Option<usize>)>;
 
+#[cfg_attr(feature = "cargo-clippy", allow(clippy::ptr_arg))]
 fn sort_by_arg<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> (ArgVec<T>, ArgVec<T>) {
     let mut res1 = ArgVec::with_capacity(ops1.len() + ops2.len());
     let mut res2 = ArgVec::with_capacity(ops1.len() + ops2.len());
@@ -310,8 +312,8 @@ fn sort_by_arg<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> (ArgVec<T>, ArgV
 
 /// Returns the first index bigger than `start` which holds a binary operation.
 fn find_first_binary_op_pos<T>(ops: &ArgVec<T>, start: usize) -> Option<usize> {
-    for i in start..ops.len() {
-        if ops[i].1.is_some() {
+    for (i, elem) in ops.iter().enumerate().skip(start) {
+        if elem.1.is_some() {
             return Some(i);
         }
     }
@@ -353,6 +355,7 @@ fn first_op<T>(
 }
 
 /// Merges two ops vectors in a correct order.
+#[cfg_attr(feature = "cargo-clippy", allow(clippy::ptr_arg))]
 fn merge_operations<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> InlineVector<Operation<T>> {
     let mut res = InlineVector::with_capacity(ops1.len() + ops2.len());
     let (arg1, arg2) = sort_by_arg(ops1, ops2);
@@ -362,11 +365,11 @@ fn merge_operations<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> InlineVecto
     let mut bin2 = find_first_binary_op_pos(&arg2, ops2pos);
     while bin1.is_some() || bin2.is_some() {
         let (pos1, pos2, bin_op) = first_op(&arg1, bin1, &arg2, bin2);
-        for i in ops1pos..pos1 {
-            res.push(arg1[i].0.clone());
+        for elem in arg1.iter().take(pos1).skip(ops1pos) {
+            res.push(elem.0.clone());
         }
-        for i in ops2pos..pos2 {
-            res.push(arg2[i].0.clone());
+        for elem in arg2.iter().take(pos2).skip(ops2pos) {
+            res.push(elem.0.clone());
         }
         ops1pos = pos1;
         ops2pos = pos2;
@@ -384,11 +387,11 @@ fn merge_operations<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> InlineVecto
     }
 
     // Handle remaining elements
-    for i in ops1pos..arg1.len() {
-        res.push(arg1[i].0.clone());
+    for elem in arg1.iter().skip(ops1pos) {
+        res.push(elem.0.clone());
     }
-    for i in ops2pos..arg2.len() {
-        res.push(arg2[i].0.clone());
+    for elem in arg2.iter().skip(ops2pos) {
+        res.push(elem.0.clone());
     }
 
     res
@@ -503,6 +506,7 @@ where
     DO2: Domain,
 {
     /// Executes all recorded operations on the input vectors.
+    #[cfg_attr(feature = "cargo-clippy", allow(clippy::type_complexity))]
     fn exec<B>(
         &self,
         buffer: &mut B,

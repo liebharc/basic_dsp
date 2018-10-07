@@ -2,7 +2,7 @@ use arrayvec::*;
 use numbers::*;
 use std::iter::FromIterator;
 use std::ops::*;
-use std::slice::Iter;
+use std::slice::{Iter, IterMut};
 use std::usize;
 use {ErrorReason, VoidResult};
 
@@ -109,10 +109,19 @@ impl<T> InlineVector<T> {
         }
     }
 
+    #[inline]
     pub fn iter(&self) -> Iter<T> {
         match *self {
             InlineVector::Inline(ref v) => v.iter(),
             InlineVector::Dynamic(ref v) => v.iter(),
+        }
+    }
+
+    #[inline]
+    pub fn iter_mut(&mut self) -> IterMut<T> {
+        match *self {
+            InlineVector::Inline(ref mut v) => v.iter_mut(),
+            InlineVector::Dynamic(ref mut v) => v.iter_mut(),
         }
     }
 

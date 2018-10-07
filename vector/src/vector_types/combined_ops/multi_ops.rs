@@ -193,6 +193,7 @@ where
     }
 
     /// Executes all recorded operations on the stored vector.
+    #[cfg_attr(feature = "cargo-clippy", allow(clippy::type_complexity))]
     pub fn get<B>(
         self,
         buffer: &mut B,
@@ -246,6 +247,7 @@ where
     DO2: Domain,
 {
     /// Executes all recorded operations on the stored vector.
+     #[cfg_attr(feature = "cargo-clippy", allow(clippy::type_complexity))]
     pub fn get<B>(
         self,
         buffer: &mut B,
