@@ -4,12 +4,12 @@ use stdsimd::simd::*;
 use stdsimd::vendor::*;
 
 /// This value must be read in groups of 2 bits.
-const SWAP_IQ_PS: i32 = 0b10110001;
+const SWAP_IQ_PS: i32 = 0b1011_0001;
 
 /// This value must be read in groups of 2 bits:
 /// 10 means that the third position (since it's the third bit pair)
 /// will be replaced with the value of the second position (10b = 2d)
-const SWAP_IQ_PD: i32 = 0b10110001;
+const SWAP_IQ_PD: i32 = 0b1011_0001;
 
 impl Simd<f32> for f32x16 {
     type Array = [f32; 16];

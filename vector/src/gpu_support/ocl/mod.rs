@@ -35,7 +35,7 @@ impl<T> GpuRegTrait for T where T: OclPrm + OclVec {}
 impl<T> GpuFloat for T where T: ClFftPrm {}
 
 fn has_f64_support(device: Device) -> bool {
-    const F64_SUPPORT: &'static str = "cl_khr_fp64";
+    const F64_SUPPORT: &str = "cl_khr_fp64";
     match device.info(DeviceInfo::Extensions) {
         Ok(DeviceInfoResult::Extensions(ext)) => ext.contains(F64_SUPPORT),
         _ => false,
@@ -45,7 +45,7 @@ fn has_f64_support(device: Device) -> bool {
 /// Integrated GPUs are typically less powerful but data transfer from memory to the
 /// integrated device can be faster.
 fn is_integrated_gpu(device: Device) -> bool {
-    const INTEL_VENDOR_ID: &'static str = "8086";
+    const INTEL_VENDOR_ID: &str = "8086";
     match device.info(DeviceInfo::VendorId) {
         Ok(DeviceInfoResult::Extensions(vid)) => vid == INTEL_VENDOR_ID,
         _ => false,
@@ -80,35 +80,32 @@ fn find_gpu_device(require_f64_support: bool, data_length: usize) -> Option<(Pla
     let mut result: Option<(Platform, Device)> = None;
     for p in Platform::list() {
         let devices_op = Device::list(&p, DeviceType::from_bits(ffi::CL_DEVICE_TYPE_GPU));
-        match devices_op {
-            Ok(devices) => {
-                for d in devices {
-                    if !require_f64_support || has_f64_support(d) {
-                        result = match result {
+        if let Ok(devices) = devices_op {
+            for d in devices {
+                if !require_f64_support || has_f64_support(d) {
+                    result = match result {
+                        Some((cp, cd))
+                            if determine_processing_power(d, data_length)
+                                < determine_processing_power(cd, data_length) =>
+                        {
                             Some((cp, cd))
-                                if determine_processing_power(d, data_length)
-                                    < determine_processing_power(cd, data_length) =>
-                            {
-                                Some((cp, cd))
-                            }
-                            _ => Some((p, d)),
                         }
+                        _ => Some((p, d)),
                     }
                 }
             }
-            Err(_) => (),
         }
     }
 
-    return result;
+    result
 }
 
 fn array_to_gpu_simd<T, R>(array: &[T]) -> &[R] {
-    super::transmute_slice(array)
+    super::super::transmute_slice(array)
 }
 
 fn array_to_gpu_simd_mut<T, R>(array: &mut [T]) -> &mut [R] {
-    super::transmute_slice_mut(array)
+    super::super::transmute_slice_mut(array)
 }
 
 /// Prepare impulse response
@@ -246,7 +243,7 @@ where
         // Execute kernel, do this in chunks so that the GPU watchdog isn't
         // terminating our kernel
         let gws_total = (data_set_size - conv_size_padded) / vec_len;
-        let chunk_size = 100000;
+        let chunk_size = 100_000;
         let mut chunk = conv_size_padded / vec_len;
         while chunk < gws_total {
             let current_size = cmp::min(chunk_size, gws_total - chunk);
@@ -256,10 +253,7 @@ where
                     .global_work_offset([chunk]) // Offset
                     .global_work_size([current_size])
                     .enq()
-                    .expect(&format!(
-                        "Running kernel (Params: {}, {}) failed:",
-                        chunk, gws_total
-                    ))
+                    .expect("Running kernel")
             };
             chunk += chunk_size;
         }
@@ -280,14 +274,9 @@ where
     }
 
     fn is_supported_fft_len(is_complex: bool, len: usize) -> bool {
-        if !is_complex {
-            false
-        } else if len == 0 {
-            false
-        }
-        // Since we divide the number by two in the `fft` routine, we need the result to be
-        // dividable by two.
-        else if len == 1 {
+        if !is_complex || len <= 1 {
+            // Since we divide the number by two in the `fft` routine, we need the result to be
+            // dividable by two.
             false
         } else if len == 2 {
             true
@@ -324,7 +313,7 @@ where
             .expect("Building ProQue");
 
         // Create buffers
-        let mut in_buffer = unsafe {
+        let in_buffer = unsafe {
             Buffer::builder()
                 .queue(ocl_pq.queue().clone())
                 .flags(MemFlags::new().read_only().copy_host_ptr())
@@ -356,7 +345,7 @@ where
             Direction::Forward
         };
         // Execute plan
-        plan.enq(direction, &mut in_buffer, &mut res_buffer)
+        plan.enq(direction, &in_buffer, &mut res_buffer)
             .unwrap();
 
         // Wait for calculation to finish and read results

@@ -1,4 +1,4 @@
-pub const CONV_KERNEL: &'static str = r#"
+pub const CONV_KERNEL: &str = r#"
     #define mulc32(a,b) ((float4)((float)mad(-(a).y, (b).y, (a).x * (b).x), (float)mad((a).y, (b).x, (a).x * (b).y), (float)mad(-(a).z, (b).z, (a).w * (b).w), (float)mad((a).z, (b).w, (a).w * (b).z)))
 
     __kernel

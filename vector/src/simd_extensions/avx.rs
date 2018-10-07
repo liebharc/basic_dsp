@@ -5,7 +5,7 @@ use std::arch::x86_64::*;
 use std::mem;
 
 /// This value must be read in groups of 2 bits.
-const SWAP_IQ_PS: i32 = 0b10110001;
+const SWAP_IQ_PS: i32 = 0b1011_0001;
 
 const SWAP_IQ_PD: i32 = 0b0101;
 

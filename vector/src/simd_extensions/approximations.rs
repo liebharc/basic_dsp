@@ -1,3 +1,6 @@
+#![cfg_attr(feature = "cargo-clippy", allow(clippy::excessive_precision))]
+#![cfg_attr(feature = "cargo-clippy", allow(clippy::unreadable_literal))]
+
 // This source code is a conversion from C to Rust with. The original C code
 // can be found here https://github.com/RJVB/sse_mathfun
 // The intrinsics are documented here: https://software.intel.com/sites/landingpage/IntrinsicsGuide/
@@ -102,7 +105,6 @@ macro_rules! simd_approx_impl {
                 let x: $regf = unsafe { mem::transmute(x) };
                 let x = x - one;
                 let x: $regu = unsafe { mem::transmute(x) };
-                let e: $regf = unsafe { mem::transmute(e) };
                 let masked_one: $regf =
                     unsafe { mem::transmute(onef_as_uint.bitand(mem::transmute(mask))) };
                 let e = e - masked_one;
@@ -173,8 +175,8 @@ macro_rules! simd_approx_impl {
                 let exp_p4 = $regf::splat(1.6666665459E-1);
                 let exp_p5 = $regf::splat(5.0000001201E-1);
         
-                let x = unsafe { Simd::<$data_type>::min(x, mem::transmute(exp_hi)) };
-                let x = unsafe { Simd::<$data_type>::max(x, mem::transmute(exp_lo)) };
+                let x = Simd::<$data_type>::min(x, exp_hi);
+                let x = Simd::<$data_type>::max(x, exp_lo);
         
                 // express exp(x) as exp(g + n*log(2))
                 let fx = x * log2ef + half;
@@ -216,8 +218,7 @@ macro_rules! simd_approx_impl {
                 let emm0: $regu = emm0.shl(mant_len);
                 let pow2n: $regf = unsafe { mem::transmute(emm0) };
         
-                let y = y * pow2n;
-                y
+                y * pow2n
             }
         
             #[inline]

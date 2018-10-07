@@ -1,4 +1,4 @@
-pub const CONV_KERNEL: &'static str = r#"
+pub const CONV_KERNEL: &str = r#"
     #pragma OPENCL EXTENSION cl_khr_fp64 : enable
     #define mulc64(a,b) ((double2)((double)mad(-(a).y, (b).y, (a).x * (b).x), (double)mad((a).y, (b).x, (a).x * (b).y)))
 
