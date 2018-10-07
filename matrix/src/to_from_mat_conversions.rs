@@ -111,7 +111,7 @@ where
 {
     let rows = source.transform(conversion);
     MatrixMxN {
-        rows: rows,
+        rows,
         storage_type: marker::PhantomData,
         number_type: marker::PhantomData,
     }
@@ -126,7 +126,7 @@ where
 {
     let rows = source.transform(conversion);
     Matrix2xN {
-        rows: rows,
+        rows,
         storage_type: marker::PhantomData,
         number_type: marker::PhantomData,
     }
@@ -141,7 +141,7 @@ where
 {
     let rows = source.transform(conversion);
     Matrix3xN {
-        rows: rows,
+        rows,
         storage_type: marker::PhantomData,
         number_type: marker::PhantomData,
     }
@@ -156,7 +156,7 @@ where
 {
     let rows = source.transform(conversion);
     Matrix4xN {
-        rows: rows,
+        rows,
         storage_type: marker::PhantomData,
         number_type: marker::PhantomData,
     }
