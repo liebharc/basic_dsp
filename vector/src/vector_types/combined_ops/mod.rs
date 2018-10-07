@@ -234,14 +234,12 @@ where
     T: RealNumber,
     Self: Sized,
 {
-    #[inline]
     fn perform_real_operation(
         vectors: &mut [Self],
         operation: &Operation<T>,
         index: usize,
         points: usize,
     );
-    #[inline]
     fn perform_complex_operation(
         vectors: &mut [Self],
         operation: &Operation<T>,
