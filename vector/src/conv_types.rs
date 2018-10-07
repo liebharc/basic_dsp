@@ -258,7 +258,9 @@ macro_rules! add_complex_linear_table_impl {
             $(
                 impl $name<$data_type> {
                     /// Convert the lookup table into real number space
+                    #[cfg_attr(feature = "cargo-clippy", allow(clippy::wrong_self_convention))]
                     pub fn to_real(self) -> $real<$data_type> {
+                        // TODO 0.6: rename method name to fix clippy warning
                         let complex = &self.table[..];
                         let mut interleaved = InlineVector::with_capacity(2 * complex.len());
                         for n in complex {
@@ -460,6 +462,7 @@ where
 }
 
 /// Sinc function according to `https://en.wikipedia.org/wiki/Sinc_function`
+#[derive(Default)]
 pub struct SincFunction<T>
 where
     T: RealNumber,

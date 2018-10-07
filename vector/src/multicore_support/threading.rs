@@ -262,7 +262,7 @@ impl Chunk {
     fn determine_number_of_chunks(
         array_length: usize,
         complexity: Complexity,
-        settings: &MultiCoreSettings,
+        settings: MultiCoreSettings,
     ) -> usize {
         if settings.core_limit == 1 {
             settings.core_limit
@@ -359,7 +359,7 @@ impl Chunk {
     #[inline]
     pub fn execute_partial<'a, T, S, F>(
         complexity: Complexity,
-        settings: &MultiCoreSettings,
+        settings: MultiCoreSettings,
         array: &mut [T],
         step_size: usize,
         arguments: S,
@@ -399,7 +399,7 @@ impl Chunk {
     #[inline]
     pub fn execute_partial_multidim<'a, T, S, F>(
         complexity: Complexity,
-        settings: &MultiCoreSettings,
+        settings: MultiCoreSettings,
         array: &mut [&mut [T]],
         range: Range<usize>,
         step_size: usize,
@@ -483,7 +483,7 @@ impl Chunk {
     #[inline]
     pub fn execute_with_range<'a, T, S, F>(
         complexity: Complexity,
-        settings: &MultiCoreSettings,
+        settings: MultiCoreSettings,
         array: &mut [T],
         step_size: usize,
         arguments: S,
@@ -523,7 +523,7 @@ impl Chunk {
     #[inline]
     pub fn map_on_array_chunks<'a, T, S, F, R>(
         complexity: Complexity,
-        settings: &MultiCoreSettings,
+        settings: MultiCoreSettings,
         array: &[T],
         step_size: usize,
         arguments: S,
@@ -576,7 +576,7 @@ impl Chunk {
     #[inline]
     pub fn execute_sym_pairs_with_range<'a, T, S, F>(
         complexity: Complexity,
-        settings: &MultiCoreSettings,
+        settings: MultiCoreSettings,
         array: &mut [T],
         step_size: usize,
         arguments: S,
@@ -640,7 +640,7 @@ impl Chunk {
     #[inline]
     pub fn get_a_fold_b<'a, F, T, R>(
         complexity: Complexity,
-        settings: &MultiCoreSettings,
+        settings: MultiCoreSettings,
         a: &[T],
         a_step: usize,
         b: &[T],
@@ -689,7 +689,7 @@ impl Chunk {
     #[inline]
     pub fn get_chunked_results<'a, F, S, T, R>(
         complexity: Complexity,
-        settings: &MultiCoreSettings,
+        settings: MultiCoreSettings,
         a: &[T],
         a_step: usize,
         arguments: S,
@@ -734,10 +734,11 @@ impl Chunk {
 
     /// Executes the given function on the all elements of the array in parallel and passes
     /// the argument to all function calls.. Results are intended to be stored in the target array.
+    #[cfg_attr(feature = "cargo-clippy", allow(clippy::too_many_arguments))]
     #[inline]
     pub fn from_src_to_dest<'a, T, S, F>(
         complexity: Complexity,
-        settings: &MultiCoreSettings,
+        settings: MultiCoreSettings,
         original: &[T],
         original_step: usize,
         target: &mut [T],

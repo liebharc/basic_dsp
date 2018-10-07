@@ -56,7 +56,7 @@ where
             let spectrum = array_to_complex_mut(spectrum);
             fft.process(signal, spectrum);
         } else {
-            T::fft(true, &mut signal[0..len], &mut temp[0..len], reverse);
+            T::fft(true, &signal[0..len], &mut temp[0..len], reverse);
         }
     }
 
@@ -197,19 +197,17 @@ where
             let complex = convert(&data[0..len]);
             let dest = convert_mut(&mut temp[0..len]);
             let len = complex.len();
-            let mut i = 0;
             let conv_len = if conv_len > len { len } else { conv_len };
             let sconv_len = conv_len as isize;
-            for num in dest {
-                let iter = WrappingIterator::new(complex, i - sconv_len - 1, 2 * conv_len + 1);
+            for (i, num) in dest.iter_mut().enumerate() {
+                let iter = WrappingIterator::new(complex, i as isize - sconv_len - 1, 2 * conv_len + 1);
                 let mut sum = TT::zero();
                 let mut j = -(T::from(conv_len).unwrap());
                 for c in iter {
                     sum = sum + c * fun(-j * ratio);
                     j = j + T::one();
                 }
-                (*num) = sum;
-                i += 1;
+                *num = sum;
             }
         }
 
@@ -252,8 +250,8 @@ where
             let dest = array_to_complex_mut(&mut target[0..len]);
             let other_iter = &other[other_start..other_end];
             let conv_len = conv_len as isize;
-            for i in 0..range.start / 2 {
-                dest[i] = Self::convolve_iteration(
+            for (i, dest) in dest.iter_mut().enumerate().take(range.start / 2) {
+                *dest = Self::convolve_iteration(
                     complex,
                     other_iter,
                     i as isize,
@@ -269,8 +267,8 @@ where
             let dest = &mut target[0..len];
             let other_iter = &other[other_start..other_end];
             let conv_len = conv_len as isize;
-            for i in 0..range.start {
-                dest[i] =
+            for (i, dest) in dest.iter_mut().enumerate().take(range.start) {
+                *dest =
                     Self::convolve_iteration(data, other_iter, i as isize, conv_len, full_conv_len);
             }
         }
@@ -311,7 +309,7 @@ where
                 let conv_len = conv_len as isize;
                 Chunk::execute_with_range(
                     Complexity::Large,
-                    &self.multicore_settings,
+                    self.multicore_settings,
                     dest,
                     1,
                     (complex, other_iter),
@@ -343,7 +341,7 @@ where
                 let conv_len = conv_len as isize;
                 Chunk::execute_with_range(
                     Complexity::Large,
-                    &self.multicore_settings,
+                    self.multicore_settings,
                     dest,
                     1,
                     (data, other_iter),
@@ -373,7 +371,7 @@ where
     ) -> VoidResult {
         // Since this function mainly exists to be used by the matrix lib
         // we just decide to ignore invalid calls.
-        if impulse_response.len() != matrix.len() || impulse_response.len() == 0 {
+        if impulse_response.len() != matrix.len() || impulse_response.is_empty() {
             return Err(ErrorReason::InvalidArgumentLength);
         }
 
@@ -573,10 +571,8 @@ where
             // The next lines uses + $reg::LEN due to rounding of odd numbers
             let scalar_len = conv_len + Reg::LEN;
             let conv_len = conv_len as isize;
-            let mut i = 0;
-            for num in &mut dest[0..scalar_len] {
-                *num = Self::convolve_iteration(complex, other_iter, i, conv_len, full_conv_len);
-                i += 1;
+            for (i, num) in dest[0..scalar_len].iter_mut().enumerate() {
+                *num = Self::convolve_iteration(complex, other_iter, i as isize, conv_len, full_conv_len);
             }
 
             let (scalar_left, _, vectorization_length) =
@@ -588,7 +584,7 @@ where
                 let simd = Reg::array_to_regs(&data[scalar_left..vectorization_length]);
                 Chunk::execute_with_range(
                     Complexity::Large,
-                    &self.multicore_settings,
+                    self.multicore_settings,
                     &mut dest[scalar_len..points - scalar_len],
                     1,
                     simd,
@@ -643,7 +639,7 @@ where
             let converted = convert_mut(&mut data[0..len]);
             Chunk::execute_with_range(
                 Complexity::Medium,
-                &self.multicore_settings,
+                self.multicore_settings,
                 converted,
                 1,
                 (ratio, function_arg),
@@ -667,7 +663,7 @@ where
             let points = converted.len();
             Chunk::execute_sym_pairs_with_range(
                 Complexity::Medium,
-                &self.multicore_settings,
+                self.multicore_settings,
                 converted,
                 1,
                 (ratio, function_arg),

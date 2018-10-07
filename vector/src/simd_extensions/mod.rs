@@ -290,7 +290,7 @@ macro_rules! simd_generic_impl {
             fn load_unchecked(array: &[$data_type], idx: usize) -> Self {
                 let loaded = unsafe {
                     let data = array.as_ptr();
-                    *(data.offset(idx as isize) as *const Unalign<Self>)
+                    *(data.add(idx) as *const Unalign<Self>)
                 };
                 loaded.0
             }
@@ -299,7 +299,7 @@ macro_rules! simd_generic_impl {
             fn store_unchecked(self, array: &mut [$data_type], idx: usize) {
                 unsafe {
                     let place = array.as_mut_ptr();
-                    *(place.offset(idx as isize) as *mut Unalign<Self>) = Unalign(self)
+                    *(place.add(idx) as *mut Unalign<Self>) = Unalign(self)
                 }
             }
         

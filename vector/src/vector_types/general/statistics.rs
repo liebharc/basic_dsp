@@ -366,7 +366,7 @@ where
         let array = self.data.to_slice();
         let chunks = Chunk::get_chunked_results(
             Complexity::Small,
-            &self.multicore_settings,
+            self.multicore_settings,
             &array[0..data_length],
             1,
             (),
@@ -407,7 +407,7 @@ where
         let array = self.data.to_slice();
         let chunks = Chunk::get_chunked_results(
             Complexity::Small,
-            &self.multicore_settings,
+            self.multicore_settings,
             &array[0..data_length],
             1,
             len,
@@ -444,7 +444,7 @@ where
             let vectorization_length = vectorization_length.unwrap();
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
-                &self.multicore_settings,
+                self.multicore_settings,
                 &array[scalar_left..vectorization_length],
                 Reg::LEN,
                 (),
@@ -482,7 +482,7 @@ where
             let vectorization_length = vectorization_length.unwrap();
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
-                &self.multicore_settings,
+                self.multicore_settings,
                 &array[scalar_left..vectorization_length],
                 Reg::LEN,
                 (),
@@ -520,7 +520,7 @@ where
             let vectorization_length = vectorization_length.unwrap();
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
-                &self.multicore_settings,
+                self.multicore_settings,
                 &array[scalar_left..vectorization_length],
                 Reg::LEN,
                 (),
@@ -558,7 +558,7 @@ where
             let vectorization_length = vectorization_length.unwrap();
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
-                &self.multicore_settings,
+                self.multicore_settings,
                 &array[scalar_left..vectorization_length],
                 Reg::LEN,
                 (),
@@ -618,7 +618,7 @@ where
         let array = self.data.to_slice();
         let chunks = Chunk::get_chunked_results(
             Complexity::Small,
-            &self.multicore_settings,
+            self.multicore_settings,
             &array[0..data_length],
             2,
             (),
@@ -660,7 +660,7 @@ where
         let array = self.data.to_slice();
         let chunks = Chunk::get_chunked_results(
             Complexity::Small,
-            &self.multicore_settings,
+            self.multicore_settings,
             &array[0..data_length],
             2,
             len,

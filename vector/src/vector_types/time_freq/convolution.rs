@@ -315,7 +315,7 @@ fn next_power_of_two(value: usize) -> usize {
         return n;
     }
     while n != 0 {
-        n = n >> 1;
+        n >>= 1;
         count += 1;
     }
 
@@ -439,57 +439,59 @@ where
                 }
             }
 
-            let mut position = 0;
-            if T::has_gpu_support() {
-                // GPU implementation of overlap_discard `thinks` in interleaved arrays
-                // while this implementation `thinks` in complex arrays. Therefore a factor
-                // of 2 needs to be taken into account in the method call.
-                position = T::overlap_discard(
-                    array_to_real_mut(x_time),
-                    array_to_real_mut(tmp),
-                    array_to_real_mut(x_freq),
-                    array_to_real(h_freq),
-                    2 * imp_len,
-                    2 * step_size,
-                ) / 2;
-            } else {
-                // `fft.process` will invalidate `x_time` we therefore need to remember the overlap region
-                // and restore it.
-                let mut overlap_buffer = InlineVector::of_size(Complex::<T>::zero(), overlap);
-
-                let scaling = T::from(fft_len).unwrap();
-                {
-                    let range = position..fft_len + position;
-                    // (3) The first iteration is different since it copies over the results which have been calculated for the beginning
-                    (&mut overlap_buffer[..])
-                        .copy_from_slice(&x_time[position + step_size..position + fft_len]);
-                    fft.process(&mut x_time[range], x_freq);
-                    // Copy over the results of the scalar convolution (1)
-                    (&mut x_time[0..imp_len / 2]).copy_from_slice(&tmp[0..imp_len / 2]);
-                    for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_freq.iter()) {
-                        *n = *n * *v / scaling;
+            let position: usize =
+                if T::has_gpu_support() {
+                    // GPU implementation of overlap_discard `thinks` in interleaved arrays
+                    // while this implementation `thinks` in complex arrays. Therefore a factor
+                    // of 2 needs to be taken into account in the method call.
+                    let position = T::overlap_discard(
+                        array_to_real_mut(x_time),
+                        array_to_real_mut(tmp),
+                        array_to_real_mut(x_freq),
+                        array_to_real(h_freq),
+                        2 * imp_len,
+                        2 * step_size,
+                    ) / 2;
+                    position as usize
+                } else {
+                    // `fft.process` will invalidate `x_time` we therefore need to remember the overlap region
+                    // and restore it.
+                    let mut overlap_buffer = InlineVector::of_size(Complex::<T>::zero(), overlap);
+                    let mut position = 0;
+                    let scaling = T::from(fft_len).unwrap();
+                    {
+                        let range = position..fft_len + position;
+                        // (3) The first iteration is different since it copies over the results which have been calculated for the beginning
+                        (&mut overlap_buffer[..])
+                            .copy_from_slice(&x_time[position + step_size..position + fft_len]);
+                        fft.process(&mut x_time[range], x_freq);
+                        // Copy over the results of the scalar convolution (1)
+                        (&mut x_time[0..imp_len / 2]).copy_from_slice(&tmp[0..imp_len / 2]);
+                        for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_freq.iter()) {
+                            *n = *n * *v / scaling;
+                        }
+                        ifft.process(x_freq, tmp);
+                        position += step_size;
                     }
-                    ifft.process(x_freq, tmp);
-                    position += step_size;
-                }
 
-                while position + fft_len < x_len {
-                    let range = position..fft_len + position;
-                    (&mut x_time[position..position + overlap])
-                        .copy_from_slice(&mut overlap_buffer[..]);
-                    (&mut overlap_buffer[..])
-                        .copy_from_slice(&x_time[position + step_size..position + fft_len]);
-                    fft.process(&mut x_time[range], x_freq);
-                    // (4) Same as (3) except that the results of the previous iteration gets copied over
-                    (&mut x_time[position - step_size + imp_len / 2..position + imp_len / 2])
-                        .copy_from_slice(&tmp[imp_len - 1..fft_len]);
-                    for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_freq.iter()) {
-                        *n = *n * *v / scaling;
+                    while position + fft_len < x_len {
+                        let range = position..fft_len + position;
+                        (&mut x_time[position..position + overlap])
+                            .copy_from_slice(&overlap_buffer[..]);
+                        (&mut overlap_buffer[..])
+                            .copy_from_slice(&x_time[position + step_size..position + fft_len]);
+                        fft.process(&mut x_time[range], x_freq);
+                        // (4) Same as (3) except that the results of the previous iteration gets copied over
+                        (&mut x_time[position - step_size + imp_len / 2..position + imp_len / 2])
+                            .copy_from_slice(&tmp[imp_len - 1..fft_len]);
+                        for (n, v) in (&mut x_freq[..]).iter_mut().zip(h_freq.iter()) {
+                            *n = *n * *v / scaling;
+                        }
+                        ifft.process(x_freq, tmp);
+                        position += step_size;
                     }
-                    ifft.process(x_freq, tmp);
-                    position += step_size;
-                }
-            }
+                    position
+                };
 
             // (5) now store the result of the last iteration
             (&mut x_time[position - step_size + imp_len / 2..position + imp_len / 2])

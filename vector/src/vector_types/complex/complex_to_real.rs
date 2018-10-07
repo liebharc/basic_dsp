@@ -489,7 +489,7 @@ where
         let source = &self.data.to_slice();
         Chunk::from_src_to_dest(
             complexity,
-            &self.multicore_settings,
+            self.multicore_settings,
             &source[0..len],
             2,
             array,
@@ -533,7 +533,7 @@ where
             let vectorization_length = vectorization_length.unwrap();
             Chunk::from_src_to_dest(
                 complexity,
-                &self.multicore_settings,
+                self.multicore_settings,
                 &array[scalar_left..vectorization_length],
                 Reg::LEN,
                 &mut temp[scalar_left / 2..vectorization_length / 2],

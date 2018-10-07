@@ -397,7 +397,7 @@ macro_rules! impl_binary_vector_operation {
                 if vectorization_length.is_some() {
                     let vectorization_length = vectorization_length.unwrap();
                     Chunk::from_src_to_dest(
-                        Complexity::Small, &self.multicore_settings,
+                        Complexity::Small, self.multicore_settings,
                         &other[scalar_left..vectorization_length], Reg::LEN,
                         &mut array[scalar_left..vectorization_length], Reg::LEN, (),
                         |original, range, target, _arg| {
@@ -440,7 +440,7 @@ macro_rules! impl_binary_complex_vector_operation {
                 if vectorization_length.is_some() {
                     let vectorization_length = vectorization_length.unwrap();
                     Chunk::from_src_to_dest(
-                        Complexity::Small, &self.multicore_settings,
+                        Complexity::Small, self.multicore_settings,
                         &other[scalar_left..vectorization_length], Reg::LEN,
                         &mut array[scalar_left..vectorization_length], Reg::LEN, (),
                         |original, range, target, _arg| {
@@ -492,7 +492,7 @@ macro_rules! impl_binary_smaller_vector_operation {
                 let array = self.data.to_slice_mut();
                 let other = &$arg_name[..];
                 Chunk::from_src_to_dest(
-                    Complexity::Small, &self.multicore_settings,
+                    Complexity::Small, self.multicore_settings,
                     &other, Reg::LEN,
                     &mut array[0..data_length], 1, (),
                     |operand, range, target, _arg| {
@@ -522,7 +522,7 @@ macro_rules! impl_binary_smaller_complex_vector_ops {
                 let array = self.data.to_slice_mut();
                 let other = &$arg_name[..];
                 Chunk::from_src_to_dest(
-                    Complexity::Small, &self.multicore_settings,
+                    Complexity::Small, self.multicore_settings,
                     &other, Reg::LEN,
                     &mut array[0..data_length], 2, (),
                     |operand, range, target, _arg| {

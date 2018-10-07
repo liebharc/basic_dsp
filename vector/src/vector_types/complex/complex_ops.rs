@@ -84,7 +84,7 @@ where
         let array = self.data.to_slice_mut();
         Chunk::execute_with_range(
             Complexity::Small,
-            &self.multicore_settings,
+            self.multicore_settings,
             &mut array[0..data_length],
             2,
             (a, b),

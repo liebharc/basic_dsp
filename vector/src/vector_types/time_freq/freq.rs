@@ -64,8 +64,8 @@ where
         {
             let data = self.data.to_slice();
             let temp = temp.to_slice_mut();
-            &mut temp[step..len].clone_from_slice(&data[step..len]);
-            &mut temp[0..step].clone_from_slice(&data[0..step]);
+            temp[step..len].clone_from_slice(&data[step..len]);
+            temp[0..step].clone_from_slice(&data[0..step]);
             let mut j = step + 1;
             let mut i = temp_len - 1;
             while i >= len {

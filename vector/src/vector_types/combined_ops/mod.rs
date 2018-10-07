@@ -616,7 +616,7 @@ where
                 if any_complex_ops {
                     Chunk::execute_partial_multidim(
                         complexity,
-                        &multicore_settings,
+                        multicore_settings,
                         &mut array,
                         range,
                         Reg::LEN,
@@ -628,7 +628,7 @@ where
                 } else {
                     Chunk::execute_partial_multidim(
                         complexity,
-                        &multicore_settings,
+                        multicore_settings,
                         &mut array,
                         range,
                         Reg::LEN,

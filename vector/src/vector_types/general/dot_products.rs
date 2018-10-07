@@ -88,7 +88,7 @@ where
             let vectorization_length = vectorization_length.unwrap();
             Chunk::get_a_fold_b(
                 Complexity::Small,
-                &self.multicore_settings,
+                self.multicore_settings,
                 &other[scalar_left..vectorization_length],
                 Reg::LEN,
                 &array[scalar_left..vectorization_length],
@@ -153,7 +153,7 @@ where
             let vectorization_length = vectorization_length.unwrap();
             Chunk::get_a_fold_b(
                 Complexity::Small,
-                &self.multicore_settings,
+                self.multicore_settings,
                 &other[scalar_left..vectorization_length],
                 Reg::LEN,
                 &array[scalar_left..vectorization_length],
@@ -219,7 +219,7 @@ where
             let vectorization_length = vectorization_length.unwrap();
             Chunk::get_a_fold_b(
                 Complexity::Small,
-                &self.multicore_settings,
+                self.multicore_settings,
                 &other[scalar_left..vectorization_length],
                 Reg::LEN,
                 &array[scalar_left..vectorization_length],
@@ -283,7 +283,7 @@ where
             let vectorization_length = vectorization_length.unwrap();
             Chunk::get_a_fold_b(
                 Complexity::Small,
-                &self.multicore_settings,
+                self.multicore_settings,
                 &other[scalar_left..vectorization_length],
                 Reg::LEN,
                 &array[scalar_left..vectorization_length],

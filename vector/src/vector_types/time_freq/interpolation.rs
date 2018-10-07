@@ -99,14 +99,14 @@ fn interpolate_priv_scalar<T, TT>(
     interpolation_factor: T,
     delay: T,
     conv_len: usize,
-    multicore_settings: &MultiCoreSettings,
+    multicore_settings: MultiCoreSettings,
 ) where
     T: RealNumber,
     TT: Zero + Mul<Output = TT> + Copy + Send + Sync + From<T> + Add<Output = TT>,
 {
     Chunk::execute_with_range(
         Complexity::Large,
-        &multicore_settings,
+        multicore_settings,
         temp,
         1,
         data,
@@ -190,6 +190,7 @@ where
     N: NumberSpace,
     D: Domain,
 {
+    #[cfg_attr(feature = "cargo-clippy", allow(clippy::too_many_arguments))]
     fn interpolate_priv_simd<Reg: SimdGeneric<T>, TT, C, CMut, RMul, RSum, B>(
         &mut self,
         _: RegType<Reg>,
@@ -262,7 +263,7 @@ where
                 let simd_len_in_t = Reg::LEN / step;
                 Chunk::execute_with_range(
                     Complexity::Large,
-                    &self.multicore_settings,
+                    self.multicore_settings,
                     &mut dest[scalar_len..len - scalar_len],
                     1,
                     simd,
@@ -478,7 +479,7 @@ where
                     interpolation_factor,
                     delay,
                     conv_len,
-                    &self.multicore_settings,
+                    self.multicore_settings,
                 );
             }
             temp.trade(&mut self.data);
@@ -495,7 +496,7 @@ where
                     interpolation_factor,
                     delay,
                     conv_len,
-                    &self.multicore_settings,
+                    self.multicore_settings,
                 );
             }
             temp.trade(&mut self.data);

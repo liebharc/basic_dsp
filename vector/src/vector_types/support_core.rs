@@ -36,9 +36,9 @@ impl<'a, S: ToSliceMut<T>, T: RealNumber> BufferBorrow<S, T> for FixedLenBufferB
     fn trade(self, storage: &mut S) {
         let len = std::cmp::min(storage.len(), self.data.len());
         let storage = storage.to_slice_mut();
-        &mut storage[0..len]
+        storage[0..len]
             .to_slice_mut()
-            .copy_from_slice(&mut self.data[0..len]);
+            .copy_from_slice(&self.data[0..len]);
     }
 }
 

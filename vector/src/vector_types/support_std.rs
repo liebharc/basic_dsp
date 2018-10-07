@@ -59,6 +59,7 @@ impl<'a, T: RealNumber> BufferBorrow<Vec<T>, T> for SingleBufferBurrow<'a, T> {
 }
 
 /// A buffer which stores a single vector and never shrinks.
+#[derive(Default)]
 pub struct SingleBuffer<T>
 where
     T: RealNumber,

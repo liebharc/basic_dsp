@@ -206,9 +206,7 @@ where
             Err(_) => {
                 let orig_len = self.len();
                 let mut temp = buffer.borrow(len);
-                {
-                    &mut temp[0..orig_len].clone_from_slice(&self[..]);
-                }
+                temp[0..orig_len].clone_from_slice(&self[..]);
                 temp.trade(&mut self.data);
                 self.valid_len = len;
                 Ok(())

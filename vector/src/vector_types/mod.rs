@@ -342,7 +342,7 @@ where
             let array = self.data.to_slice_mut();
             Chunk::execute_partial(
                 complexity,
-                &self.multicore_settings,
+                self.multicore_settings,
                 &mut array[0..len],
                 1,
                 argument,
@@ -367,7 +367,7 @@ where
             let array = self.data.to_slice_mut();
             Chunk::execute_partial(
                 complexity,
-                &self.multicore_settings,
+                self.multicore_settings,
                 &mut array[0..len],
                 2,
                 argument,
@@ -419,7 +419,7 @@ where
                 let vectorization_length = vectorization_length.unwrap();
                 Chunk::execute_partial(
                     complexity,
-                    &self.multicore_settings,
+                    self.multicore_settings,
                     &mut array[scalar_left..vectorization_length],
                     Reg::LEN,
                     argument,
@@ -484,7 +484,7 @@ where
                 let vectorization_length = vectorization_length.unwrap();
                 Chunk::execute_partial(
                     complexity,
-                    &self.multicore_settings,
+                    self.multicore_settings,
                     &mut array[scalar_left..vectorization_length],
                     Reg::LEN,
                     argument,
@@ -532,7 +532,7 @@ where
                 let temp = result.to_slice_mut();
                 Chunk::from_src_to_dest(
                     complexity,
-                    &self.multicore_settings,
+                    self.multicore_settings,
                     &array[0..data_length],
                     2,
                     &mut temp[0..data_length / 2],
@@ -598,7 +598,7 @@ where
                 let vectorization_length = vectorization_length.unwrap();
                 Chunk::from_src_to_dest(
                     complexity,
-                    &self.multicore_settings,
+                    self.multicore_settings,
                     &array[scalar_left..vectorization_length],
                     Reg::LEN,
                     &mut temp[scalar_left / 2..vectorization_length / 2],
@@ -678,7 +678,7 @@ where
                 let converted = convert_mut(&mut data[0..len]);
                 Chunk::execute_with_range(
                     Complexity::Medium,
-                    &self.multicore_settings,
+                    self.multicore_settings,
                     converted,
                     1,
                     function_arg,
@@ -699,7 +699,7 @@ where
                 let converted = convert_mut(&mut data[0..len]);
                 Chunk::execute_sym_pairs_with_range(
                     Complexity::Medium,
-                    &self.multicore_settings,
+                    self.multicore_settings,
                     converted,
                     1,
                     function_arg,
