@@ -788,7 +788,7 @@ where
         let start = slice.as_ptr();
         unsafe {
             WrappingIterator {
-                start: start,
+                start,
                 end: start.offset(len - 1),
                 pos: start.offset(pos),
                 count: iter_len,
@@ -850,7 +850,7 @@ where
         let start = slice.as_ptr();
         unsafe {
             ReverseWrappingIterator {
-                start: start,
+                start,
                 end: start.offset(len - 1),
                 pos: start.offset(pos),
                 count: iter_len,

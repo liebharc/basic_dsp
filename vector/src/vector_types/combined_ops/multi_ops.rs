@@ -77,7 +77,7 @@ where
             ops: InlineVector::with_default_capcacity(),
         };
     MultiOperation1 {
-        a: a,
+        a,
         prepared_ops: ops,
     }
 }
@@ -136,8 +136,8 @@ where
         swap: false,
     };
     MultiOperation2 {
-        a: a,
-        b: b,
+        a,
+        b,
         prepared_ops: ops,
     }
 }
@@ -186,8 +186,8 @@ where
         };
 
         MultiOperation2 {
-            a: a,
-            b: b,
+            a,
+            b,
             prepared_ops: extend,
         }
     }

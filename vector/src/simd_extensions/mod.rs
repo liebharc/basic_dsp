@@ -89,7 +89,7 @@ where
 
 /// Dirty workaround since the stdsimd doesn't implement conversion traits (yet?).
 pub trait SimdFrom<T> {
-    fn regfrom(T) -> Self;
+    fn regfrom(src: T) -> Self;
 }
 
 /// SIMD methods which share their implementation independent if it's a `f32` or `f64` register.

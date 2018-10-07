@@ -58,7 +58,7 @@ where
     /// Creates a new Hamming window
     pub fn new(alpha: T) -> Self {
         HammingWindow {
-            alpha: alpha,
+            alpha,
             beta: (T::one() - alpha),
         }
     }

@@ -112,7 +112,7 @@ where
         data.try_resize(alloc)
             .expect("Expanding to alloc_len should always work");
         RealTimeVec {
-            data: data,
+            data,
             delta: T::one(),
             domain: TimeData,
             number_space: RealData,
@@ -133,7 +133,7 @@ where
         data.try_resize(alloc)
             .expect("Expanding to alloc_len should always work");
         ComplexTimeVec {
-            data: data,
+            data,
             delta: T::one(),
             domain: TimeData,
             number_space: ComplexData,
@@ -153,7 +153,7 @@ where
         data.try_resize(alloc)
             .expect("Expanding to alloc_len should always work");
         RealFreqVec {
-            data: data,
+            data,
             delta: T::one(),
             domain: FrequencyData,
             number_space: RealData,
@@ -174,7 +174,7 @@ where
         data.try_resize(alloc)
             .expect("Expanding to alloc_len should always work");
         ComplexFreqVec {
-            data: data,
+            data,
             delta: T::one(),
             domain: FrequencyData,
             number_space: ComplexData,

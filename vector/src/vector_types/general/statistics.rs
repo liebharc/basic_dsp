@@ -233,14 +233,14 @@ where
         }
 
         Statistics {
-            sum: sum,
+            sum,
             count: len,
             average: sum / (T::from(len).unwrap()),
-            min: min,
-            max: max,
+            min,
+            max,
             rms: (sum_squared / (T::from(len).unwrap())).sqrt(),
-            min_index: min_index,
-            max_index: max_index,
+            min_index,
+            max_index,
         }
     }
 
@@ -323,14 +323,14 @@ where
         }
 
         Statistics {
-            sum: sum,
-            count: count,
+            sum,
+            count,
             average: sum / (T::from(count).unwrap()),
-            min: min,
-            max: max,
+            min,
+            max,
             rms: (sum_squared / (T::from(count).unwrap())).sqrt(),
-            min_index: min_index,
-            max_index: max_index,
+            min_index,
+            max_index,
         }
     }
 

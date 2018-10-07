@@ -589,7 +589,7 @@ where
         }
 
         self.convolve_signal_scalar(buffer, impulse_response);
-        return Ok(());
+        Ok(())
     }
 }
 

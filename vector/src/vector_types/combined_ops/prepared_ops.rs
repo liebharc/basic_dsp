@@ -187,7 +187,7 @@ where
             number_space_in: self.number_space_in,
             domain_out: domain_new,
             number_space_out: number_space_new,
-            ops: ops,
+            ops,
         }
     }
 
@@ -298,12 +298,10 @@ fn sort_by_arg<T: Clone>(ops1: &OpsVec<T>, ops2: &OpsVec<T>) -> (ArgVec<T>, ArgV
             } else {
                 res1.push((n.1.clone(), other_count));
             }
+        } else if id.1 < res2.len() {
+            res2.insert(id.1, (n.1.clone(), other_count));
         } else {
-            if id.1 < res2.len() {
-                res2.insert(id.1, (n.1.clone(), other_count));
-            } else {
-                res2.push((n.1.clone(), other_count));
-            }
+            res2.push((n.1.clone(), other_count));
         }
     }
 
@@ -469,8 +467,8 @@ where
             number_space_out1: number_space_new1,
             domain_out2: domain_new2,
             number_space_out2: number_space_new2,
-            ops: ops,
-            swap: swap,
+            ops,
+            swap,
         }
     }
 

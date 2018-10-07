@@ -455,7 +455,7 @@ where
 {
     /// Creates a raised cosine function.
     pub fn new(rolloff: T) -> Self {
-        RaisedCosineFunction { rolloff: rolloff }
+        RaisedCosineFunction { rolloff }
     }
 }
 

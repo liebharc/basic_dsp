@@ -183,9 +183,9 @@ fn attempt_calibrate(number_of_cores: usize) -> Result<Calibration, u32> {
         return Err(4)
     }
 
-    let dual_core_min = 5000;
-    let dual_core_max = 100000;
-    let multi_core_max = 200000;
+    let dual_core_min = 5_000;
+    let dual_core_max = 100_000;
+    let multi_core_max = 200_000;
 
     // The multiplication factor is the less well reasoned part in this equiation. It should only help
     // to avoid that threads are spawned too aggressively.
@@ -194,10 +194,10 @@ fn attempt_calibrate(number_of_cores: usize) -> Result<Calibration, u32> {
     let large_dual_core_threshold = limit( med_dual_core_threshold_res.unwrap(), dual_core_min, dual_core_max);
     let large_multi_core_threshold = limit(med_multi_core_threshold_res.unwrap(), large_dual_core_threshold + 1, multi_core_max);
     Ok(Calibration {
-        med_dual_core_threshold: med_dual_core_threshold,
-        med_multi_core_threshold: med_multi_core_threshold,
-        large_dual_core_threshold: large_dual_core_threshold,
-        large_multi_core_threshold: large_multi_core_threshold,
+        med_dual_core_threshold,
+        med_multi_core_threshold,
+        large_dual_core_threshold,
+        large_multi_core_threshold,
         duration_cal_routine: 0.0, // Will be set by the calling function
         cal_routine_result_code: 0 // Success
     })
@@ -211,10 +211,10 @@ fn calibrate(number_of_cores: usize) -> Calibration {
             calibration
         },
         Err(err_code) => Calibration {
-            med_dual_core_threshold: 50000,
-            med_multi_core_threshold: 100000,
-            large_dual_core_threshold: 20000,
-            large_multi_core_threshold: 30000,
+            med_dual_core_threshold: 50_000,
+            med_multi_core_threshold: 100_000,
+            large_dual_core_threshold: 20_000,
+            large_multi_core_threshold: 30_000,
             duration_cal_routine: time::precise_time_s() - start,
             cal_routine_result_code: err_code
         }

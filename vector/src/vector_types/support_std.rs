@@ -96,7 +96,7 @@ where
 
         SingleBufferBurrow {
             owner: self,
-            len: len,
+            len,
         }
     }
 
@@ -518,7 +518,7 @@ where
         let data_length = data.len();
 
         Ok(ComplexTimeVec {
-            data: data,
+            data,
             delta: T::one(),
             domain: TimeData,
             number_space: ComplexData,
@@ -549,7 +549,7 @@ where
         let data_length = data.len();
 
         Ok(ComplexFreqVec {
-            data: data,
+            data,
             delta: T::one(),
             domain: FrequencyData,
             number_space: ComplexData,

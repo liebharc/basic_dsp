@@ -405,8 +405,8 @@ where
     let mut vec = DspVec {
         data: vec.data,
         delta: vec.delta,
-        domain: domain,
-        number_space: number_space,
+        domain,
+        number_space,
         valid_len: vec.valid_len,
         multicore_settings: vec.multicore_settings,
     };
