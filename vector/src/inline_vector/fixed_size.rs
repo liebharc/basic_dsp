@@ -65,34 +65,34 @@ impl<T> InlineVector<T> {
     }
 
     pub fn push(&mut self, elem: T) {
-        match self {
-            &mut InlineVector::Inline(ref mut v) => {
+        match *self {
+            InlineVector::Inline(ref mut v) => {
                 v.push(elem);
             }
         };
     }
 
     pub fn remove(&mut self, index: usize) -> T {
-        match self {
-            &mut InlineVector::Inline(ref mut v) => v.remove(index),
+        match *self {
+            InlineVector::Inline(ref mut v) => v.remove(index),
         }
     }
 
     pub fn pop(&mut self) -> Option<T> {
-        match self {
-            &mut InlineVector::Inline(ref mut v) => v.pop(),
+        match *self {
+            InlineVector::Inline(ref mut v) => v.pop(),
         }
     }
 
     pub fn len(&self) -> usize {
-        match self {
-            &InlineVector::Inline(ref v) => v.len(),
+        match *self {
+            InlineVector::Inline(ref v) => v.len(),
         }
     }
 
     pub fn capacity(&self) -> usize {
-        match self {
-            &InlineVector::Inline(ref v) => v.capacity(),
+        match *self {
+            InlineVector::Inline(ref v) => v.capacity(),
         }
     }
 
@@ -104,15 +104,13 @@ impl<T> InlineVector<T> {
     pub fn iter(&self) -> Iter<T> {
         match *self {
             InlineVector::Inline(ref v) => v.iter(),
-            InlineVector::Dynamic(ref v) => v.iter(),
         }
     }
 
     #[inline]
     pub fn iter_mut(&mut self) -> IterMut<T> {
-        match *self {
+        match self {
             InlineVector::Inline(ref mut v) => v.iter_mut(),
-            InlineVector::Dynamic(ref mut v) => v.iter_mut(),
         }
     }
 
@@ -123,9 +121,9 @@ impl<T> InlineVector<T> {
     }
 
     pub fn insert(&mut self, index: usize, element: T) {
-        match self {
-            &mut InlineVector::Inline(ref mut v) => {
-                let _ = v.insert(index, element);
+        match *self {
+            InlineVector::Inline(ref mut v) => {
+                v.insert(index, element);
             }
         }
     }
@@ -133,8 +131,8 @@ impl<T> InlineVector<T> {
 
 impl<T: Zero + Clone> InlineVector<T> {
     pub fn try_resize(&mut self, len: usize) -> VoidResult {
-        match self {
-            &mut InlineVector::Inline(ref v) => {
+        match *self {
+            InlineVector::Inline(ref v) => {
                 if v.capacity() >= len {
                     Ok(())
                 } else {
@@ -149,8 +147,8 @@ impl<T> Index<usize> for InlineVector<T> {
     type Output = T;
 
     fn index(&self, index: usize) -> &T {
-        match self {
-            &InlineVector::Inline(ref v) => &v[index],
+        match *self {
+            InlineVector::Inline(ref v) => &v[index],
         }
     }
 }
@@ -158,7 +156,7 @@ impl<T> Index<usize> for InlineVector<T> {
 impl<T> IndexMut<usize> for InlineVector<T> {
     fn index_mut(&mut self, index: usize) -> &mut T {
         match self {
-            &mut InlineVector::Inline(ref mut v) => &mut v[index],
+            InlineVector::Inline(ref mut v) => &mut v[index],
         }
     }
 }
@@ -167,16 +165,16 @@ impl<T> Index<RangeFull> for InlineVector<T> {
     type Output = [T];
 
     fn index(&self, _index: RangeFull) -> &[T] {
-        match self {
-            &InlineVector::Inline(ref v) => &v[..],
+        match *self {
+            InlineVector::Inline(ref v) => &v[..],
         }
     }
 }
 
 impl<T> IndexMut<RangeFull> for InlineVector<T> {
     fn index_mut(&mut self, _index: RangeFull) -> &mut [T] {
-        match self {
-            &mut InlineVector::Inline(ref mut v) => &mut v[..],
+        match *self {
+            InlineVector::Inline(ref mut v) => &mut v[..],
         }
     }
 }
@@ -185,16 +183,16 @@ impl<T> Index<RangeFrom<usize>> for InlineVector<T> {
     type Output = [T];
 
     fn index(&self, index: RangeFrom<usize>) -> &[T] {
-        match self {
-            &InlineVector::Inline(ref v) => &v[index],
+        match *self {
+            InlineVector::Inline(ref v) => &v[index],
         }
     }
 }
 
 impl<T> IndexMut<RangeFrom<usize>> for InlineVector<T> {
     fn index_mut(&mut self, index: RangeFrom<usize>) -> &mut [T] {
-        match self {
-            &mut InlineVector::Inline(ref mut v) => &mut v[index],
+        match *self {
+            InlineVector::Inline(ref mut v) => &mut v[index],
         }
     }
 }
@@ -203,24 +201,24 @@ impl<T> Index<RangeTo<usize>> for InlineVector<T> {
     type Output = [T];
 
     fn index(&self, index: RangeTo<usize>) -> &[T] {
-        match self {
-            &InlineVector::Inline(ref v) => &v[index],
+        match *self {
+            InlineVector::Inline(ref v) => &v[index],
         }
     }
 }
 
 impl<T> IndexMut<RangeTo<usize>> for InlineVector<T> {
     fn index_mut(&mut self, index: RangeTo<usize>) -> &mut [T] {
-        match self {
-            &mut InlineVector::Inline(ref mut v) => &mut v[index],
+        match *self {
+            InlineVector::Inline(ref mut v) => &mut v[index],
         }
     }
 }
 
 impl<T: Clone> Clone for InlineVector<T> {
     fn clone(&self) -> Self {
-        match self {
-            &InlineVector::Inline(ref v) => InlineVector::Inline(v.clone()),
+        match *self {
+            InlineVector::Inline(ref v) => InlineVector::Inline(v.clone()),
         }
     }
 }

@@ -231,6 +231,7 @@ impl Chunk {
     /// Executes the given function on the all elements of the array in parallel and passes
     /// the argument to all function calls.. Results are intended to be stored in the target array.
     #[inline]
+    #[cfg_attr(feature = "cargo-clippy", allow(clippy::too_many_arguments))]
     pub fn from_src_to_dest<'a, T, S, F>(
         _: Complexity,
         _: MultiCoreSettings,
@@ -239,7 +240,7 @@ impl Chunk {
         target: &mut [T],
         _: usize,
         arguments: S,
-        ref function: F,
+        function: F,
     ) where
         F: Fn(&[T], Range<usize>, &mut [T], S) + 'a + Sync,
         T: Float + Copy + Clone + Send + Sync,

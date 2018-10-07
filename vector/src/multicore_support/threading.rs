@@ -756,7 +756,6 @@ impl Chunk {
         if number_of_chunks > 1 {
             let chunks = Chunk::partition_mut(target, target_step, number_of_chunks);
             let ranges = Chunk::partition_in_ranges(original_length, original_step, chunks.len());
-
             crossbeam::scope(|scope| {
                 for chunk in chunks.zip(ranges) {
                     scope.spawn(move || {
