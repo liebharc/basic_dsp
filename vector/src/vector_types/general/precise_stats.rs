@@ -140,7 +140,7 @@ where
                 let mut stats = Statistics::empty();
                 let mut j = range.start;
                 for num in array {
-                    stats.add(*num as f64, j);
+                    stats.add(f64::from(*num), j);
                     j += 1;
                 }
                 stats
@@ -181,7 +181,7 @@ where
                 let mut j = range.start;
                 for num in array {
                     let stats = &mut results[j % len];
-                    stats.add(*num as f64, j / len);
+                    stats.add(f64::from(*num), j / len);
                     j += 1;
                 }
 
@@ -289,7 +289,7 @@ where
             move |array, _, _| {
                 let mut sum = 0.0;
                 for n in array {
-                    sum += *n as f64;
+                    sum += f64::from(*n);
                 }
                 sum
             },
@@ -309,7 +309,7 @@ where
             move |array, _, _| {
                 let mut sum = 0.0;
                 for n in array {
-                    let t = *n as f64;
+                    let t = f64::from(*n);
                     sum += t * t;
                 }
                 sum
@@ -376,7 +376,7 @@ where
                 let mut j = range.start / 2;
                 let array = array_to_complex(array);
                 for num in array {
-                    stat.add(Complex64::new(num.re as f64, num.im as f64), j);
+                    stat.add(Complex64::new(f64::from(num.re), f64::from(num.im)), j);
                     j += 1;
                 }
                 stat
@@ -421,7 +421,7 @@ where
                 let array = array_to_complex(array);
                 for num in array {
                     let stat = &mut results[j % len];
-                    stat.add(Complex64::new(num.re as f64, num.im as f64), j / len);
+                    stat.add(Complex64::new(f64::from(num.re), f64::from(num.im)), j / len);
                     j += 1;
                 }
 
@@ -535,7 +535,7 @@ where
                 let mut sum = Complex64::zero();
                 let array = array_to_complex(&array[0..array.len()]);
                 for n in array {
-                    sum = sum + Complex64::new(n.re as f64, n.im as f64);
+                    sum += Complex64::new(f64::from(n.re), f64::from(n.im));
                 }
                 sum
             },
@@ -556,8 +556,8 @@ where
                 let mut sum = Complex::<f64>::zero();
                 let array = array_to_complex(&array[0..array.len()]);
                 for n in array {
-                    let t = Complex64::new(n.re as f64, n.im as f64);
-                    sum = sum + t * t;
+                    let t = Complex64::new(f64::from(n.re), f64::from(n.im));
+                    sum += t * t;
                 }
                 sum
             },

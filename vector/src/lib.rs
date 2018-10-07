@@ -226,7 +226,7 @@ pub mod numbers {
 fn transmute_slice<S, D>(source: &[S]) -> &[D] {
     let len = get_target_slice_len::<S, D>(source);
     unsafe {
-        let trans: &[D] = std::mem::transmute(source);
+        let trans: &[D] = &*(source as *const [S] as *const [D]);
         std::slice::from_raw_parts(trans.as_ptr(), len)
     }
 }
@@ -236,7 +236,7 @@ fn transmute_slice<S, D>(source: &[S]) -> &[D] {
 fn transmute_slice_mut<S, D>(source: &mut [S]) -> &mut[D] {
     let len = get_target_slice_len::<S, D>(source);
     unsafe {
-        let trans: &mut [D] = std::mem::transmute(source);
+        let trans: &mut [D] = &mut *(source as *mut [S] as *mut [D]);
         std::slice::from_raw_parts_mut(trans.as_mut_ptr(), len)
     }
 }
@@ -275,8 +275,8 @@ fn memcpy<T: Copy>(data: &mut [T], from: Range<usize>, to: usize) {
     unsafe {
         let ptr = data.as_mut_ptr();
         copy(
-            ptr.offset(from.start as isize),
-            ptr.offset(to as isize),
+            ptr.add(from.start),
+            ptr.add(to),
             from.end - from.start,
         )
     }
@@ -289,7 +289,7 @@ fn memzero<T: Copy>(data: &mut [T], range: Range<usize>) {
     assert!(range.end <= data.len());
     unsafe {
         let ptr = data.as_mut_ptr();
-        write_bytes(ptr.offset(range.start as isize), 0, range.end - range.start);
+        write_bytes(ptr.add(range.start), 0, range.end - range.start);
     }
 }
 
