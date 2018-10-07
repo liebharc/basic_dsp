@@ -43,15 +43,6 @@ build_all: build
 	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --features use_sse
 	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml    
 	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --no-default-features
-	
-clippy:
-ifeq ($(RUST_NIGHTLY), nightly)
-else
-	$(CARGO_CMD) clippy --manifest-path vector/Cargo.toml
-	$(CARGO_CMD) clippy --manifest-path matrix/Cargo.toml
-	$(CARGO_CMD) clippy --manifest-path interop/Cargo.toml
-	$(CARGO_CMD) clippy
-endif	
     
 test_all: test
 	$(CARGO_CMD) clean
