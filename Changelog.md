@@ -1,6 +1,11 @@
 # `basic_dsp`
 Changes:
 
+## Version 0.6.0
+
+- Removed `combined_ops` module as it at best showed performance improvements of 10% which didn't justify the complexity within it.
+
+
 ## Version 0.5.6
 
 **Behaviour changes**:

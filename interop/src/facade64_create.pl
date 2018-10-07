@@ -44,4 +44,3 @@ sub copy_replace {
 }
 
 copy_replace("facade32", "facade64");
-copy_replace("combined_ops32", "combined_ops64");

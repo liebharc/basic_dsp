@@ -161,36 +161,6 @@ impl Simd<f32> for f32x8 {
     }
 
     #[inline]
-    fn complex_abs_squared2(self) -> f32x8 {
-        let abs = self.complex_abs_squared();
-        f32x8::new(
-            abs.extract(0),
-            abs.extract(2),
-            abs.extract(1),
-            abs.extract(3),
-            abs.extract(4),
-            abs.extract(6),
-            abs.extract(5),
-            abs.extract(7),
-        )
-    }
-
-    #[inline]
-    fn complex_abs2(self) -> f32x8 {
-        let abs = self.complex_abs();
-        f32x8::new(
-            abs.extract(0),
-            abs.extract(2),
-            abs.extract(1),
-            abs.extract(3),
-            abs.extract(4),
-            abs.extract(6),
-            abs.extract(5),
-            abs.extract(7),
-        )
-    }
-
-    #[inline]
     fn sqrt(self) -> f32x8 {
         simd::x86::avx::AvxF32x8::sqrt(self)
     }
@@ -372,28 +342,6 @@ impl Simd<f64> for f64x4 {
     fn complex_abs(self) -> f64x4 {
         let squared_sum = self.complex_abs_squared();
         simd::x86::avx::AvxF64x4::sqrt(squared_sum)
-    }
-
-    #[inline]
-    fn complex_abs_squared2(self) -> f64x4 {
-        let abs = self.complex_abs_squared();
-        f64x4::new(
-            abs.extract(0),
-            abs.extract(2),
-            abs.extract(1),
-            abs.extract(3),
-        )
-    }
-
-    #[inline]
-    fn complex_abs2(self) -> f64x4 {
-        let abs = self.complex_abs();
-        f64x4::new(
-            abs.extract(0),
-            abs.extract(2),
-            abs.extract(1),
-            abs.extract(3),
-        )
     }
 
     #[inline]

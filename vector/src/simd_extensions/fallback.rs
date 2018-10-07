@@ -253,23 +253,6 @@ impl Simd<f32> for f32x4 {
             0.0,
         )
     }
-    #[inline]
-
-    fn complex_abs_squared2(self) -> f32x4 {
-        let squared = self * self;
-        f32x4::new(squared.0 + squared.1, 0.0, squared.2 + squared.3, 0.0)
-    }
-
-    #[inline]
-    fn complex_abs2(self) -> f32x4 {
-        let squared = self * self;
-        f32x4::new(
-            (squared.0 + squared.1).sqrt(),
-            0.0,
-            (squared.2 + squared.3).sqrt(),
-            0.0,
-        )
-    }
 
     #[inline]
     fn sqrt(self) -> f32x4 {
@@ -405,22 +388,6 @@ impl Simd<f64> for f64x2 {
 
     #[inline]
     fn complex_abs(self) -> f64x2 {
-        let a = self.0;
-        let b = self.1;
-        let result = (a * a + b * b).sqrt();
-        f64x2::new(result, 0.0)
-    }
-
-    #[inline]
-    fn complex_abs_squared2(self) -> f64x2 {
-        let a = self.0;
-        let b = self.1;
-        let result = a * a + b * b;
-        f64x2::new(result, 0.0)
-    }
-
-    #[inline]
-    fn complex_abs2(self) -> f64x2 {
         let a = self.0;
         let b = self.1;
         let result = (a * a + b * b).sqrt();

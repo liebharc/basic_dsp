@@ -4,9 +4,7 @@ extern crate basic_dsp_vector;
 extern crate num_complex;
 
 pub mod facade32;
-pub mod combined_ops32;
 pub mod facade64;
-pub mod combined_ops64;
 use basic_dsp_vector::{VoidResult, SingleBuffer, TransRes, PaddingOption, GenDspVec, ScalarResult,
                        ErrorReason};
 use basic_dsp_vector::window_functions::*;

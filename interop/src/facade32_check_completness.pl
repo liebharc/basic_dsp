@@ -53,54 +53,6 @@ sub parse_trait_definition {
     return @methods;
 }
 
-sub parse_enum_definition {
-    my ($file, @enums) = @_;
-    open DEF, "<", $file or die $!;
-    my $enums = join("|", @enums);
-    my @enums_found;
-    my $level = 0;
-    my $record = 0;
-    my @members = ();
-    while (<DEF>) {
-        my $line = $_;
-        chomp $line;
-        if ($level == 0 and $line =~ /^pub enum (\w+)/) {
-            my $enum = $1;
-            $record = $enum =~ /($enums)/;
-            push @enums_found, $enum;
-        }
-        if ($line =~ /\{/) {
-            $level++;
-        }
-        if ($line =~ /\}/) {
-            $level--;
-            if ($level == 0) {
-                $record = 0;
-            }
-        }
-
-        if ($level == 1 and $record and $line =~ /(\w+)[\(;]/) {
-            my $member = $1;
-            push @members, $member;
-        }
-    }
-    close DEF;
-
-    my @union;
-    for my $enum (@enums_found)
-    {
-        if ( grep( /^$enum$/, @enums ) ) {
-          push @union, $enum;
-        }
-    }
-
-    if (scalar @enums ne scalar @union) {
-        die "@enums should have been parsed but only @union were found.";
-    }
-
-    return @members;
-}
-
 sub parse_facade {
     my ($type, $file) = @_;
     open FACADE32, "<", "$file" or die $!;
@@ -114,17 +66,6 @@ sub parse_facade {
     }
     close FACADE32;
     return @methods;
-}
-
-sub camel_to_snake {
-    my @input = @_;
-    my @output;
-    for my $input (@input) {
-        $input =~ s/([a-z])([A-Z])/"$1_$2"/egx;
-        push @output, lc $input;
-    }
-
-    return @output;
 }
 
 # DataVector32
@@ -172,33 +113,6 @@ for my $def (@definitions) {
     }
     else {
         print "missing for DataVector32: $def\n";
-        $missing++;
-    }
-}
-
-# multi-ops
-@definitions = parse_enum_definition("$root/combined_ops/operations_enum.rs", "Operation");
-@definitions = camel_to_snake(@definitions);
-@impl = parse_facade("PreparedOp1F32", "combined_ops32.rs");
-for my $def (@definitions) {
-    my $regex = sprintf("%s_ops1_f", $def);
-    if (grep(/^$regex$/, @impl)) {
-        $found++;
-    }
-    else {
-        print "missing for PreparedOp1F32: $def\n";
-        $missing++;
-    }
-}
-
-@impl = parse_facade("PreparedOp2F32", "combined_ops32.rs");
-for my $def (@definitions) {
-    my $regex = sprintf("%s_ops2_f", $def);
-    if (grep(/^$regex$/, @impl)) {
-        $found++;
-    }
-    else {
-        print "missing for PreparedOp2F32: $def\n";
         $missing++;
     }
 }

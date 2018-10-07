@@ -21,8 +21,6 @@ Activate with: `--features use_gpu`.
 
 `use_gpu` relies on `opencl` and `clFFT` to implement some operations (right now `fft` and `convolve_signal`) on the GPU. GPUs have the advantage that they allow highly parallel processing which is beneficial for many DSP operations. However GPUs also have the disadvantage that they have a high latency, which means that it takes time to move data to the GPU and back to the host CPU. For a library like `basic_dsp_vector` with many low level DSP operations, the high latency is a major drawback. Therefore the GPU is only used if the vector length exceeds a predefined threshold. 
 
-In future the `combined_ops` may be an option to make further use of a GPU. But as of today that's not implemented.
-
 To run `basic_dsp_vector` with `use_gpu` at least one `opencl` driver must be installed (e.g. one of Intel, NVidia or AMD) and the `clFFT` library must be in the library path. Users should keep in mind that many consumer GPUs are optimized for `f32` operations and will be rather slow on `f64` data.
 
 # Embedded support: `no_std`

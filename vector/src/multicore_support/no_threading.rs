@@ -52,29 +52,6 @@ impl Chunk {
         function(array, arguments);
     }
 
-    /// Executes the given function on the first `array_length` elements of the given list of
-    /// arrays in parallel and passes the argument to all function calls.
-    #[inline]
-    pub fn execute_partial_multidim<'a, T, S, F>(
-        _: Complexity,
-        _: MultiCoreSettings,
-        array: &mut [&mut [T]],
-        range: Range<usize>,
-        _: usize,
-        arguments: S,
-        ref function: F,
-    ) where
-        F: Fn(&mut InlineVector<&mut [T]>, Range<usize>, S) + 'a + Sync,
-        T: RealNumber,
-        S: Sync + Copy + Send,
-    {
-        let mut shortened: InlineVector<&mut [T]> = array
-            .iter_mut()
-            .map(|a| &mut a[range.start..range.end])
-            .collect();
-        function(&mut shortened, range, arguments);
-    }
-
     /// Executes the given function on the all elements of the array and also tells the function
     /// on which range/chunk it operates on.
     #[inline]

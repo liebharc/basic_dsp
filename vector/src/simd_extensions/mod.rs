@@ -50,14 +50,6 @@ where
     /// Store the complex norm in the first half of the vector.
     fn complex_abs(self) -> Self;
 
-    /// Same as `complex_abs_squared` but stores the result
-    /// as complex number
-    fn complex_abs_squared2(self) -> Self;
-
-    /// Same as `complex_abs` but stores the result
-    /// as complex number where the imaginary part is 0.
-    fn complex_abs2(self) -> Self;
-
     /// Calculates the square root of the register.
     fn sqrt(self) -> Self;
 

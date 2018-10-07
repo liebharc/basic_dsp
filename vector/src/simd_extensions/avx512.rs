@@ -176,16 +176,6 @@ impl Simd<f32> for f32x16 {
     }
 
     #[inline]
-    fn complex_abs_squared2(self) -> f32x16 {
-        self.complex_abs_squared()
-    }
-
-    #[inline]
-    fn complex_abs2(self) -> f32x16 {
-        self.complex_abs()
-    }
-
-    #[inline]
     fn sqrt(self) -> f32x16 {
         unsafe { _mm512_sqrt_ps(self) }
     }
@@ -386,16 +376,6 @@ impl Simd<f64> for f64x8 {
     fn complex_abs(self) -> f64x8 {
         let squared_sum = self.complex_abs_squared();
         unsafe { _mm512_sqrt_pd(squared_sum) }
-    }
-
-    #[inline]
-    fn complex_abs_squared2(self) -> f64x8 {
-        self.complex_abs_squared()
-    }
-
-    #[inline]
-    fn complex_abs2(self) -> f64x8 {
-        self.complex_abs()
     }
 
     #[inline]
