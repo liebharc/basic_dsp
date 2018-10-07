@@ -11,16 +11,16 @@ ifeq ($(RUST_NIGHTLY), nightly)
 	$(CARGO_CMD) clean
 	$(CARGO_CMD) test --manifest-path vector/Cargo.toml --no-default-features --lib
 	$(CARGO_CMD) clean
-	$(CARGO_CMD) test --features use_sse
+	$(CARGO_CMD) test --features use_sse2
 	$(CARGO_CMD) clean
-	$(CARGO_CMD) test --features use_avx
+	$(CARGO_CMD) test --features use_avx2
 else
 	$(MAKE) run-all TASK="test"
 endif
 	
 bench:
 ifeq ($(RUST_NIGHTLY), nightly)
-	$(CARGO_CMD) bench --verbose --features use_avx
+	$(CARGO_CMD) bench --verbose --features use_avx2
 else
 	@echo "Bench requires Rust nigthly, skipping bench for $(RUST_VERSION)"
 endif
@@ -38,9 +38,9 @@ build_all: build
 	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml
 	$(CARGO_CMD) build --manifest-path vector/Cargo.toml
 	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml    
-	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --features use_avx
+	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --features use_avx2
 	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml    
-	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --features use_sse
+	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --features use_sse2
 	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml    
 	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --no-default-features
 	
@@ -54,8 +54,8 @@ endif
 test_all: test
 	$(CARGO_CMD) clean
 	$(CARGO_CMD) test --manifest-path vector/Cargo.toml --no-default-features --lib
-	$(CARGO_CMD) test --features use_sse
-	$(CARGO_CMD) test --features use_avx
+	$(CARGO_CMD) test --features use_sse2
+	$(CARGO_CMD) test --features use_avx2
 
 run-all: $(packages)
 	$(CARGO_CMD) $(TASK) --verbose

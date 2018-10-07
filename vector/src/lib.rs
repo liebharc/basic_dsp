@@ -76,7 +76,7 @@ extern crate num_traits;
 #[cfg(any(feature = "doc", feature = "use_gpu"))]
 extern crate ocl;
 extern crate rustfft;
-#[cfg(any(feature = "doc", feature = "use_sse", feature = "use_avx"))]
+#[cfg(any(feature = "doc", feature = "use_sse2", feature = "use_avx2"))]
 extern crate simd;
 #[cfg(feature = "std")]
 extern crate time;
@@ -104,8 +104,8 @@ pub mod numbers {
     pub use num_traits::One;
     use rustfft;
     #[cfg(any(
-        feature = "use_sse",
-        feature = "use_avx",
+        feature = "use_sse2",
+        feature = "use_avx2",
         feature = "use_avx512"
     ))]
     use simd;
@@ -159,14 +159,14 @@ pub mod numbers {
     impl ToSimd for f32 {
         type RegFallback = simd_extensions::fallback::f32x4;
 
-        #[cfg(feature = "use_sse")]
+        #[cfg(feature = "use_sse2")]
         type RegSse = simd::f32x4;
-        #[cfg(not(feature = "use_sse"))]
+        #[cfg(not(feature = "use_sse2"))]
         type RegSse = simd_extensions::fallback::f32x4;
 
-        #[cfg(feature = "use_avx")]
+        #[cfg(feature = "use_avx2")]
         type RegAvx = simd::x86::avx::f32x8;
-        #[cfg(not(feature = "use_avx"))]
+        #[cfg(not(feature = "use_avx2"))]
         type RegAvx = simd_extensions::fallback::f32x4;
 
         #[cfg(feature = "use_avx512")]
@@ -180,14 +180,14 @@ pub mod numbers {
     impl ToSimd for f64 {
         type RegFallback = simd_extensions::fallback::f64x2;
 
-        #[cfg(feature = "use_sse")]
+        #[cfg(feature = "use_sse2")]
         type RegSse = simd::x86::sse2::f64x2;
-        #[cfg(not(feature = "use_sse"))]
+        #[cfg(not(feature = "use_sse2"))]
         type RegSse = simd_extensions::fallback::f64x2;
 
-        #[cfg(feature = "use_avx")]
+        #[cfg(feature = "use_avx2")]
         type RegAvx = simd::x86::avx::f64x4;
-        #[cfg(not(feature = "use_avx"))]
+        #[cfg(not(feature = "use_avx2"))]
         type RegAvx = simd_extensions::fallback::f64x2;
 
         #[cfg(feature = "use_avx512")]

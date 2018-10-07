@@ -1,7 +1,7 @@
 use numbers::*;
-#[cfg(feature = "use_avx")]
+#[cfg(feature = "use_avx2")]
 use simd::x86::avx as simdavx;
-#[cfg(feature = "use_sse")]
+#[cfg(feature = "use_sse2")]
 use simd::x86::sse2 as simdsse;
 use std;
 use std::mem;
@@ -326,23 +326,23 @@ simd_generic_impl!(f32, simd::f32x16); // Type isn't implemented in simd
 #[cfg(feature = "use_avx512")]
 simd_generic_impl!(f64, simd::f64x8); // Type isn't implemented in simd
 
-#[cfg(feature = "use_avx")]
+#[cfg(feature = "use_avx2")]
 mod avx;
-#[cfg(feature = "use_avx")]
+#[cfg(feature = "use_avx2")]
 simd_generic_impl!(f32, simdavx::f32x8);
-#[cfg(feature = "use_avx")]
+#[cfg(feature = "use_avx2")]
 simd_generic_impl!(f64, simdavx::f64x4);
 
-#[cfg(feature = "use_sse")]
+#[cfg(feature = "use_sse2")]
 mod sse;
-#[cfg(feature = "use_sse")]
+#[cfg(feature = "use_sse2")]
 simd_generic_impl!(f32, simd::f32x4);
-#[cfg(feature = "use_sse")]
+#[cfg(feature = "use_sse2")]
 simd_generic_impl!(f64, simdsse::f64x2);
 
 #[cfg(any(
-    feature = "use_sse",
-    feature = "use_avx",
+    feature = "use_sse2",
+    feature = "use_avx2",
     feature = "use_avx512"
 ))]
 mod approximations;
@@ -371,9 +371,9 @@ macro_rules! sel_reg(
     ($self_:ident.$method: ident::<$type: ident>($($args: expr),*)) => {
         if is_x86_feature_detected!("avx512vl") && cfg!(feature="use_avx512") {
             $self_.$method(RegType::<<$type as ToSimd>::RegAvx512>::new(), $($args),*)
-        } else if is_x86_feature_detected!("avx2") && cfg!(feature="use_avx") {
+        } else if is_x86_feature_detected!("avx2") && cfg!(feature="use_avx2") {
             $self_.$method(RegType::<<$type as ToSimd>::RegAvx>::new(), $($args),*)
-        } else if is_x86_feature_detected!("sse2") && cfg!(feature="use_sse") {
+        } else if is_x86_feature_detected!("sse2") && cfg!(feature="use_sse2") {
             $self_.$method(RegType::<<$type as ToSimd>::RegSse>::new(), $($args),*)
         } else {
             $self_.$method(RegType::<<$type as ToSimd>::RegFallback>::new(), $($args),*)
@@ -382,9 +382,9 @@ macro_rules! sel_reg(
     ($method: ident::<$type: ident>($($args: expr),*)) => {
         if is_x86_feature_detected!("avx512vl") && cfg!(feature="use_avx512") {
             $method(RegType::<<$type as ToSimd>::RegAvx512>::new(), $($args),*)
-        } else if is_x86_feature_detected!("avx2") && cfg!(feature="use_avx") {
+        } else if is_x86_feature_detected!("avx2") && cfg!(feature="use_avx2") {
             $method(RegType::<<$type as ToSimd>::RegAvx>::new(), $($args),*)
-        } else if is_x86_feature_detected!("sse2") && cfg!(feature="use_sse") {
+        } else if is_x86_feature_detected!("sse2") && cfg!(feature="use_sse2") {
             $method(RegType::<<$type as ToSimd>::RegSse>::new(), $($args),*)
         } else {
             $method(RegType::<<$type as ToSimd>::RegFallback>::new(), $($args),*)
@@ -406,7 +406,7 @@ mod tests {
         assert_eq!(get_alignment_offset(24, reg_len), 8);
     }
 
-    #[cfg(feature = "use_avx")]
+    #[cfg(feature = "use_avx2")]
     mod avx {
         use super::super::*;
         #[test]

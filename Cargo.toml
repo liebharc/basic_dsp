@@ -47,8 +47,8 @@ time = "^0.1"
 
 [features]
 use_avx512 = ["basic_dsp_vector/use_avx512"]
-use_avx = ["basic_dsp_vector/use_avx"]
-use_sse = ["basic_dsp_vector/use_sse"]
+use_avx2 = ["basic_dsp_vector/use_avx2"]
+use_sse2 = ["basic_dsp_vector/use_sse2"]
 use_gpu = ["basic_dsp_vector/use_gpu"]
 matrix = ["basic_dsp_matrix"]
 interop= ["basic_dsp_interop"]

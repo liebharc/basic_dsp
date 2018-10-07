@@ -4,15 +4,15 @@
 
 The next table marks the allowed combinations for feature flags with an `X`.
 
-|            | use_sse | use_avx | use_gpu | no_std |
+|             | use_sse2 | use_avx2 | use_gpu | no_std |
 |:----------:|:-------:|:-------:|:------:|:------:|
-| use_sse    |    X    |    X    |    X   |    X   |
-| use_avx    |    X    |    X    |    X   |    X   |
-| use_gpu    |    X    |    X    |    X   |        |
-| no_std     |    X    |    X    |        |    X   |
-
-# SIMD support: `use_sse` and `use_avx`
-Activate with: `--features use_sse` or `--features use_avx`.
+| use_sse2    |    X    |    X     |    X   |    X   |
+| use_avx2    |    X    |    X     |    X   |    X   |
+| use_gpu     |    X    |    X     |    X   |        |
+| no_std      |    X    |    X     |        |    X   |
+ 
+# SIMD support: `use_sse2` and `use_avx2`
+Activate with: `--features use_sse2` or `--features use_avx2`.
 
 This enables explicit [SSE2](https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions) and [AVX2](https://en.wikipedia.org/wiki/Advanced_Vector_Extensions) support. `SSE2` and `AVX2` are vector instructions which are supported by some CPUs (e.g. Intel and AMD) which speed up the calculations. Without any of those feature flags the lib relies on `rustc` to vectorize the code, and typically `rustc` does a very good job on that as long as it's called with the correct arguments (`-C target-cpu=native -C target-feature=+sse2,+sse3,+avx2,+avx`). There are however some cases where explicit vectorization is useful. The feature flags require the `stdsimd` crate. 
 
