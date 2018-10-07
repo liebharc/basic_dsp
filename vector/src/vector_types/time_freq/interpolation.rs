@@ -254,7 +254,7 @@ where
 
             let (scalar_left, _, vectorization_length) =
                 Reg::calc_data_alignment_reqs(&data[0..data_len]);
-            let scalar_left_points =  scalar_left / step;
+            let scalar_left_points = scalar_left / step;
             if vectorization_length.is_some() {
                 let vectorization_length = vectorization_length.unwrap();
                 let simd = Reg::array_to_regs(&data[scalar_left..vectorization_length]);
@@ -278,7 +278,8 @@ where
                             // The reasoning for the next match is analog to the explanation in the
                             // create_shifted_copies function.
                             // We need the inverse of the mod unless we start with zero
-                            let factor_shift = (interpolation_factor - factor_shift) % interpolation_factor;
+                            let factor_shift =
+                                (interpolation_factor - factor_shift) % interpolation_factor;
                             let selection = factor_shift * simd_len_in_t + simd_shift;
                             let shifted = &shifts[selection];
                             let mut sum = Reg::splat(T::zero());

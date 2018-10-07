@@ -228,7 +228,7 @@ where
                     let mut i = range.start;
                     let target = Reg::array_to_regs(&target[..]);
                     kahan_sum(target.iter().map(|a| {
-                        let res = *a *Reg::load_unchecked(original, i);
+                        let res = *a * Reg::load_unchecked(original, i);
                         i += Reg::LEN;
                         res
                     }))

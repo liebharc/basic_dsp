@@ -276,13 +276,19 @@ macro_rules! simd_generic_impl {
         
             #[inline]
             fn array_to_regs(array: &[$data_type]) -> &[Self] {
-                assert_eq!(get_alignment_offset(array.as_ptr() as usize, mem::size_of::<Self>()), 0);
+                assert_eq!(
+                    get_alignment_offset(array.as_ptr() as usize, mem::size_of::<Self>()),
+                    0
+                );
                 super::transmute_slice(array)
             }
         
             #[inline]
             fn array_to_regs_mut(array: &mut [$data_type]) -> &mut [Self] {
-                assert_eq!(get_alignment_offset(array.as_ptr() as usize, mem::size_of::<Self>()), 0);
+                assert_eq!(
+                    get_alignment_offset(array.as_ptr() as usize, mem::size_of::<Self>()),
+                    0
+                );
                 super::transmute_slice_mut(array)
             }
         

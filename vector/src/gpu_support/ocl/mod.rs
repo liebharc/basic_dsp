@@ -345,8 +345,7 @@ where
             Direction::Forward
         };
         // Execute plan
-        plan.enq(direction, &in_buffer, &mut res_buffer)
-            .unwrap();
+        plan.enq(direction, &in_buffer, &mut res_buffer).unwrap();
 
         // Wait for calculation to finish and read results
         res_buffer

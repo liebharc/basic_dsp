@@ -54,7 +54,10 @@
 //! And the type `GenDspVec` serves as wild card at compile time since it defers all checks to run time.
 
 #![cfg_attr(feature = "cargo-clippy", feature(tool_lints))]
-#![cfg_attr(feature = "cargo-clippy", allow(clippy::new_without_default_derive))] // This LINT gives false positives
+#![cfg_attr(
+    feature = "cargo-clippy",
+    allow(clippy::new_without_default_derive)
+)] // This LINT gives false positives
 
 extern crate arrayvec;
 #[cfg(any(feature = "doc", feature = "use_gpu"))]
@@ -65,26 +68,26 @@ extern crate crossbeam;
 #[macro_use]
 extern crate lazy_static;
 #[cfg(feature = "std")]
-extern crate num_cpus;
-#[cfg(feature = "std")]
-extern crate time;
-#[cfg(feature = "std")]
 extern crate linreg;
 extern crate num_complex;
+#[cfg(feature = "std")]
+extern crate num_cpus;
 extern crate num_traits;
 #[cfg(any(feature = "doc", feature = "use_gpu"))]
 extern crate ocl;
 extern crate rustfft;
 #[cfg(any(feature = "doc", feature = "use_sse", feature = "use_avx"))]
 extern crate simd;
+#[cfg(feature = "std")]
+extern crate time;
 #[macro_use]
 mod simd_extensions;
 pub mod conv_types;
 mod multicore_support;
 mod vector_types;
 pub mod window_functions;
-pub use multicore_support::MultiCoreSettings;
 pub use multicore_support::print_calibration;
+pub use multicore_support::MultiCoreSettings;
 pub use vector_types::*;
 mod gpu_support;
 mod inline_vector;
@@ -236,7 +239,7 @@ fn transmute_slice<S, D>(source: &[S]) -> &[D] {
 
 /// Transmutes a mutable slice. Both S and D must be `#[repr(C)]`.
 /// The code panics if the slice has a length which doesn't allow conversion.
-fn transmute_slice_mut<S, D>(source: &mut [S]) -> &mut[D] {
+fn transmute_slice_mut<S, D>(source: &mut [S]) -> &mut [D] {
     let len = get_target_slice_len::<S, D>(source);
     unsafe {
         let trans: &mut [D] = &mut *(source as *mut [S] as *mut [D]);
@@ -277,11 +280,7 @@ fn memcpy<T: Copy>(data: &mut [T], from: Range<usize>, to: usize) {
     assert!(to <= data.len() - (from.end - from.start));
     unsafe {
         let ptr = data.as_mut_ptr();
-        copy(
-            ptr.add(from.start),
-            ptr.add(to),
-            from.end - from.start,
-        )
+        copy(ptr.add(from.start), ptr.add(to), from.end - from.start)
     }
 }
 

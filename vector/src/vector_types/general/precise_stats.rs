@@ -421,7 +421,10 @@ where
                 let array = array_to_complex(array);
                 for num in array {
                     let stat = &mut results[j % len];
-                    stat.add(Complex64::new(f64::from(num.re), f64::from(num.im)), j / len);
+                    stat.add(
+                        Complex64::new(f64::from(num.re), f64::from(num.im)),
+                        j / len,
+                    );
                     j += 1;
                 }
 

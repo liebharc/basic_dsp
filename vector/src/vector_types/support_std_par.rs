@@ -1,8 +1,7 @@
 use super::{
-    ComplexData, ComplexFreqVec, ComplexTimeVec, DataDomain,
-    Domain, DspVec, FrequencyData, GenDspVec, NumberSpace, RealData,
-    RealFreqVec, RealOrComplexData, RealTimeVec, TimeData, TimeOrFrequencyData, ToSlice,
-    TypeMetaData,
+    ComplexData, ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec, FrequencyData,
+    GenDspVec, NumberSpace, RealData, RealFreqVec, RealOrComplexData, RealTimeVec, TimeData,
+    TimeOrFrequencyData, ToSlice, TypeMetaData,
 };
 use super::{ToComplexVector, ToDspVector, ToRealVector};
 use multicore_support::MultiCoreSettings;
@@ -18,8 +17,8 @@ use vector_types::vec_impl_and_indexers::Vector;
 ///
 /// The resulting vector may use multi-threading for its processing.
 pub trait ToDspVectorPar<T>: Sized + ToSlice<T>
-    where
-        T: RealNumber,
+where
+    T: RealNumber,
 {
     /// Create a new generic vector.
     /// `delta` can be changed after construction with a call of `set_delta`.
@@ -35,17 +34,17 @@ pub trait ToDspVectorPar<T>: Sized + ToSlice<T>
     ///
     /// The resulting vector may use multi-threading for its processing.
     fn to_dsp_vec_par<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
-        where
-            N: NumberSpace,
-            D: Domain;
+    where
+        N: NumberSpace,
+        D: Domain;
 }
 
 /// Conversion from a generic data type into a dsp vector with real data.
 ///
 /// The resulting vector may use multi-threading for its processing.
 pub trait ToRealVectorPar<T>: Sized + ToSlice<T>
-    where
-        T: RealNumber,
+where
+    T: RealNumber,
 {
     /// Create a new vector in real number space and time domain.
     /// `delta` can be changed after construction with a call of `set_delta`.
@@ -64,9 +63,9 @@ pub trait ToRealVectorPar<T>: Sized + ToSlice<T>
 ///
 /// The resulting vector may use multi-threading for its processing.
 pub trait ToComplexVectorPar<S, T>
-    where
-        S: Sized + ToSlice<T>,
-        T: RealNumber,
+where
+    S: Sized + ToSlice<T>,
+    T: RealNumber,
 {
     /// Create a new vector in complex number space and time domain.
     /// `delta` can be changed after construction with a call of `set_delta`.
@@ -82,15 +81,21 @@ pub trait ToComplexVectorPar<S, T>
 }
 
 impl<Type: ToDspVector<T>, T: RealNumber> ToDspVectorPar<T> for Type {
-    fn to_gen_dsp_vec_par(self, is_complex: bool, domain: DataDomain) -> DspVec<Self, T, RealOrComplexData, TimeOrFrequencyData> {
+    fn to_gen_dsp_vec_par(
+        self,
+        is_complex: bool,
+        domain: DataDomain,
+    ) -> DspVec<Self, T, RealOrComplexData, TimeOrFrequencyData> {
         let mut vec = self.to_gen_dsp_vec(is_complex, domain);
         vec.set_multicore_settings(MultiCoreSettings::parallel());
         vec
     }
 
-    fn to_dsp_vec_par<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D> where
+    fn to_dsp_vec_par<N, D>(self, meta_data: &TypeMetaData<T, N, D>) -> DspVec<Self, T, N, D>
+    where
         N: NumberSpace,
-        D: Domain {
+        D: Domain,
+    {
         let mut vec = self.to_dsp_vec(meta_data);
         vec.set_multicore_settings(MultiCoreSettings::parallel());
         vec
@@ -111,7 +116,9 @@ impl<Type: ToRealVector<T>, T: RealNumber> ToRealVectorPar<T> for Type {
     }
 }
 
-impl<Type: ToComplexVector<S, T> + Sized + ToSlice<T>, S: Sized + ToSlice<T>, T: RealNumber> ToComplexVectorPar<S, T> for Type {
+impl<Type: ToComplexVector<S, T> + Sized + ToSlice<T>, S: Sized + ToSlice<T>, T: RealNumber>
+    ToComplexVectorPar<S, T> for Type
+{
     fn to_complex_time_vec_par(self) -> DspVec<S, T, ComplexData, TimeData> {
         let mut vec = self.to_complex_time_vec();
         vec.set_multicore_settings(MultiCoreSettings::parallel());
@@ -125,11 +132,10 @@ impl<Type: ToComplexVector<S, T> + Sized + ToSlice<T>, S: Sized + ToSlice<T>, T:
     }
 }
 
-
 #[cfg(test)]
 mod tests {
-    use vector_types::*;
     use num_cpus;
+    use vector_types::*;
 
     #[test]
     fn single_threaded_vector() {

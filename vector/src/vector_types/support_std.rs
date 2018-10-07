@@ -95,10 +95,7 @@ where
             self.temp = vec![T::zero(); len];
         }
 
-        SingleBufferBurrow {
-            owner: self,
-            len,
-        }
+        SingleBufferBurrow { owner: self, len }
     }
 
     fn alloc_len(&self) -> usize {

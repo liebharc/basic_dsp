@@ -200,7 +200,8 @@ where
             let conv_len = if conv_len > len { len } else { conv_len };
             let sconv_len = conv_len as isize;
             for (i, num) in dest.iter_mut().enumerate() {
-                let iter = WrappingIterator::new(complex, i as isize - sconv_len - 1, 2 * conv_len + 1);
+                let iter =
+                    WrappingIterator::new(complex, i as isize - sconv_len - 1, 2 * conv_len + 1);
                 let mut sum = TT::zero();
                 let mut j = -(T::from(conv_len).unwrap());
                 for c in iter {
@@ -572,13 +573,19 @@ where
             let scalar_len = conv_len + Reg::LEN;
             let conv_len = conv_len as isize;
             for (i, num) in dest[0..scalar_len].iter_mut().enumerate() {
-                *num = Self::convolve_iteration(complex, other_iter, i as isize, conv_len, full_conv_len);
+                *num = Self::convolve_iteration(
+                    complex,
+                    other_iter,
+                    i as isize,
+                    conv_len,
+                    full_conv_len,
+                );
             }
 
             let (scalar_left, _, vectorization_length) =
                 Reg::calc_data_alignment_reqs(&data[0..len]);
             let step = if self.is_complex() { 2 } else { 1 };
-            let scalar_left_points =  scalar_left / step;
+            let scalar_left_points = scalar_left / step;
             if vectorization_length.is_some() {
                 let vectorization_length = vectorization_length.unwrap();
                 let simd = Reg::array_to_regs(&data[scalar_left..vectorization_length]);

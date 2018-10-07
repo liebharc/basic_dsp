@@ -447,7 +447,7 @@ where
                         left *= 2;
                     }
 
-                    target[len - right..len] .copy_from_slice(&data[len_before - right..len_before]);
+                    target[len - right..len].copy_from_slice(&data[len_before - right..len_before]);
                     target[0..left].copy_from_slice(&data[0..left]);
                     memzero(target, left..len - len_before);
                 }

@@ -3,6 +3,9 @@
 use super::Complexity;
 use crossbeam;
 use inline_vector::InlineVector;
+use linreg::linear_regression;
+use num_cpus;
+use num_traits::FromPrimitive;
 use numbers::*;
 use std::iter::Iterator;
 use std::mem;
@@ -10,9 +13,6 @@ use std::ops::Range;
 use std::slice::{Chunks, ChunksMut};
 use std::sync::{Arc, Mutex};
 use time;
-use linreg::linear_regression;
-use num_cpus;
-use num_traits::FromPrimitive;
 
 /// Holds parameters which specify how multiple cores are used
 /// to execute an operation.
@@ -42,12 +42,10 @@ impl MultiCoreSettings {
     pub fn parallel() -> MultiCoreSettings {
         if *NUMBER_OF_CORES == 1 {
             Self::new(1)
-        }
-        else if *NUMBER_OF_CORES == 2 {
+        } else if *NUMBER_OF_CORES == 2 {
             // If two cores are available then use both of them if multi-threading is requested
             Self::new(2)
-        }
-        else {
+        } else {
             // Half because we assume hyper threading and that we will keep a core so busy
             // that hyper threading isn't of any use
             Self::new(*NUMBER_OF_CORES / 2)
@@ -70,34 +68,27 @@ struct Calibration {
     large_dual_core_threshold: usize,
     large_multi_core_threshold: usize,
     duration_cal_routine: f64,
-    cal_routine_result_code: u32
+    cal_routine_result_code: u32,
 }
 
 /// Limits a value between min and max
 fn limit(value: usize, min: usize, max: usize) -> usize {
     if value < min {
         min
-    }
-    else if value > max {
+    } else if value > max {
         max
-    }
-    else {
+    } else {
         value
     }
 }
 
 fn measure(number_of_cores: usize, data: &mut Vec<f64>) -> Result<f64, u32> {
     let start = time::precise_time_ns();
-    Chunk::execute_on_chunks(
-        &mut data[..],
-        1,
-        (),
-        number_of_cores,
-        move |array, _arg| {
-            for v in array {
-                *v = v.sin();
-            }
-        });
+    Chunk::execute_on_chunks(&mut data[..], 1, (), number_of_cores, move |array, _arg| {
+        for v in array {
+            *v = v.sin();
+        }
+    });
     let result = (time::precise_time_ns() - start) as f64;
     if result < 1000.0 {
         Err(1) // Likely the compiler optimized our benchmark code away so we have to work with defaults
@@ -117,8 +108,7 @@ fn proportional_regression(x: &[f64], y: &[f64]) -> Option<f64> {
     let result = sum / x.len() as f64;
     if result.is_nan() || result.is_infinite() {
         None
-    }
-    else {
+    } else {
         Some(result)
     }
 }
@@ -153,14 +143,13 @@ fn attempt_calibrate(number_of_cores: usize) -> Result<Calibration, u32> {
 
     for _ in 0..iterations {
         sizes.push(size as f64);
-        let mut data = vec!(1.0; size);
+        let mut data = vec![1.0; size];
         ono_thread.push(try!(measure(1, &mut data)));
         let two_threads_result = try!(measure(2, &mut data));
         two_threads.push(two_threads_result);
         if number_of_cores > 2 {
             max_threads.push(try!(measure(number_of_cores, &mut data)));
-        }
-        else {
+        } else {
             max_threads.push(two_threads_result);
         }
 
@@ -171,18 +160,18 @@ fn attempt_calibrate(number_of_cores: usize) -> Result<Calibration, u32> {
     let two_threads = linear_regression::<f64, f64, f64>(&sizes, &two_threads);
     let max_threads = linear_regression::<f64, f64, f64>(&sizes, &max_threads);
     if two_threads.is_none() || max_threads.is_none() {
-        return Err(3) // If curve fitting fails then work with defaults
+        return Err(3); // If curve fitting fails then work with defaults
     }
 
     let t1_m = ono_thread.unwrap();
-    let t1_b= 0.0; // due to asssumed proportional relation
+    let t1_b = 0.0; // due to asssumed proportional relation
     let (t2_m, t2_b) = two_threads.unwrap();
     let (tmax_m, tmax_b) = max_threads.unwrap();
 
     let med_dual_core_threshold_res = intersection(t1_m, t1_b, t2_m, t2_b);
     let med_multi_core_threshold_res = intersection(t1_m, t1_b, tmax_m, tmax_b);
     if med_dual_core_threshold_res.is_none() || med_multi_core_threshold_res.is_none() {
-        return Err(4)
+        return Err(4);
     }
 
     let dual_core_min = 5_000;
@@ -191,17 +180,33 @@ fn attempt_calibrate(number_of_cores: usize) -> Result<Calibration, u32> {
 
     // The multiplication factor is the less well reasoned part in this equiation. It should only help
     // to avoid that threads are spawned too aggressively.
-    let med_dual_core_threshold = limit(2 * med_dual_core_threshold_res.unwrap(), dual_core_min, dual_core_max);
-    let med_multi_core_threshold = limit(2 * med_multi_core_threshold_res.unwrap(), med_dual_core_threshold + 1, multi_core_max);
-    let large_dual_core_threshold = limit( med_dual_core_threshold_res.unwrap(), dual_core_min, dual_core_max);
-    let large_multi_core_threshold = limit(med_multi_core_threshold_res.unwrap(), large_dual_core_threshold + 1, multi_core_max);
+    let med_dual_core_threshold = limit(
+        2 * med_dual_core_threshold_res.unwrap(),
+        dual_core_min,
+        dual_core_max,
+    );
+    let med_multi_core_threshold = limit(
+        2 * med_multi_core_threshold_res.unwrap(),
+        med_dual_core_threshold + 1,
+        multi_core_max,
+    );
+    let large_dual_core_threshold = limit(
+        med_dual_core_threshold_res.unwrap(),
+        dual_core_min,
+        dual_core_max,
+    );
+    let large_multi_core_threshold = limit(
+        med_multi_core_threshold_res.unwrap(),
+        large_dual_core_threshold + 1,
+        multi_core_max,
+    );
     Ok(Calibration {
         med_dual_core_threshold,
         med_multi_core_threshold,
         large_dual_core_threshold,
         large_multi_core_threshold,
-        duration_cal_routine: 0.0, // Will be set by the calling function
-        cal_routine_result_code: 0 // Success
+        duration_cal_routine: 0.0,  // Will be set by the calling function
+        cal_routine_result_code: 0, // Success
     })
 }
 
@@ -211,15 +216,15 @@ fn calibrate(number_of_cores: usize) -> Calibration {
         Ok(mut calibration) => {
             calibration.duration_cal_routine = time::precise_time_s() - start;
             calibration
-        },
+        }
         Err(err_code) => Calibration {
             med_dual_core_threshold: 50_000,
             med_multi_core_threshold: 100_000,
             large_dual_core_threshold: 20_000,
             large_multi_core_threshold: 30_000,
             duration_cal_routine: time::precise_time_s() - start,
-            cal_routine_result_code: err_code
-        }
+            cal_routine_result_code: err_code,
+        },
     }
 }
 
@@ -282,7 +287,8 @@ impl Chunk {
             } else {
                 settings.core_limit
             }
-        } else { // Complexity::Large
+        } else {
+            // Complexity::Large
             let calibration = &CALIBRATION;
             if array_length < calibration.large_dual_core_threshold {
                 1
@@ -381,11 +387,17 @@ impl Chunk {
         }
     }
 
-    fn execute_on_chunks<'a, T, S, F>(array: &mut [T], step_size: usize, arguments: S, number_of_chunks: usize, ref function: F)
-        where
-            F: Fn(&mut [T], S) + 'a + Sync,
-            T: RealNumber,
-            S: Sync + Copy + Send {
+    fn execute_on_chunks<'a, T, S, F>(
+        array: &mut [T],
+        step_size: usize,
+        arguments: S,
+        number_of_chunks: usize,
+        ref function: F,
+    ) where
+        F: Fn(&mut [T], S) + 'a + Sync,
+        T: RealNumber,
+        S: Sync + Copy + Send,
+    {
         let chunks = Chunk::partition_mut(array, step_size, number_of_chunks);
         crossbeam::scope(|scope| {
             for chunk in chunks {

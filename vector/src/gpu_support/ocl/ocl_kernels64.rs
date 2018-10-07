@@ -28,7 +28,6 @@ pub const CONV_KERNEL: &str = r#"
                     sum2.x+sum2.y);
     }
 
-
     __kernel
     void conv_vecs_c(
                 __global double2 const* const src,

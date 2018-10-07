@@ -528,7 +528,8 @@ where
         destination.set_delta(self.delta);
         let temp = &mut destination[0..data_length / 2];
         let array = &self.data.to_slice();
-        let (scalar_left, scalar_right, vectorization_length) = Reg::calc_data_alignment_reqs(array);
+        let (scalar_left, scalar_right, vectorization_length) =
+            Reg::calc_data_alignment_reqs(array);
         if vectorization_length.is_some() {
             let vectorization_length = vectorization_length.unwrap();
             Chunk::from_src_to_dest(
@@ -552,7 +553,7 @@ where
         }
 
         let mut i = 0;
-        while i <  scalar_left {
+        while i < scalar_left {
             let c = Complex::new(array[i], array[i + 1]);
             temp[i / 2] = op(c);
             i += 2;
