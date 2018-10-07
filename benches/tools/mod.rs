@@ -16,6 +16,7 @@ where
     T: RealNumber,
 {
     pub vector: *mut B,
+    pub argument: *mut B,
     pub size: usize,
     pub buffer: SingleBuffer<T>,
 }
@@ -41,8 +42,10 @@ impl VectorBox<RealTimeVec<Vec<f32>, f32>, f32> {
     pub fn new(size: Size) -> VectorBox<RealTimeVec<Vec<f32>, f32>, f32> {
         let size = translate_size(size);
         let data = vec![10.0; size];
+        let argument = vec![10.0; size];
         VectorBox {
             vector:  Box::into_raw(Box::new(data.to_real_time_vec_par())),
+            argument:  Box::into_raw(Box::new(argument.to_real_time_vec_par())),
             buffer: SingleBuffer::with_capacity(size),
             size: size,
         }
@@ -53,8 +56,10 @@ impl VectorBox<Vec<f32>, f32> {
     pub fn new(size: Size) -> VectorBox<Vec<f32>, f32> {
         let size = translate_size(size);
         let data = vec![10.0; size];
+        let argument = vec![10.0; size];
         VectorBox {
             vector: Box::into_raw(Box::new(data)),
+            argument: Box::into_raw(Box::new(argument)),
             buffer: SingleBuffer::with_capacity(size),
             size: size,
         }
@@ -65,8 +70,10 @@ impl VectorBox<Vec<f64>, f64> {
     pub fn new(size: Size) -> VectorBox<Vec<f64>, f64> {
         let size = translate_size(size);
         let data = vec![10.0; size];
+        let argument = vec![10.0; size];
         VectorBox {
             vector: Box::into_raw(Box::new(data)),
+            argument: Box::into_raw(Box::new(argument)),
             buffer: SingleBuffer::with_capacity(size),
             size: size,
         }
@@ -81,8 +88,10 @@ impl VectorBox<GenDspVec<Vec<f32>, f32>, f32> {
 
     pub fn with_size(size: usize) -> VectorBox<GenDspVec<Vec<f32>, f32>, f32> {
         let data = vec![10.0; size];
+        let argument = vec![10.0; size];
         VectorBox {
             vector: Box::into_raw(Box::new(data.to_gen_dsp_vec_par(true, DataDomain::Time))),
+            argument: Box::into_raw(Box::new(argument.to_gen_dsp_vec_par(true, DataDomain::Time))),
             buffer: SingleBuffer::with_capacity(size),
             size: size,
         }
@@ -93,8 +102,10 @@ impl VectorBox<ComplexTimeVec<Vec<f32>, f32>, f32> {
     pub fn new(size: Size) -> VectorBox<ComplexTimeVec<Vec<f32>, f32>, f32> {
         let size = translate_size(size);
         let data = vec![10.0; size];
+        let argument = vec![10.0; size];
         VectorBox {
             vector: Box::into_raw(Box::new(data.to_complex_time_vec_par())),
+            argument: Box::into_raw(Box::new(argument.to_complex_time_vec_par())),
             buffer: SingleBuffer::with_capacity(size),
             size: size,
         }
@@ -105,8 +116,10 @@ impl VectorBox<RealTimeVec<Vec<f64>, f64>, f64> {
     pub fn new(size: Size) -> VectorBox<RealTimeVec<Vec<f64>, f64>, f64> {
         let size = translate_size(size);
         let data = vec![10.0; size];
+        let argument = vec![10.0; size];
         VectorBox {
             vector: Box::into_raw(Box::new(data.to_real_time_vec_par())),
+            argument: Box::into_raw(Box::new(argument.to_real_time_vec_par())),
             buffer: SingleBuffer::with_capacity(size),
             size: size,
         }
@@ -130,6 +143,21 @@ where
             let vector = Box::from_raw(self.vector);
             let result = function(*vector, &mut self.buffer);
             self.vector = Box::into_raw(Box::new(result));
+        }
+
+        true
+    }
+
+    pub fn execute_with_arg<F>(&mut self, function: F) -> bool
+        where
+            F: Fn(B, B, &mut SingleBuffer<T>) -> (B, B) + 'static + Sync
+    {
+        unsafe {
+            let vector = Box::from_raw(self.vector);
+            let argument = Box::from_raw(self.argument);
+            let (result, arg) = function(*vector, *argument, &mut self.buffer);
+            self.vector = Box::into_raw(Box::new(result));
+            self.argument = Box::into_raw(Box::new(arg));
         }
 
         true

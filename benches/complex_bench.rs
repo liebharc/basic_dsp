@@ -62,11 +62,9 @@ mod complex {
     fn complex_vector_multiplication_32s_benchmark(b: &mut Bencher) {
         let mut vector = ComplexTime32Box::new(Size::Small);
         b.iter(|| {
-            vector.execute(|mut v, _| {
-                let len = v.len();
-                let operand = vec![0.0; len].to_complex_time_vec();
-                v.mul(&operand).unwrap();
-                v
+            vector.execute_with_arg(|mut v, o, _| {
+                v.mul(&o).unwrap();
+                (v, o)
             })
         });
     }
@@ -92,11 +90,9 @@ mod complex {
     fn convolve_vector_with_vector_32t_benchmark(b: &mut Bencher) {
         let mut vector = ComplexTime32Box::new(Size::Tiny);
         b.iter(|| {
-            vector.execute(|mut v, buffer| {
-                let len = v.len();
-                let operand = vec![0.0; len].to_complex_time_vec();
-                v.convolve_signal(buffer, &operand).unwrap();
-                v
+            vector.execute_with_arg(|mut v, o, buffer| {
+                v.convolve_signal(buffer, &o).unwrap();
+                (v, o)
             })
         });
     }

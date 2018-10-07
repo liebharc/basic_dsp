@@ -110,7 +110,7 @@ mod real {
 
     #[bench]
     fn real_scale_32m_benchmark(b: &mut Bencher) {
-        let mut vector = RealTime32Box::new(Size::Medium);
+        let mut vector = RealTime32Box::new(Size::Small);
         b.iter(|| {
             vector.execute(|mut v, _| {
                 v.scale(10.0);
@@ -294,11 +294,9 @@ mod real {
     fn real_vector_multiplication_32s_benchmark(b: &mut Bencher) {
         let mut vector = RealTime32Box::new(Size::Small);
         b.iter(|| {
-            vector.execute(|mut v, _| {
-                let len = v.len();
-                let operand = vec![0.0; len].to_real_time_vec();
-                v.mul(&operand).unwrap();
-                v
+            vector.execute_with_arg(|mut v, o, _| {
+                v.mul(&o).unwrap();
+                (v, o)
             })
         });
     }

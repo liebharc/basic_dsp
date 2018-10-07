@@ -648,4 +648,66 @@ mod real_test {
             assert_vector_eq(&a_expected[..], &a_actual[..]);
         });
     }
+
+    #[test]
+    fn multi_operations_3ops_2vectors_32_bench_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
+
+            let b = create_data_with_len(201511141, iteration, len);
+            let b = b.to_gen_dsp_vec(false, DataDomain::Time);
+
+            let ops = multi_ops2(a.clone(), b.clone());
+            let ops = ops.add_ops(|mut v, o| {
+                v.log(10.0);
+                v.mul(&o).unwrap();
+                v.sin();
+                (v, o)
+            });
+            let mut buffer = SingleBuffer::new();
+            let (a_actual, _) = ops.get(&mut buffer).unwrap();
+
+            a.log(10.0);
+            a.mul(&b).unwrap();
+            a.sin();
+            let a_expected = a;
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
+        });
+    }
+
+    #[test]
+    fn multi_operations_6ops_2vectors_32_bench_test() {
+        parameterized_vector_test(|iteration, _| {
+            let len = 1000;
+            let a = create_data_with_len(201511141, iteration, len);
+            let mut a = a.to_gen_dsp_vec(false, DataDomain::Time);
+
+            let b = create_data_with_len(201511141, iteration, len);
+            let b = b.to_gen_dsp_vec(false, DataDomain::Time);
+
+            let ops = multi_ops2(a.clone(), b.clone());
+            let ops = ops.add_ops(|mut v, o| {
+                v.square();
+                v.mul(&o).unwrap();
+                v.sin();
+                v.log(10.0);
+                v.scale(10.0);
+                v.sqrt();
+                (v, o)
+            });
+            let mut buffer = SingleBuffer::new();
+            let (a_actual, _) = ops.get(&mut buffer).unwrap();
+
+            a.square();
+            a.mul(&b).unwrap();
+            a.sin();
+            a.log(10.0);
+            a.scale(10.0);
+            a.sqrt();
+            let a_expected = a;
+            assert_vector_eq(&a_expected[..], &a_actual[..]);
+        });
+    }
 }

@@ -48,7 +48,6 @@ clippy:
 ifeq ($(RUST_NIGHTLY), nightly)
 	$(CARGO_CMD) clippy
 else
-
 	@echo "Skipping clippy for $(RUST_VERSION)"	
 endif	
     

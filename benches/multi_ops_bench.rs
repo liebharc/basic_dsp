@@ -13,8 +13,8 @@ mod real {
     use tools::*;
 
     #[bench]
-    fn multi_operations_2ops1_vector_32_benchmark(b: &mut Bencher) {
-        let mut vector = ComplexTime32Box::new(Size::Small);
+    fn multi_operations_2ops_1vector_32_benchmark(b: &mut Bencher) {
+        let mut vector = ComplexTime32Box::new(Size::Medium);
         b.iter(|| {
             vector.execute(|v, buffer| {
                 let ops = multi_ops1(v);
@@ -29,8 +29,8 @@ mod real {
     }
 
     #[bench]
-    fn multi_operations_2ops1_vector_32_reference(b: &mut Bencher) {
-        let mut vector = ComplexTime32Box::new(Size::Small);
+    fn multi_operations_2ops_1vector_32_reference(b: &mut Bencher) {
+        let mut vector = ComplexTime32Box::new(Size::Medium);
         b.iter(|| {
             vector.execute(|mut v, _| {
                 v.log(10.0);
@@ -41,8 +41,8 @@ mod real {
     }
 
     #[bench]
-    fn multi_operations_3ops1_vector_32_benchmark(b: &mut Bencher) {
-        let mut vector = ComplexTime32Box::new(Size::Small);
+    fn multi_operations_3ops_1vector_32_benchmark(b: &mut Bencher) {
+        let mut vector = ComplexTime32Box::new(Size::Medium);
         b.iter(|| {
             vector.execute(|v, buffer| {
                 let ops = multi_ops1(v);
@@ -58,8 +58,8 @@ mod real {
     }
 
     #[bench]
-    fn multi_operations_3ops1_vector_32_reference(b: &mut Bencher) {
-        let mut vector = ComplexTime32Box::new(Size::Small);
+    fn multi_operations_3ops_1vector_32_reference(b: &mut Bencher) {
+        let mut vector = ComplexTime32Box::new(Size::Medium);
         b.iter(|| {
             vector.execute(|mut v, _| {
                 v.log(10.0);
@@ -71,12 +71,10 @@ mod real {
     }
 
     #[bench]
-    fn multi_operations_3ops2_vector_32_benchmark(b: &mut Bencher) {
-        let mut vector = ComplexTime32Box::new(Size::Small);
+    fn multi_operations_3ops_2vectors_32_benchmark(b: &mut Bencher) {
+        let mut vector = ComplexTime32Box::new(Size::Medium);
         b.iter(|| {
-            vector.execute(|v, buffer| {
-                let len = v.len();
-                let operand = vec![6.0; len].to_complex_time_vec();
+            vector.execute_with_arg(|v, operand, buffer| {
                 let ops = multi_ops2(v, operand);
                 let ops = ops.add_ops(|mut v, o| {
                     v.log(10.0);
@@ -84,15 +82,29 @@ mod real {
                     v.sin();
                     (v, o)
                 });
-                let (v, _) = ops.get(buffer).unwrap();
-                v
+                let (v, operand) = ops.get(buffer).unwrap();
+                (v, operand)
             })
         });
     }
 
     #[bench]
-    fn multi_operations_6ops1_vector_32_benchmark(b: &mut Bencher) {
-        let mut vector = ComplexTime32Box::new(Size::Small);
+    fn multi_operations_3ops_2vectors_32_reference(b: &mut Bencher) {
+        let mut vector = ComplexTime32Box::new(Size::Medium);
+        b.iter(|| {
+            vector.execute_with_arg(|mut v, o, _| {
+                v.log(10.0);
+                v.mul(&o).unwrap();
+                v.sin();
+                (v, o)
+            })
+        });
+    }
+
+
+    #[bench]
+    fn multi_operations_6ops_1vector_32_benchmark(b: &mut Bencher) {
+        let mut vector = ComplexTime32Box::new(Size::Medium);
         b.iter(|| {
             vector.execute(|v, buffer| {
                 let ops = multi_ops1(v);
@@ -110,13 +122,29 @@ mod real {
         });
     }
 
+
+
     #[bench]
-    fn multi_operations_6ops2_vector_32_benchmark(b: &mut Bencher) {
-        let mut vector = ComplexTime32Box::new(Size::Small);
+    fn multi_operations_6ops_1vector_32_reference(b: &mut Bencher) {
+        let mut vector = ComplexTime32Box::new(Size::Medium);
         b.iter(|| {
-            vector.execute(|v, buffer| {
-                let len = v.len();
-                let operand = vec![6.0; len].to_complex_time_vec();
+            vector.execute(|mut x, _| {
+                x.square();
+                x.scale(6.0);
+                x.sin();
+                x.log(10.0);
+                x.scale(10.0);
+                x.sqrt();
+                x
+            })
+        });
+    }
+
+    #[bench]
+    fn multi_operations_6ops_2vectors_32_benchmark(b: &mut Bencher) {
+        let mut vector = ComplexTime32Box::new(Size::Medium);
+        b.iter(|| {
+            vector.execute_with_arg(|v, operand, buffer| {
                 let ops = multi_ops2(v, operand);
                 let ops = ops.add_ops(|mut v, o| {
                     v.square();
@@ -127,8 +155,26 @@ mod real {
                     v.sqrt();
                     (v, o)
                 });
-                let (v, _) = ops.get(buffer).unwrap();
-                v
+                let (v, operand) = ops.get(buffer).unwrap();
+                (v, operand)
+            })
+        });
+    }
+
+
+
+    #[bench]
+    fn multi_operations_6ops_2vectors_32_reference(b: &mut Bencher) {
+        let mut vector = ComplexTime32Box::new(Size::Medium);
+        b.iter(|| {
+            vector.execute_with_arg(|mut v, o, _| {
+                v.square();
+                v.mul(&o).unwrap();
+                v.sin();
+                v.log(10.0);
+                v.scale(10.0);
+                v.sqrt();
+                (v, o)
             })
         });
     }
