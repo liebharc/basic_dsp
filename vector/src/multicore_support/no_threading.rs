@@ -1,3 +1,5 @@
+#![cfg_attr(feature = "cargo-clippy", allow(clippy::toplevel_ref_arg))]
+
 use super::Complexity;
 use inline_vector::InlineVector;
 use numbers::*;
