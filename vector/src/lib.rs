@@ -84,7 +84,6 @@ pub use multicore_support::MultiCoreSettings;
 pub use multicore_support::print_calibration;
 pub use vector_types::*;
 mod gpu_support;
-use std::mem;
 mod inline_vector;
 use numbers::*;
 use std::ops::Range;
@@ -222,28 +221,49 @@ pub mod numbers {
     }
 }
 
-// Returns a complex slice from a real slice
-fn array_to_complex<T>(array: &[T]) -> &[Complex<T>] {
+/// Transmutes a slice. Both S and D must be `#[repr(C)]`.
+/// The code panics if the slice has a length which doesn't allow conversion.
+fn transmute_slice<S, D>(source: &[S]) -> &[D] {
+    let len = get_target_slice_len::<S, D>(source);
     unsafe {
-        let len = array.len();
-        if len % 2 != 0 {
-            panic!("Argument must have an even length");
-        }
-        let trans: &[Complex<T>] = mem::transmute(array);
-        &trans[0..len / 2]
+        let trans: &[D] = std::mem::transmute(source);
+        std::slice::from_raw_parts(trans.as_ptr(), len)
+    }
+}
+
+/// Transmutes a mutable slice. Both S and D must be `#[repr(C)]`.
+/// The code panics if the slice has a length which doesn't allow conversion.
+fn transmute_slice_mut<S, D>(source: &mut [S]) -> &mut[D] {
+    let len = get_target_slice_len::<S, D>(source);
+    unsafe {
+        let trans: &mut [D] = std::mem::transmute(source);
+        std::slice::from_raw_parts_mut(trans.as_mut_ptr(), len)
+    }
+}
+
+/// Helper method which finds the length of a target slice and also perform checks on the length
+fn get_target_slice_len<S, D>(source: &[S]) -> usize {
+    let to_larger_type = std::mem::size_of::<D>() >= std::mem::size_of::<S>();
+    if to_larger_type {
+        assert_eq!(std::mem::size_of::<D>() % std::mem::size_of::<S>(), 0);
+        let ratio = std::mem::size_of::<D>() / std::mem::size_of::<S>();
+        assert_eq!(source.len() % ratio, 0);
+        source.len() / ratio
+    } else {
+        assert_eq!(std::mem::size_of::<S>() % std::mem::size_of::<D>(), 0);
+        let ratio = std::mem::size_of::<S>() / std::mem::size_of::<D>();
+        source.len() * ratio
     }
 }
 
 // Returns a complex slice from a real slice
+fn array_to_complex<T>(array: &[T]) -> &[Complex<T>] {
+    transmute_slice(array)
+}
+
+// Returns a complex slice from a real slice
 fn array_to_complex_mut<T>(array: &mut [T]) -> &mut [Complex<T>] {
-    unsafe {
-        let len = array.len();
-        if len % 2 != 0 {
-            panic!("Argument must have an even length");
-        }
-        let trans: &mut [Complex<T>] = mem::transmute(array);
-        &mut trans[0..len / 2]
-    }
+    transmute_slice_mut(array)
 }
 
 /// Copies memory inside a slice

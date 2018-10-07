@@ -277,29 +277,13 @@ macro_rules! simd_generic_impl {
             #[inline]
             fn array_to_regs(array: &[$data_type]) -> &[Self] {
                 assert_eq!(get_alignment_offset(array.as_ptr() as usize, mem::size_of::<Self>()), 0);
-                unsafe {
-                    let len = array.len();
-                    let reg_len = Self::LEN;
-                    if len % reg_len != 0 {
-                        panic!("Argument must be dividable by {}", reg_len);
-                    }
-                    let trans: &[Self] = mem::transmute(array);
-                    &trans[0..len / reg_len]
-                }
+                super::transmute_slice(array)
             }
         
             #[inline]
             fn array_to_regs_mut(array: &mut [$data_type]) -> &mut [Self] {
                 assert_eq!(get_alignment_offset(array.as_ptr() as usize, mem::size_of::<Self>()), 0);
-                unsafe {
-                    let len = array.len();
-                    let reg_len = Self::LEN;
-                    if len % reg_len != 0 {
-                        panic!("Argument must be dividable by {}", reg_len);
-                    }
-                    let trans: &mut [Self] = mem::transmute(array);
-                    &mut trans[0..len / reg_len]
-                }
+                super::transmute_slice_mut(array)
             }
         
             #[inline]

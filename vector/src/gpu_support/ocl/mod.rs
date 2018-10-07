@@ -104,29 +104,11 @@ fn find_gpu_device(require_f64_support: bool, data_length: usize) -> Option<(Pla
 }
 
 fn array_to_gpu_simd<T, R>(array: &[T]) -> &[R] {
-    unsafe {
-        let is_f64 = mem::size_of::<T>() == 8;
-        let vec_len = if is_f64 { 2 } else { 4 };
-        let len = array.len();
-        if len % vec_len != 0 {
-            panic!("Argument must fit into an integer number of GPU registers");
-        }
-        let trans: &[R] = mem::transmute(array);
-        &trans[0..len / vec_len]
-    }
+    super::transmute_slice(array)
 }
 
 fn array_to_gpu_simd_mut<T, R>(array: &mut [T]) -> &mut [R] {
-    unsafe {
-        let is_f64 = mem::size_of::<T>() == 8;
-        let vec_len = if is_f64 { 2 } else { 4 };
-        let len = array.len();
-        if len % vec_len != 0 {
-            panic!("Argument must fit into an integer number of GPU registers");
-        }
-        let trans: &mut [R] = mem::transmute(array);
-        &mut trans[0..len / vec_len]
-    }
+    super::transmute_slice_mut(array)
 }
 
 /// Prepare impulse response

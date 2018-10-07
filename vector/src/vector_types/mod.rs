@@ -312,13 +312,7 @@ fn complex_to_array<T>(complex: &[Complex<T>]) -> &[T]
 where
     T: RealNumber,
 {
-    use std::mem;
-    use std::slice;
-    unsafe {
-        let len = complex.len();
-        let trans: &[T] = mem::transmute(complex);
-        slice::from_raw_parts(&trans[0] as *const T, len * 2)
-    }
+    super::transmute_slice(complex)
 }
 
 /// Creates an interleaved array slice from a complex array.
@@ -326,13 +320,7 @@ fn complex_to_array_mut<T>(complex: &mut [Complex<T>]) -> &mut [T]
 where
     T: RealNumber,
 {
-    use std::mem;
-    use std::slice;
-    unsafe {
-        let len = complex.len();
-        let trans: &mut [T] = mem::transmute(complex);
-        slice::from_raw_parts_mut(&mut trans[0] as *mut T, len * 2)
-    }
+    super::transmute_slice_mut(complex)
 }
 
 impl<S, T, N, D> DspVec<S, T, N, D>

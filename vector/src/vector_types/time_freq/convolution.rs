@@ -11,8 +11,6 @@ use multicore_support::*;
 use numbers::*;
 use rustfft::FFTplanner;
 use simd_extensions::*;
-use std::mem;
-use std::slice;
 use {array_to_complex, array_to_complex_mut};
 
 /// Provides a convolution operations.
@@ -325,19 +323,11 @@ fn next_power_of_two(value: usize) -> usize {
 }
 
 fn array_to_real<T>(array: &[Complex<T>]) -> &[T] {
-    unsafe {
-        let len = array.len();
-        let trans: &[T] = mem::transmute(array);
-        slice::from_raw_parts(trans.as_ptr(), 2 * len)
-    }
+    super::super::super::transmute_slice(array)
 }
 
 fn array_to_real_mut<T>(array: &mut [Complex<T>]) -> &mut [T] {
-    unsafe {
-        let len = array.len();
-        let trans: &mut [T] = mem::transmute(array);
-        slice::from_raw_parts_mut(trans.as_mut_ptr(), 2 * len)
-    }
+    super::super::super::transmute_slice_mut(array)
 }
 
 impl<S, T, N, D> DspVec<S, T, N, D>
