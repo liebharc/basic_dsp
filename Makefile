@@ -20,9 +20,9 @@ endif
 	
 bench:
 ifeq ($(RUST_NIGHTLY), nightly)
-			$(CARGO_CMD) bench --verbose --features use_avx
+	$(CARGO_CMD) bench --verbose --features use_avx
 else
-			@echo "Bench requires Rust nigthly, skipping bench for $(RUST_VERSION)"
+	@echo "Bench requires Rust nigthly, skipping bench for $(RUST_VERSION)"
 endif
 
 clean:
@@ -43,6 +43,14 @@ build_all: build
 	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --features use_sse
 	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml    
 	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --no-default-features
+	
+clippy:
+ifeq ($(RUST_NIGHTLY), nightly)
+	$(CARGO_CMD) clippy
+else
+
+	@echo "Skipping clippy for $(RUST_VERSION)"	
+endif	
     
 test_all: test
 	$(CARGO_CMD) clean
