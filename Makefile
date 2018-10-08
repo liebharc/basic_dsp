@@ -61,6 +61,6 @@ run-all: $(packages)
 	$(CARGO_CMD) $(TASK) --no-default-features --features std,use_sse2
 
 $(packages):
-	$(CARGO_CMD) $(TASK) --manifest-path $@/Cargo.toml
+	$(CARGO_CMD) $(TASK) --manifest-path $@/Cargo.toml  --no-default-features --features std,use_sse2
 
 .PHONY: $(packages) test
