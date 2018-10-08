@@ -83,6 +83,7 @@ extern crate time;
 #[macro_use]
 mod simd_extensions;
 pub mod conv_types;
+pub mod meta;
 mod multicore_support;
 mod vector_types;
 pub mod window_functions;

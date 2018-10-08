@@ -1,9 +1,10 @@
 use super::{
-    complex_to_array, complex_to_array_mut, Buffer, BufferBorrow, ComplexData, DataDomain, Domain,
-    DspVec, ErrorReason, FrequencyData, MetaData, NumberSpace, RealData, RealOrComplexData,
-    TimeData, TimeOrFrequencyData, ToComplexVector, ToDspVector, ToRealVector, ToSlice, ToSliceMut,
+    complex_to_array, complex_to_array_mut, Buffer, BufferBorrow, DataDomain, Domain,
+    DspVec, ErrorReason, MetaData, NumberSpace,
+    ToComplexVector, ToDspVector, ToRealVector, ToSlice, ToSliceMut,
     TypeMetaData, VoidResult,
 };
+use super::super::meta;
 use arrayvec;
 use arrayvec::{Array, ArrayVec};
 use inline_vector::InlineVector;
@@ -90,37 +91,37 @@ where
 }
 
 /// A vector with real numbers in time domain.
-pub type RealTimeVec<S, T> = DspVec<S, T, RealData, TimeData>;
+pub type RealTimeVec<S, T> = DspVec<S, T,  meta::Real,  meta::Time>;
 /// A vector with real numbers in frequency domain.
-pub type RealFreqVec<S, T> = DspVec<S, T, RealData, FrequencyData>;
+pub type RealFreqVec<S, T> = DspVec<S, T,  meta::Real,  meta::Freq>;
 /// A vector with complex numbers in time domain.
-pub type ComplexTimeVec<S, T> = DspVec<S, T, ComplexData, TimeData>;
+pub type ComplexTimeVec<S, T> = DspVec<S, T, meta::Complex, meta::Time>;
 /// A vector with complex numbers in frequency domain.
-pub type ComplexFreqVec<S, T> = DspVec<S, T, ComplexData, FrequencyData>;
+pub type ComplexFreqVec<S, T> = DspVec<S, T, meta::Complex, meta::Freq>;
 /// A vector with no information about number space or domain at compile time.
-pub type GenDspVec<S, T> = DspVec<S, T, RealOrComplexData, TimeOrFrequencyData>;
+pub type GenDspVec<S, T> = DspVec<S, T, meta::RealOrComplex, meta::TimeOrFreq>;
 
 /// A vector with real numbers in time domain.
-pub type RealTimeVecSlice32<'a> = DspVec<&'a [f32], f32, RealData, TimeData>;
+pub type RealTimeVecSlice32<'a> = DspVec<&'a [f32], f32,  meta::Real,  meta::Time>;
 /// A vector with real numbers in frequency domain.
-pub type RealFreqVecSlice32<'a> = DspVec<&'a [f32], f32, RealData, FrequencyData>;
+pub type RealFreqVecSlice32<'a> = DspVec<&'a [f32], f32,  meta::Real,  meta::Freq>;
 /// A vector with complex numbers in time domain.
-pub type ComplexTimeVecSlice32<'a> = DspVec<&'a [f32], f32, ComplexData, TimeData>;
+pub type ComplexTimeVecSlice32<'a> = DspVec<&'a [f32], f32, meta::Complex, meta::Time>;
 /// A vector with complex numbers in frequency domain.
-pub type ComplexFreqVecSlice32<'a> = DspVec<&'a [f32], f32, ComplexData, FrequencyData>;
+pub type ComplexFreqVecSlice32<'a> = DspVec<&'a [f32], f32, meta::Complex, meta::Freq>;
 /// A vector with no information about number space or domain at compile time.
-pub type GenDspVecSlice32<'a> = DspVec<&'a [f32], f32, RealOrComplexData, TimeOrFrequencyData>;
+pub type GenDspVecSlice32<'a> = DspVec<&'a [f32], f32, meta::RealOrComplex, meta::TimeOrFreq>;
 
 /// A vector with real numbers in time domain.
-pub type RealTimeVecSlice64<'a> = DspVec<&'a [f64], f64, RealData, TimeData>;
+pub type RealTimeVecSlice64<'a> = DspVec<&'a [f64], f64,  meta::Real,  meta::Time>;
 /// A vector with real numbers in frequency domain.
-pub type RealFreqVecSlice64<'a> = DspVec<&'a [f64], f64, RealData, FrequencyData>;
+pub type RealFreqVecSlice64<'a> = DspVec<&'a [f64], f64,  meta::Real,  meta::Freq>;
 /// A vector with complex numbers in time domain.
-pub type ComplexTimeVecSlice64<'a> = DspVec<&'a [f64], f64, ComplexData, TimeData>;
+pub type ComplexTimeVecSlice64<'a> = DspVec<&'a [f64], f64, meta::Complex, meta::Time>;
 /// A vector with complex numbers in frequency domain.
-pub type ComplexFreqVecSlice64<'a> = DspVec<&'a [f64], f64, ComplexData, FrequencyData>;
+pub type ComplexFreqVecSlice64<'a> = DspVec<&'a [f64], f64, meta::Complex, meta::Freq>;
 /// A vector with no information about number space or domain at compile time.
-pub type GenDspVecSlice64<'a> = DspVec<&'a [f64], f64, RealOrComplexData, TimeOrFrequencyData>;
+pub type GenDspVecSlice64<'a> = DspVec<&'a [f64], f64, meta::RealOrComplex, meta::TimeOrFreq>;
 
 impl<'a, T> ToSlice<T> for &'a [T] {
     fn to_slice(&self) -> &[T] {
@@ -305,10 +306,10 @@ where
         GenDspVec {
             data: self,
             delta: A::Item::one(),
-            domain: TimeOrFrequencyData {
+            domain: meta::TimeOrFreq {
                 domain_current: domain,
             },
-            number_space: RealOrComplexData {
+            number_space: meta::RealOrComplex {
                 is_complex_current: is_complex,
             },
             valid_len: len,
@@ -348,8 +349,8 @@ where
         RealTimeVec {
             data: self,
             delta: A::Item::one(),
-            domain: TimeData,
-            number_space: RealData,
+            domain:  meta::Time,
+            number_space:  meta::Real,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -360,8 +361,8 @@ where
         RealFreqVec {
             data: self,
             delta: A::Item::one(),
-            domain: FrequencyData,
-            number_space: RealData,
+            domain:  meta::Freq,
+            number_space:  meta::Real,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -377,8 +378,8 @@ where
         ComplexTimeVec {
             data: self,
             delta: A::Item::one(),
-            domain: TimeData,
-            number_space: ComplexData,
+            domain: meta::Time,
+            number_space: meta::Complex,
             valid_len: if len % 2 == 0 { len } else { 0 },
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -389,8 +390,8 @@ where
         ComplexFreqVec {
             data: self,
             delta: A::Item::one(),
-            domain: FrequencyData,
-            number_space: ComplexData,
+            domain: meta::Freq,
+            number_space: meta::Complex,
             valid_len: if len % 2 == 0 { len } else { 0 },
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -409,10 +410,10 @@ where
         GenDspVec {
             data: self,
             delta: T::one(),
-            domain: TimeOrFrequencyData {
+            domain: meta::TimeOrFreq {
                 domain_current: domain,
             },
-            number_space: RealOrComplexData {
+            number_space: meta::RealOrComplex {
                 is_complex_current: is_complex,
             },
             valid_len: len,
@@ -449,8 +450,8 @@ where
         RealTimeVec {
             data: self,
             delta: T::one(),
-            domain: TimeData,
-            number_space: RealData,
+            domain:  meta::Time,
+            number_space:  meta::Real,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -461,8 +462,8 @@ where
         RealFreqVec {
             data: self,
             delta: T::one(),
-            domain: FrequencyData,
-            number_space: RealData,
+            domain:  meta::Freq,
+            number_space:  meta::Real,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -478,8 +479,8 @@ where
         ComplexTimeVec {
             data: self,
             delta: T::one(),
-            domain: TimeData,
-            number_space: ComplexData,
+            domain: meta::Time,
+            number_space: meta::Complex,
             valid_len: if len % 2 == 0 { len } else { 0 },
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -490,8 +491,8 @@ where
         ComplexFreqVec {
             data: self,
             delta: T::one(),
-            domain: FrequencyData,
-            number_space: ComplexData,
+            domain: meta::Freq,
+            number_space: meta::Complex,
             valid_len: if len % 2 == 0 { len } else { 0 },
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -507,10 +508,10 @@ where
         GenDspVec {
             data: self,
             delta: T::one(),
-            domain: TimeOrFrequencyData {
+            domain: meta::TimeOrFreq {
                 domain_current: domain,
             },
-            number_space: RealOrComplexData {
+            number_space: meta::RealOrComplex {
                 is_complex_current: is_complex,
             },
             valid_len: len,
@@ -547,8 +548,8 @@ where
         RealTimeVec {
             data: self,
             delta: T::one(),
-            domain: TimeData,
-            number_space: RealData,
+            domain:  meta::Time,
+            number_space:  meta::Real,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -559,8 +560,8 @@ where
         RealFreqVec {
             data: self,
             delta: T::one(),
-            domain: FrequencyData,
-            number_space: RealData,
+            domain:  meta::Freq,
+            number_space:  meta::Real,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -576,8 +577,8 @@ where
         ComplexTimeVec {
             data: self,
             delta: T::one(),
-            domain: TimeData,
-            number_space: ComplexData,
+            domain: meta::Time,
+            number_space: meta::Complex,
             valid_len: if len % 2 == 0 { len } else { 0 },
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -588,8 +589,8 @@ where
         ComplexFreqVec {
             data: self,
             delta: T::one(),
-            domain: FrequencyData,
-            number_space: ComplexData,
+            domain: meta::Freq,
+            number_space: meta::Complex,
             valid_len: if len % 2 == 0 { len } else { 0 },
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -606,8 +607,8 @@ where
         ComplexTimeVec {
             data: array,
             delta: T::one(),
-            domain: TimeData,
-            number_space: ComplexData,
+            domain: meta::Time,
+            number_space: meta::Complex,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -619,8 +620,8 @@ where
         ComplexFreqVec {
             data: array,
             delta: T::one(),
-            domain: FrequencyData,
-            number_space: ComplexData,
+            domain: meta::Freq,
+            number_space: meta::Complex,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -639,10 +640,10 @@ where
         GenDspVec {
             data: self,
             delta: T::one(),
-            domain: TimeOrFrequencyData {
+            domain: meta::TimeOrFreq{
                 domain_current: domain,
             },
-            number_space: RealOrComplexData {
+            number_space: meta::RealOrComplex {
                 is_complex_current: is_complex,
             },
             valid_len: len,
@@ -679,8 +680,8 @@ where
         RealTimeVec {
             data: self,
             delta: T::one(),
-            domain: TimeData,
-            number_space: RealData,
+            domain:  meta::Time,
+            number_space:  meta::Real,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -691,8 +692,8 @@ where
         RealFreqVec {
             data: self,
             delta: T::one(),
-            domain: FrequencyData,
-            number_space: RealData,
+            domain:  meta::Freq,
+            number_space:  meta::Real,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -708,8 +709,8 @@ where
         ComplexTimeVec {
             data: self,
             delta: T::one(),
-            domain: TimeData,
-            number_space: ComplexData,
+            domain: meta::Time,
+            number_space: meta::Complex,
             valid_len: if len % 2 == 0 { len } else { 0 },
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -720,8 +721,8 @@ where
         ComplexFreqVec {
             data: self,
             delta: T::one(),
-            domain: FrequencyData,
-            number_space: ComplexData,
+            domain: meta::Freq,
+            number_space: meta::Complex,
             valid_len: if len % 2 == 0 { len } else { 0 },
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -738,8 +739,8 @@ where
         ComplexTimeVec {
             data: array,
             delta: T::one(),
-            domain: TimeData,
-            number_space: ComplexData,
+            domain: meta::Time,
+            number_space: meta::Complex,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -751,8 +752,8 @@ where
         ComplexFreqVec {
             data: array,
             delta: T::one(),
-            domain: FrequencyData,
-            number_space: ComplexData,
+            domain: meta::Freq,
+            number_space: meta::Complex,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }

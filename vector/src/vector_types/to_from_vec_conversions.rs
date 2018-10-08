@@ -1,9 +1,10 @@
 //! Conversions to and from vectors which serve as constructors.
 use super::{
-    ComplexData, ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec, FrequencyData,
-    GenDspVec, NumberSpace, RealData, RealFreqVec, RealTimeVec, TimeData, ToSlice, TypeMetaData,
+    ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec,
+    GenDspVec, NumberSpace, RealFreqVec, RealTimeVec, ToSlice, TypeMetaData,
 };
 use multicore_support::MultiCoreSettings;
+use super::super::meta;
 use numbers::*;
 use std::convert::From;
 
@@ -114,8 +115,8 @@ where
         RealTimeVec {
             data,
             delta: T::one(),
-            domain: TimeData,
-            number_space: RealData,
+            domain: meta::Time,
+            number_space: meta::Real,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -135,8 +136,8 @@ where
         ComplexTimeVec {
             data,
             delta: T::one(),
-            domain: TimeData,
-            number_space: ComplexData,
+            domain: meta::Time,
+            number_space: meta::Complex,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -155,8 +156,8 @@ where
         RealFreqVec {
             data,
             delta: T::one(),
-            domain: FrequencyData,
-            number_space: RealData,
+            domain: meta::Freq,
+            number_space: meta::Real,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }
@@ -176,8 +177,8 @@ where
         ComplexFreqVec {
             data,
             delta: T::one(),
-            domain: FrequencyData,
-            number_space: ComplexData,
+            domain: meta::Freq,
+            number_space: meta::Complex,
             valid_len: len,
             multicore_settings: MultiCoreSettings::default(),
         }

@@ -6,6 +6,9 @@ Changes:
 - Removed `combined_ops` module as it at best showed performance improvements of 10% which didn't justify the complexity within it.
 - `to_real` function of `ComplexTimeLinearTableLookup` and `ComplexFrequencyLinearTableLookup` now takes `&self` instead of `self`
 - Renamed feature `use_sse` to `use_sse2` and feature `use_avx` to `use_avx2` to avoid confusion with SIMD naming.
+- `ComplexData` is now in `meta::Complex`. `RealData`, `RealOrComplexData`, `TimeData`, `FrequencyData` and 
+`TimeOrFrequencyData` have been moved similarly. If you used those types then consider to implement against the type
+definitions or traits instead.
 
 ## Version 0.5.6
 

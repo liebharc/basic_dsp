@@ -1,9 +1,10 @@
 use super::{
-    ComplexData, ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec, FrequencyData,
-    GenDspVec, NumberSpace, RealData, RealFreqVec, RealOrComplexData, RealTimeVec, TimeData,
-    TimeOrFrequencyData, ToSlice, TypeMetaData,
+    ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec,
+    GenDspVec, NumberSpace, RealFreqVec, RealTimeVec,
+    ToSlice, TypeMetaData,
 };
 use super::{ToComplexVector, ToDspVector, ToRealVector};
+use super::super::meta;
 use multicore_support::MultiCoreSettings;
 /// ! Support for types in Rust std
 use numbers::*;
@@ -85,7 +86,7 @@ impl<Type: ToDspVector<T>, T: RealNumber> ToDspVectorPar<T> for Type {
         self,
         is_complex: bool,
         domain: DataDomain,
-    ) -> DspVec<Self, T, RealOrComplexData, TimeOrFrequencyData> {
+    ) -> DspVec<Self, T, meta::RealOrComplex, meta::TimeOrFreq> {
         let mut vec = self.to_gen_dsp_vec(is_complex, domain);
         vec.set_multicore_settings(MultiCoreSettings::parallel());
         vec
@@ -103,13 +104,13 @@ impl<Type: ToDspVector<T>, T: RealNumber> ToDspVectorPar<T> for Type {
 }
 
 impl<Type: ToRealVector<T>, T: RealNumber> ToRealVectorPar<T> for Type {
-    fn to_real_time_vec_par(self) -> DspVec<Self, T, RealData, TimeData> {
+    fn to_real_time_vec_par(self) -> DspVec<Self, T, meta::Real,  meta::Time> {
         let mut vec = self.to_real_time_vec();
         vec.set_multicore_settings(MultiCoreSettings::parallel());
         vec
     }
 
-    fn to_real_freq_vec_par(self) -> DspVec<Self, T, RealData, FrequencyData> {
+    fn to_real_freq_vec_par(self) -> DspVec<Self, T, meta::Real, meta::Freq> {
         let mut vec = self.to_real_freq_vec();
         vec.set_multicore_settings(MultiCoreSettings::parallel());
         vec
@@ -119,13 +120,13 @@ impl<Type: ToRealVector<T>, T: RealNumber> ToRealVectorPar<T> for Type {
 impl<Type: ToComplexVector<S, T> + Sized + ToSlice<T>, S: Sized + ToSlice<T>, T: RealNumber>
     ToComplexVectorPar<S, T> for Type
 {
-    fn to_complex_time_vec_par(self) -> DspVec<S, T, ComplexData, TimeData> {
+    fn to_complex_time_vec_par(self) -> DspVec<S, T, meta::Complex, meta::Time> {
         let mut vec = self.to_complex_time_vec();
         vec.set_multicore_settings(MultiCoreSettings::parallel());
         vec
     }
 
-    fn to_complex_freq_vec_par(self) -> DspVec<S, T, ComplexData, FrequencyData> {
+    fn to_complex_freq_vec_par(self) -> DspVec<S, T, meta::Complex, meta::Freq> {
         let mut vec = self.to_complex_freq_vec();
         vec.set_multicore_settings(MultiCoreSettings::parallel());
         vec

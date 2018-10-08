@@ -39,6 +39,7 @@ mod general;
 pub use self::general::*;
 mod buffer;
 pub use self::buffer::*;
+use super::meta;
 
 /// Result for operations which transform a type (most commonly the type is a vector).
 /// On success the transformed type is returned.
@@ -98,114 +99,8 @@ pub trait TimeDomain: Domain {}
 /// Trait for types containing frequency domain data.
 pub trait FrequencyDomain: Domain {}
 
-/// Marker for types containing real data.
-#[derive(Debug, Clone, PartialEq)]
-pub struct RealData;
-impl NumberSpace for RealData {
-    fn is_complex(&self) -> bool {
-        false
-    }
-    fn to_complex(&mut self) {}
-    fn to_real(&mut self) {}
-}
-impl RealNumberSpace for RealData {}
-
-/// Marker for types containing complex data.
-#[derive(Debug, Clone, PartialEq)]
-pub struct ComplexData;
-impl NumberSpace for ComplexData {
-    fn is_complex(&self) -> bool {
-        true
-    }
-    fn to_complex(&mut self) {}
-    fn to_real(&mut self) {}
-}
-impl ComplexNumberSpace for ComplexData {}
-
-/// Marker for types containing real or complex data.
-#[derive(Debug, Clone, PartialEq)]
-pub struct RealOrComplexData {
-    pub is_complex_current: bool,
-}
-impl NumberSpace for RealOrComplexData {
-    fn is_complex(&self) -> bool {
-        self.is_complex_current
-    }
-
-    fn to_complex(&mut self) {
-        self.is_complex_current = true;
-    }
-
-    fn to_real(&mut self) {
-        self.is_complex_current = false;
-    }
-}
-impl RealNumberSpace for RealOrComplexData {}
-impl ComplexNumberSpace for RealOrComplexData {}
-
-/// Marker for types containing time data.
-#[derive(Debug, Clone, PartialEq)]
-pub struct TimeData;
-impl Domain for TimeData {
-    fn domain(&self) -> DataDomain {
-        DataDomain::Time
-    }
-    fn to_freq(&mut self) {}
-    fn to_time(&mut self) {}
-}
-impl TimeDomain for TimeData {}
-
-/// Marker for types containing frequency data.
-#[derive(Debug, Clone, PartialEq)]
-pub struct FrequencyData;
-impl Domain for FrequencyData {
-    fn domain(&self) -> DataDomain {
-        DataDomain::Frequency
-    }
-    fn to_time(&mut self) {}
-    fn to_freq(&mut self) {}
-}
-impl FrequencyDomain for FrequencyData {}
-
-/// Marker for types containing time or frequency data.
-#[derive(Debug, Clone, PartialEq)]
-pub struct TimeOrFrequencyData {
-    pub domain_current: DataDomain,
-}
-impl Domain for TimeOrFrequencyData {
-    fn domain(&self) -> DataDomain {
-        self.domain_current
-    }
-
-    fn to_freq(&mut self) {
-        self.domain_current = DataDomain::Frequency;
-    }
-
-    fn to_time(&mut self) {
-        self.domain_current = DataDomain::Time;
-    }
-}
-
-impl TimeDomain for TimeOrFrequencyData {}
-impl FrequencyDomain for TimeOrFrequencyData {}
-
 /// Expresses at compile time that two classes could potentially represent the same number space or domain.
 pub trait PosEq<O> {}
-impl PosEq<RealData> for RealData {}
-impl PosEq<RealOrComplexData> for RealData {}
-impl PosEq<RealData> for RealOrComplexData {}
-impl PosEq<ComplexData> for RealOrComplexData {}
-impl PosEq<RealOrComplexData> for RealOrComplexData {}
-impl PosEq<ComplexData> for ComplexData {}
-impl PosEq<RealOrComplexData> for ComplexData {}
-
-impl PosEq<TimeData> for TimeData {}
-impl PosEq<TimeOrFrequencyData> for TimeData {}
-impl PosEq<TimeData> for TimeOrFrequencyData {}
-impl PosEq<FrequencyData> for TimeOrFrequencyData {}
-impl PosEq<TimeOrFrequencyData> for TimeOrFrequencyData {}
-impl PosEq<FrequencyData> for FrequencyData {}
-impl PosEq<TimeOrFrequencyData> for FrequencyData {}
 
 /// A 1xN (one times N elements) or Nx1 data vector as used for most digital signal processing
 /// (DSP) operations.
@@ -323,7 +218,7 @@ where
 }
 
 
-impl<S: ToSliceMut<T>, T: RealNumber> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData> {
+impl<S: ToSliceMut<T>, T: RealNumber> DspVec<S, T, meta::RealOrComplex, meta::TimeOrFreq> {
 
     /// Indicates whether or not the operations on this vector have been successful.
     /// Consider using the statically typed vector versions so that this check doesn't need to be

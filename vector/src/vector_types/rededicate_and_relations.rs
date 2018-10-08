@@ -1,9 +1,10 @@
 //! Specifies the conversions between data types.
 use super::{
-    ComplexData, ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec, FrequencyData,
-    GenDspVec, MetaData, NumberSpace, RealData, RealFreqVec, RealOrComplexData, RealTimeVec,
-    ResizeOps, TimeData, TimeOrFrequencyData, ToSlice, Vector,
+    ComplexFreqVec, ComplexTimeVec, DataDomain, Domain, DspVec,
+    GenDspVec, MetaData, NumberSpace, RealFreqVec, RealTimeVec,
+    ResizeOps, ToSlice, Vector,
 };
+use super::super::meta;
 use numbers::*;
 
 /// This trait allows to change a data type. The operations will
@@ -205,8 +206,8 @@ where
         RealTimeVec {
             data: origin.data,
             delta: origin.delta,
-            domain: TimeData,
-            number_space: RealData,
+            domain: meta::Time,
+            number_space: meta::Real,
             valid_len: origin.valid_len,
             multicore_settings: origin.multicore_settings,
         }
@@ -228,8 +229,8 @@ where
         RealFreqVec {
             data: origin.data,
             delta: origin.delta,
-            domain: FrequencyData,
-            number_space: RealData,
+            domain:  meta::Freq,
+            number_space:  meta::Real,
             valid_len: origin.valid_len,
             multicore_settings: origin.multicore_settings,
         }
@@ -251,8 +252,8 @@ where
         ComplexTimeVec {
             data: origin.data,
             delta: origin.delta,
-            domain: TimeData,
-            number_space: ComplexData,
+            domain: meta::Time,
+            number_space: meta::Complex,
             valid_len: origin.valid_len,
             multicore_settings: origin.multicore_settings,
         }
@@ -274,8 +275,8 @@ where
         ComplexFreqVec {
             data: origin.data,
             delta: origin.delta,
-            domain: FrequencyData,
-            number_space: ComplexData,
+            domain: meta::Freq,
+            number_space: meta::Complex,
             valid_len: origin.valid_len,
             multicore_settings: origin.multicore_settings,
         }
@@ -299,10 +300,10 @@ where
         GenDspVec {
             data: origin.data,
             delta: origin.delta,
-            domain: TimeOrFrequencyData {
+            domain: meta::TimeOrFreq {
                 domain_current: domain,
             },
-            number_space: RealOrComplexData {
+            number_space: meta::RealOrComplex {
                 is_complex_current: is_complex,
             },
             valid_len: origin.valid_len,

@@ -2,6 +2,7 @@
 //! Please refer to the other chapters of the help for documentation of the functions.
 use super::*;
 use basic_dsp_vector::*;
+use basic_dsp_vector::meta;
 use basic_dsp_vector::conv_types::*;
 use num_complex::*;
 use std::slice;
@@ -147,7 +148,7 @@ pub extern "C" fn real_dot_product32(vector: &VecBuf,
                                      operand: &VecBuf)
                                      -> ScalarInteropResult<f32> {
     vector.convert_scalar(|v| {
-        DotProductOps::<GenDspVec<Vec<f32>, f32>, f32, f32, RealOrComplexData, TimeOrFrequencyData>::dot_product(v, &operand.vec)
+        DotProductOps::<GenDspVec<Vec<f32>, f32>, f32, f32, meta::RealOrComplex, meta::TimeOrFreq>::dot_product(v, &operand.vec)
     },
     0.0)
 }
@@ -157,7 +158,7 @@ pub extern "C" fn complex_dot_product32(vector: &VecBuf,
                                         operand: &VecBuf)
                                         -> ScalarInteropResult<Complex32> {
     vector.convert_scalar(|v| {
-        DotProductOps::<GenDspVec<Vec<f32>, f32>, Complex32, f32, RealOrComplexData, TimeOrFrequencyData>::dot_product(v, &operand.vec)
+        DotProductOps::<GenDspVec<Vec<f32>, f32>, Complex32, f32, meta::RealOrComplex, meta::TimeOrFreq>::dot_product(v, &operand.vec)
     },
     Complex32::new(0.0, 0.0))
 }
@@ -198,7 +199,7 @@ pub extern "C" fn real_dot_product_prec32(vector: &VecBuf,
                                           operand: &VecBuf)
                                           -> ScalarInteropResult<f32> {
     vector.convert_scalar(|v| {
-        PreciseDotProductOps::<GenDspVec<Vec<f32>, f32>, f32, f32, RealOrComplexData, TimeOrFrequencyData>::dot_product_prec(v, &operand.vec)
+        PreciseDotProductOps::<GenDspVec<Vec<f32>, f32>, f32, f32, meta::RealOrComplex, meta::TimeOrFreq>::dot_product_prec(v, &operand.vec)
     },
     0.0)
 }
@@ -208,7 +209,7 @@ pub extern "C" fn complex_dot_product_prec32(vector: &VecBuf,
                                              operand: &VecBuf)
                                              -> ScalarInteropResult<Complex32> {
     vector.convert_scalar(|v| {
-        PreciseDotProductOps::<GenDspVec<Vec<f32>, f32>, Complex32, f32, RealOrComplexData, TimeOrFrequencyData>::dot_product_prec(v, &operand.vec)
+        PreciseDotProductOps::<GenDspVec<Vec<f32>, f32>, Complex32, f32, meta::RealOrComplex, meta::TimeOrFreq>::dot_product_prec(v, &operand.vec)
     },
     Complex32::new(0.0, 0.0))
 }
