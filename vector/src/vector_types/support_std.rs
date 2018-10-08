@@ -1,3 +1,5 @@
+/// ! Support for types in Rust std
+
 use super::{
     Buffer, BufferBorrow, ComplexFreqVec, ComplexTimeVec, DataDomain,
     Domain, DspVec, ErrorReason, GenDspVec, MetaData, NumberSpace,
@@ -7,11 +9,11 @@ use super::{
 use super::super::meta;
 use super::{Resize, ToComplexVector, ToDspVector, ToRealVector, ToSliceMut, VoidResult};
 use multicore_support::MultiCoreSettings;
-/// ! Support for types in Rust std
 use numbers::*;
 use std::mem;
 use std::ops::*;
 use std::result;
+use simd_extensions::*;
 
 
 /// Rounds a length so that it always divides by the length of a SIMD
