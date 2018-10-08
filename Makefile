@@ -1,7 +1,5 @@
 CARGO_CMD ?= cargo
 
-packages = vector matrix interop
-
 RUST_VERSION=$(shell rustc --version)
 RUST_NIGHTLY = $(findstring nightly,$(RUST_VERSION))
 
@@ -57,10 +55,8 @@ test_all: test
 	$(CARGO_CMD) test --no-default-features --features std,use_sse2
 	$(CARGO_CMD) test --no-default-features --features std,use_avx2
 
-run-all: $(packages)
+run-all:
 	$(CARGO_CMD) $(TASK) --no-default-features --features std,use_sse2
-
-$(packages):
-	$(CARGO_CMD) $(TASK) --manifest-path $@/Cargo.toml  --no-default-features --features std,use_sse2
-
-.PHONY: $(packages) test
+	$(CARGO_CMD) $(TASK) --manifest-path vector/Cargo.toml  --no-default-features --features std,use_sse2
+	$(CARGO_CMD) $(TASK) --manifest-path matrix/Cargo.toml
+	$(CARGO_CMD) $(TASK) --manifest-path interop/Cargo.toml
