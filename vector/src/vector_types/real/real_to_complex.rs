@@ -100,7 +100,7 @@ where
     {
         if self.is_complex() {
             self.number_space.to_complex();
-            self.valid_len = 0;
+            self.mark_vector_as_invalid();
             return Self::ComplexResult::rededicate_from_force(self);
         }
         self.zero_interleave_b(buffer, 2);

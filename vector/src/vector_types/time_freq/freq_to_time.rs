@@ -137,7 +137,7 @@ where
         B: for<'a> Buffer<'a, S, T>,
     {
         if self.domain() != DataDomain::Frequency {
-            self.valid_len = 0;
+            self.mark_vector_as_invalid();
             self.number_space.to_complex();
             self.domain.to_freq();
             return Self::TimeResult::rededicate_from_force(self);
@@ -189,7 +189,7 @@ where
         B: for<'a> Buffer<'a, S, T>,
     {
         if self.domain() != DataDomain::Frequency || !self.is_complex() {
-            self.valid_len = 0;
+            self.mark_vector_as_invalid();
             self.number_space.to_complex();
             self.domain.to_freq();
             return Err((
@@ -199,7 +199,7 @@ where
         }
 
         if self.points() > 0 && self[1].abs() > T::from(1e-10).unwrap() {
-            self.valid_len = 0;
+            self.mark_vector_as_invalid();
             self.number_space.to_complex();
             self.domain.to_freq();
             return Err((

@@ -340,7 +340,7 @@ macro_rules! assert_complex {
     ($self_: ident) => {
         if !$self_.is_complex() {
             $self_.number_space.to_real();
-            $self_.valid_len = 0;
+            $self_.mark_vector_as_invalid();
             return Self::RealResult::rededicate_from_force($self_);
         }
     };

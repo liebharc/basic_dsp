@@ -56,7 +56,7 @@ where
         F: Fn(T, usize, A) -> T + 'a + Sync,
     {
         if self.is_complex() {
-            self.valid_len = 0;
+            self.mark_vector_as_invalid();
             return;
         }
 
@@ -166,7 +166,7 @@ where
         F: Fn(Complex<T>, usize, A) -> Complex<T> + 'a + Sync,
     {
         if !self.is_complex() {
-            self.valid_len = 0;
+            self.mark_vector_as_invalid();
             return;
         }
 

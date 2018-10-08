@@ -89,7 +89,7 @@ where
 macro_rules! assert_complex {
     ($self_: ident) => {
         if !$self_.is_complex() {
-            $self_.valid_len = 0;
+            $self_.mark_vector_as_invalid();
             return;
         }
     };
@@ -98,7 +98,7 @@ macro_rules! assert_complex {
 macro_rules! assert_time {
     ($self_: ident) => {
         if $self_.domain() != DataDomain::Time {
-            $self_.valid_len = 0;
+            $self_.mark_vector_as_invalid();
             return;
         }
     };
@@ -598,7 +598,7 @@ where
         ratio: T,
     ) {
         if !self.is_complex() || self.domain() != DataDomain::Frequency {
-            self.valid_len = 0;
+            self.mark_vector_as_invalid();
             return;
         }
         self.multiply_function_priv(
@@ -626,7 +626,7 @@ where
         ratio: T,
     ) {
         if self.domain() != DataDomain::Frequency {
-            self.valid_len = 0;
+            self.mark_vector_as_invalid();
             return;
         }
         if self.is_complex() {

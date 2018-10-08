@@ -322,6 +322,17 @@ where
     super::transmute_slice_mut(complex)
 }
 
+
+impl<S: ToSliceMut<T>, T: RealNumber> DspVec<S, T, RealOrComplexData, TimeOrFrequencyData> {
+
+    /// Indicates whether or not the operations on this vector have been successful.
+    /// Consider using the statically typed vector versions so that this check doesn't need to be
+    /// performed.
+    pub fn is_erroneous(&self) -> bool {
+       self.valid_len == 0 && self.delta.is_nan()
+    }
+}
+
 impl<S, T, N, D> DspVec<S, T, N, D>
 where
     S: ToSliceMut<T>,
@@ -329,6 +340,12 @@ where
     N: NumberSpace,
     D: Domain,
 {
+    /// Marks the data of the vector as erroneous
+    fn mark_vector_as_invalid(&mut self) {
+        self.valid_len = 0;
+        self.delta = T::nan();
+    }
+
     /// Executes a real function.
     #[inline]
     fn pure_real_operation<A, F>(&mut self, op: F, argument: A, complexity: Complexity)

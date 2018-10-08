@@ -146,7 +146,7 @@ where
         B: for<'a> Buffer<'a, S, T>,
     {
         if self.domain() != DataDomain::Time {
-            self.valid_len = 0;
+            self.mark_vector_as_invalid();
             self.number_space.to_complex();
             self.domain.to_freq();
             return Self::FreqResult::rededicate_from_force(self);
@@ -208,7 +208,7 @@ where
         B: for<'a> Buffer<'a, S, T>,
     {
         if self.domain() != DataDomain::Time || self.is_complex() {
-            self.valid_len = 0;
+            self.mark_vector_as_invalid();
             self.number_space.to_complex();
             self.domain.to_freq();
             return Err((
@@ -218,7 +218,7 @@ where
         }
 
         if self.points() % 2 == 0 {
-            self.valid_len = 0;
+            self.mark_vector_as_invalid();
             self.number_space.to_complex();
             self.domain.to_freq();
             return Err((
@@ -240,7 +240,7 @@ where
         B: for<'a> Buffer<'a, S, T>,
     {
         if self.domain() != DataDomain::Time || self.is_complex() {
-            self.valid_len = 0;
+            self.mark_vector_as_invalid();
             self.number_space.to_complex();
             self.domain.to_freq();
             return Err((
@@ -250,7 +250,7 @@ where
         }
 
         if self.points() % 2 == 0 {
-            self.valid_len = 0;
+            self.mark_vector_as_invalid();
             self.number_space.to_complex();
             self.domain.to_freq();
             return Err((
@@ -276,7 +276,7 @@ where
         B: for<'a> Buffer<'a, S, T>,
     {
         if self.domain() != DataDomain::Time || self.is_complex() {
-            self.valid_len = 0;
+            self.mark_vector_as_invalid();
             self.number_space.to_complex();
             self.domain.to_freq();
             return Err((
@@ -286,7 +286,7 @@ where
         }
 
         if self.points() % 2 == 0 {
-            self.valid_len = 0;
+            self.mark_vector_as_invalid();
             self.number_space.to_complex();
             self.domain.to_freq();
             return Err((

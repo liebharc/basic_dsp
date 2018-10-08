@@ -50,7 +50,7 @@ where
         let mut temp = buffer.borrow(dest_len);
         {
             if self.is_complex() {
-                self.valid_len = 0;
+                self.mark_vector_as_invalid();
                 return;
             }
             let data = self.data.to_slice();
@@ -90,7 +90,7 @@ where
         let mut temp = buffer.borrow(dest_len);
         {
             if self.is_complex() {
-                self.valid_len = 0;
+                self.mark_vector_as_invalid();
                 return;
             }
             let data = self.data.to_slice();

@@ -53,7 +53,7 @@ where
         B: for<'a> Buffer<'a, S, T>,
     {
         if self.domain() != DataDomain::Frequency && !self.is_complex() {
-            self.valid_len = 0;
+            self.mark_vector_as_invalid();
             return;
         }
 

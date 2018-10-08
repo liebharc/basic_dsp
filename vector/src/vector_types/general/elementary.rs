@@ -274,7 +274,7 @@ where
 macro_rules! assert_complex {
     ($self_: ident) => {
         if !$self_.is_complex() {
-            $self_.valid_len = 0;
+            $self_.mark_vector_as_invalid();
             return;
         }
     };
