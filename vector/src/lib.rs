@@ -60,7 +60,7 @@
 )] // This LINT gives false positives
 
 extern crate arrayvec;
-#[cfg(any(feature = "doc", feature = "use_gpu"))]
+#[cfg(feature = "use_gpu")]
 extern crate clfft;
 #[cfg(feature = "std")]
 extern crate crossbeam;
@@ -73,10 +73,10 @@ extern crate num_complex;
 #[cfg(feature = "std")]
 extern crate num_cpus;
 extern crate num_traits;
-#[cfg(any(feature = "doc", feature = "use_gpu"))]
+#[cfg(feature = "use_gpu")]
 extern crate ocl;
 extern crate rustfft;
-#[cfg(any(feature = "doc", feature = "use_sse2", feature = "use_avx2"))]
+#[cfg(feature = "use_simd")]
 extern crate simd;
 #[cfg(feature = "std")]
 extern crate time;

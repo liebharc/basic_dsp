@@ -1,5 +1,5 @@
 use super::{
-    round_len, Buffer, BufferBorrow, ComplexFreqVec, ComplexTimeVec, DataDomain,
+    Buffer, BufferBorrow, ComplexFreqVec, ComplexTimeVec, DataDomain,
     Domain, DspVec, ErrorReason, GenDspVec, MetaData, NumberSpace,
     RealFreqVec, RealTimeVec, ToSlice,
     TypeMetaData,
@@ -12,6 +12,18 @@ use numbers::*;
 use std::mem;
 use std::ops::*;
 use std::result;
+
+
+/// Rounds a length so that it always divides by the length of a SIMD
+/// register. This function assumes that `Reg32::LEN > Reg64::LEN`.
+fn round_len(len: usize) -> usize {
+    fn get_reg_len<T: RealNumber, Reg: SimdGeneric<T>>(_: RegType<Reg>) -> usize {
+        Reg::LEN
+    }
+
+    let reg_len = sel_reg!(get_reg_len::<f32>());
+    ((len + reg_len - 1) / reg_len) * reg_len
+}
 
 /// Conversion from two instances of a generic data type into a dsp vector with complex data.
 pub trait InterleaveToVector<T>: ToSlice<T>

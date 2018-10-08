@@ -164,17 +164,6 @@ where
     }
 }
 
-/// Rounds a length so that it always divides by the length of a SIMD
-/// register. This function assumes that `Reg32::LEN > Reg64::LEN`.
-fn round_len(len: usize) -> usize {
-    fn get_reg_len<T: RealNumber, Reg: SimdGeneric<T>>(_: RegType<Reg>) -> usize {
-        Reg::LEN
-    }
-
-    let reg_len = sel_reg!(get_reg_len::<f32>());
-    ((len + reg_len - 1) / reg_len) * reg_len
-}
-
 /// Swaps the halves of two arrays. The `forward` paremeter
 /// specifies what should happen then the `data.len()` is odd.
 /// The function should always produce the same results as `fft_shift`

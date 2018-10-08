@@ -16,6 +16,7 @@ script:
 - |
   make test &&
   make bench &&
+  make clippy &&
   cargo doc -p basic_dsp -p basic_dsp_vector -p basic_dsp_matrix --no-deps
 
 env:

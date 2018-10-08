@@ -4,7 +4,7 @@ use simd::x86::avx as simdavx;
 #[cfg(feature = "use_sse2")]
 use simd::x86::sse2 as simdsse;
 use std;
-#[cfg(any(feature = "doc", feature = "use_sse2", feature = "use_avx2"))]
+#[cfg(feature = "use_simd")]
 use simd;
 use std::mem;
 use std::ops::*;
@@ -342,11 +342,7 @@ simd_generic_impl!(f32, simd::f32x4);
 #[cfg(feature = "use_sse2")]
 simd_generic_impl!(f64, simdsse::f64x2);
 
-#[cfg(any(
-    feature = "use_sse2",
-    feature = "use_avx2",
-    feature = "use_avx512"
-))]
+#[cfg(feature = "use_simd")]
 mod approximations;
 
 mod approx_fallback;
