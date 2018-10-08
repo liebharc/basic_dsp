@@ -58,7 +58,7 @@ test_all: test
 	$(CARGO_CMD) test --no-default-features --features std,use_avx2
 
 run-all: $(packages)
-	$(CARGO_CMD) $(TASK) --verbose
+	$(CARGO_CMD) $(TASK) --no-default-features --features std,use_sse2
 
 $(packages):
 	$(CARGO_CMD) $(TASK) --manifest-path $@/Cargo.toml

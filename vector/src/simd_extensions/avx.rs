@@ -1,6 +1,7 @@
 use super::{Simd, SimdFrom};
 use numbers::*;
 use simd::x86::avx::*;
+use simd;
 use std::arch::x86_64::*;
 use std::mem;
 
