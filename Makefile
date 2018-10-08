@@ -44,7 +44,8 @@ build_all: build
 	
 clippy:
 ifeq ($(RUST_NIGHTLY), nightly)
-	$(CARGO_CMD) clippy --no-default-features --features std,use_sse2,matrix
+	$(CARGO_CMD) clean 
+	$(CARGO_CMD) clippy --no-default-features --features std,use_sse2
 else
 	@echo "Skipping clippy for $(RUST_VERSION)"	
 endif	
