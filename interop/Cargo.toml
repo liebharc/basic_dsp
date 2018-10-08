@@ -29,5 +29,7 @@ path = "../vector"
 version = "^0.6.0"
 
 [features]
-use_avx2 = []
+std = []
 use_sse2 = []
+use_avx2 = []
+use_gpu = []

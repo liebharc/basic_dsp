@@ -31,5 +31,7 @@ hamcrest = "^0.1.0"
 rand = "^0.3.12"
 
 [features]
-use_avx2 = []
+std = []
 use_sse2 = []
+use_avx2 = []
+use_gpu = []
