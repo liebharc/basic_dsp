@@ -11,16 +11,16 @@ ifeq ($(RUST_NIGHTLY), nightly)
 	$(CARGO_CMD) clean
 	$(CARGO_CMD) test --manifest-path vector/Cargo.toml --no-default-features --lib
 	$(CARGO_CMD) clean
-	$(CARGO_CMD) test --features use_sse2
+	$(CARGO_CMD) test --no-default-features --features std,use_sse2
 	$(CARGO_CMD) clean
-	$(CARGO_CMD) test --features use_avx2
+	$(CARGO_CMD) test --no-default-features --features std,use_avx2
 else
 	$(MAKE) run-all TASK="test"
 endif
 	
 bench:
 ifeq ($(RUST_NIGHTLY), nightly)
-	$(CARGO_CMD) bench --verbose --features use_avx2
+	$(CARGO_CMD) bench
 else
 	@echo "Bench requires Rust nigthly, skipping bench for $(RUST_VERSION)"
 endif
@@ -36,17 +36,17 @@ build:
       
 build_all: build
 	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml
-	$(CARGO_CMD) build --manifest-path vector/Cargo.toml
+	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --no-default-features --features std
 	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml    
-	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --features use_avx2
+	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --no-default-features --features std,use_sse2
 	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml    
-	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --features use_sse2
+	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --no-default-features --features std,use_avx2
 	$(CARGO_CMD) clean --manifest-path vector/Cargo.toml    
 	$(CARGO_CMD) build --manifest-path vector/Cargo.toml --no-default-features
 	
 clippy:
 ifeq ($(RUST_NIGHTLY), nightly)
-	$(CARGO_CMD) clippy
+	$(CARGO_CMD) clippy --no-default-features --features std,use_sse2
 else
 	@echo "Skipping clippy for $(RUST_VERSION)"	
 endif	
@@ -54,8 +54,8 @@ endif
 test_all: test
 	$(CARGO_CMD) clean
 	$(CARGO_CMD) test --manifest-path vector/Cargo.toml --no-default-features --lib
-	$(CARGO_CMD) test --features use_sse2
-	$(CARGO_CMD) test --features use_avx2
+	$(CARGO_CMD) test --no-default-features --features std,use_sse2
+	$(CARGO_CMD) test --no-default-features --features std,use_avx2
 
 run-all: $(packages)
 	$(CARGO_CMD) $(TASK) --verbose

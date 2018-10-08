@@ -19,7 +19,7 @@ codegen-units = 4
 codegen-units = 4
 
 [features]
-default = ["std"]
+default = ["std", "use_sse2", "use_avx2"]
 use_avx2 = ["use_simd"]
 use_avx512 = ["use_simd"]
 use_sse2 = ["use_simd"]
