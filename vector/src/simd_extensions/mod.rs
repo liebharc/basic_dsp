@@ -4,6 +4,8 @@ use simd::x86::avx as simdavx;
 #[cfg(feature = "use_sse2")]
 use simd::x86::sse2 as simdsse;
 use std;
+#[cfg(any(feature = "doc", feature = "use_sse2", feature = "use_avx2"))]
+use simd;
 use std::mem;
 use std::ops::*;
 
