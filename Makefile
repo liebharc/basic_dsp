@@ -9,9 +9,9 @@ ifeq ($(RUST_NIGHTLY), nightly)
 	$(CARGO_CMD) clean
 	$(CARGO_CMD) test --manifest-path vector/Cargo.toml --no-default-features --lib
 	$(CARGO_CMD) clean
-	$(CARGO_CMD) test --no-default-features --features std,use_sse2
+	$(CARGO_CMD) test --no-default-features --features std,use_sse2,matrix
 	$(CARGO_CMD) clean
-	$(CARGO_CMD) test --no-default-features --features std,use_avx2
+	$(CARGO_CMD) test --no-default-features --features std,use_avx2,matrix
 else
 	$(MAKE) run-all TASK="test"
 endif
@@ -44,7 +44,7 @@ build_all: build
 	
 clippy:
 ifeq ($(RUST_NIGHTLY), nightly)
-	$(CARGO_CMD) clippy --no-default-features --features std,use_sse2
+	$(CARGO_CMD) clippy --no-default-features --features std,use_sse2,matrix
 else
 	@echo "Skipping clippy for $(RUST_VERSION)"	
 endif	
@@ -56,7 +56,7 @@ test_all: test
 	$(CARGO_CMD) test --no-default-features --features std,use_avx2
 
 run-all:
-	$(CARGO_CMD) $(TASK) --no-default-features --features std,use_sse2
+	$(CARGO_CMD) $(TASK) --no-default-features --features std,use_sse2,matrix
 	$(CARGO_CMD) $(TASK) --manifest-path vector/Cargo.toml  --no-default-features --features std,use_sse2
 	$(CARGO_CMD) $(TASK) --manifest-path matrix/Cargo.toml
 	$(CARGO_CMD) $(TASK) --manifest-path interop/Cargo.toml

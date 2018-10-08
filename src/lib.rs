@@ -1,17 +1,17 @@
-#[cfg(feature = "basic_dsp_interop")]
+#[cfg(feature = "interop")]
 extern crate basic_dsp_interop;
-#[cfg(feature = "basic_dsp_matrix")]
+#[cfg(feature = "matrix")]
 extern crate basic_dsp_matrix;
 extern crate basic_dsp_vector;
 
 pub use basic_dsp_vector::*;
 
-#[cfg(feature = "basic_dsp_matrix")]
+#[cfg(feature = "matrix")]
 pub mod matrix {
     pub use basic_dsp_matrix::*;
 }
 
-#[cfg(feature = "basic_dsp_interop")]
+#[cfg(feature = "interop")]
 pub mod interop {
     pub use basic_dsp_interop::*;
 }
