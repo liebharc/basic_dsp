@@ -27,7 +27,11 @@ impl<T> InteropVec<T>
     {
         let result = op(&mut self.vec, &mut self.buffer);
         match result {
-            Ok(()) => VectorInteropResult{vector: Box::new(self), result_code: 0},
+            Ok(()) => {
+                let vector = Box::new(self);
+                let result_code = get_error_marker(&vector);
+                VectorInteropResult{ vector, result_code }
+            },
             Err(res) => {
                 VectorInteropResult {
                     vector: Box::new(self),
@@ -45,12 +49,14 @@ impl<T> InteropVec<T>
         let result = op(vec, &mut buffer);
         match result {
             Ok(vec) => {
+                let vector = Box::new(InteropVec {
+                    vec: vec,
+                    buffer: buffer,
+                });
+                let result_code = get_error_marker(&vector);
                 VectorInteropResult {
-                    vector: Box::new(InteropVec {
-                        vec: vec,
-                        buffer: buffer,
-                    }),
-                    result_code: 0,
+                    vector,
+                    result_code,
                 }
             }
             Err((err, vec)) => {
@@ -73,7 +79,7 @@ impl<T> InteropVec<T>
             Ok(res) => {
                 ScalarInteropResult {
                     result: res,
-                    result_code: 0,
+                    result_code: get_error_marker(&self),
                 }
             }
             Err(res) => {
@@ -99,6 +105,7 @@ pub fn convert_void(result: VoidResult) -> i32 {
 
 /// Error codes:
 ///
+/// -1. Operation isn't valid for the given vector types, check real/complex and time/freq data
 /// 1. VectorsMustHaveTheSameSize
 /// 2. VectorMetaDataMustAgree
 /// 3. VectorMustBeComplex
@@ -131,6 +138,11 @@ pub fn translate_error(reason: ErrorReason) -> i32 {
         ErrorReason::InputMustHaveAnEvenLength => 13,
         ErrorReason::TypeCanNotResize => 14,
     }
+}
+
+/// Returns the error code depending on the error marker of a vector.
+pub fn get_error_marker<T: RealNumber>(vec: &InteropVec<T>) -> i32 {
+    if vec.vec.is_erroneous() { -1 } else { 0 }
 }
 
 pub fn translate_to_window_function<T>(value: i32) -> Box<WindowFunction<T>>
