@@ -25,11 +25,14 @@ num-complex = "^0.1.34"
 
 [dependencies.basic_dsp_vector]
 optional = false
+default-features = false
 path = "../vector"
 version = "^0.6.0"
 
 [features]
-std = []
-use_sse2 = []
-use_avx2 = []
-use_gpu = []
+use_avx512 = ["basic_dsp_vector/use_avx512"]
+use_avx2 = ["basic_dsp_vector/use_avx2"]
+use_sse2 = ["basic_dsp_vector/use_sse2"]
+use_gpu = ["basic_dsp_vector/use_gpu"]
+std = ["basic_dsp_vector/std"]
+default = ["use_sse2", "use_avx2", "std"]
