@@ -3,9 +3,9 @@ use numbers::*;
 use simd::x86::avx as simdavx;
 #[cfg(feature = "use_sse2")]
 use simd::x86::sse2 as simdsse;
-use std;
-#[cfg(feature = "use_simd")]
+#[cfg(feature = "use_sse2")]
 use simd;
+use std;
 use std::mem;
 use std::ops::*;
 
