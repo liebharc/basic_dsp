@@ -391,15 +391,14 @@ macro_rules! impl_binary_vector_operation {
 
                 let data_length = self.len();
                 let array = self.data.to_slice_mut();
-                let (left, center, right) =
-                    Reg::calc_data_alignment_reqs(&array[0..data_length]);
+                let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name[..];
-                if center.is_some() {
-                    let center = center.unwrap();
+                if partition.center.is_some() {
+                    let center = partition.center.unwrap();
                     Chunk::from_src_to_dest(
                         Complexity::Small, self.multicore_settings,
-                        &other[left..center], Reg::LEN,
-                        &mut array[left..center], Reg::LEN, (),
+                        &other[partition.left..center], Reg::LEN,
+                        &mut array[partition.left..center], Reg::LEN, (),
                         |original, range, target, _arg| {
                             let mut i = range.start;
                             let target =
@@ -410,10 +409,10 @@ macro_rules! impl_binary_vector_operation {
                             }
                     });
                 }
-                for i in 0..left {
+                for i in 0..partition.left {
                     array[i] = array[i].$scal_op(other[i]);
                 }
-                for i in right..data_length {
+                for i in partition.right..data_length {
                     array[i] = array[i].$scal_op(other[i]);
                 }
             }
@@ -434,15 +433,14 @@ macro_rules! impl_binary_complex_vector_operation {
 
                 let data_length = self.len();
                 let array = self.data.to_slice_mut();
-                let (left, center, right) =
-                    Reg::calc_data_alignment_reqs(&array[0..data_length]);
+                let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name[..];
-                if center.is_some() {
-                    let center = center.unwrap();
+                if partition.center.is_some() {
+                    let center = partition.center.unwrap();
                     Chunk::from_src_to_dest(
                         Complexity::Small, self.multicore_settings,
-                        &other[left..center], Reg::LEN,
-                        &mut array[left..center], Reg::LEN, (),
+                        &other[partition.left..center], Reg::LEN,
+                        &mut array[partition.left..center], Reg::LEN, (),
                         |original, range, target, _arg| {
                             let mut i = range.start;
                             let target =
@@ -454,7 +452,7 @@ macro_rules! impl_binary_complex_vector_operation {
                     });
                 }
                 let mut i = 0;
-                while i < left {
+                while i < partition.left {
                     let complex1 = Complex::<T>::new(array[i], array[i + 1]);
                     let complex2 = Complex::<T>::new(other[i], other[i + 1]);
                     let result = complex1.$scal_op(complex2);
@@ -463,7 +461,7 @@ macro_rules! impl_binary_complex_vector_operation {
                     i += 2;
                 }
 
-                let mut i = right;
+                let mut i = partition.right;
                 while i < data_length {
                     let complex1 = Complex::<T>::new(array[i], array[i + 1]);
                     let complex2 = Complex::<T>::new(other[i], other[i + 1]);

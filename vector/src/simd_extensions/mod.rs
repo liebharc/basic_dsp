@@ -8,6 +8,8 @@ use simd;
 use std;
 use std::mem;
 use std::ops::*;
+mod simd_partition;
+pub use self::simd_partition::SimdPartition;
 
 /// SIMD methods which have `f32` or `f64` specific implementation.
 pub trait Simd<T>: Sized
@@ -102,7 +104,7 @@ where
     /// the process will crash. This method takes a vector an divides it in three ranges:
     /// beginning, center, end. Beginning and end may not be loaded directly as SIMD registers.
     /// Center will contain most of the data.
-    fn calc_data_alignment_reqs(array: &[T]) -> (usize, Option<usize>, usize);
+    fn calc_data_alignment_reqs(array: &[T]) -> SimdPartition;
 
     /// Converts a real valued array which has exactly the size of a SIMD register
     /// into a SIMD register.
@@ -193,18 +195,25 @@ macro_rules! simd_generic_impl {
         
         impl SimdGeneric<$data_type> for $mod::$reg {
             #[inline]
-            fn calc_data_alignment_reqs(array: &[$data_type]) -> (usize, Option<usize>,usize) {
+            fn calc_data_alignment_reqs(array: &[$data_type]) -> SimdPartition {
                 let data_length = array.len();
                 let addr = array.as_ptr();
                 let scalar_left = get_alignment_offset(addr as usize, mem::size_of::<Self>());
                 assert!(scalar_left % mem::size_of::<$data_type>() == 0);
                 let scalar_left = scalar_left / mem::size_of::<$data_type>();
                 if scalar_left + Self::LEN > data_length {
-                    // Result order: scalar_left, scalar_right, vectorization_length
-                    (data_length, None, data_length)
+                    SimdPartition {
+                        left: data_length,
+                        center: None,
+                        right: data_length
+                    }
                 } else {
                     let right = (data_length - scalar_left) % Self::LEN;
-                    (scalar_left, Some(data_length - right), data_length - right)
+                    SimdPartition {
+                        left: scalar_left,
+                        center: Some(data_length - right),
+                        right: data_length - right
+                    }
                 }
             }
         

@@ -528,16 +528,15 @@ where
         destination.set_delta(self.delta);
         let temp = &mut destination[0..data_length / 2];
         let array = &self.data.to_slice();
-        let (left, center, right) =
-            Reg::calc_data_alignment_reqs(array);
-        if center.is_some() {
-            let vectorization_length = center.unwrap();
+        let partition = Reg::calc_data_alignment_reqs(array);
+        if partition.center.is_some() {
+            let center = partition.center.unwrap();
             Chunk::from_src_to_dest(
                 complexity,
                 self.multicore_settings,
-                &array[left..vectorization_length],
+                &array[partition.left..center],
                 Reg::LEN,
-                &mut temp[left / 2..vectorization_length / 2],
+                &mut temp[partition.left / 2..center / 2],
                 Reg::LEN / 2,
                 (),
                 move |array, range, target, _arg| {
@@ -553,13 +552,13 @@ where
         }
 
         let mut i = 0;
-        while i < left {
+        while i < partition.left {
             let c = Complex::new(array[i], array[i + 1]);
             temp[i / 2] = op(c);
             i += 2;
         }
 
-        let mut i = right;
+        let mut i = partition.right;
         while i < data_length {
             let c = Complex::new(array[i], array[i + 1]);
             temp[i / 2] = op(c);

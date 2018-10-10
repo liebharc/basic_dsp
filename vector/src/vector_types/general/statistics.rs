@@ -438,14 +438,13 @@ where
     fn sum_real<Reg: SimdGeneric<T>>(&self, _: RegType<Reg>) -> T {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (left, center, right) =
-            Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let mut sum = if center.is_some() {
-            let vectorization_length = center.unwrap();
+        let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
+        let mut sum = if partition.center.is_some() {
+            let center = partition.center.unwrap();
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
                 self.multicore_settings,
-                &array[left..vectorization_length],
+                &array[partition.left..center],
                 Reg::LEN,
                 (),
                 move |array, _, _| {
@@ -464,10 +463,10 @@ where
         } else {
             T::zero()
         };
-        for num in &array[0..left] {
+        for num in &array[0..partition.left] {
             sum = sum + *num;
         }
-        for num in &array[right..data_length] {
+        for num in &array[partition.right..data_length] {
             sum = sum + *num;
         }
         sum
@@ -476,14 +475,13 @@ where
     fn sum_sq_real<Reg: SimdGeneric<T>>(&self, _: RegType<Reg>) -> T {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (left, center, right) =
-            Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let mut sum = if center.is_some() {
-            let vectorization_length = center.unwrap();
+        let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
+        let mut sum = if partition.center.is_some() {
+            let center = partition.center.unwrap();
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
                 self.multicore_settings,
-                &array[left..vectorization_length],
+                &array[partition.left..center],
                 Reg::LEN,
                 (),
                 move |array, _, _| {
@@ -502,10 +500,10 @@ where
         } else {
             T::zero()
         };
-        for num in &array[0..left] {
+        for num in &array[0..partition.left] {
             sum = sum + *num * *num;
         }
-        for num in &array[right..data_length] {
+        for num in &array[partition.right..data_length] {
             sum = sum + *num * *num;
         }
         sum
@@ -514,14 +512,13 @@ where
     fn sum_complex<Reg: SimdGeneric<T>>(&self, _: RegType<Reg>) -> Complex<T> {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (left, center, right) =
-            Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let mut sum = if center.is_some() {
-            let vectorization_length = center.unwrap();
+        let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
+        let mut sum = if partition.center.is_some() {
+            let center = partition.center.unwrap();
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
                 self.multicore_settings,
-                &array[left..vectorization_length],
+                &array[partition.left..center],
                 Reg::LEN,
                 (),
                 move |array, _, _| {
@@ -540,10 +537,10 @@ where
         } else {
             Complex::<T>::new(T::zero(), T::zero())
         };
-        for num in array_to_complex(&array[0..left]) {
+        for num in array_to_complex(&array[0..partition.left]) {
             sum = sum + *num;
         }
-        for num in array_to_complex(&array[right..data_length]) {
+        for num in array_to_complex(&array[partition.right..data_length]) {
             sum = sum + *num;
         }
         sum
@@ -552,14 +549,13 @@ where
     fn sum_sq_complex<Reg: SimdGeneric<T>>(&self, _: RegType<Reg>) -> Complex<T> {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (left, center, right) =
-            Reg::calc_data_alignment_reqs(&array[0..data_length]);
-        let mut sum = if center.is_some() {
-            let vectorization_length = center.unwrap();
+        let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
+        let mut sum = if partition.center.is_some() {
+            let center = partition.center.unwrap();
             let chunks = Chunk::get_chunked_results(
                 Complexity::Small,
                 self.multicore_settings,
-                &array[left..vectorization_length],
+                &array[partition.left..center],
                 Reg::LEN,
                 (),
                 move |array, _, _| {
@@ -578,10 +574,10 @@ where
         } else {
             Complex::<T>::new(T::zero(), T::zero())
         };
-        for num in array_to_complex(&array[0..left]) {
+        for num in array_to_complex(&array[0..partition.left]) {
             sum = sum + *num * *num;
         }
-        for num in array_to_complex(&array[right..data_length]) {
+        for num in array_to_complex(&array[partition.right..data_length]) {
             sum = sum + *num * *num;
         }
         sum

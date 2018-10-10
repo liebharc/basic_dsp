@@ -252,12 +252,11 @@ where
                 }
             }
 
-            let (left, center, _) =
-                Reg::calc_data_alignment_reqs(&data[0..data_len]);
-            let left_points = left / step;
-            if center.is_some() {
-                let vectorization_length = center.unwrap();
-                let simd = Reg::array_to_regs(&data[left..vectorization_length]);
+            let partition = Reg::calc_data_alignment_reqs(&data[0..data_len]);
+            let left_points = partition.left / step;
+            if partition.center.is_some() {
+                let center = partition.center.unwrap();
+                let simd = Reg::array_to_regs(&data[partition.left..center]);
                 // Length of a SIMD reg relative to the length of type T
                 // which is 1 for real numbers or 2 for complex numbers
                 let simd_len_in_t = Reg::LEN / step;
