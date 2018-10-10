@@ -438,7 +438,7 @@ where
     fn sum_real<Reg: SimdGeneric<T>>(&self, _: RegType<Reg>) -> T {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (left, right, center) =
+        let (left, center, right) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let mut sum = if center.is_some() {
             let vectorization_length = center.unwrap();
@@ -476,7 +476,7 @@ where
     fn sum_sq_real<Reg: SimdGeneric<T>>(&self, _: RegType<Reg>) -> T {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (left, right, center) =
+        let (left, center, right) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let mut sum = if center.is_some() {
             let vectorization_length = center.unwrap();
@@ -514,7 +514,7 @@ where
     fn sum_complex<Reg: SimdGeneric<T>>(&self, _: RegType<Reg>) -> Complex<T> {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (left, right, center) =
+        let (left, center, right) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let mut sum = if center.is_some() {
             let vectorization_length = center.unwrap();
@@ -552,7 +552,7 @@ where
     fn sum_sq_complex<Reg: SimdGeneric<T>>(&self, _: RegType<Reg>) -> Complex<T> {
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (left, right, center) =
+        let (left, center, right) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let mut sum = if center.is_some() {
             let vectorization_length = center.unwrap();

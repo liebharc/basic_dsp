@@ -582,7 +582,7 @@ where
                 );
             }
 
-            let (left, _, center) =
+            let (left, center, _) =
                 Reg::calc_data_alignment_reqs(&data[0..len]);
             let step = if self.is_complex() { 2 } else { 1 };
             let scalar_left_points = left / step;

@@ -313,7 +313,7 @@ where
         {
             let data_length = self.valid_len;
             let array = self.data.to_slice_mut();
-            let (left, right, center) =
+            let (left, center, right) =
                 Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if center.is_some() {
                 let vectorization_length = center.unwrap();
@@ -378,7 +378,7 @@ where
         {
             let data_length = self.valid_len;
             let array = self.data.to_slice_mut();
-            let (left, right, center) =
+            let (left, center, right) =
                 Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if center.is_some() {
                 let vectorization_length = center.unwrap();
@@ -492,7 +492,7 @@ where
         {
             let array = self.data.to_slice_mut();
             let temp = result.to_slice_mut();
-            let (left, right, center) =
+            let (left, center, right) =
                 Reg::calc_data_alignment_reqs(&array[0..data_length]);
             if center.is_some() {
                 let vectorization_length = center.unwrap();

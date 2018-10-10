@@ -528,7 +528,7 @@ where
         destination.set_delta(self.delta);
         let temp = &mut destination[0..data_length / 2];
         let array = &self.data.to_slice();
-        let (left, right, center) =
+        let (left, center, right) =
             Reg::calc_data_alignment_reqs(array);
         if center.is_some() {
             let vectorization_length = center.unwrap();

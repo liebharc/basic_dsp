@@ -81,7 +81,7 @@ where
 
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (left, right, center) =
+        let (left, center, right) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
         let chunks = if center.is_some() {
@@ -146,7 +146,7 @@ where
 
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (left, right, center) =
+        let (left, center, right) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
         let chunks = if center.is_some() {
@@ -212,7 +212,7 @@ where
 
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (left, right, center) =
+        let (left, center, right) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
         let chunks = if center.is_some() {
@@ -276,7 +276,7 @@ where
 
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (left, right, center) =
+        let (left, center, right) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
         let chunks = if center.is_some() {

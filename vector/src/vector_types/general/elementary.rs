@@ -391,15 +391,15 @@ macro_rules! impl_binary_vector_operation {
 
                 let data_length = self.len();
                 let array = self.data.to_slice_mut();
-                let (scalar_left, scalar_right, vectorization_length) =
+                let (left, center, right) =
                     Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name[..];
-                if vectorization_length.is_some() {
-                    let vectorization_length = vectorization_length.unwrap();
+                if center.is_some() {
+                    let center = center.unwrap();
                     Chunk::from_src_to_dest(
                         Complexity::Small, self.multicore_settings,
-                        &other[scalar_left..vectorization_length], Reg::LEN,
-                        &mut array[scalar_left..vectorization_length], Reg::LEN, (),
+                        &other[left..center], Reg::LEN,
+                        &mut array[left..center], Reg::LEN, (),
                         |original, range, target, _arg| {
                             let mut i = range.start;
                             let target =
@@ -410,10 +410,10 @@ macro_rules! impl_binary_vector_operation {
                             }
                     });
                 }
-                for i in 0..scalar_left {
+                for i in 0..left {
                     array[i] = array[i].$scal_op(other[i]);
                 }
-                for i in scalar_right..data_length {
+                for i in right..data_length {
                     array[i] = array[i].$scal_op(other[i]);
                 }
             }
@@ -434,15 +434,15 @@ macro_rules! impl_binary_complex_vector_operation {
 
                 let data_length = self.len();
                 let array = self.data.to_slice_mut();
-                let (scalar_left, scalar_right, vectorization_length) =
+                let (left, center, right) =
                     Reg::calc_data_alignment_reqs(&array[0..data_length]);
                 let other = &$arg_name[..];
-                if vectorization_length.is_some() {
-                    let vectorization_length = vectorization_length.unwrap();
+                if center.is_some() {
+                    let center = center.unwrap();
                     Chunk::from_src_to_dest(
                         Complexity::Small, self.multicore_settings,
-                        &other[scalar_left..vectorization_length], Reg::LEN,
-                        &mut array[scalar_left..vectorization_length], Reg::LEN, (),
+                        &other[left..center], Reg::LEN,
+                        &mut array[left..center], Reg::LEN, (),
                         |original, range, target, _arg| {
                             let mut i = range.start;
                             let target =
@@ -454,7 +454,7 @@ macro_rules! impl_binary_complex_vector_operation {
                     });
                 }
                 let mut i = 0;
-                while i < scalar_left {
+                while i < left {
                     let complex1 = Complex::<T>::new(array[i], array[i + 1]);
                     let complex2 = Complex::<T>::new(other[i], other[i + 1]);
                     let result = complex1.$scal_op(complex2);
@@ -463,7 +463,7 @@ macro_rules! impl_binary_complex_vector_operation {
                     i += 2;
                 }
 
-                let mut i = scalar_right;
+                let mut i = right;
                 while i < data_length {
                     let complex1 = Complex::<T>::new(array[i], array[i + 1]);
                     let complex2 = Complex::<T>::new(other[i], other[i + 1]);

@@ -252,7 +252,7 @@ where
                 }
             }
 
-            let (left, _, center) =
+            let (left, center, _) =
                 Reg::calc_data_alignment_reqs(&data[0..data_len]);
             let left_points = left / step;
             if center.is_some() {
