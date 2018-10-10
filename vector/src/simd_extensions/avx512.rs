@@ -237,14 +237,10 @@ impl Simd<f32> for f32x16 {
     }
 
     #[inline]
-    fn max(self, other: Self) -> Self {
-        unsafe { _mm512_max_ps(self, other) }
-    }
+    fn max(self, other: Self) -> Self { self.max(other) }
 
     #[inline]
-    fn min(self, other: Self) -> Self {
-        unsafe { _mm512_min_ps(self, other) }
-    }
+    fn min(self, other: Self) -> Self { self.min(other) }
 }
 
 impl Simd<f64> for f64x8 {
@@ -416,14 +412,10 @@ impl Simd<f64> for f64x8 {
     }
 
     #[inline]
-    fn max(self, other: Self) -> Self {
-        unsafe { _mm512_max_pd(self, other) }
-    }
+    fn max(self, other: Self) -> Self { self.max(other) }
 
     #[inline]
-    fn min(self, other: Self) -> Self {
-        unsafe { _mm512_min_pd(self, other) }
-    }
+    fn min(self, other: Self) -> Self { self.min(other) }
 }
 
 impl SimdFrom<f32x16> for i32x8 {
