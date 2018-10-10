@@ -545,7 +545,7 @@ where
                     let array = Reg::array_to_regs(&array[range]);
                     for n in array {
                         let result = op_simd(*n);
-                        result.store_half_unchecked(target, i);
+                        result.store_half(target, i);
                         i += Reg::LEN / 2;
                     }
                 },

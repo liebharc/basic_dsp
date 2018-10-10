@@ -121,14 +121,14 @@ where
                 current[k] = T::zero();
                 k += 1;
                 if k >= current.len() {
-                    copy.push(Reg::load_unchecked(&current[..], 0));
+                    copy.push(Reg::load(&current[..], 0));
                     k = 0;
                 }
                 if step > 1 {
                     current[k] = T::zero();
                     k += 1;
                     if k >= current.len() {
-                        copy.push(Reg::load_unchecked(&current[..], 0));
+                        copy.push(Reg::load(&current[..], 0));
                         k = 0;
                     }
                 }
@@ -139,13 +139,13 @@ where
                 current[k] = re;
                 k += 1;
                 if k >= current.len() {
-                    copy.push(Reg::load_unchecked(&current[..], 0));
+                    copy.push(Reg::load(&current[..], 0));
                     k = 0;
                 }
                 current[k] = im;
                 k += 1;
                 if k >= current.len() {
-                    copy.push(Reg::load_unchecked(&current[..], 0));
+                    copy.push(Reg::load(&current[..], 0));
                     k = 0;
                 }
             } else {
@@ -153,7 +153,7 @@ where
                 current[k] = *data.next().unwrap();
                 k += 1;
                 if k >= current.len() {
-                    copy.push(Reg::load_unchecked(&current[..], 0));
+                    copy.push(Reg::load(&current[..], 0));
                     k = 0;
                 }
             }

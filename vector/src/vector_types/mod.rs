@@ -184,7 +184,7 @@ where
         let mut pos = step;
         for _ in 0..len {
             let pos_new = (pos + step) % len;
-            unsafe { mem::swap(&mut temp, data.get_unchecked_mut(pos)) };
+            mem::swap(&mut temp, &mut data[pos]);
             pos = pos_new;
         }
     }
@@ -509,7 +509,7 @@ where
                         let mut j = 0;
                         for reg in array {
                             let result = simd_op(*reg, argument);
-                            result.store_half_unchecked(target, j);
+                            result.store_half(target, j);
                             j += Reg::LEN / 2;
                         }
                     },

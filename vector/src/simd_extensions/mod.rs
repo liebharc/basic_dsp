@@ -26,11 +26,6 @@ where
     /// Number of elements in a SIMD register.
     const LEN: usize;
 
-    /// Loads a SIMD register from an array. If the end of the array is approached
-    /// then the load code wraps around to the beginning and starts to load the first
-    /// elements again.
-    fn load_wrap_unchecked(array: &[T], idx: usize) -> Self;
-
     /// Creates a SIMD register loaded with a complex value.
     fn from_complex(value: Complex<T>) -> Self;
 
@@ -57,7 +52,7 @@ where
 
     /// Stores the first half of the vector in an array.
     /// Useful e.g. in combination with `complex_abs_squared`.
-    fn store_half_unchecked(self, target: &mut [T], index: usize);
+    fn store_half(self, target: &mut [T], index: usize);
 
     /// Multiplies the register with a complex value.
     fn mul_complex(self, value: Self) -> Self;
@@ -145,19 +140,16 @@ where
     fn array_to_regs_mut(array: &mut [T]) -> &mut [Self];
 
     /// Loads a SIMD register from an array without any bound checks.
-    fn load_unchecked(array: &[T], idx: usize) -> Self;
+    fn load(array: &[T], idx: usize) -> Self;
 
-    /// Stores a SIMD register into an array without any bound checks.
-    fn store_unchecked(self, target: &mut [T], index: usize);
+    /// Stores a SIMD register into an array.
+    fn store(self, array: &mut [T], index: usize);
 
     /// Returns one element from the register.
     fn extract(self, idx: u32) -> T;
 
     /// Creates a new SIMD register where every element equals `value`.
     fn splat(value: T) -> Self;
-
-    /// Stores a SIMD register into an array.
-    fn store(self, array: &mut [T], index: usize);
 }
 
 /// Approximated and faster implementation of some numeric standard function.
@@ -185,19 +177,6 @@ pub trait SimdApproximations<T> {
     /// the implementation is easier with a boolean `is_sin` flag which
     /// determines if the sine or cosine is requried.
     fn sin_cos_approx(self, is_sin: bool) -> Self;
-}
-
-/// Private struct copied over from the `simd` crate to implement the `load_unchecked`
-/// and `store_unchecked` methods for the `SimdGeneric` trait.
-#[repr(packed)]
-struct Unalign<T>(T);
-
-impl<T: Copy> Copy for Unalign<T> {}
-
-impl<T: Clone + Copy> Clone for Unalign<T> {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 
 fn get_alignment_offset(addr: usize, reg_len: usize) -> usize {
@@ -285,22 +264,15 @@ macro_rules! simd_generic_impl {
                 );
                 super::transmute_slice_mut(array)
             }
-        
+
             #[inline]
-            fn load_unchecked(array: &[$data_type], idx: usize) -> Self {
-                let loaded = unsafe {
-                    let data = array.as_ptr();
-                    *(data.add(idx) as *const Unalign<Self>)
-                };
-                loaded.0
+            fn load(array: &[$data_type], idx: usize) -> Self {
+                Self::load(array, idx)
             }
-        
+
             #[inline]
-            fn store_unchecked(self, array: &mut [$data_type], idx: usize) {
-                unsafe {
-                    let place = array.as_mut_ptr();
-                    *(place.add(idx) as *mut Unalign<Self>) = Unalign(self)
-                }
+            fn store(self, array: &mut [$data_type], index: usize) {
+                Self::store(self, array, index);
             }
         
             #[inline]
@@ -311,11 +283,6 @@ macro_rules! simd_generic_impl {
             #[inline]
             fn splat(value: $data_type) -> Self {
                 Self::splat(value)
-            }
-        
-            #[inline]
-            fn store(self, array: &mut [$data_type], index: usize) {
-                Self::store(self, array, index);
             }
         }
     };

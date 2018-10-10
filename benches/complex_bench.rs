@@ -59,6 +59,17 @@ mod complex {
     }
 
     #[bench]
+    fn complex_abs_to_complex_32s_benchmark(b: &mut Bencher) {
+        let mut vector = ComplexTime32Box::new(Size::Small);
+        b.iter(|| {
+            vector.execute(|v, _| {
+                let r = v.magnitude();
+                r.to_complex().unwrap()
+            })
+        });
+    }
+
+    #[bench]
     fn complex_vector_multiplication_32s_benchmark(b: &mut Bencher) {
         let mut vector = ComplexTime32Box::new(Size::Small);
         b.iter(|| {

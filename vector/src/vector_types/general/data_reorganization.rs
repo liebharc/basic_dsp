@@ -279,8 +279,8 @@ macro_rules! zero_interleave {
                     let mut i = 0;
                     let mut j = range.start;
                     while i < target.len() {
-                        let original_ptr = unsafe { original.get_unchecked(j) };
-                        let target_ptr = unsafe { target.get_unchecked_mut(i) };
+                        let original_ptr = &original[j];
+                        let target_ptr = &mut target[i];
                         unsafe {
                             ptr::copy(original_ptr, target_ptr, $tuple);
                         }

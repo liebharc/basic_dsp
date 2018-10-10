@@ -98,7 +98,7 @@ where
                     let mut i = range.start;
                     let target = Reg::array_to_regs(&target[..]);
                     for a in target {
-                        result = result + *a * Reg::load_unchecked(original, i);
+                        result = result + *a * Reg::load(original, i);
                         i += Reg::LEN;
                     }
 
@@ -163,7 +163,7 @@ where
                     let mut i = range.start;
                     let target = Reg::array_to_regs(&target[..]);
                     for a in target {
-                        result = result + a.mul_complex(Reg::load_unchecked(original, i));
+                        result = result + a.mul_complex(Reg::load(original, i));
                         i += Reg::LEN;
                     }
                     result.sum_complex()
@@ -228,7 +228,7 @@ where
                     let mut i = range.start;
                     let target = Reg::array_to_regs(&target[..]);
                     kahan_sum(target.iter().map(|a| {
-                        let res = *a * Reg::load_unchecked(original, i);
+                        let res = *a * Reg::load(original, i);
                         i += Reg::LEN;
                         res
                     }))
@@ -292,7 +292,7 @@ where
                     let mut i = range.start;
                     let target = Reg::array_to_regs(&target[..]);
                     kahan_sum(target.iter().map(|a| {
-                        let res = a.mul_complex(Reg::load_unchecked(original, i));
+                        let res = a.mul_complex(Reg::load(original, i));
                         i += Reg::LEN;
                         res
                     }))

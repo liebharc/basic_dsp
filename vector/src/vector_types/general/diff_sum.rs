@@ -70,19 +70,11 @@ where
         if is_complex {
             let data = array_to_complex_mut(data);
             for j in 0..len / 2 - 1 {
-                unsafe {
-                    let b = *data.get_unchecked(j + 1);
-                    let a = data.get_unchecked_mut(j);
-                    *a = b - *a;
-                }
+                data[j] = data[j + 1] - data[j];
             }
         } else {
             for j in 0..len - 1 {
-                unsafe {
-                    let b = *data.get_unchecked(j + 1);
-                    let a = data.get_unchecked_mut(j);
-                    *a = b - *a;
-                }
+                data[j] = data[j + 1] - data[j];
             }
         }
     }

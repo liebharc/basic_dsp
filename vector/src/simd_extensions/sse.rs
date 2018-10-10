@@ -26,15 +26,6 @@ impl Simd<f32> for f32x4 {
     const LEN: usize = 4;
 
     #[inline]
-    fn load_wrap_unchecked(array: &[f32], idx: usize) -> f32x4 {
-        let mut temp = [0.0; 4];
-        for (i, t) in temp.iter_mut().enumerate() {
-            *t = unsafe { *array.get_unchecked((idx + i) % array.len()) };
-        }
-        f32x4::load(&temp, 0)
-    }
-
-    #[inline]
     fn from_complex(value: Complex<f32>) -> f32x4 {
         f32x4::new(value.re, value.im, value.re, value.im)
     }
@@ -154,11 +145,9 @@ impl Simd<f32> for f32x4 {
     }
 
     #[inline]
-    fn store_half_unchecked(self, target: &mut [f32], index: usize) {
-        unsafe {
-            *target.get_unchecked_mut(index) = self.extract(0);
-            *target.get_unchecked_mut(index + 1) = self.extract(1);
-        }
+    fn store_half(self, target: &mut [f32], index: usize) {
+        target[index] = self.extract(0);
+        target[index + 1] = self.extract(1);
     }
 
     #[inline]
@@ -203,16 +192,6 @@ impl Simd<f64> for f64x2 {
     type ComplexArray = [Complex<f64>; 1];
 
     const LEN: usize = 2;
-
-    #[inline]
-    fn load_wrap_unchecked(array: &[f64], idx: usize) -> f64x2 {
-        let mut temp = [0.0; 2];
-        for (i, t) in temp.iter_mut().enumerate() {
-            *t = unsafe { *array.get_unchecked((idx + i) % array.len()) };
-        }
-
-        f64x2::load(&temp, 0)
-    }
 
     #[inline]
     fn from_complex(value: Complex<f64>) -> f64x2 {
@@ -282,10 +261,8 @@ impl Simd<f64> for f64x2 {
     }
 
     #[inline]
-    fn store_half_unchecked(self, target: &mut [f64], index: usize) {
-        unsafe {
-            *target.get_unchecked_mut(index) = self.extract(0);
-        }
+    fn store_half(self, target: &mut [f64], index: usize) {
+        target[index] = self.extract(0);
     }
 
     #[inline]

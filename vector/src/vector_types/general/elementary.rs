@@ -405,7 +405,7 @@ macro_rules! impl_binary_vector_operation {
                             let target =
                                 Reg::array_to_regs_mut(&mut target[..]);
                             for dst in &mut target[..] {
-                                 *dst = dst.$simd_op(Reg::load_unchecked(original, i));
+                                 *dst = dst.$simd_op(Reg::load(original, i));
                                 i += Reg::LEN;
                             }
                     });
@@ -448,7 +448,7 @@ macro_rules! impl_binary_complex_vector_operation {
                             let target =
                                 Reg::array_to_regs_mut(&mut target[..]);
                             for dst in &mut target[..] {
-                                 *dst = dst.$simd_op(Reg::load_unchecked(original, i));
+                                 *dst = dst.$simd_op(Reg::load(original, i));
                                 i += Reg::LEN;
                             }
                     });
