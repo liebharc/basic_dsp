@@ -81,17 +81,17 @@ where
 
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (scalar_left, scalar_right, vectorization_length) =
+        let (left, right, center) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
-        let chunks = if vectorization_length.is_some() {
-            let vectorization_length = vectorization_length.unwrap();
+        let chunks = if center.is_some() {
+            let vectorization_length = center.unwrap();
             Chunk::get_a_fold_b(
                 Complexity::Small,
                 self.multicore_settings,
-                &other[scalar_left..vectorization_length],
+                &other[left..vectorization_length],
                 Reg::LEN,
-                &array[scalar_left..vectorization_length],
+                &array[left..vectorization_length],
                 Reg::LEN,
                 |original, range, target| {
                     let mut result = Reg::splat(T::zero());
@@ -111,12 +111,12 @@ where
 
         let mut i = 0;
         let mut sum = T::zero();
-        while i < scalar_left {
+        while i < left {
             sum = sum + array[i] * other[i];
             i += 1;
         }
 
-        let mut i = scalar_right;
+        let mut i = right;
         while i < data_length {
             sum = sum + array[i] * other[i];
             i += 1;
@@ -146,17 +146,17 @@ where
 
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (scalar_left, scalar_right, vectorization_length) =
+        let (left, right, center) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
-        let chunks = if vectorization_length.is_some() {
-            let vectorization_length = vectorization_length.unwrap();
+        let chunks = if center.is_some() {
+            let vectorization_length = center.unwrap();
             Chunk::get_a_fold_b(
                 Complexity::Small,
                 self.multicore_settings,
-                &other[scalar_left..vectorization_length],
+                &other[left..vectorization_length],
                 Reg::LEN,
-                &array[scalar_left..vectorization_length],
+                &array[left..vectorization_length],
                 Reg::LEN,
                 |original, range, target| {
                     let mut result = Reg::splat(T::zero());
@@ -175,14 +175,14 @@ where
 
         let mut i = 0;
         let mut sum = Complex::<T>::new(T::zero(), T::zero());
-        while i < scalar_left {
+        while i < left {
             let a = Complex::<T>::new(array[i], array[i + 1]);
             let b = Complex::<T>::new(other[i], other[i + 1]);
             sum = sum + a * b;
             i += 2;
         }
 
-        let mut i = scalar_right;
+        let mut i = right;
         while i < data_length {
             let a = Complex::<T>::new(array[i], array[i + 1]);
             let b = Complex::<T>::new(other[i], other[i + 1]);
@@ -212,17 +212,17 @@ where
 
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (scalar_left, scalar_right, vectorization_length) =
+        let (left, right, center) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
-        let chunks = if vectorization_length.is_some() {
-            let vectorization_length = vectorization_length.unwrap();
+        let chunks = if center.is_some() {
+            let vectorization_length = center.unwrap();
             Chunk::get_a_fold_b(
                 Complexity::Small,
                 self.multicore_settings,
-                &other[scalar_left..vectorization_length],
+                &other[left..vectorization_length],
                 Reg::LEN,
-                &array[scalar_left..vectorization_length],
+                &array[left..vectorization_length],
                 Reg::LEN,
                 |original, range, target| {
                     let mut i = range.start;
@@ -241,12 +241,12 @@ where
 
         let mut i = 0;
         let mut sum = T::zero();
-        while i < scalar_left {
+        while i < left {
             sum = sum + array[i] * other[i];
             i += 1;
         }
 
-        let mut i = scalar_right;
+        let mut i = right;
         while i < data_length {
             sum = sum + array[i] * other[i];
             i += 1;
@@ -276,17 +276,17 @@ where
 
         let data_length = self.len();
         let array = self.data.to_slice();
-        let (scalar_left, scalar_right, vectorization_length) =
+        let (left, right, center) =
             Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
-        let chunks = if vectorization_length.is_some() {
-            let vectorization_length = vectorization_length.unwrap();
+        let chunks = if center.is_some() {
+            let vectorization_length = center.unwrap();
             Chunk::get_a_fold_b(
                 Complexity::Small,
                 self.multicore_settings,
-                &other[scalar_left..vectorization_length],
+                &other[left..vectorization_length],
                 Reg::LEN,
-                &array[scalar_left..vectorization_length],
+                &array[left..vectorization_length],
                 Reg::LEN,
                 |original, range, target| {
                     let mut i = range.start;
@@ -305,14 +305,14 @@ where
 
         let mut i = 0;
         let mut sum = Complex::<T>::new(T::zero(), T::zero());
-        while i < scalar_left {
+        while i < left {
             let a = Complex::<T>::new(array[i], array[i + 1]);
             let b = Complex::<T>::new(other[i], other[i + 1]);
             sum = sum + a * b;
             i += 2;
         }
 
-        let mut i = scalar_right;
+        let mut i = right;
         while i < data_length {
             let a = Complex::<T>::new(array[i], array[i + 1]);
             let b = Complex::<T>::new(other[i], other[i + 1]);

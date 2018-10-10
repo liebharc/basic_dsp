@@ -313,14 +313,14 @@ where
         {
             let data_length = self.valid_len;
             let array = self.data.to_slice_mut();
-            let (scalar_left, scalar_right, vectorization_length) =
+            let (left, right, center) =
                 Reg::calc_data_alignment_reqs(&array[0..data_length]);
-            if vectorization_length.is_some() {
-                let vectorization_length = vectorization_length.unwrap();
+            if center.is_some() {
+                let vectorization_length = center.unwrap();
                 Chunk::execute_partial(
                     complexity,
                     self.multicore_settings,
-                    &mut array[scalar_left..vectorization_length],
+                    &mut array[left..vectorization_length],
                     Reg::LEN,
                     argument,
                     move |array, argument| {
@@ -331,10 +331,10 @@ where
                     },
                 );
             }
-            for num in &mut array[0..scalar_left] {
+            for num in &mut array[0..left] {
                 *num = scalar_op(*num, argument);
             }
-            for num in &mut array[scalar_right..data_length] {
+            for num in &mut array[right..data_length] {
                 *num = scalar_op(*num, argument);
             }
         }
@@ -378,14 +378,14 @@ where
         {
             let data_length = self.valid_len;
             let array = self.data.to_slice_mut();
-            let (scalar_left, scalar_right, vectorization_length) =
+            let (left, right, center) =
                 Reg::calc_data_alignment_reqs(&array[0..data_length]);
-            if vectorization_length.is_some() {
-                let vectorization_length = vectorization_length.unwrap();
+            if center.is_some() {
+                let vectorization_length = center.unwrap();
                 Chunk::execute_partial(
                     complexity,
                     self.multicore_settings,
-                    &mut array[scalar_left..vectorization_length],
+                    &mut array[left..vectorization_length],
                     Reg::LEN,
                     argument,
                     move |array, argument| {
@@ -397,13 +397,13 @@ where
                 );
             }
             {
-                let array = array_to_complex_mut(&mut array[0..scalar_left]);
+                let array = array_to_complex_mut(&mut array[0..left]);
                 for num in array {
                     *num = scalar_op(*num, argument);
                 }
             }
             {
-                let array = array_to_complex_mut(&mut array[scalar_right..data_length]);
+                let array = array_to_complex_mut(&mut array[right..data_length]);
                 for num in array {
                     *num = scalar_op(*num, argument);
                 }
@@ -492,16 +492,16 @@ where
         {
             let array = self.data.to_slice_mut();
             let temp = result.to_slice_mut();
-            let (scalar_left, scalar_right, vectorization_length) =
+            let (left, right, center) =
                 Reg::calc_data_alignment_reqs(&array[0..data_length]);
-            if vectorization_length.is_some() {
-                let vectorization_length = vectorization_length.unwrap();
+            if center.is_some() {
+                let vectorization_length = center.unwrap();
                 Chunk::from_src_to_dest(
                     complexity,
                     self.multicore_settings,
-                    &array[scalar_left..vectorization_length],
+                    &array[left..vectorization_length],
                     Reg::LEN,
-                    &mut temp[scalar_left / 2..vectorization_length / 2],
+                    &mut temp[left / 2..vectorization_length / 2],
                     Reg::LEN / 2,
                     argument,
                     move |array, range, target, argument| {
@@ -516,17 +516,17 @@ where
                 );
             }
             {
-                let array = array_to_complex(&array[0..scalar_left]);
-                for pair in array.iter().zip(&mut temp[0..scalar_left / 2]) {
+                let array = array_to_complex(&array[0..left]);
+                for pair in array.iter().zip(&mut temp[0..left / 2]) {
                     let (src, dest) = pair;
                     *dest = scalar_op(*src, argument);
                 }
             }
             {
-                let array = array_to_complex(&array[scalar_right..data_length]);
+                let array = array_to_complex(&array[right..data_length]);
                 for pair in array
                     .iter()
-                    .zip(&mut temp[scalar_right / 2..data_length / 2])
+                    .zip(&mut temp[right / 2..data_length / 2])
                 {
                     let (src, dest) = pair;
                     *dest = scalar_op(*src, argument);

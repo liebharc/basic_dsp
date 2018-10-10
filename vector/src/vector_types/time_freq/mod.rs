@@ -582,13 +582,13 @@ where
                 );
             }
 
-            let (scalar_left, _, vectorization_length) =
+            let (left, _, center) =
                 Reg::calc_data_alignment_reqs(&data[0..len]);
             let step = if self.is_complex() { 2 } else { 1 };
-            let scalar_left_points = scalar_left / step;
-            if vectorization_length.is_some() {
-                let vectorization_length = vectorization_length.unwrap();
-                let simd = Reg::array_to_regs(&data[scalar_left..vectorization_length]);
+            let scalar_left_points = left / step;
+            if center.is_some() {
+                let vectorization_length = center.unwrap();
+                let simd = Reg::array_to_regs(&data[left..vectorization_length]);
                 Chunk::execute_with_range(
                     Complexity::Large,
                     self.multicore_settings,

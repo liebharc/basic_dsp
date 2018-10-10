@@ -252,12 +252,12 @@ where
                 }
             }
 
-            let (scalar_left, _, vectorization_length) =
+            let (left, _, center) =
                 Reg::calc_data_alignment_reqs(&data[0..data_len]);
-            let scalar_left_points = scalar_left / step;
-            if vectorization_length.is_some() {
-                let vectorization_length = vectorization_length.unwrap();
-                let simd = Reg::array_to_regs(&data[scalar_left..vectorization_length]);
+            let left_points = left / step;
+            if center.is_some() {
+                let vectorization_length = center.unwrap();
+                let simd = Reg::array_to_regs(&data[left..vectorization_length]);
                 // Length of a SIMD reg relative to the length of type T
                 // which is 1 for real numbers or 2 for complex numbers
                 let simd_len_in_t = Reg::LEN / step;
@@ -271,7 +271,7 @@ where
                         let mut i = range.start + scalar_len;
                         for num in dest_range {
                             let rounded = (i + interpolation_factor - 1) / interpolation_factor;
-                            let end = rounded + conv_len - scalar_left_points;
+                            let end = rounded + conv_len - left_points;
                             let simd_end = (end + simd_len_in_t - 1) / simd_len_in_t;
                             let simd_shift = end % simd_len_in_t;
                             let factor_shift = i % interpolation_factor;
