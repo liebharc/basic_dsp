@@ -94,7 +94,7 @@ where
     ///
     /// # Example
     ///
-    /// ```
+    /// ```no_run
     /// # use std::f64;
     /// use basic_dsp_vector::*;
     /// let mut vector = vec!(2.718281828459045, 7.389056, 20.085537).to_real_time_vec();
@@ -116,7 +116,7 @@ where
     ///
     /// # Example
     ///
-    /// ```
+    /// ```no_run
     /// # use std::f64;
     /// use basic_dsp_vector::*;
     /// let mut vector = vec!(1.0, 2.0, 3.0).to_real_time_vec();
@@ -169,7 +169,7 @@ where
     ///
     /// # Example
     ///
-    /// ```
+    /// ```no_run
     /// # use std::f64;
     /// use basic_dsp_vector::*;
     /// let mut vector = vec!(10.0, 100.0, 1000.0).to_real_time_vec();
@@ -191,7 +191,7 @@ where
     ///
     /// # Example
     ///
-    /// ```
+    /// ```no_run
     /// use basic_dsp_vector::*;
     /// use std::f32;
     /// let vector: Vec<f32> = vec!(1.0, 2.0, 3.0);
@@ -211,7 +211,7 @@ where
     ///
     /// # Example
     ///
-    /// ```
+    /// ```no_run
     /// use basic_dsp_vector::*;
     /// use std::f32;
     /// let vector: Vec<f32> = vec!(1.0, 2.0, 3.0);
