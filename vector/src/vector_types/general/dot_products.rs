@@ -84,7 +84,7 @@ where
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
         let chunks =
-            Chunk::get_a_fold_b(
+            Chunk::get_zipped(
                 Complexity::Small,
                 &self.multicore_settings,
                 partition.center(other),
@@ -136,7 +136,7 @@ where
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
         let chunks =
-            Chunk::get_a_fold_b(
+            Chunk::get_zipped(
                 Complexity::Small,
                 &self.multicore_settings,
                 partition.center(other),
@@ -184,7 +184,7 @@ where
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
         let chunks =
-            Chunk::get_a_fold_b(
+            Chunk::get_zipped(
                 Complexity::Small,
                 &self.multicore_settings,
                 partition.center(&other),
@@ -234,7 +234,7 @@ where
         let partition = Reg::calc_data_alignment_reqs(&array[0..data_length]);
         let other = &factor[..];
         let chunks =
-            Chunk::get_a_fold_b(
+            Chunk::get_zipped(
                 Complexity::Small,
                 &self.multicore_settings,
                 partition.center(other),

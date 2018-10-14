@@ -163,7 +163,7 @@ impl Chunk {
     /// Executes the given function on the all elements of the array in parallel. A result is
     /// returned for each chunk.
     #[inline]
-    pub fn get_a_fold_b<'a, F, T, R>(
+    pub fn get_zipped<'a, F, T, R>(
         _: Complexity,
         _: &MultiCoreSettings,
         a: &[T],
