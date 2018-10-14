@@ -49,9 +49,6 @@ where
     /// For performance it's recommended
     /// to use multiply both vectors in frequency domain instead of this operation.
     ///
-    /// # Upcoming shanges
-    /// With version `0.5` this method might get renamed.
-    ///
     /// # Failures
     /// TransRes may report the following `ErrorReason` members:
     ///
