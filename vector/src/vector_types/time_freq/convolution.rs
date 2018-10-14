@@ -101,6 +101,25 @@ macro_rules! assert_time {
     };
 }
 
+fn would_benefit_from_simd<T: RealNumber>(vec_len: usize, imp_len: usize, ratio: T) -> bool {
+    let ratio_inv = T::one() / ratio;
+    imp_len <= 202
+        && vec_len > 2000
+        && (ratio_inv.round() - ratio_inv).abs() < T::from(1e-6).unwrap()
+        && ratio > T::from(0.5).unwrap()
+}
+
+fn can_use_simd<T: RealNumber>(points: usize) -> bool {
+    points <= InlineVector::<T>::max_capacity()
+}
+
+fn calc_points<T: RealNumber>(imp_len: usize, ratio : T, is_complex: bool) -> usize {
+    let step = if is_complex { 2 } else { 1 };
+    let ratio_usize: usize = ratio.abs().round().to_usize().expect(
+        "Converting ratio to usize failed, interpolation factor is likely too large");
+    step * (2 * imp_len + 1) * ratio_usize
+}
+
 impl<'a, S, T, N, D> Convolution<'a, S, T, &'a RealImpulseResponse<T>> for DspVec<S, T, N, D>
 where
     S: ToSliceMut<T>,
@@ -121,100 +140,55 @@ where
         B: for<'b> Buffer<'b, S, T>,
     {
         assert_time!(self);
-        if !self.is_complex() {
-            let ratio_inv = T::one() / ratio;
-            if len <= 202
-                && self.len() > 2000
-                && (ratio_inv.round() - ratio_inv).abs() < T::from(1e-6).unwrap()
-                && ratio > T::from(0.5).unwrap()
-            {
-                let ratio: usize = ratio.abs().round().to_usize().expect(
-                    "Converting ratio to usize failed, is the interpolation factor \
-                     perhaps really huge?",
-                );
-                let points = (2 * len + 1) * ratio;
-                if points <= InlineVector::<T>::max_capacity() {
-                    let mut imp_resp = DspVec {
-                        data: InlineVector::of_size(T::zero(), points),
-                        delta: self.delta(),
-                        domain: self.domain.clone(),
-                        number_space: self.number_space.clone(),
-                        valid_len: points,
-                        multicore_settings: MultiCoreSettings::default(),
-                    };
+        let ratio_inv = T::one() / ratio;
+        let points = calc_points(len, ratio, self.is_complex());
+        if would_benefit_from_simd(self.len(), len, ratio) && can_use_simd::<T>(points) {
+            // Create a vector from the impulse response and use `convolve_signal` to get
+            // SIMD support
+            let mut imp_resp = DspVec {
+                data: InlineVector::of_size(T::zero(), points),
+                delta: self.delta(),
+                domain: self.domain.clone(),
+                number_space: self.number_space.clone(),
+                valid_len: points,
+                multicore_settings: MultiCoreSettings::default(),
+            };
 
-                    let mut i = 0;
-                    let mut j = -(T::from(len).unwrap());
-                    while i < imp_resp.len() {
-                        let value = function.calc(j * ratio_inv);
-                        imp_resp[i] = value;
-                        i += 1;
-                        j = j + T::one();
-                    }
-
-                    self.convolve_signal(buffer, &imp_resp).expect(
-                        "Meta data should agree since we constructed the argument from this \
-                         vector",
-                    );
-                    return;
-                }
+            let mut i = 0;
+            let mut j = -(T::from(len).unwrap());
+            while i < imp_resp.len() {
+                let value = function.calc(j * ratio_inv);
+                imp_resp[i] = value;
+                i += 2;
+                j = j + T::one();
             }
 
-            self.convolve_function_priv(
-                buffer,
-                ratio,
-                len,
-                |data| data,
-                |temp| temp,
-                |x| function.calc(x),
+            self.convolve_signal(buffer, &imp_resp).expect(
+                "Meta data should agree since we constructed the argument from this \
+                 vector",
             );
-        } else {
-            let ratio_inv = T::one() / ratio;
-            if len <= 202
-                && self.len() > 2000
-                && (ratio_inv.round() - ratio_inv).abs() < T::from(1e-6).unwrap()
-                && ratio > T::from(0.5).unwrap()
-            {
-                let ratio: usize = ratio.abs().round().to_usize().expect(
-                    "Converting ratio to usize failed, is the interpolation factor \
-                     perhaps really huge?",
+        }
+        else {
+            if self.is_complex() {
+                self.convolve_function_priv(
+                    buffer,
+                    ratio,
+                    len,
+                    |data| array_to_complex(data),
+                    |temp| array_to_complex_mut(temp),
+                    |x| Complex::<T>::new(function.calc(x), T::zero()),
                 );
-                let points = (2 * len + 1) * ratio;
-                if 2 * points <= InlineVector::<T>::max_capacity() {
-                    let mut imp_resp = DspVec {
-                        data: InlineVector::of_size(T::zero(), 2 * points),
-                        delta: self.delta(),
-                        domain: self.domain.clone(),
-                        number_space: self.number_space.clone(),
-                        valid_len: 2 * points,
-                        multicore_settings: MultiCoreSettings::default(),
-                    };
-
-                    let mut i = 0;
-                    let mut j = -(T::from(len).unwrap());
-                    while i < imp_resp.len() {
-                        let value = function.calc(j * ratio_inv);
-                        imp_resp[i] = value;
-                        i += 2;
-                        j = j + T::one();
-                    }
-
-                    self.convolve_signal(buffer, &imp_resp).expect(
-                        "Meta data should agree since we constructed the argument from this \
-                         vector",
-                    );
-                    return;
-                }
             }
-
-            self.convolve_function_priv(
-                buffer,
-                ratio,
-                len,
-                |data| array_to_complex(data),
-                |temp| array_to_complex_mut(temp),
-                |x| Complex::<T>::new(function.calc(x), T::zero()),
-            );
+                else {
+                    self.convolve_function_priv(
+                        buffer,
+                        ratio,
+                        len,
+                        |data| data,
+                        |temp| temp,
+                        |x| function.calc(x),
+                    );
+                }
         }
     }
 }
@@ -242,53 +216,43 @@ where
         assert_time!(self);
 
         let ratio_inv = T::one() / ratio;
-        if len <= 202
-            && self.len() > 2000
-            && (ratio_inv.round() - ratio_inv).abs() < T::from(1e-6).unwrap()
-            && ratio > T::from(0.5).unwrap()
-        {
-            let ratio: usize = ratio.abs().round().to_usize().expect(
-                "Converting ratio to usize failed, is the interpolation factor perhaps \
-                 really huge?",
-            );
-            let points = (2 * len + 1) * ratio;
-            if 2 * points <= InlineVector::<T>::max_capacity() {
-                let mut imp_resp = DspVec {
-                    data: InlineVector::of_size(T::zero(), 2 * points),
-                    delta: self.delta(),
-                    domain: self.domain.clone(),
-                    number_space: self.number_space.clone(),
-                    valid_len: self.valid_len,
-                    multicore_settings: MultiCoreSettings::default(),
-                };
+        let points = calc_points(len, ratio, self.is_complex());
+        if would_benefit_from_simd(self.len(), len, ratio) && can_use_simd::<T>(points) {
+            let mut imp_resp = DspVec {
+                data: InlineVector::of_size(T::zero(), 2 * points),
+                delta: self.delta(),
+                domain: self.domain.clone(),
+                number_space: self.number_space.clone(),
+                valid_len: self.valid_len,
+                multicore_settings: MultiCoreSettings::default(),
+            };
 
-                let mut i = 0;
-                let mut j = -T::from(len).unwrap();
-                while i < imp_resp.len() {
-                    let value = function.calc(j * ratio_inv);
-                    imp_resp[i] = value.re;
-                    i += 2;
-                    imp_resp[i] = value.im;
-                    i += 1;
-                    j = j + T::one();
-                }
-
-                self.convolve_signal(buffer, &imp_resp).expect(
-                    "Meta data should agree since we constructed the argument from this \
-                     vector",
-                );
-                return;
+            let mut i = 0;
+            let mut j = -T::from(len).unwrap();
+            while i < imp_resp.len() {
+                let value = function.calc(j * ratio_inv);
+                imp_resp[i] = value.re;
+                i += 2;
+                imp_resp[i] = value.im;
+                i += 1;
+                j = j + T::one();
             }
-        }
 
-        self.convolve_function_priv(
-            buffer,
-            ratio,
-            len,
-            |data| array_to_complex(data),
-            |temp| array_to_complex_mut(temp),
-            |x| function.calc(x),
-        );
+            self.convolve_signal(buffer, &imp_resp).expect(
+                "Meta data should agree since we constructed the argument from this \
+                 vector",
+            );
+        }
+        else {
+            self.convolve_function_priv(
+                buffer,
+                ratio,
+                len,
+                |data| array_to_complex(data),
+                |temp| array_to_complex_mut(temp),
+                |x| function.calc(x),
+            );
+        }
     }
 }
 
