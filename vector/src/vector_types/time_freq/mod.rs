@@ -677,7 +677,7 @@ where
                     let scale = TT::from(ratio);
                     let len1 = array1.len();
                     let len2 = array2.len();
-                    let offset = if points % 2 != 0 { 1 } else { 0 };
+                    let offset = points % 2;
                     let max = T::from(points - offset).unwrap() / two;
                     let center = T::from(points - offset).unwrap() / two;
                     let mut j1 = -center + T::from(range1.start).unwrap();
@@ -717,7 +717,7 @@ where
                     // in the previous loop.
                     let pos1 = len1 - i1;
                     let pos2 = len2 - i2;
-                    let common_length = if pos1 < pos2 { pos1 } else { pos2 };
+                    let common_length = pos1.min(pos2);
                     for num in &mut array1[i1 + common_length..len1] {
                         (*num) =
                             (*num) * scale * fun(arg, fft_swap_x(is_fft_shifted, j1, max) * ratio);
